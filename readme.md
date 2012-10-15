@@ -1,5 +1,5 @@
 # Emoncms
-See main launch site: http://emoncms.org
+See main site: http://emoncms.org
 
 Emoncms is an open source energy visualisation web application, the main feature's include
 
@@ -24,16 +24,16 @@ Emoncms is licenced under the GPL Affero licence (AGPL)
 # Developers
 Emoncms is developed and has had contributions from the following people.
 
-Trystan Lea		https://github.com/trystanlea (principal maintainer)
-Ildefonso Martínez	https://github.com/ildemartinez
-Matthew Wire		https://github.com/mattwire
-Baptiste Gaultier	https://github.com/bgaultier
-Paul Allen		https://github.com/MarsFlyer
-James Moore		https://github.com/foozmeat		
-Lloyda			https://github.com/lloyda
-JSidrach		https://github.com/JSidrach
-Jramer			https://github.com/jramer
-Drsdre			https://github.com/drsdre
-Dexa187			https://github.com/dexa187
-Carlos Alonso Gabizó
+- Trystan Lea		https://github.com/trystanlea (principal maintainer)
+- Ildefonso Martínez	https://github.com/ildemartinez
+- Matthew Wire		https://github.com/mattwire
+- Baptiste Gaultier	https://github.com/bgaultier
+- Paul Allen		https://github.com/MarsFlyer
+- James Moore		https://github.com/foozmeat		
+- Lloyda		https://github.com/lloyda
+- JSidrach		https://github.com/JSidrach
+- Jramer		https://github.com/jramer
+- Drsdre		https://github.com/drsdre
+- Dexa187		https://github.com/dexa187
+- Carlos Alonso Gabizó
 
