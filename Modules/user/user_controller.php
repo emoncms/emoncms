@@ -78,10 +78,10 @@
     //--------------------------------------------------------------------------
     if ($action == 'create' && $allowusersregister)
     {    	
-      $username = preg_replace('/[^\w\s-.]/','',$_POST["name"]);	// filter out all except for alphanumeric white space and dash
+      $username = preg_replace('/[^\w\s-.]/','',post("name"));	// filter out all except for alphanumeric white space and dash
       $username = db_real_escape_string($username);
 
-      $password = db_real_escape_string($_POST["pass"]);
+      $password = db_real_escape_string(post("pass"));
 
       $failed = FALSE;
 
@@ -102,9 +102,10 @@
       }  
       else
       {
-        create_user($username,$password);
+        $userid = create_user($username,$password);
         $result = user_logon($username,$password);
-        $output['message'] = _("Your new account has been created");
+
+         if (isset($_POST['returnapikey']) && $_POST['returnapikey'] == true) $output['message'] = get_apikey_read($userid); else $output['message'] = _("Your new account has been created");
         if ($format == 'html')
         {
           header("Location: ../user/view");

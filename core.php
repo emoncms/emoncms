@@ -49,6 +49,13 @@
     return $val;
   }
 
+  function post($index)
+  {
+    $val = null;
+    if (isset($_POST[$index])) $val = $_POST[$index];
+    return $val;
+  }
+
   function server($index)
   {
     $val = null;
