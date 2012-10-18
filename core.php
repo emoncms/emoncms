@@ -101,12 +101,17 @@
       $controllerScript = "Modules/".$controller_name."/".$controller.".php";   
       if (is_file($controllerScript))
       {
+        // Load language files for module
+        $domain = "messages";
+        bindtextdomain($domain, "Modules/".$controller_name."/Locale");
+        bind_textdomain_codeset($domain, 'UTF-8');
+        textdomain($domain);
+
         require $controllerScript;
         $output = $controller();
       }
     }
 
-    //if (!$output['content']) $output['content'] = "404 Page does not exist";
     return $output;
   }
 

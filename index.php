@@ -13,6 +13,7 @@
 
   require("settings.php");
   require("core.php");
+  require("locale.php");
   $path = get_application_path();
 
   // Database connect
@@ -29,14 +30,16 @@
     $session = user_apikey_session($_GET['apikey']);
   else
     $session = emon_session_start();
-  
+ 
+  set_emoncms_lang($session['userid']);
+
   // 1) Get route
   $route = decode_route(get('q'));
 
   if (get('embed')==1) $embed = 1; else $embed = 0;
 
   // If no route specified use defaults
-  if (!$route['controller'] && !$route['action']) 
+  if (!$route['controller'] && !$route['action'])
   {
     // Non authenticated defaults
     if (!$session['read'])

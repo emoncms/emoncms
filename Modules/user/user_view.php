@@ -11,7 +11,7 @@
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-
+global $available_languages;
 ?>
 
   <h2><?php echo _('User: '); ?><?php echo $user['username']; ?></h2>
@@ -23,24 +23,21 @@ defined('EMONCMS_EXEC') or die('Restricted access');
   echo '<span class="help-block">'._("Select preferred language").'</span>';  
   echo '<select name="lang">';
   
-  if ($handle = opendir('locale')) {
-    if ($user['lang']=='')
-      echo '<option selected value="">'._("Browser language").'</option>';
-    else 
-      echo '<option value="">'._("Browser language").'</option>';
+  if ($user['lang']=='')
+    echo '<option selected value="">'._("Browser language").'</option>';
+  else 
+    echo '<option value="">'._("Browser language").'</option>';
     
-      while (false !== ($entry = readdir($handle))) 
-        if (is_dir('locale/'.$entry) && ($entry !='.') && ($entry!='..'))
-      {
-        if ($entry == $user['lang'])
-          echo '<option selected value="'.$entry.'">'._($entry).'</option>';
-        else
-              echo '<option value="'.$entry.'">'._($entry).'</option>';
-      }
+  foreach ($available_languages as $entry) 
+  {
+    if ($entry == $user['lang'])
+      echo '<option selected value="'.$entry.'">'._($entry).'</option>';
+    else
+      echo '<option value="'.$entry.'">'._($entry).'</option>';
+  }
                
-    closedir($handle);
-    echo '</select>';   
-  } 
+  echo '</select>';   
+
     
   echo '<input type="submit" value="'._("Save").'" class="btn">';
   echo '</form>';
