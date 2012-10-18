@@ -86,7 +86,12 @@
     $result = db_query("SELECT * FROM feeds WHERE userid = $userid AND status = '$status'");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_object($result)) { $row->size = get_feedtable_size($row->id); $feeds[] = $row; }
+    while ($row = db_fetch_object($result)) 
+    { 
+      $row->size = get_feedtable_size($row->id);
+      $row->time = strtotime($row->time)*1000;
+      $feeds[] = $row; 
+    }
     return $feeds;
   }
 
