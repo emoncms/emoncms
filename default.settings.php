@@ -45,8 +45,6 @@
 
   $allowusersregister = TRUE;
 
-  $available_languages = array("en_EN","es_ES","fr_FR","nl_BE","nl_NL");
-
   if ($display_errors)
   {
     error_reporting(E_ALL);

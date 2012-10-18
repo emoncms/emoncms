@@ -11,6 +11,13 @@
  
   */
 
+  // Check if settings.php file exists
+  if(!file_exists(dirname(__FILE__)."/settings.php"))
+  {
+    echo "Copy default.settings.php to settings.php and configure it";
+    die;
+  }
+  
   require("settings.php");
   require("core.php");
   require("locale.php");
