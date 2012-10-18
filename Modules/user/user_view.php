@@ -11,11 +11,11 @@
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-global $available_languages;
+
 ?>
 
   <h2><?php echo _('User: '); ?><?php echo $user['username']; ?></h2>
-  <?php   
+  <?php  
   /*
   * Create combo with available languages
   */
@@ -28,7 +28,8 @@ global $available_languages;
   else 
     echo '<option value="">'._("Browser language").'</option>';
     
-  foreach ($available_languages as $entry) 
+    
+  foreach (get_available_languages() as $entry) 
   {
     if ($entry == $user['lang'])
       echo '<option selected value="'.$entry.'">'._($entry).'</option>';
@@ -78,6 +79,32 @@ global $available_languages;
   
 
 <?php
+/*
+ * Return all locale directory from all modules.
+ * If one module has a language it will be detected
+ */
+function directoryLocaleScan($dir) {
+  if (isset($dir) && is_readable($dir)) {
+    $dlist = Array();
+    $dir = realpath($dir);
+
+    $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
+    
+    foreach($objects as $entry => $object){ 
+      $entry = str_replace($dir, '', $entry);
+      if (basename(dirname($entry))=='locale')     
+        $dlist[] = basename($entry);
+    }
+    
+    return array_unique($dlist);
+  }
+}
+
+function get_available_languages()
+{
+  return directoryLocaleScan(dirname(__FILE__));  
+}
+
 /*
  * Fake code to be detected by POedit to translate languages name
  * Do you know a better way to do that? If not here POedit will delete them in the mo file 

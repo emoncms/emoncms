@@ -14,7 +14,7 @@
 
 <script type="text/javascript" src="<?php print $path; ?>Lib/flot/jquery.min.js"></script>
 
-<div style="float:right;"><a href="api">Feed API Help</a></div>
+<div style="float:right;"><a href="api"><?php echo _("Feed API Help");?></a></div>
 <h2><?php if ($del) echo _('Deleted feeds'); else echo _('Feeds'); ?></h2>
 
 <div id="feedlist"></div>
