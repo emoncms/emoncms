@@ -11,6 +11,10 @@
  
   */
 
+  if (!file_exists("settings.php")) {
+    echo "Copy default.settings.php to settings.php and configure";
+    die;
+  }
   require("settings.php");
   require("core.php");
   require("locale.php");
