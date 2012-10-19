@@ -77,33 +77,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     <input type="submit" class="btn btn-danger" value="<?php echo _('Change'); ?>" />
   </form>
   
-
 <?php
-/*
- * Return all locale directory from all modules.
- * If one module has a language it will be detected
- */
-function directoryLocaleScan($dir) {
-  if (isset($dir) && is_readable($dir)) {
-    $dlist = Array();
-    $dir = realpath($dir);
-
-    $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
-    
-    foreach($objects as $entry => $object){ 
-      $entry = str_replace($dir, '', $entry);
-      if (basename(dirname($entry))=='locale')     
-        $dlist[] = basename($entry);
-    }
-    
-    return array_unique($dlist);
-  }
-}
-
-function get_available_languages()
-{
-  return directoryLocaleScan(dirname(__FILE__));  
-}
 
 /*
  * Fake code to be detected by POedit to translate languages name
