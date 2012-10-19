@@ -44,7 +44,7 @@
       return 3;
     else
     {
-      $result = db_query("SELECT count(*) from information_schema.tables WHERE table_schema = '$database'");
+      $result = db_query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
       $row = db_fetch_array($result);
                    
       if ($row[0])
