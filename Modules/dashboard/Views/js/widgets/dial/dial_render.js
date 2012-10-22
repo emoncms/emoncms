@@ -1,12 +1,49 @@
-  /*
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
 
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-  */
+function dial_widgetlist()
+{
+  var widgets = {
+    "dial":
+    {
+      "offsetx":-80,"offsety":-80,"width":160,"height":160,
+      "menu":"Widgets",
+      "options":["feed","max","scale","units","type"]
+    }
+  }
+  return widgets;
+}
+
+function dial_init()
+{
+  setup_widget_canvas('dial');
+}
+
+function dial_draw()
+{
+  $('.dial').each(function(index)
+  {
+    var feed = $(this).attr("feed");
+    var val = curve_value(feed,dialrate);
+    // ONLY UPDATE ON CHANGE
+    if ((val * 1).toFixed(1) != (assoc[feed] * 1).toFixed(1) || redraw == 1)
+    {
+      var id = "can-"+$(this).attr("id");
+      var scale = 1*$(this).attr("scale") || 1;
+      draw_gauge(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val*scale, $(this).attr("max"), $(this).attr("units"),$(this).attr("type"));
+    }
+  });
+}
+
+function dial_slowupdate()
+{
+
+}
+
+function dial_fastupdate()
+{
+  dial_draw();
+}
+
+
 
   function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type)
   {
@@ -129,3 +166,5 @@
   ctx.fillText(position+units,x,y+(size*0.125));
 
   }
+
+

@@ -60,18 +60,18 @@ function get_dashboard_list($userid, $public, $published)
 }
 
 
-function set_dashboard_content($userid, $content, $id)
+function set_dashboard_content($userid, $content, $id, $height)
 {
   $result = db_query("SELECT * FROM dashboard WHERE userid = '$userid' AND id='$id'");
   $row = db_fetch_array($result);
 
   if ($row)
   {
-    db_query("UPDATE dashboard SET content = '$content' WHERE userid='$userid' AND id='$id'");
+    db_query("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid='$userid' AND id='$id'");
   }
   else
   {
-    db_query("INSERT INTO dashboard (`userid`,`content`,`id`) VALUES ('$userid','$content','$id')");
+    db_query("INSERT INTO dashboard (`userid`,`content`,`id`,`height`) VALUES ('$userid','$content','$id','$height')");
   }
 }
 

@@ -1,3 +1,43 @@
+
+function cylinder_widgetlist()
+{
+  var widgets = {
+    "cylinder":
+    {
+      "offsetx":-80,"offsety":-165,"width":160,"height":330,
+      "menu":"Widgets",
+      "options":["topfeed","botfeed"]
+    }
+  }
+  return widgets;
+}
+
+function cylinder_init()
+{
+  setup_widget_canvas('cylinder');
+}
+
+function cylinder_draw()
+{
+  $('.cylinder').each(function(index)
+  {
+    var cyl_top = assoc[$(this).attr("topfeed")]*1;
+    var cyl_bot = assoc[$(this).attr("botfeed")]*1;
+
+    var id = "can-"+$(this).attr("id");
+    draw_cylinder(widgetcanvas[id],cyl_bot,cyl_top,$(this).width(),$(this).height());
+  });
+}
+
+function cylinder_slowupdate()
+{
+  cylinder_draw();
+}
+
+function cylinder_fastupdate()
+{
+}
+
 /*
    All emon_widgets code is released under the GNU General Public License v3.
    See COPYRIGHT.txt and LICENSE.txt.
@@ -80,4 +120,6 @@
     var blue = (191-(temperature*3.65)).toFixed(0);
     return "rgb("+red+","+green+","+blue+")";
   }
+
+
 

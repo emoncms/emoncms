@@ -243,12 +243,15 @@
       $id = intval($_POST['id']);
       if (!$id) $id = intval($_GET['id']);
 
+      $height = intval($_POST['height']);
+      if (!$height) $height = intval($_GET['height']);
+
       // IMPORTANT: if you get problems with characters being removed check this line:
       $content = preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$content);	// filter out all except characters usually used
 
       $content = db_real_escape_string($content);
 
-      set_dashboard_content($session['userid'],$content,$id);
+      set_dashboard_content($session['userid'],$content,$id,$height);
 
       if ($format == 'html')
       {
