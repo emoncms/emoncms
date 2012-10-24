@@ -12,13 +12,8 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $theme, $session, $allowusersregister;
+global $path, $theme, $allowusersregister;
 
-// gets the accepted language browser list
-//$accepted_languages = lang_http_accept();
-
-// set to the apropiated language
-//set_lang($accepted_languages);
 ?>
 
 <div style="margin: 0px auto; max-width:392px; padding:10px;">
@@ -52,7 +47,7 @@ global $path, $theme, $session, $allowusersregister;
 						</table>
 					</div>
 				<?php } ?>
-				<?php if (isset($error)) echo $error; ?>
+				<?php if (isset($error)) echo $error;	?>
 			</form>
 		</div>
 	</div>

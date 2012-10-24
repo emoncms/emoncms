@@ -1,13 +1,20 @@
 <?php
-  $display_errors = TRUE;
 
+/*
+ * Database connection settings
+ */
   $username = "";
   $password = "";
   $server   = "localhost";
   $database = "";
 
   $theme = "basic";
-
+  
+/*
+ * Error processing
+ */
+  $display_errors = TRUE;
+  
   /*
 
   Menu settings
@@ -43,11 +50,9 @@
   $public_profile_controller = "dashboard"; 
   $public_profile_action = "run";
 
+/*
+ * Allow user register in emoncms
+ */
   $allowusersregister = TRUE;
 
-  if ($display_errors)
-  {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 'on');
-  }
 ?>
