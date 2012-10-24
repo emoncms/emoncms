@@ -18,6 +18,7 @@
   */
 
   $menu_right = array();
+  $menu_right[] = array('name'=>"Admin", 'path'=>"admin/view" , 'session'=>"admin");
   $menu_right[] = array('name'=>"Account", 'path'=>"user/view" , 'session'=>"write");
   $menu_right[] = array('name'=>"Logout", 'path'=>"user/logout" , 'session'=>"write");
 
