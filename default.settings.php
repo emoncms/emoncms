@@ -1,20 +1,16 @@
 <?php
 
-/*
- * Database connection settings
- */
+  /*
+ 
+  Database connection settings
+
+  */
+
   $username = "";
   $password = "";
   $server   = "localhost";
   $database = "";
 
-  $theme = "basic";
-  
-/*
- * Error processing
- */
-  $display_errors = TRUE;
-  
   /*
 
   Menu settings
@@ -50,9 +46,19 @@
   $public_profile_controller = "dashboard"; 
   $public_profile_action = "run";
 
-/*
- * Allow user register in emoncms
- */
+  /*
+
+  Other
+
+  */
+
+  // Theme location
+  $theme = "basic";
+  
+  // Error processing
+  $display_errors = TRUE;
+
+  // Allow user register in emoncms
   $allowusersregister = TRUE;
 
 ?>
