@@ -15,7 +15,7 @@
   require("core.php");
     
   // Process user settings
-  require "process_settings.php"; 
+  require "process_settings.php";
 
   require("locale.php");
   
@@ -35,7 +35,7 @@
     $session = user_apikey_session($_GET['apikey']);
   else
     $session = emon_session_start();
- 
+
   set_emoncms_lang($session['userid']);
 
   // 1) Get route
@@ -84,8 +84,10 @@
 
   if ($route['format']=='html')
   {
+    $menu_left = load_menu();
     $output['mainmenu'] = theme("menu_view.php", array());
     if ($embed == 0) print theme("theme.php", $output);
     if ($embed == 1) print theme("embed.php", $output);
   }
+
 ?>
