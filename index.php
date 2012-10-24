@@ -11,16 +11,14 @@
  
   */
 
-  // Check if settings.php file exists
-  if(!file_exists(dirname(__FILE__)."/settings.php"))
-  {
-    echo "Copy default.settings.php to settings.php and configure it";
-    die;
-  }
-  
-  require("settings.php");
+  // Load emoncms framework core
   require("core.php");
+    
+  // Process user settings
+  require "process_settings.php"; 
+
   require("locale.php");
+  
   $path = get_application_path();
 
   // Database connect
