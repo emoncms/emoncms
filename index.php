@@ -27,8 +27,6 @@
     case 4: db_schema_setup(load_db_schema()); break;
   }
 
-  //db_schema_setup(load_db_schema());
-
   // Session control
   require("Modules/user/user_model.php");
   if (get('apikey'))

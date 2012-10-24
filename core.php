@@ -36,6 +36,7 @@
   function emon_session_start()
   {
     session_start();
+    if (isset($_SESSION['admin'])) $session['admin'] = $_SESSION['admin']; else $session['admin'] = 0;
     if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;
     if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
     if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;

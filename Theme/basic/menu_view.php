@@ -38,5 +38,6 @@ foreach ($menu_right as $item)
   if (isset($session[$item['session']]) && $session[$item['session']]==1) 
     echo "<li><a href=".$path.$item['path']." >"._($item['name'])."</a></li>";
 } 
+
 ?>
 </ul>

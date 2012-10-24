@@ -20,8 +20,11 @@
 
   function admin_controller()
   {
-    require "Models/feed_model.php";
-    global $session, $action,$format;
+    //require "Modules/feed/feed_model.php";
+    global $session, $route;
+
+    $format = $route['format'];
+    $action = $route['action'];
 
     $output['content'] = "";
     $output['message'] = "";
@@ -31,31 +34,27 @@
     // http://yoursite/emoncms/admin/users
     //---------------------------------------------------------------------------------------------------------
 
-    if ($action == '' && $session['write'] && $session['admin'])
+    if ($action == 'view' && $session['write'] && $session['admin'])
     {
-      $userlist = get_user_list();
-      $total_memuse = 0;
-      for ($i=0;$i<count($userlist);$i++) {
-        $user = $userlist[$i];
-        $stats = get_statistics($user['userid']);
-        $user['uphits'] = $stats['uphits'];
-        $user['dnhits'] = $stats['dnhits'];
-        $user['memuse'] = $stats['memory'];
-        $total_memuse += $user['memuse'];
-        $userlist[$i] = $user;
-      }
-        
-      usort($userlist, 'user_sort');	// sort by highest memory user first
-
-      $output['content'] = view("admin/admin_view.php", array('userlist'=>$userlist,'total_memuse'=>$total_memuse));
+      $output['content'] = view("admin/admin_main_view.php", array());
     }
+
+    if ($action == 'users' && $session['write'] && $session['admin'])
+    {
+      //$userlist = get_user_list();
+      //$output['content'] = view("admin/admin_view.php", array('userlist'=>$userlist));
+    }
+
+    if ($action == 'db' && $session['write'] && $session['admin'])
+    {
+      $out = db_schema_setup(load_db_schema());
+      $output['content'] = view("admin/admin_db_view.php", array('out'=>$out));
+    }
+
+
+
     return $output;
   }
 
-
-function user_sort($x, $y)
-{
-	return $y['memuse'] - $x['memuse'];
-}
 
 ?>
