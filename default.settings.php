@@ -13,15 +13,9 @@
 
   /*
 
-  Menu settings
+  Core menu settings
  
   */
-
-  $menu_left = array();
-  $menu_left[] = array('name'=>"Input", 'path'=>"input/list" , 'session'=>"write");
-  $menu_left[] = array('name'=>"Feeds", 'path'=>"feed/list" , 'session'=>"write");
-  $menu_left[] = array('name'=>"Dashboard", 'path'=>"dashboard/list" , 'session'=>"write");
-  $menu_left[] = array('name'=>"Vis", 'path'=>"vis/list" , 'session'=>"write");
 
   $menu_right = array();
   $menu_right[] = array('name'=>"Account", 'path'=>"user/view" , 'session'=>"write");
