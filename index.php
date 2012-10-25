@@ -87,7 +87,7 @@
 
   if ($route['format']=='html')
   {
-    $menu_left = load_menu();
+    $menu_left = emoncms_modules::getInstance()->build_menu_from_modules();
     $output['mainmenu'] = theme("menu_view.php", array());
     if ($embed == 0) print theme("theme.php", $output);
     if ($embed == 1) print theme("embed.php", $output);

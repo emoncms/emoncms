@@ -170,26 +170,4 @@
     }    
   }
 
-  function load_menu()
-  {
-    $menu_left = array();
-    return emoncms_modules::getInstance()->get_menu($menu_left);
-    /*
-    $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++)
-    {
-      if (filetype("Modules/".$dir[$i])=='dir') 
-      {
-        if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
-        {
-          require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
-        }
-      }
-    }
-     
-     */
-    return $menu_left;
-  }
-
-
 ?>

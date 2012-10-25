@@ -61,7 +61,7 @@ class emoncms_modules {
     }
   }  
   
-  public function get_menu($menu)
+  public function build_menu_from_modules()
   {
     $amenu = array();
     
