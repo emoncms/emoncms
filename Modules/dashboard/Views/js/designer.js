@@ -22,10 +22,11 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
     var mousedown_y = 0;
 
     var page_width = $(canvas).attr("width");
-    var page_height = $(canvas).attr("height");
     $("#when-selected").hide();
-    draw();
     scan();
+    $("#page-container").css("height",page_height);
+    $("#can").attr("height",page_height);
+    draw();
     widget_buttons();
 
   function snap(pos) {return Math.round(pos/grid_size)*grid_size;}
@@ -57,6 +58,8 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
 	'width':parseInt($(this).css("width")),
 	'height':parseInt($(this).css("height"))
       };
+      
+      if ((boxlist[id]['top'] + boxlist[id]['height'])>page_height) page_height = (boxlist[id]['top'] + boxlist[id]['height']);
     });
     }
   }

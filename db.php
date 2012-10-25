@@ -125,7 +125,7 @@
     { 
       if (table_exists($table))
       {
-        $out[] = array("TABLE ".$table,"ok");
+        $out[] = array('Table',$table,"ok");
         //-----------------------------------------------------
         // Check table fields from schema
         //-----------------------------------------------------
@@ -139,12 +139,12 @@
 
           if (field_exists($table, $field))
           {
-            $out[] = array($field,"ok");
+            $out[] = array('field',$field,"ok");
           }
           else
           {
             $query = "ALTER TABLE `$table` ADD `$field` $type";
-            $out[] = array($field,"added");
+            $out[] = array('field',$field,"added");
             db_query($query);
           } 
 
@@ -158,7 +158,7 @@
           if ($array['Extra']!=$extra && $extra=="auto_increment") { $out .= "Extra: $extra"; $query .= " auto_increment"; }
           if ($array['Key']!=$key && $key=="PRI") { $out .= "Key: $key, "; $query .= " primary key"; }
 
-          if ($query) $query = "ALTER TABLE $table MODIFY $field $type".$query;
+          if ($query) $query = "ALTER TABLE $table MODIFY `$field` $type".$query;
           if ($query) db_query($query);
 
           next($schema[$table]);
@@ -179,7 +179,7 @@
           if (isset($schema[$table][$field]['default'])) $default = $schema[$table][$field]['default']; else $default = null;
           if (isset($schema[$table][$field]['Extra'])) $extra = $schema[$table][$field]['Extra']; else $extra = null;
 
-          $query .= $field;
+          $query .= '`'.$field.'`';
           $query .= " $type";
           if ($default) $query .= " Default '$default'";
           if ($null=="NO") $query .= " not null";
@@ -193,7 +193,7 @@
           }
         }
         $query .= ")";
-        $out[] = array("TABLE ".$table,"created");
+        $out[] = array('Table',$table,"created");
 
         if ($query) db_query($query);
       }

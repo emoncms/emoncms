@@ -46,12 +46,24 @@
       </div>
     </div>
 		
-    <?php if (isset($message) && ($message)) { ?>     	
-    <div class="alert alert-info">
-      <button class="close" data-dismiss="alert">×</button>
-      <strong>Message: </strong><?php print $message; ?>
-    </div>
-    <?php } 
+    <?php 
+
+    if (isset($message))
+    {
+      $alert = 'info';
+      if (count($message)==2) {
+        $alert = $message[0];
+        $message = $message[1];
+      } 
+
+      if ($message) { ?>     	
+        <div class="alert alert-<?php echo $alert; ?>">
+          <button class="close" data-dismiss="alert">×</button>
+          <strong>Message: </strong><?php print $message; ?>
+        </div>
+      <?php 
+      } 
+    }
 
     /*------------------------------------------------------
      * GREY SUBMENU

@@ -32,15 +32,13 @@
   register_modules();
   //
 
-  //db_schema_setup(load_db_schema());
-
   // Session control
   require("Modules/user/user_model.php");
   if (get('apikey'))
     $session = user_apikey_session($_GET['apikey']);
   else
     $session = emon_session_start();
- 
+
   set_emoncms_lang($session['userid']);
 
   // 1) Get route
@@ -89,8 +87,10 @@
 
   if ($route['format']=='html')
   {
+    $menu_left = load_menu();
     $output['mainmenu'] = theme("menu_view.php", array());
     if ($embed == 0) print theme("theme.php", $output);
     if ($embed == 1) print theme("embed.php", $output);
   }
+
 ?>

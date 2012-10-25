@@ -1,33 +1,24 @@
 <?php
 
-/*
- * Database connection settings
- */
+  /*
+ 
+  Database connection settings
+
+  */
+
   $username = "";
   $password = "";
   $server   = "localhost";
   $database = "";
 
-  $theme = "basic";
-  
-/*
- * Error processing
- */
-  $display_errors = TRUE;
-  
   /*
 
-  Menu settings
+  Core menu settings
  
   */
 
-  $menu_left = array();
-  $menu_left[] = array('name'=>"Input", 'path'=>"input/list" , 'session'=>"write");
-  $menu_left[] = array('name'=>"Feeds", 'path'=>"feed/list" , 'session'=>"write");
-  $menu_left[] = array('name'=>"Dashboard", 'path'=>"dashboard/list" , 'session'=>"write");
-  $menu_left[] = array('name'=>"Vis", 'path'=>"vis/list" , 'session'=>"write");
-
   $menu_right = array();
+  $menu_right[] = array('name'=>"Admin", 'path'=>"admin/view" , 'session'=>"admin");
   $menu_right[] = array('name'=>"Account", 'path'=>"user/view" , 'session'=>"write");
   $menu_right[] = array('name'=>"Logout", 'path'=>"user/logout" , 'session'=>"write");
 
@@ -50,9 +41,19 @@
   $public_profile_controller = "dashboard"; 
   $public_profile_action = "run";
 
-/*
- * Allow user register in emoncms
- */
+  /*
+
+  Other
+
+  */
+
+  // Theme location
+  $theme = "basic";
+  
+  // Error processing
+  $display_errors = TRUE;
+
+  // Allow user register in emoncms
   $allowusersregister = TRUE;
 
 ?>
