@@ -26,9 +26,6 @@ class emoncms_feed_module_class extends emoncms_custom_module {
     return array('name'=>_("Feeds"), 'path'=>"feed/list" , 'session'=>"write", 'order' => 2 );
   }
   
-	function __construct() {
-		
-	}
 }
 
 ?>

@@ -27,9 +27,6 @@ class emoncms_vis_module_class extends emoncms_custom_module {
     return array('name'=>_("Vis"), 'path'=>"vis/list" , 'session'=>"write", 'order' => 4 );
   }
     
-	function __construct() {
-		
-	}
 }
 
 ?>

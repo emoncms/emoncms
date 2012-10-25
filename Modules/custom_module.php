@@ -17,12 +17,18 @@
  */
 abstract class emoncms_custom_module  {
 	  
+  /*
+   * Returns module description
+   */    
   abstract public function description();
+  
+  /*
+   * Returns module menu
+   */
   abstract public function register_menu();
   
-	function __construct() {
-		
-	}
+  // TODO: maybe return module version, modules dependencies,....
+  //
   
 }
 

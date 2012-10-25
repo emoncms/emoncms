@@ -27,9 +27,6 @@ class emoncms_input_module_class extends emoncms_custom_module {
     return array('name'=>_("Input"), 'path'=>"input/list" , 'session'=>"write", 'order' => 1 );
   }
     
-	function __construct() {
-		
-	}
 }
 
 ?>

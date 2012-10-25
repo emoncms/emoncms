@@ -26,10 +26,7 @@ class emoncms_dashboard_module_class extends emoncms_custom_module {
   {
     return array('name'=>"Dashboard", 'path'=>"dashboard/list" , 'session'=>"write", 'order' => 3 );
   }
-    
-	function __construct() {
-		
-	}
+  
 }
 
 ?>
