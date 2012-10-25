@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:39+0100\n"
-"PO-Revision-Date: 2012-10-18 23:37+0100\n"
-"Last-Translator: Trystan <trystan.lea@googlemail.com>\n"
+"POT-Creation-Date: 2012-10-25 19:38+0100\n"
+"PO-Revision-Date: 2012-10-25 19:39+0100\n"
+"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -15,6 +15,10 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../input_class.php:22
+msgid "Input emoncms module"
+msgstr "Módulo de emoncms para procesamiento de entradas"
 
 #: ../../../input_controller.php:133
 msgid "Input deleted"
@@ -96,8 +100,7 @@ msgstr "potencia obtenida a kWh/d"
 msgid "Inputs"
 msgstr "Entradas"
 
-#: ../../../Views/input_list.php:24
-#: ../../../Views/input_node.php:23
+#: ../../../Views/input_list.php:24 ../../../Views/input_node.php:23
 #: ../../../Views/input_node.php:27
 msgid "Node view"
 msgstr "Vista de nodos"
@@ -106,8 +109,7 @@ msgstr "Vista de nodos"
 msgid "Id"
 msgstr "Id"
 
-#: ../../../Views/input_list.php:57
-#: ../../../Views/input_node.php:76
+#: ../../../Views/input_list.php:57 ../../../Views/input_node.php:76
 msgid "Name"
 msgstr "Nombre"
 
@@ -115,18 +117,15 @@ msgstr "Nombre"
 msgid "Node"
 msgstr "Nodo"
 
-#: ../../../Views/input_list.php:63
-#: ../../../Views/input_node.php:76
+#: ../../../Views/input_list.php:63 ../../../Views/input_node.php:76
 msgid "Updated"
 msgstr "Actualizado"
 
-#: ../../../Views/input_list.php:63
-#: ../../../Views/input_node.php:76
+#: ../../../Views/input_list.php:63 ../../../Views/input_node.php:76
 msgid "Value"
 msgstr "Valor"
 
-#: ../../../Views/input_list.php:99
-#: ../../../Views/input_node.php:106
+#: ../../../Views/input_list.php:99 ../../../Views/input_node.php:106
 msgid "Autoconfigure inputs"
 msgstr "Configura entradas automaticamente"
 
@@ -139,8 +138,13 @@ msgid "Input configuration:   "
 msgstr "Configuración de entrada:"
 
 #: ../../../Views/process_list.php:21
-msgid "Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list."
-msgstr "Los procesos de entrada son ejecutados de manera secuencial y el resultado es pasado para ser procesador por el siguiente proceso de la lista de procesos de entrada."
+msgid ""
+"Input processes are executed sequentially with the result being passed back "
+"for further processing by the next processor in the input processing list."
+msgstr ""
+"Los procesos de entrada son ejecutados de manera secuencial y el resultado "
+"es pasado para ser procesador por el siguiente proceso de la lista de "
+"procesos de entrada."
 
 #: ../../../Views/process_list.php:27
 msgid "New"
@@ -178,8 +182,7 @@ msgstr "Argumento"
 msgid "Actions"
 msgstr "Acciones"
 
-#: ../../../Views/process_list.php:107
-#: ../../../Views/process_list.php:111
+#: ../../../Views/process_list.php:107 ../../../Views/process_list.php:111
 msgid "Move up"
 msgstr "Mover arriba"
 
