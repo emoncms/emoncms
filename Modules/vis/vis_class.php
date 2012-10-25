@@ -15,16 +15,16 @@
 /**
  * 
  */
-class emoncms_input_module_class extends emoncms_custom_module {
+class emoncms_vis_module_class extends emoncms_custom_module {
 	   
   public function description()
   {
-    return _("Input emoncms module");
+    return _("Vis emoncms module");
   }
   
   public function register_menu()
   {
-    return array('name'=>_("Input"), 'path'=>"input/list" , 'session'=>"write", 'order' => 1 );
+    return array('name'=>_("Vis"), 'path'=>"vis/list" , 'session'=>"write", 'order' => 4 );
   }
     
 	function __construct() {

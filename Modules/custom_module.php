@@ -18,6 +18,7 @@
 abstract class emoncms_custom_module  {
 	  
   abstract public function description();
+  abstract public function register_menu();
   
 	function __construct() {
 		
@@ -59,6 +60,17 @@ class emoncms_modules {
       $this->modules_instances[$emoncms_module] = new $emoncms_module;
     }
   }  
+  
+  public function get_menu($menu)
+  {
+    $amenu = array();
+    
+    foreach ($this->get_registered_modules() as $emoncms_module_instance) {
+      $amenu[] = $emoncms_module_instance->register_menu();       
+    }
+    
+    return $amenu;  
+  }
    
 }
 

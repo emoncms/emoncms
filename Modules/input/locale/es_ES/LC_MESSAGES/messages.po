@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-25 19:38+0100\n"
-"PO-Revision-Date: 2012-10-25 19:39+0100\n"
+"POT-Creation-Date: 2012-10-25 19:59+0100\n"
+"PO-Revision-Date: 2012-10-25 19:59+0100\n"
 "Last-Translator: ilde <i.martinez@ismsolar.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -19,6 +19,11 @@ msgstr ""
 #: ../../../input_class.php:22
 msgid "Input emoncms module"
 msgstr "Módulo de emoncms para procesamiento de entradas"
+
+#: ../../../input_class.php:27
+#, fuzzy
+msgid "Input"
+msgstr "Entradas"
 
 #: ../../../input_controller.php:133
 msgid "Input deleted"

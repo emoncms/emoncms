@@ -173,6 +173,8 @@
   function load_menu()
   {
     $menu_left = array();
+    return emoncms_modules::getInstance()->get_menu($menu_left);
+    /*
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
     {
@@ -184,6 +186,8 @@
         }
       }
     }
+     
+     */
     return $menu_left;
   }
 

@@ -21,6 +21,11 @@ class emoncms_feed_module_class extends emoncms_custom_module {
     return _("Feed emoncms module");
   }
   
+  public function register_menu()
+  {
+    return array('name'=>_("Feeds"), 'path'=>"feed/list" , 'session'=>"write", 'order' => 2 );
+  }
+  
 	function __construct() {
 		
 	}
