@@ -14,7 +14,7 @@
   // Load emoncms framework core
   require("core.php");
     
-  // Process user settings
+  // Process user settings and framework configuration
   require "process_settings.php"; 
 
   require("locale.php");
@@ -26,6 +26,11 @@
   switch(db_connect()) {
     case 4: db_schema_setup(load_db_schema()); break;
   }
+  
+  // Module registration    
+  require("Modules/custom_module.php");       
+  register_modules();
+  //
 
   //db_schema_setup(load_db_schema());
 
