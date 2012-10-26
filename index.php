@@ -14,8 +14,8 @@
   // Load emoncms framework core
   require("core.php");
     
-  // Process user settings
-  require "process_settings.php";
+  // Process user settings and framework configuration
+  require "process_settings.php"; 
 
   require("locale.php");
   
@@ -26,7 +26,10 @@
   switch(db_connect()) {
     case 4: db_schema_setup(load_db_schema()); break;
   }
-
+  
+  // Module registration    
+  require("Modules/custom_module.php");       
+  
   // Session control
   require("Modules/user/user_model.php");
   if (get('apikey'))
@@ -82,7 +85,7 @@
 
   if ($route['format']=='html')
   {
-    $menu_left = load_menu();
+    $menu_left = emoncms_modules::getInstance()->build_menu_from_modules();
     $output['mainmenu'] = theme("menu_view.php", array());
     if ($embed == 0) print theme("theme.php", $output);
     if ($embed == 1) print theme("embed.php", $output);

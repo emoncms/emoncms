@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:38+0100\n"
-"PO-Revision-Date: 2012-10-18 18:38+0100\n"
+"POT-Creation-Date: 2012-10-25 19:58+0100\n"
+"PO-Revision-Date: 2012-10-25 19:58+0100\n"
 "Last-Translator: ilde <i.martinez@ismsolar.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -15,6 +15,14 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../feed_class.php:21
+msgid "Feed emoncms module"
+msgstr "Módulo emoncms para procesamiento de feeds"
+
+#: ../../../feed_class.php:26 ../../../Views/feedlist_view.php:18
+msgid "Feeds"
+msgstr "Fuentes"
 
 #: ../../../feed_controller.php:200
 msgid "Feed "
@@ -59,10 +67,6 @@ msgstr "API Helper"
 #: ../../../Views/feedlist_view.php:18 ../../../Views/feedlist_view.php:21
 msgid "Deleted feeds"
 msgstr "Fuentes borradas"
-
-#: ../../../Views/feedlist_view.php:18
-msgid "Feeds"
-msgstr "Fuentes"
 
 #: ../../../Views/feedlist_view.php:22
 msgid "Delete feeds permanently"

@@ -10,7 +10,7 @@
   http://openenergymonitor.org
 
   */
-
+    
   define('EMONCMS_EXEC', 1);
 
   function get_application_path()
@@ -151,23 +151,6 @@
     }
     return $schema;
   }
-
-  function load_menu()
-  {
-    $menu_left = array();
-    $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++)
-    {
-      if (filetype("Modules/".$dir[$i])=='dir') 
-      {
-        if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
-        {
-          require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
-        }
-      }
-    }
-    return $menu_left;
-  }
-
+  
 
 ?>
