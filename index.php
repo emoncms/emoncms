@@ -29,9 +29,7 @@
   
   // Module registration    
   require("Modules/custom_module.php");       
-  register_modules();
-  //
-
+  
   // Session control
   require("Modules/user/user_model.php");
   if (get('apikey'))
