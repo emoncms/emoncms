@@ -1,5 +1,7 @@
 .project
 settings.php
+Modules/sync
+Modules/event
 Modules/energyaudit
 Modules/node
 Modules/auto

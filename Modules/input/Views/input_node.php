@@ -65,7 +65,7 @@ global $path;
 
         for (z in nodes)
         {
-          out += "<div style='background-color:#dedede; padding: 2px 2px 2px 2px; margin-bottom:10px;'><div style='padding:10px'>";
+          out += "<div style='background-color:#eee; margin-bottom:10px; border: 1px solid #ddd'><div style='padding:10px;  border-top: 1px solid #fff'>";
           out += "<i id='iconp"+z+"' node='"+z+"' class='icon-plus' "; if (nodevis[z]==true) out += "style='display:none;'"; out+="></i>";
           out += "<i id='iconn"+z+"' node='"+z+"' class='icon-minus' "; if (nodevis[z]==false) out += "style='display:none;'"; out+="></i>";
           out += "<b>Node "+z+"</b></div>";
