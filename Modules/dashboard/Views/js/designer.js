@@ -117,7 +117,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
     redraw = 1;
   }
 
-  function draw_options(box_options)
+  function draw_options(box_options, options_type)
   {
     // Build options table html
     var options_html = "<table>";
@@ -126,7 +126,33 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
       var val = $("#"+selected_box).attr(box_options[z]);
       if (val == undefined) val="";
       options_html += "<tr><td>"+box_options[z]+":</td>";
-      options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ ></td></tr>"
+
+      if (options_type && options_type[z] == "feed") 
+      {
+        options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+        for (i in feedlist)
+        {
+          if (val != feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['name']+"' >"+feedlist[i]['name']+"</option>";
+          if (val == feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['name']+"' selected >"+feedlist[i]['name']+"</option>";
+        }
+        options_html += "</td></tr>";
+      }
+
+      else if (options_type && options_type[z] == "feedid") 
+      {
+        options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+        for (i in feedlist)
+        {
+          if (val != feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['id']+"' >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+          if (val == feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['id']+"' selected >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+        }
+        options_html += "</td></tr>";
+      }
+
+      else
+      {
+        options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ ></td></tr>"
+      }
     }
     options_html += "</table>";
     $("#box-options").html(options_html);
@@ -294,7 +320,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
 
   $("#options-button").click(function(event) { 
     if (selected_box){
-      draw_options(widgets[$("#"+selected_box).attr("class")]["options"]);
+      draw_options(widgets[$("#"+selected_box).attr("class")]["options"],widgets[$("#"+selected_box).attr("class")]["optionstype"]);
       $("#testo").show();
     }
   });

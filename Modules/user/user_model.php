@@ -235,14 +235,16 @@ function change_password($userid, $oldpass, $newpass)
 
 function get_user_list()
 {
-  $result = db_query("SELECT id, username, admin FROM users");
+  $result = db_query("SELECT id, username, admin, uphits, dnhits FROM users");
   $userlist = array();
   while ($row = db_fetch_array($result))
   {
     $userlist[] = array(
       'userid' => $row['id'],
       'name' => $row['username'],
-      'admin' => $row['admin']
+      'admin' => $row['admin'],
+      'uphits' => $row['uphits'],
+      'dnhits' => $row['dnhits']
     );
   }
 
@@ -285,5 +287,26 @@ function set_user_settingsarray($userid, $settingsarray)
   $settingsarray = json_encode($settingsarray);
   db_query("UPDATE users SET settingsarray = '$settingsarray' WHERE id='$userid'");
 }
+
+function user_inc_uphits($userid)
+{
+  db_query("update users SET uphits = uphits + 1 WHERE id='$userid'");
+}
+
+function user_inc_dnhits($userid)
+{
+  db_query("update users SET dnhits = dnhits + 1 WHERE id='$userid'");
+}
+
+  function user_sortby_uphits($x,$y)
+  {
+    return $y['uphits'] - $x['uphits'];
+  }
+
+  function user_sortby_dnhits($x,$y)
+  {
+    return $y['dnhits'] - $x['dnhits'];
+  }
+
 
 ?>

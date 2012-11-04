@@ -7,6 +7,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid"],
+      "optionstype":["feedid"],
       "html":""
     },
 
@@ -15,6 +16,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","fill","units"],
+      "optionstype":["feedid","value","value"],
       "html":""
     },
 
@@ -23,6 +25,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid"],
+      "optionstype":["feedid"],
       "html":""
     },
 
@@ -31,6 +34,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["power","kwhd","currency","pricekwh"],
+      "optionstype":["feedid","feedid","value","value"],
       "html":""
     },
 
@@ -39,6 +43,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["power","kwhd"],
+      "optionstype":["feedid","feedid"],
       "html":""
     },
 
@@ -47,6 +52,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid"],
+      "optionstype":["feedid"],
       "html":""
     },
 
@@ -55,6 +61,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","thresholdA","thresholdB"],
+      "optionstype":["feedid","value","value"],
       "html":""
     },
 
@@ -63,6 +70,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","power","thresholdA","thresholdB"],
+      "optionstype":["feedid","feedid","value","value"],
       "html":""
     },
 
@@ -71,6 +79,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid"],
+      "optionstype":["feedid"],
       "html":""
     },
 
@@ -79,6 +88,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["kwhdA","kwhdB"],
+      "optionstype":["feedid","feedid"],
       "html":""
     },
 
@@ -87,6 +97,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["clear","showoptions"],
+      "optionstype":["value","value"],
       "html":""
     },
 
@@ -95,6 +106,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","ufac"],
+      "optionstype":["feedid","value"],
       "html":""
     }
   }

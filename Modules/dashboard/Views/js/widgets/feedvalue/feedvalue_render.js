@@ -6,7 +6,8 @@ function feedvalue_widgetlist()
     {
       "offsetx":-40,"offsety":-30,"width":80,"height":60,
       "menu":"Widgets",
-      "options":["feedname","units"]
+      "options":["feed","units"],
+      "optionstype":["feed","value"]
     }
   }
   return widgets;
@@ -20,7 +21,7 @@ function feedvalue_draw()
 {
   $('.feedvalue').each(function(index)
   {
-    var feed = $(this).attr("feedname");
+    var feed = $(this).attr("feed");
     var units = $(this).attr("units");
     var val = assoc[feed];
 

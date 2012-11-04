@@ -97,7 +97,7 @@
 
   function get_user_feed_ids($userid)
   {
-    $result = db_query("SELECT id FROM feeds WHERE userid = $userid");
+    $result = db_query("SELECT id FROM feeds WHERE userid = '$userid' AND status = '0'");
     if (!$result) return 0;
     $feeds = array();
     while ($row = db_fetch_object($result)) { $feeds[] = $row->id; }
@@ -106,10 +106,10 @@
 
   function get_user_feed_names($userid)
   {
-    $result = db_query("SELECT id,name FROM feeds WHERE userid = $userid");
+    $result = db_query("SELECT id,name FROM feeds WHERE userid = '$userid' AND status = '0'");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_array($result)) { $feeds[] = array($row['id'],$row['name']); }
+    while ($row = db_fetch_array($result)) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name']); }
     return $feeds;
   }
 

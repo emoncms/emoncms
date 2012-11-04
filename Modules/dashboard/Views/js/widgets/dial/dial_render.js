@@ -6,7 +6,8 @@ function dial_widgetlist()
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
       "menu":"Widgets",
-      "options":["feed","max","scale","units","type"]
+      "options":["feed","max","scale","units","type"],
+      "optionstype":["feed","value","value","value","value"]
     }
   }
   return widgets;

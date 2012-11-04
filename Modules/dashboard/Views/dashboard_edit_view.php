@@ -61,6 +61,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   var page_height = "<?php echo $dashboard['height']; ?>";
   var path = "<?php echo $path; ?>";
   var apikey_read = "<?php echo $apikey_read; ?>";
+  var feedlist = <?php echo json_encode($feedlist); ?>;
   $("#testo").hide();
 
   var widget = <?php echo json_encode($widgets); ?>;

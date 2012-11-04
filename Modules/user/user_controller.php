@@ -273,7 +273,13 @@
       }
     }
 
+    if ($action == 'admin' && $session['write'] && $session['admin'])
+    {
+      $userlist = get_user_list();    
+      usort($userlist, 'user_sortby_uphits');
+      $output['content'] = view("user/user_admin_view.php", array('userlist'=>$userlist));
+    }
+
     return $output;
   }
-
 ?>

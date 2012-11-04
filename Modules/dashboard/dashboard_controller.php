@@ -25,6 +25,7 @@
 
   function dashboard_controller()
   {
+    require "Modules/feed/feed_model.php";
     require "Modules/dashboard/dashboard_model.php";
     global $path, $session, $route;
 
@@ -197,7 +198,8 @@
 
       $apikey = get_apikey_read($session['userid']);
       $menu = build_dashboard_menu($session['userid'],"edit");
-      $output['content'] = view("dashboard/Views/dashboard_edit_view.php", array('dashboard'=>$dashboard, "apikey_read"=>$apikey));
+      $feedlist = get_user_feed_names($session['userid']);
+      $output['content'] = view("dashboard/Views/dashboard_edit_view.php", array('dashboard'=>$dashboard, "apikey_read"=>$apikey, 'feedlist'=>$feedlist));
 
       $output['content'] .= view("dashboard/Views/dashboard_config.php", array('dashboard'=>$dashboard));
       $output['submenu'] = view("dashboard/Views/dashboard_menu.php", array('id'=>$dashboard['id'], 'menu'=>$menu, 'type'=>"edit"));

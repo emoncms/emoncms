@@ -6,7 +6,8 @@ function cylinder_widgetlist()
     {
       "offsetx":-80,"offsety":-165,"width":160,"height":330,
       "menu":"Widgets",
-      "options":["topfeed","botfeed"]
+      "options":["topfeed","botfeed"],
+      "optionstype":["feed","feed"]
     }
   }
   return widgets;

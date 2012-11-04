@@ -35,6 +35,13 @@
 
   function emon_session_start()
   {
+    session_set_cookie_params(
+            3600 * 24 * 30, //lifetime, 30 days
+            "/", //path
+            "", //domain 
+            false, //secure
+            true//http_only
+    );
     session_start();
     if (isset($_SESSION['admin'])) $session['admin'] = $_SESSION['admin']; else $session['admin'] = 0;
     if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;

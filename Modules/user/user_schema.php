@@ -9,9 +9,11 @@ $schema['users'] = array(
   'apikey_write' => array('type' => 'varchar(64)'),
   'apikey_read' => array('type' => 'varchar(64)'),
   'lastlogin' => array('type' => 'datetime'),
+  'uphits' => array('type' => 'int(11)', 'Null'=>'NO'),
+  'dnhits' => array('type' => 'int(11)', 'Null'=>'NO'),
   'admin' => array('type' => 'int(11)', 'Null'=>'NO'),
   'lang' => array('type' => 'varchar(5)'),
-  'timeoffset' => array('type' => 'int(11)'),
+  'timeoffset' => array('type' => 'int(11)', 'Null'=>'NO'),
   'settingsarray' => array('type' => 'text')
 );
 
