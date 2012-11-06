@@ -47,7 +47,7 @@
           var tag = 0; if (data[z]['tag']!=0) tag = data[z]['tag'];
           if (!tags[tag]) tags[tag] = [];
           tags[tag].push(data[z]);
-          if (tagvis[tag]==undefined) {tagvis[tag] = true;} 
+          if (tagvis[tag]==undefined) {tagvis[tag] = false;} 
           feeds[feedid] = data[z];
         }
 
@@ -55,10 +55,10 @@
 
         for (z in tags)
         {
-          out += "<div style='background-color:#dedede; padding: 2px 2px 2px 2px; margin-bottom:10px;'><div style='padding:10px'>";
+          out += "<div style='background-color:#eee; margin-bottom:10px; border: 1px solid #ddd'><div style='padding:10px;  border-top: 1px solid #fff'>";
           out += "<i id='iconp"+z+"' node='"+z+"' class='icon-plus' "; if (tagvis[z]==true) out += "style='display:none;'"; out+="></i>";
           out += "<i id='iconn"+z+"' node='"+z+"' class='icon-minus' "; if (tagvis[z]==false) out += "style='display:none;'"; out+="></i>";
-          out += "<b>"+z+"</b></div>";
+          if (z != 'null') out += " <b>"+z+"</b></div>"; else  out += " <b>No tag</b></div>";
 
           out += "<table ";
           if (tagvis[z]==false) out += "style='display:none;'";
@@ -171,6 +171,24 @@
               url: path+"feed/restore.json?id="+feedid
             });
             update_list();
+        });
+
+        $(".icon-plus").click(function(){
+          var nid = $(this).attr("node");
+
+          $("#node"+nid).show();
+          $(this).hide();
+          $("#iconn"+nid).show();
+          tagvis[nid]=true;
+        });
+
+        $(".icon-minus").click(function(){
+          var nid = $(this).attr("node");
+          
+          $("#node"+nid).hide();
+          $(this).hide();
+          $("#iconp"+nid).show();
+          tagvis[nid]=false;
         });
         
     }
