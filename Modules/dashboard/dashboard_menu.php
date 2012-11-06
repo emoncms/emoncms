@@ -5,6 +5,6 @@
 
   $menu_left[] = array('name'=>$img, 'path'=>get_user_name($session['userid']) , 'session'=>"read", 'order' => 0 );
 
-  $menu_left[] = array('name'=>"Dashboard", 'path'=>"dashboard/list" , 'session'=>"write", 'order' => 3 );
+  $menu_left[] = array('name'=>"Dashboard", 'path'=>"dashboard/list" , 'session'=>"write", 'order' => 4 );
 
 ?>

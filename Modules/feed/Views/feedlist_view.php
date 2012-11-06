@@ -17,6 +17,8 @@
 <div style="float:right;"><a href="api"><?php echo _("Feed API Help");?></a></div>
 <h2><?php if ($del) echo _('Deleted feeds'); else echo _('Feeds'); ?></h2>
 
+<?php if ($feeds) { ?>
+
 <div id="feedlist"></div>
 <?php if (!$del) { ?><br><a href="?del=1" class="btn btn-danger"><?php echo _('Deleted feeds'); ?></a><?php } ?>
 <?php if ($del && $feeds) { ?><br><a href="emptybin"><?php echo _('Delete feeds permanently'); ?></a> (no confirmation)<?php } ?>
@@ -196,3 +198,12 @@
 }
 
 </script>
+
+<?php } else { ?>
+
+<div class="alert alert-block">
+<h4 class="alert-heading">No feeds created</h4>
+<p>Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage.</p>
+</div>
+
+<?php } ?> 

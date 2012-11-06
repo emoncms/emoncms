@@ -11,21 +11,21 @@
   
 //require_once "Includes/messages.php";
   
-global $path;
+global $path, $session;
 ?>
 
 <script type="text/javascript" src="<?php print $path; ?>Lib/flot/jquery.min.js"></script>
 
 <div style="float:right;"><a href="api">Input API Help</a></div>
 
+<h2><?php echo _("Inputs"); ?></h2>
+
 <?php if ($inputs) { ?>
     
-<h2><?php echo _("Node view"); ?></h2>
+
 
 <div align="right">
-  <!--<a href="#" title="<?php echo _("New dashboard"); ?>" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/new.json  ',data : '',dataType : 'json',success : location.reload()});"><i class="icon-plus-sign"></i></a>-->
   <a href="<?php echo $path; ?>input/list" title="<?php echo _("Node view"); ?>"><i class="icon-th"></i></a>
-  <!--<a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list"></i></a>-->
 </div>
 
 <div id="inputlist"></div>
@@ -128,4 +128,17 @@ global $path;
   }
 </script>
 
-<?php } ?>
+<?php } else { ?>
+
+<div class="alert alert-block">
+<h4 class="alert-heading">No inputs created</h4>
+<p>Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.</p>
+</div>
+
+<p><b>To connect up a NanodeRF:</b></p>
+<p>1) Download and open the <a href="https://github.com/openenergymonitor/NanodeRF/NanodeRF_multinode" >NanodeRF_multinode</a> firmware.</p>
+<p>2) Set line 83 to: <b>char apikey[] = "<?php echo get_apikey_write($session['userid']); ?>";</b></p>
+<p>3) Upload the firmware to your NanodeRF.</p>
+
+
+<?php } ?> 

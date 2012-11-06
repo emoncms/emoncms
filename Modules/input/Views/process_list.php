@@ -53,9 +53,7 @@ global $path, $session;
 
   <?php $message = "<h2>" . _("Are you sure you want to delete input: ") . $name . "?</h2>"; ?>
 
-  <form action="../confirm" method="post">
-    <input type="hidden" name="message" value="<?php echo $message; ?>">
-    <input type="hidden" name="action" value="input/delete">
+  <form action="<?php echo $path; ?>input/delete" method="get">
     <input type="hidden" name="id" value="<?php echo $inputid; ?>">
     <input type="submit" value="<?php echo _('Delete input?'); ?>" class="btn btn-danger"/>
   </form>
