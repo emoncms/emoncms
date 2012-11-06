@@ -110,12 +110,17 @@
     //----------------------------------------------------------------------------------------------------------------------
     // View or run dashboard (id)
     //----------------------------------------------------------------------------------------------------------------------
-    elseif (($action == 'run' || $action == 'view' ) && $session['read']) // write access required
+    elseif ($action == 'view' && $session['read']) // write access required
     {
       $id = intval(get('id'));
       $alias = preg_replace('/[^a-z]/','',$subaction);
      
-      if ($action == "run") {$public = !$session['write']; $published = 1;} else {$public = 0; $published = 0;}
+      if ($session['write']==0){
+        $public = 1; $published = 1; $action = "run";
+      } else { 
+        $public = 0; $published = 0;
+      }
+
       if ($id) 
       {     
         // If a dashboard id is given we get the coresponding dashboard
@@ -137,22 +142,19 @@
         $output['content'] = urlencode($dashboard['content']);
         return $output;
       }
-
+ 
       $menu = build_dashboard_menu($session['userid'], $action);
            
-      if ($action=="run")
+      if ($session['write']==0)
       {
         // In run mode dashboard menu becomes the main menu
-        $_SESSION['editmode'] = FALSE;
         $output['runmenu'] =  '<div class="nav-collapse collapse">';
         $output['runmenu'] .= '<ul class="nav">'.$menu.'</ul>';
-        if ($session['write']) $output['runmenu'] .= "<ul class='nav pull-right'><li><a href='".$GLOBALS['path']."user/logout'>"._("Logout")."</a></li></ul>";
         $output['runmenu'] .= "</div>";
       }
       else
       {
         // Otherwise in view mode the dashboard menu is an additional grey menu
-        $_SESSION['editmode'] = TRUE;
         $output['submenu'] = view("dashboard/Views/dashboard_menu.php", array('id'=>$dashboard['id'], 'menu'=>$menu, 'type'=>"view"));
       }
       
