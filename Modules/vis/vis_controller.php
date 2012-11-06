@@ -45,7 +45,8 @@
     if ($action == 'list' && $session['write'])
     {
       $user = get_user($session['userid']);
-      $output['content'] = view("vis/api_view.php", array('user' => $user));
+      $feedlist = get_user_feed_names($session['userid']);
+      $output['content'] = view("vis/api_view.php", array('user' => $user, 'feedlist'=>$feedlist));
     }
 
     // vis/realtime?feedid=1

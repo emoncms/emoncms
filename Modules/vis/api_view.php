@@ -15,378 +15,141 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 global $path;
 ?>
+  <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
+<script type='text/javascript' src="<?php echo $path; ?>Modules/vis/vis/vis_render.js"></script>
 
-<style>
-  .apitext {
-    border: 0;
-    border-bottom: 1px solid #ccc;
-    color: #F78623;
-    font-weight: bold;
-    width: 30px;
+<h2>Visualisations</h2>
+
+<div style="float:left">
+
+<div style="width:320px; background-color:#efefef; margin-bottom:10px; border: 1px solid #ddd;">
+  <div style="padding:10px;  border-top: 1px solid #fff">
+    <div style="float:left; padding-top:2px; font-weight:bold;">1) Select visualisation: </div>
+    <div style="float:right;">
+      <span id="select"></span>
+    </div>
+    <div style="clear:both"></div>
+  </div>
+</div>
+
+<div style="width:320px; background-color:#efefef; margin-bottom:10px; border: 1px solid #ddd;">
+  <div style="padding:10px;  border-top: 1px solid #fff">
+    <div style="padding-top:2px; font-weight:bold;">2) Set options: </div><br>
+    <div id="box-options" ></div>
+  </div>
+</div>
+
+<div style="width:320px; background-color:#efefef; margin-bottom:10px; border: 1px solid #ddd;">
+  <div style="padding:10px;  border-top: 1px solid #fff">
+    <div style="float:left; padding-top:2px; font-weight:bold;">3) </div>
+    <div style="float:right;">
+    <input id="additem" type="submit" value="View" class="btn btn-info" />
+    <input id="fullscreen" type="submit" value="Full screen" class="btn btn-info" />
+    </div>
+    <div style="clear:both"></div>
+  </div>
+</div>
+
+<div style="width:320px; background-color:#efefef; margin-bottom:10px; border: 1px solid #ddd;">
+  <div style="padding:10px;  border-top: 1px solid #fff">
+    <div style="padding-top:2px; font-weight:bold;">Embed in your website: </div><br>
+    <textarea id="embedcode" style="width:290px; height:120px;" readonly="readonly"></textarea>
+  </div>
+</div>
+
+</div>
+
+<div style="width:600px; height:420px; float:right">
+    <div id="visiframe"><div style="height:400px; border: 1px solid #ddd; " ></div></div>
+</div>
+
+<div id="visurl"></div>
+
+<script type="application/javascript">
+  var path = "<?php echo $path; ?>";
+  var feedlist = <?php echo json_encode($feedlist); ?>;
+  var widgets = vis_widgetlist();
+
+  var out = '<select id="additemselect" style="width:120px; margin:0px;">';
+  for (z in widgets)
+  {
+    out += "<option value='"+z+"' >"+z+"</option>";
   }
-</style>
-  
-  <h2><?php echo _('API Helper'); ?></h2>
-  <table class="table table-striped ">
-    <p><?php echo _('API keys are used to give authenticated access without login in via a normal session.'); ?></p>   
-    <tr>
-      <td>
-        <b><?php echo _('Read only access: '); ?></b><?php echo $user['apikey_read']; ?>
-        <br>
-        <span class="label label-info"><?php echo _('Allows to access in read only mode'); ?></span>
-      </td>
-      <td>
-        <form action="newapiread" method="post">
-          <input type="submit" class="btn btn-warning" value="<?php echo _('new'); ?>">
-        </form>
-      </td>
-    </tr>
+  out += '</select>';
+  $("#select").html(out);
 
-    <tr>
-      <td style="vertical-align:middle">
-        <b><?php echo _('Write only access: '); ?></b><?php echo $user['apikey_write']; ?>
-        <br>
-        <span class="label label-warning"><?php echo _('Keep secret. Write mode access'); ?></span>
-      </td>
-      <td>
-        <form action="newapiwrite" method="post">
-          <input type="submit" class="btn btn-warning" value="<?php echo _('new'); ?>" >
-        </form>
-      </td>
-    </tr>
-  </table>
-  
-  <br><h2><?php echo _('Post API'); ?></h2>
-  <table class="table table-striped ">
-    <tr>
-      <td>
-        <p>
-          <b>API url: </b><?php echo $GLOBALS['path']; ?>api/post
-       </td>
-       <td></td>
-    </tr>
-    <tr>
-      <td>
-        <p><b><?php echo _('Example: Click or copy this to your web browser or send from your monitoring hardware'); ?></b><br></p>
-        <?php
-          $testjson = $GLOBALS['path']."api/post?apikey=".$user['apikey_write']."&json={power:252.4,temperature:15.4}"
-        ?>      
-        <a href="<?php echo $testjson; ?>"><?php echo $testjson; ?></a>
-      </td>
-      <td>
-        <a href="<?php echo $testjson; ?>" class="btn btn-info"><?php echo _('try me'); ?></a>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <p><b><?php echo _('Using Node addressing'); ?></b><br></p>
-        <?php
-          $testjson = $GLOBALS['path']."api/post?apikey=".$user['apikey_write']."&node=1&json={power:252.4,temperature:15.4}"
-        ?>      
-        <?php echo $testjson; ?>
-        <p><span class="label label-warning"><?php echo _('Change node_id from URL with the node identification'); ?></span></p>
-      </td>
-      <td>
-        <a href="<?php echo $testjson; ?>" class="btn btn-info"><?php echo _('try me'); ?></a>
-      </td>
-    </tr>
-  </table>
+  draw_options(widgets['realtime']['options'], widgets['realtime']['optionstype']);
 
-  <br><h2><?php echo _('Visualisation API'); ?></h2>
-  <p><?php echo _('These are all the visualisations that are available in emoncms3. To view a visualisation enter in a relevant feedid in the underlined boxes below and then click on the > button.'); ?></p>  
+  $("#additemselect").click(function(){
+    draw_options(widgets[$(this).val()]['options'], widgets[$(this).val()]['optionstype']);
+  });
 
-  <table class='table table-striped '>
-    <tr>
-      <th>
-        <?php echo _('Name'); ?>
-      </th>
-      <th style="text-align:right">
-        <?php echo _('URL'); ?>
-      </th>
-      <th>
-        <?php echo _('View'); ?>
-      </th>
-    </tr>
-    <tr>
-      <form action="realtime" method="get">
-        <td>
-          <?php echo _('Real-time graph'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/realtime?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+  $("#additem").click(function(){
+    var visurl = "";
+    var vistype = $("#additemselect").val();
+    visurl += path+"vis/"+vistype;
+    $(".options").each(function() {
+      if ($(this).val()) visurl += "&"+$(this).attr("id")+"="+$(this).val();
+    });
 
-    <tr>
-      <form action="rawdata" method="get">
-        <td>
-          <?php echo _('Raw data graph'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/rawdata?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+    $("#visiframe").html('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
 
-    <tr>
-      <form action="bargraph" method="get">
-        <td>
-          <?php echo _('Bar graph'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/bargraph?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+    $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
+  });
 
-    <tr>
-      <form action="smoothie" method="get">
-        <td>
-          <?php echo _('Smoothie'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/smoothie?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+  $("#fullscreen").click(function(){
+    var visurl = "";
+    var vistype = $("#additemselect").val();
+    visurl += path+"vis/"+vistype;
+    $(".options").each(function() {
+      if ($(this).val()) visurl += "&"+$(this).attr("id")+"="+$(this).val();
+    });
+    $(window.location).attr('href',visurl);
+  });
 
-    <tr>
-      <form action="histgraph" method="get">
-        <td>
-          <?php echo _('All time histogram'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/histgraph?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+  function draw_options(box_options, options_type)
+  {
+    // Build options table html
+    var options_html = "<table>";
+    for (z in box_options)
+    {
+      options_html += "<tr><td style='width:100px'><b>"+box_options[z]+":</b></td>";
 
-    <tr>
-      <form action="dailyhistogram" method="get">
-        <td>
-          <?php echo _('Daily histogram'); ?>
-         </td>
-        <td style="text-align:right">
-          vis/dailyhistogram?power=
-          <input class="apitext" name="power" type='text'  />
-          &kwhd=
-          <input class="apitext" name="kwhd" type='text'  />
-          &whw=
-          <input class="apitext" name="whw" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+      if (options_type && options_type[z] == "feed-inst") 
+      {
+        options_html += "<td>"+select_feed(box_options[z], feedlist, 1)+"</td>";
+      }
 
-    <tr>
-      <form action="zoom" method="get">
-        <td>
-          <?php echo _('Zoom'); ?>
-        </td>
-        <td style="text-align:right">vis/zoom?power=
-          <input class="apitext" name="power" type='text'  />
-          &kwhd=
-          <input class="apitext" name="kwhd" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
-    
-    <tr>
-      <form action="../vis/comparison" method="get">
-        <td>
-          <?php echo _('kWh/d Comparison'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/comparison?power=
-          <input class="apitext" name="power" type='text' style='width:50px' />
-          &amp;kwhd=
-          <input class="apitext" name="kwhd" type='text' style='width:50px' />
-          &amp;currency=
-          <input class="apitext" name="currency" type='text' style='width:50px' />
-          &amp;pricekwh=
-          <input class="apitext" name="pricekwh" type='text' style='width:50px' />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+      else if (options_type && options_type[z] == "feed-daily") 
+      {
+        options_html += "<td>"+select_feed(box_options[z], feedlist, 2)+"</td>";
+      }
 
-    <tr>
-      <form action="stacked" method="get">
-        <td>
-          <?php echo _('Stacked'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/stacked?kwhdA=
-          <input class="apitext" name="kwhdA" type='text'  />
-          &kwhdB=
-          <input class="apitext" name="kwhdB" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+      else if (options_type && options_type[z] == "feed-hist") 
+      {
+        options_html += "<td>"+select_feed(box_options[z], feedlist, 3)+"</td>";
+      }
 
-    <tr class="d1">
-      <form action="threshold" method="get">
-        <td>
-          <?php echo _('Threshold'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/theshold/?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-          &thresholdA=
-          <input class="apitext" name="thresholdA" type='text'  />
-          &thresholdB=
-          <input class="apitext" name="thresholdB" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+      else
+      {
+        options_html += "<td><input style='width:120px' class='options' id='"+box_options[z]+"' type='text' / ></td>";
+      }
+      options_html += "</tr>";
+    }
+    options_html += "</table>";
+    $("#box-options").html(options_html);
+  }
 
-    <tr>
-      <form action="simplezoom" method="get">
-        <td>
-          <?php echo _('Simple zoom'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/simplezoom?power=
-          <input class="apitext" name="power" type='text'  />
-          &kwhd=
-          <input class="apitext" name="kwhd" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
+  // Create a drop down select box with a list of feeds.
+  function select_feed(id, feedlist, type)
+  {
+    var out = "<select style='width:120px' id='"+id+"' class='options' >";
+    for (i in feedlist)
+    {
+      if (feedlist[i]['datatype']==type) out += "<option value='"+feedlist[i]['id']+"' >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+    }
+    out += "</select>";
+    return out;
+  }
 
-    <tr>
-      <form action="orderbars" method="get">
-        <td>
-          <?php echo _('Bar graph (ordered by height)'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/orderbars?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
-
-    <tr>
-      <form action="orderthreshold" method="get">
-        <td>
-          <?php echo _('Threshold ordered by height'); ?></td>
-        <td style="text-align:right">
-          vis/orderthreshold?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-          &power=
-          <input class="apitext" name="power" type='text'  />
-          &thresholdA=
-          <input class="apitext" name="thresholdA" type='text'  />
-          &thresholdB=
-          <input class="apitext" name="thresholdB" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
-
-    <tr>
-      <form action="multigraph" method="get">
-        <td>
-          <?php echo _('Multigraph'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/multigraph
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
-
-    <tr>
-      <form action="edit" method="get">
-        <td>
-          <?php echo _('Datapoint Editor'); ?>
-        </td>
-        <td style="text-align:right">
-          vis/edit?feedid=
-          <input class="apitext" name="feedid" type='text'  />
-        </td>
-        <td>
-          <input type="submit" value=">" class="btn btn-info"/>
-        </td>
-      </form>
-    </tr>
-
-  </table>
-  
-  <h3><?php echo _('Other options:'); ?></h3>
-
-  <table class='table table-striped '>
-    <tr>
-      <td>
-        <b><?php echo _('Hide menu') ?></b>   
-        <br>
-        <?php echo _('Hide the top menu and footer by adding the attribute &embed=1 to the URL.'); ?> 
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <b><?php echo _('Share'); ?></b>
-        <br>
-        <?php echo _('To share a visualisation use your read apikey. Add the attribute '); ?><i>&apikey=<?php echo $user['apikey_read']; ?></i><?php echo _(' to the URL'); ?>
-      </td>
-    </tr>   
-    <tr>
-      <td>
-        <b><?php echo _('Embed'); ?></b>
-        <br>
-         <?php echo htmlspecialchars('<iframe style="width:650px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="' . $path . 'vis/rawdata?feedid=1&apikey=' . $user['apikey_read'] . '&embed=1"></iframe>'); ?>
-      </td>
-    </tr>
-    <tr>
-      <td>
-        <b><?php echo _('Reset Multigraph'); ?></b>
-        <br>
-        <?php echo _('The multigraph can be reset using the &clear=1 attribute.'); ?>
-      </td>
-    </tr>   
-  </table>
-
+</script>
