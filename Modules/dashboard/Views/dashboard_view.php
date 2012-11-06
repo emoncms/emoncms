@@ -48,7 +48,7 @@
   var redraw = 1;
   var reloadiframe = 0;
   show_dashboard();
-  setInterval(function() { update("<?php echo $apikey_read; ?>"); }, 5000);
+  setInterval(function() { update("<?php echo $apikey_read; ?>"); }, 10000);
   setInterval(function() { fast_update("<?php echo $apikey_read; ?>"); }, 30);
 
 </script>

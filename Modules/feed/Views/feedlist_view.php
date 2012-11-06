@@ -20,18 +20,19 @@
 <?php if ($feeds) { ?>
 
 <div id="feedlist"></div>
+<div style="font-size:13px; color:#888" >(Note feed size is temporarily turned off - testing performance improvements)</div>
 <?php if (!$del) { ?><br><a href="?del=1" class="btn btn-danger"><?php echo _('Deleted feeds'); ?></a><?php } ?>
 <?php if ($del && $feeds) { ?><br><a href="emptybin"><?php echo _('Delete feeds permanently'); ?></a> (no confirmation)<?php } ?>
 
 <script type="text/javascript">
   var path =  "<?php echo $path; ?>";
-  var feeds = <?php echo json_encode($feeds); ?>;
+  var data = <?php echo json_encode($feeds); ?>;
   var del = <?php echo $del; ?>;
-
   var tagvis = {};
+  draw_feeds(data);
 
   update_list();
-  var updatetimer = setInterval(update_list,2000);
+  var updatetimer = setInterval(update_list,10000);
 
   function update_list()
   {
@@ -40,7 +41,14 @@
       dataType: 'json',
       success: function(data) 
       { 
-       // feeds = data;
+        draw_feeds(data);
+      }
+    });
+  }
+
+function draw_feeds(data)
+{
+      // feeds = data;
         var feeds = {};
         var tags = {};
         for (z in data)
@@ -65,8 +73,8 @@
           out += "<table ";
           if (tagvis[z]==false) out += "style='display:none;'";
           out += " class='catlist' id='node"+z+"'><tr>";
-          out += "<th>id</th><th><?php echo _('Name'); ?></th><th><?php echo _('Tag'); ?></th><th><?php echo _('Type'); ?></th><th><?php echo _('Size'); ?></th><th><?php echo _('Updated'); ?></th><th><?php echo _('Value'); ?></th><th></th></tr>";
-
+          out += "<th>id</th><th><?php echo _('Name'); ?></th><th><?php echo _('Tag'); ?></th><th><?php echo _('Type'); ?></th><th><?php echo _('Updated'); ?></th><th><?php echo _('Value'); ?></th><th></th></tr>";
+          
           for (i in tags[z])
           {
             var feedid = tags[z][i]['id'];
@@ -98,7 +106,7 @@
 
             out += "<td id='tag"+feedid+"'>"+feeds[feedid]['tag']+"</td>";
             out += "<td id='datatype"+feedid+"'>"+feeds[feedid]['datatype']+"</td>";
-            out += "<td>"+(feeds[feedid]['size']/1000).toFixed(1)+" KiB</td>";
+            //out += "<td>"+(feeds[feedid]['size']/1000).toFixed(1)+" KiB</td>";
             out += "<td style='color:"+color+";'>"+updated+"</td>";
             out += "<td>"+value+"</td>";
 
@@ -193,8 +201,6 @@
           tagvis[nid]=false;
         });
         
-    }
-  });
 }
 
 </script>

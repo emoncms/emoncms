@@ -37,8 +37,10 @@ global $path, $session;
 
   var nodevis = {};
 
+  draw_inputs(inputs);
+
   update_list();
-  setInterval(update_list,5000);
+  setInterval(update_list,10000);
 
   function update_list()
   {
@@ -48,6 +50,13 @@ global $path, $session;
       async: false,
       success: function(data) 
       { 
+        draw_inputs(data);
+      }
+    });
+  }
+
+  function draw_inputs(data)
+  {
         inputs = data; 
 
         var nodes = [];
@@ -123,8 +132,6 @@ global $path, $session;
           $("#iconp"+nid).show();
           nodevis[nid]=false;
         });
-      }
-    });
   }
 </script>
 
