@@ -57,6 +57,9 @@
     }
   }
 
+  // Route calls for api through to input
+  if ($route['controller'] == "api") $route['controller'] = "input";
+
   // 2) Load the main page controller
   $output = controller($route['controller']);
 
