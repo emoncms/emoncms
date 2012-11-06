@@ -1,4 +1,4 @@
-<?php global $path; ?>
+<?php global $path, $session; ?>
 
 <h2>Input API</h2>
 
@@ -11,6 +11,9 @@
 
 <p>Set the input entry time manually:<br>
 <a href="<?php echo $path; ?>input/post?time=<?php echo time(); ?>&node=1&csv=100,200,300"><?php echo $path; ?>input/post?<b>time=<?php echo time(); ?></b>&node=1&csv=100,200,300</a></p>
+<p><b>APIKEY</b><br>
+To post data from a remote device you will need to include in the request url your write apikey. This give your device write access to your emoncms account, allowing it to post data. For example using the first json type request above just add the apikey to the end like this:</p>
+<p><a href="<?php echo $path; ?>input/post?json={power:200}&apikey=<?php echo get_apikey_write($session['userid']); ?>"><?php echo $path; ?>input/post?json={power:200}<b>&apikey=<?php echo get_apikey_write($session['userid']); ?></b></a></p>
 
 <h3>List</h3>
 <p><a href="<?php echo $path; ?>input/list"><?php echo $path; ?>input/list</a></p>
