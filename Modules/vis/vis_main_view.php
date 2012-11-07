@@ -43,7 +43,7 @@ global $path;
   <div style="padding:10px;  border-top: 1px solid #fff">
     <div style="float:left; padding-top:2px; font-weight:bold;">3) </div>
     <div style="float:right;">
-    <input id="additem" type="submit" value="View" class="btn btn-info" />
+    <input id="viewbtn" type="submit" value="View" class="btn btn-info" />
     <input id="fullscreen" type="submit" value="Full screen" class="btn btn-info" />
     </div>
     <div style="clear:both"></div>
@@ -70,7 +70,7 @@ global $path;
   var feedlist = <?php echo json_encode($feedlist); ?>;
   var widgets = vis_widgetlist();
 
-  var out = '<select id="additemselect" style="width:120px; margin:0px;">';
+  var out = '<select id="visselect" style="width:120px; margin:0px;">';
   for (z in widgets)
   {
     out += "<option value='"+z+"' >"+z+"</option>";
@@ -80,13 +80,13 @@ global $path;
 
   draw_options(widgets['realtime']['options'], widgets['realtime']['optionstype']);
 
-  $("#additemselect").click(function(){
+  $("#visselect").click(function(){
     draw_options(widgets[$(this).val()]['options'], widgets[$(this).val()]['optionstype']);
   });
 
-  $("#additem").click(function(){
+  $("#viewbtn").click(function(){
     var visurl = "";
-    var vistype = $("#additemselect").val();
+    var vistype = $("#visselect").val();
     visurl += path+"vis/"+vistype;
     $(".options").each(function() {
       if ($(this).val()) visurl += "&"+$(this).attr("id")+"="+$(this).val();
@@ -99,7 +99,7 @@ global $path;
 
   $("#fullscreen").click(function(){
     var visurl = "";
-    var vistype = $("#additemselect").val();
+    var vistype = $("#visselect").val();
     visurl += path+"vis/"+vistype;
     $(".options").each(function() {
       if ($(this).val()) visurl += "&"+$(this).attr("id")+"="+$(this).val();

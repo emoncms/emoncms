@@ -163,7 +163,7 @@ function draw_feeds(data)
             });
 
             update_list();
-            updatetimer = setInterval(update_list,2000);
+            updatetimer = setInterval(update_list,10000);
           }
         });
 

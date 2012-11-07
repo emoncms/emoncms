@@ -39,7 +39,7 @@
 
     elseif ($action == "create" && $session['write'])
     { 
-      $name = $_GET["name"];
+      $name = preg_replace('/[^\w\s-]/','',get('name'));
       $type = intval($_GET["type"]);
 
       $feedid = create_feed($session['userid'],$name,$type);
@@ -48,8 +48,7 @@
 
     elseif ($action == "getid" && $session['write'])
     { 
-      $name = $_GET["name"];
-
+      $name = preg_replace('/[^\w\s-]/','',get('name'));
       $feedid = get_feed_id($session['userid'],$name);
       $output['content'] = "Result: $feedid";
     }
