@@ -126,6 +126,7 @@
 
     elseif ($action == 'multigraph' && $session['read'])
     {
+      $write_apikey = "";
       if ($session['write'])
       {
       	$write_apikey = get_apikey_write($session['userid']);
