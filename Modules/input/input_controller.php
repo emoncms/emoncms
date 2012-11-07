@@ -72,12 +72,14 @@ function input_controller()
     if ($csv)
     {
       $values = explode(',', $csv);
-      for ($i=0; $i<count($values); $i++)
+      $i = 0;
+      foreach ($values as $value)
       {
+        $i++; 
         if ($node) $key = $i; else $key = "csv".$i;
-        $datapairs[] = $key.":".$values[$i];
+        $datapairs[] = $key.":".$value;
       }
-    }	
+    }
 
     if ($json || $csv)
     {
