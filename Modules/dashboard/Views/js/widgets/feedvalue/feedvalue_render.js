@@ -23,6 +23,8 @@ function feedvalue_draw()
   $('.feedvalue').each(function(index)
   {
     var feed = $(this).attr("feedname");
+    if (feed==undefined) feed = $(this).attr("feed");
+
     var units = $(this).attr("units");
     var val = assoc[feed];
 
