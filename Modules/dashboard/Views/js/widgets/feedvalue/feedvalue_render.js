@@ -6,7 +6,7 @@ function feedvalue_widgetlist()
     {
       "offsetx":-40,"offsety":-30,"width":80,"height":60,
       "menu":"Widgets",
-      "options":["feed","units"],
+      "options":["feedname","units"],
       "optionstype":["feed","value"]
     }
   }
