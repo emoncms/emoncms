@@ -78,7 +78,7 @@ function fast_update(apikey_read)
       var fn = window[fname];
       fn();
     }
-    redraw = 0;
+
   }
 
   for (z in widget)
@@ -87,6 +87,7 @@ function fast_update(apikey_read)
     var fn = window[fname];
     fn();
   }
+    redraw = 0;
 }
 
 function curve_value(feed,rate)
