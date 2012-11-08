@@ -15,13 +15,14 @@ function feedvalue_widgetlist()
 
 function feedvalue_init()
 {
+  feedvalue_draw();
 }
 
 function feedvalue_draw()
 {
   $('.feedvalue').each(function(index)
   {
-    var feed = $(this).attr("feed");
+    var feed = $(this).attr("feedname");
     var units = $(this).attr("units");
     var val = assoc[feed];
 
