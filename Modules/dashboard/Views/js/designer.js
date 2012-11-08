@@ -132,8 +132,8 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in feedlist)
         {
-          if (val != feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['name']+"' >"+feedlist[i]['name']+"</option>";
-          if (val == feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['name']+"' selected >"+feedlist[i]['name']+"</option>";
+          if (val != feedlist[i]['name'].replace(/\s/g, '-')) options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' >"+feedlist[i]['name']+"</option>";
+          if (val == feedlist[i]['name'].replace(/\s/g, '-')) options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' selected >"+feedlist[i]['name']+"</option>";
         }
         options_html += "</td></tr>";
       }
