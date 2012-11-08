@@ -114,8 +114,10 @@
     {
       $id = intval(get('id'));
       $alias = preg_replace('/[^a-z]/','',$subaction);
-     
-      if ($session['write']==0){
+
+      if (!isset($session['profile'])) $session['profile'] = 0;
+
+      if ($session['profile']==1){
         $public = 1; $published = 1; $action = "run";
       } else { 
         $public = 0; $published = 0;
@@ -144,8 +146,8 @@
       }
  
       $menu = build_dashboard_menu($session['userid'], $action);
-           
-      if ($session['write']==0)
+
+      if ($session['profile']==1)
       {
         // In run mode dashboard menu becomes the main menu
         $output['runmenu'] =  '<div class="nav-collapse collapse">';
