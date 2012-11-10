@@ -139,7 +139,7 @@ function get_process_list()
     ProcessArg::FEEDID,
     "average",
     2,
-    DataType::DAILY
+    DataType::HISTOGRAM
   );
 
   $list[18] = array(
