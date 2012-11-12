@@ -59,6 +59,7 @@
 
   // Route calls for api through to input
   if ($route['controller'] == "api") $route['controller'] = "input";
+  if ($route['controller'] == "input" && $route['action'] == "post") $route['format'] = "json";
 
   // 2) Load the main page controller
   $output = controller($route['controller']);
@@ -91,5 +92,5 @@
     if ($embed == 0) print theme("theme.php", $output);
     if ($embed == 1) print theme("embed.php", $output);
   }
-
+  
 ?>

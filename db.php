@@ -30,7 +30,7 @@
 
   function db_connect()
   {
-    global $mysqli, $server, $username, $password, $database;
+    global $mysqli, $server, $username, $password, $database, $dbtest;
     
     // ERROR CODES
     // 1: success!
@@ -44,14 +44,13 @@
       return 3;
     else
     {
-      $result = db_query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
-      $row = db_fetch_array($result);
-                   
-      if ($row[0])
-        return 1;
-      else
-        return 4;
-
+      if ($dbtest==true)
+      {
+        $result = db_query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
+        $row = db_fetch_array($result);
+        if (!$row[0]) return 4;
+      }
+      return 1;
     }
   }
 
