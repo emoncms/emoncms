@@ -183,7 +183,7 @@ function get_user_input_names($userid)
     $inputs = array();
     if ($result) {
       while ($row = db_fetch_array($result)) {
-        $inputs[] = array($row['id'],$row['name']);
+        $inputs[] = array('id'=>$row['id'],'name'=>$row['name']);
       }
     }
     return $inputs;
