@@ -359,10 +359,10 @@ function input_ontime($feedid, $time_now, $value)
   $new_kwh = 0;
 
   // Get last value
-  $last = get_feed_timevalue($feedid);
+  $last = get_feed_field($feedid);
   $last_ontime = $last['value'];
   $last_time = strtotime($last['time']);
-
+  echo json_encode($last);
   if ($last_time)
   {
     $time_elapsed = ($time_now - $last_time);

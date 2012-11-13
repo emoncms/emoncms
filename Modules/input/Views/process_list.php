@@ -146,7 +146,7 @@ function generate_process_arg_box()
         out +='<select class="processArgBox" name="arg" id="arg" onChange="update_process_arg_box()" style="width:140px;">'
         if (data[0] == 2) out += '<option value="-1">CREATE NEW:</option>';
         for (arg in data[2]) {
-          out += '<option value="'+data[2][arg][0]+'">'+data[2][arg][1]+'</option>';
+          out += '<option value="'+data[2][arg]['id']+'">'+data[2][arg]['name']+'</option>';
         }
         out +='</select>';
         break;
