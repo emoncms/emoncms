@@ -165,6 +165,31 @@ function get_process_list()
   return $list;
 }
 
+ function new_process_inputs($userid,$inputs)
+  {
+  //--------------------------------------------------------------------------------------------------------------
+  // 3) Process inputs according to input processlist
+  //--------------------------------------------------------------------------------------------------------------
+	  foreach ($inputs as $input)            
+	  {
+	    $input_processlist =  get_input_processlist($userid,$input['id']);
+	    if ($input_processlist)
+	    {
+	      $processlist = explode(",",$input_processlist);
+	      foreach ($processlist as $inputprocess)    			        
+	      {
+	        $inputprocess = explode(":", $inputprocess); 				// Divide into process id and arg
+	        $processid = $inputprocess[0];						// Process id
+	        $arg = $inputprocess[1];	 					// Can be value or feed id
+	
+	        $process_list = get_process_list();
+	        $process_function = $process_list[$processid][2];			// get process function name
+	        $value = $process_function($arg,$input['time'],$input['value']);	// execute process function
+	      }
+	    }
+	  }
+  }
+
  function process_inputs($userid,$inputs,$time)
   {
   //--------------------------------------------------------------------------------------------------------------

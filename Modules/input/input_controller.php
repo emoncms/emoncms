@@ -53,7 +53,48 @@ function input_controller()
   //---------------------------------------------------------------------------------------------------------
   // Post input data
   // http://yoursite/emoncms/input/post.json?csv= | json= ...
-  //---------------------------------------------------------------------------------------------------------			
+  //---------------------------------------------------------------------------------------------------------
+  if ($action == 'bulk' && $session['write'])
+  {
+    $error = false;
+    $data = get('data');
+    $nodes = json_decode($data);
+    if ($nodes == NULL) $error = true;
+
+    //echo var_dump($nodes);
+    $len = count($nodes);
+    if ($len>0)
+    {
+      if (isset($nodes[$len-1][0])) $offset = intval($nodes[$len-1][0]); else $offset = 0;
+      $start_time = time() - $offset;
+
+      foreach ($nodes as $node) 
+      {
+        $inputs = array();
+        if (isset($node[1]))
+        {
+          $nodeid = intval($node[1]);
+          for ($i=2; $i<count($node); $i++)
+          {
+            $name = "node".$nodeid."_".($i-1);
+            $id = get_input_id($session['userid'],$name);
+            $value = intval($node[$i]);
+            $time = $start_time + intval($node[0]);
+
+            if ($id==0) {
+              $id = create_input_timevalue($session['userid'],$name,$nodeid,$time,$value);
+            } else {				
+              set_input_timevalue($id,$time,$value);
+            }
+            $inputs[] = array('id'=>$id,'time'=>$time,'value'=>$value);
+          }
+          new_process_inputs($session['userid'],$inputs);
+        } else $error = true;
+      }
+    } else $error = true;
+    if ($error == false) $output['message'] = "ok"; else $output['message'] = "format error";
+  }
+			
   if ($action == 'post' && $session['write'])
   {
     $node = intval(get('node'));
