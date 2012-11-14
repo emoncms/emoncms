@@ -172,6 +172,7 @@ function get_process_list()
   //--------------------------------------------------------------------------------------------------------------
 	  foreach ($inputs as $input)            
 	  {
+            $value = $input['value'];
 	    $input_processlist =  get_input_processlist($userid,$input['id']);
 	    if ($input_processlist)
 	    {
@@ -184,7 +185,7 @@ function get_process_list()
 	
 	        $process_list = get_process_list();
 	        $process_function = $process_list[$processid][2];			// get process function name
-	        $value = $process_function($arg,$input['time'],$input['value']);	// execute process function
+	        $value = $process_function($arg,$input['time'],$value);	// execute process function
 	      }
 	    }
 	  }
