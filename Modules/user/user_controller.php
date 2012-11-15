@@ -209,7 +209,7 @@
     //--------------------------------------------------------------------------
     if ($action == 'logout' && $session['read'])
     { 
-        if ($_POST['CSRF_token'] == $_SESSION['CSRF_token'])
+        if (isset($_SESSION['CSRF_token']) && post('CSRF_token') == $_SESSION['CSRF_token'])
         {
           user_logout();
           $output['message'] = _("You are logged out");
