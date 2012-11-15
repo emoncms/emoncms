@@ -28,7 +28,7 @@
       $proto = "https";
     }
 
-    $path = dirname("$proto://" . $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME']) . "/";
+    $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
 
     return $path;
   }
