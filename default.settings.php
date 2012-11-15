@@ -39,7 +39,7 @@
   // Public profile functionality
   $public_profile_enabled = TRUE;
   $public_profile_controller = "dashboard"; 
-  $public_profile_action = "run";
+  $public_profile_action = "view";
 
   /*
 
