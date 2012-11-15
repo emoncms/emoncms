@@ -40,7 +40,7 @@ global $path, $session;
   draw_inputs(inputs);
 
   update_list();
-  setInterval(update_list,10000);
+  setInterval(update_list,5000);
 
   function update_list()
   {
