@@ -50,7 +50,7 @@ function lang_http_accept()
 		if (preg_match($pattern, $lang, $splits)) {
 			// print_r($splits);
 			$a = $splits["primarytag"];
-			if ($splits["subtag"]<> "") $a = $a."_".$splits["subtag"];
+			if (isset($splits["subtag"]) && $splits["subtag"]<> "") $a = $a."_".$splits["subtag"];
 				$langs[]=$a;
     		} else {
         		//echo "\nno match\n"; 
