@@ -209,16 +209,7 @@
     //--------------------------------------------------------------------------
     if ($action == 'logout' && $session['read'])
     { 
-        if (isset($_SESSION['CSRF_token']) && post('CSRF_token') == $_SESSION['CSRF_token'])
-        {
-          user_logout();
-          $output['message'] = _("You are logged out");
-        }
-        else
-        {
-          reset_CSRF_token();
-          $output['message'] = _("Invalid token");
-        }
+      user_logout();
 
       if ($format == 'html'){
         header("Location: ../");
