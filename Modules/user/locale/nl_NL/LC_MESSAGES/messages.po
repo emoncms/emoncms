@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:42+0100\n"
-"PO-Revision-Date: 2012-10-18 18:42+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"POT-Creation-Date: 2012-11-15 10:46+0100\n"
+"PO-Revision-Date: 2012-11-15 10:47+0100\n"
+"Last-Translator: Alco <nightcrawler28@live.nl>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -14,28 +14,50 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../login_block.php:33 ../../../user_view.php:59
-#, fuzzy
+#: ../../../login_block.php:28 ../../../user_view.php:60
 msgid "Username:"
 msgstr "Gebruikersnaam"
 
-#: ../../../login_block.php:37
+#: ../../../login_block.php:32
 msgid "Password:"
 msgstr "Wachtwoord:"
 
-#: ../../../login_block.php:41
+#: ../../../login_block.php:36
 msgid "Login"
 msgstr "Aanmelden"
 
-#: ../../../login_block.php:49
-#, fuzzy
+#: ../../../login_block.php:44
 msgid ""
 "Or if you are new enter a username and password above and click register"
 msgstr "wachtwoord en click registeer"
 
-#: ../../../login_block.php:49
+#: ../../../login_block.php:44
 msgid "Register"
-msgstr ""
+msgstr "Registreer"
+
+#: ../../../user_admin_view.php:1
+msgid "Users"
+msgstr "Gebruikers"
+
+#: ../../../user_admin_view.php:2
+msgid "registered users"
+msgstr "geregistreerde gebruikers"
+
+#: ../../../user_admin_view.php:4
+msgid "Username"
+msgstr "Gebruikersnaam"
+
+#: ../../../user_admin_view.php:4
+msgid "Up hits"
+msgstr "Hoog hits"
+
+#: ../../../user_admin_view.php:4
+msgid "Dn hits"
+msgstr "Laag hits:"
+
+#: ../../../user_admin_view.php:4
+msgid "Admin"
+msgstr "Administratie"
 
 #: ../../../user_controller.php:57
 msgid "Invalid username or password"
@@ -66,17 +88,16 @@ msgid "Your password has been changed"
 msgstr "U wachtwoord is aangepast"
 
 #: ../../../user_controller.php:136
-#, fuzzy
 msgid "Invalid password"
-msgstr "Ongeldig oud wachtwoord"
+msgstr "Ongeldig wachtwoord"
 
 #: ../../../user_controller.php:162
 msgid "No email address present"
-msgstr ""
+msgstr "Geen email adres ingevoerd"
 
 #: ../../../user_controller.php:166
 msgid "Username and password updated"
-msgstr ""
+msgstr "Gebruikersnaam en wachtwoord aangepast"
 
 #: ../../../user_controller.php:182
 msgid "New read apikey: "
@@ -99,76 +120,72 @@ msgid "User: "
 msgstr "Gebruiker"
 
 #: ../../../user_view.php:23
-#, fuzzy
 msgid "Select preferred language"
 msgstr "Selecteer voorkeurstaal:"
 
 #: ../../../user_view.php:27 ../../../user_view.php:29
 msgid "Browser language"
-msgstr ""
+msgstr "Brower taal"
 
-#: ../../../user_view.php:42
+#: ../../../user_view.php:43
 msgid "Save"
 msgstr "Bewaar"
 
-#: ../../../user_view.php:48
-#, fuzzy
+#: ../../../user_view.php:49
 msgid "Local time"
-msgstr "Actueel:"
+msgstr "Lokale tijd:"
 
-#: ../../../user_view.php:50
+#: ../../../user_view.php:51
 msgid "Time offset in hours:"
-msgstr ""
+msgstr "Tijdsafwijkg regio in uren:"
 
-#: ../../../user_view.php:53
+#: ../../../user_view.php:54
 msgid "Set"
 msgstr "Wijzig"
 
-#: ../../../user_view.php:57
-#, fuzzy
+#: ../../../user_view.php:58
 msgid "Change details"
-msgstr "Wijzig wachtwoord"
+msgstr "Wijzig details"
 
-#: ../../../user_view.php:62
+#: ../../../user_view.php:63
 msgid "Email:"
 msgstr "Email:"
 
-#: ../../../user_view.php:65 ../../../user_view.php:76
+#: ../../../user_view.php:66 ../../../user_view.php:77
 msgid "Change"
 msgstr "Wijzig"
 
-#: ../../../user_view.php:69
+#: ../../../user_view.php:70
 msgid "Change password"
 msgstr "Wijzig wachtwoord"
 
-#: ../../../user_view.php:70
-#, fuzzy
+#: ../../../user_view.php:71
 msgid "Current password:"
-msgstr "Nieuw wachtwoord:"
+msgstr "Huidig wachtwoord:"
 
-#: ../../../user_view.php:73
+#: ../../../user_view.php:74
 msgid "New password:"
 msgstr "Nieuw wachtwoord:"
 
-#: ../../../user_view.php:87
-msgid "en_EN"
-msgstr ""
-
 #: ../../../user_view.php:88
-msgid "es_ES"
-msgstr ""
+msgid "en_EN"
+msgstr "Engels"
 
 #: ../../../user_view.php:89
-msgid "nl_BE"
-msgstr ""
+msgid "es_ES"
+msgstr "Spaans"
 
 #: ../../../user_view.php:90
-msgid "nl_NL"
-msgstr ""
+msgid "nl_BE"
+msgstr "Nederlands(België)"
 
 #: ../../../user_view.php:91
+msgid "nl_NL"
+msgstr "Nederlands"
+
+#: ../../../user_view.php:92
 msgid "fr_FR"
-msgstr ""
+msgstr "Frans"
 
 #~ msgid "Sorry, you need a valid apikey or be logged in to see this page"
 #~ msgstr ""
@@ -380,9 +397,6 @@ msgstr ""
 #~ msgid "Up hits:"
 #~ msgstr "Hoog hits:"
 
-#~ msgid "Down hits:"
-#~ msgstr "Laag hits:"
-
 #~ msgid "Visualisation API"
 #~ msgstr "Weergave API"
 
@@ -420,17 +434,5 @@ msgstr ""
 #~ msgid "Multigraph"
 #~ msgstr "Multigrafiek"
 
-#~ msgid "Admin panel"
-#~ msgstr "Administratie paneel"
-
 #~ msgid "Total feed data disk space use: "
 #~ msgstr "Totaal gebruik van hardeschijfruimte voor feeds:"
-
-#~ msgid "Users"
-#~ msgstr "Gebruikers"
-
-#~ msgid "registered users"
-#~ msgstr "geregistreerde gebruikers"
-
-#~ msgid "Up hits"
-#~ msgstr "Hoog hits"
