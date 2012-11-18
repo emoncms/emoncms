@@ -81,7 +81,7 @@
       }
     }
 
-    elseif ($action == 'get' && $session['write'])
+    elseif ($action == 'get' && $session['read'])
     {
       $feedid = intval($_GET['id']);
       if (feed_belongs_user($feedid,$session['userid']))
