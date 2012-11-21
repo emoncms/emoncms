@@ -40,7 +40,7 @@
     elseif ($action == "create" && $session['write'])
     { 
       $name = preg_replace('/[^\w\s-]/','',get('name'));
-      $type = intval($_GET["type"]);
+      $type = intval(get("type"));
 
       $feedid = create_feed($session['userid'],$name,$type);
       $output['content'] = "Result: $feedid";
@@ -74,7 +74,7 @@
     //---------------------------------------------------------------------------------------------------------
     elseif ($action == 'value' && $session['read'])
     {
-      $feedid = intval($_GET["id"]);
+      $feedid = intval(get("id"));
       if (feed_belongs_user($feedid,$session['userid']))
       {
       	$output['content'] = get_feed_field($feedid,'value');
@@ -83,10 +83,10 @@
 
     elseif ($action == 'get' && $session['read'])
     {
-      $feedid = intval($_GET['id']);
+      $feedid = intval(get('id'));
       if (feed_belongs_user($feedid,$session['userid']))
       {
-        $field = $_GET['field'];
+        $field = preg_replace('/[^\w\s-]/','',get('field'));
         if ($field) $output['content'] = get_feed_field($feedid,$field);
         if (!$field) $output['content'] = json_encode(get_feed($feedid));
       }
@@ -94,11 +94,11 @@
 
     elseif ($action == 'set' && $session['write'])
     {
-      $feedid = intval($_GET['id']);
+      $feedid = intval(get('id'));
       if (feed_belongs_user($feedid,$session['userid']))
       {
-        $field = $_GET['field'];
-        $value = $_GET['value'];
+        $field = preg_replace('/[^\w\s-]/','',get('field'));
+        $value = preg_replace('/[^\w\s-]/','',get('value'));
         set_feed_field($feedid,$field,$value);
       }
     }
@@ -111,9 +111,9 @@
 
     elseif ($action == "insert" && $session['write'])
     { 
-      $feedid = intval($_GET["id"]);
-      $feedtime = intval($_GET["time"]);
-      $value = floatval($_GET["value"]);
+      $feedid = intval(get("id"));
+      $feedtime = intval(get("time"));
+      $value = floatval(get("value"));
 
       if (!$feedtime) $feedtime = time();
       insert_feed_data($feedid,time(),$feedtime,$value);
@@ -121,10 +121,10 @@
 
     elseif ($action == "update" && $session['write'])
     { 
-      $feedid = intval($_GET["id"]);
+      $feedid = intval(get("id"));
       if (feed_belongs_user($feedid, $session['userid'])) {
-        $feedtime = intval($_GET["time"]);
-        $value = floatval($_GET["value"]);
+        $feedtime = intval(get("time"));
+        $value = floatval(get("value"));
 
         if (!$feedtime) $feedtime = time();
         update_feed_data($feedid,time(),$feedtime,$value);
@@ -138,14 +138,14 @@
     //---------------------------------------------------------------------------------------------------------
     elseif ($action == 'data' && $session['read'])
     {
-      $feedid = intval($_GET['id']);
+      $feedid = intval(get('id'));
       
       // Check if feed belongs to user
       if (feed_belongs_user($feedid,$session['userid']))
       {
-        $start = floatval($_GET['start']);
-        $end = floatval($_GET['end']);
-        $dp = intval($_GET['dp']);
+        $start = floatval(get('start'));
+        $end = floatval(get('end'));
+        $dp = intval(get('dp'));
         $data = get_feed_data($feedid,$start,$end,$dp);
         $output['content'] = json_encode($data);
       } else { $output['message'] = "Permission denied"; }
@@ -153,13 +153,13 @@
 
     elseif ($action == 'histogram' && $session['read'])
     {
-      $feedid = intval($_GET['id']);
+      $feedid = intval(get('id'));
       
       // Check if feed belongs to user
       if (feed_belongs_user($feedid,$session['userid']))
       {
-        $start = floatval($_GET['start']);
-        $end = floatval($_GET['end']);
+        $start = floatval(get('start'));
+        $end = floatval(get('end'));
         $data = get_histogram_data($feedid,$start,$end);
         $output['content'] = json_encode($data);
       } else { $output['message'] = "Permission denied"; }
@@ -167,12 +167,12 @@
 
     elseif ($action == 'kwhatpower' && $session['read'])
     {
-      $feedid = intval($_GET['id']);
+      $feedid = intval(get('id'));
       // Check if feed belongs to user
       if (feed_belongs_user($feedid,$session['userid']))
       {
-        $min = floatval($_GET['min']);
-        $max = floatval($_GET['max']);
+        $min = floatval(get('min'));
+        $max = floatval(get('max'));
 			
         $data = get_kwhd_atpower($feedid,$min,$max);
         $output['content'] = json_encode($data);
@@ -192,7 +192,7 @@
     //--------------------------------------------------------------------------------------------------------- 
     elseif ($action == "delete" && $session['write'])
     { 
-      $feedid = intval($_GET["id"]);
+      $feedid = intval(get("id"));
       if (feed_belongs_user($feedid, $session['userid']))
       {
         delete_feed($userid,$feedid);
@@ -206,7 +206,7 @@
     //--------------------------------------------------------------------------------------------------------- 
     if ($action == "restore" && $session['write'])
     { 
-      $feedid = intval($_GET["id"]);
+      $feedid = intval(get("id"));
       if (feed_belongs_user($feedid, $session['userid'])) {
         restore_feed($userid,$feedid);
       } 
