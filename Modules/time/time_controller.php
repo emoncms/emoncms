@@ -35,7 +35,7 @@
 
     if ($action == 'set' && $session['read'])
     {
-      $offset = intval($_GET['offset']);
+      $offset = intval(get('offset'));
       
       if ($offset>0)
       {

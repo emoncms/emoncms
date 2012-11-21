@@ -137,7 +137,7 @@
     if ($action == "multigraphsave" && $session['write'])
     {
       $output['message'] = "saving";
-      $json = preg_replace('/[^\w\s-.?@%&:[]{},]/','',$_POST['data']);
+      $json = preg_replace('/[^\w\s-.?@%&:[]{},]/','',post('data'));
 
       set_multigraph($session['userid'], $json);
     }

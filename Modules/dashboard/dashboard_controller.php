@@ -50,7 +50,7 @@
     //----------------------------------------------------------------------------------------------------------------------
     elseif ($action == 'delete' && $session['write']) // write access required
     {
-      $output['message'] = delete_dashboard($session['userid'], intval($_POST["id"]));
+      $output['message'] = delete_dashboard($session['userid'], intval(post("id")));
     }
 		
     //----------------------------------------------------------------------------------------------------------------------
@@ -58,7 +58,7 @@
     //----------------------------------------------------------------------------------------------------------------------
     elseif ($action == 'clone' && $session['write']) // write access required
     {
-      $output['message'] = clone_dashboard($session['userid'], intval($_POST["id"]));
+      $output['message'] = clone_dashboard($session['userid'], intval(post("id")));
     }
 		
     //----------------------------------------------------------------------------------------------------------------------
@@ -214,7 +214,7 @@
     //----------------------------------------------------------------------------------------------------------------------
     elseif ($action == 'ckeditor' && $session['write'])
     {
-      $id = intval($_GET['id']);
+      $id = intval(get('id'));
       $alias = preg_replace('/[^a-z]/','',$subaction);
 
       if ($id) 
@@ -243,14 +243,14 @@
     //----------------------------------------------------------------------------------------------------------------------
     if ($action == 'set' && $session['write']) // write access required
     {
-      $content = $_POST['content'];
-      if (!$content) $content = $_GET['content'];
+      $content = post('content');
+      if (!$content) $content = get('content');
 
-      $id = intval($_POST['id']);
-      if (!$id) $id = intval($_GET['id']);
+      $id = intval(post('id'));
+      if (!$id) $id = intval(get('id'));
 
-      $height = intval($_POST['height']);
-      if (!$height) $height = intval($_GET['height']);
+      $height = intval(post('height'));
+      if (!$height) $height = intval(get('height'));
 
       // IMPORTANT: if you get problems with characters being removed check this line:
       $content = preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$content);	// filter out all except characters usually used
@@ -274,10 +274,10 @@
     //----------------------------------------------------------------------------------------------------------------------
     elseif ($action == 'setconf' && $session['write']) // write access required
     {
-      $id = intval($_POST['id']);
-      $name = preg_replace('/[^\w\s-]/','',$_POST['name']);
-      $alias = preg_replace('/[^a-z]/','',$_POST['alias']);
-      $description = preg_replace('/[^\w\s-]/','',$_POST['description']);
+      $id = intval(post('id'));
+      $name = preg_replace('/[^\w\s-]/','',post('name'));
+      $alias = preg_replace('/[^a-z]/','',post('alias'));
+      $description = preg_replace('/[^\w\s-]/','',post('description'));
        
 	  // Separated functions to allow set values in independent way
       if (isset($_POST['main']))

@@ -119,8 +119,8 @@
     if ($action == 'changepass' && $_SESSION['write'])
     {
       $failed = FALSE;
-      $oldpass =  db_real_escape_string($_POST['oldpass']);
-      $newpass =  db_real_escape_string($_POST['newpass']);
+      $oldpass =  db_real_escape_string(post('oldpass'));
+      $newpass =  db_real_escape_string(post('newpass'));
       if (strlen($newpass) < 4 || strlen($newpass) > 30)
       {
         $failed = TRUE;
@@ -142,10 +142,10 @@
     // http://yoursite/emoncms/user/changepass?old=sdgs43&new=sdsg345
     if ($action == 'changedetails' && $_SESSION['write'])
     {
-      $username = preg_replace('/[^\w\s-.]/','',$_POST["username"]);
+      $username = preg_replace('/[^\w\s-.]/','',post("username"));
       $username =  db_real_escape_string($username);
 
-      $email = preg_replace('/[^\w\s-.@]/','',$_POST["email"]);
+      $email = preg_replace('/[^\w\s-.@]/','',post("email"));
       $email =  db_real_escape_string($email);
 
       $id = get_user_id($username);
@@ -255,7 +255,9 @@
     if ($action == 'setlang' && $session['write'])
     {
       // Store userlang in database
-      set_user_lang($session['userid'],$_GET['lang']);
+
+      $lang = preg_replace('/[^\w\s-]/','',get('lang'));
+      set_user_lang($session['userid'],$lang);
 
       // Reload the page	  	
       if ($format == 'html')

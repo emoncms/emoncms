@@ -331,7 +331,7 @@ function input_controller()
       $inputid = intval(get("inputid"));
       if (input_belongs_to_user($session['userid'], $inputid))
       {
-        $processid = intval($_GET['processid']);
+        $processid = intval(get('processid'));
         if (delete_input_process($session['userid'],$inputid,$processid))
           $output['message'] = "Input process deleted";
         else
@@ -348,8 +348,8 @@ function input_controller()
       $inputid = intval(get("inputid"));
       if (input_belongs_to_user($session['userid'], $inputid))
       {
-        $processid = intval($_GET['processid']);
-        $moveby = intval($_GET['moveby']);
+        $processid = intval(get('processid'));
+        $moveby = intval(get('moveby'));
         move_input_process($session['userid'],$inputid,$processid,$moveby);
         $output['message'] = "Input process moved";
       } else $output['message'] = "Input ".$inputid." does not exist";
