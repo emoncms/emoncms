@@ -24,7 +24,7 @@ function directoryLocaleScan($dir) {
     foreach($objects as $entry => $object){ 
       $entry = str_replace($dir, '', $entry);
       if (basename(dirname($entry))=='locale')     
-        $dlist[] = basename($entry);
+        if (basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
     }
     
     return array_unique($dlist);
