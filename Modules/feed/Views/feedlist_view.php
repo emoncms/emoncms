@@ -151,15 +151,15 @@ function draw_feeds(data)
             $("#datatype"+feedid).html(feeds[feedid]['datatype']);
 
             $.ajax({                                      
-              url: path+"feed/set.json?id="+feedid+"&field=name&value="+feeds[feedid]['name']
+              url: path+"feed/set.json?id="+feedid+"&field=name&value="+feeds[feedid]['name'], async:false
             });
 
             $.ajax({                                      
-              url: path+"feed/set.json?id="+feedid+"&field=tag&value="+feeds[feedid]['tag']
+              url: path+"feed/set.json?id="+feedid+"&field=tag&value="+feeds[feedid]['tag'], async:false
             });
 
             $.ajax({                                      
-              url: path+"feed/set.json?id="+feedid+"&field=datatype&value="+feeds[feedid]['datatype']
+              url: path+"feed/set.json?id="+feedid+"&field=datatype&value="+feeds[feedid]['datatype'], async:false
             });
 
             update_list();
