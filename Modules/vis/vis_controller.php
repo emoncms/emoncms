@@ -46,7 +46,7 @@
     {
       $user = get_user($session['userid']);
       $feedlist = get_user_feed_names($session['userid']);
-      $output['content'] = view("vis/vis_main_view.php", array('user' => $user, 'feedlist'=>$feedlist));
+      $output['content'] = view("vis/vis_main_view.php", array('user' => $user, 'feedlist'=>$feedlist, 'apikey'=>$apikey));
     }
 
     // vis/realtime?feedid=1

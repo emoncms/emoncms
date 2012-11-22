@@ -12,11 +12,21 @@
 
   */
 
-  global $path; 
+  global $path, $session; 
 
 ?>
 
 <h2><?php echo _("Feed API");?></h2>
+
+<h3>Apikey authentication</h3>
+<p>If you want to call any of the following action's when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY.</p>
+<p><b>Read only:</b><br>
+<input type="text" style="width:230px" readonly="readonly" value="<?php echo get_apikey_read($session['userid']); ?>" />
+</p>
+
+<p><b>Read & Write:</b><br>
+<input type="text" style="width:230px" readonly="readonly" value="<?php echo get_apikey_write($session['userid']); ?>" />
+</p>
 
 <h3><?php echo _("General");?></h3>
 <p><a href="<?php echo $path; ?>feed/create?name=test&type=0"><?php echo $path; ?>feed/create?name=test&type=0</a></p>

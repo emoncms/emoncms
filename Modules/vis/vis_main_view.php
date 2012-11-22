@@ -70,6 +70,8 @@ global $path;
   var feedlist = <?php echo json_encode($feedlist); ?>;
   var widgets = vis_widgetlist();
 
+  var apikey = "<?php echo $apikey; ?>";
+
   var out = '<select id="visselect" style="width:120px; margin:0px;">';
   for (z in widgets)
   {
@@ -94,7 +96,7 @@ global $path;
 
     $("#visiframe").html('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
 
-    $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
+    $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
   });
 
   $("#fullscreen").click(function(){
