@@ -122,7 +122,7 @@
 
   function get_feed($id)
   {
-    $result = db_query("SELECT * FROM feeds WHERE id = $id");
+    $result = db_query("SELECT id,name,datatype,tag,time,value,status FROM feeds WHERE id = $id");
     return db_fetch_object($result);
   }
 

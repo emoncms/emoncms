@@ -32,7 +32,7 @@
   draw_feeds(data);
 
   update_list();
-  var updatetimer = setInterval(update_list,10000);
+  var updatetimer = setInterval(update_list,5000);
 
   function update_list()
   {
@@ -163,7 +163,7 @@ function draw_feeds(data)
             });
 
             update_list();
-            updatetimer = setInterval(update_list,10000);
+            updatetimer = setInterval(update_list,5000);
           }
         });
 

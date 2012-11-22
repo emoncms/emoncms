@@ -382,18 +382,18 @@ function kwhinc_to_kwhd($feedid, $time_now, $value)
 //---------------------------------------------------------------------------------------
 function input_ontime($feedid, $time_now, $value)
 {
-  $new_kwh = 0;
-
   // Get last value
-  $last = get_feed_field($feedid);
-  $last_ontime = $last['value'];
-  $last_time = strtotime($last['time']);
-  echo json_encode($last);
-  if ($last_time)
+  $last = get_feed($feedid);
+  $ontime = $last->value;
+  $last_time = strtotime($last->time);
+
+  if ($value == 1)
   {
     $time_elapsed = ($time_now - $last_time);
-    $ontime = $last_ontime + $time_elapsed;
+    $ontime = $ontime + $time_elapsed;
   }
+
+  
 
   $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
   update_feed_data($feedid, $time_now, $feedtime, $ontime);
