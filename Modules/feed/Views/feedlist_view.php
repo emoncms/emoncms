@@ -20,7 +20,6 @@
 <?php if ($feeds) { ?>
 
 <div id="feedlist"></div>
-<div style="font-size:13px; color:#888" >(Note feed size is temporarily turned off - testing performance improvements)</div>
 <?php if (!$del) { ?><br><a href="?del=1" class="btn btn-danger"><?php echo _('Deleted feeds'); ?></a><?php } ?>
 <?php if ($del && $feeds) { ?><br><a href="emptybin"><?php echo _('Delete feeds permanently'); ?></a> (no confirmation)<?php } ?>
 
