@@ -104,7 +104,12 @@ function draw_feeds(data)
             if (feeds[feedid]['value']<10) value = (1*feeds[feedid]['value']).toFixed(2);
 
             out += "<td id='tag"+feedid+"'>"+feeds[feedid]['tag']+"</td>";
-            out += "<td id='datatype"+feedid+"'>"+feeds[feedid]['datatype']+"</td>";
+
+            if (feeds[feedid]['datatype']==0) out += "<td style='font-size:12px' id='datatype"+feedid+"'>UNDEFINED</td>";
+            if (feeds[feedid]['datatype']==1) out += "<td style='font-size:12px' id='datatype"+feedid+"'>REALTIME</td>";
+            if (feeds[feedid]['datatype']==2) out += "<td style='font-size:12px' id='datatype"+feedid+"'>DAILY</td>";
+            if (feeds[feedid]['datatype']==3) out += "<td style='font-size:12px' id='datatype"+feedid+"'>HISTOGRAM</td>";
+
             //out += "<td>"+(feeds[feedid]['size']/1000).toFixed(1)+" KiB</td>";
             out += "<td style='color:"+color+";'>"+updated+"</td>";
             out += "<td>"+value+"</td>";
@@ -132,7 +137,15 @@ function draw_feeds(data)
             $("#edit"+feedid).html("<i class='icon-ok'></i>");
             $("#tag"+feedid).html("<input type='edit' style='width:50px;' value='"+feeds[feedid]['tag']+"' / >");
             $("#name"+feedid).html("<input type='edit' style='width:50px;' value='"+feeds[feedid]['name']+"' / >");
-            $("#datatype"+feedid).html("<input type='edit' style='width:50px;' value='"+feeds[feedid]['datatype']+"' / >");
+
+            var typeselect = "<select style='width:110px;'>";
+            if (feeds[feedid]['datatype']==0) typeselect += "<option selected value='0' >UNDEFINED</option>"; else typeselect += "<option value='0' >UNDEFINED</option>";
+            if (feeds[feedid]['datatype']==1) typeselect += "<option selected value='1' >REALTIME</option>"; else typeselect += "<option value='1' >REALTIME</option>";
+            if (feeds[feedid]['datatype']==2) typeselect += "<option selected value='2' >DAILY</option>"; else typeselect += "<option value='2' >DAILY</option>";
+            if (feeds[feedid]['datatype']==3) typeselect += "<option selected value='3' >HISTOGRAM</option>"; else typeselect += "<option value='3' >HISTOGRAM</option>";
+            typeselect += "</select>";
+
+            $("#datatype"+feedid).html(typeselect);
           }
           
           if (mode == 1 )
@@ -141,7 +154,7 @@ function draw_feeds(data)
 
             feeds[feedid]['name'] = $("#name"+feedid+" input").val();
             feeds[feedid]['tag'] = $("#tag"+feedid+" input").val();
-            feeds[feedid]['datatype'] = $("#datatype"+feedid+" input").val();
+            feeds[feedid]['datatype'] = $("#datatype"+feedid+" select").val();
 
             $("#edit"+feedid).html("<i class='icon-pencil'></i>");
 

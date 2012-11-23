@@ -35,7 +35,8 @@ global $path;
 <div style="width:320px; background-color:#efefef; margin-bottom:10px; border: 1px solid #ddd;">
   <div style="padding:10px;  border-top: 1px solid #fff">
     <div style="padding-top:2px; font-weight:bold;">2) Set options: </div><br>
-    <div id="box-options" ></div>
+    <div id="box-options" ></div><br>
+    <p style="font-size:12px; color:#444;"><b>Note:</b> If a feed does not appear in the selection box, check that the type has been set on the feeds page.</p>
   </div>
 </div>
 
