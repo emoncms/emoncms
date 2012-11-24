@@ -15,7 +15,7 @@ global $path, $session;
 
 <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
 
-<div style="float:right;"><a href="api">Input API Help</a></div>
+<div style="float:right;"><a href="../api">Input API Help</a></div>
 
 <h2><?php echo _('Input configuration:   '); echo get_input_name($inputid); ?></h2>
 <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>

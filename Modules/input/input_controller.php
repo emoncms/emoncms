@@ -144,10 +144,10 @@ function input_controller()
   //---------------------------------------------------------------------------------------------------------
   if ($action == 'list' && $session['read'])
   {
-    $inputs = get_user_inputs($session['userid']);
+    $inputs = get_user_inputsbynode($session['userid']);
 
     if ($format == 'json') $output['content'] = json_encode($inputs);
-    if ($format == 'html') $output['content'] = view("input/Views/input_list.php", array('inputs' => $inputs));
+    if ($format == 'html') $output['content'] = view("input/Views/input_node.php", array('inputs' => $inputs));
   }
 
   //---------------------------------------------------------------------------------------------------------

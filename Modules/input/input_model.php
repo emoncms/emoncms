@@ -164,10 +164,10 @@ function get_user_inputsbynode($userid)
     while ($row = db_fetch_array($result))
     {
       $inputs[] = array(
-        $row['id'],
-        $row['name'],
-        strtotime($row['time']) * 1000,
-        $row['value'], 'nodeid'=>$row['nodeid']
+        'id'=>$row['id'],
+        'name'=>$row['name'],
+        'time'=>strtotime($row['time']) * 1000,
+        'value'=>$row['value'], 'nodeid'=>$row['nodeid']
       );
     }
   }

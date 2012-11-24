@@ -28,7 +28,7 @@
   
   function user_controller()
   {
-    global $session, $route ,$allowusersregister;
+    global $session, $route ,$allowusersregister, $default_controller_auth, $default_action_auth;
 
     $format = $route['format'];
     $action = $route['action'];
@@ -61,7 +61,7 @@
         {	      	
       	  $output['message'] = _('Welcome, you are now logged in');
     	  if ($format == 'html'){
-      	    header('Location: ../user/view');
+      	    header('Location: ../'.$default_controller_auth.'/'.$default_action_auth);
 	  }
         }
       } 

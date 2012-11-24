@@ -55,12 +55,17 @@
 
     elseif ($action == "list" && $session['read'])
     { 
-      $del = intval(get('del'));
-      $feeds = get_user_feeds($session['userid'],$del);
+      $feeds = get_user_feeds($session['userid'],0);
       if ($format == 'json') $output['content'] = json_encode($feeds);
-      if ($format == 'html') $output['content'] = view("feed/Views/feedlist_view.php", array('feeds' => $feeds,'del'=>$del));
+      if ($format == 'html') $output['content'] = view("feed/Views/feedlist_view.php", array('feeds' => $feeds));
     }
 
+    elseif ($action == "deleted" && $session['read'])
+    { 
+      $feeds = get_user_feeds($session['userid'],1);
+      if ($format == 'json') $output['content'] = json_encode($feeds);
+      if ($format == 'html') $output['content'] = view("feed/Views/deletedfeedlist_view.php", array('feeds' => $feeds));
+    }
 
     /*
 
