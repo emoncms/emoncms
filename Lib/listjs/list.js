@@ -1,54 +1,47 @@
-var element = "";
-var groupby;
-var updatetimer;
-var updaterate;
-var editable = false;
+var list;
 
-function listjs(_element, _groupby, items, fields, group_properties, _updaterate)
+function listjs(_list)
 {
-  element = _element;
-  updaterate = _updaterate;
-  groupby = _groupby;
-
-  for (n in fields) { if (fields[n]['input']!=undefined) editable = true; }
+  list = _list;
 
   $(document).ready(function(){
-    draw_list(groupby, items, fields, group_properties); 
+    draw_list(); 
   });
 
-  updatetimer = setInterval(update_list,updaterate);
+  updatetimer = setInterval(update_list,list['updaterate']);
 }
 
 function update_list()
 {
     $.ajax({                                      
-      url: path+controller+"/"+listaction+".json",                
+      url: list['path']+list['controller']+"/"+list['listaction']+".json",                
       dataType: 'json',
       success: function(items) 
       { 
-        draw_list(groupby, items, fields, group_properties);
+        list['items'] = items;
+        draw_list();
       }
     });
 }
 
-function draw_list(groupby, items, fields, group_properties)
+function draw_list()
 {
         var feeds = {};
         var groups = {};
         // 1) Sort into associative array by rowid
         // 2) Create associative array of groups with array of id's that belong to group
-        for (z in items)
+        for (z in list['items'])
         {
-          var rowid = items[z]['id'];
-          var group = items[z][groupby];
+          var rowid = list['items'][z]['id'];
+          var group = list['items'][z][list['groupby']];
 
           if (!groups[group]) groups[group] = [];
-          groups[group].push(items[z]['id']);
+          groups[group].push(list['items'][z]['id']);
 
-          if (!group_properties[group]) group_properties[group] = {};
-          if (group_properties[group]['expanded']==undefined) {group_properties[group]['expanded'] = false;} 
+          if (!list['group_properties'][group]) list['group_properties'][group] = {};
+          if (list['group_properties'][group]['expanded']==undefined) {list['group_properties'][group]['expanded'] = false;} 
 
-          feeds[rowid] = items[z];
+          feeds[rowid] = list['items'][z];
         }
 
         // ---------------------------------------------------------------------------------------------------------
@@ -61,21 +54,21 @@ function draw_list(groupby, items, fields, group_properties)
           // 1) Draw group box
           // ---------------------------------------------------------------------------------------------------------
           out += "<div style='background-color:#eee; margin-bottom:10px; border: 1px solid #ddd'><div style='padding:10px;  border-top: 1px solid #fff'>";
-          out += "<i id='iconp"+z+"' node='"+z+"' class='icon-plus' "; if (group_properties[z]['expanded']==true) out += "style='display:none;'"; out+="></i>";
-          out += "<i id='iconn"+z+"' node='"+z+"' class='icon-minus' "; if (group_properties[z]['expanded']==false) out += "style='display:none;'"; out+="></i>";
-          if (z != 'null' && z != 0) out += " <b>"+group_prefix+z+"</b>"; else  out += " <b>No Group</b>";
-          if (group_properties[z]['description']) out += ":&nbsp;"+group_properties[z]['description'];
+          out += "<i id='iconp"+z+"' node='"+z+"' class='icon-plus' "; if (list['group_properties'][z]['expanded']==true) out += "style='display:none;'"; out+="></i>";
+          out += "<i id='iconn"+z+"' node='"+z+"' class='icon-minus' "; if (list['group_properties'][z]['expanded']==false) out += "style='display:none;'"; out+="></i>";
+          if (z != 'null' && z != 0) out += " <b>"+list['group_prefix']+z+"</b>"; else  out += " <b>No Group</b>";
+          if (list['group_properties'][z]['description']) out += ":&nbsp;"+list['group_properties'][z]['description'];
           out += "</div>";
 
           // Start of items table
           out += "<table ";
-          if (group_properties[z]['expanded']==false) out += "style='display:none;'";
+          if (list['group_properties'][z]['expanded']==false) out += "style='display:none;'";
           out += " class='catlist' id='node"+z+"'><tr>";
 
           // ---------------------------------------------------------------------------------------------------------
           // 2) Draw group items table headings
           // ---------------------------------------------------------------------------------------------------------
-          for (n in fields) out += "<th>"+n+"</th>";
+          for (n in list['fields']) out += "<th>"+n+"</th>";
           out += "<th></th></tr>";
 
           // ---------------------------------------------------------------------------------------------------------
@@ -87,25 +80,33 @@ function draw_list(groupby, items, fields, group_properties)
 
             out += "<tr class='d"+(i & 1)+"' >";
 
-            for (field in fields)
+            for (field in list['fields'])
             {
               out += "<td id='"+field+rowid+"' >";
 
               // if button type: add button surround
-              if (fields[field]['button'] != undefined) out += "<a style='text-decoration:none;' href='"+path+fields[field]['button']+rowid+"'><div class='button05' style='width:150px; margin: 0 auto;'>";
+              if (list['fields'][field]['button'] != undefined) out += "<a style='text-decoration:none;' href='"+list['path']+list['fields'][field]['button']+rowid+"'><div class='button05' style='width:150px; margin: 0 auto;'>";
 
-              if (fields[field]['format'] == undefined) out += feeds[rowid][field];
-              if (fields[field]['format'] == 'updated') out += list_format_updated(feeds[rowid]['time']);
-              if (fields[field]['format'] == 'value') out += list_format_value(feeds[rowid][field]);
-              if (fields[field]['format'] == 'select') out += "<span style='font-size:12px'>"+fields[field]['options'][feeds[rowid][field]]+"</span>";
+              if (list['fields'][field]['format'] == undefined) out += feeds[rowid][field];
+              if (list['fields'][field]['format'] == 'updated') out += list_format_updated(feeds[rowid]['time']);
+              if (list['fields'][field]['format'] == 'value') out += list_format_value(feeds[rowid][field]);
+              if (list['fields'][field]['format'] == 'select') out += "<span style='font-size:12px'>"+list['fields'][field]['options'][feeds[rowid][field]]+"</span>";
+
+              // Toggle icon is an icon that can be toggled between two icon types denoting two states, true or false
+              // here we draw the icon depending on the feed status and we make the icon clickable
+              if (list['fields'][field]['format'] == "toggleicon") 
+              {
+                if (feeds[rowid][field]==true) out += "<span class='toggleicon' rowid='"+rowid+"' field='"+field+"' state=0 ><i class='icon-"+list['fields'][field]['icon-true']+"'></i></span>";
+                if (feeds[rowid][field]==false || feeds[rowid][field]==null) out += "<span class='toggleicon' rowid='"+rowid+"' field='"+field+"' state=1 ><i class='icon-"+list['fields'][field]['icon-false']+"'></i></span>";
+              }
          
-              if (fields[field]['button'] != undefined) out += "</div></a>";
+              if (list['fields'][field]['button'] != undefined) out += "</div></a>";
               out += "</td>";
             }
             out += "<td>";
-            if (editable) out += "<span class='edit-row' rowid='"+rowid+"' id='edit"+rowid+"' mode=0><i class='icon-pencil'></i></span>&nbsp;&nbsp;";
-            if (deletable) out += "<span class='delete-row' rowid='"+rowid+"' ><i class='icon-remove'></i></span>";
-            if (restoreable) out += "<span class='restore-row' rowid='"+rowid+"' ><i class='icon-share'></i></span>";
+            if (list['editable']) out += "<span class='edit-row' rowid='"+rowid+"' id='edit"+rowid+"' mode=0><i class='icon-pencil'></i></span>&nbsp;&nbsp;";
+            if (list['deletable']) out += "<span class='delete-row' rowid='"+rowid+"' ><i class='icon-remove'></i></span>";
+            if (list['restoreable']) out += "<span class='restore-row' rowid='"+rowid+"' ><i class='icon-share'></i></span>";
 
             out += "</td></tr>";
           }
@@ -114,10 +115,24 @@ function draw_list(groupby, items, fields, group_properties)
         }
 
         // Insert generated html in element
-        $("#"+element).html(out);
+        $("#"+list['element']).html(out);
 
 
-        if (editable) 
+        $(".toggleicon").click(function()
+        {
+          var rowid = $(this).attr('rowid');
+          var state = $(this).attr("state");
+          var field = $(this).attr("field");
+
+          // Send field data back to server to be saved.
+          $.ajax({                                      
+            url: list['path']+list['controller']+"/set.json?id="+rowid+"&field="+field+"&value="+state, async:false
+          });
+
+          update_list();
+        });
+
+        if (list['editable']) 
         {
  
         $(".edit-row").click(function() {
@@ -135,18 +150,18 @@ function draw_list(groupby, items, fields, group_properties)
             $(this).attr("mode",1);
             $("#edit"+rowid).html("<i class='icon-ok'></i>");
 
-            for (field in fields)
+            for (field in list['fields'])
             {
-              if (fields[field]['input'] == "text") $("#"+field+rowid).html("<input type='edit' style='width:50px;' value='"+feeds[rowid][field]+"' / >");
+              if (list['fields'][field]['input'] == "text") $("#"+field+rowid).html("<input type='edit' style='width:50px;' value='"+feeds[rowid][field]+"' / >");
 
-              if (fields[field]['input'] == "select") 
+              if (list['fields'][field]['input'] == "select") 
               {
                 // Create option list
                 var options = "";
-                for (option in fields[field]['options']) {
+                for (option in list['fields'][field]['options']) {
                   options += "<option ";
                   if (feeds[rowid]['datatype']==option) options += "selected";
-                  options += " value='"+option+"' >"+fields[field]['options'][option]+"</option>";
+                  options += " value='"+option+"' >"+list['fields'][field]['options'][option]+"</option>";
                 }
                 $("#"+field+rowid).html("<select style='width:110px;'>"+options+"</select>");
               }
@@ -161,28 +176,28 @@ function draw_list(groupby, items, fields, group_properties)
             $(this).attr("mode",0);
             $("#edit"+rowid).html("<i class='icon-pencil'></i>");
 
-            for (field in fields)
+            for (field in list['fields'])
             {
-              if (fields[field]['input']=="text")
+              if (list['fields'][field]['input']=="text")
               {
                 feeds[rowid][field] = $("#"+field+rowid+" input").val();
                 $("#"+field+rowid).html(feeds[rowid][field]);
               }
 
-              if (fields[field]['input']=="select")
+              if (list['fields'][field]['input']=="select")
               {
                 feeds[rowid][field] = $("#"+field+rowid+" select").val();
-                $("#"+field+rowid).html("<span style='font-size:12px'>"+fields[field]['options'][feeds[rowid][field]]+"</span>");
+                $("#"+field+rowid).html("<span style='font-size:12px'>"+list['fields'][field]['options'][feeds[rowid][field]]+"</span>");
               }
 
               // Send field data back to server to be saved.
               $.ajax({                                      
-                url: path+controller+"/set.json?id="+rowid+"&field="+field+"&value="+feeds[rowid][field], async:false
+                url: list['path']+list['controller']+"/set.json?id="+rowid+"&field="+field+"&value="+feeds[rowid][field], async:false
               });
             }
 
             update_list();
-            updatetimer = setInterval(update_list,updaterate);
+            updatetimer = setInterval(update_list,list['updaterate']);
           }
         });
 
@@ -192,7 +207,7 @@ function draw_list(groupby, items, fields, group_properties)
         $(".delete-row").click(function() {
           var rowid = $(this).attr('rowid');
             $.ajax({                                      
-              url: path+controller+"/delete.json?id="+rowid, async: false
+              url: list['path']+list['controller']+"/delete.json?id="+rowid, async: false
             });
             update_list();
         });
@@ -201,7 +216,7 @@ function draw_list(groupby, items, fields, group_properties)
         $(".restore-row").click(function() {
           var rowid = $(this).attr('rowid');
             $.ajax({                                      
-              url: path+controller+"/restore.json?id="+rowid, async: false
+              url: list['path']+list['controller']+"/restore.json?id="+rowid, async: false
             });
             update_list();
         });
@@ -213,7 +228,7 @@ function draw_list(groupby, items, fields, group_properties)
           $("#node"+nid).show();
           $(this).hide();
           $("#iconn"+nid).show();
-          group_properties[nid]['expanded']=true;
+          list['group_properties'][nid]['expanded']=true;
         });
 
         // Minimize group
@@ -223,7 +238,7 @@ function draw_list(groupby, items, fields, group_properties)
           $("#node"+nid).hide();
           $(this).hide();
           $("#iconp"+nid).show();
-          group_properties[nid]['expanded']=false;
+          list['group_properties'][nid]['expanded']=false;
         });
 }
 
