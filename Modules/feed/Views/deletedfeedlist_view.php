@@ -27,30 +27,41 @@
   // The list is created using list.js - a javascript dynamic user interface list creator created as part of this project
   // list.js is still in early development.
 
-  var path =  "<?php echo $path; ?>";
-
-  var items = <?php echo json_encode($feeds); ?>;
-  console.log(items);
-  var fields = 
+  var list =
   {
-    'id':{}, 
-    'name': {}, 
-    'tag': {}, 
-    'datatype':
+    'element': "feedlist",
+ 
+    'items': <?php echo json_encode($feeds); ?>,
+
+    'groupby': 'tag',
+
+    'fields': 
     {
-      'format':"select",
-      'options':{0:"UNDEFINED", 1:"REALTIME", 2:"DAILY", 3:"HISTOGRAM"}
-    }
+      'id':{}, 
+      'name': {}, 
+      'tag': {}, 
+      'datatype':
+      {
+        'format':"select",
+        'options':{0:"UNDEFINED", 1:"REALTIME", 2:"DAILY", 3:"HISTOGRAM"}
+      }, 
+    },
+
+    'group_prefix': "",
+
+    'path': "<?php echo $path; ?>",
+    'controller': "feed",
+    'listaction': "deleted",
+
+    'editable': false,
+    'deletable': false,
+    'restoreable': true,
+
+    'group_properties': {},
+
+    'updaterate': 5000
   };
 
-  var group_properties = {};
-
-  var group_prefix = "";
-  var controller = "feed";
-  var listaction = "deleted";
-  var deletable = false;
-  var restoreable = true;
-
-  listjs("feedlist", "tag", items, fields, group_properties, 60000);
+  listjs(list);
 
 </script>
