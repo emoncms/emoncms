@@ -77,19 +77,19 @@
     // current feed value
     // http://yoursite/emoncms/feed/value?id=1
     //---------------------------------------------------------------------------------------------------------
-    elseif ($action == 'value' && $session['read'])
+    elseif ($action == 'value')
     {
       $feedid = intval(get("id"));
-      if (feed_belongs_user($feedid,$session['userid']))
+      if (feed_belongs_user_or_public($feedid,$session['userid']))
       {
       	$output['content'] = get_feed_field($feedid,'value');
       }
     }
 
-    elseif ($action == 'get' && $session['read'])
+    elseif ($action == 'get')
     {
       $feedid = intval(get('id'));
-      if (feed_belongs_user($feedid,$session['userid']))
+      if (feed_belongs_user_or_public($feedid,$session['userid']))
       {
         $field = preg_replace('/[^\w\s-]/','',get('field'));
         if ($field) $output['content'] = get_feed_field($feedid,$field);
@@ -141,12 +141,12 @@
     // start: start time, end: end time, dp: number of datapoints in time range to fetch
     // http://yoursite/emoncms/feed/data?id=1&start=000&end=000&dp=1
     //---------------------------------------------------------------------------------------------------------
-    elseif ($action == 'data' && $session['read'])
+    elseif ($action == 'data')
     {
       $feedid = intval(get('id'));
       
       // Check if feed belongs to user
-      if (feed_belongs_user($feedid,$session['userid']))
+      if (feed_belongs_user_or_public($feedid,$session['userid']))
       {
         $start = floatval(get('start'));
         $end = floatval(get('end'));
@@ -156,12 +156,12 @@
       } else { $output['message'] = "Permission denied"; }
     }
 
-    elseif ($action == 'histogram' && $session['read'])
+    elseif ($action == 'histogram')
     {
       $feedid = intval(get('id'));
       
       // Check if feed belongs to user
-      if (feed_belongs_user($feedid,$session['userid']))
+      if (feed_belongs_user_or_public($feedid,$session['userid']))
       {
         $start = floatval(get('start'));
         $end = floatval(get('end'));
@@ -170,11 +170,11 @@
       } else { $output['message'] = "Permission denied"; }
     }
 
-    elseif ($action == 'kwhatpower' && $session['read'])
+    elseif ($action == 'kwhatpower')
     {
       $feedid = intval(get('id'));
       // Check if feed belongs to user
-      if (feed_belongs_user($feedid,$session['userid']))
+      if (feed_belongs_user_or_public($feedid,$session['userid']))
       {
         $min = floatval(get('min'));
         $max = floatval(get('max'));
