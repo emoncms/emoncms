@@ -30,7 +30,7 @@
     $feedid = get_feed_id($userid,$name);
     if ($feedid!=0) return $feedid;
 
-    $result = db_query("INSERT INTO feeds (userid,name,status,datatype) VALUES ('$userid','$name','0','$datatype')");
+    $result = db_query("INSERT INTO feeds (userid,name,status,datatype,public) VALUES ('$userid','$name','0','$datatype','false')");
     $feedid = db_insert_id();
 
     if ($feedid>0) 
@@ -70,6 +70,14 @@
     return 0;
   }
 
+  function feed_belongs_user_or_public($feedid,$userid)
+  {
+    $result = db_query("SELECT userid, public FROM feeds WHERE `id` = '$feedid'");
+    $row = db_fetch_array($result);
+    if ($row['userid']==$userid || $row['public']==true) return 1; 
+    return 0;
+  }
+
   /*
 
   User Feed lists
@@ -83,7 +91,7 @@
 
   function get_user_feeds($userid,$status)
   {
-    $result = db_query("SELECT id,name,datatype,tag,time,value FROM feeds WHERE userid = $userid AND status = '$status'");
+    $result = db_query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE userid = $userid AND status = '$status'");
     if (!$result) return 0;
     $feeds = array();
     while ($row = db_fetch_object($result)) 
@@ -122,7 +130,7 @@
 
   function get_feed($id)
   {
-    $result = db_query("SELECT id,name,datatype,tag,time,value,status FROM feeds WHERE id = $id");
+    $result = db_query("SELECT id,name,datatype,tag,time,value,status,public FROM feeds WHERE id = $id");
     return db_fetch_object($result);
   }
 
