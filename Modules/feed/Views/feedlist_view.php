@@ -32,46 +32,63 @@
   // The list is created using list.js - a javascript dynamic user interface list creator created as part of this project
   // list.js is still in early development.
 
-  var path =  "<?php echo $path; ?>";
-
-  var items = <?php echo json_encode($feeds); ?>;
-
-  var fields = 
+  var list =
   {
-    'id':{}, 
-    'name':
+    'element': "feedlist",
+ 
+    'items': <?php echo json_encode($feeds); ?>,
+
+    'groupby': 'tag',
+
+    'fields': 
     {
-      'input':"text"
-    }, 
-    'tag':
-    {
-      'input':"text"
-    }, 
-    'datatype':
-    {
-      'format':"select",
-      'input':"select", 
-      'options':{0:"UNDEFINED", 1:"REALTIME", 2:"DAILY", 3:"HISTOGRAM"}
-    }, 
-    'updated':
-    { 
-      'format':"updated"
-    }, 
-    'value':
-    {
-      'format':"value", 
-    }
+      'id':{}, 
+      'name':
+      {
+        'input':"text"
+      }, 
+      'tag':
+      {
+        'input':"text"
+      }, 
+      'datatype':
+      {
+        'format':"select",
+        'input':"select", 
+        'options':{0:"UNDEFINED", 1:"REALTIME", 2:"DAILY", 3:"HISTOGRAM"}
+      }, 
+      'public':
+      {
+        'format':"toggleicon",
+        'icon-true':"globe",
+        'icon-false':"lock"
+      },
+      'updated':
+      { 
+        'format':"updated"
+      }, 
+      'value':
+      {
+        'format':"value", 
+      }
+    },
+
+    'group_prefix': "",
+
+    'path': "<?php echo $path; ?>",
+    'controller': "feed",
+    'listaction': "list",
+
+    'editable': true,
+    'deletable': true,
+    'restoreable': false,
+
+    'group_properties': {},
+
+    'updaterate': 5000
   };
 
-  var group_prefix = "";
-  var controller = "feed";
-  var listaction = "list";
-  var deletable = true;
-  var restoreable = false;
-
-  var group_properties = {};
-
-  listjs("feedlist", "tag", items, fields, group_properties, 5000);
+  listjs(list);
 
 </script>
 
