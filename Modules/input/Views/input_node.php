@@ -28,37 +28,47 @@ global $path, $session;
   // The list is created using list.js - a javascript dynamic user interface list creator created as part of this project
   // list.js is still in early development.
 
-  var path =  "<?php echo $path; ?>";
-
-  var items = <?php echo json_encode($inputs); ?>;
-  console.log(items);
-
-  var fields = 
+  var list =
   {
-    'id':{}, 
-    'name':
+    'element': "inputlist",
+ 
+    'items': <?php echo json_encode($inputs); ?>,
+
+    'groupby': 'nodeid',
+
+    'fields': 
     {
-      'button':"input/process/list.html?inputid="
-    }, 
-    'updated':
-    { 
-      'format':"updated"
+      'id':{}, 
+      'name':
+      {
+        'button':"input/process/list.html?inputid="
+      }, 
+      'updated':
+      { 
+        'format':"updated"
+      }, 
+      'value':
+      {
+        'format':"value", 
+      }
     },
-    'value':
-    {
-      'format':"value", 
-    }
+
+    'group_prefix': "Node ",
+
+    'path': "<?php echo $path; ?>",
+    'controller': "input",
+    'listaction': "list",
+
+    'editable': false,
+    'deletable': true,
+    'restoreable': false,
+
+    'group_properties': {},
+
+    'updaterate': 5000
   };
 
-  var group_properties = {};
-
-  var group_prefix = "Node ";
-  var controller = "input";
-  var listaction = "list";
-  var deletable = true;
-  var restoreable = false;
-
-  listjs("inputlist", 'nodeid', items, fields, group_properties, 5000);
+  listjs(list);
 
 </script>
 
