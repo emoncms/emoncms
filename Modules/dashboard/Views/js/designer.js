@@ -167,7 +167,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in feedlist)
         {
-          var selected = ""; if (val == feedlist[i]['name']) selected = "selected";
+          var selected = ""; if (val == feedlist[i]['id']) selected = "selected";
           options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
         }
         options_html += "</td></tr>";
