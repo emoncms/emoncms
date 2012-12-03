@@ -141,8 +141,10 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
     redraw = 1;
   }
 
-  function draw_options(box_options, options_type)
+  function draw_options(widget)
   {
+    var box_options = widgets[widget]["options"];
+    var options_type = widgets[widget]["optionstype"];
     // Build options table html
     var options_html = "<table>";
     for (z in box_options)
@@ -182,6 +184,11 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
           options_html += "<option value='"+multigraphs[i]['id']+"' "+selected+" >"+multigraphs[i]['id']+"</option>";
         }
         options_html += "</td></tr>";
+      }
+      else if (options_type && options_type[z] == "html") 
+      {  
+        val = $("#"+selected_box).html();
+        options_html += "<td><textarea class='options' id='"+box_options[z]+"' >"+val+"</textarea></td></tr>"
       }
 
       else
@@ -355,7 +362,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
 
   $("#options-button").click(function(event) { 
     if (selected_box){
-      draw_options(widgets[$("#"+selected_box).attr("class")]["options"],widgets[$("#"+selected_box).attr("class")]["optionstype"]);
+      draw_options($("#"+selected_box).attr("class"));
       $("#testo").show();
     }
   });

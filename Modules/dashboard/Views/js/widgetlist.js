@@ -4,7 +4,7 @@
     {
       "offsetx":-50,"offsety":-30,"width":100,"height":60,
       "menu":"Text",
-      "options":["html"],"html":
+      "options":["html"],"optionstype":["html"],"html":
       "Some text"
     },
 
@@ -12,7 +12,7 @@
     {
       "offsetx":-50,"offsety":-30,"width":100,"height":60,
       "menu":"Text",
-      "options":["html"],"html":
+      "options":["html"],"optionstype":["html"],"html":
       "Title"
     },
 
@@ -20,7 +20,7 @@
     {
       "offsetx":-50,"offsety":-30,"width":100,"height":60,
       "menu":"Text",
-      "options":["html"],"html":
+      "options":["html"],"optionstype":["html"],"html":
       "Title"
     },
 
@@ -28,7 +28,6 @@
     {
       "offsetx":0,"offsety":0,"width":200,"height":200,
       "menu":"Containers",
-      "options":["name"],
       "html":""
     },
 
@@ -36,7 +35,6 @@
     {
       "offsetx":-100,"offsety":-180,"width":200,"height":360,
       "menu":"Containers",
-      "options":["name"],
       "html":""
     }
   };

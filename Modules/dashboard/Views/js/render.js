@@ -58,7 +58,6 @@ function update()
     dataType : 'json',
     success : function(data)
     { 
-      console.log(data);
       for (z in data)
       {
         var newstr = data[z]['name'].replace(/\s/g, '-');
