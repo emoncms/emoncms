@@ -15,7 +15,6 @@
 -------------------------------------------------------------------------------------->
 
  <?php
-  $apikey = get("apikey");
   global $path, $embed;
  ?>
     
@@ -28,7 +27,7 @@
  // Time window buttons
  ---------------------------------------------------------------------------------------------------->
 <?php if (!$embed) { ?>
-<h2>Realtime data: <?php echo $feedname; ?></h2>
+<h2>Realtime data: <?php echo $feedidname; ?></h2>
 <?php } ?>
 
  <div id="graph_bound" style="height:400px; width:100%; position:relative; ">

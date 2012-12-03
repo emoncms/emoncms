@@ -10,11 +10,6 @@
 
 <?php
   global $path, $embed;
-  $powerfeed = get('power')?get('power'):0;
-  $apikey = get("apikey");
-  $feedid = get('feedid')?get('feedid'):0;
-  $thresholdA = get('thresholdA')?get('thresholdA'):500;
-  $thresholdB = get('thresholdB')?get('thresholdB'):2500;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
@@ -46,7 +41,7 @@
   if (embed) $('#graph').height($(window).height());
 
   var feedid = <?php echo $feedid; ?>; 
-  var powerfeed = <?php echo $powerfeed; ?>; 
+  var powerfeed = <?php echo $power; ?>; 
 
   var thresholdA = <?php echo $thresholdA; ?>;   
   var thresholdB = <?php echo $thresholdB; ?>;

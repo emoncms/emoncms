@@ -10,24 +10,27 @@
 
 <?php
   global $path, $embed;
+
+  $type = get_feed_field($feedid,'datatype');
 ?>
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
  <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.min.js"></script>
  <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+ <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Raw data: <?php echo $feedidname; ?></h2>
+<h2>Datapoint editor: <?php echo $feedidname; ?></h2>
+<p>Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint.</p>
 <?php } ?>
 
-    <div id="graph_bound" style="width:100%; height:400px; position:relative; ">
+    <div id="graph_bound" style="height:350px; width:100%; position:relative; ">
       <div id="graph"></div>
-      <div style="position:absolute; top:20px; left:40px;">
+      <div style="position:absolute; top:20px; right:20px;">
 
         <input class="time" type="button" value="D" time="1"/>
         <input class="time" type="button" value="W" time="7"/>
@@ -41,57 +44,54 @@
 
       </div>
 
-        <h3 style="position:absolute; top:0px; left:310px;"><span id="stats"></span></h3>
+        <h3 style="position:absolute; top:00px; left:50px;"><span id="stats"></span></h3>
+    </div>
+
+    <div style="width:100% height:50px; background-color:#ddd; padding:10px; margin:10px;">
+    Edit feed_<?php echo $feedid; ?> @ time: <input type="text" id="time" style="width:150px;" value="" /> new value: 
+    <input type="text" id="newvalue" style="width:150px;" value="" />
+    <input id="okb" type="submit" value="ok" class="button05"/>
     </div>
 
 <script id="source" language="javascript" type="text/javascript">
 
-  var feedid = "<?php echo $feedid; ?>";
-  var feedname = "<?php echo $feedidname; ?>";
-  var path = "<?php echo $path; ?>";
-  var apikey = "<?php echo $apikey; ?>";
-  var valid = "<?php echo $valid; ?>";
-
-  var plotfill = <?php echo $fill; ?>;
-  if (plotfill==1) plotfill = true; else plotfill = false;
-  var units = "<?php echo $units; ?>";
-
-  var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+
+  var feedid = "<?php echo $feedid; ?>";
+  var feedname = "<?php echo $feedidname; ?>";
+  var type = "<?php echo $type; ?>";
+  var path = "<?php echo $path; ?>";
+  var apikey = "<?php echo $apikey; ?>";
 
   var timeWindow = (3600000*24.0*7);				//Initial time window
   var start = ((new Date()).getTime())-timeWindow;		//Get start time
   var end = (new Date()).getTime();				//Get end time
 
-  var graph_data = [];
   vis_feed_data();
-
-  $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
-    plot();
-  });
 
   function vis_feed_data()
   {
-    if (valid) graph_data = get_feed_data(feedid,start,end,1000);
+    var graph_data = get_feed_data(feedid,start,end,1000);
     var stats = power_stats(graph_data);
-    var out = "Average: "+stats['average'].toFixed(0)+units;
-    if (units=='W') out+= " | "+stats['kwh'].toFixed(2)+" kWh";
-    $("#stats").html(out);   
-    plot();
-  }
-
-  function plot()
-  {
-    var plot = $.plot($("#graph"), [{data: graph_data, lines: { show: true, fill: plotfill }}], {
-      grid: { show: true, hoverable: true, clickable: true },
+    //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
+    
+    var plotdata = {data: graph_data, lines: { show: true, fill: true }};
+    if (type == 2) plotdata = {data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}};
+    
+    var plot = $.plot($("#graph"), [plotdata], {
+      grid: { show: true, clickable: true},
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       selection: { mode: "xy" }
     });
+
   }
+
+  $("#graph").bind("plotclick", function (event, pos, item) { 
+    $("#time").val(item.datapoint[0]/1000);
+    $("#newvalue").val(item.datapoint[1]);
+    //$("#stats").html("Value: "+item.datapoint[1]);
+  });
 
   //--------------------------------------------------------------------------------------
   // Graph zooming
@@ -106,5 +106,19 @@
   $('#left').click(function () {inst_panleft(); vis_feed_data();});
   $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
   //-----------------------------------------------------------------------------------------------
+
+  $('#okb').click(function () {
+    var time = $("#time").val();
+    var newvalue = $("#newvalue").val();
+    
+    $.ajax({                                      
+      url: path+'feed/update.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue,
+      dataType: 'json',
+      async: false,                      
+      success: function() {} 
+    });
+    vis_feed_data();
+  });
 </script>
 

@@ -60,13 +60,13 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   var dashid = <?php echo $dashboard['id']; ?>;
   var page_height = "<?php echo $dashboard['height']; ?>";
   var path = "<?php echo $path; ?>";
-  var apikey_read = "<?php echo $apikey_read; ?>";
+  var apikey = "";
   var feedlist = <?php echo json_encode($feedlist); ?>;
+  var userid = <?php echo $session['userid']; ?>;
+
   $("#testo").hide();
 
   var widget = <?php echo json_encode($widgets); ?>;
-
-  console.log(widgets);
 
   for (z in widget)
   {
@@ -84,11 +84,10 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
   show_dashboard();
 
-  setInterval(function() { update("<?php echo $apikey_read; ?>"); }, 10000);
-  setInterval(function() { fast_update("<?php echo $apikey_read; ?>"); }, 30);
+  setInterval(function() { update(); }, 10000);
+  setInterval(function() { fast_update(); }, 30);
 
   $("#save-dashboard").click(function (){
-    console.log("Saving");
     $.ajax({
       type: "POST",
       url :  path+"dashboard/set.json",

@@ -1,3 +1,12 @@
+/*
+  list.js is released under the GNU Affero General Public License.
+  See Emoncms COPYRIGHT.txt and LICENSE.txt.
+
+  Emoncms - open source energy visualisation
+  Part of the OpenEnergyMonitor project:
+  http://openenergymonitor.org
+*/
+
 var list;
 
 function listjs(_list)
@@ -107,6 +116,11 @@ function draw_list()
             if (list['editable']) out += "<span class='edit-row' rowid='"+rowid+"' id='edit"+rowid+"' mode=0><i class='icon-pencil'></i></span>&nbsp;&nbsp;";
             if (list['deletable']) out += "<span class='delete-row' rowid='"+rowid+"' ><i class='icon-remove'></i></span>";
             if (list['restoreable']) out += "<span class='restore-row' rowid='"+rowid+"' ><i class='icon-share'></i></span>";
+
+            for (action in list['actions'])
+            {
+              out += "&nbsp;&nbsp;<a href='"+list['actions'][action]['href']+rowid+"'><i class='"+list['actions'][action]['icon']+"'></i></a>";
+            }
 
             out += "</td></tr>";
           }

@@ -35,8 +35,9 @@
 <script type="application/javascript">
   var dashid = <?php echo $dashboard['id']; ?>;
   var path = "<?php echo $path; ?>";
-  var apikey_read = "<?php echo $apikey_read; ?>";
   var widget = <?php echo json_encode($widgets); ?>;
+  var apikey = "<?php echo get('apikey'); ?>";
+  var userid = <?php echo $session['userid']; ?>;
 
   for (z in widget)
   {
@@ -47,8 +48,9 @@
 
   var redraw = 1;
   var reloadiframe = 0;
+
   show_dashboard();
-  setInterval(function() { update("<?php echo $apikey_read; ?>"); }, 10000);
-  setInterval(function() { fast_update("<?php echo $apikey_read; ?>"); }, 30);
+  setInterval(function() { update(); }, 10000);
+  setInterval(function() { fast_update(); }, 30);
 
 </script>

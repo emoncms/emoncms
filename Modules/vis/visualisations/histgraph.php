@@ -22,9 +22,7 @@
 -------------------------------------------------------------------------------------->
 
 <?php
-  $apikey = get("apikey");
   global $path, $embed;
-
   if (!$feedid) $feedid = 0;
 ?>
 
@@ -33,7 +31,7 @@
  <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Histogram: <?php echo $feedname; ?></h2>
+<h2>Histogram: <?php echo $feedidname; ?></h2>
 <?php } ?>
 
 <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
@@ -46,6 +44,7 @@
    var feedid = "<?php echo $feedid; ?>";				//Fetch table name
    var path = "<?php echo $path; ?>";
    var apikey = "<?php echo $apikey; ?>";
+   var valid = "<?php echo $valid; ?>";
 
    $(function () {
 
@@ -61,7 +60,7 @@
      //----------------------------------------------------------------------------------------
 
      var graph_data = [];                              //data array declaration
-     vis_feed_data(apikey,feedid);
+     if (valid) vis_feed_data(apikey,feedid);
      if (feedid == 0) plotGraph();
 
   $(window).resize(function(){

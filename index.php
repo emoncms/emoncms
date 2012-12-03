@@ -73,9 +73,9 @@
       $session['userid'] = $userid;
       $session['username'] = $route['controller'];
       $session['read'] = 1; 
-      $session['profile'] = 1; 
+      $session['profile'] = 1;
       $route['action'] = $public_profile_action;
-      $output = controller($public_profile_controller); 
+      $output = controller($public_profile_controller);
     }
   }
 

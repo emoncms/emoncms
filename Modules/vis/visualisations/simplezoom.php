@@ -9,9 +9,6 @@
 -->
 
 <?php
-  $apikey = get("apikey");
-  $power = get("power");
-  $kwhd = get("kwhd");
   global $path, $embed;
 ?>
 
@@ -129,8 +126,10 @@
 
   $("#graph").bind("plothover", function (event, pos, item) { 
     if (feedlist[1].selected) {
-      var mdate = new Date(item.datapoint[0]);
-      $("#stats").html((item.datapoint[1]).toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+      if (item) {
+        var mdate = new Date(item.datapoint[0]);
+        $("#stats").html((item.datapoint[1]).toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+      }
     }
   });
 

@@ -21,9 +21,12 @@
   function get_feed_data(feedID,start,end,dp)
   {
     var feedIn = [];
+    var query = "&id="+feedID+"&start="+start+"&end="+end+"&dp="+dp;
+    if (apikey!="") query+= "&apikey="+apikey;
+
     $.ajax({                                    
       url: path+'feed/data.json',                         
-      data: "&apikey="+apikey+"&id="+feedID+"&start="+start+"&end="+end+"&dp="+dp,  
+      data: query,  
       dataType: 'json',                           
       async: false,
       success: function(datain) { feedIn = datain; }
@@ -68,10 +71,13 @@
   //-------------------------------------------------------------------------------
   function get_multigraph(apikey)
   {
+    var query = path+"vis/multigraphget.json";
+    if (apikey!="") query+= "?apikey="+apikey;
+    console.log(query);
     var feedlist = [];
     $.ajax({                                      
       type: "GET",
-      url: path+"vis/multigraphget.json?apikey="+apikey, //+apikey_write,     
+      url: query, //+apikey_write,     
       async: false,    
       dataType: 'json',     
       success: function(data){feedlist = data;}

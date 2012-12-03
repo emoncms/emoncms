@@ -53,11 +53,23 @@
       $output['content'] = "Result: $feedid";
     }
 
-    elseif ($action == "list" && $session['read'])
+    elseif ($action == "list")
     { 
-      $feeds = get_user_feeds($session['userid'],0);
-      if ($format == 'json') $output['content'] = json_encode($feeds);
-      if ($format == 'html') $output['content'] = view("feed/Views/feedlist_view.php", array('feeds' => $feeds));
+      $userid = intval(get('userid'));
+      if ($session['read']) 
+      { 
+        $feeds = get_user_feeds($session['userid'],0); 
+      }
+      elseif ($userid>0) 
+      { 
+        $feeds = get_user_public_feeds($userid);
+      }
+
+      if (isset($feeds))
+      {
+        if ($format == 'json') $output['content'] = json_encode($feeds);
+        if ($format == 'html' && $session['read']) $output['content'] = view("feed/Views/feedlist_view.php", array('feeds' => $feeds));
+      }
     }
 
     elseif ($action == "deleted" && $session['read'])

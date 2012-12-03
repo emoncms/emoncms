@@ -10,10 +10,6 @@
 
 <?php
   global $path, $embed;
-  $apikey = get("apikey");
-  $feedid = get('feedid')?get('feedid'):0;
-  $thresholdA = get('thresholdA')?get('thresholdA'):500;
-  $thresholdB = get('thresholdB')?get('thresholdB'):2500;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->

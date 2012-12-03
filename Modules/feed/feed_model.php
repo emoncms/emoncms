@@ -74,7 +74,21 @@
   {
     $result = db_query("SELECT userid, public FROM feeds WHERE `id` = '$feedid'");
     $row = db_fetch_array($result);
-    if ($row['userid']==$userid || $row['public']==true) return 1; 
+
+    if ($row['public']==true) return 1;
+    if ($row['userid']==$userid && $userid!=0) return 1;
+
+    return 0;
+  }
+
+  function feedtype_belongs_user_or_public($feedid,$userid,$datatype)
+  {
+    $result = db_query("SELECT userid, public FROM feeds WHERE `id` = '$feedid' AND `datatype` = '$datatype' AND `status` = 0");
+    $row = db_fetch_array($result);
+
+    if ($row['public']==true) return 1;
+    if ($row['userid']==$userid && $userid!=0) return 1;
+
     return 0;
   }
 
@@ -104,6 +118,21 @@
     return $feeds;
   }
 
+  function get_user_public_feeds($userid)
+  {
+    $result = db_query("SELECT id,name,value FROM feeds WHERE `userid` = '$userid' AND public = '1' AND status = '0'");
+    if (!$result) return 0;
+    $feeds = array();
+    while ($row = db_fetch_object($result)) 
+    { 
+      // $row->size = get_feedtable_size($row->id);
+      // $row->time = strtotime($row->time)*1000;
+      //$row->tag = str_replace(" ","_",$row->tag);
+      $feeds[] = $row; 
+    }
+    return $feeds;
+  }
+
   function get_user_feed_ids($userid)
   {
     $result = db_query("SELECT id FROM feeds WHERE userid = '$userid' AND status = '0'");
@@ -115,10 +144,10 @@
 
   function get_user_feed_names($userid)
   {
-    $result = db_query("SELECT id,name,datatype FROM feeds WHERE userid = '$userid' AND status = '0'");
+    $result = db_query("SELECT id,name,datatype,public FROM feeds WHERE userid = '$userid' AND status = '0'");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_array($result)) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name'],'datatype'=>$row['datatype']); }
+    while ($row = db_fetch_array($result)) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name'],'datatype'=>$row['datatype'],'public'=>$row['public']); }
     return $feeds;
   }
 

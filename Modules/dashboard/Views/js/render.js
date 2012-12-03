@@ -6,6 +6,13 @@ See COPYRIGHT.txt and LICENSE.txt.
 Emoncms - open source energy visualisation
 Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
+
+  render.js goes through all the dashboard html elements that specify the dashboard widgets
+  and inserts the dials, visualisations to be displayed inside the element.
+  see designer.js for more information on the html element widget box model.
+
+  render.js calls the render scripts of all the widgets which is where all the 
+  individual widget render code is located.
 */
 
 // Global page vars definition
@@ -37,18 +44,21 @@ function show_dashboard()
   browserVersion = Browser.Version();
   if (browserVersion < 9) dialrate = 0.2;
 
-  update(apikey_read);
+  update();
 }
 
 // update function
-function update(apikey_read)
+function update()
 {
+  var query = path + "feed/list.json?userid="+userid;
+  if (apikey) query += "&apikey="+apikey;
   $.ajax(
   {
-    url : path + "feed/list.json?apikey=" + apikey_read,
+    url : query,
     dataType : 'json',
     success : function(data)
     { 
+      console.log(data);
       for (z in data)
       {
         var newstr = data[z]['name'].replace(/\s/g, '-');
@@ -68,7 +78,7 @@ function update(apikey_read)
   });
 }
 
-function fast_update(apikey_read)
+function fast_update()
 {
   if (redraw)
   { 

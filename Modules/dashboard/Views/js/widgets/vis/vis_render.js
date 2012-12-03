@@ -92,15 +92,6 @@ function vis_widgetlist()
       "html":""
     },
 
-    "multigraph": 
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["clear","showoptions"],
-      "optionstype":["value","value"],
-      "html":""
-    },
-
     "smoothie": 
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
@@ -108,8 +99,20 @@ function vis_widgetlist()
       "options":["feedid","ufac"],
       "optionstype":["feedid","value"],
       "html":""
+    },
+
+    "multigraph": 
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["mid"],
+      "optionstype":["multigraph"],
+      "html":""
     }
   }
+
+  // Gets multigraphs from vis_widget.php public multigraphs variable
+
   return widgets;
 }
 
@@ -120,7 +123,12 @@ function vis_init()
 
 function vis_draw()
 {
-$('.rawdata,.bargraph,.zoom,.realtime,.simplezoom,.threshold,.orderthreshold,.orderbars,.stacked,.multigraph,.histgraph,.smoothie').each(function(index)
+  var vislist = vis_widgetlist();
+
+  var visclasslist = '';
+  for (z in vislist) { visclasslist += '.'+z+','; }
+
+  $(visclasslist).each(function(index)
   {
 
     var id = $(this).attr("id");
@@ -136,13 +144,14 @@ $('.rawdata,.bargraph,.zoom,.realtime,.simplezoom,.threshold,.orderthreshold,.or
       var attr = target.attributes[i].name;
       if (attr!="id" && attr!="class" && attr!="style")
       {
-        console.log(attr);
         attrstring += "&"+attr+"="+target.attributes[i].value;
       }
     }
 
-    if (!$(this).html() || reloadiframe==id){
-      $(this).html('<iframe style="width:'+width+'px; height:'+height+'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+path+'vis/'+$(this).attr("class")+'?apikey='+apikey_read+'&embed=1'+attrstring+'"></iframe>');
+    var apikey_string = "";
+    if (apikey) apikey_string = "&apikey="+apikey;
+    if (!$(this).html() || reloadiframe==id || apikey){
+      $(this).html('<iframe style="width:'+width+'px; height:'+height+'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+path+'vis/'+$(this).attr("class")+'?embed=1'+attrstring+apikey_string+'"></iframe>');
     }
 
     var iframe = $(this).children('iframe');

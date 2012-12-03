@@ -73,6 +73,15 @@
       }
     },
 
+    'actions':
+    {
+      'view':
+      {
+        'icon':"icon-eye-open",
+        'href':"<?php echo $path; ?>vis/auto?feedid="
+      }
+    },
+
     'group_prefix': "",
 
     'path': "<?php echo $path; ?>",

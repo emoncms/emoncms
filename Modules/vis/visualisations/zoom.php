@@ -13,11 +13,6 @@
 
   global $path, $embed;
 
-  $power = get('power');
-  $kwhd = get('kwhd');
-  $apikey = get('apikey');
-  $currency = get('currency')?get('currency'):'&pound;';
-  $pricekwh = get('pricekwh')?get('pricekwh'):0.14;
   ?>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">

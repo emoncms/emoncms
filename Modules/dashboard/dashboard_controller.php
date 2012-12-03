@@ -200,10 +200,10 @@
         $dashboard = get_main_dashboard($session['userid']);
       }
 
-      $apikey = get_apikey_read($session['userid']);
+      //$apikey = get_apikey_read($session['userid']);
       $menu = build_dashboard_menu($session['userid'],"edit");
       $feedlist = get_user_feed_names($session['userid']);
-      $output['content'] = view("dashboard/Views/dashboard_edit_view.php", array('dashboard'=>$dashboard, "apikey_read"=>$apikey, 'feedlist'=>$feedlist));
+      $output['content'] = view("dashboard/Views/dashboard_edit_view.php", array('dashboard'=>$dashboard, 'feedlist'=>$feedlist));
 
       $output['content'] .= view("dashboard/Views/dashboard_config.php", array('dashboard'=>$dashboard));
       $output['submenu'] = view("dashboard/Views/dashboard_menu.php", array('id'=>$dashboard['id'], 'menu'=>$menu, 'type'=>"edit"));

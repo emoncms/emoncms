@@ -6,10 +6,9 @@ http://openenergymonitor.org/emon/node/600
 <?php
 
   global $path, $embed;
-  $feedid2 = get("feedid2");
-  $feedid = get("feedid")?get("feedid"):0;
-  $ufac = get("ufac");
-  $apikey = get("apikey");
+
+  $feedid2 =null;
+
 ?>
 
 <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />

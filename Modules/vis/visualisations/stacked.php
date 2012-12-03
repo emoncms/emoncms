@@ -9,9 +9,6 @@
 -->
   <?php  
     global $path, $embed;
-    $kwhdA = get('kwhdA');
-    $kwhdB = get('kwhdB');
-    $apikey = get('apikey');
   ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->

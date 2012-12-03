@@ -9,8 +9,6 @@
 -->
 
 <?php
-  $feedid = get("feedid"); 
-  $apikey = get("apikey");
   global $path, $embed;
 ?>
 
@@ -25,7 +23,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
  
 <?php if (!$embed) { ?>
-<h2>Bar graph: <?php echo $feedname; ?></h2>
+<h2>Bar graph: <?php echo $feedidname; ?></h2>
 <?php } ?>
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
@@ -50,11 +48,13 @@
 <script id="source" language="javascript" type="text/javascript">
 
   var feedid = "<?php echo $feedid; ?>";
-  var feedname = "<?php echo $feedname; ?>";
+  var feedname = "<?php echo $feedidname; ?>";
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var embed = <?php echo $embed; ?>;
+  var valid = "<?php echo $valid; ?>";
 
+  var valid = "<?php echo $valid; ?>";
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
@@ -74,7 +74,7 @@
 
   function vis_feed_data()
   {
-    graph_data = get_feed_data(feedid,start,end,500);
+    if (valid) graph_data = get_feed_data(feedid,start,end,500);
     plot();
   }
 
@@ -94,8 +94,11 @@
   $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
 
   $("#graph").bind("plothover", function (event, pos, item) { 
-    var mdate = new Date(item.datapoint[0]);
-    $("#stats").html((item.datapoint[1]).toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+    if (item)
+    {
+      var mdate = new Date(item.datapoint[0]);
+      $("#stats").html((item.datapoint[1]).toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+    }
   });
   //----------------------------------------------------------------------------------------------
   // Operate buttons

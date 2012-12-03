@@ -1,3 +1,27 @@
+/*
+ designer.js - 	Licence: GNU GPL Affero, Author: Trystan Lea
+
+ The dashboard designer works around the concept of html elements with fixed positions 
+ and specified widths and heights. Its a box model where each box can hold a widget.
+ A box specifies which widget it is by its class. The properties of a widget such as 
+ the feedid to use is also specified in the html element:
+
+ <div class="dial" feedid="1" style="position:absolute; top:50px; left:50px; width:200px; height:100px;" ></div>
+
+ render.js and associated widget render scripts then inserts the dial javascript into the element specified in the designer.
+
+ The dashboard designer creates a canvas layer above the dashboard html elements layer and uses jquery to get the mouse positions and actions that specify the box position and dimentions.
+
+ The functions: draw_options(box_options, options_type) and widget_buttons() draw the menu and widget options interface.
+
+
+ Notes:
+
+ 3 Dec 2012 - multigraph id selector drop down menu could be refactored for more generic implementation as a drop down 
+ selector from options potentially specified in the widget lists.
+
+*/
+
 function dashboard_designer(_canvas, _grid_size, _widgets)
 {
     var canvas = _canvas;
@@ -132,8 +156,8 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in feedlist)
         {
-          if (val != feedlist[i]['name'].replace(/\s/g, '-')) options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' >"+feedlist[i]['name']+"</option>";
-          if (val == feedlist[i]['name'].replace(/\s/g, '-')) options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' selected >"+feedlist[i]['name']+"</option>";
+          var selected = ""; if (val == feedlist[i]['name'].replace(/\s/g, '-')) selected = "selected";
+          options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['name']+"</option>";
         }
         options_html += "</td></tr>";
       }
@@ -143,8 +167,19 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in feedlist)
         {
-          if (val != feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['id']+"' >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
-          if (val == feedlist[i]['name']) options_html += "<option value='"+feedlist[i]['id']+"' selected >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+          var selected = ""; if (val == feedlist[i]['name']) selected = "selected";
+          options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+        }
+        options_html += "</td></tr>";
+      }
+
+      else if (options_type && options_type[z] == "multigraph") 
+      {
+        options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+        for (i in multigraphs)
+        {
+          var selected = ""; if (val == multigraphs[i]['id']) selected = "selected";
+          options_html += "<option value='"+multigraphs[i]['id']+"' "+selected+" >"+multigraphs[i]['id']+"</option>";
         }
         options_html += "</td></tr>";
       }

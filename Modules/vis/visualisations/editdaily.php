@@ -9,8 +9,9 @@
 -->
 
 <?php
-  $apikey = get("apikey");
   global $path, $embed;
+
+  $type = get_feed_field($feedid,'datatype');
 ?>
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
@@ -23,7 +24,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Datapoint editor: <?php echo $feedname; ?></h2>
+<h2>Datapoint editor: <?php echo $feedidname; ?></h2>
 <p>Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint.</p>
 <?php } ?>
 
@@ -58,7 +59,7 @@
   $('#graph').height($('#graph_bound').height());
 
   var feedid = "<?php echo $feedid; ?>";
-  var feedname = "<?php echo $feedname; ?>";
+  var feedname = "<?php echo $feedidname; ?>";
   var type = "<?php echo $type; ?>";
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
