@@ -231,6 +231,13 @@
     return $value;
   }
 
+  function delete_feed_data($feedid,$start,$end)
+  {
+    echo "<br><br>".$start;
+    $feedname = "feed_".trim($feedid)."";
+    db_query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end' LIMIT 1");
+  }
+
   function get_feed_data($feedid,$start,$end,$dp)
   {
     if ($end == 0) $end = time()*1000;
