@@ -142,9 +142,10 @@
       if (feed_belongs_user($feedid, $session['userid'])) {
         $feedtime = intval(get("time"));
         $value = floatval(get("value"));
+        $delete = intval(get("delete"));
 
         if (!$feedtime) $feedtime = time();
-        update_feed_data($feedid,time(),$feedtime,$value);
+        if (!$delete) update_feed_data($feedid,time(),$feedtime,$value); else delete_feed_data($feedid,$feedtime,$feedtime);
       }
     }
 

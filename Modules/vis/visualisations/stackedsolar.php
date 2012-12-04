@@ -30,8 +30,8 @@
 </div>
 
     <script id="source" language="javascript" type="text/javascript">
-      var kwhdA = <?php echo $bottom; ?>;   
-      var kwhdB = <?php echo $top; ?>;
+      var kwhdA = <?php echo $solar; ?>;   
+      var kwhdB = <?php echo $consumption; ?>;
 
       var path = "<?php echo $path; ?>";  
 
@@ -40,12 +40,24 @@
 
       var dataA = get_feed_data(kwhdA,0,0,0);
       var dataB = get_feed_data(kwhdB,0,0,0);
+      var dataC = [];
 
+        for (z in dataA)
+        {
+          dataC[z]=[dataA[z][0],0];
+          var a=0, b = 0;
+          if (dataB[z]==undefined) {dataB[z] = [dataA[z][0],0];}
+          if (dataA[z]==undefined) {dataA[z] = [dataB[z][0],0];}
+          dataB[z][1] = dataB[z][1] - dataA[z][1];
+          if (dataB[z][1]<0) {dataC[z][1] = dataB[z][1]*-1; dataB[z][1] = 0;}
+        }
 
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
+
+
 
         $('#loading').hide();
         var view = 0;
@@ -54,19 +66,20 @@
         var monthsA = [];
         var daysB = [];
         var monthsB = [];
+        var daysC = [];
+        var monthsC = [];
 
         monthsA = get_months(dataA);
         monthsB = get_months(dataB);
+        monthsC = get_months(dataC);
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
-    bargraph(monthsA.data,monthsB.data,3600*24*20,"month");
+    bargraph(monthsA.data,monthsB.data,monthsC.data,3600*24*20,"month");
   });
 
-        bargraph(monthsA.data,monthsB.data,3600*24*20,"month");
-
-
+        bargraph(monthsA.data,monthsB.data,monthsC.data,3600*24*20,"month");
 
         $("#graph").bind("plotclick", function (event, pos, item)
         {
@@ -82,7 +95,8 @@
               d.setTime(item.datapoint[0]);
               daysA = get_days_month(dataA,d.getMonth(),d.getFullYear());
               daysB = get_days_month(dataB,d.getMonth(),d.getFullYear());
-              bargraph(daysA,daysB,3600*22,"day");
+              daysC = get_days_month(dataC,d.getMonth(),d.getFullYear());
+              bargraph(daysA,daysB,daysC,3600*22,"day");
               view = 1;
               $("#out").html("");
             }
@@ -90,8 +104,8 @@
           else
           {
             
-            if (view==1) { $("#out").html(""); view = 0; bargraph(monthsA.data,monthsB.data,3600*24*20,"month"); }     
-            if (view==2) { $("#out").html(""); view = 1; bargraph(daysA,daysB,3600*22,"day"); }      
+            if (view==1) { $("#out").html(""); view = 0; bargraph(monthsA.data,monthsB.data,monthsC.data,3600*24*20,"month"); }     
+            if (view==2) { $("#out").html(""); view = 1; bargraph(daysA,daysB,daysC,3600*22,"day"); }      
           }
         });
 
@@ -103,24 +117,23 @@
             d.setTime(item.datapoint[0]);
             var mdate = new Date(item.datapoint[0]);
 
-            console.log(item);
-            console.log(daysA);
-            console.log(daysB);
             var type = "", value = 0;
-            if (item.seriesIndex == 0 && view==0) {value = monthsA.data[item.dataIndex][1];};
-            if (item.seriesIndex == 1 && view==0) {value = monthsB.data[item.dataIndex][1];};
+            if (item.seriesIndex == 0 && view==0) {type = "Solar"; value = monthsA.data[item.dataIndex][1];};
+            if (item.seriesIndex == 1 && view==0) {type = "Import"; value = monthsB.data[item.dataIndex][1];};
+            if (item.seriesIndex == 2 && view==0) {type = "Export"; value = monthsC.data[item.dataIndex][1];};
 
-            if (item.seriesIndex == 0 && view==1) {value = 1*daysA[item.dataIndex][1];};
-            if (item.seriesIndex == 1 && view==1) {value = 1*daysB[item.dataIndex][1];};
+            if (item.seriesIndex == 0 && view==1) {type = "Solar"; value = 1*daysA[item.dataIndex][1];};
+            if (item.seriesIndex == 1 && view==1) {type = "Import"; value = 1*daysB[item.dataIndex][1];};
+            if (item.seriesIndex == 2 && view==1) {type = "Export"; value = 1*daysC[item.dataIndex][1];};
 
             if (view==0) $("#out").html(type+' '+value.toFixed(1)+" kWh/d | "+mdate.format("mmm yyyy"));
             if (view==1) $("#out").html(type+' '+value.toFixed(1)+" kWh/d | "+mdate.format("dS mmm yyyy"));
           }
         });
 
-        function bargraph(dataA,dataB,barwidth, mode)
+        function bargraph(dataA,dataB,dataC,barwidth, mode)
         {
-          $.plot($("#graph"), [ {color: "#0096ff", data:dataA}, {color: "#7cc9ff", data:dataB}], 
+          $.plot($("#graph"), [ {color: "#e0c21f", data:dataA}, {color: "#4e9acf", data:dataB}, {color: "#AA96ff", data:dataC}], 
           {
             series: {
             stack: true,

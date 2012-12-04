@@ -87,7 +87,16 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["kwhdA","kwhdB"],
+      "options":["bottom","top"],
+      "optionstype":["feedid","feedid"],
+      "html":""
+    },
+
+    "stackedsolar": 
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["solar","consumption"],
       "optionstype":["feedid","feedid"],
       "html":""
     },

@@ -51,6 +51,7 @@
     Edit feed_<?php echo $feedid; ?> @ time: <input type="text" id="time" style="width:150px;" value="" /> new value: 
     <input type="text" id="newvalue" style="width:150px;" value="" />
     <input id="okb" type="submit" value="ok" class="button05"/>
+    <input id="delb" type="submit" value="Delete" class="button05"/>
     </div>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -114,6 +115,19 @@
     $.ajax({                                      
       url: path+'feed/update.json',                         
       data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue,
+      dataType: 'json',
+      async: false,                      
+      success: function() {} 
+    });
+    vis_feed_data();
+  });
+
+  $('#delb').click(function () {
+    var time = $("#time").val();
+    
+    $.ajax({                                      
+      url: path+'feed/update.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&delete=1",
       dataType: 'json',
       async: false,                      
       success: function() {} 

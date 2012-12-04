@@ -47,7 +47,8 @@
       //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
       'zoom'=> array('options'=>array(array('power',1),array('kwhd',2),array('currency',5,'&pound;'),array('pricekwh',6,0.14))),
       //'comparison'=> array('options'=>array(array('feedid',3))),
-      'stacked'=> array('options'=>array(array('kwhdA',2),array('kwhdB',2))),
+      'stacked'=> array('options'=>array(array('bottom',2),array('top',2))),
+      'stackedsolar'=> array('options'=>array(array('solar',2),array('consumption',2))),
       'threshold'=> array('options'=>array(array('feedid',3),array('thresholdA',6,500),array('thresholdB',6,2500))),
       'simplezoom'=> array('options'=>array(array('power',1),array('kwhd',2))),
       'orderbars'=> array('options'=>array(array('feedid',2))),
@@ -109,7 +110,7 @@
           }
 
           // Boolean not used at the moment
-          //if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
+          if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
           if ($type==5) $array[$key] = preg_replace('/[^\w\s£$]/','',get($key))?get($key):$default;
           if ($type==6) $array[$key] = floatval((get($key)?get($key):$default));
           if ($type==7) $array[$key] = intval((get($key)?get($key):$default));

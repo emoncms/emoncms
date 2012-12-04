@@ -38,7 +38,7 @@
     for(var i in plotlist) {
       if (timeWindowChanged) plotlist[i].plot.data = null;
       if (plotlist[i].selected) {        
-        if (!plotlist[i].plot.data) plotlist[i].plot.data = get_feed_data(plotlist[i].id,start,end,1000);
+        if (!plotlist[i].plot.data) plotlist[i].plot.data = get_feed_data(plotlist[i].id,start,end,400);
         if ( plotlist[i].plot.data) plotdata.push(plotlist[i].plot);
       }
     }
