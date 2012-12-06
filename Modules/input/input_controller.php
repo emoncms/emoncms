@@ -78,15 +78,19 @@ function input_controller()
           {
             $name = "node".$nodeid."_".($i-1);
             $id = get_input_id($session['userid'],$name);
-            $value = intval($node[$i]);
+            $value = $node[$i];
             $time = $start_time + intval($node[0]);
 
+          if (!is_null($value)) {
+            $value = intval($node[$i]);
             if ($id==0) {
               $id = create_input_timevalue($session['userid'],$name,$nodeid,$time,$value);
             } else {				
               set_input_timevalue($id,$time,$value);
             }
             $inputs[] = array('id'=>$id,'time'=>$time,'value'=>$value);
+          }
+
           }
           new_process_inputs($session['userid'],$inputs);
         } else $error = true;
