@@ -502,7 +502,7 @@ function accumulator($arg, $time, $value)
 {
   $feedid = $arg;
 
-  $last_value = get_feed_value($feedid);
+  $last_value = get_feed_field($feedid,'value');
 
   $value = $last_value + $value;
 
