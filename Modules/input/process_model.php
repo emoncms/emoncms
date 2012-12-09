@@ -150,7 +150,6 @@ function get_process_list()
     1
   );
 
-
   $list[19] = array(
     _("power gained to kWh/d"),
     2,
@@ -158,9 +157,30 @@ function get_process_list()
     1,
     1
   );
+  
+  $list[20] = array(
+    _("pulse difference"),
+    ProcessArg::FEEDID,
+    "pulse_diff",
+    1,
+    DataType::REALTIME  
+  );
+  
+  $list[21] = array(
+    _("KWh to Power"),
+    ProcessArg::FEEDID,
+    "kwh_to_power",
+    1,
+    DataType::REALTIME  
+  );
 
-
-
+  $list[22] = array(
+    _("** Last"),
+    ProcessArg::FEEDID,
+    "log_to_feed",
+    1,
+    DataType::REALTIME  
+  );
 
   return $list;
 }
@@ -756,5 +776,62 @@ function average($feedid, $time_now, $value)
   }
   }
 
+  function pulse_diff($feedid,$time_now,$value)
+  {
 
+    if($value>0) {
+ 
+    $pulse_diff = 0;
+
+    // Get last value
+    error_log("Feed:".$feedid);
+    $last = get_feed_timevalue($feedid);
+    $last_value = $last['value'];
+    $last_time = strtotime($last['time']); 
+   
+    if ($last_time) {
+      // Need to handle resets of the pulse value (and negative 2**15?)
+      if ($value >= $last_value)
+      {
+        $pulse_diff = $value - $last_value;
+      }
+      else
+      {
+        $pulse_diff = $value;
+      }
+    }
+    error_log("Value:".$value." Last:".$last_value." Diff:".$pulse_diff);
+    
+    // Save to allow next difference calc. 
+    insert_feed_data($feedid,$time_now,$time_now,$value);
+
+    return $pulse_diff;
+  	}
+  }
+  
+  function kwh_to_power($feedid,$time_now,$value)
+  {
+
+    if($value>0) {
+ 
+    $power = 0;
+
+    // Get last time
+    error_log("Feed:".$feedid);
+    $last = get_feed_timevalue($feedid);
+    $last_value = $last['value'];
+    $last_time = strtotime($last['time']); 
+
+    if ($last_time) {
+      $time_elapsed = ($time_now - $last_time);   // seconds
+      error_log("Time elapsed:".$time_elapsed);
+      $power = ($value * 3600 / $time_elapsed);
+    }
+    
+    insert_feed_data($feedid,$time_now,$time_now,$power);
+
+    return $power;
+  	}
+  }
+  
 ?>
