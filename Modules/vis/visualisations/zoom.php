@@ -85,7 +85,8 @@
       var feedid = power;
 
       var price = <?php echo $pricekwh ?>;
-      var currency = "<?php echo $currency ?>";
+      //var currency = "<?php echo $currency ?>";
+      var currency = "&dollar;";
 
       var bot_kwhd_text = "";
 
