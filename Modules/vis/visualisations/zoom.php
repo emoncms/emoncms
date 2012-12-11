@@ -96,7 +96,7 @@
         total += parseFloat(kwh_data[z][1]); ndays++;
       }
 
-      bot_kwhd_text = "Total: "+(total).toFixed(0)+" kWh : "+currency+(total*price).toFixed(0) + " | Average: "+(total/ndays).toFixed(1)+ " kWh : "+currency+((total/ndays)*price).toFixed(2)+" | "+currency+((total/ndays)*price*7).toFixed(0)+" a week, "+currency+((total/ndays)*price*365).toFixed(0)+" a year | Unit price: "+currency+price;
+      bot_kwhd_text = "Total: "+(total).toFixed(0)+" kWh : "+currency+(total*price).toFixed(0) + " | Average: "+(total/ndays).toFixed(1)+ " kWh : "+currency+((total/ndays)*price).toFixed(2)+" | "+currency+((total/ndays)*price*(365/12)).toFixed(0)+" a month, "+currency+((total/ndays)*price*365).toFixed(0)+" a year | Unit price: "+currency+price;
 
       years = get_years(kwh_data);
       //set_annual_view();
