@@ -1,4 +1,3 @@
-
 <html>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 
@@ -49,7 +48,7 @@
    //----------------------------------------------------------------------------------------
    // These start time and end time set the initial graph view window 
    //----------------------------------------------------------------------------------------
-   var timeWindow = (3600000*0.1);				//Initial time window
+   var timeWindow = (3600000*0.5);				//Initial time window
    var start = ((new Date()).getTime())-timeWindow;		//Get start time
    var end = (new Date()).getTime();				//Get end time
 
