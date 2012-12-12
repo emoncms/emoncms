@@ -144,18 +144,18 @@ function get_process_list()
 
   $list[18] = array(
     _("heat flux"),
-    2,
+    ProcessArg::FEEDID,
     "heat_flux",
     1,
-    1
+    DataType::REALTIME
   );
 
   $list[19] = array(
     _("power gained to kWh/d"),
-    2,
+    ProcessArg::FEEDID,
     "power_acc_to_kwhd",
     1,
-    1
+    DataType::DAILY
   );
   
   $list[20] = array(
@@ -173,13 +173,12 @@ function get_process_list()
     1,
     DataType::REALTIME  
   );
-
   $list[22] = array(
-    _("** Last"),
-    ProcessArg::FEEDID,
-    "log_to_feed",
-    1,
-    DataType::REALTIME  
+    _("- input"),
+    ProcessArg::INPUTID,
+    "subtract_input",
+    0,
+    DataType::UNDEFINED
   );
 
   return $list;
@@ -268,7 +267,7 @@ function get_process($id)
 {
   $list = get_process_list();
   
-  if ($id>0 && $id<count($list)) return $list[$id];
+  if ($id>0 && $id<count($list)+1) return $list[$id];
 }
 
 function scale($arg, $time, $value)
@@ -321,6 +320,14 @@ function add_input($id, $time, $value)
   $result = db_query("SELECT value FROM input WHERE id = '$id'");
   $row = db_fetch_array($result);
   $value = $value + $row['value'];
+  return $value;
+}
+
+function subtract_input($id, $time, $value)
+{
+  $result = db_query("SELECT value FROM input WHERE id = '$id'");
+  $row = db_fetch_array($result);
+  $value = $value - $row['value'];
   return $value;
 }
 
