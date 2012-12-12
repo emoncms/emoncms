@@ -25,7 +25,7 @@ function dial_draw()
     var feed = $(this).attr("feed");
     var val = curve_value(feed,dialrate);
     // ONLY UPDATE ON CHANGE
-    if ((val * 1).toFixed(1) != (assoc[feed] * 1).toFixed(1) || redraw == 1)
+    if ((val * 1).toFixed(2) != (assoc[feed] * 1).toFixed(2) || redraw == 1)
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
