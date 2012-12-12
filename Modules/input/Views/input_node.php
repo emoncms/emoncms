@@ -80,7 +80,7 @@ global $path, $session;
 </div>
 
 <p><b>To connect up a NanodeRF:</b></p>
-<p>1) Download and open the <a href="https://github.com/openenergymonitor/NanodeRF/NanodeRF_multinode" >NanodeRF_multinode</a> firmware.</p>
+<p>1) Download and open the <a href="https://github.com/openenergymonitor/NanodeRF/tree/master/NanodeRF_multinode" >NanodeRF_multinode</a> firmware.</p>
 <p>2) Set line 83 to: <b>char apikey[] = "<?php echo get_apikey_write($session['userid']); ?>";</b></p>
 <p>3) Upload the firmware to your NanodeRF.</p>
 

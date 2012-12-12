@@ -79,7 +79,7 @@ function get_process_list()
     DataType::DAILY
   );
   $list[9] = array(
-    _("kWh to kWh/d"),
+    _("kWh to kWh/d (OLD)"),
     ProcessArg::FEEDID,
     "kwh_to_kwhd",
     1,
@@ -144,23 +144,49 @@ function get_process_list()
 
   $list[18] = array(
     _("heat flux"),
-    2,
+    ProcessArg::FEEDID,
     "heat_flux",
     1,
-    1
+    DataType::REALTIME
   );
-
 
   $list[19] = array(
     _("power gained to kWh/d"),
-    2,
+    ProcessArg::FEEDID,
     "power_acc_to_kwhd",
     1,
-    1
+    DataType::DAILY
   );
-
-
-
+  
+  $list[20] = array(
+    _("pulse difference"),
+    ProcessArg::FEEDID,
+    "pulse_diff",
+    1,
+    DataType::REALTIME  
+  );
+  
+  $list[21] = array(
+    _("KWh to Power"),
+    ProcessArg::FEEDID,
+    "kwh_to_power",
+    1,
+    DataType::REALTIME  
+  );
+  $list[22] = array(
+    _("- input"),
+    ProcessArg::INPUTID,
+    "subtract_input",
+    0,
+    DataType::UNDEFINED
+  );
+  $list[23] = array(
+    _("kWh to kWh/d"),
+    ProcessArg::FEEDID,
+    "kwh_to_kwhd2",
+    2,
+    DataType::HISTOGRAM
+  );
 
   return $list;
 }
@@ -248,7 +274,7 @@ function get_process($id)
 {
   $list = get_process_list();
   
-  if ($id>0 && $id<count($list)) return $list[$id];
+  if ($id>0 && $id<count($list)+1) return $list[$id];
 }
 
 function scale($arg, $time, $value)
@@ -301,6 +327,14 @@ function add_input($id, $time, $value)
   $result = db_query("SELECT value FROM input WHERE id = '$id'");
   $row = db_fetch_array($result);
   $value = $value + $row['value'];
+  return $value;
+}
+
+function subtract_input($id, $time, $value)
+{
+  $result = db_query("SELECT value FROM input WHERE id = '$id'");
+  $row = db_fetch_array($result);
+  $value = $value - $row['value'];
   return $value;
 }
 
@@ -438,6 +472,31 @@ function kwh_to_kwhd($feedid, $time_now, $value)
   return $value;
 }
 
+function kwh_to_kwhd2($feedid, $time_now, $value)
+{
+  $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+
+  $feedname = "feed_".trim($feedid)."";
+  $result = db_query("SELECT * FROM $feedname WHERE `time` = '$time'");
+  $row = db_fetch_array($result);
+
+  if (!$row)
+  {
+    db_query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0','$value')");
+  }
+  else
+  {
+    $kwh_start_of_day = $row['data2'];
+    $kwh_today = $value - $kwh_start_of_day;
+    db_query("UPDATE $feedname SET data = '$kwh_today' WHERE `time` = '$time'");
+  }
+
+  $updatetime = date("Y-n-j H:i:s", $time_now);
+  db_query("UPDATE feeds SET value = '$kwh_today', time = '$updatetime', datatype = '2' WHERE id='$feedid'");
+
+  return $value;
+}
+
 function phaseshift($feedid, $time, $value)
 {
   $rad = acos($value);
@@ -502,7 +561,7 @@ function accumulator($arg, $time, $value)
 {
   $feedid = $arg;
 
-  $last_value = get_feed_value($feedid);
+  $last_value = get_feed_field($feedid,'value');
 
   $value = $last_value + $value;
 
@@ -756,5 +815,62 @@ function average($feedid, $time_now, $value)
   }
   }
 
+  function pulse_diff($feedid,$time_now,$value)
+  {
 
+    if($value>0) {
+ 
+    $pulse_diff = 0;
+
+    // Get last value
+    error_log("Feed:".$feedid);
+    $last = get_feed_timevalue($feedid);
+    $last_value = $last['value'];
+    $last_time = strtotime($last['time']); 
+   
+    if ($last_time) {
+      // Need to handle resets of the pulse value (and negative 2**15?)
+      if ($value >= $last_value)
+      {
+        $pulse_diff = $value - $last_value;
+      }
+      else
+      {
+        $pulse_diff = $value;
+      }
+    }
+    error_log("Value:".$value." Last:".$last_value." Diff:".$pulse_diff);
+    
+    // Save to allow next difference calc. 
+    insert_feed_data($feedid,$time_now,$time_now,$value);
+
+    return $pulse_diff;
+  	}
+  }
+  
+  function kwh_to_power($feedid,$time_now,$value)
+  {
+
+    if($value>0) {
+ 
+    $power = 0;
+
+    // Get last time
+    error_log("Feed:".$feedid);
+    $last = get_feed_timevalue($feedid);
+    $last_value = $last['value'];
+    $last_time = strtotime($last['time']); 
+
+    if ($last_time) {
+      $time_elapsed = ($time_now - $last_time);   // seconds
+      error_log("Time elapsed:".$time_elapsed);
+      $power = ($value * 3600 / $time_elapsed);
+    }
+    
+    insert_feed_data($feedid,$time_now,$time_now,$power);
+
+    return $power;
+  	}
+  }
+  
 ?>

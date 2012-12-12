@@ -11,3 +11,4 @@ Modules/energydata
 Modules/energygroup
 Modules/raspberrypi
 Modules/site
+Modules/command

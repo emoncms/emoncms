@@ -5,28 +5,7 @@
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgetlist.js"></script>
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/render.js"></script>
 
-  <?php
-
-    $widgets = array();
-    $dir = scandir("Modules/dashboard/Views/js/widgets");
-    for ($i=2; $i<count($dir); $i++)
-    {
-      if (filetype("Modules/dashboard/Views/js/widgets/".$dir[$i])=='dir') 
-      {
-        if (is_file("Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_widget.php"))
-        {
-          require_once "Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_widget.php";
-          $widgets[] = $dir[$i];
-        }
-        else if (is_file("Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_render.js"))
-        {
-          echo "<script type='text/javascript' src='".$path."Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_render.js'></script>";
-          $widgets[] = $dir[$i];
-        }
-      }
-    }
-
-  ?>
+  <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
   <div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; position:relative;">
     <div id="page"><?php echo $dashboard['content']; ?></div>
