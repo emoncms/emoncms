@@ -79,7 +79,7 @@ function get_process_list()
     DataType::DAILY
   );
   $list[9] = array(
-    _("kWh to kWh/d"),
+    _("kWh to kWh/d (OLD)"),
     ProcessArg::FEEDID,
     "kwh_to_kwhd",
     1,
@@ -179,6 +179,13 @@ function get_process_list()
     "subtract_input",
     0,
     DataType::UNDEFINED
+  );
+  $list[23] = array(
+    _("kWh to kWh/d"),
+    ProcessArg::FEEDID,
+    "kwh_to_kwhd2",
+    2,
+    DataType::HISTOGRAM
   );
 
   return $list;
@@ -461,6 +468,31 @@ function kwh_to_kwhd($feedid, $time_now, $value)
 
   // 4) Update feed kwhd
   update_feed_data($feedid, $time_now, $time, $kwhd);
+
+  return $value;
+}
+
+function kwh_to_kwhd2($feedid, $time_now, $value)
+{
+  $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+
+  $feedname = "feed_".trim($feedid)."";
+  $result = db_query("SELECT * FROM $feedname WHERE `time` = '$time'");
+  $row = db_fetch_array($result);
+
+  if (!$row)
+  {
+    db_query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0','$value')");
+  }
+  else
+  {
+    $kwh_start_of_day = $row['data2'];
+    $kwh_today = $value - $kwh_start_of_day;
+    db_query("UPDATE $feedname SET data = '$kwh_today' WHERE `time` = '$time'");
+  }
+
+  $updatetime = date("Y-n-j H:i:s", $time_now);
+  db_query("UPDATE feeds SET value = '$kwh_today', time = '$updatetime', datatype = '2' WHERE id='$feedid'");
 
   return $value;
 }
