@@ -5,7 +5,7 @@
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgetlist.js"></script>
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/render.js"></script>
 
-  <?php require_once $path."Modules/dashboard/Views/loadwidgets.php"; ?>
+  <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
   <div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; position:relative;">
     <div id="page"><?php echo $dashboard['content']; ?></div>
