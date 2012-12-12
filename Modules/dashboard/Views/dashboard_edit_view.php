@@ -1,4 +1,16 @@
-<?php global $session,$path; 
+<?php 
+
+/*
+All Emoncms code is released under the GNU Affero General Public License.
+See COPYRIGHT.txt and LICENSE.txt.
+
+---------------------------------------------------------------------
+Emoncms - open source energy visualisation
+Part of the OpenEnergyMonitor project:
+http://openenergymonitor.org
+*/
+
+global $session,$path; 
 
 if (!$dashboard['height']) $dashboard['height'] = 400;
 ?>
@@ -8,28 +20,8 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgetlist.js"></script>
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/render.js"></script>
 
-  <?php
+  <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
-    $widgets = array();
-    $dir = scandir("Modules/dashboard/Views/js/widgets");
-    for ($i=2; $i<count($dir); $i++)
-    {
-      if (filetype("Modules/dashboard/Views/js/widgets/".$dir[$i])=='dir') 
-      {
-        if (is_file("Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_widget.php"))
-        {
-          require_once "Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_widget.php";
-          $widgets[] = $dir[$i];
-        }
-        else if (is_file("Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_render.js"))
-        {
-          echo "<script type='text/javascript' src='".$path."Modules/dashboard/Views/js/widgets/".$dir[$i]."/".$dir[$i]."_render.js'></script>";
-          $widgets[] = $dir[$i];
-        }
-      }
-    }
-
-  ?>
 
 <div style="background-color:#ddd; padding:4px;">
   <span id="widget-buttons"></span>
