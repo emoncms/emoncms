@@ -242,6 +242,64 @@
       $output['message'] = "Deleted feeds are now permanently deleted";
     }
 
+   if ($action == "export" && $session['write'])
+    { 
+      // Feed id and start time of feed to export
+      $feedid = intval($_GET["id"]);
+      $start = intval($_GET["start"]);
+      if (feed_belongs_user($feedid, $session['userid'])) {
+
+        // Open database etc here
+        // Extend timeout limit from 30s to 2mins
+        set_time_limit (120);
+  
+        // Regulate mysql and apache load.
+        $block_size = 1000;
+        $sleep = 20000;
+
+        $feedname = "feed_".trim($feedid)."";
+        $fileName = $feedname.'.csv';
+ 
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: text/csv");
+        header("Content-Disposition: attachment; filename={$fileName}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $fh = @fopen( 'php://output', 'w' );
+
+        // Load new feed blocks until there is no more data 
+        $moredata_available = 1;
+        while ($moredata_available)
+        {
+          // 1) Load a block
+          $result = db_query("SELECT * FROM $feedname WHERE time>$start  
+          ORDER BY time Asc Limit $block_size");
+
+          $moredata_available = 0;
+          while($row = db_fetch_array($result)) {
+
+            // Write block as csv to output stream
+            fputcsv($fh, array($row['time'],$row['data']));
+
+            // Set new start time so that we read the next block along
+            $start = $row['time'];
+            $moredata_available = 1;
+          }
+          // 2) Sleep for a bit
+          usleep($sleep);
+        }
+        fclose($fh);
+        exit;
+      }
+    }
+
     return $output;
   }
 
