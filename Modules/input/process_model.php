@@ -851,8 +851,6 @@ function average($feedid, $time_now, $value)
   function kwh_to_power($feedid,$time_now,$value)
   {
 
-    if($value>0) {
- 
     $power = 0;
 
     // Get last time
@@ -870,7 +868,6 @@ function average($feedid, $time_now, $value)
     insert_feed_data($feedid,$time_now,$time_now,$power);
 
     return $power;
-  	}
   }
   
 ?>
