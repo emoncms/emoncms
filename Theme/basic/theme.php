@@ -19,7 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <!-- Thanks to Baptiste Gaultier for the emoncms dial icon http://bit.ly/zXgScz -->
     <link rel="shortcut icon" href="<?php echo $path; ?>Theme/basic/favicon.png" />
-    <link href="<?php print $GLOBALS['path']; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="<?php print $GLOBALS['path']; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link rel="stylesheet" type="text/css" href="<?php echo $path; ?>Theme/basic/style.css" />
 
     <!-- APPLE TWEAKS - thanks to Paul Dreed -->
@@ -36,7 +36,7 @@
      *------------------------------------------------------
      */
     ?>
-    <div class="navbar navbar-fixed-top">
+    <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
           <?php if (!isset($runmenu)) $runmenu = '';
