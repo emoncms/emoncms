@@ -13,7 +13,14 @@
 
 ?>
 
-<ul class="nav">
+<style>
+#mainnav li:first-child a
+{
+  padding-left: 0px;
+}
+</style>
+
+<ul id="mainnav" class="nav" style="padding-left: 0px;">
 
 <?php 
 
