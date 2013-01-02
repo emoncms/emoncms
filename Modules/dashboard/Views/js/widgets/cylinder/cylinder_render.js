@@ -70,7 +70,7 @@ function cylinder_fastupdate()
     ctx.lineWidth = 8;
 
   var diff = 1*cyl_top - 1*cyl_bot;
-  var step_diff = -diff / 20;
+  var step_diff = -diff / 5;
   var step_temp = cyl_top;
 
   ctx.fillStyle = get_color(step_temp);
