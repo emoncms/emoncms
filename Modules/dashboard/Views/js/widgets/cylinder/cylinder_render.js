@@ -115,11 +115,11 @@ function cylinder_fastupdate()
 
   function get_color(temperature)
   {
-    //var red = (32+(temperature*3.95)).toFixed(0);
-    var red = 68;
-    var green = 58;
-    //var blue = (191-(temperature*3.65)).toFixed(0);
-    var blue = 30;
+    var red = (32+(temperature*3.95)).toFixed(0);
+    //var red = 68;
+    var green = 40;
+    var blue = (191-(temperature*3.65)).toFixed(0);
+    //var blue = 30;
     return "rgb("+red+","+green+","+blue+")";
   }
 
