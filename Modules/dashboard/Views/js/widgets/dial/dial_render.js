@@ -1,4 +1,3 @@
-
 function dial_widgetlist()
 {
   var widgets = {
@@ -29,7 +28,7 @@ function dial_draw()
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
-      draw_gauge(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val*scale, $(this).attr("max"), $(this).attr("units"),$(this).attr("type"));
+      draw_gauge(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val.toFixed(1)*scale, $(this).attr("max"), $(this).attr("units"),$(this).attr("type"));
     }
   });
 }
