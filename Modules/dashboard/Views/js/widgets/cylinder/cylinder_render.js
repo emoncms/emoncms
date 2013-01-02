@@ -1,4 +1,3 @@
-
 function cylinder_widgetlist()
 {
   var widgets = {
@@ -71,7 +70,7 @@ function cylinder_fastupdate()
     ctx.lineWidth = 8;
 
   var diff = 1*cyl_top - 1*cyl_bot;
-  var step_diff = -diff / 5;
+  var step_diff = -diff / 20;
   var step_temp = cyl_top;
 
   ctx.fillStyle = get_color(step_temp);
@@ -110,15 +109,17 @@ function cylinder_fastupdate()
   ctx.fillStyle = "#fff";
   ctx.textAlign    = "center";
   ctx.font = "bold "+((width/168)*30)+"px arial";
-  ctx.fillText(cyl_top.toFixed(1)+"C",midx,top_pos);
-  ctx.fillText(cyl_bot.toFixed(1)+"C",midx,bot_pos+15);
+  ctx.fillText(cyl_top.toFixed(1)+"F",midx,top_pos);
+  ctx.fillText(cyl_bot.toFixed(1)+"F",midx,bot_pos+15);
   }
 
   function get_color(temperature)
   {
-    var red = (32+(temperature*3.95)).toFixed(0);
-    var green = 40;
-    var blue = (191-(temperature*3.65)).toFixed(0);
+    //var red = (32+(temperature*3.95)).toFixed(0);
+    var red = 68;
+    var green = 58;
+    //var blue = (191-(temperature*3.65)).toFixed(0);
+    var blue = 30;
     return "rgb("+red+","+green+","+blue+")";
   }
 
