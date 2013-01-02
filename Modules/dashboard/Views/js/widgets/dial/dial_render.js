@@ -28,7 +28,7 @@ function dial_draw()
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
-      draw_gauge(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val.toFixed(1)*scale, $(this).attr("max"), $(this).attr("units"),$(this).attr("type"));
+      draw_gauge(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val*scale, $(this).attr("max"), $(this).attr("units"),$(this).attr("type"));
     }
   });
 }
@@ -162,7 +162,7 @@ function dial_fastupdate()
   ctx.fillStyle = "#fff";
   ctx.textAlign    = "center";
   ctx.font = "bold "+(size*0.28)+"px arial";
-  if (position>10) position = position.toFixed(0); else position = position.toFixed(1);
+  if (position>100) position = position.toFixed(0); else position = position.toFixed(1);
   ctx.fillText(position+units,x,y+(size*0.125));
 
   }
