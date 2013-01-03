@@ -430,7 +430,7 @@ function input_ontime($feedid, $time_now, $value)
   
 
   $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-  update_feed_data($feedid, $time_now, $feedtime, $ontime);
+  update_feed_data($feedid, $time_now, $feedtime, $ontime/3600);
 
   return $value;
 }
