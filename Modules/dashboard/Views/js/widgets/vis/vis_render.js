@@ -1,4 +1,3 @@
-
 function vis_widgetlist()
 {
   var widgets = {
@@ -24,8 +23,8 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
+      "options":["feedid","units"],
+      "optionstype":["feedid","value"],
       "html":""
     },
 
