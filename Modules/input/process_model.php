@@ -424,13 +424,13 @@ function input_ontime($feedid, $time_now, $value)
   if ($value == 1 || $value == 0.5)
   {
     $time_elapsed = ($time_now - $last_time);
-    $ontime = $ontime + $time_elapsed;
+    $ontime = ($ontime + $time_elapsed)/3600;
   }
 
   
 
   $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-  update_feed_data($feedid, $time_now, $feedtime, $ontime/3600);
+  update_feed_data($feedid, $time_now, $feedtime, $ontime);
 
   return $value;
 }
