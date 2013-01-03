@@ -423,8 +423,8 @@ function input_ontime($feedid, $time_now, $value)
 
   if ($value == 1 || $value == 0.5)
   {
-    $time_elapsed = ($time_now - $last_time);
-    $ontime = ($ontime + $time_elapsed)/3600;
+    $time_elapsed = ($time_now - $last_time) / 3600;
+    $ontime = ($ontime + $time_elapsed);
   }
 
   
