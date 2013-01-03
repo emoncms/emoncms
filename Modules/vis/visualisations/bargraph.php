@@ -55,6 +55,9 @@
   var valid = "<?php echo $valid; ?>";
 
   var valid = "<?php echo $valid; ?>";
+  
+  var units = "<?php echo $units; ?>";
+  
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
