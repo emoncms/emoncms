@@ -308,5 +308,12 @@ function user_inc_dnhits($userid)
     return $y['dnhits'] - $x['dnhits'];
   }
 
+function get_user_salt($userid)
+{
+  $result = db_query("SELECT salt FROM users WHERE id = '$userid'");
+  $row = db_fetch_array($result);
+  return $row['salt'];
+}
+
 
 ?>
