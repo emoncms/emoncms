@@ -8,14 +8,14 @@ var movingtime = 0;
 
 function draw_multigraph_feedlist_editor()
 {
-  var out = "<table class='catlist'>";
-  out += "<tr><th>Feed</th><th>Left</th><th>Right</th><th>Fill</th><th></th></tr>";
+  var out = "<table class='catlist' style='table-layout:fixed; width:300px;' >";
+  out += "<tr><th style='width:120px;' >Feed</th><th>Left</th><th>Right</th><th>Fill</th><th style='width:46px;'></th></tr>";
 
   for (z in multigraph_feedlist)
   {
     out += "<tr>";
 
-    out += "<td>"+multigraph_feedlist[z]['name']+"</td>";
+    out += "<td style='word-wrap:break-word;'>"+multigraph_feedlist[z]['name']+"</td>";
 
     var checked = ""; if (multigraph_feedlist[z]['left']) checked = "checked";
     out += "<td><input listid='"+z+"' class='left' type='checkbox' "+checked+" / ></td>";
