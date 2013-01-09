@@ -476,10 +476,18 @@ function input_max($feedid, $time_now, $value)
 //---------------------------------------------------------------------------------------
 function input_min($feedid, $time_now, $value)
 {
+
+  if ()
   // Get last value
   $last = get_feed($feedid);
   $inmin = $last->value;
   $last_time = strtotime($last->time);
+
+  if ($inmin == 0)
+  {
+  	//initialize variable high
+  	$inmin = 100;
+  }
 
   if ($value < $inmin)
   {
