@@ -194,6 +194,13 @@ function get_process_list()
     1,
     DataType::DAILY
   );
+  $list[25] = array(
+    _("input min"),
+    ProcessArg::FEEDID,
+    "input_min",
+    1,
+    DataType::DAILY
+  );
 
   return $list;
 }
@@ -460,6 +467,28 @@ function input_max($feedid, $time_now, $value)
 
   $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
   update_feed_data($feedid, $time_now, $feedtime, $inmax);
+
+  return $value;
+}
+
+//---------------------------------------------------------------------------------------
+// input min finder
+//---------------------------------------------------------------------------------------
+function input_min($feedid, $time_now, $value)
+{
+  // Get last value
+  $last = get_feed($feedid);
+  $inmin = $last->value;
+  $last_time = strtotime($last->time);
+
+  if ($value < $inmin)
+  {
+    //$time_elapsed = ($time_now - $last_time) / 3600;
+    $inmin = $value;
+  }
+
+  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+  update_feed_data($feedid, $time_now, $feedtime, $inmin);
 
   return $value;
 }
