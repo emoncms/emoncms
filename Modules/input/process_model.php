@@ -187,6 +187,13 @@ function get_process_list()
     2,
     DataType::HISTOGRAM
   );
+  $list[24] = array(
+    _("input max"),
+    ProcessArg::FEEDID,
+    "input_max",
+    1,
+    DataType::DAILY
+  );
 
   return $list;
 }
@@ -431,6 +438,28 @@ function input_ontime($feedid, $time_now, $value)
 
   $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
   update_feed_data($feedid, $time_now, $feedtime, $ontime);
+
+  return $value;
+}
+
+//---------------------------------------------------------------------------------------
+// input max finder
+//---------------------------------------------------------------------------------------
+function input_max($feedid, $time_now, $value)
+{
+  // Get last value
+  $last = get_feed($feedid);
+  $inmax = $last->value;
+  $last_time = strtotime($last->time);
+
+  if ($value > $inmax)
+  {
+    //$time_elapsed = ($time_now - $last_time) / 3600;
+    $inmax = $value;
+  }
+
+  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+  update_feed_data($feedid, $time_now, $feedtime, $inmax);
 
   return $value;
 }
