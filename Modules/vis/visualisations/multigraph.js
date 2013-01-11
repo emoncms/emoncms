@@ -70,8 +70,9 @@ function multigraph_init(element)
   // start time is calculated from end - timewindow
   if (multigraph_feedlist[0]!=undefined)
   {
-    end = multigraph_feedlist[0].end;
-    if (end==0) end = (new Date()).getTime();
+    //end = multigraph_feedlist[0].end;
+    //if (end==0) 
+    end = (new Date()).getTime();
     if (multigraph_feedlist[0].timeWindow) start = end - multigraph_feedlist[0].timeWindow;
   }
 
