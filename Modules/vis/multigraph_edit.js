@@ -122,7 +122,9 @@ function update_multigraph_feedlist()
 {
   // Save multigraph view start and end time to feedlist array
   multigraph_feedlist[0].timeWindow = end - start;
-  if (movingtime) multigraph_feedlist[0].end = 0; else multigraph_feedlist[0].end = end;
+  //Always make multigraph update to latest end time
+  //if (movingtime) multigraph_feedlist[0].end = 0; else multigraph_feedlist[0].end = end;
+  multigraph_feedlist[0].end = 0;
   movingtime = 0;
 
   $.ajax({                                      
