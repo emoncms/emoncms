@@ -169,14 +169,12 @@ var seconds = ("0" + date.getSeconds()).slice (-2);
 // will display time in 10:30:23 format
 var formattedTime = hours + ':' + minutes + ':' + seconds;
  
- 
-                    showTooltip(item.pageX, item.pageY,
-                                item.series.label + " at " + formattedTime   + " = " + y);
-                }
-            }
-            else {
-                $("#tooltip").remove();
-                previousPoint = null;            
-            }
-        }
-    });
+showTooltip(item.pageX, item.pageY,item.series.label + " at " + formattedTime   + " = " + y);
+}
+  }
+    else {
+      $("#tooltip").remove();
+      previousPoint = null;            
+    }
+  }
+});
