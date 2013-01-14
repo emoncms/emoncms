@@ -78,8 +78,8 @@ function multigraph_init(element)
 
   var out = 
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
-      "<div id='graph'></div>"+
-      "<div style='position:absolute; top:20px; right:20px;'>"+
+      "<div id='graph' style='position:absolute; top:25px;'></div>"+
+      "<div style='position:absolute; top:0px; right:20px;'>"+
 
         "<input class='time' type='button' value='D' time='1'/>"+
         "<input class='time' type='button' value='W' time='7'/>"+
@@ -99,11 +99,11 @@ function multigraph_init(element)
 
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+  if (embed) $('#graph').height($(window).height()-25);
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    if (embed) $('#graph').height($(window).height()-25);
     plot();
   });
 
