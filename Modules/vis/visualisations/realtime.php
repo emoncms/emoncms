@@ -29,12 +29,15 @@
 <h2>Realtime data: <?php echo $feedidname; ?></h2>
 <?php } ?>
 
- <div id="graph_bound" style="height:300px; width:100%; position:relative; ">
+ <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
    <div id="graph" style="position:absolute; top:25px; right:0px;"></div>
-   <div style="position:absolute; top:0px; right:20px;">
+   <div style="position:absolute; top:0px; right:0px;">
      <button class="viewWindow" time="1.0">1 hr</button>
      <button class="viewWindow" time="0.50">30 min</button>
      <button class="viewWindow" time="0.25">15 min</button>
+   </div>
+   <div style="position:absolute; top:0px; left:0px;">
+    <h3>Realtime: <?php echo $feedidname; ?></h3>
    </div>
  </div>
 
@@ -69,7 +72,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height()-50);
+    if (embed) $('#graph').height($(window).height());
     plot();
   });
 
