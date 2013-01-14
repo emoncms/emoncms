@@ -31,11 +31,11 @@
 
  <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
    <div id="graph"></div>
-   <div style="position:absolute; top:20px; right:20px;">
-     <button class="viewWindow" time="1.0">1 hour</button>
+   <div style="position:absolute; top:0px; right:20px;">
+     <button class="viewWindow" time="2.0">2 hr</button>
+     <button class="viewWindow" time="1.0">1 hr</button>
      <button class="viewWindow" time="0.50">30 min</button>
      <button class="viewWindow" time="0.25">15 min</button>
-     <button class="viewWindow" time="0.01">1 min</button>
    </div>
  </div>
 
