@@ -26,8 +26,8 @@
 <?php } ?>
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-      <div id="graph"></div>
-      <div style="position:absolute; top:20px; right:20px;">
+      <div id="graph" style="position:absolute; top:25px;"></div>
+      <div style="position:absolute; top:0px; right:0px;">
 
         <input class="time" type="button" value="D" time="1"/>
         <input class="time" type="button" value="W" time="7"/>
@@ -48,7 +48,7 @@
 
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+  if (embed) $('#graph').height($(window).height()-25);
 
   var feedid = <?php echo $feedid; ?>;   
   var thresholdA = <?php echo $thresholdA; ?>;   
@@ -69,7 +69,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    if (embed) $('#graph').height($(window).height()-25);
     vis_feed_data();
   });
 
