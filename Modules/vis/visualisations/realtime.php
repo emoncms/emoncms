@@ -52,7 +52,7 @@
    var end = (new Date()).getTime();				//Get end time
 
    $('#graph').width($('#graph_bound').width());
-   $('#graph').height($('#graph_bound').height()-25);
+   $('#graph').height($('#graph_bound').height()+25);
    if (embed) $('#graph').height($(window).height());
 
    var data = [];
