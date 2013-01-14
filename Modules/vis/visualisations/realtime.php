@@ -29,7 +29,7 @@
 <h2>Realtime data: <?php echo $feedidname; ?></h2>
 <?php } ?>
 
- <div id="graph_bound" style="height:425px; width:100%; position:relative; ">
+ <div id="graph_bound" style="height:500px; width:100%; position:relative; ">
    <div id="graph"></div>
    <div style="position:absolute; top:-25px; right:20px;">
      <button class="viewWindow" time="1.0">1 hr</button>
@@ -51,8 +51,8 @@
    var start = ((new Date()).getTime())-timeWindow;		//Get start time
    var end = (new Date()).getTime();				//Get end time
 
-   $('#graph').width($('#graph_bound').width());
-   $('#graph').height($('#graph_bound').height()+25);
+   $('#graph').width($('#graph_bound').width()-60);
+   $('#graph').height($('#graph_bound').height()-120);
    if (embed) $('#graph').height($(window).height());
 
    var data = [];
