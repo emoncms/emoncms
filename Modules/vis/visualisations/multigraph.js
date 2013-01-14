@@ -79,7 +79,7 @@ function multigraph_init(element)
   var out = 
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
       "<div id='graph' style='position:absolute; top:25px;'></div>"+
-      "<div style='position:absolute; top:0px; right:20px;'>"+
+      "<div style='position:absolute; top:0px; right:0px;'>"+
 
         "<input class='time' type='button' value='D' time='1'/>"+
         "<input class='time' type='button' value='W' time='7'/>"+
