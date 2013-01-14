@@ -29,9 +29,9 @@
 <h2>Realtime data: <?php echo $feedidname; ?></h2>
 <?php } ?>
 
- <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+ <div id="graph_bound" style="height:425px; width:100%; position:relative; ">
    <div id="graph"></div>
-   <div style="position:absolute; top:-20px; right:20px;">
+   <div style="position:absolute; top:-25px; right:20px;">
      <button class="viewWindow" time="1.0">1 hr</button>
      <button class="viewWindow" time="0.50">30 min</button>
      <button class="viewWindow" time="0.25">15 min</button>
