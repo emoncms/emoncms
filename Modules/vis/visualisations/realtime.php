@@ -31,7 +31,7 @@
 
  <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
    <div id="graph"></div>
-   <div style="position:absolute; top:0px; right:20px;">
+   <div style="position:absolute; top:-20px; right:20px;">
      <button class="viewWindow" time="1.0">1 hr</button>
      <button class="viewWindow" time="0.50">30 min</button>
      <button class="viewWindow" time="0.25">15 min</button>
@@ -53,7 +53,7 @@
 
    $('#graph').width($('#graph_bound').width());
    $('#graph').height($('#graph_bound').height()-25);
-   if (embed) $('#graph').height($(window).height()-25);
+   if (embed) $('#graph').height($(window).height());
 
    var data = [];
 
@@ -69,7 +69,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height()-25);
+    if (embed) $('#graph').height($(window).height());
     plot();
   });
 
