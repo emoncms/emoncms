@@ -51,9 +51,9 @@
    var start = ((new Date()).getTime())-timeWindow;		//Get start time
    var end = (new Date()).getTime();				//Get end time
 
-   $('#graph').width($('#graph_bound').width()-60);
-   $('#graph').height($('#graph_bound').height()-120);
-   if (embed) $('#graph').height($(window).height());
+   $('#graph').width($('#graph_bound').width());
+   $('#graph').height($('#graph_bound').height());
+   if (embed) $('#graph').height($(window).height()-50);
 
    var data = [];
 
@@ -69,7 +69,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    if (embed) $('#graph').height($(window).height()-50);
     plot();
   });
 
