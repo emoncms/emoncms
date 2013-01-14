@@ -28,7 +28,10 @@
       $proto = "https";
     }
 
-    $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
+    if( isset( $_SERVER['HTTP_X_FORWARDED_SERVER'] ))
+        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_SERVER') . server('SCRIPT_NAME')) . "/";
+    else
+        $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
 
     return $path;
   }
