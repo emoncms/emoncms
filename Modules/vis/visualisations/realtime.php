@@ -32,10 +32,11 @@
  <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
    <div id="graph" style="position:absolute; top:25px; right:0px;"></div>
    <div style="position:absolute; top:0px; right:0px;">
-    <b>Realtime: <?php echo $feedidname; ?></b>
+    <b>Realtime: <?php echo $feedidname; ?>          </b>
      <button class="viewWindow" time="1.0">1 hr</button>
      <button class="viewWindow" time="0.50">30 min</button>
      <button class="viewWindow" time="0.25">15 min</button>
+     <button class="viewWindow" time="0.08">5 min</button>
    </div>
  </div>
 
