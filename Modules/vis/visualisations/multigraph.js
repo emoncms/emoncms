@@ -81,6 +81,7 @@ function multigraph_init(element)
       "<div id='graph' style='position:absolute; top:25px;'></div>"+
       "<div style='position:absolute; top:0px; right:0px;'>"+
 
+        "<input class='time' type='button' value='12 Hr' time='0.5'/>"+
         "<input class='time' type='button' value='D' time='1'/>"+
         "<input class='time' type='button' value='W' time='7'/>"+
         "<input class='time' type='button' value='M' time='30'/>"+
