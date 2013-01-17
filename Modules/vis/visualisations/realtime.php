@@ -84,8 +84,9 @@
    function plot()
    {
      $.plot($("#graph"), 
-       //[{data: data, lines: { fill: true }},{data: data2, lines: { fill: false }}],
-       [ [data],[data2] ],
+       //[{data: data, lines: { fill: true }}],
+       //[ [data],[data2] ],
+       [{ data: [ [data], [data2] ] }],
        {
        //series: { stack: true},
        xaxis: { mode: "time", localTimezone: true},
