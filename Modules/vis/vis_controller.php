@@ -39,7 +39,7 @@
     */
 
     $visualisations = array(
-      'realtime' => array('options'=>array(array('feedid',1))),
+      'realtime' => array('options'=>array(array('feedid',1),array('feedid2',1))),
       'rawdata'=> array('options'=>array(array('feedid',1),array('fill',7,0),array('units',5,'W'))),
       'bargraph'=> array('options'=>array(array('feedid',2),array('units',5,'kWh'))),
       'smoothie'=> array('options'=>array(array('feedid',1),array('ufac',6))),
