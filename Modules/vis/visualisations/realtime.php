@@ -41,7 +41,7 @@
  <script id="source" language="javascript" type="text/javascript">
    //--------------------------------------------------------------------------------------
    var feedid = <?php echo $feedid; ?>;				//Fetch table name
-   //var feedid2 = <?php echo $feedid2; ?>;  			//Fetch table name
+   var feedid2 = <?php echo $feedid2; ?>;  			//Fetch table name
    var path = "<?php echo $path; ?>";
    var apikey = "<?php echo $apikey; ?>";	
    var embed = <?php echo $embed; ?>;
@@ -77,7 +77,7 @@
    function vis_feed_data()
    {
      data = get_feed_data(feedid,start,end,2);
-     //data2 = get_feed_data(feedid2,start,end,2);
+     data2 = get_feed_data(feedid2,start,end,2);
      plot();
    }
   
@@ -86,10 +86,9 @@
      $.plot($("#graph"), 
        [{data: data, lines: { fill: true }}],
        {xaxis: { mode: "time", localTimezone: true},
-       //grid: { show: true, hoverable: true, clickable: true },
+       grid: { show: true, hoverable: true, clickable: true },
        selection: { mode: "xy" }
        });
-     });
    }
 
    //----------------------------------------------------------------------------------------------
