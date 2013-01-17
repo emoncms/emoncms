@@ -84,16 +84,11 @@
    function plot()
    {
      $.plot($("#graph"),
-       [{data: data, lines: { fill: true }}],
+       [{data: data,data2 lines: { fill: true }}],
        {xaxis: { mode: "time", localTimezone: true},
        //grid: { show: true, hoverable: true, clickable: true },
        selection: { mode: "xy" }
      });
-     $.plot($("#graph"),
-       [{data: data2, lines: { fill: false }}],
-       {xaxis: { mode: "time", localTimezone: true},
-       //grid: { show: true, hoverable: true, clickable: true },
-       selection: { mode: "xy" }
      });
    }
 
