@@ -85,9 +85,9 @@
    {
      $.plot($("#graph"), 
        //[{data: data, lines: { fill: true }},{data: data2, lines: { fill: false }}],
-       [{color: "#c1a81f", data:data}, {color: "#dec225", data:data2}],
+       [ [data],[data2] ],
        {
-       series: { stack: true},
+       //series: { stack: true},
        xaxis: { mode: "time", localTimezone: true},
        //grid: { show: true, hoverable: true, clickable: true },
        selection: { mode: "xy" }
