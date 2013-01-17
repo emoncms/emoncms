@@ -83,8 +83,8 @@
   
    function plot()
    {
-     $.plot($("#graph"),
-       [{data: data,data2 lines: { fill: true }}],
+     $.plot($("#graph"), 
+       [{data: data, lines: { fill: true }},{data: data2, lines: { fill: false }}],
        {xaxis: { mode: "time", localTimezone: true},
        //grid: { show: true, hoverable: true, clickable: true },
        selection: { mode: "xy" }
