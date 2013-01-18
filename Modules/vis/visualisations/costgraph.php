@@ -64,7 +64,7 @@
   
   var units = "$";
   
-  var ctotal = "0.0";
+  var ctotal = 0.0;
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
@@ -88,7 +88,7 @@
 
   function vis_feed_data()
   {
-    <!--ctotal = "0.0";-->
+    ctotal = 0.0;
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     if (valid) graph2_data = get_feed_data(feedid,start,end,500);
     <!--Multiply cost per kwh by kwh/d value-->
