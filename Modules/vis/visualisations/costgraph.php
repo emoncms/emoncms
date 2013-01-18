@@ -61,7 +61,7 @@
 
   var valid = "<?php echo $valid; ?>";
   
-  var units = "&dollar";
+  var units = "$";
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
@@ -71,11 +71,11 @@
   var start = ((new Date()).getTime())-timeWindow;		//Get start time
   var end = (new Date()).getTime();				//Get end time
 
-  //var graph_data = [];
-  var graph_data = get_feed_data(feedid,start,end,500);
+  var graph_data = [];
+  //var graph_data = get_feed_data(feedid,start,end,500);
   vis_feed_data();
   
-  <?php echo $graph_data; ?>
+  //<?php echo $graph_data; ?>
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
