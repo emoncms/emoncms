@@ -72,10 +72,9 @@
   var end = (new Date()).getTime();				//Get end time
 
   var graph_data = [];
-  //var graph_data = get_feed_data(feedid,start,end,500);
+  <!--var graph_data = get_feed_data(feedid,start,end,500);-->
   vis_feed_data();
   
-  //<?php echo $graph_data; ?>
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
@@ -86,7 +85,7 @@
   function vis_feed_data()
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
-    //graph_data = (graph_data * cost)+(rider/31);
+    <!--graph_data = (graph_data * cost)+(rider/31);-->
     plot();
   }
 
