@@ -72,7 +72,7 @@
   var end = (new Date()).getTime();				//Get end time
 
   var graph_data = [];
-  var graph_data = get_feed_data(feedid,start,end,500);
+  <!--var graph_data = get_feed_data(feedid,start,end,500);-->
   vis_feed_data();
   
 
@@ -90,16 +90,20 @@
   }
 
   function plot()
-  {<!--
+  {
     var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       yaxis: {min: 0},
       selection: { mode: "x" }
-    });-->
-    <div id="graph">
-    <h4><?php echo $graph_data; ?></h4>
-    </div>
+    });
+    <?php
+    foreach ($graph_data as $v1) {
+    foreach ($v1 as $v2) {
+        echo "$v2\n";
+       }
+      }
+      ?>
   }
 
   //--------------------------------------------------------------------------------------
