@@ -63,7 +63,7 @@
   
   var units = "$";
   
-  var ctotal = "";
+  var ctotal = 0.0;
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
@@ -93,7 +93,7 @@
     for(var i=0;i<graph_data.length;i++){
       graph_data[i][1] = ((graph_data[i][1] * cost) + (rider / 30));
       graph2_data[i][1] = (rider / 30);
-      ctotal += graph_data[i][1];
+      ctotal = (graph_data[i][1] + ctotal);
     }
     plot();
     document.write("<b>Total Cost is: "+ctotal+"<br>");
