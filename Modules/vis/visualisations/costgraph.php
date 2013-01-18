@@ -43,7 +43,8 @@
 
       </div>
 
-        <h3 style="position:absolute; top:15px; left:50px;"><span id="stats"></span></h3>
+        <h2 style="position:absolute; top:15px; left:50px;"><span id="stats"></span></h2>
+        <h3 style="position:absolute; bottom:15px; left:50px;"><span id="tots"></span></h3>
         
     </div>
 
@@ -97,9 +98,7 @@
       ctotal = (graph_data[i][1] + ctotal);
     }
     plot();
-    <div id="graph">
-    document.write("<b>Total Cost is: "+ctotal+"<br>");
-    </div>
+    <!-- document.write("<b>Total Cost is: "+ctotal+"<br>"); -->
   }
 
   function plot()
@@ -116,6 +115,7 @@
       yaxis: {min: 0},
       selection: { mode: "x" }
     });
+    $("#tots").html("Total: $"+ctotal+);
   }
   
 
