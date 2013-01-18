@@ -25,6 +25,7 @@
 <?php if (!$embed) { ?>
 <h2>Bar graph: <?php echo $feedidname; ?></h2>
 <?php } ?>
+<h2><?php echo $feedidname; ?></h2>
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph" style="position:absolute; top:25px;"></div>
@@ -70,7 +71,8 @@
   var start = ((new Date()).getTime())-timeWindow;		//Get start time
   var end = (new Date()).getTime();				//Get end time
 
-  var graph_data = [];
+  //var graph_data = [];
+  var graph_data = get_feed_data(feedid,start,end,500);
   vis_feed_data();
 
   $(window).resize(function(){
@@ -83,9 +85,6 @@
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     //graph_data = (graph_data * cost)+(rider/31);
-    <div style="position:absolute; top:0px; right:0px;">
-    <h4><?php echo $graph_data; ?></h4>
-    </div>
     plot();
   }
 
