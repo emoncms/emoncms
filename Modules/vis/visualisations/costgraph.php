@@ -98,7 +98,6 @@
       ctotal = (graph_data[i][1] + ctotal);
     }
     plot();
-    <!-- document.write("<b>Total Cost is: "+ctotal+"<br>"); -->
   }
 
   function plot()
@@ -115,8 +114,9 @@
       yaxis: {min: 0},
       selection: { mode: "x" }
     });
-    $("#tots").html("Total: $"+ctotal+);
   }
+  
+  $("#tots").html("Total: $"+ctotal+);
   
 
   //--------------------------------------------------------------------------------------
