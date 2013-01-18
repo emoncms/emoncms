@@ -72,6 +72,7 @@
   var end = (new Date()).getTime();				//Get end time
 
   var graph_data = [];
+  var graph2_data = [];
   <!--var graph_data = get_feed_data(feedid,start,end,500);-->
   vis_feed_data();
   
@@ -85,16 +86,21 @@
   function vis_feed_data()
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
-    <!--graph_data = (graph_data * cost)+(rider/31);-->
+    <!--Multiply cost per kwh by kwh/d value-->
     for(var i=0;i<graph_data.length;i++){
-      graph_data[i][1] = ((graph_data[i][1] * cost) + (rider / 31));
-      }
+      graph2_data[i] = graph_data[i];
+      graph_data[i][1] = (graph_data[i][1] * cost);
+      graph2_data[i][1] = (rider / 31);
+    }
     plot();
   }
 
   function plot()
   {
-    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], {
+    var plot = $.plot($("#graph"), 
+      [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}},
+       {data: graph2_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], 
+      {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       yaxis: {min: 0},
