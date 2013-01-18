@@ -87,6 +87,7 @@
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     <!--graph_data = (graph_data * cost)+(rider/31);-->
     plot();
+    help();
   }
 
   function plot()
@@ -97,10 +98,17 @@
       yaxis: {min: 0},
       selection: { mode: "x" }
     });
-    <?php
+  }
+  
+  function help()
+  {
+   <?php
     foreach ($graph_data as $v1) {
-    foreach ($v1 as $v2) {
-        echo "$v2\n";
+    foreach ($v1 as $v2) {?>
+    <div id="graph">
+        <?php echo "$v2\n";?>
+        </div>
+        <?php
        }
       }
       ?>
