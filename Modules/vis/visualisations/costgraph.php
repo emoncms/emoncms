@@ -43,7 +43,7 @@
       </div>
 
         <h3 style="position:absolute; top:15px; left:50px;"><span id="stats"></span></h3>
-        <h4><?php echo $graph_data; ?></h4>
+        
     </div>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -83,6 +83,7 @@
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     //graph_data = (graph_data * cost)+(rider/31);
+    <h4><?php echo $graph_data; ?></h4>
     plot();
   }
 
