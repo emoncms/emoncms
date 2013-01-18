@@ -91,7 +91,7 @@
 
   function plot()
   {
-    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "left", barWidth: 3600*18*1000, fill: true}}], {
+    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "right", barWidth: 3600*18*1000, fill: true}}], {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       yaxis: {min: 0},
