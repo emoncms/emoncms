@@ -72,7 +72,7 @@
   var end = (new Date()).getTime();				//Get end time
 
   var graph_data = [];
-  <!--var graph_data = get_feed_data(feedid,start,end,500);-->
+  var graph_data = get_feed_data(feedid,start,end,500);
   vis_feed_data();
   
 
