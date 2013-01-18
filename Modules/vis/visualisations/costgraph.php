@@ -63,6 +63,8 @@
   
   var units = "$";
   
+  var ctotal = "";
+  
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height()-25);
@@ -89,10 +91,12 @@
     if (valid) graph2_data = get_feed_data(feedid,start,end,500);
     <!--Multiply cost per kwh by kwh/d value-->
     for(var i=0;i<graph_data.length;i++){
-      graph_data[i][1] = (graph_data[i][1] * cost);
-      graph2_data[i][1] = (rider / 31);
+      graph_data[i][1] = ((graph_data[i][1] * cost) + (rider / 30));
+      graph2_data[i][1] = (rider / 30);
+      ctotal += graph_data[i][1];
     }
     plot();
+    document.write("<b>Total Cost is: "+ctotal+"<br>");
   }
 
   function plot()
