@@ -59,7 +59,7 @@
 
   var valid = "<?php echo $valid; ?>";
   
-  //var units = "<?php echo $units; ?>";
+  var units = "$";
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
