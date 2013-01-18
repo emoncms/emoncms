@@ -87,6 +87,7 @@
 
   function vis_feed_data()
   {
+   ctotal = 0.0;
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     if (valid) graph2_data = get_feed_data(feedid,start,end,500);
     <!--Multiply cost per kwh by kwh/d value-->
@@ -96,7 +97,9 @@
       ctotal = (graph_data[i][1] + ctotal);
     }
     plot();
+    <div id="graph">
     document.write("<b>Total Cost is: "+ctotal+"<br>");
+    </div>
   }
 
   function plot()
