@@ -25,7 +25,7 @@
 <?php if (!$embed) { ?>
 <h2>Bar graph: <?php echo $feedidname; ?></h2>
 <?php } ?>
-<h2><?php echo $graph_data; ?></h2>
+
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph" style="position:absolute; top:25px;"></div>
@@ -74,6 +74,8 @@
   //var graph_data = [];
   var graph_data = get_feed_data(feedid,start,end,500);
   vis_feed_data();
+  
+  <h2><?php echo $graph_data; ?></h2>
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
