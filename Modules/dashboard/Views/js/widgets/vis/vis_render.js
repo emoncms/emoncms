@@ -117,6 +117,14 @@ function vis_widgetlist()
       "optionstype":["multigraph"],
       "html":""
     }
+    "costgraph": 
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid","cost","rider","billday"],
+      "optionstype":["feedid","value","value","value"],
+      "html":""
+    }
   }
 
   // Gets multigraphs from vis_widget.php public multigraphs variable
