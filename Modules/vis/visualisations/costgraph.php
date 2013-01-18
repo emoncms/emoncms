@@ -44,7 +44,7 @@
       </div>
 
         <h2 style="position:absolute; top:15px; left:50px;"><span id="stats"></span></h2>
-        <h3 style="position:absolute; bottom:15px; left:50px;"><span id="tots"></span></h3>
+        <!--<h3 style="position:absolute; bottom:15px; left:50px;"><span id="tots"></span></h3>-->
         
     </div>
 
