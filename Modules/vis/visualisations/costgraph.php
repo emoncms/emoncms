@@ -87,7 +87,7 @@
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     <!--graph_data = (graph_data * cost)+(rider/31);-->
     plot();
-    help();
+
   }
 
   function plot()
