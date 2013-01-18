@@ -88,7 +88,7 @@
 
   function vis_feed_data()
   {
-    ctotal = "0.0";
+    <!--ctotal = "0.0";-->
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     if (valid) graph2_data = get_feed_data(feedid,start,end,500);
     <!--Multiply cost per kwh by kwh/d value-->
@@ -127,7 +127,7 @@
     if (item)
     {
       var mdate = new Date(item.datapoint[0]);
-      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy")" | "+ctotal+);
+      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy")+" | "+ctotal);
     }
   });
   //----------------------------------------------------------------------------------------------
