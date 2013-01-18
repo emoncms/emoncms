@@ -75,7 +75,7 @@
   var graph_data = get_feed_data(feedid,start,end,500);
   vis_feed_data();
   
-  <h2><?php echo $graph_data; ?></h2>
+  <?php echo $graph_data; ?>
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
