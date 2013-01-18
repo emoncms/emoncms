@@ -59,7 +59,7 @@
   var embed = <?php echo $embed; ?>;
   var valid = "<?php echo $valid; ?>";
 
-  var valid = "<?php echo $valid; ?>";
+  <!--var valid = "<?php echo $valid; ?>";-->
   
   var units = "$";
   
@@ -85,13 +85,13 @@
   function vis_feed_data()
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
-    graph_data = (graph_data * cost)+(rider/31);
+    <!--graph_data = (graph_data * cost)+(rider/31);-->
     plot();
   }
 
   function plot()
   {
-    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], {
+    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "left", barWidth: 3600*18*1000, fill: true}}], {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       yaxis: {min: 0},
