@@ -86,9 +86,9 @@
   function vis_feed_data()
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
+    if (valid) graph2_data = get_feed_data(feedid,start,end,500);
     <!--Multiply cost per kwh by kwh/d value-->
     for(var i=0;i<graph_data.length;i++){
-      graph2_data[i] = graph_data[i];
       graph_data[i][1] = (graph_data[i][1] * cost);
       graph2_data[i][1] = (rider / 31);
     }
@@ -99,7 +99,7 @@
   {
     var plot = $.plot($("#graph"), 
       [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}},
-       {data: graph2_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], 
+       {data: graph2_data, bars: { show: true, align: "center", barWidth: 3600*10*1000, fill: true}}], 
       {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
