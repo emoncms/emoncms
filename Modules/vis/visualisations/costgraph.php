@@ -98,9 +98,12 @@
   function plot()
   {
     var plot = $.plot($("#graph"), 
-      [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}},
-       {data: graph2_data, bars: { show: true, align: "center", barWidth: 3600*10*1000, fill: true}}], 
+      [{data: graph_data},{data: graph2_data}], 
       {
+      series: {
+        stack: true,
+        bars: { show: true,align: "center",barWidth: (3600*18*1000),fill: true }
+      },
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       yaxis: {min: 0},
