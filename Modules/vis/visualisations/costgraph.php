@@ -90,13 +90,16 @@
   }
 
   function plot()
-  {
+  {<!--
     var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       yaxis: {min: 0},
       selection: { mode: "x" }
-    });
+    });-->
+    <div id="graph">
+    <h4><?php echo $graph_data; ?></h4>
+    </div>
   }
 
   //--------------------------------------------------------------------------------------
