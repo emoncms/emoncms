@@ -25,7 +25,7 @@
 <?php if (!$embed) { ?>
 <h2>Bar graph: <?php echo $feedidname; ?></h2>
 <?php } ?>
-<h2><?php echo $feedidname; ?></h2>
+<h2><?php echo $graph_data; ?></h2>
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph" style="position:absolute; top:25px;"></div>
