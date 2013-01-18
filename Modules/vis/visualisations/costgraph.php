@@ -48,6 +48,9 @@
 <script id="source" language="javascript" type="text/javascript">
 
   var feedid = "<?php echo $feedid; ?>";
+  var cost = "<?php echo $cost; ?>";
+  var rider = "<?php echo $rider; ?>";
+  var billday = "<?php echo $billday; ?>";
   var feedname = "<?php echo $feedidname; ?>";
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
@@ -56,7 +59,7 @@
 
   var valid = "<?php echo $valid; ?>";
   
-  var units = "<?php echo $units; ?>";
+  //var units = "<?php echo $units; ?>";
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
@@ -78,6 +81,7 @@
   function vis_feed_data()
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
+    graph_data = (graph_data * cost)+(rider/31);
     plot();
   }
 
