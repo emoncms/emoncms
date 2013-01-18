@@ -87,7 +87,7 @@
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
     <!--graph_data = (graph_data * cost)+(rider/31);-->
     for(var i=0;i<graph_data.length;i++){
-      document.write("<b>arr["+i+"] is </b>=>"+graph_data[i][0]+"<br>");
+      document.write("<b>arr["+i+"] is </b>=>"+graph_data[i][1]+"<br>");
       }
     plot();
   }
