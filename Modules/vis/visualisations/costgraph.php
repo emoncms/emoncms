@@ -112,7 +112,7 @@
     if (item)
     {
       var mdate = new Date(item.datapoint[0]);
-      $("#stats").html((item.datapoint[1]).toFixed(1)+units+" | "+mdate.format("ddd, mmm dS, yyyy"));
+      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy"));
     }
   });
   //----------------------------------------------------------------------------------------------
