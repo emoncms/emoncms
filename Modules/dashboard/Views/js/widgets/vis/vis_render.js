@@ -116,7 +116,8 @@ function vis_widgetlist()
       "options":["mid"],
       "optionstype":["multigraph"],
       "html":""
-    }
+    },
+    
     "costgraph": 
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
