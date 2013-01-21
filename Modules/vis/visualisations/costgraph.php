@@ -28,7 +28,7 @@
 
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-      <div id="graph" style="position:absolute; top:25px;"></div>
+      <div id="graph" style="position:absolute; top:25px; bottom:25px;"></div>
       <div style="position:absolute; top:0px; right:0px;">
 
         <input class="time" type="button" value="D" time="1"/>
@@ -72,7 +72,7 @@
   var ctotal = 0.0;
   
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+  $('#graph').height($('#graph_bound').height()-25);
   if (embed) $('#graph').height($(window).height()-50);
 
   var timeWindow = (3600000*24.0*30);  			//Initial time window
