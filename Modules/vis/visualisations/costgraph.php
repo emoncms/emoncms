@@ -42,9 +42,9 @@
         <input id="right" type="button" value=">"/>
 
       </div>
-      <div style="position:absolute; top:5px; left:25px;">
+      <div style="position:absolute; top:5px; left:30px;">
         <!--<h2 style="position:absolute; bottom:0px; left:0px;">-->
-        <h3><span id="totals"></span><span id="stats"></span><br></h3>
+        <h4><span id="totals"></span><span id="stats"></span><br></h4>
         <!--</h2>-->
         <!--<h3 style="position:absolute; bottom:15px; left:50px;"><span id="tots"></span></h3>-->
         </div>
@@ -73,7 +73,7 @@
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height()-50);
+  if (embed) $('#graph').height($(window).height()-25);
 
   var timeWindow = (3600000*24.0*30);  			//Initial time window
   var start = ((new Date()).getTime())-timeWindow;		//Get start time
@@ -87,7 +87,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height()-50);
+    if (embed) $('#graph').height($(window).height()-25);
     plot();
   });
 
@@ -133,7 +133,7 @@
     if (item)
     {
       var mdate = new Date(item.datapoint[0]);
-      $("#stats").html(" | Daily: "+(item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy"));
+      $("#stats").html(" | Daily: "+units+(item.datapoint[1]).toFixed(2)+" | "+mdate.format("ddd, mmm dS, yyyy"));
     }
   });
   //----------------------------------------------------------------------------------------------
