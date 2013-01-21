@@ -27,7 +27,7 @@
 <?php } ?>
 
 
-    <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+    <div id="graph_bound" style="height:300px; width:100%; position:relative; ">
       <div id="graph" style="position:absolute; top:25px;"></div>
       <div style="position:absolute; top:0px; right:0px;">
 
