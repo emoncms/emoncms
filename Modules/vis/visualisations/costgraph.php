@@ -28,7 +28,7 @@
 
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-      <div id="graph" style="position:absolute; top:25px;"></div>
+      <div id="graph" style="position:absolute; top:25px; bottom:25px;"></div>
       <div style="position:absolute; top:0px; right:0px;">
 
         <input class="time" type="button" value="D" time="1"/>
@@ -127,7 +127,7 @@
     if (item)
     {
       var mdate = new Date(item.datapoint[0]);
-      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy")+" | "+ctotal);
+      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy")+" | "+ctotal.toFixed(2));
     }
   });
   //----------------------------------------------------------------------------------------------
