@@ -119,7 +119,7 @@
       yaxis: {min: 0},
       selection: { mode: "x" }
     });
-    $("#totals").html("Cost for period: $"+ctotal.toFixed(2));
+    $("#totals").html("Period Cost: $"+ctotal.toFixed(2)+"     ");
   }
 
   
@@ -133,7 +133,7 @@
     if (item)
     {
       var mdate = new Date(item.datapoint[0]);
-      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy")+" | "+ctotal.toFixed(2));
+      $("#stats").html((item.datapoint[1]).toFixed(2)+units+" | "+mdate.format("ddd, mmm dS, yyyy"));
     }
   });
   //----------------------------------------------------------------------------------------------
