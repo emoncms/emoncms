@@ -42,7 +42,7 @@
         <input id="right" type="button" value=">"/>
 
       </div>
-      <div id="bot_info" style="position:absolute; bottom:-20px; left:10px;">
+      <div id="bot_info" style="position:absolute; bottom:-20px; left:20px;">
         <!--<h2 style="position:absolute; bottom:0px; left:0px;">-->
         <h3><span id="totals"></span><span id="stats"></span><br></h3>
         <!--</h2>-->
