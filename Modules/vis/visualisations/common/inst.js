@@ -34,7 +34,7 @@
         {
           var laststart = start; var lastend = end;
           var timeWindow = (end-start);
-          var shiftsize = timeWindow * 0.2;
+          var shiftsize = timeWindow * 0.0333;
           start += shiftsize;
           end += shiftsize;
           timeWindowChanged = 1;
@@ -44,7 +44,7 @@
         {
           var laststart = start; var lastend = end;
           var timeWindow = (end-start);
-          var shiftsize = timeWindow * 0.2;
+          var shiftsize = timeWindow * 0.0333;
           start -= shiftsize;
           end -= shiftsize;
           timeWindowChanged = 1;
