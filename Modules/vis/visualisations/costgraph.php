@@ -28,7 +28,7 @@
 
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-      <div id="graph" style="position:absolute; top:25px; bottom:25px;"></div>
+      <div id="graph" style="position:absolute; bottom:25px;"></div>
       <div style="position:absolute; top:0px; right:0px;">
 
         <input class="time" type="button" value="D" time="1"/>
@@ -42,7 +42,7 @@
         <input id="right" type="button" value=">"/>
 
       </div>
-      <div id="bot_info" style="position:absolute; bottom:-20px; left:20px;">
+      <div style="position:absolute; bottom:-20px; left:20px;">
         <!--<h2 style="position:absolute; bottom:0px; left:0px;">-->
         <h3><span id="totals"></span><span id="stats"></span><br></h3>
         <!--</h2>-->
