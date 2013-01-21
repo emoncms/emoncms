@@ -72,7 +72,7 @@
   var ctotal = 0.0;
   
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height()-50);
+  $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height()-50);
 
   var timeWindow = (3600000*24.0*30);  			//Initial time window
