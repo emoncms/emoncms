@@ -73,7 +73,7 @@
   
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height()+25);
+  if (embed) $('#graph').height($(window).height()-50);
 
   var timeWindow = (3600000*24.0*30);  			//Initial time window
   var start = ((new Date()).getTime())-timeWindow;		//Get start time
@@ -87,7 +87,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height()+25);
+    if (embed) $('#graph').height($(window).height()-50);
     plot();
   });
 
