@@ -27,7 +27,7 @@
 <?php } ?>
 
 
-    <div id="graph_bound" style="height:300px; width:100%; position:relative; ">
+    <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph" style="position:absolute; top:25px;"></div>
       <div style="position:absolute; top:0px; right:0px;">
 
@@ -42,9 +42,12 @@
         <input id="right" type="button" value=">"/>
 
       </div>
-
-        <h2 style="position:absolute; bottom:0px; left:0px;"><span id="stats"></span></h2>
+      <div style="position:absolute; bottom:0px; left:0px;">
+        <!--<h2 style="position:absolute; bottom:0px; left:0px;">-->
+        <h3><span id="stats"></span></h3>
+        <!--</h2>-->
         <!--<h3 style="position:absolute; bottom:15px; left:50px;"><span id="tots"></span></h3>-->
+        </div>
         
     </div>
 
