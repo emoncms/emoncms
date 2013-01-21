@@ -45,7 +45,7 @@
       
         
     </div>
-    <div style="position:absolute; bottom:0px; left:0px;">
+    <div id="bot_info" style="position:relative; height:50px; width:100%;">
         <!--<h2 style="position:absolute; bottom:0px; left:0px;">-->
         <h3><span id="stats"></span></h3>
         <!--</h2>-->
