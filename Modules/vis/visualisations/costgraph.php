@@ -42,14 +42,15 @@
         <input id="right" type="button" value=">"/>
 
       </div>
-      <div style="position:absolute; bottom:0px; left:0px;">
+      
+        
+    </div>
+    <div style="position:absolute; bottom:0px; left:0px;">
         <!--<h2 style="position:absolute; bottom:0px; left:0px;">-->
         <h3><span id="stats"></span></h3>
         <!--</h2>-->
         <!--<h3 style="position:absolute; bottom:15px; left:50px;"><span id="tots"></span></h3>-->
         </div>
-        
-    </div>
 
 <script id="source" language="javascript" type="text/javascript">
 
