@@ -226,7 +226,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
       edit_mode = false;
     });
 
-    $(".widgetmenu").click(function(event) { 
+    $(".widgetmenu").change(function(event) { 
       create = ($(this).find("option:selected").text());
       var title = $(this).find("option:selected").attr("title");
       if (create && title!=1) edit_mode = false;
