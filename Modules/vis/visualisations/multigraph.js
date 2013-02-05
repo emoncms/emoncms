@@ -109,7 +109,7 @@ function multigraph_init(element)
     plot();
     
   //Add interval for auto-refresh
-  setInterval(function () {inst_refresh(); vis_feed_data();}, time );
+  setInterval(function () {inst_refresh(); vis_feed_data();}, 2000 );
   
   });
 
