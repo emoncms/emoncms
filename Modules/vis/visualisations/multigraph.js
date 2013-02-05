@@ -66,6 +66,9 @@
 function multigraph_init(element)
 {
   
+  //Add interval for auto-refresh
+  setInterval(function () {inst_refresh(); vis_feed_data();}, 2000 );
+  
   // Get start and end time of multigraph view
   // end time and timewindow is stored in the first multigraph_feedlist item.
   // start time is calculated from end - timewindow
@@ -107,9 +110,6 @@ function multigraph_init(element)
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height()-25);
     plot();
-    
-  //Add interval for auto-refresh
-  setInterval(function () {inst_refresh(); vis_feed_data();}, time );
   
   });
 
