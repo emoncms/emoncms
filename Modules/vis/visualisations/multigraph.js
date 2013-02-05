@@ -67,7 +67,7 @@ function multigraph_init(element)
 {
   
   //Add interval for auto-refresh
-  setInterval(function () {inst_refresh(); vis_feed_data();}, 2000 );
+  //setInterval(function () {inst_refresh(); vis_feed_data();}, 2000 );
   
   // Get start and end time of multigraph view
   // end time and timewindow is stored in the first multigraph_feedlist item.
