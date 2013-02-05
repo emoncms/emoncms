@@ -881,6 +881,10 @@ function average($feedid, $time_now, $value)
 
   function pulse_diff($feedid,$time_now,$value)
   {
+    // Wrap around signed int to unsigned int
+    if ($value < 0) {
+            $value = 65536 + $value;
+    }
 
     if($value>0) {
  

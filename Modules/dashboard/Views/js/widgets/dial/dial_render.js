@@ -110,6 +110,10 @@ function dial_fastupdate()
       offset = 0;
       segment = ["#e94937","#da4130","#c43626","#ad2b1c","#992113","#86170a"];
     }
+    else if (type == 10) //light: from dark grey to white
+    {
+      segment = ["#202020","#4D4D4D","#7D7D7D","#EEF0F3","#F7F7F7", "#FFFFFF"];
+    }
 
     if (position>maxvalue) position = maxvalue;
     var a = 1.75 - ((position/maxvalue) * 1.5) + offset;
