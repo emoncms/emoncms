@@ -57,3 +57,9 @@
           timeWindowChanged = 1;
           movingtime = 1;
         }
+        
+        function inst_refresh()
+        {
+          var timewindow = (end-start); 
+          timeWindowChanged = 0; 
+        }
