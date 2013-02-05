@@ -60,10 +60,8 @@
         
         function inst_refresh()
         {
-          var laststart = start; var lastend = end;
+          var timewindow = (end-start);
+          start = ((new Date()).getTime())-timeWindow;  	//Get start time
           end = (new Date()).getTime();
-          var elapsed = end - lastend;
-          //var timewindow = (end-start);
-          start = laststart - elapsed; 
           timeWindowChanged = 1; 
         }
