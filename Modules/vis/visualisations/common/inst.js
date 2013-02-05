@@ -61,5 +61,5 @@
         function inst_refresh()
         {
           var timewindow = (end-start); 
-          timeWindowChanged = 0; 
+          timeWindowChanged = 1; 
         }
