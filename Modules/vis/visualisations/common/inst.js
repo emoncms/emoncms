@@ -64,6 +64,6 @@
           end = (new Date()).getTime();
           var elapsed = end - lastend;
           //var timewindow = (end-start);
-          start = laststart + elapsed; 
+          start = laststart - elapsed; 
           timeWindowChanged = 1; 
         }
