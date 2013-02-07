@@ -110,7 +110,7 @@ global $path;
 
   // 1) ON CLICK OF VISUALISATION OPTION:
 
-  $("#visselect").click(function(){
+  $("#visselect").change(function(){
 
     // Custom multigraph visualisation items
     if ($(this).val()=="multigraph")
@@ -127,7 +127,7 @@ global $path;
       // 1) Start by drawing a dropdown multigraph id selector
       $("#box-options").html(out+" &nbsp;&nbsp;&nbsp;<b>New:</b> <i class='icon-plus'></i></p><div id='feedtable' ></div>");
 
-      $("#midselector").click(function(){
+      $("#midselector").change(function(){
         multigraph = $(this).val();
 
         $.ajax({                                      
