@@ -26,7 +26,7 @@ global $path, $theme, $allowusersregister;
 			<form class="well" action="" method="post">
 				<p>
 					<?php echo _('Username:'); ?><br/>
-					<input type="text" name="name" style="width:94%"/>
+					<input type="text" name="name" style="width:194%"/>
 				</p>
 				<p>
 					<?php echo _('Password:'); ?><br/>
