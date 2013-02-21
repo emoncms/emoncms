@@ -30,7 +30,7 @@ global $path, $theme, $allowusersregister;
 				</p>
 				<p>
 					<?php echo _('Password:'); ?><br/>
-					<input type="password" name="pass" style="width:94%"/>
+					<input type="password" name="pass" style="width:54%"/>
 				</p>
 
 				<input type="submit" class="btn" value="<?php echo _('Login'); ?>" onclick="javascript: form.action='<?php echo $GLOBALS['path']; ?>user/login';" />
