@@ -25,7 +25,7 @@ global $path, $theme, $allowusersregister;
 		<div style="text-align:left">
 			<form class="well" action="" method="post">
 				<p>
-					<?php echo _('Username:'); ?><br/>
+					<?php echo _('ｕｕｕ:'); ?><br/>
 					<input type="text" name="name" style="width:94%"/>
 				</p>
 				<p>
