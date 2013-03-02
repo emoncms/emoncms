@@ -1,5 +1,5 @@
 .project
-settings.php
+settings.ini
 Modules/sync
 Modules/event
 Modules/energyaudit
