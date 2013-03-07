@@ -28,8 +28,8 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
     var widgets = _widgets;
     var grid_size = _grid_size;
 
-    var canvas = document.getElementById("can");
-    var ctx = canvas.getContext("2d");
+    var cnvs = document.getElementById("can");
+    var ctx = cnvs.getContext("2d");
 
     var boxlist = {};
     var resize = {};
@@ -45,7 +45,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
     var mousedown_x = 0;
     var mousedown_y = 0;
 
-    var page_width = $(canvas).attr("width");
+    var page_width = parseInt($(canvas).attr("width"));
     $("#when-selected").hide();
     scan();
     $("#page-container").css("height",page_height);
@@ -247,9 +247,11 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
   }
 
   // Click to select
-  $(canvas).click(function(event) { 
-    var mx = event.layerX;
-    var my = event.layerY;
+  $(canvas).click(function(event) {
+    console.log(event); 
+    var mx = event.offsetX;
+    var my = event.offsetY;
+    console.log("click: "+mx+" "+my);
     if (edit_mode) selected_box = onbox(mx,my);
     if (!selected_box)  {$("#testo").hide(); $("#when-selected").hide();}
 
@@ -258,8 +260,8 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
 
   $(canvas).mousedown(function(event) { 
     mousedown = true;
-    var mx = event.layerX;
-    var my = event.layerY;
+    var mx = event.offsetX;
+    var my = event.offsetY;
     if (edit_mode) 
     {
       // If its not yet selected check if a box is selected now
@@ -280,6 +282,7 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
       if (Math.abs(my - bottedge)<20) selected_edge = "bottom";
       if (Math.abs(my - resize['top'])<20) selected_edge = "top";
       if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = "center";
+          console.log(my+" "+bottedge);
       }
     }
     else
@@ -302,8 +305,8 @@ function dashboard_designer(_canvas, _grid_size, _widgets)
 
   $(canvas).mousemove(function(event) { 
     if (mousedown && selected_box && selected_edge){
-    var mx = event.layerX;
-    var my = event.layerY;
+    var mx = event.offsetX;
+    var my = event.offsetY;
 
       var rightedge = resize['left']+resize['width'];
       var bottedge = resize['top']+resize['height'];

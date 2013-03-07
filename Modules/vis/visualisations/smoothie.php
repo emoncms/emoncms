@@ -20,7 +20,6 @@ http://openenergymonitor.org/emon/node/600
 	    bar { height: 32px; background: red; }
 	</style>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/smoothie/smoothie.js"></script>
 
 <?php if (!$embed) { ?>

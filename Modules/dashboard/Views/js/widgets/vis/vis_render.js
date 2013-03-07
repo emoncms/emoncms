@@ -137,9 +137,10 @@ function vis_draw()
   var visclasslist = '';
   for (z in vislist) { visclasslist += '.'+z+','; }
 
-  $(visclasslist).each(function(index)
-  {
+  visclasslist = visclasslist.slice(0, -1)
 
+  $(visclasslist).each(function()
+  {
     var id = $(this).attr("id");
     var feed = $(this).attr("feed") || 0;
     var width = $(this).width();
@@ -168,7 +169,6 @@ function vis_draw()
     iframe.height(height);
 
   });
-
 reloadiframe = 0;
 }
 

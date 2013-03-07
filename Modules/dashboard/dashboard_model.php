@@ -16,229 +16,188 @@ defined('EMONCMS_EXEC') or die('Restricted access');
  * Create a new user dashboard
  * 
  */
-function new_dashboard($userid)
+class Dashboard
 {
-  // If it is first user dashboard, set it the main one or no one exists 
-  if (!get_main_dashboard($userid))
-    db_query("INSERT INTO dashboard (`userid`,`main`) VALUES ('$userid',TRUE)");  
-  else
-    db_query("INSERT INTO dashboard (`userid`) VALUES ('$userid')");
-  
-  return db_insert_id();
-}
+    private $mysqli;
 
-function delete_dashboard($userid, $id)
-{
-  $result = db_query("DELETE FROM dashboard WHERE userid = '$userid' AND id = '$id'");
-  return $result;
-}
-
-function clone_dashboard($userid, $id)
-{
-	// Get content, name and description from origin dashboard
-  $result = db_query("SELECT content,name,description FROM dashboard WHERE userid = '$userid' AND id='$id'");
-  $row = db_fetch_array($result);
-	
-	// Name for cloned dashboard
-	$name = $row['name']._(' clone');
-
-  db_query("INSERT INTO dashboard (`userid`,`content`,`name`,`description`) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
-	
-	return db_insert_id();
-}
-
-function get_dashboard_list($userid, $public, $published)
-{
-  $qB = ""; $qC = "";
-  if ($public) $qB = " and public=1";
-  if ($published) $qC = " and published=1";
-  $result = db_query("SELECT id, name, alias, description, main, published, public, showdescription FROM dashboard WHERE userid='$userid'".$qB.$qC);
-
-  $list = array();
-  while ($row = db_fetch_array($result)) $list[] = $row;
-  return $list;
-}
-
-
-function set_dashboard_content($userid, $content, $id, $height)
-{
-  $result = db_query("SELECT * FROM dashboard WHERE userid = '$userid' AND id='$id'");
-  $row = db_fetch_array($result);
-
-  if ($row)
-  {
-    db_query("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid='$userid' AND id='$id'");
-  }
-  else
-  {
-    db_query("INSERT INTO dashboard (`userid`,`content`,`id`,`height`) VALUES ('$userid','$content','$id','$height')");
-  }
-}
-
-/*
- * Sets dashboard $id of $userid with $name
- */
-function set_dashboard_name($userid, $id, $name)
-{
-  db_query("UPDATE dashboard SET name = '$name' WHERE userid='$userid' AND id='$id'"); 
-}
-
-function set_dashboard_description($userid, $id, $description)
-{
-  db_query("UPDATE dashboard SET description = '$description' WHERE userid='$userid' AND id='$id'"); 
-}
-
-function set_dashboard_alias($userid, $id, $alias)
-{
-  db_query("UPDATE dashboard SET alias = '$alias' WHERE userid='$userid' AND id='$id'"); 
-}
-
-function set_dashboard_conf($userid, $id, $name, $alias, $description, $main, $public, $published)
-{
-  $result = db_query("SELECT id FROM dashboard WHERE userid = '$userid' AND id='$id'");
-  $row = db_fetch_array($result);
-
-  if ($row)
-  {
-    db_query("UPDATE dashboard SET name = '$name', alias = '$alias', description = '$description', public = '$public', published = '$published' WHERE userid='$userid' AND id='$id'");
-
-    // set user main dashboard
-    if ($main == '1')
+    public function __construct($mysqli)
     {
-      db_query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' AND id<>'$id'");
-
-      // set main to the main dashboard
-      db_query("UPDATE dashboard SET main = TRUE WHERE userid='$userid' AND id='$id'");
+        $this->mysqli = $mysqli;
     }
-    else
+
+    public function create($userid)
     {
-      // set main to false all other user dashboards
-      db_query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' AND id='$id'");
+      $userid = (int) $userid;
+      $this->mysqli->query("INSERT INTO dashboard (`userid`) VALUES ('$userid')");
+      return $this->mysqli->insert_id;
     }
-  }
-}
 
-// Return the main dashboard from $userid
-function get_main_dashboard($userid)
-{
-  $result = db_query("SELECT * FROM dashboard WHERE userid='$userid' and main=TRUE");
-  return db_fetch_array($result);
-}
+    public function delete($id)
+    {
+      $id = (int) $id;
+      $result = $this->mysqli->query("DELETE FROM dashboard WHERE id = '$id'");
+      return $result;
+    }
 
-// Returns the $id dashboard from $userid
-function get_dashboard_id($userid, $id, $public, $published)
-{
-  $qB = ""; if ($public) $qB = " and public=1";
-  $qC = ""; if ($published) $qC = " and published=1";
+    public function dashclone($userid, $id)
+    {
+      $userid = (int) $userid;
+      $id = (int) $id;
 
-  $result = db_query("SELECT * FROM dashboard WHERE userid='$userid' and id='$id'".$qB.$qC);
-  return db_fetch_array($result);
-}
+	    // Get content, name and description from origin dashboard
+      $result = $this->mysqli->query("SELECT content,name,description FROM dashboard WHERE userid = '$userid' AND id='$id'");
+      $row = $result->fetch_array();
+	
+	    // Name for cloned dashboard
+	    $name = $row['name']._(' clone');
 
-// Returns the $id dashboard from $userid
-function get_dashboard_alias($userid, $alias, $public, $published)
-{
-  $qB = ""; if ($public) $qB = " and public=1";
-  $qC = ""; if ($published) $qC = " and published=1";
+      $this->mysqli->query("INSERT INTO dashboard (`userid`,`content`,`name`,`description`) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
+	
+	    return $this->mysqli->insert_id;
+    }
 
-  $result = db_query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'".$qB.$qC);
-  return db_fetch_array($result);
-}
+    public function get_list($userid, $public, $published)
+    {
+      $userid = (int) $userid;
 
-/*
- * Set a $id dashboard from $userid as main dashboard
- * Only one dashboard can be main so first set all dashboards main property to false if new main dashboard is set
- * Main dashboard is set published too
- */
-function set_dashboard_main($userid, $id, $main)
-{
-  // set user main dashboard
-  if ($main == '1')
-  {
-	// set main to false all other user dashboards  	
-    db_query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' AND id<>'$id'");
+      $qB = ""; $qC = "";
+      if ($public==true) $qB = " and public=1";
+      if ($published==true) $qC = " and published=1";
+      $result = $this->mysqli->query("SELECT id, name, alias, description, main, published, public, showdescription FROM dashboard WHERE userid='$userid'".$qB.$qC);
 
-    // set main to the main dashboard
-    db_query("UPDATE dashboard SET main = TRUE WHERE userid='$userid' AND id='$id'");
-    
-    // main dashboard must be published
-    set_dashboard_publish($userid,$id,'1');
-  }
-  else
-  {       
-    db_query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' AND id='$id'");
-  }
-}
+      $list = array();
+      while ($row = $result->fetch_object()) 
+      { 
+        $list[] = array (
+          'id' => (int) $row->id,
+          'name' => $row->name,
+          'alias' => $row->alias,
+          'showdescription' => (bool) $row->showdescription,
+          'description' => $row->description,
+          'main' => (bool) $row->main,
+          'published'=> (bool) $row->published,
+          'public'=> (bool) $row->public
+        );
+      }
+      return $list;
+    }
 
-/*
- * Set a $id dashboard from $userid as published/unpublished dashboard
- * 
- */
-function set_dashboard_publish($userid, $id, $published)
-{
-  if ($published == '1')  
-    db_query("UPDATE dashboard SET published = TRUE WHERE userid='$userid' AND id='$id'");
-  else
-    db_query("UPDATE dashboard SET published = FALSE WHERE userid='$userid' AND id='$id'");
-}
+    public function set_content($userid, $id, $content, $height)
+    {
+      $userid = (int) $userid;
+      $id = (int) $id;
+      $height = (int) $height;
+      $content = preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$content);
 
-/*
- * Set a $id dashboard from $userid as public/private dashboard
- * 
- */
-function set_dashboard_public($userid, $id, $public)
-{
-  if ($public == '1')  
-    db_query("UPDATE dashboard SET public = TRUE WHERE userid='$userid' AND id='$id'");
-  else
-    db_query("UPDATE dashboard SET public = FALSE WHERE userid='$userid' AND id='$id'");
-}
+      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid = '$userid' AND id='$id'");
+      $row = $result->fetch_array();
+      if ($row) $this->mysqli->query("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid='$userid' AND id='$id'");
 
-/*
- * Set showdescription property
- */
-function set_dashboard_showdescription($userid, $id, $showdescription)
-{
-  if ($showdescription == '1')  
-    db_query("UPDATE dashboard SET showdescription = TRUE WHERE userid='$userid' AND id='$id'");
-  else
-    db_query("UPDATE dashboard SET showdescription = FALSE WHERE userid='$userid' AND id='$id'");
-}
+      return array('success'=>true);
+    }
 
-function build_dashboard_menu($userid,$location)
-{
-  global $path, $session;
-  $public = 0; $published = 0;
-  if ($location!="run") { $dashpath = 'dashboard/'.$location; } else { $dashpath = $session['username'];   $public = !$session['write']; $published = 1;}
+    public function set($userid,$id,$fields)
+    {
+      $userid = (int) $userid;
+      $id = (int) $id;
+      $fields = json_decode($fields);
 
-  $dashboards = get_dashboard_list($userid, $public, $published);
-  $topmenu="";
-  foreach ($dashboards as $dashboard)
-  {
-  	// Check show description
-  	if ($dashboard['showdescription']) 
-  	{		 
-  		$desc = ' title="'.$dashboard['description'].'"';
-  	}
-		else 
-		{
-			$desc = '';
-		} 
+      $array = array();
+
+      // content, height, name, alias, description, main, public, published, showdescription
+      // Repeat this line changing the field name to add fields that can be updated:
+
+      if (isset($fields->height)) $array[] = "`height` = '".intval($fields->height)."'";
+      if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$fields->content)."'";
+
+      if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
+      if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
+      if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
+
+      if (isset($fields->main)) 
+      {
+        $main = (bool)$fields->main;
+        if ($main) $this->mysqli->query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' and id<>'$id'");
+        $array[] = "`main` = '".$main ."'";
+      }
+
+      if (isset($fields->public)) $array[] = "`public` = '".((bool)$fields->public)."'";
+      if (isset($fields->published)) $array[] = "`published` = '".((bool)$fields->published)."'";
+      if (isset($fields->showdescription)) $array[] = "`public` = '".((bool)$fields->showdescription)."'";
+      // Convert to a comma seperated string for the mysql query
+      $fieldstr = implode(",",$array);
+
+      $this->mysqli->query("UPDATE dashboard SET ".$fieldstr." WHERE userid='$userid' and `id` = '$id'");
+
+      if ($this->mysqli->affected_rows>0){
+        return array('success'=>true, 'message'=>'Field updated');
+      } else {
+        return array('success'=>false, 'message'=>'Field could not be updated');
+      }
+    }
+
+    // Return the main dashboard from $userid
+    public function get_main($userid)
+    {
+      $userid = (int) $userid;
+      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and main=TRUE");
+      return $result->fetch_array();
+    }
+
+    public function get($userid, $id, $public, $published)
+    {
+      $userid = (int) $userid;
+      $id = (int) $id;
+      $qB = ""; if ($public==true) $qB = " and public=1";
+      $qC = ""; if ($published==true) $qC = " and published=1";
+
+      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and id='$id'".$qB.$qC);
+      return $result->fetch_array();
+    }
+
+    // Returns the $id dashboard from $userid
+    public function get_from_alias($userid, $alias, $public, $published)
+    {
+      $userid = (int) $userid;
+      $alias = preg_replace('/[^\w\s-]/','',$fields->alias);
+      $qB = ""; if ($public==true) $qB = " and public=1";
+      $qC = ""; if ($published==true) $qC = " and published=1";
+
+      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'".$qB.$qC);
+      return $result->fetch_array();
+    }
+
+    public function build_menu($userid,$location)
+    {
+      global $path, $session;
+      $userid = (int) $userid;
+
+      $public = 0; $published = 0;
+      if ($location!="run") { $dashpath = 'dashboard/'.$location; } else { $dashpath = $session['username'];   $public = !$session['write']; $published = 1;}
+
+      $dashboards = $this->get_list($userid, $public, $published);
+      $topmenu="";
+      foreach ($dashboards as $dashboard)
+      {
+      	// Check show description
+      	if ($dashboard['showdescription']) {		 
+      		$desc = ' title="'.$dashboard['description'].'"';
+      	} else {
+			    $desc = '';
+		    } 
 		
-		// Set URL using alias or id
-    if ($dashboard['alias'])
-    {
-    	$aliasurl = "/".$dashboard['alias'];
-    }
-    else
-    {
-    	$aliasurl = '&id='.$dashboard['id'];    	
+		    // Set URL using alias or id
+        if ($dashboard['alias']) {
+        	$aliasurl = "/".$dashboard['alias'];
+        } else {
+        	$aliasurl = '&id='.$dashboard['id'];    	
+        }
+
+		    // Build the menu item
+      	$topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';		
+      }
+      return $topmenu;
     }
 
-		// Build the menu item
-  	$topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';		
-  }
-  return $topmenu;
 }
-
 

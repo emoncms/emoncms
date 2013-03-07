@@ -50,31 +50,23 @@ function show_dashboard()
 // update function
 function update()
 {
-  var query = path + "feed/list.json?userid="+userid;
-  if (apikey) query += "&apikey="+apikey;
-  $.ajax(
-  {
-    url : query,
-    dataType : 'json',
-    success : function(data)
-    { 
-      for (z in data)
-      {
-        var newstr = data[z]['name'].replace(/\s/g, '-');
-        var value = parseFloat(data[z]['value']);
-        $("." + newstr).html(value);
-        assoc[newstr] = value * 1;
-        feedids[newstr] = data[z]['id'];
-      }
+  var data = feed.list();
 
-      for (z in widget)
-      {
-        var fname = widget[z]+"_slowupdate";
-        var fn = window[fname];
-        fn();
-      }
-    }
-  });
+  for (z in data)
+  {
+    var newstr = data[z]['name'].replace(/\s/g, '-');
+    var value = parseFloat(data[z]['value']);
+    $("." + newstr).html(value);
+    assoc[newstr] = value * 1;
+    feedids[newstr] = data[z]['id'];
+  }
+
+  for (z in widget)
+  {
+    var fname = widget[z]+"_slowupdate";
+    var fn = window[fname];
+    fn();
+  }
 }
 
 function fast_update()

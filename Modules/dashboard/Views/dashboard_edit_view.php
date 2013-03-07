@@ -15,10 +15,11 @@ global $session,$path;
 if (!$dashboard['height']) $dashboard['height'] = 400;
 ?>
 
-  <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
   <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgetlist.js"></script>
   <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/render.js"></script>
+
+  <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
   <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
@@ -53,7 +54,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   var page_height = "<?php echo $dashboard['height']; ?>";
   var path = "<?php echo $path; ?>";
   var apikey = "";
-  var feedlist = <?php echo json_encode($feedlist); ?>;
+  var feedlist = feed.list();
   var userid = <?php echo $session['userid']; ?>;
 
   $("#testo").hide();
@@ -81,11 +82,11 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
   $("#save-dashboard").click(function (){
     $.ajax({
-      type: "POST",
-      url :  path+"dashboard/set.json",
-      data : "&content=" + encodeURIComponent($("#page").html())+"&id="+dashid+"&height="+page_height,
-      
-      success : function(data) { console.log(data); if (data=="ok") $("#state").html("Saved"); } 
+      type: "GET",
+      url :  path+"dashboard/setcontent.json",
+      data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+page_height,
+      dataType: 'json',
+      success : function(data) { console.log(data); if (data.success==true) $("#state").html("Saved"); } 
     });
   });
 </script>

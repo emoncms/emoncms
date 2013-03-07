@@ -3,7 +3,7 @@
 <p>If all the item statuses below show ok that means your database is setup correctly.</p>
 <br>
 
-<table class="catlist" >
+<table class="table" >
 <tr><th>Schema item</th><th>Name</th><th>Status</th></tr>
 <?php $i=0; foreach ($out as $line) { $i++; ?>
 

@@ -1,79 +1,97 @@
 <?php
 
-  /*
+/*
+   All Emoncms code is released under the GNU Affero General Public License.
+   See COPYRIGHT.txt and LICENSE.txt.
 
-  All Emoncms code is released under the GNU Affero General Public License.
-  See COPYRIGHT.txt and LICENSE.txt.
+   ---------------------------------------------------------------------
+   Emoncms - open source energy visualisation
+   Part of the OpenEnergyMonitor project:
+   http://openenergymonitor.org
 
-  ---------------------------------------------------------------------
-  Emoncms - open source energy visualisation
-  Part of the OpenEnergyMonitor project:
-  http://openenergymonitor.org
+   test commit
+*/
 
-  Feeds table
+// no direct access
+defined('EMONCMS_EXEC') or die('Restricted access');
 
-  id | name | userid | tag | time | value | status | datatype
+class Feed
+{
+    private $mysqli;
 
-  status 0: active
-  status 1: wastebin
-  
-  datatype 0: UNDEFINED
-  datatype 1: REALTIME
-  datatype 2: DAILY
-  datatype 3: HISTOGRAM
-
-  */
-
-  function create_feed($userid,$name,$datatype)
-  {
-    // If feed of given name by the user already exists
-    $feedid = get_feed_id($userid,$name);
-    if ($feedid!=0) return $feedid;
-
-    $result = db_query("INSERT INTO feeds (userid,name,status,datatype,public) VALUES ('$userid','$name','0','$datatype','false')");
-    $feedid = db_insert_id();
-
-    if ($feedid>0) 
+    public function __construct($mysqli)
     {
-      $feedname = "feed_".$feedid;
+        $this->mysqli = $mysqli;
+    }
 
-      if ($datatype!=3) {										
-        $result = db_query(
-        "CREATE TABLE $feedname (
-	  time INT UNSIGNED, data float,
-        INDEX ( `time` ))");
-      }
+    public function create($userid,$name,$datatype)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\w\s-]/','',$name);
+        $datatype = intval($datatype);
 
-      if ($datatype==3) {										
-        $result = db_query(										
-        "CREATE TABLE $feedname (
-	  time INT UNSIGNED, data float, data2 float,
-        INDEX ( `time` ))");
-      }
+        // If feed of given name by the user already exists
+        $feedid = $this->get_id($userid,$name);
+        if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
 
-      return $feedid;											
-    } else return 0;
+        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public) VALUES ('$userid','$name','$datatype','false')");
+        $feedid = $this->mysqli->insert_id;
+
+        if ($feedid>0) 
+        {
+          $feedname = "feed_".$feedid;
+
+          if ($datatype!=3) {										
+            $result = $this->mysqli->query(
+            "CREATE TABLE $feedname (
+	      time INT UNSIGNED, data float,
+            INDEX ( `time` ))");
+          }
+
+          if ($datatype==3) {										
+            $result = $this->mysqli->query(										
+            "CREATE TABLE $feedname (
+	      time INT UNSIGNED, data float, data2 float,
+            INDEX ( `time` ))");
+          }
+
+          return array('success'=>true, 'feedid'=>$feedid);										
+        } else return array('success'=>false);
   }
 
-  function get_feed_id($userid,$name)
+  public function exists($feedid)
   {
-    $result = db_query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
-    $row = db_fetch_array($result);
-    return $row['id'];
+    $feedid = intval($feedid);
+    $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
+    if ($result->num_rows>0) return true; else return false;
   }
 
-  function feed_belongs_user($feedid,$userid)
+  public function get_id($userid,$name)
   {
-    $result = db_query("SELECT id FROM feeds WHERE `userid` = '$userid' AND `id` = '$feedid'");
-    $row = db_fetch_array($result);
+    $userid = intval($userid);
+    $name = preg_replace('/[^\w\s-]/','',$name);
+    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
+    if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+  }
+
+  public function belongs_to_user($feedid,$userid)
+  {
+    $userid = intval($userid);
+    $feedid = intval($feedid);
+
+    $result = $this->mysqli->query("SELECT id FROM feeds WHERE `userid` = '$userid' AND `id` = '$feedid'");
+    $row = $result->fetch_array();
     if ($row) return 1;
     return 0;
   }
 
-  function feed_belongs_user_or_public($feedid,$userid)
+  public function belongs_to_user_or_public($feedid,$userid)
   {
-    $result = db_query("SELECT userid, public FROM feeds WHERE `id` = '$feedid'");
-    $row = db_fetch_array($result);
+    $userid = intval($userid);
+    $feedid = intval($feedid);
+
+    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE `id` = '$feedid'");
+    $row = $result->fetch_array();
 
     if ($row['public']==true) return 1;
     if ($row['userid']==$userid && $userid!=0) return 1;
@@ -81,10 +99,14 @@
     return 0;
   }
 
-  function feedtype_belongs_user_or_public($feedid,$userid,$datatype)
+  public function feedtype_belongs_user_or_public($feedid,$userid,$datatype)
   {
-    $result = db_query("SELECT userid, public FROM feeds WHERE `id` = '$feedid' AND `datatype` = '$datatype' AND `status` = 0");
-    $row = db_fetch_array($result);
+    $userid = intval($userid);
+    $feedid = intval($feedid);
+    $datatype = intval($datatype);
+
+    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE `id` = '$feedid' AND `datatype` = '$datatype'");
+    $row = $result->fetch_array();
 
     if ($row['public']==true) return 1;
     if ($row['userid']==$userid && $userid!=0) return 1;
@@ -103,27 +125,32 @@
 
   */
 
-  function get_user_feeds($userid,$status)
+  public function get_user_feeds($userid)
   {
-    $result = db_query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE userid = $userid AND status = '$status'");
+    $userid = intval($userid);
+
+    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE userid = $userid");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_object($result)) 
+    while ($row = $result->fetch_object()) 
     { 
       // $row->size = get_feedtable_size($row->id);
       $row->time = strtotime($row->time)*1000;
       $row->tag = str_replace(" ","_",$row->tag);
+      $row->public = (bool) $row->public;
       $feeds[] = $row; 
     }
     return $feeds;
   }
 
-  function get_user_public_feeds($userid)
+  public function get_user_public_feeds($userid)
   {
-    $result = db_query("SELECT id,name,value FROM feeds WHERE `userid` = '$userid' AND public = '1' AND status = '0'");
+    $userid = intval($userid);
+
+    $result = $this->mysqli->query("SELECT id,name,value FROM feeds WHERE `userid` = '$userid' AND public = '1'");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_object($result)) 
+    while ($row = $result->fetch_object()) 
     { 
       // $row->size = get_feedtable_size($row->id);
       // $row->time = strtotime($row->time)*1000;
@@ -133,126 +160,172 @@
     return $feeds;
   }
 
-  function get_user_feed_ids($userid)
+  public function get_user_feed_ids($userid)
   {
-    $result = db_query("SELECT id FROM feeds WHERE userid = '$userid' AND status = '0'");
+    $userid = intval($userid);
+
+    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid'");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_object($result)) { $feeds[] = $row->id; }
+    while ($row = $result->fetch_object()) { $feeds[] = $row->id; }
     return $feeds;
   }
 
-  function get_user_feed_names($userid)
+  public function get_user_feed_names($userid)
   {
-    $result = db_query("SELECT id,name,datatype,public FROM feeds WHERE userid = '$userid' AND status = '0'");
+    $userid = intval($userid);
+
+    $result = $this->mysqli->query("SELECT id,name,datatype,public FROM feeds WHERE userid = '$userid'");
     if (!$result) return 0;
     $feeds = array();
-    while ($row = db_fetch_array($result)) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name'],'datatype'=>$row['datatype'],'public'=>$row['public']); }
+    while ($row = $result->fetch_array()) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name'],'datatype'=>$row['datatype'],'public'=>$row['public']); }
     return $feeds;
   }
 
   /*
 
-  Feeds table GET functions
+  Feeds table GET public functions
 
   */
 
-  function get_feed($id)
+  public function get($id)
   {
-    $result = db_query("SELECT id,name,datatype,tag,time,value,status,public FROM feeds WHERE id = $id");
-    return db_fetch_object($result);
+    $id = intval($id);
+
+    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE id = $id");
+    $row = $result->fetch_object();
+    $row->public = (bool) $row->public;
+    return $row;
   }
 
-  function get_feed_field($id,$field)
+  public function get_field($id,$field)
   {
-    $result = db_query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
-    $row = db_fetch_array($result);
+    $id = intval($id);
+    $field = preg_replace('/[^\w\s-]/','',$field);
+
+    $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
+    $row = $result->fetch_array();
     return $row[0];
   }
 
-  function get_feed_timevalue($id)
+  public function get_timevalue($id)
   {
-    $result = db_query("SELECT time,value FROM feeds WHERE id = '$id'");
-    return db_fetch_array($result);
+    $id = intval($id);
+
+    $result = $this->mysqli->query("SELECT time,value FROM feeds WHERE id = '$id'");
+    return $result->fetch_array();
   }
 
   /*
 
-  Feeds table SET functions
+  Feeds table SET public functions
 
   */
 
-  function set_feed_field($id,$field,$value)
+  public function set_feed_fields($id,$fields)
   {
-    if ($field!='id') $result = db_query("UPDATE feeds SET `$field` = '$value' WHERE id = $id");
-    return $result;
+    $id = intval($id);
+    $fields = json_decode($fields);
+
+    $array = array();
+
+    // Repeat this line changing the field name to add fields that can be updated:
+    if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
+    if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
+    if (isset($fields->datatype)) $array[] = "`datatype` = '".intval($fields->datatype)."'";
+    if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
+    // Convert to a comma seperated string for the mysql query
+    $fieldstr = implode(",",$array);
+    $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
+
+    if ($this->mysqli->affected_rows>0){
+      return array('success'=>true, 'message'=>'Field updated');
+    } else {
+      return array('success'=>false, 'message'=>'Field could not be updated');
+    }
   }
 
   /*
 
-  Feed data functions
+  Feed data public functions
 
-  insert, update, get and specialist histogram functions
+  insert, update, get and specialist histogram public functions
 
   */
 
-  function insert_feed_data($feedid,$updatetime,$feedtime,$value)
+  public function insert_data($feedid,$updatetime,$feedtime,$value)
   { 
-    if (get_feed_field($feedid,'status')==1) return $value;	// Dont insert if deleted
+    if ($feedtime == null) $feedtime = time();
+    $feedid = intval($feedid);
+    $updatetime = intval($updatetime);
+    $feedtime = intval($feedtime);
+    $value = floatval($value);
 
     $feedname = "feed_".trim($feedid)."";
 
     // a. Insert data value in feed table
-    db_query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
+    $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
-    db_query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
+    $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
     // Check feed event if event module is installed
-    if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-        require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-        check_feed_event($feedid,$updatetime,$feedtime,$value);
-    }
+    // if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
+    //    require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
+    //    check_feed_event($feedid,$updatetime,$feedtime,$value);
+    // }
 
     return $value;
   }
 
-  function update_feed_data($feedid,$updatetime,$feedtime,$value)
+  public function update_data($feedid,$updatetime,$feedtime,$value)
   {        
-    if (get_feed_field($feedid,'status')==1) return $value;	// Dont update if deleted
+    if ($feedtime == null) $feedtime = time();
+    $feedid = intval($feedid);
+    $updatetime = intval($updatetime);
+    $feedtime = intval($feedtime);
+    $value = floatval($value);
              
     $feedname = "feed_".trim($feedid)."";
 
     // a. update or insert data value in feed table
-    $result = db_query("SELECT * FROM $feedname WHERE time = '$feedtime'");
-    $row = db_fetch_array($result);
-
-    if ($row) db_query("UPDATE $feedname SET data = '$value', time = '$feedtime' WHERE time = '$feedtime'");
-    if (!$row) {$value = 0; db_query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')"); }
+    $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+    $row = $result->fetch_array();
+    if ($row) $this->mysqli->query("UPDATE $feedname SET data = '$value', time = '$feedtime' WHERE time = '$feedtime'");
+    if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");}
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
-    db_query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
+    $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
     // Check feed event if event module is installed
-    if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-        require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-        check_feed_event($feedid,$updatetime,$feedtime,$value);
-    }
+    // if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
+    //    require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
+    //    check_feed_event($feedid,$updatetime,$feedtime,$value);
+    // }
 
     return $value;
   }
 
-  function delete_feed_data($feedid,$start,$end)
+  public function delete_data($feedid,$start,$end)
   {
+    $feedid = intval($feedid);
+    $start = intval($start);
+    $end = intval($end);
+
     echo "<br><br>".$start;
     $feedname = "feed_".trim($feedid)."";
-    db_query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end' LIMIT 1");
+    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end' LIMIT 1");
   }
 
-  function get_feed_data($feedid,$start,$end,$dp)
+  public function get_data($feedid,$start,$end,$dp)
   {
+    $feedid = intval($feedid);
+    $start = floatval($start);
+    $end = floatval($end);
+    $dp = intval($dp);
+
     if ($end == 0) $end = time()*1000;
 
     $feedname = "feed_".trim($feedid)."";
@@ -268,10 +341,10 @@
       {
         $t = $start + $i*$td;
         $tb = $start + ($i+1)*$td;
-        $result = db_query("SELECT * FROM $feedname WHERE `time` >$t AND `time` <$tb LIMIT 1");
+        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` >$t AND `time` <$tb LIMIT 1");
 
         if($result){
-          $row = db_fetch_array($result);
+          $row = $result->fetch_array();
           $dataValue = $row['data'];               
           if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
             $time = $row['time'] * 1000;     
@@ -280,8 +353,8 @@
         }         
       }
     } else {
-      $result = db_query("select * from $feedname WHERE time>$start AND time<$end order by time Desc");
-      while($row = db_fetch_array($result)) {
+      $result = $this->mysqli->query("select * from $feedname WHERE time>$start AND time<$end order by time Desc");
+      while($row = $result->fetch_array()) {
         $dataValue = $row['data'];
         $time = $row['time'] * 1000;  
         $data[] = array($time , $dataValue); 
@@ -291,18 +364,22 @@
     return $data;
   }
 
-  function get_histogram_data($feedid,$start,$end)
+  public function get_histogram_data($feedid,$start,$end)
   {
+    $feedid = intval($feedid);
+    $start = intval($start);
+    $end = intval($end);
+
     if ($end == 0) $end = time()*1000;
     $feedname = "feed_".trim($feedid)."";
     $start = $start/1000; $end = $end/1000;
     $data = array();
 
     // Histogram has an extra dimension so a sum and group by needs to be used.
-    $result = db_query("select data2, sum(data) as kWh from $feedname WHERE time>='$start' AND time<'$end' group by data2 order by data2 Asc"); 
+    $result = $this->mysqli->query("select data2, sum(data) as kWh from $feedname WHERE time>='$start' AND time<'$end' group by data2 order by data2 Asc"); 
 	
     $data = array();                                      // create an array for them
-    while($row = db_fetch_array($result))                 // for all the new lines
+    while($row = $result->fetch_array())                 // for all the new lines
     {
       $dataValue = $row['kWh'];                           // get the datavalue
       $data2 = $row['data2'];            		  // and the instant watts
@@ -311,13 +388,17 @@
     return $data;
   }
 
-  function get_kwhd_atpower($feedid, $min, $max)
+  public function get_kwhd_atpower($feedid, $min, $max)
   {
+    $feedid = intval($feedid);
+    $min = intval($min);
+    $max = intval($max);
+
     $feedname = "feed_".trim($feedid)."";
-    $result = db_query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
+    $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
 
     $data = array();
-    while($row = db_fetch_array($result)) $data[] = array($row['time']* 1000 , $row['kWh']); 
+    while($row = $result->fetch_array()) $data[] = array($row['time']* 1000 , $row['kWh']); 
 
     return $data;
   }
@@ -328,21 +409,25 @@
 
   */
 
-  function get_feedtable_size($feedid)
+  public function get_feedtable_size($feedid)
   {
+    $feedid = intval($feedid);
+
     $feedname = "feed_".$feedid;
-    $result = db_query("SHOW TABLE STATUS LIKE '$feedname'");
-    $row = db_fetch_array($result);
+    $result = $this->mysqli->query("SHOW TABLE STATUS LIKE '$feedname'");
+    $row = $result->fetch_array();
     $tablesize = $row['Data_length']+$row['Index_length'];
     return $tablesize;
   }
 
-  function get_user_feeds_size($userid)
+  public function get_user_feeds_size($userid)
   {
-    $result = db_query("SELECT id FROM feeds WHERE userid = '$userid'");
+    $userid = intval($userid);
+
+    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid'");
     $total = 0;
     if ($result) {
-      while ($row = db_fetch_array($result)) {
+      while ($row = $result->fetch_array()) {
         $total += get_feedtable_size($row['id']);
       }
     }
@@ -356,34 +441,69 @@
 
   */
 
-  function delete_feed($userid,$feedid)
+  public function delete($feedid)
   {
-    // feed status of 1 = deleted, this provides a way to soft delete so that if the delete was a mistake
-    // it can be taken out of the recycle bin.
-    db_query("UPDATE feeds SET status = 1 WHERE id='$feedid'");
+    $feedid = intval($feedid);
+    $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid'");
+    $this->mysqli->query("DROP TABLE feed_".$feedid);
   }
 
-  function restore_feed($userid,$feedid)
+  public function export($feedid,$start)
   {
-    // feed status of 1 = deleted, this provides a way to soft delete so that if the delete was a mistake
-    // it can be taken out of the recycle bin.
-    db_query("UPDATE feeds SET status = 0 WHERE id='$feedid'");
-  }
+      // Feed id and start time of feed to export
+      $feedid = intval($feedid);
+      $start = intval($start);
 
-  function permanently_delete_feeds($userid)
-  {
-    $result = db_query("SELECT * FROM feeds WHERE userid = '$userid'");
-    $feeds = array();
-    if ($result) {
-      while ($row = db_fetch_object($result)) {
-        $feed = get_feed($row->id);
-        $feedid = $feed->id;
-        if ($feed && $feed->status==1){
-          db_query("DELETE FROM feeds WHERE id = '$feedid'");
-          db_query("DROP TABLE feed_".$feedid);
-        }
+      // Open database etc here
+      // Extend timeout limit from 30s to 2mins
+      set_time_limit (120);
+
+      // Regulate mysql and apache load.
+      $block_size = 1000;
+      $sleep = 20000;
+
+      $feedname = "feed_".trim($feedid)."";
+      $fileName = $feedname.'.csv';
+
+      // There is no need for the browser to cache the output
+      header("Cache-Control: no-cache, no-store, must-revalidate");
+
+      // Tell the browser to handle output as a csv file to be downloaded
+      header('Content-Description: File Transfer');
+      header("Content-type: text/csv");
+      header("Content-Disposition: attachment; filename={$fileName}");
+
+      header("Expires: 0");
+      header("Pragma: no-cache");
+
+      // Write to output stream
+      $fh = @fopen( 'php://output', 'w' );
+
+      // Load new feed blocks until there is no more data 
+      $moredata_available = 1;
+      while ($moredata_available)
+      {
+          // 1) Load a block
+          $result = db_query("SELECT * FROM $feedname WHERE time>$start  
+          ORDER BY time Asc Limit $block_size");
+
+          $moredata_available = 0;
+          while($row = db_fetch_array($result)) 
+          {
+              // Write block as csv to output stream
+              fputcsv($fh, array($row['time'],$row['data']));
+
+              // Set new start time so that we read the next block along
+              $start = $row['time'];
+              $moredata_available = 1;
+          }
+          // 2) Sleep for a bit
+          usleep($sleep);
       }
-    }
+
+      fclose($fh);
+      exit;
   }
 
-?>
+}
+
