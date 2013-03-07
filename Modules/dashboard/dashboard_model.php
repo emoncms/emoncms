@@ -159,7 +159,7 @@ class Dashboard
     public function get_from_alias($userid, $alias, $public, $published)
     {
       $userid = (int) $userid;
-      $alias = preg_replace('/[^\w\s-]/','',$fields->alias);
+      $alias = preg_replace('/[^\w\s-]/','',$alias);
       $qB = ""; if ($public==true) $qB = " and public=1";
       $qC = ""; if ($published==true) $qC = " and published=1";
 
