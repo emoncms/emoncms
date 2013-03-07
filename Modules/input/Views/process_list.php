@@ -141,7 +141,7 @@ function generate_process_arg_box()
   if (process[1]==1) // Process type is multiply, divide by input or add another input - argument type is input 
   {
       out +='<select class="processArgBox" name="arg" id="arg" onChange="update_process_arg_box()" style="width:140px;">'
-      for (i in inputlist) out += '<option value="'+inputlist[i].id+'">'+inputlist[i].name+'</option>';
+      for (i in inputlist) out += '<option value="'+inputlist[i].id+'">'+inputlist[i].nodeid+":"+inputlist[i].name+'</option>';
       out +='</select>';
   }
 
