@@ -23,6 +23,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
   <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
+<div id="dashboardpage">
 
 <div style="background-color:#ddd; padding:4px;">
   <span id="widget-buttons"></span>
@@ -45,6 +46,8 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
       <input id='options-save' type='button' value='save'/ >
     </div>
   </div> 
+</div>
+
 </div>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/designer.js"></script>
@@ -72,8 +75,13 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   var reloadiframe = 0;
 
   var grid_size = 20;
+  $('#can').width($('#dashboardpage').width());
 
-  dashboard_designer("#can",grid_size,widgets);
+  designer.canvas = "#can";
+  designer.grid_size = 20;
+  designer.widgets = widgets;
+
+  designer.init();
 
   show_dashboard();
 
@@ -88,5 +96,9 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
       dataType: 'json',
       success : function(data) { console.log(data); if (data.success==true) $("#state").html("Saved"); } 
     });
+  });
+
+  $(window).resize(function(){
+    designer.draw();
   });
 </script>
