@@ -71,6 +71,7 @@ class User
 
     public function emon_session_start()
     {
+        //ini_set('session.gc_maxlifetime','10');
         session_set_cookie_params(
             3600 * 24 * 30, //lifetime, 30 days
             "/", //path

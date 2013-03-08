@@ -11,14 +11,10 @@ http://openenergymonitor.org/emon/node/600
 
 ?>
 
-<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta names="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-	
-	<style type="text/css">
-	    html, body { background-color:#000000;}
-	    bar { height: 32px; background: red; }
-	</style>
+<style type="text/css">
+    html, body { background-color:#000000;}
+    bar { height: 32px; background: red; }
+</style>
 
 <script type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/smoothie/smoothie.js"></script>
 
@@ -90,7 +86,7 @@ http://openenergymonitor.org/emon/node/600
 			    else
 				prev = old1;
 
-			    if (data[1][1] != prev)
+			    if (data[1] != undefined && data[1][1] != prev)
 			    {
 				line.append(new Date().getTime(), data[1][1]);
 				if (oldref == 0)
