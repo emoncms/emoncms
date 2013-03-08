@@ -133,7 +133,7 @@ function load_menu()
     }
 
     usort($menu_left, "menu_sort");
-    return $menu_left;
+    return array('left'=>$menu_left, 'dropdown'=>$menu_dropdown);
 }
 
 // Menu sort by order

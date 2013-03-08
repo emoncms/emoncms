@@ -10,9 +10,11 @@
     http://openenergymonitor.org
   */
 
-  global $path, $session, $menu_left, $menu_right, $menu_dropdown;
+  global $path, $session, $menu, $menu_right, $menu;
   if (!isset($session['profile'])) $session['profile'] = 0;
 
+  $menu_left = $menu['left'];
+  $menu_dropdown = $menu['dropdown'];
 ?>
 
 <style>
@@ -34,7 +36,7 @@
       <ul class="dropdown-menu">
         <?php foreach ($menu_dropdown as $item) { ?>
           <?php if (isset($session[$item['session']]) && $session[$item['session']]==1) { ?>
-            <li><a href="#"><?php echo $item['name']; ?></a></li>
+            <li><a href="<?php echo $path.$item['path']; ?>"><?php echo $item['name']; ?></a></li>
           <?php } ?>
         <?php } ?>
       </ul>
