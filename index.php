@@ -30,8 +30,10 @@
   }
 
   // 3) User sessions
+  require "Modules/user/rememberme_model.php";
+  $rememberme = new Rememberme($mysqli);
   require("Modules/user/user_model.php");
-  $user = new User($mysqli);
+  $user = new User($mysqli,$rememberme);
 
   if (get('apikey'))
     $session = $user->apikey_session($_GET['apikey']);

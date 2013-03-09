@@ -49,6 +49,7 @@ global $path, $allowusersregister;
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
+        <input type="checkbox" id="rememberme" value="1" name="rememberme"> Remember me<br><br>
         <button id="login" class="btn btn-primary" type="button">Login</button> or 
         <?php if ($allowusersregister) { ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
       </p>
@@ -82,7 +83,9 @@ $("#cancel-link").click(function(){
 $("#login").click(function(){
   var username = $("input[name='username']").val();
   var password = $("input[name='password']").val();
-  var result = user.login(username,password);
+  var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
+
+  var result = user.login(username,password,rememberme);
 
 	if (result.success) 
 	{

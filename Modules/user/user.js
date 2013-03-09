@@ -1,12 +1,12 @@
 
 var user = {
 
-  'login':function(username,password)
+  'login':function(username,password,rememberme)
   {
     var result ={};
     $.ajax({
       url: path+"user/login.json",
-      data: "&username="+username+"&password="+password,
+      data: "&username="+username+"&password="+password+"&rememberme="+rememberme,
       dataType: 'json',
       async: false,
       success: function(data)

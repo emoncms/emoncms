@@ -32,7 +32,7 @@ function user_controller()
     if ($route->format == 'json')
     {
         // Core session
-        if ($route->action == 'login') $result = $user->login(get('username'),get('password'));
+        if ($route->action == 'login') $result = $user->login(get('username'),get('password'),get('rememberme'));
         if ($route->action == 'register' && $allowusersregister) $result = $user->register(get('username'),get('password'),get('email'));
         if ($route->action == 'logout' && $session['read']) $user->logout();
 

@@ -21,3 +21,10 @@ $schema['users'] = array(
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
     'bio' => array('type' => 'text', 'default'=>'')
 );
+
+$schema['rememberme'] = array(
+    'userid' => array('type' => 'int(11)'),
+    'token' => array('type' => 'varchar(40)'),
+    'persistentToken' => array('type' => 'varchar(40)'),
+    'expire' => array('type' => 'datetime')
+);

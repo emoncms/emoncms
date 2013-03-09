@@ -14,11 +14,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
-    private $mysqli;
 
-    public function __construct($mysqli)
+    private $mysqli;
+    private $rememberme;
+
+    public function __construct($mysqli,$rememberme)
     {
         $this->mysqli = $mysqli;
+        $this->rememberme = $rememberme;
     }
 
     //---------------------------------------------------------------------------------------
@@ -40,7 +43,7 @@ class User
             $row = $result->fetch_array();
             if ($row['id'] != 0)
             {
-                session_regenerate_id();
+                //session_regenerate_id();
                 $session['userid'] = $row['id'];
                 $session['read'] = 1;
                 $session['write'] = 0;
@@ -56,7 +59,7 @@ class User
             $row = $result->fetch_array();
             if ($row['id'] != 0)
             {
-                session_regenerate_id();
+                //session_regenerate_id();
                 $session['userid'] = $row['id'];
                 $session['read'] = 1;
                 $session['write'] = 1;
@@ -71,20 +74,41 @@ class User
 
     public function emon_session_start()
     {
-        //ini_set('session.gc_maxlifetime','10');
-        session_set_cookie_params(
-            3600 * 24 * 30, //lifetime, 30 days
-            "/", //path
-            "", //domain 
-            false, //secure
-            true//http_only
-        );
         session_start();
+
+        if (!empty($_SESSION['userid'])) {
+          if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
+            $this->logout();
+          }
+        } 
+        else 
+        {
+          $loginresult = $this->rememberme->login();
+          if ($loginresult) 
+          {
+            // Remember me login
+            $_SESSION['userid'] = $loginresult;
+            $_SESSION['read'] = 1;
+            $_SESSION['write'] = 1;
+            // There is a chance that an attacker has stolen the login token, so we store
+            // the fact that the user was logged in via RememberMe (instead of login form)
+            $_SESSION['cookielogin'] = true;
+          }
+          else
+          {
+            if($this->rememberme->loginTokenWasInvalid()) {
+              // Stolen
+            }
+          }
+        }
+
         if (isset($_SESSION['admin'])) $session['admin'] = $_SESSION['admin']; else $session['admin'] = 0;
         if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
+        if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
+
         return $session;
     }
 
@@ -124,8 +148,10 @@ class User
         return array('success'=>true, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
     }
 
-    public function login($username, $password)
+    public function login($username, $password, $remembermecheck)
     {
+        $remembermecheck = (int) $remembermecheck;
+
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
 
         // filter out all except for alphanumeric white space and dash
@@ -147,7 +173,6 @@ class User
         }
         else
         {
-            //this is a security measure
             session_regenerate_id();
             $_SESSION['userid'] = $userData->id;
             $_SESSION['username'] = $username;
@@ -156,15 +181,25 @@ class User
             $_SESSION['admin'] = $userData->admin;
             $_SESSION['lang'] = $userData->language;
             $_SESSION['editmode'] = TRUE;
+
+            if ($remembermecheck==true) {
+                $this->rememberme->createCookie($userData->id);
+            } else {
+                $this->rememberme->clearCookie();
+            }
+
             return array('success'=>true, 'message'=>_("Login successful"));
         }
     }
 
     public function logout()
     {
+        $this->rememberme->clearCookie($_SESSION['username']);
+        $_SESSION['userid'] = 0;
         $_SESSION['read'] = 0;
         $_SESSION['write'] = 0;
         $_SESSION['admin'] = 0;
+        session_regenerate_id(true);
         session_destroy();
     }
 
@@ -200,6 +235,8 @@ class User
 
     public function change_username($userid, $username)
     {
+        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As your using a cookie based remember me login, please logout and log back in to change username"));
+
         $userid = intval($userid);
         if (strlen($username) < 4 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
 
@@ -220,6 +257,8 @@ class User
 
     public function change_email($userid, $email)
     {
+        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As your using a cookie based remember me login, please logout and log back in to change email"));
+
         $userid = intval($userid);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
