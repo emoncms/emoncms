@@ -76,6 +76,7 @@ class User
     {
         session_start();
 
+/*
         // if php session exists
         if (!empty($_SESSION['userid'])) {
           // if rememberme emoncms cookie exists but is not valid then  
@@ -86,6 +87,7 @@ class User
         } 
         else 
         {
+
           $loginresult = $this->rememberme->login();
           if ($loginresult) 
           {
@@ -104,6 +106,7 @@ class User
             }
           }
         }
+*/
 
         if (isset($_SESSION['admin'])) $session['admin'] = $_SESSION['admin']; else $session['admin'] = 0;
         if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;

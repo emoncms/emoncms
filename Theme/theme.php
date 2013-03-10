@@ -75,7 +75,7 @@
 
         </style>
 
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.0.min.js"></script>
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
 
