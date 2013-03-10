@@ -76,7 +76,10 @@ class User
     {
         session_start();
 
+        // if php session exists
         if (!empty($_SESSION['userid'])) {
+          // if rememberme emoncms cookie exists but is not valid then  
+          // a valid cookie is a cookie who's userid, token and persistant token match a record in the db
           if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
             $this->logout();
           }
@@ -194,7 +197,7 @@ class User
 
     public function logout()
     {
-        $this->rememberme->clearCookie($_SESSION['username']);
+        $this->rememberme->clearCookie(true);
         $_SESSION['userid'] = 0;
         $_SESSION['read'] = 0;
         $_SESSION['write'] = 0;
