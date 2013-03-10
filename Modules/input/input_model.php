@@ -226,6 +226,21 @@ class Input
             return 0;
     }
 
+    public function get_by_name($userid, $nodeid, $name)
+    {
+        $userid = (int) $userid;
+        $nodeid = (int) $nodeid;
+        $name = (int) $name;
+
+        $result = $this->mysqli->query("SELECT id,processList,record FROM input WHERE nodeid='$nodeid' AND name='$name' AND userid='$userid'");
+        if ($result) {
+            $row = $result->fetch_object();
+            return array('id'=>$row->id, 'processList'=>$row->processList, 'record'=>$row->record);
+        }
+        else
+            return false;
+    }
+
     public function get_name($id)
     {
         $id = (int) $id;
