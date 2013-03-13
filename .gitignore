@@ -1,5 +1,6 @@
 .project
 settings.php
+migrate_inputs.php
 Modules/sync
 Modules/event
 Modules/energyaudit
