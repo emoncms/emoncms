@@ -23,6 +23,20 @@ input[type="text"] {
 
 </div>
 
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">WARNING deleting a dashboard is permanent</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete this dashboard?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+    <button id="confirmdelete" class="btn btn-primary">Delete permanently</button>
+  </div>
+</div>
+
 <script>
 
   var path = "<?php echo $path; ?>";
@@ -46,9 +60,12 @@ input[type="text"] {
 
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
+    'draw-action':{'title':'', 'type':"iconlink", 'icon':"icon-edit", 'link':path+"dashboard/edit?id="},
     'view-action':{'title':'', 'type':"iconlink", 'link':path+"dashboard/view?id="}
 
   }
+
+  table.deletedata = false;
 
   update();
 
@@ -64,8 +81,20 @@ input[type="text"] {
     dashboard.set(id,fields_to_update);
   });
 
-  $("#table").bind("onDelete", function(e,id){
+  $("#table").bind("onDelete", function(e,id,row){
+    $('#myModal').modal('show');
+    $('#myModal').attr('feedid',id);
+    $('#myModal').attr('feedrow',row);
+  });
+
+  $("#confirmdelete").click(function()
+  {
+    var id = $('#myModal').attr('feedid');
+    var row = $('#myModal').attr('feedrow');
     dashboard.delete(id); 
+    table.delete(row);
+
+    $('#myModal').modal('hide');
   });
 
 </script>

@@ -116,7 +116,7 @@ function input_controller()
                     if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                     if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
                   }
-                  $result = true;
+                  $result = 'ok';
                 }
                 foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
               }
@@ -159,7 +159,7 @@ function input_controller()
                 if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                 if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
               }
-              $result = true;
+              $result = 'ok';
             }
           }
           foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
@@ -184,7 +184,7 @@ function input_controller()
                 if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                 if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
               }
-              $result = true;
+              $result = 'ok';
             }
           }
           foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);

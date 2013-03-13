@@ -44,13 +44,17 @@
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('menu'=>$menu, 'type'=>"view"));
         }
 
-        if ($route->action == "view" && $session['write']) 
+        if ($route->action == "view" && $session['read']) 
         {
             if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
             elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
+            else $dash = $dashboard->get_main($session['userid']);
 
-            $result = view("Modules/dashboard/Views/dashboard_view.php",array('dashboard'=>$dash));
-            $result .= view("Modules/dashboard/Views/dashboard_config.php", array('dashboard'=>$dash));
+            if ($dash) {
+              $result = view("Modules/dashboard/Views/dashboard_view.php",array('dashboard'=>$dash));
+            } else {
+              $result = view("Modules/dashboard/Views/dashboard_list.php",array());
+            }
 
             $menu = $dashboard->build_menu($session['userid'],"view");    
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"view"));
@@ -72,6 +76,7 @@
     if ($route->format == 'json')
     {
         if ($route->action=='list' && $session['write']) $result = $dashboard->get_list($session['userid'], false, false);
+
         if ($route->action=='set' && $session['write']) $result = $dashboard->set($session['userid'],get('id'),get('fields'));
         if ($route->action=='setcontent' && $session['write']) $result = $dashboard->set_content($session['userid'],get('id'),get('content'),get('height'));
         if ($route->action=='delete' && $session['write']) $result = $dashboard->delete(get('id'));

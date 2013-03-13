@@ -173,7 +173,14 @@ class Dashboard
       $userid = (int) $userid;
 
       $public = 0; $published = 0;
-      if ($location!="run") { $dashpath = 'dashboard/'.$location; } else { $dashpath = $session['username'];   $public = !$session['write']; $published = 1;}
+
+      if (isset($session['profile']) && $session['profile']==1) { 
+        $dashpath = $session['username'];   
+        $public = !$session['write']; 
+        $published = 1;
+      } else { 
+        $dashpath = 'dashboard/'.$location; 
+      }
 
       $dashboards = $this->get_list($userid, $public, $published);
       $topmenu="";

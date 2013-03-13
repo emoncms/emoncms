@@ -516,6 +516,9 @@ class Process
 
       // Get last value
       $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
+
+      if (!$result) return $value;
+
       $last_row = $result->fetch_array();
 
       if (!$last_row)

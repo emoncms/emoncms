@@ -9,7 +9,7 @@
   http://openenergymonitor.org
 */
   
-global $path, $useckeditor;
+global $path, $session, $useckeditor;
 ?>
 
 <style>
@@ -47,20 +47,21 @@ global $path, $useckeditor;
   <?php echo $menu; ?>
 </ul>
 
-<div align="right" style="padding:4px;">
-  <?php if ($type=="view" && isset($id)) { ?>
-    <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" title="<?php echo _("Draw Editor"); ?>" ><i class="icon-edit"></i></a>
-  <?php } ?>
+<?php if ($session['write']) { ?>
 
-  <?php if ($type=="edit" && isset($id)) { ?>
-    <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>" title="<?php echo _("View mode"); ?>"><i class="icon-eye-open"></i></a>
-  <?php } ?>
+  <div align="right" style="padding:4px;">
+    <?php if ($type=="view" && isset($id)) { ?>
+      <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" title="<?php echo _("Draw Editor"); ?>" ><i class="icon-edit"></i></a>
+    <?php } ?>
 
-  <?php if (isset($id)) { ?>
-    <a href="#myModal" role="button" data-toggle="modal"><i class="icon-wrench"></i></a>
-  <?php } ?>
+    <?php if ($type=="edit" && isset($id)) { ?>
+      <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>" title="<?php echo _("View mode"); ?>"><i class="icon-eye-open"></i></a>
+      <a href="#myModal" role="button" data-toggle="modal"><i class="icon-wrench"></i></a>
+    <?php } ?>
 
-  <a href="#" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});" title="<?php echo _("New"); ?>"><i class="icon-plus-sign"></i></a>
+    <a href="#" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});" title="<?php echo _("New"); ?>"><i class="icon-plus-sign"></i></a>
 
-  <a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _('List view'); ?>"></i></a>   
-</div>
+    <a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _('List view'); ?>"></i></a>   
+  </div>
+
+<?php } ?>

@@ -195,6 +195,7 @@ class Input
 
         $dbinputs = array();
         while ($row = $result->fetch_object()) {
+            if ($row->nodeid==null) $row->nodeid = 0;
             if (!isset($dbinputs[$row->nodeid])) $dbinputs[$row->nodeid] = array();
             $dbinputs[$row->nodeid][$row->name] = array('id'=>$row->id, 'processList'=>$row->processList, 'record'=>$row->record);
         }

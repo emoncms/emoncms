@@ -44,29 +44,44 @@ function show_dashboard()
   browserVersion = Browser.Version();
   if (browserVersion < 9) dialrate = 0.2;
 
+  for (z in widget)
+  {
+    var fname = widget[z]+"_init";
+    var fn = window[fname];
+    fn();
+  }
+
   update();
 }
 
 // update function
 function update()
 {
-  var data = feed.list();
-
-  for (z in data)
+  var query = path + "feed/list.json?userid="+userid;
+  $.ajax(
   {
-    var newstr = data[z]['name'].replace(/\s/g, '-');
-    var value = parseFloat(data[z]['value']);
-    $("." + newstr).html(value);
-    assoc[newstr] = value * 1;
-    feedids[newstr] = data[z]['id'];
-  }
+    url : query,
+    dataType : 'json',
+    success : function(data)
+    { 
 
-  for (z in widget)
-  {
-    var fname = widget[z]+"_slowupdate";
-    var fn = window[fname];
-    fn();
-  }
+      for (z in data)
+      {
+        var newstr = data[z]['name'].replace(/\s/g, '-');
+        var value = parseFloat(data[z]['value']);
+        $("." + newstr).html(value);
+        assoc[newstr] = value * 1;
+        feedids[newstr] = data[z]['id'];
+      }
+
+      for (z in widget)
+      {
+        var fname = widget[z]+"_slowupdate";
+        var fn = window[fname];
+        fn();
+      }
+    }
+  });
 }
 
 function fast_update()

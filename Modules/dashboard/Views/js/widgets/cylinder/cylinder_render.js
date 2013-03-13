@@ -54,8 +54,11 @@ function cylinder_fastupdate()
 
   function draw_cylinder(ctx,cyl_bot,cyl_top,width,height)
   {
-    if (!ctx) return;
 
+    console.log("Draw cylinder");
+    if (!ctx) console.log("No CTX");
+    if (!ctx) return;
+  
     //var width = 168;
     var midx = width / 2;
     var cyl_width = width - 8;

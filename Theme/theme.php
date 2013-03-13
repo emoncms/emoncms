@@ -117,9 +117,18 @@
           </div><br>
         <?php } ?> 
 
+        <?php
+          if (!isset($fullwidth)) $fullwidth = false;
+          if (!$fullwidth) {
+        ?>
+
         <div class="container">
             <?php echo $content; ?>
         </div>
+
+        <?php } else { ?>
+            <?php echo $content; ?>
+        <?php } ?>
 
 
         <div style="clear:both; height:60px;"></div> 

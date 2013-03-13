@@ -67,9 +67,34 @@
   // 6) Load the main page controller
   $output = controller($route->controller);
 
-  // 7) Output
-  if ($route->format == 'json') print json_encode($output['content']);
+  // If no controller of this name - then try username
+  if (!$output['content'] && $public_profile_enabled)
+  { 
+    $userid = $user->get_id($route->controller);
+    if ($userid) {
+      $route->subaction = $route->action;
+      $session['userid'] = $userid;
+      $session['username'] = $route->controller;
+      $session['read'] = 1; 
+      $session['profile'] = 1;
+      $route->action = $public_profile_action;
+      $output = controller($public_profile_controller);
+    }
+  }
 
+  // 7) Output
+  if ($route->format == 'json') 
+  {  
+    if ($route->controller=='time') {
+      print $output['content'];
+    } elseif ($route->controller=='input' && $route->action=='post') {
+      print $output['content'];
+    } elseif ($route->controller=='input' && $route->action=='bulk') {
+      print $output['content'];
+    } else {
+      print json_encode($output['content']);
+    }
+  }
   if ($route->format == 'html') 
   {
     $menu = load_menu();

@@ -36,5 +36,19 @@
       "offsetx":-100,"offsety":-180,"width":200,"height":360,
       "menu":"Containers",
       "html":""
+    },
+
+    "Container-Black": 
+    {
+      "offsetx":-100,"offsety":-180,"width":200,"height":360,
+      "menu":"Containers",
+      "html":""
+    },
+
+    "Container-BlueLine": 
+    {
+      "offsetx":-100,"offsety":-180,"width":200,"height":360,
+      "menu":"Containers",
+      "html":""
     }
   };
