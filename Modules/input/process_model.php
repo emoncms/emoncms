@@ -206,6 +206,7 @@ class Process
 
     public function input($time, $value, $processList)
     {
+        $process_list = $this->get_process_list();
         $pairs = explode(",",$processList);
         foreach ($pairs as $pair)    			        
         {
@@ -213,7 +214,7 @@ class Process
           $processid = $inputprocess[0];						                  // Process id
           $arg = $inputprocess[1];	 					                        // Can be value or feed id
 
-          $process_list = $this->get_process_list();
+          if ($process_list[$processid][1]==1) { echo 'ok'; die; }
           $process_public = $process_list[$processid][2];	            // get process public function name
           $value = $this->$process_public($arg,$time,$value);		  // execute process public function
         }
