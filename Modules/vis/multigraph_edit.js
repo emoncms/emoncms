@@ -8,7 +8,8 @@ var movingtime = 0;
 
 function draw_multigraph_feedlist_editor()
 {
-  if (multigraph_feedlist[0]['end'] == 0) movingtime=0;
+  if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0
+) movingtime=0;
   else movingtime=1;
 
   var out = "<table class='catlist' style='table-layout:fixed; width:300px;' >";
@@ -48,7 +49,7 @@ function draw_multigraph_feedlist_editor()
   out += "<td><input id='add' type='button' class='button05' value='Add'/ ></td></tr>";
 
   out += "<tr><td>Floating time</strong></td>";
-  var checked = ""; if (multigraph_feedlist[0]['end'] == 0) checked = "checked";
+  var checked = ""; if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0) checked = "checked";
   out += "<td><input id='movingtime' type='checkbox' "+checked+" / ></td>";
   out += "<td></td>";
   out += "<td></td>";
