@@ -32,8 +32,8 @@ function user_controller()
     if ($route->format == 'json')
     {
         // Core session
-        if ($route->action == 'login' && !$session['read']) $result = $user->login(get('username'),get('password'),get('rememberme'));
-        if ($route->action == 'register' && $allowusersregister) $result = $user->register(get('username'),get('password'),get('email'));
+        if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
+        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) $user->logout();
 
         if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));

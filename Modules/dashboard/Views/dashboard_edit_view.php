@@ -92,7 +92,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
   $("#save-dashboard").click(function (){
     $.ajax({
-      type: "GET",
+      type: "POST",
       url :  path+"dashboard/setcontent.json",
       data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+page_height,
       dataType: 'json',

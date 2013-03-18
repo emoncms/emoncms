@@ -30,7 +30,7 @@ class Route
     public function decode($q)
     {
         // filter out all except a-z and / .
-        $q = preg_replace('/[^.\/A-Za-z0-9]/', '', $q);
+        $q = preg_replace('/[^.\/A-Za-z0-9-]/', '', $q);
 
         // Split by /
         $args = preg_split('/[\/]/', $q);

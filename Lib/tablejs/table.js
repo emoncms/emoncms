@@ -69,7 +69,7 @@ var table = {
         }
     },
   
-    'delete':function(row)
+    'remove':function(row)
     {
         table.data.splice(row,1);
         $("tr[uid="+row+"]").remove();
@@ -104,7 +104,7 @@ var table = {
 
         // Event: delete row
         $(table.element).on('click', 'a[type=delete]', function() {
-            if (table.deletedata) table.delete( $(this).attr('row') );
+            if (table.deletedata) table.remove( $(this).attr('row') );
             $(table.element).trigger("onDelete",[$(this).attr('uid'),$(this).attr('row')]);
         });
 

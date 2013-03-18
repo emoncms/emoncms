@@ -48,6 +48,7 @@ class Multigraph
     */
     public function get($id, $userid)
     {
+        $id = intval($id);
         $userid = intval($userid);
         $result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE `id`='$id'");
         $result = $result->fetch_array();
