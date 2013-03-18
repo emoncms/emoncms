@@ -15,7 +15,7 @@ var input = {
     return result;
   },
 
-  'delete':function(id)
+  'remove':function(id)
   {
     $.ajax({ url: path+"input/delete.json", data: "inputid="+id, async: false, success: function(data){} });
   },
