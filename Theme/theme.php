@@ -108,7 +108,6 @@
 
         <div id="topspacer"></div>
 
-   
         <?php if (isset($submenu) && ($submenu)) { ?>  
           <div id="submenu">
               <div class="container">
