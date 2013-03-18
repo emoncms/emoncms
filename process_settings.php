@@ -26,6 +26,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 }
 else
 {   
-    echo 'Copy and modify default.settings.php to settings.php';
+    echo 'Copy and modify default.settings.php to settings.php<br>';
+    echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';    
     die;    
 }
