@@ -24,6 +24,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         ini_set('display_errors', 'on');      
     }
     
+    // Check if database connection configuration is set
     if (($database == "") || ($username == "") || ($password = "")) {
       echo 'Please, configure database connection settings in settings.php file';
       die;
