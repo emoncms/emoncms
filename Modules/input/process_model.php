@@ -214,9 +214,8 @@ class Process
           $processid = $inputprocess[0];						                  // Process id
           $arg = $inputprocess[1];	 					                        // Can be value or feed id
 
-          if ($process_list[$processid][1]==1) { echo 'ok'; die; }
           $process_public = $process_list[$processid][2];	            // get process public function name
-          $value = $this->$process_public($arg,$time,$value);		  // execute process public function
+          $value = $this->$process_public($arg,$time,$value);		      // execute process public function
         }
     }
 
@@ -367,7 +366,7 @@ class Process
     public function input_ontime($feedid, $time_now, $value)
     {
       // Get last value
-      $last = get_feed($feedid);
+      $last = $this->feed->get($feedid);
       $ontime = $last->value;
       $last_time = strtotime($last->time);
 
@@ -383,6 +382,39 @@ class Process
       return $value;
     }
 
+    public function kwh_to_kwhd($feedid, $time_now, $value)
+    {
+      $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+
+      // First we check if there is an entry for the feed in the kwhdproc table
+      $result = $this->mysqli->query("SELECT * FROM kwhdproc WHERE feedid = '$feedid'");
+      $row = $result->fetch_array();
+
+      // If there is not we create an entry
+      if (!$row)
+        $this->mysqli->query("INSERT INTO kwhdproc (feedid,time,kwh) VALUES ('$feedid','0','0')");
+
+      // We then check if the entries time is the same as todays time if it isnt its a new day
+      // and we need to put the kwh figure for the start of the day in the kwhdproc table
+      if ($time != $row['time'])
+      {
+        $this->mysqli->query("UPDATE kwhdproc SET kwh = '$value', time = '$time' WHERE feedid='$feedid'");
+        $start_day_kwh_value = $value;
+      }
+      else
+      {
+        // If it isnt the start of the day then we need to get the start of the day kwh figure
+        $start_day_kwh_value = $row['kwh'];
+      }
+
+      // 3) Calculate todays kwh figure
+      $kwhd = $value - $start_day_kwh_value;
+
+      // 4) Update feed kwhd
+      $this->feed->update_data($feedid, $time_now, $time, $kwhd);
+
+      return $value;
+    }
   
     public function kwh_to_kwhd2($feedid, $time_now, $value)
     {
