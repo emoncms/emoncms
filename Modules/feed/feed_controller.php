@@ -32,8 +32,14 @@ function feed_controller()
     if ($route->format == 'json')
     {
         // Public actions available on public feeds.
-        if ($route->action == "list" && isset($_GET['userid'])) $result = $feed->get_user_public_feeds(get('userid'));
-
+        if ($route->action == "list")
+        {
+          if (!isset($_GET['userid']) && $session['read']) $result = $feed->get_user_feeds($session['userid']);
+          if (isset($_GET['userid']) && $session['read'] && $_GET['userid'] == $session['userid']) $result = $feed->get_user_feeds($session['userid']);
+          if (isset($_GET['userid']) && $session['read'] && $_GET['userid'] != $session['userid']) $result = $feed->get_user_public_feeds(get('userid'));
+          if (isset($_GET['userid']) && !$session['read']) $result = $feed->get_user_public_feeds(get('userid'));
+        }
+         
         if ($feed->belongs_to_user_or_public(get('id'),$session['userid']))
         {
             if ($route->action == "value") $result = $feed->get_field(get('id'),'value');
@@ -44,11 +50,8 @@ function feed_controller()
         }
 
         // at least read session required
-        if ($session['read'])
-        {
-            if ($route->action == "getid") $result = $feed->get_id($session['userid'],get('name'));
-            if ($route->action == "list" && !isset($_GET['userid'])) $result = $feed->get_user_feeds($session['userid']);
-        }
+
+        if ($route->action == "getid" && $session['read']) $result = $feed->get_id($session['userid'],get('name'));
 
         // write session required
         if ($session['write'])
