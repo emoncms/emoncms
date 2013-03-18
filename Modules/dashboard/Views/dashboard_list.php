@@ -91,8 +91,8 @@ input[type="text"] {
   {
     var id = $('#myModal').attr('feedid');
     var row = $('#myModal').attr('feedrow');
-    dashboard.delete(id); 
-    table.delete(row);
+    dashboard.remove(id); 
+    table.remove(row);
 
     $('#myModal').modal('hide');
   });
