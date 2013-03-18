@@ -22,6 +22,11 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (isset($display_errors) && ($display_errors)) {
         error_reporting(E_ALL);      
         ini_set('display_errors', 'on');      
+    }
+    
+    if (($database == "") || ($username == "") || ($password = "")) {
+      echo 'Please, configure database connection settings in settings.php file';
+      die;
     }    
 }
 else

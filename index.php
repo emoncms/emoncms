@@ -24,7 +24,7 @@
   // 2) Database
   $mysqli = new mysqli($server,$username,$password,$database);
 
-  if (!$mysqli->connect_error && $dbtest==true) {
+  if (!$mysqli->connect_error && $dbtest==true) { 
     require "Lib/dbschemasetup.php";
     if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema());
   }
