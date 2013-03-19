@@ -10,6 +10,7 @@
   $password = "";
   $server   = "localhost";
   $database = "";
+  $port     = 3306;
 
   /*
 
