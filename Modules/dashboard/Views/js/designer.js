@@ -264,8 +264,17 @@ var designer = {
     {
         // Click to select
         $(this.canvas).click(function(event) {
-          var mx = event.offsetX;
-          var my = event.offsetY;
+ 
+          var mx = 0, my = 0;
+          if(event.offsetX==undefined)
+          {
+            mx = (event.pageX - $(event.target).offset().left);
+            my = (event.pageY - $(event.target).offset().top);
+          } else {
+            mx = event.offsetX;
+            my = event.offsetY;
+          }
+
           if (designer.edit_mode) designer.selected_box = designer.onbox(mx,my);
           if (!designer.selected_box)  {$("#testo").hide(); $("#when-selected").hide();}
 
@@ -274,8 +283,17 @@ var designer = {
 
         $(this.canvas).mousedown(function(event) { 
           designer.mousedown = true;
-          var mx = event.offsetX;
-          var my = event.offsetY;
+
+          var mx = 0, my = 0;
+          if(event.offsetX==undefined) // this works for Firefox
+          {
+            mx = (event.pageX - $(event.target).offset().left);
+            my = (event.pageY - $(event.target).offset().top);
+          } else {
+            mx = event.offsetX;
+            my = event.offsetY;
+          }
+
           if (designer.edit_mode) 
           {
             // If its not yet selected check if a box is selected now
@@ -317,9 +335,18 @@ var designer = {
         });
 
         $(this.canvas).mousemove(function(event) { 
-          if (designer.mousedown && designer.selected_box && selected_edge){
-          var mx = event.offsetX;
-          var my = event.offsetY;
+            if (designer.mousedown && designer.selected_box && selected_edge){
+
+            var mx = 0, my = 0;
+            if(event.offsetX==undefined) // this works for Firefox
+            {
+              mx = (event.pageX - $(event.target).offset().left);
+              my = (event.pageY - $(event.target).offset().top);
+            } else {
+              mx = event.offsetX;
+              my = event.offsetY;
+            }
+
 
             var rightedge = resize['left']+resize['width'];
             var bottedge = resize['top']+resize['height'];

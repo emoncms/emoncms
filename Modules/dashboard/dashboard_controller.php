@@ -78,7 +78,7 @@
         if ($route->action=='list' && $session['write']) $result = $dashboard->get_list($session['userid'], false, false);
 
         if ($route->action=='set' && $session['write']) $result = $dashboard->set($session['userid'],get('id'),get('fields'));
-        if ($route->action=='setcontent' && $session['write']) $result = $dashboard->set_content($session['userid'],get('id'),get('content'),get('height'));
+        if ($route->action=='setcontent' && $session['write']) $result = $dashboard->set_content($session['userid'],post('id'),post('content'),post('height'));
         if ($route->action=='delete' && $session['write']) $result = $dashboard->delete(get('id'));
 
         if ($route->action=='create' && $session['write']) $result = $dashboard->create($session['userid']);

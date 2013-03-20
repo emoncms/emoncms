@@ -21,7 +21,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multi.js"></script>
  
 <?php if (!$embed) { ?>
 <h2>Multigraph</h2>
@@ -37,17 +37,20 @@
   var apikey = "<?php echo $apikey; ?>";
   var multigraph_feedlist = {};
 
+  var start = 0, end=0;
+
   $.ajax({ url: path+"vis/multigraph/get.json", data: "&id="+mid, dataType: 'json', async: true,
     success: function(data)
     {
-        multigraph_feedlist = data;
 
         var timeWindow = (3600000*24.0*7);				//Initial time window
-        var start = ((new Date()).getTime())-timeWindow;		//Get start time
-        var end = (new Date()).getTime();				//Get end time
+        multigraph.start = ((new Date()).getTime())-timeWindow;		//Get start time
+        multigraph.end = (new Date()).getTime();				//Get end time
 
-        multigraph_init("#multigraph");
-        vis_feed_data();
+        multigraph.element = "#multigraph";
+        multigraph.feedlist = data;
+        multigraph.init();
+        multigraph.compile();
     } 
   });
 

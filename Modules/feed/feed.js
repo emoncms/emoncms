@@ -15,7 +15,7 @@ var feed = {
     return result;
   },
 
-  'delete':function(id)
+  'remove':function(id)
   {
     $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
   }

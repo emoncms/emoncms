@@ -15,7 +15,7 @@ var dashboard = {
     return result;
   },
 
-  'delete':function(id)
+  'remove':function(id)
   {
     $.ajax({ url: path+"dashboard/delete.json", data: "id="+id, async: false, success: function(data){} });
   }

@@ -13,12 +13,7 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
   
 // Check if settings.php file exists
-if(!file_exists(dirname(__FILE__)."/settings.php"))
-{
-    echo 'Copy and modify default.settings.php to settings.php';
-    die;
-}
-else
+if(file_exists(dirname(__FILE__)."/settings.php"))
 {
     // Load settigs.php
     require_once('settings.php');
@@ -27,5 +22,12 @@ else
     if (isset($display_errors) && ($display_errors)) {
         error_reporting(E_ALL);      
         ini_set('display_errors', 'on');      
-    }    
+    }
+     
+}
+else
+{   
+    echo 'Copy and modify default.settings.php to settings.php<br>';
+    echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';    
+    die;    
 }

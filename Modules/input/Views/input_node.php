@@ -36,7 +36,7 @@ input[type="text"] {
   table.fields = {
     //'id':{'type':"fixed"},
     'nodeid':{'type':"fixed"},
-    'name':{'type':"fixed"},
+    'name':{'type':"text"},
     'description':{'type':"text"},
     'processList':{'type':"fixed"},
     // 'time':{'title':'last updated', 'type':"updated"},
@@ -74,7 +74,7 @@ input[type="text"] {
   });
 
   $("#table").bind("onDelete", function(e,id){
-    input.delete(id); 
+    input.remove(id); 
   });
 
 </script>
