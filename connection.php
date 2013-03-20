@@ -41,7 +41,7 @@ class emoncmsdbconnection extends mysqli
             die("Error connecting database. Please, check settings.php");
         } else {          
             if ($dbtest==true) {              
-              require "Lib/dbschemasetup.php";
+              require_once "Lib/dbschemasetup.php";
               if (!db_check(self::$instance,$database)) db_schema_setup(self::$instance,load_db_schema());
             }
         }

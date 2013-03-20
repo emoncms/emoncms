@@ -49,9 +49,9 @@ global $path, $allowusersregister;
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
-        <input type="checkbox" id="rememberme" value="1" name="rememberme"> Remember me<br><br>
-        <button id="login" class="btn btn-primary" type="button">Login</button> or 
-        <?php if ($allowusersregister) { ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
+        <input type="checkbox" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br>
+        <button id="login" class="btn btn-primary" type="button"><?php echo _('Login'); ?></button> 
+        <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
       </p>
 
       <p class="register-item" style="display:none">
