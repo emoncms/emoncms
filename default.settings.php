@@ -58,6 +58,6 @@
   $allowusersregister = TRUE;
 
   // Skip database setup test - set to false once database has been setup.
-  $dbtest = true;
+  $dbtest = TRUE;
 
 ?>

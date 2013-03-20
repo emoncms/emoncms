@@ -40,7 +40,7 @@ function get_available_languages()
 function lang_http_accept()
 {
     $langs = array();
-
+//die(server('HTTP_ACCEPT_LANGUAGE'));
     foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang) 
     {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
@@ -64,13 +64,25 @@ function set_lang($language)
 {
     // set the first browser selected language
     // TODO: iterate to find a suitable available language
+    
+    // Chrome returns different HTTP_ACCEPT_LANGUAGE code than firefox!!!
+    // Firefox      Chrome
+    // -------------------
+    //  en_EN         en
+    //  es_ES         es
+    // ... so translation system does not work in Chrome!!!
+    // lets try to fix quickly
+    if ($language[0] == 'es') $language[0]='es_ES';
+    elseif ($language[0] == 'fr') $language[0]='fr_FR';
+    
+    
     if (isset($language[0])) set_lang_by_user($language[0]);
 }
 
 function set_lang_by_user($lang)
 {
     putenv("LC_ALL=$lang");
-    setlocale(LC_ALL, $lang); 
+    setlocale(LC_ALL,$lang);    
 }
 
 function set_emoncms_lang($lang)
