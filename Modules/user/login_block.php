@@ -20,7 +20,7 @@ global $path, $allowusersregister;
 
 <div style="margin: 0px auto; max-width:392px; padding:10px;">
   <div style="max-width:392px; margin-right:20px; padding-top:45px; padding-bottom:15px; color: #888;">
-    <img style="margin:12px;" src="<?php echo $path; ?>Theme/emoncms_logo.png" />
+    <img style="margin:12px;" src="<?php echo $path; ?>Theme/emoncms_logo.png" width="256" height="46" />
   </div>
 
   <div class="login-container">

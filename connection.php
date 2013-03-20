@@ -9,41 +9,43 @@
   http://openenergymonitor.org
 */
 
+global $database;
+
 class emoncmsdbconnection extends mysqli
 {
     protected static $instance;
 
-    public function __construct($db_server,$db_username,$db_password,$db_database,$db_port) {
+    public function __construct() {
       
+        global $database,$username,$password,$server,$port;
+        
         // Check if database connection configuration is set (password can be blank)
         // If database name is blank, connection does not throw errors :(
-        if ($db_database == "" || $db_username == "") {
+        if ($database == "" || $username == "") {         
           die('Please, configure database connection settings in settings.php file');        
         }
        
-        // turn of error reporting
-        mysqli_report(MYSQLI_REPORT_OFF);
-
-        // connect to database
-        @parent::__construct($db_server,$db_username,$db_password,$db_database,$db_port );
-
-        // check if a connection established
-        if( mysqli_connect_errno() ) {
-            //throw new exception(mysqli_connect_error(), mysqli_connect_errno()); 
-            die("Error connecting database. Please, check settings.php");
-        } else {
-          //if (!$mysqli->connect_error && $dbtest==true) {
-            require "Lib/dbschemasetup.php";
-            die("creating tables");
-            if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema());
-         // }
-        }
+        // connect to database (check if previous settings.php file sets $port variable )
+        @parent::__construct($server,$username,$password,$database, ($port == NULL) ? 3306 : $port );        
     }
 
     public static function getInstance() {
+        global $database, $dbtest;
+        
         if( !self::$instance ) {
             self::$instance = new self(); 
         }
+        
+        // check if a connection established
+        if( mysqli_connect_errno() ) {
+            die("Error connecting database. Please, check settings.php");
+        } else {          
+            if ($dbtest==true) {              
+              require "Lib/dbschemasetup.php";
+              if (!db_check(self::$instance,$database)) db_schema_setup(self::$instance,load_db_schema());
+            }
+        }
+        
         return self::$instance;
     }
 

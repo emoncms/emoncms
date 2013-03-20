@@ -24,8 +24,8 @@
   $path = get_application_path();
 
   // 2) Database
-  // TODO: use singleton pattern or persistent connections
-  $mysqli = new emoncmsdbconnection($server,$username,$password,$database,$port);    
+  // Using singleton pattern TODO:persistent connections
+  $mysqli = emoncmsdbconnection::getInstance();    
 
   // 3) User sessions
   require "Modules/user/rememberme_model.php";
