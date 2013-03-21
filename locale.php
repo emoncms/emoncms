@@ -93,3 +93,4 @@ function set_emoncms_lang($lang)
     else 
         set_lang_by_user($lang);
 }
+
