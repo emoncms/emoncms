@@ -11,15 +11,15 @@ input[type="text"] {
 }
 </style>
 
-<br><div style="float:right;"><a href="api">Input API Help</a></div>
+<br><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
 
 <div class="container">
-    <h2>Inputs</h2>
+    <h2><?php echo _('Inputs'); ?></h2>
     <div id="table"></div>
 
     <div id="noinputs" class="alert alert-block hide">
-        <h4 class="alert-heading">No inputs created</h4>
-        <p>Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.</p>
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 
 </div>
