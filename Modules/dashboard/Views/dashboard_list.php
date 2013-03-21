@@ -16,9 +16,9 @@ input[type="text"] {
     <div id="table"></div>
 
     <div id="nodashboards" class="alert alert-block hide">
-      <h4 class="alert-heading">No dashboards created</h4>
-      <p>Maybe you would like to add your first dashboard using the 
-      <a href="#" onclick="$.ajax({type: 'POST',url:'<?php echo $path; ?>dashboard/create.json',success: function(){update();} });"><i class="icon-plus-sign"></i></a> button.
+      <h4 class="alert-heading"><?php echo _('No dashboards created'); ?></h4>
+      <p><?php echo _('Maybe you would like to add your first dashboard using the button') ?> 
+      <a href="#" onclick="$.ajax({type: 'POST',url:'<?php echo $path; ?>dashboard/create.json',success: function(){update();} });"><i class="icon-plus-sign"></i></a>
     </div>
 
 </div>
@@ -26,14 +26,14 @@ input[type="text"] {
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">WARNING deleting a dashboard is permanent</h3>
+    <h3 id="myModalLabel"><?php echo _('WARNING deleting a dashboard is permanent') ?></h3>
   </div>
   <div class="modal-body">
-    <p>Are you sure you want to delete this dashboard?</p>
+    <p><?php echo _('Are you sure you want to delete this dashboard?'); ?></p>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <button id="confirmdelete" class="btn btn-primary">Delete permanently</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+    <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
   </div>
 </div>
 

@@ -19,6 +19,7 @@
   require "core.php";
   require "route.php";
   require "locale.php";
+  
   $path = get_application_path();
 
   // 2) Database
@@ -27,7 +28,7 @@
   if (!$mysqli->connect_error && $dbtest==true) {
     require "Lib/dbschemasetup.php";
     if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema());
-  }
+  }  
 
   // 3) User sessions
   require "Modules/user/rememberme_model.php";
