@@ -7,7 +7,7 @@ var user = {
     $.ajax({
       type: "POST",
       url: path+"user/login.json",
-      data: "&username="+username+"&password="+password+"&rememberme="+rememberme,
+      data: "&username="+username+"&password="+encodeURIComponent(password)+"&rememberme="+rememberme,
       dataType: 'json',
       async: false,
       success: function(data)
@@ -24,7 +24,7 @@ var user = {
     $.ajax({
       type: "POST",
       url: path+"user/register.json",
-      data: "&username="+username+"&password="+password+"&email="+email,
+      data: "&username="+username+"&password="+encodeURIComponent(password)+"&email="+email,
       dataType: 'json',
       async: false, 
       success: function(data)
