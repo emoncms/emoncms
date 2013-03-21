@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:34+0100\n"
-"PO-Revision-Date: 2012-10-18 18:34+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"POT-Creation-Date: 2013-03-20 14:27+0100\n"
+"PO-Revision-Date: 2013-03-20 14:32+0100\n"
+"Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -13,8 +13,46 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../admin_db_view.php:1
+msgid "Database setup, update and status check"
+msgstr "Configuración de la base de datos, actualización y chequeo de estado"
+
+#: ../../../admin_db_view.php:2
+msgid ""
+"This page displays the output of the database setup and update process which "
+"checks the database requirements of each module installed and enter any new "
+"table or fields if required."
+msgstr ""
+"Esta página muestra el proceso de creacion y actualización de la base de "
+"datos donde se comprueban los requisitos de cada módulo instalado y se "
+"actualiza el esquema si es necesario."
+
+#: ../../../admin_db_view.php:3
+msgid ""
+"If all the item statuses below show ok that means your database is setup "
+"correctly."
+msgstr ""
+"Si el estado de todos los avisos están correctos significa que la base de "
+"datos está correcta."
+
+#: ../../../admin_db_view.php:7
+msgid "Schema item"
+msgstr "Elemento del esquema de la base de datos"
+
+#: ../../../admin_db_view.php:7
+msgid "Name"
+msgstr "Nombre"
+
+#: ../../../admin_db_view.php:7
+msgid "Status"
+msgstr "Estado"
+
+#: ../../../admin_main_view.php:12
+msgid "Update & check"
+msgstr "Comprobar y actualizar"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -235,9 +273,6 @@ msgstr ""
 #~ "Estas son todas la formas de visualización disponibles en Emoncms3. Para "
 #~ "ejecutar una vista introduce los datos apropiados en las cajas de texto y "
 #~ "pulsa en el boton >."
-
-#~ msgid "Name"
-#~ msgstr "Nombre"
 
 #~ msgid "URL"
 #~ msgstr "Enlace"

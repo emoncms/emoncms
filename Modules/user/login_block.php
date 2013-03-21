@@ -20,7 +20,7 @@ global $path, $allowusersregister;
 
 <div style="margin: 0px auto; max-width:392px; padding:10px;">
   <div style="max-width:392px; margin-right:20px; padding-top:45px; padding-bottom:15px; color: #888;">
-    <img style="margin:12px;" src="<?php echo $path; ?>Theme/emoncms_logo.png" />
+    <img style="margin:12px;" src="<?php echo $path; ?>Theme/emoncms_logo.png" width="256" height="46" />
   </div>
 
   <div class="login-container">
@@ -49,9 +49,9 @@ global $path, $allowusersregister;
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
-        <input type="checkbox" id="rememberme" value="1" name="rememberme"> Remember me<br><br>
-        <button id="login" class="btn btn-primary" type="button">Login</button> or 
-        <?php if ($allowusersregister) { ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
+        <input type="checkbox" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br>
+        <button id="login" class="btn btn-primary" type="button"><?php echo _('Login'); ?></button> 
+        <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
       </p>
 
       <p class="register-item" style="display:none">

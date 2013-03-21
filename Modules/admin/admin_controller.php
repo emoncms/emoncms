@@ -20,7 +20,7 @@ function admin_controller()
 
     if ($route->action == 'db' && $session['write'] && $session['admin'])
     {
-        require "Lib/dbschemasetup.php";
+        require_once "Lib/dbschemasetup.php";
         $out = db_schema_setup($mysqli,load_db_schema());
         $result = view("Modules/admin/admin_db_view.php", array('out'=>$out));
     }
