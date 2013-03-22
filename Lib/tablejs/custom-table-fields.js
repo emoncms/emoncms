@@ -93,7 +93,11 @@ var customtablefields = {
             if (type == 1) { type = 'input: '; color = 'warning';}
             if (type == 2) { type = 'feed: '; color = 'info';}
 
-            out += "<span class='label label-"+color+"' title='"+type+keyvalue[1]+"'>"+key+"</span> ";
+            if (type == 'feed: ') { 
+              out += "<a href='"+path+"vis/auto?feedid="+keyvalue[1]+"'<span class='label label-"+color+"' title='"+type+keyvalue[1]+"' style='cursor:pointer'>"+key+"</span></a> "; 
+            } else {
+              out += "<span class='label label-"+color+"' title='"+type+keyvalue[1]+"' style='cursor:default'>"+key+"</span> ";
+            }
           }
           
           return out;
