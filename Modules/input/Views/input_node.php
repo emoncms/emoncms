@@ -38,7 +38,7 @@ input[type="text"] {
     'nodeid':{'type':"fixed"},
     'name':{'type':"text"},
     'description':{'type':"text"},
-    'processList':{'type':"fixed"},
+    'processList':{'type':"processlist"},
     // 'time':{'title':'last updated', 'type':"updated"},
     // 'value':{'type':"value"},
 
