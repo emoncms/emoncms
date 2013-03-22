@@ -22,7 +22,7 @@ function db_schema_setup($mysqli, $schema)
     { 
         // if table exists:
         $result = $mysqli->query("SHOW TABLES LIKE '".$table."'");
-        if ($result->num_rows==1)
+        if (($result != null ) && ($result->num_rows==1))
         {
             $out[] = array('Table',$table,"ok");
             //-----------------------------------------------------
