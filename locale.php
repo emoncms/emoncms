@@ -72,11 +72,14 @@ function set_lang($language)
     //  es_ES         es
     // ... so translation system does not work in Chrome!!!
     // lets try to fix quickly
-    if ($language[0] == 'es') $language[0]='es_ES';
-    elseif ($language[0] == 'fr') $language[0]='fr_FR';
     
-    
-    if (isset($language[0])) set_lang_by_user($language[0]);
+    if (isset($language[0]))
+    {
+      if ($language[0] == 'es') $language[0]='es_ES';
+      elseif ($language[0] == 'fr') $language[0]='fr_FR';
+
+      set_lang_by_user($language[0]);
+    }
 }
 
 function set_lang_by_user($lang)
