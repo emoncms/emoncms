@@ -62,7 +62,7 @@ input[type="text"] {
     if (table.data.length != 0) $("#noinputs").hide(); else $("#noinputs").show();
   }
 
-  var updater = setInterval(update, 5000);
+  var updater = setInterval(update, 10000);
 
   $("#table").bind("onEdit", function(e){
     clearInterval(updater);
@@ -70,7 +70,7 @@ input[type="text"] {
 
   $("#table").bind("onSave", function(e,id,fields_to_update){
     input.set(id,fields_to_update); 
-    updater = setInterval(update, 5000);
+    updater = setInterval(update, 10000);
   });
 
   $("#table").bind("onDelete", function(e,id){
