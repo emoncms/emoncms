@@ -42,6 +42,7 @@
     $session = $user->emon_session_start();
 
   // 4) Language
+  if (!isset($session['lang'])) $session['lang']='';
   set_emoncms_lang($session['lang']);
 
   // 5) Get route and load controller
