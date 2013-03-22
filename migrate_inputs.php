@@ -1,7 +1,6 @@
 <?php 
 
   die; 
-  if ($_GET['key']!="f63ns7fn45v5sj") die;
   $execute = FALSE;
 
 ?>
