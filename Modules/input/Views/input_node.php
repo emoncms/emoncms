@@ -11,10 +11,11 @@ input[type="text"] {
 }
 </style>
 
-<br><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
+<br>
+<div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div></div>
 
 <div class="container">
-    <h2><?php echo _('Inputs'); ?></h2>
+    <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
     <div id="table"></div>
 
     <div id="noinputs" class="alert alert-block hide">
@@ -51,15 +52,21 @@ input[type="text"] {
 
   table.groupby = 'nodeid';
 
-  table.draw();
-
   update();
 
   function update()
   {
     table.data = input.list();
     table.draw();
-    if (table.data.length != 0) $("#noinputs").hide(); else $("#noinputs").show();
+    if (table.data.length != 0) {
+      $("#noinputs").hide();
+      $("#apihelphead").show();      
+      $("#localheading").show();
+    } else {
+      $("#noinputs").show();
+      $("#localheading").hide();
+      $("#apihelphead").hide(); 
+    }
   }
 
   var updater = setInterval(update, 10000);
@@ -75,6 +82,7 @@ input[type="text"] {
 
   $("#table").bind("onDelete", function(e,id){
     input.remove(id); 
+    update();
   });
 
 </script>
