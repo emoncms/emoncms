@@ -159,6 +159,8 @@ var designer = {
     {
       var box_options = widgets[widget]["options"];
       var options_type = widgets[widget]["optionstype"];
+      var options_name = widgets[widget]["optionsname"];   
+      var optionshint = widgets[widget]["optionshint"];   
            
       // Build options table html            
       var options_html = "<table>";
@@ -166,7 +168,9 @@ var designer = {
       {
         var val = $("#"+designer.selected_box).attr(box_options[z]);
         if (val == undefined) val="";
-        options_html += "<tr><td>"+box_options[z]+":</td>";
+        
+        //options_html += "<tr><td>"+box_options[z]+":</td>";
+        options_html += "<tr><td>"+options_name[z]+":</td>";
 
         if (options_type && options_type[z] == "feed") 
         {
@@ -175,7 +179,7 @@ var designer = {
           {
             var selected = ""; if (val == feedlist[i]['name'].replace(/\s/g, '-')) selected = "selected";
             options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['name']+"</option>";
-          }
+          }        
           options_html += "</td></tr>";
         }
 
@@ -210,7 +214,11 @@ var designer = {
         {
           options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ ></td></tr>"
         }
-      }
+        
+        options_html += "<tr><td></td><td><p class='muted'>"+optionshint[z]+"</p></td></tr>";
+       
+      }      
+      
       options_html += "</table>";
       
       // Fill the modal configuration window with options
