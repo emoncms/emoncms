@@ -26,13 +26,24 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
 <div id="dashboardpage">
+    
+<div id="widget_options" class="modal hide fade keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+  <h3><?php echo _('Configure component'); ?></h3></div>
+  <div id="widget_options_body" class="modal-body"></div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+    <button id="options-save" class="btn btn-primary"><?php echo _('Save changes'); ?></button>
+  </div>  
+  </div>  
+</div>
 
 <div style="background-color:#ddd; padding:4px;">
   <span id="widget-buttons"></span>
   <span id="when-selected">
-  <button id="options-button">Options</button>
-  <button id="delete-button">Delete</button>
-  </span>
+    <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i><?php echo _('Configure'); ?></button>      
+    <button id="delete-button" class="btn"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>  
+  </span> 
 
   <button style="float:right; margin:6px;" id="save-dashboard">Save</button>
   <span id="state"  style="float:right; margin-top:9px; color:#888;"></span>
@@ -41,15 +52,6 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 <div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; position:relative;">
   <div id="page"><?php echo $dashboard['content']; ?></div>
   <canvas id="can" width="940px" height="<?php echo $dashboard['height']; ?>px" style="position:absolute; top:0px; left:0px; margin:0; padding:0;"></canvas>
-
-  <div id="testo" style="position:absolute; top:0px; left:0px; width:938px; background-color:rgba(255,255,255,0.9); border: 1px solid #ddd;">
-    <div style="padding:20px;">
-      <div id="box-options"></div>
-      <input id='options-save' type='button' value='save'/ >
-    </div>
-  </div> 
-</div>
-
 </div>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/designer.js"></script>
