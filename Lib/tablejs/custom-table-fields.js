@@ -46,6 +46,64 @@ var customtablefields = {
         'draw': function (row,field) { return list_format_value(table.data[row][field]) }
     },
 
+    'processlist':
+    {
+        'draw': function (row,field) { 
+
+          var processlist = table.data[row][field];
+          if (!processlist) return "";
+          
+          var processPairs = processlist.split(",");
+
+          var out = "";
+
+          for (z in processPairs)
+          {
+            var keyvalue = processPairs[z].split(":");
+
+            var key = keyvalue[0];
+            var type = "";
+            var color = "";
+
+            if (key==1) { key = 'log'; type = 2;}  
+            if (key==2) { key = 'x'; type = 0;}  
+            if (key==3) { key = '+'; type = 0;}  
+            if (key==4) { key = 'kwh'; type = 2;}  
+            if (key==5) { key = 'kwhd'; type = 2;}  
+            if (key==6) { key = 'x inp'; type = 1;}
+            if (key==7) { key = 'ontime'; type = 2;}  
+            if (key==8) { key = 'kwhinckwhd'; type = 2;}  
+            if (key==9) { key = 'kwhkwhd'; type = 2;}  
+            if (key==10) { key = 'update'; type = 2;} 
+            if (key==11) { key = '+ inp'; type = 1;} 
+            if (key==12) { key = '/ inp'; type = 1;} 
+            if (key==13) { key = 'phaseshift'; }
+            if (key==14) { key = 'accumulate'; type = 2;}  
+            if (key==15) { key = 'rate'; type = 2;}  
+            if (key==16) { key = 'hist'; type = 2;}  
+            if (key==17) { key = 'average'; type = 2;}  
+            if (key==18) { key = 'flux'; type = 2;}  
+            if (key==19) { key = 'pwrgain'; type = 2;}  
+            if (key==20) { key = 'pulsdiff'; type = 2;}  
+            if (key==21) { key = 'kwhpwr'; type = 2;}  
+            if (key==22) { key = '- inp'; type = 1;} 
+            if (key==23) { key = 'kwhkwhd'; type = 2;}  
+
+            if (type == 0) { type = 'value: '; color = 'important';}
+            if (type == 1) { type = 'input: '; color = 'warning';}
+            if (type == 2) { type = 'feed: '; color = 'info';}
+
+            if (type == 'feed: ') { 
+              out += "<a href='"+path+"vis/auto?feedid="+keyvalue[1]+"'<span class='label label-"+color+"' title='"+type+keyvalue[1]+"' style='cursor:pointer'>"+key+"</span></a> "; 
+            } else {
+              out += "<span class='label label-"+color+"' title='"+type+keyvalue[1]+"' style='cursor:default'>"+key+"</span> ";
+            }
+          }
+          
+          return out;
+        }
+    },
+
     'iconlink':
     {
         'draw': function (row,field) { 

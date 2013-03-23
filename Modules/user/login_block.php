@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $allowusersregister;
+global $path, $allowusersregister, $enable_rememberme;
 
 ?>
 
@@ -49,7 +49,7 @@ global $path, $allowusersregister;
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
-        <input type="checkbox" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br>
+        <?php if ($enable_rememberme) { ?><input type="checkbox" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
         <button id="login" class="btn btn-primary" type="button"><?php echo _('Login'); ?></button> 
         <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
       </p>

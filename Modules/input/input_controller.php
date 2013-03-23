@@ -136,6 +136,7 @@ function input_controller()
       {
         $dbinputs = $input->get_inputs($session['userid']);
         $nodeid = intval(get('node'));
+        if ($nodeid>2000000000) $nodeid = 0;
         if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
 
         if (isset($_GET['json']))
@@ -167,7 +168,7 @@ function input_controller()
 
         if (isset($_GET['csv']))
         {
-          $csv = preg_replace('/[^0-9,.]/','',get('csv')); 
+          $csv = preg_replace('/[^0-9,.-]/','',get('csv')); 
           $csv = explode(',',$csv);
 
           $tmp = array();
