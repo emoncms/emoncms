@@ -97,10 +97,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
       url :  path+"dashboard/setcontent.json",
       data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+page_height,
       dataType: 'json',
-      success : function(data) { console.log(data); if (data.success==true) {
-        $("#save-dashboard").text("Saved");
-        $("#save-dashboard").attr('class','btn btn-success');
-        }
+      success : function(data) { console.log(data); if (data.success==true) $("#save-dashboard").attr('class','btn btn-success').text("Saved");
       } 
     });
   });

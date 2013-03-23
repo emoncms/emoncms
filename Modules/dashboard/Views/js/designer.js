@@ -61,7 +61,11 @@ var designer = {
 
 
     'snap': function(pos) {return Math.round(pos/designer.grid_size)*designer.grid_size;},
-
+    
+    'modified': function() {
+      $("#save-dashboard").attr('class','btn btn-warning').text("Changed, press to save");
+    },
+    
     'onbox': function(x,y) 
     {
       var box = null;
@@ -124,9 +128,8 @@ var designer = {
       //--------------------------------------------------------------------
       if (designer.selected_box)
       {         
-        $("#save-dashboard").text("Changed, press to save");
-        $("#save-dashboard").attr('class','btn btn-warning');
-        
+        designer.modified();       
+                
         var top = designer.boxlist[designer.selected_box]['top'];
         var left = designer.boxlist[designer.selected_box]['left'];
         var width = designer.boxlist[designer.selected_box]['width'];
@@ -414,6 +417,7 @@ var designer = {
             $("#"+designer.selected_box).remove();
             designer.selected_box = 0;
             designer.draw();
+            designer.modified();            
             $("#when-selected").hide();
           }
         });
