@@ -42,11 +42,10 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   <span id="widget-buttons"></span>
   <span id="when-selected">
     <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i><?php echo _('Configure'); ?></button>      
-    <button id="delete-button" class="btn"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>  
+    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>  
   </span> 
 
-  <button style="float:right; margin:6px;" id="save-dashboard">Save</button>
-  <span id="state"  style="float:right; margin-top:9px; color:#888;"></span>
+  <button class="btn btn-success" style="float:right; margin:6px;" id="save-dashboard"><?php echo _('Not modified'); ?></button>  
 </div>
 
 <div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; position:relative;">
@@ -98,7 +97,11 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
       url :  path+"dashboard/setcontent.json",
       data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+page_height,
       dataType: 'json',
-      success : function(data) { console.log(data); if (data.success==true) $("#state").html("Saved"); } 
+      success : function(data) { console.log(data); if (data.success==true) {
+        $("#save-dashboard").text("Saved");
+        $("#save-dashboard").attr('class','btn btn-success');
+        }
+      } 
     });
   });
 

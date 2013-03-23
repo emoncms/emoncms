@@ -123,9 +123,10 @@ var designer = {
       // Draw selected box points
       //--------------------------------------------------------------------
       if (designer.selected_box)
-      {
-      $("#state").html("Changed");
-          console.log(designer.selected_box);
+      {         
+        $("#save-dashboard").text("Changed, press to save");
+        $("#save-dashboard").attr('class','btn btn-warning');
+        
         var top = designer.boxlist[designer.selected_box]['top'];
         var left = designer.boxlist[designer.selected_box]['left'];
         var width = designer.boxlist[designer.selected_box]['width'];
