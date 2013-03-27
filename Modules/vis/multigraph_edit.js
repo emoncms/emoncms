@@ -8,6 +8,10 @@ var movingtime = 0;
 
 function draw_multigraph_feedlist_editor()
 {
+  if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0
+) movingtime=0;
+  else movingtime=1;
+
   var out = "<table class='catlist' style='table-layout:fixed; width:300px;' >";
   out += "<tr><th style='width:120px;' >Feed</th><th>Left</th><th>Right</th><th>Fill</th><th style='width:46px;'></th></tr>";
 
@@ -42,8 +46,16 @@ function draw_multigraph_feedlist_editor()
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td>";
-  out += "<td><input id='add' type='button' class='button05' value='Add'/ ></td>";
-  out += "</tr></table>";
+  out += "<td><input id='add' type='button' class='button05' value='Add'/ ></td></tr>";
+
+  out += "<tr><td>Floating time</strong></td>";
+  var checked = ""; if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0) checked = "checked";
+  out += "<td><input id='movingtime' type='checkbox' "+checked+" / ></td>";
+  out += "<td></td>";
+  out += "<td></td>";
+  out += "<td></td></tr>";
+
+  out += "</table>";
   out += '<br><p style="color:#444; ">Delete multigraph&nbsp;&nbsp;<i class="icon-trash" mid="'+multigraph+'"></p>';
   $("#feedtable").html(out);
 
@@ -54,6 +66,14 @@ function draw_multigraph_feedlist_editor()
     var fill = $("#addfill").attr("checked");
     multigraph_feedlist.push({'id':feedid,'name':get_feed_name(feedid),'datatype':get_feed_datatype(feedid),'left':left,'right':right,'fill':fill });
     draw_multigraph_feedlist_editor();
+  });
+
+  $("#movingtime").click(function(){ 
+    if($(this).attr("checked")) movingtime = 0;
+    else movingtime=1;
+
+    update_multigraph_feedlist();
+    vis_feed_data();
   });
 
   $(".left").click(function(){ 
@@ -122,8 +142,10 @@ function update_multigraph_feedlist()
 {
   // Save multigraph view start and end time to feedlist array
   multigraph_feedlist[0].timeWindow = end - start;
-  if (movingtime) multigraph_feedlist[0].end = 0; else multigraph_feedlist[0].end = end;
-  movingtime = 0;
+  if (movingtime == 0) 
+    multigraph_feedlist[0].end = 0; 
+  else 
+    multigraph_feedlist[0].end = end;
 
   $.ajax({                                      
     type: "GET",
