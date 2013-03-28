@@ -29,17 +29,17 @@ input[type="text"] {
 
   var path = "<?php echo $path; ?>";
 
-  // Extemd table library field types
+  // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
   table.element = "#table";
 
   table.fields = {
     //'id':{'type':"fixed"},
-    'nodeid':{'type':"fixed"},
-    'name':{'type':"text"},
-    'description':{'type':"text"},
-    'processList':{'type':"processlist"},
+    'nodeid':{'title':'<?php echo _('Node identification'); ?>','type':"fixed"},
+    'name':{'title':'<?php echo _('Input name'); ?>','type':"text"},
+    'description':{'title':'<?php echo _('Description'); ?>','type':"text"},
+    'processList':{'title':'<?php echo _('Process list'); ?>','type':"processlist"},
     // 'time':{'title':'last updated', 'type':"updated"},
     // 'value':{'type':"value"},
 

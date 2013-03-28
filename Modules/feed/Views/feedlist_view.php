@@ -20,22 +20,22 @@ input[type="text"] {
     <div id="table"></div>
 
     <div id="nofeeds" class="alert alert-block hide">
-        <h4 class="alert-heading">No feeds created</h4>
-        <p>Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. You may want to follow the <a href="api">Feed API helper</a> as a guide for generating your request.</p>
+        <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
+        <p><?php echo _('Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
     </div>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">WARNING deleting a feed is permanent</h3>
+    <h3 id="myModalLabel"><?php echo _('WARNING deleting a feed is permanent'); ?></h3>
   </div>
   <div class="modal-body">
-    <p>Are you sure you want to delete this feed?</p>
+    <p><?php echo _('Are you sure you want to delete this feed?'); ?></p>
   </div>
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-    <button id="confirmdelete" class="btn btn-primary">Delete permanently</button>
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+    <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
   </div>
 </div>
 
