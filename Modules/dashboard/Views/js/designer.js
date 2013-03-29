@@ -165,7 +165,7 @@ var designer = {
       var options_type = widgets[widget]["optionstype"];
       var options_name = widgets[widget]["optionsname"];   
       var optionshint = widgets[widget]["optionshint"];   
-           
+                 
       // Build options table html            
       var options_html = "<table>";
       for (z in box_options)
@@ -327,13 +327,13 @@ var designer = {
               var bottedge = resize['top']+resize['height'];
               var midx = resize['left']+(resize['width']/2);
               var midy = resize['top']+(resize['height']/2);
-
-              selected_edge = null;
+             
               if (Math.abs(mx - rightedge)<20) selected_edge = "right";
-              if (Math.abs(mx - resize['left'])<20) selected_edge = "left";
-              if (Math.abs(my - bottedge)<20) selected_edge = "bottom";
-              if (Math.abs(my - resize['top'])<20) selected_edge = "top";
-              if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = "center";
+              else if (Math.abs(mx - resize['left'])<20) selected_edge = "left";
+                else if (Math.abs(my - bottedge)<20) selected_edge = "bottom";
+                  else if (Math.abs(my - resize['top'])<20) selected_edge = "top";
+                    else if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = "center";
+                      else selected_edge = null;
             }
           }
           else
@@ -367,35 +367,34 @@ var designer = {
               my = event.offsetY;
             }
 
-
             var rightedge = resize['left']+resize['width'];
             var bottedge = resize['top']+resize['height'];
+            
+            if (selected_edge == "right") 
+              designer.boxlist[designer.selected_box]['width'] = (designer.snap(mx)-resize['left']);
+            else if (selected_edge == "left") 
+              {
+                designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
+                designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
+              }
+              else if (selected_edge == "bottom") 
+                  designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
+                  else if (selected_edge == "top") 
+                  { 
+                    designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
+                    designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
+                  }
+                    else if (selected_edge == "center")
+                      { 
+                        designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
+                        designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));
+                      }
 
-            if (selected_edge == "right") designer.boxlist[designer.selected_box]['width'] = (designer.snap(mx)-resize['left']);
-            if (selected_edge == "left") 
-            {
-              designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
-              designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
+            if (bottedge>parseInt($("#page-container").css("height"))){
+              $("#page-container").css("height",bottedge);
+              $("#can").attr("height",bottedge);
+              designer.page_height = bottedge;
             }
-
-            if (selected_edge == "bottom") designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
-            if (selected_edge == "top") 
-            { 
-              designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
-              designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
-            }
-
-            if (selected_edge == "center")
-            { 
-              designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
-              designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));
-            }
-
-         if (bottedge>parseInt($("#page-container").css("height"))){
-           $("#page-container").css("height",bottedge);
-           $("#can").attr("height",bottedge);
-           designer.page_height = bottedge;
-         }
 
             designer.draw();
           }
