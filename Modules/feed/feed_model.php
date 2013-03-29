@@ -253,41 +253,32 @@
 
   function get_feed_data($feedid,$start,$end,$dp)
   {
-    if ($end == 0) $end = time()*1000;
+    $feedname = "feed_".trim($feedid).""; // The table name in the db.
 
-    $feedname = "feed_".trim($feedid)."";
-    $start = $start/1000; $end = $end/1000;
+    if ($end == 0) $end = time()*1000;
+    $start = $start/1000; $end = $end/1000; // start and end in seconds now.
 
     $data = array();
-    if (($end - $start) > (5000) && $dp>0) //why 5000?
-    {
-      $range = $end - $start;
-      $td = $range / $dp;
 
-      for ($i=0; $i<$dp; $i++)
-      {
-        $t = $start + $i*$td;
-        $tb = $start + ($i+1)*$td;
-        $result = db_query("SELECT * FROM $feedname WHERE `time` >$t AND `time` <$tb LIMIT 1");
-
-        if($result){
-          $row = db_fetch_array($result);
-          $dataValue = $row['data'];               
-          if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
-            $time = $row['time'] * 1000;     
-            $data[] = array($time , $dataValue); 
-          } 
-        }         
-      }
-    } else {
-      $result = db_query("select * from $feedname WHERE time>$start AND time<$end order by time Desc");
-      while($row = db_fetch_array($result)) {
-        $dataValue = $row['data'];
-        $time = $row['time'] * 1000;  
-        $data[] = array($time , $dataValue); 
-      }
-    }
-
+   // So find out how many points our time range will return.
+   $resultcount = db_query("SELECT count(`time`) as samplecount FROM $feedname WHERE `time` >$start AND `time` <$end");
+   if($resultcount) {
+    $rowcount=db_fetch_array($resultcount);
+    $count=$rowcount['samplecount'];
+ 
+    // time * 1000 in the sql query because we need points in milliseconds and sql can do this calc much faster.
+    if ($count < 1000) {  // Not many datapoints so use them all.
+      $result = db_query("select time*1000 as bigtime, data from $feedname WHERE time>$start AND time<$end order by time Desc");
+        while($row = db_fetch_array($result)) {
+           $data[] = array($row['bigtime'], $row['data']);
+        }
+    } else { // Too many datapoints so thin them down... we average 50/count datapoints which should give approx 1000 sample points of graph data.
+      $result = db_query("select avg(time)*1000 as bigavgtime, avg(data) as avgdata from $feedname WHERE time>$start AND time<$end group by floor(time*50/$count) order by time Desc ");
+        while($row = db_fetch_array($result)) {
+            $data[] = array($row['bigavgtime'], $row['avgdata']);
+     }
+     }
+   }
     return $data;
   }
 
