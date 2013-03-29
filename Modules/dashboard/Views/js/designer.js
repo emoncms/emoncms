@@ -234,33 +234,37 @@ var designer = {
     {
       var widget_html = "";
       var select = [];
+      
       for (z in widgets)
-      {
+      {        
         var menu = widgets[z]['menu'];
-        if (menu) 
-        { 
-          select[menu] += "<option>"+z+"</option>";
-        } else {
-          widget_html +="<input class='widget-button' name='"+z+"' type='button' value='"+z+"' / >";
-        }
+        
+        if (typeof select[menu] === "undefined")
+          select[menu] = "<li><a id='"+z+"' class='widget-button'>"+z+"</a></li>";
+        else    
+          select[menu] += "<li><a id='"+z+"' class='widget-button'>"+z+"</a></li>";
       }
 
       for (z in select)
-      {
-        widget_html += "<select id='"+z+"' class='widgetmenu' style='width:120px; margin:5px;'><option title=1 >"+z+":</option>"+select[z]+"</select>";
+      {       
+        //widget_html += "<select id='"+z+"' class='widgetmenu' style='width:120px; margin:5px;'><option title=1 >"+z+":</option>"+select[z]+"</select>";
+        widget_html += "<div class='btn-group'><button class='btn dropdown-toggle widgetmenu' data-toggle='dropdown'>"+z+"&nbsp<span class='caret'></span></button>";
+        widget_html += "<ul class='dropdown-menu' name='d'>"+select[z]+"</ul>";
       }
       $("#widget-buttons").html(widget_html);
 
-      $(".widget-button").click(function(event) { 
-        designer.create = $(this).attr("name");
+      $(".widget-button").click(function(event) {         
+        designer.create = $(this).attr("id");
         designer.edit_mode = false;
       });
 
-      $(".widgetmenu").change(function(event) { 
+      /*
+       * not necesary...i think
+       *$(".widgetmenu").change(function(event) { 
         designer.create = ($(this).find("option:selected").text());
         var title = $(this).find("option:selected").attr("title");
         if (designer.create && title!=1) designer.edit_mode = false;
-      });
+      });*/
 
     },
 
@@ -338,8 +342,8 @@ var designer = {
             {
               designer.add_widget(mx,my,designer.create);
               designer.create = null;
-              $('option:selected', 'select').removeAttr('selected');
-              $('option[title=1]').attr('selected','selected');
+            //  $('option:selected', 'select').removeAttr('selected');
+            //  $('option[title=1]').attr('selected','selected');
               $("#when-selected").show();
             }
           }

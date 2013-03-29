@@ -44,8 +44,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
     <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i><?php echo _('Configure'); ?></button>      
     <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>  
   </span> 
-
-  <button class="btn btn-success" style="float:right; margin:6px;" id="save-dashboard"><?php echo _('Not modified'); ?></button>  
+  <button id="save-dashboard" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button> 
 </div>
 
 <div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; position:relative;">
