@@ -8,6 +8,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
+      "optionsname":["Feed"],
+      "optionshint":["Feed source"], 
       "html":""
     },
 
@@ -17,6 +19,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","fill","units"],
       "optionstype":["feedid","value","value"],
+      "optionsname":["Feed","Fill","Units"],
+      "optionshint":["Feed source","Fill value","Units shown"],       
       "html":""
     },
 
@@ -26,6 +30,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
+      "optionsname":["Feed"],
+      "optionshint":["Feed source"],       
       "html":""
     },
 
@@ -35,6 +41,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["power","kwhd","currency","pricekwh"],
       "optionstype":["feedid","feedid","value","value"],
+      "optionsname":["Power","kwhd","Currency","Kwh price"],
+      "optionshint":["Power","KWHD","Currency shown","Set kwh price"], 
       "html":""
     },
 
@@ -44,6 +52,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["power","kwhd"],
       "optionstype":["feedid","feedid"],
+      "optionsname":["Power","KWHD"],
+      "optionshint":["Power","kwhd"], 
       "html":""
     },
 
@@ -53,6 +63,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
+      "optionsname":["Feed"],
+      "optionshint":["Feed source"], 
       "html":""
     },
 
@@ -62,6 +74,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","thresholdA","thresholdB"],
       "optionstype":["feedid","value","value"],
+      "optionsname":["Feed","Threshold A","Thereshold B"],
+      "optionshint":["Feed source","",""], 
       "html":""
     },
 
@@ -71,6 +85,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","power","thresholdA","thresholdB"],
       "optionstype":["feedid","feedid","value","value"],
+      "optionsname":["Feed","Power","Thereshold A","Thereshold B"],
+      "optionshint":["Feed source","","",""],       
       "html":""
     },
 
@@ -80,6 +96,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
+      "optionsname":["Feed"],
+      "optionshint":["Feed source"],       
       "html":""
     },
 
@@ -89,6 +107,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["bottom","top"],
       "optionstype":["feedid","feedid"],
+      "optionsname":["Bottom","Top"],
+      "optionshint":["",""],       
       "html":""
     },
 
@@ -98,6 +118,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["solar","consumption"],
       "optionstype":["feedid","feedid"],
+      "optionsname":["Solar","Consumption"],
+      "optionshint":["Solar","Consumption"], 
       "html":""
     },
 
@@ -107,6 +129,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","ufac"],
       "optionstype":["feedid","value"],
+      "optionsname":["Feed","Ufac"],
+      "optionshint":["Feed source",""],       
       "html":""
     },
 
@@ -116,6 +140,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["mid"],
       "optionstype":["multigraph"],
+      "optionsname":["Mid"],
+      "optionshint":["Mid"],       
       "html":""
     }
   }

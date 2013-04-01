@@ -7,7 +7,9 @@ function led_widgetlist()
       "offsetx":-40,"offsety":-40,"width":80,"height":80,
       "menu":"Widgets",
       "options":["feed"],
-      "optionstype":["feed"]
+      "optionstype":["feed"],
+      "optionsname":["Feed"],
+      "optionshint":["Feed source"] 
     }
   }
   return widgets;

@@ -23,8 +23,7 @@ function directoryLocaleScan($dir) {
     
     foreach($objects as $entry => $object){ 
       $entry = str_replace($dir, '', $entry);
-      if (basename(dirname($entry))=='locale')     
-        if (basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
+      if (basename(dirname($entry))=='locale' && basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
     }
     
     return array_unique($dlist);
@@ -40,7 +39,7 @@ function get_available_languages()
 function lang_http_accept()
 {
     $langs = array();
-//die(server('HTTP_ACCEPT_LANGUAGE'));
+
     foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang) 
     {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.

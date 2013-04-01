@@ -1,5 +1,5 @@
 <?php 
-  global $path; 
+  global $path;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/dashboard.js"></script>
@@ -12,7 +12,7 @@ input[type="text"] {
 </style>
 
 <div class="container">
-    <h2><?php echo _('Dashboard'); ?></h2>
+    <div id="localheading"><h2><?php echo _('Dashboard'); ?></h2></div>
     <div id="table"></div>
 
     <div id="nodashboards" class="alert alert-block hide">
@@ -72,7 +72,13 @@ input[type="text"] {
   function update() {
     table.data = dashboard.list();
     table.draw();
-    if (table.data.length != 0) $("#nodashboards").hide(); else $("#nodashboards").show();
+    if (table.data.length != 0) {
+      $("#nodashboards").hide();
+      $("#localheading").show();
+    } else { 
+      $("#nodashboards").show(); 
+      $("#localheading").hide(); 
+    };
   }
 
   $("#table").bind("onEdit", function(e){});
@@ -93,6 +99,7 @@ input[type="text"] {
     var row = $('#myModal').attr('feedrow');
     dashboard.remove(id); 
     table.remove(row);
+    update();
 
     $('#myModal').modal('hide');
   });
