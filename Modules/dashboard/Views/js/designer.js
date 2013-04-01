@@ -173,7 +173,6 @@ var designer = {
         var val = $("#"+designer.selected_box).attr(box_options[z]);
         if (val == undefined) val="";
         
-        //options_html += "<tr><td>"+box_options[z]+":</td>";
         options_html += "<tr><td>"+options_name[z]+":</td>";
 
         if (options_type && options_type[z] == "feed") 
@@ -184,7 +183,6 @@ var designer = {
             var selected = ""; if (val == feedlist[i]['name'].replace(/\s/g, '-')) selected = "selected";
             options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['name']+"</option>";
           }        
-          options_html += "</td></tr>";
         }
 
         else if (options_type && options_type[z] == "feedid") 
@@ -195,7 +193,6 @@ var designer = {
             var selected = ""; if (val == feedlist[i]['id']) selected = "selected";
             options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
           }
-          options_html += "</td></tr>";
         }
 
         else if (options_type && options_type[z] == "multigraph") 
@@ -206,20 +203,20 @@ var designer = {
             var selected = ""; if (val == multigraphs[i]['id']) selected = "selected";
             options_html += "<option value='"+multigraphs[i]['id']+"' "+selected+" >"+multigraphs[i]['id']+"</option>";
           }
-          options_html += "</td></tr>";
         }
+        
         else if (options_type && options_type[z] == "html") 
         {  
           val = $("#"+designer.selected_box).html();
-          options_html += "<td><textarea class='options' id='"+box_options[z]+"' >"+val+"</textarea></td></tr>"
+          options_html += "<td><textarea class='options' id='"+box_options[z]+"' >"+val+"</textarea>"
         }
 
         else
         {
-          options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ ></td></tr>"
-        }
+          options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ >"
+        }     
         
-        options_html += "<tr><td></td><td><p class='muted'>"+optionshint[z]+"</p></td></tr>";
+        options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";   
        
       }      
       
@@ -246,8 +243,7 @@ var designer = {
       }
 
       for (z in select)
-      {       
-        //widget_html += "<select id='"+z+"' class='widgetmenu' style='width:120px; margin:5px;'><option title=1 >"+z+":</option>"+select[z]+"</select>";
+      {               
         widget_html += "<div class='btn-group'><button class='btn dropdown-toggle widgetmenu' data-toggle='dropdown'>"+z+"&nbsp<span class='caret'></span></button>";
         widget_html += "<ul class='dropdown-menu' name='d'>"+select[z]+"</ul>";
       }
@@ -257,14 +253,6 @@ var designer = {
         designer.create = $(this).attr("id");
         designer.edit_mode = false;
       });
-
-      /*
-       * not necesary...i think
-       *$(".widgetmenu").change(function(event) { 
-        designer.create = ($(this).find("option:selected").text());
-        var title = $(this).find("option:selected").attr("title");
-        if (designer.create && title!=1) designer.edit_mode = false;
-      });*/
 
     },
 
