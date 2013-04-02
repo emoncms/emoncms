@@ -27,7 +27,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
 <div id="dashboardpage">
     
-<div id="widget_options" class="modal hide fade keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="widget_options" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
   <h3><?php echo _('Configure element'); ?></h3></div>
   <div id="widget_options_body" class="modal-body"></div>
