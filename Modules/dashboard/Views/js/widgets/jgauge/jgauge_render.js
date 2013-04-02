@@ -9,8 +9,11 @@ function jgauge_widgetlist()
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
       "menu":"Widgets",
-	  "options":["feed", "max", "units"],
-      "optionstype":["feed","value","value"]
+      "options":["feed", "max", "units"],
+      "optionstype":["feed","value","value"],
+      "optionsname":["Feed","Max value","Units"],
+      "optionshint":["Feed","Max value to show","Unit shown"] 
+      
     }
   }
   return widgets;

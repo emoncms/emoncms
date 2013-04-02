@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-20 14:22+0100\n"
-"PO-Revision-Date: 2013-03-20 14:22+0100\n"
+"POT-Creation-Date: 2013-03-22 09:40+0100\n"
+"PO-Revision-Date: 2013-03-22 09:40+0100\n"
 "Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -139,78 +139,86 @@ msgstr ""
 msgid "Email updated"
 msgstr "actualizado"
 
-#: ../../../profile/profile.php:29
+#: ../../../profile/profile.php:22
+msgid "es_ES"
+msgstr "Español"
+
+#: ../../../profile/profile.php:23
+msgid "fr_FR"
+msgstr "Francés"
+
+#: ../../../profile/profile.php:35
 #, fuzzy
 msgid "My account"
 msgstr "Cuenta"
 
-#: ../../../profile/profile.php:33
+#: ../../../profile/profile.php:39
 msgid "Username"
 msgstr "Nombre de usuario"
 
-#: ../../../profile/profile.php:37 ../../../profile/profile.php:46
-#: ../../../profile/profile.php:69
+#: ../../../profile/profile.php:43 ../../../profile/profile.php:52
+#: ../../../profile/profile.php:75
 msgid "Save"
 msgstr "Guardar"
 
-#: ../../../profile/profile.php:42
+#: ../../../profile/profile.php:48
 #, fuzzy
 msgid "Email"
 msgstr "Correo:"
 
-#: ../../../profile/profile.php:51
+#: ../../../profile/profile.php:57
 #, fuzzy
 msgid "Change Password"
 msgstr "Cambiar contraseña"
 
-#: ../../../profile/profile.php:57
+#: ../../../profile/profile.php:63
 #, fuzzy
 msgid "Current password"
 msgstr "Contraseña actual:"
 
-#: ../../../profile/profile.php:61
+#: ../../../profile/profile.php:67
 #, fuzzy
 msgid "New password"
 msgstr "Nueva contraseña:"
 
-#: ../../../profile/profile.php:65
+#: ../../../profile/profile.php:71
 msgid "Repeat new password"
 msgstr "Confirma la contraseña"
 
-#: ../../../profile/profile.php:70
+#: ../../../profile/profile.php:76
 msgid "Cancel"
 msgstr ""
 
-#: ../../../profile/profile.php:76
+#: ../../../profile/profile.php:82
 msgid "My Profile"
 msgstr "Perfil"
 
-#: ../../../profile/profile.php:92
+#: ../../../profile/profile.php:98
 msgid "Gravatar"
 msgstr ""
 
-#: ../../../profile/profile.php:93
+#: ../../../profile/profile.php:99
 msgid "Name"
 msgstr "Nombre"
 
-#: ../../../profile/profile.php:94
+#: ../../../profile/profile.php:100
 #, fuzzy
 msgid "Location"
 msgstr "Hora local"
 
-#: ../../../profile/profile.php:95
+#: ../../../profile/profile.php:101
 msgid "Timezone"
 msgstr "Zona horaria"
 
-#: ../../../profile/profile.php:96
+#: ../../../profile/profile.php:102
 msgid "Language"
 msgstr "Lenguaje"
 
-#: ../../../profile/profile.php:97
+#: ../../../profile/profile.php:103
 msgid "Bio"
 msgstr ""
 
-#: ../../../profile/profile.php:222
+#: ../../../profile/profile.php:228
 msgid "Passwords do not match"
 msgstr ""
 
@@ -274,17 +282,11 @@ msgstr ""
 #~ msgid "en_EN"
 #~ msgstr "Inglés"
 
-#~ msgid "es_ES"
-#~ msgstr "Español"
-
 #~ msgid "nl_BE"
 #~ msgstr "Belga"
 
 #~ msgid "nl_NL"
 #~ msgstr "Holandés"
-
-#~ msgid "fr_FR"
-#~ msgstr "Francés"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"

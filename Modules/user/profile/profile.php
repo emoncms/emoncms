@@ -17,6 +17,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
  
   $languages = get_available_languages();
 
+function languagecodetotext()
+{
+  _('es_ES');
+  _('fr_FR');
+}
+
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>

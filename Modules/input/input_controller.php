@@ -29,7 +29,7 @@ function input_controller()
 {
   global $mysqli, $user, $session, $route;
 
-  // There are no actions in the input module that can be performed with less than write priviledges
+  // There are no actions in the input module that can be performed with less than write privileges
   if (!$session['write']) return array('content'=>false);
 
   global $feed;

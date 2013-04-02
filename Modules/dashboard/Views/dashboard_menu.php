@@ -56,7 +56,7 @@ global $path, $session, $useckeditor;
 
     <?php if ($type=="edit" && isset($id)) { ?>
       <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>" title="<?php echo _("View mode"); ?>"><i class="icon-eye-open"></i></a>
-      <a href="#myModal" role="button" data-toggle="modal"><i class="icon-wrench"></i></a>
+      <a href="#myModal" role="button" data-toggle="modal" title="<?php echo _("Configure dashboard"); ?>"><i class="icon-wrench"></i></a>
     <?php } ?>
 
     <a href="#" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});" title="<?php echo _("New"); ?>"><i class="icon-plus-sign"></i></a>

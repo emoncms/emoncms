@@ -61,7 +61,11 @@ var designer = {
 
 
     'snap': function(pos) {return Math.round(pos/designer.grid_size)*designer.grid_size;},
-
+    
+    'modified': function() {
+      $("#save-dashboard").attr('class','btn btn-warning').text("Changed, press to save");
+    },
+    
     'onbox': function(x,y) 
     {
       var box = null;
@@ -123,9 +127,9 @@ var designer = {
       // Draw selected box points
       //--------------------------------------------------------------------
       if (designer.selected_box)
-      {
-      $("#state").html("Changed");
-          console.log(designer.selected_box);
+      {         
+        designer.modified();       
+                
         var top = designer.boxlist[designer.selected_box]['top'];
         var left = designer.boxlist[designer.selected_box]['left'];
         var width = designer.boxlist[designer.selected_box]['width'];
@@ -159,13 +163,17 @@ var designer = {
     {
       var box_options = widgets[widget]["options"];
       var options_type = widgets[widget]["optionstype"];
-      // Build options table html
+      var options_name = widgets[widget]["optionsname"];   
+      var optionshint = widgets[widget]["optionshint"];   
+                 
+      // Build options table html            
       var options_html = "<table>";
       for (z in box_options)
       {
         var val = $("#"+designer.selected_box).attr(box_options[z]);
         if (val == undefined) val="";
-        options_html += "<tr><td>"+box_options[z]+":</td>";
+        
+        options_html += "<tr><td>"+options_name[z]+":</td>";
 
         if (options_type && options_type[z] == "feed") 
         {
@@ -174,8 +182,7 @@ var designer = {
           {
             var selected = ""; if (val == feedlist[i]['name'].replace(/\s/g, '-')) selected = "selected";
             options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['name']+"</option>";
-          }
-          options_html += "</td></tr>";
+          }        
         }
 
         else if (options_type && options_type[z] == "feedid") 
@@ -186,7 +193,6 @@ var designer = {
             var selected = ""; if (val == feedlist[i]['id']) selected = "selected";
             options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
           }
-          options_html += "</td></tr>";
         }
 
         else if (options_type && options_type[z] == "multigraph") 
@@ -197,53 +203,55 @@ var designer = {
             var selected = ""; if (val == multigraphs[i]['id']) selected = "selected";
             options_html += "<option value='"+multigraphs[i]['id']+"' "+selected+" >"+multigraphs[i]['id']+"</option>";
           }
-          options_html += "</td></tr>";
         }
+        
         else if (options_type && options_type[z] == "html") 
         {  
           val = $("#"+designer.selected_box).html();
-          options_html += "<td><textarea class='options' id='"+box_options[z]+"' >"+val+"</textarea></td></tr>"
+          options_html += "<td><textarea class='options' id='"+box_options[z]+"' >"+val+"</textarea>"
         }
 
         else
         {
-          options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ ></td></tr>"
-        }
-      }
+          options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ >"
+        }     
+        
+        options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";   
+       
+      }      
+      
       options_html += "</table>";
-      $("#box-options").html(options_html);
+      
+      // Fill the modal configuration window with options
+      $("#widget_options_body").html(options_html);      
+      
     },
 
     'widget_buttons': function()
     {
       var widget_html = "";
       var select = [];
+      
       for (z in widgets)
-      {
+      {        
         var menu = widgets[z]['menu'];
-        if (menu) 
-        { 
-          select[menu] += "<option>"+z+"</option>";
-        } else {
-          widget_html +="<input class='widget-button' name='"+z+"' type='button' value='"+z+"' / >";
-        }
+        
+        if (typeof select[menu] === "undefined")
+          select[menu] = "<li><a id='"+z+"' class='widget-button'>"+z+"</a></li>";
+        else    
+          select[menu] += "<li><a id='"+z+"' class='widget-button'>"+z+"</a></li>";
       }
 
       for (z in select)
-      {
-        widget_html += "<select id='"+z+"' class='widgetmenu' style='width:120px; margin:5px;'><option title=1 >"+z+":</option>"+select[z]+"</select>";
+      {               
+        widget_html += "<div class='btn-group'><button class='btn dropdown-toggle widgetmenu' data-toggle='dropdown'>"+z+"&nbsp<span class='caret'></span></button>";
+        widget_html += "<ul class='dropdown-menu' name='d'>"+select[z]+"</ul>";
       }
       $("#widget-buttons").html(widget_html);
 
-      $(".widget-button").click(function(event) { 
-        designer.create = $(this).attr("name");
+      $(".widget-button").click(function(event) {         
+        designer.create = $(this).attr("id");
         designer.edit_mode = false;
-      });
-
-      $(".widgetmenu").change(function(event) { 
-        designer.create = ($(this).find("option:selected").text());
-        var title = $(this).find("option:selected").attr("title");
-        if (designer.create && title!=1) designer.edit_mode = false;
       });
 
     },
@@ -276,7 +284,7 @@ var designer = {
           }
 
           if (designer.edit_mode) designer.selected_box = designer.onbox(mx,my);
-          if (!designer.selected_box)  {$("#testo").hide(); $("#when-selected").hide();}
+          if (!designer.selected_box) $("#when-selected").hide();
 
           designer.draw()
         });
@@ -307,13 +315,13 @@ var designer = {
               var bottedge = resize['top']+resize['height'];
               var midx = resize['left']+(resize['width']/2);
               var midy = resize['top']+(resize['height']/2);
-
-              selected_edge = null;
+             
               if (Math.abs(mx - rightedge)<20) selected_edge = "right";
-              if (Math.abs(mx - resize['left'])<20) selected_edge = "left";
-              if (Math.abs(my - bottedge)<20) selected_edge = "bottom";
-              if (Math.abs(my - resize['top'])<20) selected_edge = "top";
-              if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = "center";
+              else if (Math.abs(mx - resize['left'])<20) selected_edge = "left";
+                else if (Math.abs(my - bottedge)<20) selected_edge = "bottom";
+                  else if (Math.abs(my - resize['top'])<20) selected_edge = "top";
+                    else if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = "center";
+                      else selected_edge = null;
             }
           }
           else
@@ -322,8 +330,8 @@ var designer = {
             {
               designer.add_widget(mx,my,designer.create);
               designer.create = null;
-              $('option:selected', 'select').removeAttr('selected');
-              $('option[title=1]').attr('selected','selected');
+            //  $('option:selected', 'select').removeAttr('selected');
+            //  $('option[title=1]').attr('selected','selected');
               $("#when-selected").show();
             }
           }
@@ -347,35 +355,34 @@ var designer = {
               my = event.offsetY;
             }
 
-
             var rightedge = resize['left']+resize['width'];
             var bottedge = resize['top']+resize['height'];
+            
+            if (selected_edge == "right") 
+              designer.boxlist[designer.selected_box]['width'] = (designer.snap(mx)-resize['left']);
+            else if (selected_edge == "left") 
+              {
+                designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
+                designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
+              }
+              else if (selected_edge == "bottom") 
+                  designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
+                  else if (selected_edge == "top") 
+                  { 
+                    designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
+                    designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
+                  }
+                    else if (selected_edge == "center")
+                      { 
+                        designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
+                        designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));
+                      }
 
-            if (selected_edge == "right") designer.boxlist[designer.selected_box]['width'] = (designer.snap(mx)-resize['left']);
-            if (selected_edge == "left") 
-            {
-              designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
-              designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
+            if (bottedge>parseInt($("#page-container").css("height"))){
+              $("#page-container").css("height",bottedge);
+              $("#can").attr("height",bottedge);
+              designer.page_height = bottedge;
             }
-
-            if (selected_edge == "bottom") designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
-            if (selected_edge == "top") 
-            { 
-              designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
-              designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
-            }
-
-            if (selected_edge == "center")
-            { 
-              designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
-              designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));
-            }
-
-         if (bottedge>parseInt($("#page-container").css("height"))){
-           $("#page-container").css("height",bottedge);
-           $("#can").attr("height",bottedge);
-           designer.page_height = bottedge;
-         }
 
             designer.draw();
           }
@@ -383,12 +390,12 @@ var designer = {
 
         // On save click
         $("#options-save").click(function() 
-        {
+        {            
           $(".options").each(function() {
             if ($(this).attr("id")!="html") $("#"+designer.selected_box).attr($(this).attr("id"), $(this).val());
             if ($(this).attr("id")=="html") $("#"+designer.selected_box).html($(this).val());    
-          });
-          $("#testo").hide();
+          });          
+          $('#widget_options').modal('hide')
           redraw = 1;
           reloadiframe = designer.selected_box;
           $("#state").html("Changed");
@@ -401,13 +408,14 @@ var designer = {
             $("#"+designer.selected_box).remove();
             designer.selected_box = 0;
             designer.draw();
+            designer.modified();            
+            $("#when-selected").hide();
           }
         });
 
         $("#options-button").click(function(event) { 
           if (designer.selected_box){
             designer.draw_options($("#"+designer.selected_box).attr("class"));
-            $("#testo").show();
           }
         });
     }

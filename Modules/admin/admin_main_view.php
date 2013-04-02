@@ -4,8 +4,8 @@
 <table class="table table-striped ">
 <tr>
   <td>
-    <h3>Update database</h3>
-    <p>Run this after updating emoncms, after installing a new module or to check emoncms database status.</p>
+    <h3><?php echo _('Update database'); ?></h3>
+    <p><?php echo _('Run this after updating emoncms, after installing a new module or to check emoncms database status.'); ?></p>
   </td>
   <td>
     <br>

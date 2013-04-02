@@ -11,15 +11,16 @@ input[type="text"] {
 }
 </style>
 
-<br><div style="float:right;"><a href="api">Input API Help</a></div>
+<br>
+<div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div></div>
 
 <div class="container">
-    <h2>Inputs</h2>
+    <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
     <div id="table"></div>
 
     <div id="noinputs" class="alert alert-block hide">
-        <h4 class="alert-heading">No inputs created</h4>
-        <p>Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.</p>
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 
 </div>
@@ -28,17 +29,17 @@ input[type="text"] {
 
   var path = "<?php echo $path; ?>";
 
-  // Extemd table library field types
+  // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
   table.element = "#table";
 
   table.fields = {
     //'id':{'type':"fixed"},
-    'nodeid':{'type':"fixed"},
-    'name':{'type':"text"},
-    'description':{'type':"text"},
-    'processList':{'type':"processlist"},
+    'nodeid':{'title':'<?php echo _('Node identification'); ?>','type':"fixed"},
+    'name':{'title':'<?php echo _('Input name'); ?>','type':"text"},
+    'description':{'title':'<?php echo _('Description'); ?>','type':"text"},
+    'processList':{'title':'<?php echo _('Process list'); ?>','type':"processlist"},
     // 'time':{'title':'last updated', 'type':"updated"},
     // 'value':{'type':"value"},
 
@@ -51,15 +52,21 @@ input[type="text"] {
 
   table.groupby = 'nodeid';
 
-  table.draw();
-
   update();
 
   function update()
   {
     table.data = input.list();
     table.draw();
-    if (table.data.length != 0) $("#noinputs").hide(); else $("#noinputs").show();
+    if (table.data.length != 0) {
+      $("#noinputs").hide();
+      $("#apihelphead").show();      
+      $("#localheading").show();
+    } else {
+      $("#noinputs").show();
+      $("#localheading").hide();
+      $("#apihelphead").hide(); 
+    }
   }
 
   var updater = setInterval(update, 10000);
@@ -75,6 +82,7 @@ input[type="text"] {
 
   $("#table").bind("onDelete", function(e,id){
     input.remove(id); 
+    update();
   });
 
 </script>
