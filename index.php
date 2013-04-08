@@ -19,7 +19,7 @@
   require "core.php";
   require "route.php";
   require "locale.php";
-  
+    
   $path = get_application_path();
 
   // 2) Database

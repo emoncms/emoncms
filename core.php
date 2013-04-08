@@ -125,10 +125,9 @@ function load_menu()
     {
         if (filetype("Modules/".$dir[$i])=='dir') 
         {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
-            {
-                require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
-            }
+          $classname = $dir[$i].'_module';               
+          $module = new $classname();
+          $module->getmenu($menu_left);
         }
     }
 
@@ -139,4 +138,14 @@ function load_menu()
 // Menu sort by order
 function menu_sort($a,$b) {
     return $a['order']>$b['order'];
+}
+
+function __autoload($className)
+{ 
+  $file = 'Modules/'.str_replace('_module', '', $className).'/'.str_replace('_module', '_class.php', $className);
+
+  if(!file_exists($file))
+    return false;
+  else   
+    require_once $file;          
 }
