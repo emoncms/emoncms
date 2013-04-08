@@ -201,6 +201,22 @@ class Process
         DataType::HISTOGRAM
       );
 
+      $list[24] = array(
+        "allow positive (set arg = 1)",
+        ProcessArg::VALUE,
+        "allowpositive",
+        0,
+        DataType::UNDEFINED
+      );
+
+      $list[25] = array(
+        "allow negative (set arg = 1)",
+        ProcessArg::VALUE,
+        "allownegative",
+        0,
+        DataType::UNDEFINED
+      );
+
       return $list;
     }
 
@@ -239,6 +255,18 @@ class Process
     public function offset($arg, $time, $value)
     {
       return $value + $arg;
+    }
+
+    public function allowpositive($arg, $time, $value)
+    {
+      if ($value<0) $value = 0;
+      return $value;
+    }
+
+    public function allownegative($arg, $time, $value)
+    {
+      if ($value>0) $value = 0;
+      return $value;
     }
 
     public function log_to_feed($id, $time, $value)
