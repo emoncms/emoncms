@@ -22,6 +22,12 @@ var table = {
      
     'draw':function()
     {
+        table.data.sort(function(a,b) {
+          if(a[table.sortfield]<b[table.sortfield]) return -1;
+          if(a[table.sortfield]>b[table.sortfield]) return 1;
+          return 0;
+        });
+
         var group_num = 0;
         var groups = {};
         for (row in table.data)
@@ -89,11 +95,6 @@ var table = {
     'sort':function(field,dir)
     {
         table.sortfield = field;
-        table.data.sort(function(a,b) {
-          if(a[field]<b[field]) return -1*dir;
-          if(a[field]>b[field]) return 1*dir;
-          return 0;
-        });
         table.draw();
     },
 
