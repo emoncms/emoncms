@@ -15,6 +15,9 @@ var table = {
 
     'eventsadded':false,
     'deletedata':true,
+
+    'sortfield':null,
+
     'groupprefix':"",
      
     'draw':function()
@@ -85,6 +88,7 @@ var table = {
 
     'sort':function(field,dir)
     {
+        table.sortfield = field;
         table.data.sort(function(a,b) {
           if(a[field]<b[field]) return -1*dir;
           if(a[field]>b[field]) return 1*dir;

@@ -406,6 +406,37 @@ class Feed
     return $data;
   }
 
+  public function get_kwhd_atpowers($feedid, $points)
+  {
+    $feedid = intval($feedid);
+    $feedname = "feed_".trim($feedid)."";
+
+    $points = json_decode($points);
+    
+    $data = array();
+
+    for ($i=0; $i<count($points)-1; $i++)
+    {
+      $min = intval($points[$i]);
+      $max = intval($points[$i+1]);
+
+      $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
+
+      while($row = $result->fetch_array()) 
+      { 
+        if (!isset($data[$row['time']])) {
+          $data[$row['time']] = array(0,0,0,0,0);
+          $data[$row['time']][0] = (int)$row['time']; 
+        }
+        $data[$row['time']][$i+1] = (float)$row['kWh']; 
+      }
+    }
+    $out = array();
+    foreach ($data as $item) $out[] = $item;
+
+    return $out;
+  }
+
   /*
 
   Feed table size
