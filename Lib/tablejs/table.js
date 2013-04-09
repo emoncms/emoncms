@@ -22,11 +22,13 @@ var table = {
      
     'draw':function()
     {
-        table.data.sort(function(a,b) {
-          if(a[table.sortfield]<b[table.sortfield]) return -1;
-          if(a[table.sortfield]>b[table.sortfield]) return 1;
-          return 0;
-        });
+        if (table.data) {
+          table.data.sort(function(a,b) {
+            if(a[table.sortfield]<b[table.sortfield]) return -1;
+            if(a[table.sortfield]>b[table.sortfield]) return 1;
+            return 0;
+          });
+        }
 
         var group_num = 0;
         var groups = {};
