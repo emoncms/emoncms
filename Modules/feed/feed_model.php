@@ -487,14 +487,19 @@ class Feed
       while ($moredata_available)
       {
           // 1) Load a block
-          $result = db_query("SELECT * FROM $feedname WHERE time>$start  
+          $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time>$start  
           ORDER BY time Asc Limit $block_size");
 
           $moredata_available = 0;
-          while($row = db_fetch_array($result)) 
+          while($row = $result->fetch_array()) 
           {
+            
               // Write block as csv to output stream
-              fputcsv($fh, array($row['time'],$row['data']));
+              if (!isset($row['data2'])) {
+                fputcsv($fh, array($row['time'],$row['data']));
+              } else {
+                fputcsv($fh, array($row['time'],$row['data'],$row['data2']));
+              }
 
               // Set new start time so that we read the next block along
               $start = $row['time'];
