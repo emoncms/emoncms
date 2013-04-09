@@ -148,8 +148,10 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        $this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write' );");
-
+        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, uphits, dnhits, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 , 0, 0 );")) {
+        	return array('success'=>false, 'message'=>_("Error creating user"));
+        }
+        
         // Make the first user an admin
         $userid = $this->mysqli->insert_id;
         if ($userid == 1) $this->mysqli->query("UPDATE users SET admin = 1 WHERE id = '1'");
