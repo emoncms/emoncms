@@ -15,6 +15,7 @@ var table = {
 
     'eventsadded':false,
     'deletedata':true,
+    'groupprefix':"",
      
     'draw':function()
     {
@@ -32,11 +33,18 @@ var table = {
         for (group in groups) 
         {
             // Minimized group persistance, see lines: 4,92,93
-            var visible = '', symbol ='-'; 
-            if (table.groupshow[group]==false) {symbol = '+'; visible = "display:none";}
-            if (group_num>1) html += "<h3><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+group+"</h3>";
+            var visible = '', symbol ='<i class="icon-minus-sign"></i>'; 
+            if (table.groupshow[group]==undefined) table.groupshow[group]=true;
+            if (table.groupshow[group]==false) {symbol = '<i class="icon-plus-sign"></i>'; visible = "display:none";}
 
-            html += "<table id="+group+" class='table table-hover' style='"+visible+"'><tr>";
+            if (group_num>1) {
+              html += "<tr><th colspan='2'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
+              var count = 0; for (field in table.fields) count++;   // Calculate amount of padding required
+              for (i=1; i<count-1; i++) html += "<th></th>";          // Add th padding
+              html += "</tr>";
+            }
+
+            html += "<tbody id='"+group+"' style='"+visible+"'><tr>";
             for (field in table.fields)
             {
               var title = field; if (table.fields[field].title!=undefined) title = table.fields[field].title;
@@ -44,10 +52,10 @@ var table = {
             }
             html += "</tr>";
             html += groups[group];
-            html += "</table>";
+            html += "</tbody>";
         }
 
-        $(table.element).html(html);
+        $(table.element).html("<table class='table table-hover'>"+html+"</table>");
 
         if (table.eventsadded==false) {table.add_events(); table.eventsadded = true}
     },
@@ -90,9 +98,9 @@ var table = {
         // Event: minimise or maximise group
         $(table.element).on('click', '.MINMAX', function() {
             var group = $(this).attr('group');
-            var state = $(this).html();
-            if (state == '-') { $("#"+group).hide(); $(this).html('+'); table.groupshow[group] = false; }
-            if (state == '+') { $("#"+group).show(); $(this).html('-'); table.groupshow[group] = true; }
+            var state = table.groupshow[group];
+            if (state == true) { $("#"+group).hide(); $(this).html('<i class="icon-plus-sign"></i>'); table.groupshow[group] = false; }
+            if (state == false) { $("#"+group).show(); $(this).html('<i class="icon-minus-sign"></i>'); table.groupshow[group] = true; }
         });
 
         // Event: sort by field
