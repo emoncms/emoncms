@@ -13,3 +13,6 @@ Modules/raspberrypi
 Modules/site
 Modules/command
 Modules/sap
+Modules/time
+Modules/rss
+Modules/adminusers

@@ -2,238 +2,221 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:36+0100\n"
-"PO-Revision-Date: 2012-10-18 18:37+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"POT-Creation-Date: 2013-03-20 20:02+0100\n"
+"PO-Revision-Date: 2013-03-20 20:04+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
-"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: es_ES\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../dashboard_controller.php:44
-#, fuzzy
-msgid "New dashboard created"
-msgstr "Nuevo panel"
-
-#: ../../../dashboard_controller.php:148
-msgid "Logout"
-msgstr "Desconectar"
-
-#: ../../../dashboard_controller.php:255
-msgid "dashboard set"
-msgstr "establecer panel"
-
-#: ../../../dashboard_controller.php:297
-msgid "dashboard set configuration"
-msgstr "establecer configuración del panel"
-
-#: ../../../dashboard_model.php:43
+#: ../../../dashboard_model.php:52
 msgid " clone"
 msgstr " clonar"
 
-#: ../../../Views/dashboard_ckeditor_view.php:39
-#: ../../../Views/dashboard_config.php:27
-msgid "Dashboard name: "
-msgstr "Nombre del panel:"
-
-#: ../../../Views/dashboard_ckeditor_view.php:41
-#: ../../../Views/dashboard_config.php:31
-msgid "Description: "
-msgstr "Descripción"
-
-#: ../../../Views/dashboard_ckeditor_view.php:46
-msgid "Main: "
-msgstr "Principal:"
-
-#: ../../../Views/dashboard_ckeditor_view.php:53
-msgid "Published: "
-msgstr "Publicado:"
-
-#: ../../../Views/dashboard_ckeditor_view.php:60
-msgid "Public: "
-msgstr "Público:"
-
-#: ../../../Views/dashboard_config.php:23
+#: ../../../Views/dashboard_config.php:20
 msgid "Dashboard Configuration"
 msgstr "Configuración del panel"
 
-#: ../../../Views/dashboard_config.php:29
+#: ../../../Views/dashboard_config.php:25
+msgid "Dashboard name: "
+msgstr "Nombre del panel:"
+
+#: ../../../Views/dashboard_config.php:27
 msgid "Menu name: (lowercase a-z only)"
 msgstr "Nombre para el menu: (sólo letras de la \"a\" a la \"z\")"
 
-#: ../../../Views/dashboard_config.php:38
+#: ../../../Views/dashboard_config.php:29
+msgid "Description: "
+msgstr "Descripción"
+
+#: ../../../Views/dashboard_config.php:34
 msgid "Make this dashboard the first shown"
 msgstr "Hacer este panel como el primero que se muestra"
 
-#: ../../../Views/dashboard_config.php:38
-#: ../../../Views/dashboard_list_view.php:42
+#: ../../../Views/dashboard_config.php:34
+#: ../../../Views/dashboard_list.php:54
 msgid "Main"
 msgstr "Principal"
 
-#: ../../../Views/dashboard_config.php:44
+#: ../../../Views/dashboard_config.php:39
 msgid "Activate this dashboard"
 msgstr "Activar este panel"
 
-#: ../../../Views/dashboard_config.php:44
-#: ../../../Views/dashboard_list_view.php:45
+#: ../../../Views/dashboard_config.php:39
+#: ../../../Views/dashboard_list.php:56
 msgid "Published"
 msgstr "Publicado"
 
-#: ../../../Views/dashboard_config.php:50
+#: ../../../Views/dashboard_config.php:44
 msgid "Anyone with the URL can see this dashboard"
 msgstr "Cualquiera con la dirección URL puede ver este panel"
 
-#: ../../../Views/dashboard_config.php:50
-#: ../../../Views/dashboard_list_view.php:48
+#: ../../../Views/dashboard_config.php:44
+#: ../../../Views/dashboard_list.php:55
 msgid "Public"
 msgstr "Público"
 
-#: ../../../Views/dashboard_config.php:56
-msgid ""
-"Shows dashboard description on mouse over dashboard name in menu project"
-msgstr ""
-"Muestra la descripción del panel cuando se pasa el ratón sobre su nombre en "
-"el menú del proyecto"
+#: ../../../Views/dashboard_config.php:49
+msgid "Shows dashboard description on mouse over dashboard name in menu project"
+msgstr "Muestra la descripción del panel cuando se pasa el ratón sobre su nombre en el menú del proyecto"
 
-#: ../../../Views/dashboard_config.php:56
+#: ../../../Views/dashboard_config.php:49
 msgid "Show description"
 msgstr "Mostrar descripción"
 
-#: ../../../Views/dashboard_config.php:60
+#: ../../../Views/dashboard_config.php:55
 msgid "Close"
 msgstr "Cerrar"
 
-#: ../../../Views/dashboard_config.php:61
+#: ../../../Views/dashboard_config.php:56
 msgid "Save changes"
 msgstr "Guardar cambios"
 
-#: ../../../Views/dashboard_list_view.php:26
-#: ../../../Views/dashboard_thumb_view.php:31
-msgid "New dashboard"
-msgstr "Nuevo panel"
-
-#: ../../../Views/dashboard_list_view.php:27
-#: ../../../Views/dashboard_menu.php:37
-msgid "Thumb view"
-msgstr "Formato iconos"
-
-#: ../../../Views/dashboard_list_view.php:36
-msgid "Id"
-msgstr "Id"
-
-#: ../../../Views/dashboard_list_view.php:39
+#: ../../../Views/dashboard_list.php:15
 msgid "Dashboard"
 msgstr "Panel"
 
-#: ../../../Views/dashboard_list_view.php:51
-msgid "Actions"
-msgstr "Acciones"
+#: ../../../Views/dashboard_list.php:19
+msgid "No dashboards created"
+msgstr "No existen paneles"
 
-#: ../../../Views/dashboard_list_view.php:54
-msgid "Share"
-msgstr "Compartir"
+#: ../../../Views/dashboard_list.php:20
+msgid "Maybe you would like to add your first dashboard using the button"
+msgstr "Quizás te gustaría añadir tu primer panel usando el botón"
 
-#: ../../../Views/dashboard_list_view.php:72
-msgid "This is the main dashboard"
-msgstr "Este es el panel principal del proyecto"
+#: ../../../Views/dashboard_list.php:29
+msgid "WARNING deleting a dashboard is permanent"
+msgstr "ATENCIÓN, el borrado será permanente"
 
-#: ../../../Views/dashboard_list_view.php:74
-msgid "Set main dashboard"
-msgstr "Establecer panel principal"
+#: ../../../Views/dashboard_list.php:32
+msgid "Are you sure you want to delete this dashboard?"
+msgstr "¿Estás seguro de que quieres borrar este panel?"
 
-#: ../../../Views/dashboard_list_view.php:80
-msgid "Unpublish dashboard"
-msgstr "Despublicar panel"
+#: ../../../Views/dashboard_list.php:35
+msgid "Cancel"
+msgstr "Cancelar"
 
-#: ../../../Views/dashboard_list_view.php:82
-msgid "Publish dashboard"
-msgstr "Publicar panel"
+#: ../../../Views/dashboard_list.php:36
+msgid "Delete permanently"
+msgstr "Borrar permanentemente"
 
-#: ../../../Views/dashboard_list_view.php:88
-msgid "Make dashboard private"
-msgstr "Hacer panel privado"
+#: ../../../Views/dashboard_list.php:50
+msgid "Id"
+msgstr "Id"
 
-#: ../../../Views/dashboard_list_view.php:90
-msgid "Make dashboard public"
-msgstr "Hacer panel público"
-
-#: ../../../Views/dashboard_list_view.php:95
-msgid "Draw"
-msgstr "Diseñar"
-
-#: ../../../Views/dashboard_list_view.php:97
-#: ../../../Views/dashboard_publiclist_view.php:25
-#: ../../../Views/dashboard_publiclist_view.php:34
-msgid "View"
-msgstr "Vista"
-
-#: ../../../Views/dashboard_list_view.php:98
-#: ../../../Views/dashboard_thumb_view.php:47
-msgid "Delete"
-msgstr "Borrar"
-
-#: ../../../Views/dashboard_list_view.php:99
-msgid "Clone"
-msgstr "Clonar"
-
-#: ../../../Views/dashboard_list_view.php:106
-msgid "Public share URL"
-msgstr "URL pública"
-
-#: ../../../Views/dashboard_list_view.php:108
-msgid "Private share URL"
-msgstr "URL privada"
-
-#: ../../../Views/dashboard_menu.php:15
-msgid "Dashboards:"
-msgstr "Paneles:"
-
-#: ../../../Views/dashboard_menu.php:23
-msgid "Draw Editor"
-msgstr "Diseñador"
-
-#: ../../../Views/dashboard_menu.php:32
-msgid "View mode"
-msgstr "Vista"
-
-#: ../../../Views/dashboard_menu.php:35
-msgid "Config"
-msgstr "Configuración"
-
-#: ../../../Views/dashboard_menu.php:36
-msgid "New"
-msgstr "Nuevo"
-
-#: ../../../Views/dashboard_menu.php:38
-#: ../../../Views/dashboard_thumb_view.php:33
-msgid "List view"
-msgstr "Formato lista"
-
-#: ../../../Views/dashboard_publiclist_view.php:15
-msgid "Explore Public Dashboards"
-msgstr "Explorar paneles públicos"
-
-#: ../../../Views/dashboard_publiclist_view.php:21
-msgid "User"
-msgstr "Usuario"
-
-#: ../../../Views/dashboard_publiclist_view.php:22
+#: ../../../Views/dashboard_list.php:51
 msgid "Name"
 msgstr "Nombre"
 
-#: ../../../Views/dashboard_publiclist_view.php:23
+#: ../../../Views/dashboard_list.php:52
 msgid "Alias"
 msgstr "Alias"
 
-#: ../../../Views/dashboard_publiclist_view.php:24
+#: ../../../Views/dashboard_list.php:53
 msgid "Description"
 msgstr "Descripción"
+
+#: ../../../Views/dashboard_menu.php:44
+msgid "Dashboards:"
+msgstr "Paneles:"
+
+#: ../../../Views/dashboard_menu.php:54
+msgid "Draw Editor"
+msgstr "Diseñador"
+
+#: ../../../Views/dashboard_menu.php:58
+msgid "View mode"
+msgstr "Vista"
+
+#: ../../../Views/dashboard_menu.php:62
+msgid "New"
+msgstr "Nuevo"
+
+#: ../../../Views/dashboard_menu.php:64
+msgid "List view"
+msgstr "Formato lista"
+
+#~ msgid "Logout"
+#~ msgstr "Desconectar"
+
+#~ msgid "dashboard set"
+#~ msgstr "establecer panel"
+
+#~ msgid "dashboard set configuration"
+#~ msgstr "establecer configuración del panel"
+
+#~ msgid "Main: "
+#~ msgstr "Principal:"
+
+#~ msgid "Published: "
+#~ msgstr "Publicado:"
+
+#~ msgid "Public: "
+#~ msgstr "Público:"
+
+#~ msgid "New dashboard"
+#~ msgstr "Nuevo panel"
+
+#~ msgid "Thumb view"
+#~ msgstr "Formato iconos"
+
+#~ msgid "Actions"
+#~ msgstr "Acciones"
+
+#~ msgid "Share"
+#~ msgstr "Compartir"
+
+#~ msgid "This is the main dashboard"
+#~ msgstr "Este es el panel principal del proyecto"
+
+#~ msgid "Set main dashboard"
+#~ msgstr "Establecer panel principal"
+
+#~ msgid "Unpublish dashboard"
+#~ msgstr "Despublicar panel"
+
+#~ msgid "Publish dashboard"
+#~ msgstr "Publicar panel"
+
+#~ msgid "Make dashboard private"
+#~ msgstr "Hacer panel privado"
+
+#~ msgid "Make dashboard public"
+#~ msgstr "Hacer panel público"
+
+#~ msgid "Draw"
+#~ msgstr "Diseñar"
+
+#~ msgid "View"
+#~ msgstr "Vista"
+
+#~ msgid "Delete"
+#~ msgstr "Borrar"
+
+#~ msgid "Clone"
+#~ msgstr "Clonar"
+
+#~ msgid "Public share URL"
+#~ msgstr "URL pública"
+
+#~ msgid "Private share URL"
+#~ msgstr "URL privada"
+
+#~ msgid "Config"
+#~ msgstr "Configuración"
+
+#~ msgid "Explore Public Dashboards"
+#~ msgstr "Explorar paneles públicos"
+
+#~ msgid "User"
+#~ msgstr "Usuario"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -599,9 +582,6 @@ msgstr "Descripción"
 #~ msgid "Email:"
 #~ msgstr "Correo:"
 
-#~ msgid "Change"
-#~ msgstr "Cambiar"
-
 #~ msgid "Change password"
 #~ msgstr "Cambiar contraseña"
 
@@ -725,9 +705,6 @@ msgstr "Descripción"
 #~ msgid "Deleted feeds"
 #~ msgstr "Fuentes borradas"
 
-#~ msgid "Delete feeds permanently"
-#~ msgstr "¿Borrar fuentes de manera permanente?"
-
 #~ msgid "Sync feeds"
 #~ msgstr "Sincronizar fuentes"
 
@@ -790,9 +767,6 @@ msgstr "Descripción"
 
 #~ msgid "Reset process list?"
 #~ msgstr "¿Inicializar la lista de procesos?"
-
-#~ msgid "Are you sure you want to delete input: "
-#~ msgstr "¿Estás seguro de que quieres borrar la entrada:"
 
 #~ msgid "Delete input?"
 #~ msgstr "¿Borrar entrada?"

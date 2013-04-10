@@ -7,7 +7,9 @@ function feedvalue_widgetlist()
       "offsetx":-40,"offsety":-30,"width":80,"height":60,
       "menu":"Widgets",
       "options":["feedname","units"],
-      "optionstype":["feed","value"]
+      "optionstype":["feed","value"],
+      "optionsname":["Feed","Value"],
+      "optionshint":["Feed value","Value shown"] 
     }
   }
   return widgets;

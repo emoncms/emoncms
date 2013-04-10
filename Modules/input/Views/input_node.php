@@ -1,88 +1,97 @@
-<?php
-/*
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-*/
-  
-global $path, $session;
+<?php 
+  global $path; 
 ?>
 
-<script type="text/javascript" src="<?php print $path; ?>Lib/flot/jquery.min.js"></script>
-<script type="text/javascript" src="<?php print $path; ?>Lib/listjs/list.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
+<style>
+input[type="text"] {
+     width: 88%; 
+}
 
-<div style="float:right;"><a href="api">Input API Help</a></div>
+#table td:nth-of-type(1) { width:5%;}
+#table td:nth-of-type(2) { width:10%;}
+#table td:nth-of-type(3) { width:25%;}
 
-<h2><?php echo _("Inputs"); ?></h2>
+#table td:nth-of-type(5) { width:30px; text-align: center; }
+#table td:nth-of-type(6) { width:30px; text-align: center; }
+#table td:nth-of-type(7) { width:30px; text-align: center; }
+</style>
 
-<?php if ($inputs) { ?>
-    
-<div id="inputlist"></div>
+<br>
+<div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div></div>
 
-<script type="text/javascript">
+<div class="container">
+    <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
+    <div id="table"></div>
 
-  // The list is created using list.js - a javascript dynamic user interface list creator created as part of this project
-  // list.js is still in early development.
+    <div id="noinputs" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+    </div>
 
-  var list =
-  {
-    'element': "inputlist",
- 
-    'items': <?php echo json_encode($inputs); ?>,
-
-    'groupby': 'nodeid',
-
-    'fields': 
-    {
-      'id':{}, 
-      'name':
-      {
-        'button':"input/process/list.html?inputid="
-      }, 
-      'updated':
-      { 
-        'format':"updated"
-      }, 
-      'value':
-      {
-        'format':"value", 
-      }
-    },
-
-    'group_prefix': "Node ",
-
-    'path': "<?php echo $path; ?>",
-    'controller': "input",
-    'listaction': "list",
-
-    'editable': false,
-    'deletable': true,
-    'restoreable': false,
-
-    'group_properties': {},
-
-    'updaterate': 5000
-  };
-
-  listjs(list);
-
-</script>
-
-<?php } else { ?>
-
-<div class="alert alert-block">
-<h4 class="alert-heading">No inputs created</h4>
-<p>Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.</p>
 </div>
 
-<p><b>To connect up a NanodeRF:</b></p>
-<p>1) Download and open the <a href="https://github.com/openenergymonitor/NanodeRF/tree/master/NanodeRF_multinode" >NanodeRF_multinode</a> firmware.</p>
-<p>2) Set line 83 to: <b>char apikey[] = "<?php echo get_apikey_write($session['userid']); ?>";</b></p>
-<p>3) Upload the firmware to your NanodeRF.</p>
+<script>
 
+  var path = "<?php echo $path; ?>";
 
-<?php } ?> 
+  // Extend table library field types
+  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
+
+  table.element = "#table";
+
+  table.fields = {
+    //'id':{'type':"fixed"},
+    'nodeid':{'title':'<?php echo _("Node:"); ?>','type':"fixed"},
+    'name':{'title':'<?php echo _("name"); ?>','type':"text"},
+    'description':{'title':'<?php echo _('Description'); ?>','type':"text"},
+    'processList':{'title':'<?php echo _('Process list'); ?>','type':"processlist"},
+    // 'time':{'title':'last updated', 'type':"updated"},
+    // 'value':{'type':"value"},
+
+    // Actions
+    'edit-action':{'title':'', 'type':"edit"},
+    'delete-action':{'title':'', 'type':"delete"},
+    'view-action':{'title':'', 'type':"iconlink", 'link':path+"input/process/list.html?inputid=", 'icon':'icon-wrench'}
+
+  }
+
+  table.groupprefix = "Node ";
+  table.groupby = 'nodeid';
+
+  update();
+
+  function update()
+  {
+    table.data = input.list();
+    table.draw();
+    if (table.data.length != 0) {
+      $("#noinputs").hide();
+      $("#apihelphead").show();      
+      $("#localheading").show();
+    } else {
+      $("#noinputs").show();
+      $("#localheading").hide();
+      $("#apihelphead").hide(); 
+    }
+  }
+
+  var updater = setInterval(update, 10000);
+
+  $("#table").bind("onEdit", function(e){
+    clearInterval(updater);
+  });
+
+  $("#table").bind("onSave", function(e,id,fields_to_update){
+    input.set(id,fields_to_update); 
+    updater = setInterval(update, 10000);
+  });
+
+  $("#table").bind("onDelete", function(e,id){
+    input.remove(id); 
+    update();
+  });
+
+</script>

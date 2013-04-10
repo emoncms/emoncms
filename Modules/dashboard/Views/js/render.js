@@ -44,6 +44,13 @@ function show_dashboard()
   browserVersion = Browser.Version();
   if (browserVersion < 9) dialrate = 0.2;
 
+  for (z in widget)
+  {
+    var fname = widget[z]+"_init";
+    var fn = window[fname];
+    fn();
+  }
+
   update();
 }
 
@@ -51,13 +58,13 @@ function show_dashboard()
 function update()
 {
   var query = path + "feed/list.json?userid="+userid;
-  if (apikey) query += "&apikey="+apikey;
   $.ajax(
   {
     url : query,
     dataType : 'json',
     success : function(data)
     { 
+
       for (z in data)
       {
         var newstr = data[z]['name'].replace(/\s/g, '-');

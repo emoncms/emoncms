@@ -9,8 +9,37 @@
   http://openenergymonitor.org
 */
   
-global $path, $useckeditor;
+global $path, $session, $useckeditor;
 ?>
+
+<style>
+
+.greydashmenu {
+  display: block;
+  list-style: none outside none;
+  margin: 0;
+  padding: 0;
+}
+
+.greydashmenu li {
+  list-style: none outside none;
+  margin: 0;
+  padding: 0;
+  border-right: 1px solid #eee;
+  float: left;
+}
+
+.greydashmenu li a {
+  display: block;
+  margin: 0;
+  padding: 0 12px;
+  border-right: 1px solid #ccc;
+  text-decoration: none;
+  font: 13px/27px sans-serif;
+  text-transform: none;
+}
+
+</style>
 
 <span style="float:left; color:#888; font: 13px/27px sans-serif; font-weight:bold; "><?php echo _("Dashboards:"); ?></span>
 
@@ -18,22 +47,21 @@ global $path, $useckeditor;
   <?php echo $menu; ?>
 </ul>
 
-<div align="right" style="padding:4px;">
-  <?php if ($type=="view") { ?>
-    <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" title="<?php echo _("Draw Editor"); ?>" ><i class="icon-edit"></i></a>
-    
-    <?php if ($useckeditor) { ?>
-      <a href="<?php echo $path; ?>dashboard/ckeditor?id=<?php echo $id; ?>" title="CKEditor" >
-      <img src="<?php echo $path; ?>/Includes/editors/images/ckicon.png" style="margin-top:-5px;"/></a>
-    <?php } ?>
-  <?php } ?>
+<?php if ($session['write']) { ?>
 
-  <?php if ($type=="edit" || $type=="ckeditor") { ?>
-    <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>" title="<?php echo _("View mode"); ?>"><i class="icon-eye-open"></i></a>
-  <?php } ?>
-    
-  <a  data-toggle="modal" href="#myModal"><i class="icon-wrench" title="<?php echo _("Config"); ?>"></i></a>
-  <a href="#" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/new.json  ',data : '',dataType : 'json',success : location.reload()});" title="<?php echo _("New"); ?>"><i class="icon-plus-sign"></i></a>
-  <a href="<?php echo $path; ?>dashboard/thumb"><i class="icon-th-large" title="<?php echo _("Thumb view"); ?>"></i></a>
-  <a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _("List view"); ?>"></i></a>   
-</div>
+  <div align="right" style="padding:4px;">
+    <?php if ($type=="view" && isset($id)) { ?>
+      <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" title="<?php echo _("Draw Editor"); ?>" ><i class="icon-edit"></i></a>
+    <?php } ?>
+
+    <?php if ($type=="edit" && isset($id)) { ?>
+      <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>" title="<?php echo _("View mode"); ?>"><i class="icon-eye-open"></i></a>
+      <a href="#myModal" role="button" data-toggle="modal" title="<?php echo _("Configure dashboard"); ?>"><i class="icon-wrench"></i></a>
+    <?php } ?>
+
+    <a href="#" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});" title="<?php echo _("New"); ?>"><i class="icon-plus-sign"></i></a>
+
+    <a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _('List view'); ?>"></i></a>   
+  </div>
+
+<?php } ?>

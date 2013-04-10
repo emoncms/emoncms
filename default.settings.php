@@ -56,7 +56,10 @@
   // Allow user register in emoncms
   $allowusersregister = TRUE;
 
+  // Enable remember me feature - needs more testing
+  $enable_rememberme = TRUE; 
+
   // Skip database setup test - set to false once database has been setup.
-  $dbtest = true;
+  $dbtest = TRUE;
 
 ?>

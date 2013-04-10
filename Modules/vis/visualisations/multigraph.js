@@ -34,6 +34,7 @@
   function vis_feed_data()
   {
     var plotlist = convert_to_plotlist(multigraph_feedlist);
+    console.log(plotlist);
     plotdata = [];
     for(var i in plotlist) {
       if (timeWindowChanged) plotlist[i].plot.data = null;

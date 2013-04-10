@@ -15,16 +15,15 @@
 
   function vis_controller()
   {
+    global $mysqli, $session, $route, $user;
+
+    $result = false;
+
     require "Modules/feed/feed_model.php";
+    $feed = new Feed($mysqli);
+
     require "Modules/vis/multigraph_model.php";
-    global $session, $route;
-
-    $format = $route['format'];
-    $action = $route['action'];
-    $subaction = $route['subaction'];
-
-    $output['content'] = "";
-    $output['message'] = "";
+    $multigraph = new Multigraph($mysqli);
 
     $visdir = "vis/visualisations/";
  
@@ -59,73 +58,75 @@
     );
 
     $write_apikey = ""; $read_apikey = "";
-    if ($session['read']) $read_apikey = get_apikey_read($session['userid']);
-    if ($session['write']) $write_apikey = get_apikey_write($session['userid']);
+    if ($session['read']) $read_apikey = $user->get_apikey_read($session['userid']);
+    if ($session['write']) $write_apikey = $user->get_apikey_write($session['userid']);
 
-    if ($action == 'list' && $session['write'])
+    if ($route->format =='html')
     {
-      $multigraphs = get_user_multigraph($session['userid']);
-      $user = get_user($session['userid']);
-      $feedlist = get_user_feed_names($session['userid']);
-      $output['content'] = view("vis/vis_main_view.php", array('user' => $user, 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
-    }
-
-    // Auto - automatically selects visualisation based on datatype
-    // and is used primarily for quick checking feeds from the feeds page.
-    if ($action == "auto")
-    {
-      $feedid = intval(get('feedid'));
-      $datatype = get_feed_field($feedid,'datatype');
-      if ($datatype == 0) $output['message'] = "Feed type or authentication not valid";
-      if ($datatype == 1) $action = 'rawdata';
-      if ($datatype == 2) $action = 'bargraph';
-      if ($datatype == 3) $action = 'histgraph';
-    }
-
-    while ($vis = current($visualisations))
-    {
-      $viskey = key($visualisations);
-
-      // If the visualisation has a set property called action
-      // then override the visualisation key and use the set action instead
-      if (isset($vis['action'])) $viskey = $vis['action'];
- 
-      if ($action == $viskey)
-      {
-        $array = array();
-        $array['valid'] = true;
-
-        if (isset($vis['options']))
+        if ($route->action == 'list' && $session['write'])
         {
-        foreach ($vis['options'] as $option)
-        {
-          $key = $option[0]; $type = $option[1];
-          if (isset($option[2])) $default = $option[2]; else $default = "";
- 
-          if ($type==1 || $type==2 || $type==3) 
-          {
-            $array[$key] = intval(get($key));
-            $array[$key.'name'] = get_feed_field(intval(get($key)),'name');
-            if (!feedtype_belongs_user_or_public($array[$key], $session['userid'], $type)) $array['valid'] = false;
-          }
-
-          // Boolean not used at the moment
-          if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
-          if ($type==5) $array[$key] = preg_replace('/[^\w\s£$]/','',get($key))?get($key):$default;
-          if ($type==6) $array[$key] = floatval((get($key)?get($key):$default));
-          if ($type==7) $array[$key] = intval((get($key)?get($key):$default));
-        }
+            $multigraphs = $multigraph->getlist($session['userid']);
+            $feedlist = $feed->get_user_feed_names($session['userid']);
+            $result = view("Modules/vis/vis_main_view.php", array('user' => $user->get($session['userid']), 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
         }
 
-        $array['apikey'] = $read_apikey;
-        $array['write_apikey'] = $write_apikey;
+        // Auto - automatically selects visualisation based on datatype
+        // and is used primarily for quick checking feeds from the feeds page.
+        if ($route->action == "auto")
+        {
+            $feedid = intval(get('feedid'));
+            $datatype = $feed->get_field($feedid,'datatype');
+            if ($datatype == 0) $result = "Feed type or authentication not valid";
+            if ($datatype == 1) $route->action = 'rawdata';
+            if ($datatype == 2) $route->action = 'bargraph';
+            if ($datatype == 3) $route->action = 'histgraph';
+        }
 
-        $output['content'] = view($visdir.$viskey.".php", $array);
+        while ($vis = current($visualisations))
+        {
+            $viskey = key($visualisations);
 
-        if ($array['valid'] == false) $output['content'] .= "<div style='position:absolute; top:0px; left:0px; background-color:rgba(255,255,255,0.5); width:100%; height:100%; text-align:center; padding-top:100px;'><h3>Feed type or authentication not valid</h3></div>";
+            // If the visualisation has a set property called action
+            // then override the visualisation key and use the set action instead
+            if (isset($vis['action'])) $viskey = $vis['action'];
+       
+            if ($route->action == $viskey)
+            {
+                $array = array();
+                $array['valid'] = true;
 
-      }
-      next($visualisations);
+                if (isset($vis['options']))
+                {
+                    foreach ($vis['options'] as $option)
+                    {
+                        $key = $option[0]; $type = $option[1];
+                        if (isset($option[2])) $default = $option[2]; else $default = "";
+               
+                        if ($type==1 || $type==2 || $type==3) 
+                        {
+                            $array[$key] = intval(get($key));
+                            $array[$key.'name'] = $feed->get_field(intval(get($key)),'name');
+                            if (!$feed->feedtype_belongs_user_or_public($array[$key], $session['userid'], $type)) $array['valid'] = false;
+                        }
+
+                        // Boolean not used at the moment
+                        if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
+                        if ($type==5) $array[$key] = preg_replace('/[^\w\s£$]/','',get($key))?get($key):$default;
+                        if ($type==6) $array[$key] = floatval((get($key)?get($key):$default));
+                        if ($type==7) $array[$key] = intval((get($key)?get($key):$default));
+                    }
+                }
+
+                $array['apikey'] = $read_apikey;
+                $array['write_apikey'] = $write_apikey;
+
+                $result = view("Modules/".$visdir.$viskey.".php", $array);
+
+                if ($array['valid'] == false) $result .= "<div style='position:absolute; top:0px; left:0px; background-color:rgba(255,255,255,0.5); width:100%; height:100%; text-align:center; padding-top:100px;'><h3>Feed type or authentication not valid</h3></div>";
+
+            }
+            next($visualisations);
+        }
     }
 
     /*
@@ -134,32 +135,15 @@
 
     */
 
-    if ($action == 'multigraph' && $subaction == 'new' && $session['write'])
+    if ($route->format == 'json' && $route->action == 'multigraph')
     {
-      $id = create_multigraph($session['userid']);
+        if ($route->subaction == 'new' && $session['write']) $result = $multigraph->create($session['userid']);
+        if ($route->subaction == 'delete' && $session['write']) $result = $multigraph->delete(get('id'),$session['userid']);
+        if ($route->subaction == 'set' && $session['write']) $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'));
+        if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
     }
 
-    elseif ($action == 'multigraph' && $subaction == 'delete' && $session['write'])
-    {
-      $id = intval(get('id'));
-      delete_multigraph($id,$session['userid']);
-    }
-
-    elseif ($action == 'multigraph' && $subaction == 'set' && $session['write'])
-    {
-      $id = intval(get('id'));
-      $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',get('feedlist'));
-      set_multigraph($id,$session['userid'],'',$feedlist);
-    }
-
-    elseif ($action == 'multigraph' && $subaction == 'get' && $session['read'])
-    {
-      $id = intval(get('id'));
-      $multigraph_feedlist = get_multigraph($id,$session['userid']);
-      $output['content'] = json_encode($multigraph_feedlist);
-    }
-
-    return $output;
+    return array('content'=>$result);
   }
 
 ?>

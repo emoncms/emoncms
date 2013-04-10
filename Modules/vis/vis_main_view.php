@@ -15,7 +15,6 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 global $path;
 ?>
-  <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.min.js"></script>
   <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_edit.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
@@ -110,7 +109,7 @@ global $path;
 
   // 1) ON CLICK OF VISUALISATION OPTION:
 
-  $("#visselect").change(function(){
+  $("#visselect").click(function(){
 
     // Custom multigraph visualisation items
     if ($(this).val()=="multigraph")
@@ -127,7 +126,7 @@ global $path;
       // 1) Start by drawing a dropdown multigraph id selector
       $("#box-options").html(out+" &nbsp;&nbsp;&nbsp;<b>New:</b> <i class='icon-plus'></i></p><div id='feedtable' ></div>");
 
-      $("#midselector").change(function(){
+      $("#midselector").click(function(){
         multigraph = $(this).val();
 
         $.ajax({                                      

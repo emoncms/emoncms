@@ -11,13 +11,10 @@
 <?php
   global $path;
   $embed = intval(get("embed"));
-  $multigraph_feedlist = get_multigraph($mid,1);
-
-  if ($mid == 0) $multigraph_feedlist = array();
+  $mid = intval(get("mid"));
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 
@@ -33,16 +30,26 @@
 <div id="multigraph"></div>
 
 <script id="source" language="javascript" type="text/javascript">
-  var embed = <?php echo $embed; ?>;
+
+  var mid = <?php echo $mid; ?>;
   var path = "<?php echo $path; ?>";
-  var multigraph_feedlist = <?php echo json_encode($multigraph_feedlist); ?>;
+  var embed = <?php echo $embed; ?>;
   var apikey = "<?php echo $apikey; ?>";
+  var multigraph_feedlist = {};
 
-  var timeWindow = (3600000*24.0*7);				//Initial time window
-  var start = ((new Date()).getTime())-timeWindow;		//Get start time
-  var end = (new Date()).getTime();				//Get end time
+  $.ajax({ url: path+"vis/multigraph/get.json", data: "&id="+mid, dataType: 'json', async: true,
+    success: function(data)
+    {
+        multigraph_feedlist = data;
 
-  multigraph_init("#multigraph");
-  vis_feed_data();
+        var timeWindow = (3600000*24.0*7);				//Initial time window
+        var start = ((new Date()).getTime())-timeWindow;		//Get start time
+        var end = (new Date()).getTime();				//Get end time
+
+        multigraph_init("#multigraph");
+        vis_feed_data();
+    } 
+  });
+
 </script>
 

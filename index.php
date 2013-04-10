@@ -1,4 +1,5 @@
 <?php
+
   /*
 
   All Emoncms code is released under the GNU Affero General Public License.
@@ -11,86 +12,95 @@
  
   */
 
-  // Load emoncms framework core
-  require("core.php");
-    
-  // Process user settings
-  require "process_settings.php";
+  define('EMONCMS_EXEC', 1);
 
-  require("locale.php");
+  // 1) Load settings and core scripts
+  require "process_settings.php";
+  require "core.php";
+  require "route.php";
+  require "locale.php";
   
   $path = get_application_path();
 
-  // Database connect
-  require("db.php");
-  switch(db_connect()) {
-    case 4: db_schema_setup(load_db_schema()); break;
-  }
+  // 2) Database
+  $mysqli = new mysqli($server,$username,$password,$database);
 
-  // Session control
+  if (!$mysqli->connect_error && $dbtest==true) {
+    require "Lib/dbschemasetup.php";
+    if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
+  }  
+
+  // 3) User sessions
+  require "Modules/user/rememberme_model.php";
+  $rememberme = new Rememberme($mysqli);
   require("Modules/user/user_model.php");
+  $user = new User($mysqli,$rememberme);
+
   if (get('apikey'))
-    $session = user_apikey_session($_GET['apikey']);
+    $session = $user->apikey_session($_GET['apikey']);
   else
-    $session = emon_session_start();
+    $session = $user->emon_session_start();
 
-  set_emoncms_lang($session['userid']);
+  // 4) Language
+  if (!isset($session['lang'])) $session['lang']='';
+  set_emoncms_lang($session['lang']);
 
-  // 1) Get route
-  $route = decode_route(get('q'));
+  // 5) Get route and load controller
+  $route = new Route(get('q'));
 
   if (get('embed')==1) $embed = 1; else $embed = 0;
 
-  // If no route specified use defaults
-  if (!$route['controller'] && !$route['action'])
+  // If no route specified use defaults 
+  if (!$route->controller && !$route->action)
   {
     // Non authenticated defaults
     if (!$session['read'])
     {
-      $route['controller'] = $default_controller;
-      $route['action'] = $default_action;
+      $route->controller = $default_controller;
+      $route->action = $default_action;
     }
     else // Authenticated defaults
     {
-      $route['controller'] = $default_controller_auth;
-      $route['action'] = $default_action_auth;
+      $route->controller = $default_controller_auth;
+      $route->action = $default_action_auth;
     }
   }
 
-  // Route calls for api through to input
-  if ($route['controller'] == "api") $route['controller'] = "input";
-  if ($route['controller'] == "input" && $route['action'] == "post") $route['format'] = "json";
-
-  // 2) Load the main page controller
-  $output = controller($route['controller']);
+  // 6) Load the main page controller
+  $output = controller($route->controller);
 
   // If no controller of this name - then try username
   if (!$output['content'] && $public_profile_enabled)
   { 
-    $userid = get_user_id($route['controller']);
+    $userid = $user->get_id($route->controller);
     if ($userid) {
-      $route['subaction'] = $route['action'];
+      $route->subaction = $route->action;
       $session['userid'] = $userid;
-      $session['username'] = $route['controller'];
+      $session['username'] = $route->controller;
       $session['read'] = 1; 
       $session['profile'] = 1;
-      $route['action'] = $public_profile_action;
+      $route->action = $public_profile_action;
       $output = controller($public_profile_controller);
     }
   }
 
-  // Output theming
-  if ($route['format']=='json')
-  {
-    echo $output['message'].$output['content'];
+  // 7) Output
+  if ($route->format == 'json') 
+  {  
+    if ($route->controller=='time') {
+      print $output['content'];
+    } elseif ($route->controller=='input' && $route->action=='post') {
+      print $output['content'];
+    } elseif ($route->controller=='input' && $route->action=='bulk') {
+      print $output['content'];
+    } else {
+      print json_encode($output['content']);
+    }
   }
-
-  if ($route['format']=='html')
+  if ($route->format == 'html') 
   {
-    $menu_left = load_menu();
-    $output['mainmenu'] = theme("menu_view.php", array());
-    if ($embed == 0) print theme("theme.php", $output);
-    if ($embed == 1) print theme("embed.php", $output);
+    $menu = load_menu();
+    $output['mainmenu'] = view("Theme/menu_view.php", array());
+    if ($embed == 0) print view("Theme/theme.php", $output);
+    if ($embed == 1) print view("Theme/embed.php", $output);
   }
-  
-?>
