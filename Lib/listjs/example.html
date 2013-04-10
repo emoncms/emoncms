@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://crypto-js.googlecode.com/svn/tags/3.1.2/build/rollups/md5.js"></script>
+
+    <script type="text/javascript" src="list.js"></script>
+  </head>
+  <body>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="span4">
+         <h3>My Account</h3>
+        </div>
+
+
+        <div class="span8">
+          <h3>My Profile</h3>
+          <div id="table"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <script>
+
+        list.data = { gravatar: 'trystan.lea@googlemail.com', name:'Trystan Lea', location: 'North Wales', timezone: 2, language:'Welsh', bio:'' };
+
+        list.fields = {
+          'gravatar':{'type':'gravatar'},
+          'name':{'type':'text'},
+          'location':{'type':'text'},
+          'timezone':{'type':'timezone'},
+          'language':{'type':'select', 'options':['Welsh', 'English','French','Spanish','German']},
+          'bio':{'type':'text'}
+        }
+
+        list.init();
+
+        $("#table").bind("onSave", function(e){
+          // user.set(list.data);
+        });
+
+    </script>
+
+  </body>
+</html

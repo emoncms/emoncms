@@ -7,7 +7,9 @@ function cylinder_widgetlist()
       "offsetx":-80,"offsety":-165,"width":160,"height":330,
       "menu":"Widgets",
       "options":["topfeed","botfeed"],
-      "optionstype":["feed","feed"]
+      "optionstype":["feed","feed"],
+      "optionsname":["Feed","Feed"],
+      "optionshint":["Top feed value","Bottom feed value"] 
     }
   }
   return widgets;
@@ -54,8 +56,11 @@ function cylinder_fastupdate()
 
   function draw_cylinder(ctx,cyl_bot,cyl_top,width,height)
   {
-    if (!ctx) return;
 
+    console.log("Draw cylinder");
+    if (!ctx) console.log("No CTX");
+    if (!ctx) return;
+  
     //var width = 168;
     var midx = width / 2;
     var cyl_width = width - 8;

@@ -1,10 +1,10 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms3\n"
+"Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:42+0100\n"
-"PO-Revision-Date: 2012-10-18 18:42+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"POT-Creation-Date: 2013-03-22 09:40+0100\n"
+"PO-Revision-Date: 2013-03-22 09:40+0100\n"
+"Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -12,160 +12,281 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../login_block.php:33 ../../../user_view.php:59
+#: ../../../login_block.php:30
 msgid "Username:"
 msgstr "Nombre de usuario:"
 
-#: ../../../login_block.php:37
-msgid "Password:"
-msgstr "Contraseña:"
-
-#: ../../../login_block.php:41
-msgid "Login"
-msgstr "Entrar"
-
-#: ../../../login_block.php:49
-msgid ""
-"Or if you are new enter a username and password above and click register"
-msgstr ""
-"O si eres un nuevo usuario introduce un nombre de usuario y contraseña y "
-"pulsa en registarse"
-
-#: ../../../login_block.php:49
-msgid "Register"
-msgstr "Registrase"
-
-#: ../../../user_controller.php:57
-msgid "Invalid username or password"
-msgstr "Usuario o contraseña inválidos"
-
-#: ../../../user_controller.php:62
-msgid "Welcome, you are now logged in"
-msgstr "Bienvenido, ya estás conectado"
-
-#: ../../../user_controller.php:90 ../../../user_controller.php:154
-msgid "Sorry username already exists"
-msgstr "El usuario ya existe"
-
-#: ../../../user_controller.php:95 ../../../user_controller.php:158
-msgid "Please enter a username that is 4 to 30 characters long"
-msgstr "Por favor introduzca un nombre de usuario de 4 a 40 caracteres"
-
-#: ../../../user_controller.php:100 ../../../user_controller.php:127
-msgid "Please enter a password that is 4 to 30 characters long"
-msgstr "Por favor introduzca una contraseña de 4 a 30 caracteres"
-
-#: ../../../user_controller.php:108
-msgid "Your new account has been created"
-msgstr "Tu nueva cuenta ha sido creada"
-
-#: ../../../user_controller.php:131
-msgid "Your password has been changed"
-msgstr "Tu contraseña ha sido cambiada"
-
-#: ../../../user_controller.php:136
-msgid "Invalid password"
-msgstr "Contraseña inválida"
-
-#: ../../../user_controller.php:162
-msgid "No email address present"
-msgstr "Email no presente"
-
-#: ../../../user_controller.php:166
-msgid "Username and password updated"
-msgstr ""
-
-#: ../../../user_controller.php:182
-msgid "New read apikey: "
-msgstr "Nueva clave de lectura (API):"
-
-#: ../../../user_controller.php:198
-msgid "New write apikey: "
-msgstr "Nueva clave de escritura (API):"
-
-#: ../../../user_controller.php:215
-msgid "You are logged out"
-msgstr "Te has desconectado"
-
-#: ../../../user_controller.php:220
-msgid "Invalid token"
-msgstr "Token inválido"
-
-#: ../../../user_view.php:17
-msgid "User: "
-msgstr "Usuario:"
-
-#: ../../../user_view.php:23
-msgid "Select preferred language"
-msgstr "Selecciona el idioma por defecto:"
-
-#: ../../../user_view.php:27 ../../../user_view.php:29
-msgid "Browser language"
-msgstr "Lenguaje del navegador"
-
-#: ../../../user_view.php:42
-msgid "Save"
-msgstr "Guardar"
-
-#: ../../../user_view.php:48
-msgid "Local time"
-msgstr "Hora local"
-
-#: ../../../user_view.php:50
-msgid "Time offset in hours:"
-msgstr "Diferencia horario en horas:"
-
-#: ../../../user_view.php:53
-msgid "Set"
-msgstr "Establecer"
-
-#: ../../../user_view.php:57
-msgid "Change details"
-msgstr "Cambiar detalles"
-
-#: ../../../user_view.php:62
+#: ../../../login_block.php:35
 msgid "Email:"
 msgstr "Correo:"
 
-#: ../../../user_view.php:65 ../../../user_view.php:76
-msgid "Change"
-msgstr "Cambiar"
+#: ../../../login_block.php:40
+msgid "Password:"
+msgstr "Contraseña:"
 
-#: ../../../user_view.php:69
-msgid "Change password"
-msgstr "Cambiar contraseña"
-
-#: ../../../user_view.php:70
-msgid "Current password:"
+#: ../../../login_block.php:45
+#, fuzzy
+msgid "Confirm password:"
 msgstr "Contraseña actual:"
 
-#: ../../../user_view.php:73
-msgid "New password:"
-msgstr "Nueva contraseña:"
+#: ../../../login_block.php:52
+#, fuzzy
+msgid "Remember me"
+msgstr " Recordarme"
 
-#: ../../../user_view.php:87
-msgid "en_EN"
-msgstr "Inglés"
+#: ../../../login_block.php:53
+msgid "Login"
+msgstr "Entrar"
 
-#: ../../../user_view.php:88
+#: ../../../login_block.php:54
+msgid "or"
+msgstr "o"
+
+#: ../../../login_block.php:54
+msgid "register"
+msgstr "regístrate"
+
+#: ../../../login_block.php:58
+msgid "Register"
+msgstr "Registrase"
+
+#: ../../../login_block.php:59
+msgid "cancel"
+msgstr ""
+
+#: ../../../user_model.php:126
+msgid "Missing username, password or email paramater"
+msgstr ""
+
+#: ../../../user_model.php:128 ../../../user_model.php:250
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr ""
+
+#: ../../../user_model.php:132 ../../../user_model.php:261
+#, fuzzy
+msgid "Username already exists"
+msgstr "El usuario ya existe"
+
+#: ../../../user_model.php:134 ../../../user_model.php:270
+#, fuzzy
+msgid "Email address format error"
+msgstr "Email no presente"
+
+#: ../../../user_model.php:136 ../../../user_model.php:248
+msgid "Username length error"
+msgstr ""
+
+#: ../../../user_model.php:137 ../../../user_model.php:219
+#: ../../../user_model.php:220
+msgid "Password length error"
+msgstr ""
+
+#: ../../../user_model.php:162
+#, fuzzy
+msgid "Username or password empty"
+msgstr "Usuario o contraseña inválidos"
+
+#: ../../../user_model.php:165
+msgid ""
+"Username must only contain a-z and 0-9 characters, if you created an account "
+"before this rule was in place enter your username without the non a-z 0-9 "
+"characters to login and feel free to change your username on the profile "
+"page."
+msgstr ""
+
+#: ../../../user_model.php:172
+#, fuzzy
+msgid "Username does not exist"
+msgstr "La fuente no existe"
+
+#: ../../../user_model.php:179
+#, fuzzy
+msgid "Incorrect password"
+msgstr "Contraseña actual:"
+
+#: ../../../user_model.php:198
+msgid "Login successful"
+msgstr ""
+
+#: ../../../user_model.php:239
+#, fuzzy
+msgid "Old password incorect"
+msgstr "Contraseña antigua:"
+
+#: ../../../user_model.php:245
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change username"
+msgstr ""
+
+#: ../../../user_model.php:257
+#, fuzzy
+msgid "Username updated"
+msgstr "Nombre de usuario"
+
+#: ../../../user_model.php:267
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change email"
+msgstr ""
+
+#: ../../../user_model.php:273
+#, fuzzy
+msgid "Email updated"
+msgstr "actualizado"
+
+#: ../../../profile/profile.php:22
 msgid "es_ES"
 msgstr "Español"
 
-#: ../../../user_view.php:89
-msgid "nl_BE"
-msgstr "Belga"
-
-#: ../../../user_view.php:90
-msgid "nl_NL"
-msgstr "Holandés"
-
-#: ../../../user_view.php:91
+#: ../../../profile/profile.php:23
 msgid "fr_FR"
 msgstr "Francés"
+
+#: ../../../profile/profile.php:35
+#, fuzzy
+msgid "My account"
+msgstr "Cuenta"
+
+#: ../../../profile/profile.php:39
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: ../../../profile/profile.php:43 ../../../profile/profile.php:52
+#: ../../../profile/profile.php:75
+msgid "Save"
+msgstr "Guardar"
+
+#: ../../../profile/profile.php:48
+#, fuzzy
+msgid "Email"
+msgstr "Correo:"
+
+#: ../../../profile/profile.php:57
+#, fuzzy
+msgid "Change Password"
+msgstr "Cambiar contraseña"
+
+#: ../../../profile/profile.php:63
+#, fuzzy
+msgid "Current password"
+msgstr "Contraseña actual:"
+
+#: ../../../profile/profile.php:67
+#, fuzzy
+msgid "New password"
+msgstr "Nueva contraseña:"
+
+#: ../../../profile/profile.php:71
+msgid "Repeat new password"
+msgstr "Confirma la contraseña"
+
+#: ../../../profile/profile.php:76
+msgid "Cancel"
+msgstr ""
+
+#: ../../../profile/profile.php:82
+msgid "My Profile"
+msgstr "Perfil"
+
+#: ../../../profile/profile.php:98
+msgid "Gravatar"
+msgstr ""
+
+#: ../../../profile/profile.php:99
+msgid "Name"
+msgstr "Nombre"
+
+#: ../../../profile/profile.php:100
+#, fuzzy
+msgid "Location"
+msgstr "Hora local"
+
+#: ../../../profile/profile.php:101
+msgid "Timezone"
+msgstr "Zona horaria"
+
+#: ../../../profile/profile.php:102
+msgid "Language"
+msgstr "Lenguaje"
+
+#: ../../../profile/profile.php:103
+msgid "Bio"
+msgstr ""
+
+#: ../../../profile/profile.php:228
+msgid "Passwords do not match"
+msgstr ""
+
+#~ msgid ""
+#~ "Or if you are new enter a username and password above and click register"
+#~ msgstr ""
+#~ "O si eres un nuevo usuario introduce un nombre de usuario y contraseña y "
+#~ "pulsa en registarse"
+
+#~ msgid "Welcome, you are now logged in"
+#~ msgstr "Bienvenido, ya estás conectado"
+
+#~ msgid "Please enter a username that is 4 to 30 characters long"
+#~ msgstr "Por favor introduzca un nombre de usuario de 4 a 40 caracteres"
+
+#~ msgid "Please enter a password that is 4 to 30 characters long"
+#~ msgstr "Por favor introduzca una contraseña de 4 a 30 caracteres"
+
+#~ msgid "Your new account has been created"
+#~ msgstr "Tu nueva cuenta ha sido creada"
+
+#~ msgid "Your password has been changed"
+#~ msgstr "Tu contraseña ha sido cambiada"
+
+#~ msgid "Invalid password"
+#~ msgstr "Contraseña inválida"
+
+#~ msgid "New read apikey: "
+#~ msgstr "Nueva clave de lectura (API):"
+
+#~ msgid "New write apikey: "
+#~ msgstr "Nueva clave de escritura (API):"
+
+#~ msgid "You are logged out"
+#~ msgstr "Te has desconectado"
+
+#~ msgid "Invalid token"
+#~ msgstr "Token inválido"
+
+#~ msgid "User: "
+#~ msgstr "Usuario:"
+
+#~ msgid "Select preferred language"
+#~ msgstr "Selecciona el idioma por defecto:"
+
+#~ msgid "Browser language"
+#~ msgstr "Lenguaje del navegador"
+
+#~ msgid "Time offset in hours:"
+#~ msgstr "Diferencia horario en horas:"
+
+#~ msgid "Set"
+#~ msgstr "Establecer"
+
+#~ msgid "Change details"
+#~ msgstr "Cambiar detalles"
+
+#~ msgid "Change"
+#~ msgstr "Cambiar"
+
+#~ msgid "en_EN"
+#~ msgstr "Inglés"
+
+#~ msgid "nl_BE"
+#~ msgstr "Belga"
+
+#~ msgid "nl_NL"
+#~ msgstr "Holandés"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -190,9 +311,6 @@ msgstr "Francés"
 
 #~ msgid "Feed type changed"
 #~ msgstr "Tipo de fuente cambiada"
-
-#~ msgid "Feed does not exist"
-#~ msgstr "La fuente no existe"
 
 #~ msgid "Feed tag changed"
 #~ msgstr "Etiqueta de la fuente cambiada"
@@ -348,9 +466,6 @@ msgstr "Francés"
 #~ "ejecutar una vista introduce los datos apropiados en las cajas de texto y "
 #~ "pulsa en el boton >."
 
-#~ msgid "Name"
-#~ msgstr "Nombre"
-
 #~ msgid "URL"
 #~ msgstr "Enlace"
 
@@ -453,9 +568,6 @@ msgstr "Francés"
 #~ msgid "Admin"
 #~ msgstr "Administrar"
 
-#~ msgid "Account"
-#~ msgstr "Cuenta"
-
 #~ msgid "Notify settings"
 #~ msgstr "Configuración de notificaciones"
 
@@ -506,9 +618,6 @@ msgstr "Francés"
 
 #~ msgid "registered users"
 #~ msgstr "usuarios registrados"
-
-#~ msgid "Username"
-#~ msgstr "Nombre de usuario"
 
 #~ msgid "Up hits"
 #~ msgstr "Up hits"
@@ -804,9 +913,6 @@ msgstr "Francés"
 #~ msgid "Powered by "
 #~ msgstr "Creado con "
 
-#~ msgid "Old password:"
-#~ msgstr "Contraseña antigua:"
-
 #~ msgid "CKEditor"
 #~ msgstr "CKEditor"
 
@@ -820,9 +926,6 @@ msgstr "Francés"
 #~ msgstr ""
 #~ "Lo siento, necesitas una clave válida o estar loggeado para ver esta "
 #~ "página"
-
-#~ msgid "Language"
-#~ msgstr "Lenguaje"
 
 #~ msgid "API keys"
 #~ msgstr "Claves API"
@@ -854,9 +957,6 @@ msgstr "Francés"
 #~ msgid "Spanish"
 #~ msgstr "Español"
 
-#~ msgid "updated"
-#~ msgstr "actualizado"
-
 #~ msgid "Save current configuration"
 #~ msgstr "Guardar configuración actual"
 
@@ -886,9 +986,6 @@ msgstr "Francés"
 
 #~ msgid "Day"
 #~ msgstr "Día"
-
-#~ msgid "Hour"
-#~ msgstr "Hora"
 
 #~ msgid "Left vs"
 #~ msgstr "Izquierda vs"

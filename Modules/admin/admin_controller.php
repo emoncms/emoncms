@@ -1,60 +1,55 @@
 <?php
-  /*
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
+/*
+    All Emoncms code is released under the GNU Affero General Public License.
+    See COPYRIGHT.txt and LICENSE.txt.
 
     ---------------------------------------------------------------------
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
+*/
 
+// no direct access
+defined('EMONCMS_EXEC') or die('Restricted access');
 
-    ADMIN CONTROLLER ACTIONS		ACCESS
+function admin_controller()
+{
+    global $mysqli,$session,$route,$updatelogin;
 
-    users				write & admin
+    // Allow for special admin session if updatelogin property is set to true in settings.php 
+    // Its important to use this with care and set updatelogin to false or remove from settings 
+    // after the update is complete.
+    if ($updatelogin || $session['admin']) $sessionadmin = true;
 
-  */
-
-  // no direct access
-  defined('EMONCMS_EXEC') or die('Restricted access');
-
-  function admin_controller()
-  {
-    //require "Modules/feed/feed_model.php";
-    global $session, $route;
-
-    $format = $route['format'];
-    $action = $route['action'];
-
-    $output['content'] = "";
-    $output['message'] = "";
-
-    //---------------------------------------------------------------------------------------------------------
-    // Gets the user list and user memory use
-    // http://yoursite/emoncms/admin/users
-    //---------------------------------------------------------------------------------------------------------
-
-    if ($action == 'view' && $session['write'] && $session['admin'])
+    if ($sessionadmin)
     {
-      $output['content'] = view("admin/admin_main_view.php", array());
+      if ($route->action == 'view') $result = view("Modules/admin/admin_main_view.php", array());
+
+      if ($route->action == 'db')
+      {
+          $applychanges = get('apply');
+          if (!$applychanges) $applychanges = false; else $applychanges = true;
+
+          require "Modules/admin/update_class.php";
+          require_once "Lib/dbschemasetup.php";
+
+          $update = new Update($mysqli);
+
+          $updates = array();
+          $updates[] = array(
+            'title'=>"Database schema", 
+            'description'=>"", 
+            'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+          );
+
+          // In future versions we could check against db version number as to what updates should be applied
+          $updates[] = $update->u0001($applychanges);
+          $updates[] = $update->u0002($applychanges);
+          $updates[] = $update->u0003($applychanges);
+
+          $result = view("Modules/admin/update_view.php", array('updates'=>$updates));
+      }
     }
 
-    if ($action == 'users' && $session['write'] && $session['admin'])
-    {
-      //$userlist = get_user_list();
-      //$output['content'] = view("admin/admin_view.php", array('userlist'=>$userlist));
-    }
-
-    if ($action == 'db' && $session['write'] && $session['admin'])
-    {
-      $out = db_schema_setup(load_db_schema());
-      $output['content'] = view("admin/admin_db_view.php", array('out'=>$out));
-    }
-
-
-
-    return $output;
-  }
-
-
-?>
+    return array('content'=>$result);
+}

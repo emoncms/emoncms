@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="table.js"></script>
+  </head>
+  <body>
+
+    <style>
+      table tr td :last-child {
+        margin-bottom: 0;
+      }
+    </style>
+
+    <div class="container">
+      <h2>table.js: group by</h2>
+      <div id="table"></div>
+    </div>
+
+    <script>
+
+      table.element = "#table";
+
+      table.fields = {
+        'id':{'type':"fixed"},
+        'name':{'type':"text"},
+        'tag':{'type':"text"},
+        'datatype':{'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']}
+      }
+
+      table.groupby = 'tag';
+
+      table.data = [
+        {id:1,name:'house power',tag:'house',datatype:1},
+        {id:2,name:'house kWhd',tag:'house',datatype:2},
+        {id:3,name:'solar power',tag:'solar',datatype:1},
+        {id:4,name:'solar kWhd',tag:'solar',datatype:2}
+      ];
+
+      table.draw();
+
+    </script>
+  </body>
+</html
