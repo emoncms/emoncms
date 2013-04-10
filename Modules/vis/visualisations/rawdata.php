@@ -40,7 +40,7 @@
 
       </div>
 
-        <h3 style="position:absolute; top:0px; left:310px;"><span id="stats"></span></h3>
+        <h3 style="position:absolute; top:0px; left:410px;"><span id="stats"></span></h3>
     </div>
 
 <script id="source" language="javascript" type="text/javascript">
