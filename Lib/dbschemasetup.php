@@ -45,7 +45,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                 else
                 {
                     $query = "ALTER TABLE `$table` ADD `$field` $type";
-                    $operations[] = $query;
+                    if (!$apply) $operations[] = $query;
                     if ($apply) $mysqli->query($query);
                 } 
 
@@ -60,7 +60,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                 if ($array['Key']!=$key && $key=="PRI") $query .= " primary key";
 
                 if ($query) $query = "ALTER TABLE $table MODIFY `$field` $type".$query;
-                if ($query) $operations[] = $query;
+                if ($query && !$apply) $operations[] = $query;
                 if ($query && $apply) $mysqli->query($query);
 
                 next($schema[$table]);
@@ -93,7 +93,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                 }
             }
             $query .= ")";
-            if ($query) $operations[] = $query;
+            if ($query && !$apply) $operations[] = $query;
             if ($query && $apply) $mysqli->query($query);
         }
         next($schema);

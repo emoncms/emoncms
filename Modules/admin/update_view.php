@@ -1,5 +1,7 @@
 <?php 
 
+  global $path;
+
   $out = "";
   foreach ($updates as $update) 
   {
