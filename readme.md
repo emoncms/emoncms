@@ -1,4 +1,5 @@
-# Emoncms
+# Emoncms v5.0
+
 See main site: http://emoncms.org
 
 Emoncms is an open source energy visualisation web application, the main feature's include
