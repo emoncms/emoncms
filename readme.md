@@ -38,3 +38,30 @@ Emoncms is developed and has had contributions from the following people.
 - Dexa187		https://github.com/dexa187
 - Carlos Alonso Gabizó
 
+## Upgrading from version 4.0 (Modular emoncms)
+
+Download the latest version either by clicking on the zip icon in github or using git if you used git clone:
+
+    $ git pull origin master
+    
+Make a copy of your current settings.php file and create a new settings.php file from default.settings.php. Enter your emoncms database settings.
+Add the line:
+ 
+    $updatelogin = true;
+    
+to settings.php to enable a special database update only session, be sure to remove this line from settings.php once complete.
+
+In your internet browser goto open the admin/view page:
+
+    http://localhost/emoncms/admin/view
+    
+Click on the database update and check button to launch the database update script. 
+You should now see a list of changes to be performed on your existing emoncms database.
+You may at this point want to backup your input and users table before applying the changes.
+Once your happy with the changes click on apply changes to automatically apply all changes.
+
+That should be it.
+
+You may need to clear your cache if you find some of the interfaces buggy/missing.
+
+
