@@ -28,7 +28,7 @@ global $path, $allowusersregister, $enable_rememberme;
     <div id="login-form"  class="well" style="text-align:left">
       <p>
         <?php echo _('Username:'); ?><br/>
-        <input type="text" name="username" style="width:94%"/>
+        <input type="text" tabindex="1" name="username" style="width:94%"/>
       </p>
 
       <p class="register-item" style="display:none">
@@ -38,7 +38,7 @@ global $path, $allowusersregister, $enable_rememberme;
 
       <p>
         <?php echo _('Password:'); ?><br/>
-        <input type="password" name="password" style="width:94%"/>
+        <input type="password" tabindex="2" name="password" style="width:94%"/>
       </p>
 
       <p class="register-item" style="display:none">
@@ -49,8 +49,8 @@ global $path, $allowusersregister, $enable_rememberme;
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
-        <?php if ($enable_rememberme) { ?><input type="checkbox" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
-        <button id="login" class="btn btn-primary" type="button"><?php echo _('Login'); ?></button> 
+        <?php if ($enable_rememberme) { ?><input type="checkbox" tabindex="3" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
+        <button id="login" class="btn btn-primary" tabindex="4" type="button"><?php echo _('Login'); ?></button> 
         <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
       </p>
 
