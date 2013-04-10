@@ -15,12 +15,6 @@
 
   $menu_left = $menu['left'];
   $menu_dropdown = $menu['dropdown'];
-
-  if ($session['write']) $menu_right[] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
-  if (!$session['write']) $menu_right[] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
-  if ($session['write']) $menu_right[] = array('name'=>"<b>Troubleshooting</b>", 'path'=>"site/docs/status", 'order' => 0 );
-
-
 ?>
 
 <style>
