@@ -140,6 +140,24 @@ function menu_sort($a,$b) {
     return $a['order']>$b['order'];
 }
 
+//////// modules test
+function get_modules()
+{
+  $modules = array();
+  
+  $dir = scandir("Modules");
+    for ($i=2; $i<count($dir); $i++)
+    {
+        if (filetype("Modules/".$dir[$i])=='dir') 
+        {
+          $classname = $dir[$i].'_module';               
+          $modules[] = $classname;
+        }
+    }
+
+  return $modules;  
+}
+
 function __autoload($className)
 { 
   $file = 'Modules/'.str_replace('_module', '', $className).'/'.str_replace('_module', '_class.php', $className);
@@ -148,4 +166,33 @@ function __autoload($className)
     return false;
   else   
     require_once $file;          
+}
+
+function rendertemplate($position)
+{
+  $modules = get_modules();
+  $render = "";
+  
+  foreach ($modules as $module)
+  {
+    $module_class = new $module();    
+    if ($module_class instanceof iHTLMModule) {      
+      $render = $render . $module_class->moduleHTMLRender($position);
+    }  
+  }  
+  echo $render;
+}
+
+interface iModule
+{ 
+  public function getmenu(&$menu_left);
+  public function modulename();
+  public function moduleversion();
+  public function moduletype();
+  public function moduledescription();  
+}
+
+interface iHTLMModule
+{
+  public function moduleHTMLRender($position);
 }

@@ -12,5 +12,16 @@
     <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update & check'); ?></a>
   </td>
   </tr>
+<tr>
+  <td>
+    <h3><?php echo _('Manage Modules'); ?></h3>
+    <p><?php echo _('Here you can check EmonCMS modules status.'); ?></p>
+  </td>
+  <td>
+    <br>
+    <a href="<?php echo $path; ?>admin/modules" class="btn btn-info"><?php echo _('Check modules'); ?></a>
+  </td>
+  </tr>
+  
 </table>
 

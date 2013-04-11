@@ -24,7 +24,9 @@ function admin_controller()
     if ($sessionadmin)
     {
       if ($route->action == 'view') $result = view("Modules/admin/admin_main_view.php", array());
-
+      
+      if ($route->action == 'modules') $result = view("Modules/admin/admin_modules_view.php", array());
+      
       if ($route->action == 'db')
       {
           $applychanges = get('apply');

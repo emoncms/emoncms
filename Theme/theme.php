@@ -134,10 +134,9 @@
         </div>
 
         <div id="footer">
-            <?php echo _('Powered by '); ?>
-            <a href="http://openenergymonitor.org">openenergymonitor.org</a> 
-        </div>
-
+            <?php rendertemplate("footer"); ?>
+        </div>      
+        
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
 
     </body>

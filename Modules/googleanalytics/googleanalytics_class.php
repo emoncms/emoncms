@@ -1,21 +1,20 @@
 <?php
 
-class feed_module implements iModule {
+class googleanalytics_module implements iModule, iHTLMModule {
   
   public function __construct()
   {
   }  
   
   public function getmenu(&$menu_left)
-  {
-    $menu_left[] = array('name'=>"Feeds", 'path'=>"feed/list" , 'session'=>"write", 'order' => 2 );
-  }
+  {    
+  }  
   
   public function modulename()
   {
-    return "Feed Module";
+    return "Google Analytics Module";
   }
-
+  
   public function moduleversion()
   {
     return "1.0";
@@ -23,12 +22,17 @@ class feed_module implements iModule {
   
   public function moduletype()
   {
-    return "core";
-  }  
-    
+    return "test";
+  }
+
   public function moduledescription()
   {
-    return "Manage user feeds";
+    return "Google Analytics track module";
+  }
+  
+  public function moduleHTMLRender($position)
+  {
+    return "";
   }
     
 }

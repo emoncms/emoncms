@@ -1,6 +1,6 @@
 <?php
 
-class admin_module {
+class admin_module implements iModule {
   
   public function __construct()
   {
@@ -8,8 +8,29 @@ class admin_module {
   
   public function getmenu(&$menu_left)
   {
-    $menu_left[] = array('name'=>"Admin", 'path'=>"admin/view" , 'session'=>"admin",'order'=>5);
+    $menu_left[] = array('name'=>_("Admin"), 'path'=>"admin/view" , 'session'=>"admin",'order'=>5);
   }
+  
+  public function modulename()
+  {
+    return "Admin Module";
+  }
+  
+  public function moduleversion()
+  {
+    return "1.0";
+  }
+
+  public function moduletype()
+  {
+    return "core";
+  }    
+  
+  public function moduledescription()
+  {
+    return "Administration EmonCMS module";
+  }
+  
 }
 
 ?>
