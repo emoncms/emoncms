@@ -234,6 +234,11 @@ class Feed
     if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
     if (isset($fields->datatype)) $array[] = "`datatype` = '".intval($fields->datatype)."'";
     if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
+    if (isset($fields->time)) {
+      $updatetime = date("Y-n-j H:i:s", intval($fields->time)); 
+      $array[] = "`time` = '".$updatetime."'";
+    }
+    if (isset($fields->value)) $array[] = "`value` = '".intval($fields->value)."'";
     // Convert to a comma seperated string for the mysql query
     $fieldstr = implode(",",$array);
     $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
