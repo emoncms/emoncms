@@ -18,9 +18,9 @@
 
   $menu_right = array();
   
-  if ($session['write']) $menu_right[] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
+  /*if ($session['write']) $menu_right[] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );*/
   if (!$session['write']) $menu_right[] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
-  if ($session['write']) $menu_right[] = array('name'=>"<b>Troubleshooting</b>", 'path'=>"site/docs/status", 'order' => 0 );
+  /*if ($session['write']) $menu_right[] = array('name'=>"<b>Troubleshooting</b>", 'path'=>"site/docs/status", 'order' => 0 );*/
 
 ?>
 
@@ -30,8 +30,9 @@
 
   <ul class="nav">
     <?php
-
-    foreach ($menu_left as $item) 
+      echo renderMenu();
+  /*
+    foreach (renderMenu() as $item) 
     { 
       if (isset($item['session'])) {
         if (isset($session[$item['session']]) && $session[$item['session']]==1) {
@@ -41,7 +42,8 @@
         echo "<li><a href=".$path.$item['path']." >".$item['name']."</a></li>";
       }
     } 
-
+*/
+    
     ?>
 
     <?php if (count($menu_dropdown) && $session['read']) { ?>

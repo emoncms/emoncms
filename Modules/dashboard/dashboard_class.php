@@ -1,14 +1,14 @@
 <?php
 
-class dashboard_module implements iModule {
+class dashboard_module implements iModule, iMenuModule {
   
   public function __construct()
   {
   }  
   
-  public function getmenu(&$menu_left)
+  public function getmenu()
   {
-    $menu_left[] = array('name'=>"Dashboard", 'path'=>"dashboard/view" , 'session'=>"write", 'order' => 4 );
+    return array('name'=>"Dashboard", 'path'=>"dashboard/view" , 'session'=>"write", 'order' => 4 );
   }  
   
   public function modulename()

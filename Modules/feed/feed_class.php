@@ -1,14 +1,14 @@
 <?php
 
-class feed_module implements iModule {
+class feed_module implements iModule, iMenuModule {
   
   public function __construct()
   {
   }  
   
-  public function getmenu(&$menu_left)
+  public function getmenu()
   {
-    $menu_left[] = array('name'=>"Feeds", 'path'=>"feed/list" , 'session'=>"write", 'order' => 2 );
+    return array('name'=>"Feeds", 'path'=>"feed/list" , 'session'=>"write", 'order' => 2 );
   }
   
   public function modulename()

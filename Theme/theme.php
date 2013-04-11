@@ -98,9 +98,9 @@
                         <img src="<?php echo $path; ?>Theme/favicon.png" style="width:28px;"/>
                     </button>
                     <div class="nav-collapse collapse">
-                      <?php if (!isset($runmenu)) $runmenu = '';
-                            echo $mainmenu.$runmenu;
-                      ?> 
+                      <?php if (!isset($runmenu)) $runmenu = '';                            
+                            echo $mainmenu.$runmenu;                            
+                      ?>                       
                     </div>
                 </div>
             </div>

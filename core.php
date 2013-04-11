@@ -127,7 +127,9 @@ function load_menu()
         {
           $classname = $dir[$i].'_module';               
           $module = new $classname();
-          $module->getmenu($menu_left);
+          
+          if ($module instanceof iMenuModule)
+            $module->getmenu($menu_left);
         }
     }
 
@@ -183,13 +185,47 @@ function rendertemplate($position)
   echo $render;
 }
 
+function renderMenu()
+{
+  $modules = get_modules();
+  $bmenu = "";
+  
+  foreach ($modules as $module)
+  {
+    $module_class = new $module();    
+    
+    if ($module_class instanceof iMenuModule) {      
+      $menu_item = $module_class->getmenu();
+      
+      var_dump($menu_item);
+      
+      if (isset($menu_item['session'])) {
+        if (isset($session[$menu_item['session']]) && $session[$menu_item['session']]==1) {
+          $bmenu = $bmenu . "<li><a href=".$path.$menu_item['path']." >".$menu_item['name']."</a></li>";
+        }       
+      } 
+      else
+      {
+          $bmenu = $bmenu . "<li><a href='' >".$menu_item['name']."</a></li>";
+      }
+    }  
+  }  
+  
+  return $bmenu;  
+}
+
+
 interface iModule
 { 
-  public function getmenu(&$menu_left);
   public function modulename();
   public function moduleversion();
   public function moduletype();
   public function moduledescription();  
+}
+
+interface iMenuModule
+{
+  public function getmenu();  
 }
 
 interface iHTLMModule

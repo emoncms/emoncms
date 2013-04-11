@@ -1,14 +1,14 @@
 <?php
 
-class input_module implements iModule {
+class input_module implements iModule, iMenuModule {
 
   public function __construct()
   {
   }  
   
-  public function getmenu(&$menu_left)
+  public function getmenu()
   {
-    $menu_left[] = array('name'=>"Input", 'path'=>"input/node" , 'session'=>"write", 'order' => 1 );
+    return array('name'=>"Input", 'path'=>"input/node" , 'session'=>"write", 'order' => 1 );
   }  
   
   public function modulename()

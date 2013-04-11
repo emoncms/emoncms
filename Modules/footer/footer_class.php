@@ -5,10 +5,6 @@
   {
   }  
   
-  public function getmenu(&$menu_left)
-  {    
-  }  
-  
   public function modulename()
   {
     return "Footer Module";

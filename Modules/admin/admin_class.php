@@ -1,14 +1,14 @@
 <?php
 
-class admin_module implements iModule {
+class admin_module implements iModule, iMenuModule {
   
   public function __construct()
   {
   }  
   
-  public function getmenu(&$menu_left)
+  public function getmenu()
   {
-    $menu_left[] = array('name'=>_("Admin"), 'path'=>"admin/view" , 'session'=>"admin",'order'=>5);
+    return array('name'=>_("Admin"), 'path'=>"admin/view" , 'session'=>"admin",'order'=>5);
   }
   
   public function modulename()

@@ -6,10 +6,6 @@ class googleanalytics_module implements iModule, iHTLMModule {
   {
   }  
   
-  public function getmenu(&$menu_left)
-  {    
-  }  
-  
   public function modulename()
   {
     return "Google Analytics Module";
