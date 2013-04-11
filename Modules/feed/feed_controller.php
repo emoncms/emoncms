@@ -47,6 +47,7 @@ function feed_controller()
             if ($route->action == 'data') $result = $feed->get_data(get('id'),get('start'),get('end'),get('dp'));
             if ($route->action == 'histogram') $result = $feed->get_histogram_data(get('id'),get('start'),get('end'));
             if ($route->action == 'kwhatpower') $result = $feed->get_kwhd_atpower(get('id'),get('min'),get('max'));
+            if ($route->action == 'kwhatpowers') $result = $feed->get_kwhd_atpowers(get('id'),get('points'));
         }
 
         // at least read session required

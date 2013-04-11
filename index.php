@@ -27,7 +27,7 @@
 
   if (!$mysqli->connect_error && $dbtest==true) {
     require "Lib/dbschemasetup.php";
-    if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema());
+    if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
   }  
 
   // 3) User sessions

@@ -406,6 +406,37 @@ class Feed
     return $data;
   }
 
+  public function get_kwhd_atpowers($feedid, $points)
+  {
+    $feedid = intval($feedid);
+    $feedname = "feed_".trim($feedid)."";
+
+    $points = json_decode($points);
+    
+    $data = array();
+
+    for ($i=0; $i<count($points)-1; $i++)
+    {
+      $min = intval($points[$i]);
+      $max = intval($points[$i+1]);
+
+      $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
+
+      while($row = $result->fetch_array()) 
+      { 
+        if (!isset($data[$row['time']])) {
+          $data[$row['time']] = array(0,0,0,0,0);
+          $data[$row['time']][0] = (int)$row['time']; 
+        }
+        $data[$row['time']][$i+1] = (float)$row['kWh']; 
+      }
+    }
+    $out = array();
+    foreach ($data as $item) $out[] = $item;
+
+    return $out;
+  }
+
   /*
 
   Feed table size
@@ -487,14 +518,19 @@ class Feed
       while ($moredata_available)
       {
           // 1) Load a block
-          $result = db_query("SELECT * FROM $feedname WHERE time>$start  
+          $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time>$start  
           ORDER BY time Asc Limit $block_size");
 
           $moredata_available = 0;
-          while($row = db_fetch_array($result)) 
+          while($row = $result->fetch_array()) 
           {
+            
               // Write block as csv to output stream
-              fputcsv($fh, array($row['time'],$row['data']));
+              if (!isset($row['data2'])) {
+                fputcsv($fh, array($row['time'],$row['data']));
+              } else {
+                fputcsv($fh, array($row['time'],$row['data'],$row['data2']));
+              }
 
               // Set new start time so that we read the next block along
               $start = $row['time'];

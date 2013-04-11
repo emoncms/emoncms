@@ -17,7 +17,7 @@ $schema['users'] = array(
     'gravatar' => array('type' => 'varchar(30)', 'default'=>''),
     'name'=>array('type'=>'varchar(30)', 'default'=>''),
     'location'=>array('type'=>'varchar(30)', 'default'=>''),
-    'timezone' => array('type' => 'int(11)', 'default'=>'0'),
+    'timezone' => array('type' => 'int(11)', 'default'=>0),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
     'bio' => array('type' => 'text', 'default'=>'')
 );
