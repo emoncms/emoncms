@@ -49,8 +49,23 @@
     <div style="width:100% height:50px; background-color:#ddd; padding:10px; margin:10px;">
     Edit feed_<?php echo $feedid; ?> @ time: <input type="text" id="time" style="width:150px;" value="" /> new value: 
     <input type="text" id="newvalue" style="width:150px;" value="" />
-    <input id="okb" type="submit" value="ok" class="button05"/>
+    <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
+    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
     </div>
+
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel"><?php echo _('WARNING deleting feed data is permanent'); ?></h3>
+  </div>
+  <div class="modal-body">
+    <p><?php echo _('Are you sure you want to delete the data in this window?'); ?></p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+    <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+  </div>
+</div>
 
 <script id="source" language="javascript" type="text/javascript">
 
@@ -118,6 +133,23 @@
       success: function() {} 
     });
     vis_feed_data();
+  });
+
+  $('#delete-button').click(function () {
+    $('#myModal').modal('show');
+  });
+
+  $("#confirmdelete").click(function()
+  {
+    $.ajax({                                      
+      url: path+'feed/deletedatarange.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end,
+      dataType: 'json',
+      async: false,                      
+      success: function() {} 
+    });
+    vis_feed_data();
+    $('#myModal').modal('hide');
   });
 </script>
 

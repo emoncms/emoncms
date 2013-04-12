@@ -322,9 +322,20 @@ class Feed
     $start = intval($start);
     $end = intval($end);
 
-    echo "<br><br>".$start;
     $feedname = "feed_".trim($feedid)."";
     $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end' LIMIT 1");
+  }
+
+  public function deletedatarange($feedid,$start,$end)
+  {
+    $feedid = intval($feedid);
+    $start = intval($start/1000.0);
+    $end = intval($end/1000.0);
+
+    $feedname = "feed_".trim($feedid)."";
+    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
+
+    return true;
   }
 
   public function get_data($feedid,$start,$end,$dp)

@@ -66,6 +66,7 @@ function feed_controller()
                 if ($route->action == "insert") $result = $feed->insert_data(get("id"),time(),get("time"),get("value"));
                 if ($route->action == "update") $result = $feed->update_data(get('id'),time(),get("time"),get('value'));
                 if ($route->action == "deletedatapoint") $result = $feed->delete_data(get('id'),get('feedtime'),get('feedtime'));
+                if ($route->action == "deletedatarange") $result = $feed->deletedatarange(get('id'),get('start'),get('end'));
                 if ($route->action == "delete") $result = $feed->delete(get('id'));
                 if ($route->action == "restore") $result = $feed->restore(get('id'));
                 if ($route->action == "export") $result = $feed->export(get('id'),get('start'));
