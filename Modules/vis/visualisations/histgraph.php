@@ -42,7 +42,7 @@
 
 <script id="source" language="javascript" type="text/javascript">
    //--------------------------------------------------------------------------------------
-   var barwidth = "<?php echo $barwidth; ?>";				//Fetch table name
+   var barwidth = <?php echo $barwidth; ?>;				//Fetch table name
    var feedid = "<?php echo $feedid; ?>";				//Fetch table name
    var path = "<?php echo $path; ?>";
    var apikey = "<?php echo $apikey; ?>";
