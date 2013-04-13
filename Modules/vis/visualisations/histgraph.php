@@ -24,6 +24,8 @@
 <?php
   global $path, $embed;
   if (!$feedid) $feedid = 0;
+
+  if (!$barwidth) $barwidth = 50;
 ?>
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
@@ -40,6 +42,7 @@
 
 <script id="source" language="javascript" type="text/javascript">
    //--------------------------------------------------------------------------------------
+   var barwidth = "<?php echo $barwidth; ?>";				//Fetch table name
    var feedid = "<?php echo $feedid; ?>";				//Fetch table name
    var path = "<?php echo $path; ?>";
    var apikey = "<?php echo $apikey; ?>";
@@ -77,7 +80,7 @@
           $.plot(placeholder,[                    
           {
             data: graph_data ,				//data
-            bars: { show: true, align: "center", barWidth: 50, fill: true }
+            bars: { show: true, align: "center", barWidth: barwidth, fill: true }
           }], {
             xaxis: { mode: null }, grid: { show: true, hoverable: true }
           }); 
