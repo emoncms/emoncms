@@ -111,6 +111,14 @@ var customtablefields = {
           return "<a href='"+table.fields[field].link+table.data[row]['id']+"' ><i class='"+icon+"' ></i></a>" 
         }
     },
+
+    'iconbasic':
+    {
+        'draw': function(row,field)
+        {
+            return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' ></i>";
+        }
+    }
 }
 
 
