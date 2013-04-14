@@ -46,6 +46,19 @@ var feed = {
       success: function(data_in) { feedIn = data_in; } 
     });
     return feedIn;
+  },
+
+  'histogram':function(feedid,start,end)
+  {
+    var feedIn = [];
+    $.ajax({                                      
+      url: path+'feed/histogram.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&res=1",
+      dataType: 'json',
+      async: false,                      
+      success: function(data_in) { feedIn = data_in; } 
+    });
+    return feedIn;
   }
 
 }

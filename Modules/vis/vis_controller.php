@@ -42,7 +42,7 @@
       'rawdata'=> array('options'=>array(array('feedid',1),array('fill',7,0),array('units',5,'W'))),
       'bargraph'=> array('options'=>array(array('feedid',2))),
       'smoothie'=> array('options'=>array(array('feedid',1),array('ufac',6))),
-      'histgraph'=> array('options'=>array(array('feedid',3),array('barwidth',7,50))),
+      'histgraph'=> array('options'=>array(array('feedid',3),array('barwidth',7,50),array('start',7,0),array('end',7,0))),
       //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
       'zoom'=> array('options'=>array(array('power',1),array('kwhd',2),array('currency',5,'&pound;'),array('pricekwh',6,0.14))),
       //'comparison'=> array('options'=>array(array('feedid',3))),
