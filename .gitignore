@@ -16,3 +16,5 @@ Modules/sap
 Modules/time
 Modules/rss
 Modules/adminusers
+Modules/feedconvert
+Modules/report

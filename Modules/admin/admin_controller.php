@@ -53,7 +53,7 @@ function admin_controller()
 
           }
 
-          $result = view("Modules/admin/update_view.php", array('updates'=>$updates));
+          $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));
       }
     }
 

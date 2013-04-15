@@ -16,6 +16,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
+ <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
@@ -26,6 +27,7 @@
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph"></div>
+      <h4 style="position:absolute; top:10px; left:75px; text-align:right;"><span id="stats"></span></h4>
       <div style="position:absolute; top:20px; right:20px;">
 
         <input class="time" type="button" value="D" time="1"/>
@@ -87,6 +89,16 @@
       legend: { position: "nw"}
     });
   }
+
+  $("#graph").bind("plothover", function (event, pos, item) { 
+    //var mdate = new Date(item.datapoint[0]);
+    if (item) {
+      if (item.seriesIndex == 0) val = parseFloat(dataA[item.dataIndex][1]); 
+      if (item.seriesIndex == 1) val = parseFloat(dataB[item.dataIndex][1]); 
+      if (item.seriesIndex == 2) val = parseFloat(dataC[item.dataIndex][1]); 
+      $("#stats").html(val.toFixed(1));
+    }
+  });
 
   //--------------------------------------------------------------------------------------
   // Graph zooming
