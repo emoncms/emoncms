@@ -185,33 +185,15 @@ function rendertemplate($position)
   echo $render;
 }
 
-function renderMenu()
+function ModuleHolder($modulename)
 {
-  $modules = get_modules();
-  $bmenu = "";
+  $render = "";
   
-  foreach ($modules as $module)
-  {
-    $module_class = new $module();    
-    
-    if ($module_class instanceof iMenuModule) {      
-      $menu_item = $module_class->getmenu();
-      
-      var_dump($menu_item);
-      
-      if (isset($menu_item['session'])) {
-        if (isset($session[$menu_item['session']]) && $session[$menu_item['session']]==1) {
-          $bmenu = $bmenu . "<li><a href=".$path.$menu_item['path']." >".$menu_item['name']."</a></li>";
-        }       
-      } 
-      else
-      {
-          $bmenu = $bmenu . "<li><a href='' >".$menu_item['name']."</a></li>";
-      }
-    }  
+  $module_class = new $modulename;
+  if ($module_class instanceof iHTLMModule) {      
+      $render = $render . $module_class->moduleHTMLRender();
   }  
-  
-  return $bmenu;  
+  echo $render;
 }
 
 
@@ -230,5 +212,5 @@ interface iMenuModule
 
 interface iHTLMModule
 {
-  public function moduleHTMLRender($position);
+  public function moduleHTMLRender();
 }

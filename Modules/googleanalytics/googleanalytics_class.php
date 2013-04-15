@@ -26,7 +26,7 @@ class googleanalytics_module implements iModule, iHTLMModule {
     return "Google Analytics track module";
   }
   
-  public function moduleHTMLRender($position)
+  public function moduleHTMLRender()
   {
     return "";
   }

@@ -1,13 +1,14 @@
 <?php
-  class footer_module implements iModule, iHTLMModule {
+  
+  class logout_module implements iModule, iHTLMModule {
   
   public function __construct()
   {
   }  
-  
+   
   public function modulename()
   {
-    return "Footer Module";
+    return "Logout Module";
   }
   
   public function moduleversion()
@@ -17,17 +18,23 @@
   
   public function moduletype()
   {
-    return "HTML";
+    return "core";
   }
 
   public function moduledescription()
   {
-    return "Footer module to test HTML module render";
+    return "EmonCMS logout module";
   }
   
   public function moduleHTMLRender()
   {
-    return _('Powered by ')."<a href='http://openenergymonitor.org'>openenergymonitor.org</a>"; 
+    global $session,$path;
+        
+    if ($session['write'])
+      return "<li><a href='".$path."/user/logout'>Logout</a></li>";
+        
   }
+      
+  
     
 }

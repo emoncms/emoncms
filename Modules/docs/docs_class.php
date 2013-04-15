@@ -1,17 +1,11 @@
 <?php
   
-  class docs_module implements iModule, iMenuModule {
+  class docs_module implements iModule, iHTLMModule {
   
   public function __construct()
   {
   }  
-  
-  public function getmenu()
-  {
-    return array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 10 );
-    // array('name'=>"<b>Troubleshooting</b>", 'path'=>"site/docs/status", 'order' => 10 ); 
-  }  
-  
+   
   public function modulename()
   {
     return "Docs Module";
@@ -31,6 +25,19 @@
   {
     return "EmonCMS documentation and troubleshooting";
   }
+  
+  public function moduleHTMLRender()
+  {
+    global $session,$path;
+    
+    $bmenu = "<li><a href='site/docs/status' ><b>Troubleshooting</b></a></li>";
+    $bmenu = $bmenu."<li><a href='site/docs' ><b>Docs</b></a></li>";
+    
+    if (!$session['write']) $bmenu = "<li><a href='user/login'>Log In</a></li>";    
+      
+    return $bmenu;  
+  }
+      
   
     
 }

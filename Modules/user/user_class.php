@@ -9,7 +9,6 @@ class user_module implements iModule, iMenuModule {
   public function getmenu()
   {   
     return array('name'=>"Account", 'path'=>"user/view" , 'session'=>"write",'order' => 5);
-    //$menu_left[] = array('name'=>"Logout", 'path'=>"user/logout" , 'session'=>"write",'order' => 6);
   }
   
   public function modulename()

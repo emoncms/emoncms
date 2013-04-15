@@ -98,9 +98,16 @@
                         <img src="<?php echo $path; ?>Theme/favicon.png" style="width:28px;"/>
                     </button>
                     <div class="nav-collapse collapse">
+                      <ul class="nav">
                       <?php if (!isset($runmenu)) $runmenu = '';                            
-                            echo $mainmenu.$runmenu;                            
-                      ?>                       
+                            //echo $mainmenu.$runmenu;
+                            ModuleHolder("menu_module");                            
+                      ?>              
+                      </ul>
+                      <ul class="nav pull-right">
+                        <?php ModuleHolder("docs_module"); ?>       
+                        <?php ModuleHolder("logout_module"); ?>                                         
+                      </ul>           
                     </div>
                 </div>
             </div>
@@ -134,11 +141,10 @@
         </div>
 
         <div id="footer">
-            <?php rendertemplate("footer"); ?>
+            <?php ModuleHolder("footer_module"); ?>
         </div>      
         
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-
     </body>
 
 </html>
