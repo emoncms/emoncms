@@ -50,7 +50,7 @@
 
     if (multigraph_editmode==true)
     {
-      update_multigraph_feedlist();
+      //update_multigraph_feedlist();
     }
   }
 

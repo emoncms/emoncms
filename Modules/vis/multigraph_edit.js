@@ -57,6 +57,8 @@ function draw_multigraph_feedlist_editor()
   if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0
 ) movingtime=0;
   else movingtime=1;
+ 
+  console.log("Moving time start: "+movingtime);
 
   var out = "<table class='table' style='table-layout:fixed; width:300px;' >";
   out += "<tr><th style='width:100px;' >Feed</th><th>Left</th><th>Right</th><th>Fill</th><th></th></tr>";
@@ -220,6 +222,7 @@ function load_events()
     else 
       multigraph_feedlist[0].end = end;
 
+    console.log(movingtime);
     console.log(multigraph_feedlist[0].end);
 
     multigraph.set(multigraph_id,multigraph_feedlist);
