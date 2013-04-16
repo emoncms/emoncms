@@ -103,6 +103,8 @@ function draw_multigraph_feedlist_editor()
 
   out += "</table>";
   out += "<button id='delete-multigraph-button' class='btn btn-danger'><i class='icon-trash'></i> Delete multigraph</button>";
+  out += "<button id='save-multigraph-button' class='btn btn-primary' style='float:right'>Save</button>";
+  out += "<div id='saved' style='float:right; margin-top:5px; margin-right:10px;'>Saved</div>";
 
   $("#feedtable").html(out);
 }
@@ -121,19 +123,6 @@ function get_feed_datatype(id)
   {
     if (feedlist[z]['id'] == id) return feedlist[z]['datatype'];
   }
-}
-
-function update_multigraph_feedlist()
-{
-  // Save multigraph view start and end time to feedlist array
-  multigraph_feedlist[0].timeWindow = end - start;
-
-  if (movingtime == 0) 
-    multigraph_feedlist[0].end = 0; 
-  else 
-    multigraph_feedlist[0].end = end;
-
-  multigraph.set(multigraph_id,multigraph_feedlist);
 }
 
 /*
@@ -169,11 +158,10 @@ function load_events()
   });
 
   $(baseElement).on("click","#movingtime",function(event){
-    if($(this).attr("checked")) movingtime = 0;
+    if($(this)[0].checked) movingtime = 0;
     else movingtime=1;
-
-    update_multigraph_feedlist();
     vis_feed_data();
+    $("#saved").hide();
   });
 
   $(baseElement).on("click",".left",function(event){
@@ -184,9 +172,10 @@ function load_events()
     multigraph_feedlist[z]['left'] = $(this)[0].checked;
     if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true) multigraph_feedlist[z]['right'] = false;
     $(".right[listid="+z+"]").attr("checked",false); 
-    update_multigraph_feedlist();
+
     vis_feed_data();
     console.log(multigraph_feedlist);
+    $("#saved").hide();
   });
 
   $(baseElement).on("click",".right",function(){
@@ -197,28 +186,43 @@ function load_events()
     multigraph_feedlist[z]['right'] = $(this)[0].checked;
     if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true) multigraph_feedlist[z]['left'] = false;
     $(".left[listid="+z+"]").attr("checked",false); 
-    update_multigraph_feedlist();
     vis_feed_data();
+    $("#saved").hide();
   });
 
   $(baseElement).on("click",".fill",function(){
     var z = $(this).attr('listid');
     multigraph_feedlist[z]['fill'] = $(this)[0].checked;
-    update_multigraph_feedlist();
     vis_feed_data();
+    $("#saved").hide();
   });
 
   $(baseElement).on("click",".icon-remove",function(){
     var z = $(this).attr('listid');
     multigraph_feedlist.splice(z,1);
     draw_multigraph_feedlist_editor();
-    update_multigraph_feedlist();
     vis_feed_data();
+    $("#saved").hide();
   });
 
   $(baseElement).on("click","#delete-multigraph-button",function(){
     multigraph.remove(multigraph_id);
     var multigraphs = multigraph.getlist();
     $("#box-options").html(multigraphDropdown(multigraphs));
+  });
+
+  $(baseElement).on("click","#save-multigraph-button",function(event){
+    // Save multigraph view start and end time to feedlist array
+    multigraph_feedlist[0].timeWindow = end - start;
+
+    if (movingtime == 0) 
+      multigraph_feedlist[0].end = 0; 
+    else 
+      multigraph_feedlist[0].end = end;
+
+    console.log(multigraph_feedlist[0].end);
+
+    multigraph.set(multigraph_id,multigraph_feedlist);
+    $("#saved").show();
   });
 }
