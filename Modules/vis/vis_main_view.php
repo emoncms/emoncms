@@ -22,7 +22,7 @@ global $path;
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
-
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_api.js"></script>
 
 <h2>Visualisations</h2>
 
@@ -74,23 +74,10 @@ global $path;
 
 <script type="application/javascript">
   var path = "<?php echo $path; ?>";
-  var multigraphs = <?php echo json_encode($multigraphs); ?>;
   var feedlist = <?php echo json_encode($feedlist); ?>;
   var widgets = <?php echo json_encode($visualisations); ?>;
 
-  var multigraph = 0;
-  var multigraph_feedlist = [];
-
   var embed = 0;
-
-  // This could be moved to the top of multigraph.js
-  var timeWindow = (3600000*24.0*7);				//Initial time window
-  var start = ((new Date()).getTime())-timeWindow;		//Get start time
-  var end = (new Date()).getTime();				//Get end time
-
-  // This is used with multigraph.js to tell it to call a save request in multigraph_edit.js
-  // when the multigraph time window is changed.
-  var multigraph_editmode = true;
 
   //var apikey = "<?php echo $apikey; ?>";
   var apikey = "";
@@ -115,47 +102,7 @@ global $path;
     // Custom multigraph visualisation items
     if ($(this).val()=="multigraph")
     { 
-      $("#viewbtn").hide();
-
-      var out = "<p><b>Select multigraph:</b> <select id='midselector' style='width:50px; font-size:12px'>";
-      for (z in multigraphs)
-      {
-        out +="<option value='"+multigraphs[z]['id']+"'>"+multigraphs[z]['id']+"</option>";
-      }
-      out += "</select>";
-
-      // 1) Start by drawing a dropdown multigraph id selector
-      $("#box-options").html(out+" &nbsp;&nbsp;&nbsp;<b>New:</b> <i class='icon-plus'></i></p><div id='feedtable' ></div>");
-
-      $("#midselector").click(function(){
-        multigraph = $(this).val();
-
-        $.ajax({                                      
-          type: "GET",
-          url: path+"vis/multigraph/get.json?id="+multigraph,
-          dataType: 'json',
-          async: false,
-          success: function(data){if (data!=null) multigraph_feedlist = data;}
-        });
-
-        // Draw multigraph feedlist editor
-        draw_multigraph_feedlist_editor();
-        // Draw multigraph
-        multigraph_init("#visiframe");
-        vis_feed_data();
-
-      });
-
-      $(".icon-plus").click(function(){
-        $.ajax({                                      
-          type: "GET",
-          url: path+"vis/multigraph/new.json",
-          dataType: 'json',
-          async: false,
-          success: function(data){}
-        });
-        window.location = "list";
-      });
+      multigraphGUI();
     }
     else
     {
@@ -198,7 +145,7 @@ global $path;
     // the visurl with multigraph?id=1
     if (vistype=="multigraph")
     { 
-      visurl = "multigraph?mid="+multigraph;
+      visurl = "multigraph?mid="+multigraph_id;
     }
     else
     {
