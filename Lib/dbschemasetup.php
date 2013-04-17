@@ -38,30 +38,28 @@ function db_schema_setup($mysqli, $schema, $apply)
 
                 // if field exists:
                 $result = $mysqli->query("SHOW COLUMNS FROM `$table` LIKE '$field'");
-                if ($result->num_rows==1)
-                {
-                    // $out[] = array('field',$field,"ok");
-                }
-                else
+                if ($result->num_rows==0)
                 {
                     $query = "ALTER TABLE `$table` ADD `$field` $type";
                     $operations[] = $query;
                     if ($apply) $mysqli->query($query);
+                }
+                else
+                {
+                  $result = $mysqli->query("DESCRIBE $table `$field`");
+                  $array = $result->fetch_array();
+                  $query = "";
+                  
+                  if ($array['Type']!=$type) $query .= ";";
+                  if ($array['Default']!=$default) $query .= " Default '$default'";
+                  if ($array['Null']!=$null && $null=="NO") $query .= " not null";
+                  if ($array['Extra']!=$extra && $extra=="auto_increment") $query .= " auto_increment";
+                  if ($array['Key']!=$key && $key=="PRI") $query .= " primary key";
+
+                  if ($query) $query = "ALTER TABLE $table MODIFY `$field` $type".$query;
+                  if ($query) $operations[] = $query;
+                  if ($query && $apply) $mysqli->query($query);
                 } 
-
-                $result = $mysqli->query("DESCRIBE $table `$field`");
-                $array = $result->fetch_array();
-                $query = "";
-                
-                if ($array['Type']!=$type) $query .= ";";
-                if ($array['Default']!=$default) $query .= " Default '$default'";
-                if ($array['Null']!=$null && $null=="NO") $query .= " not null";
-                if ($array['Extra']!=$extra && $extra=="auto_increment") $query .= " auto_increment";
-                if ($array['Key']!=$key && $key=="PRI") $query .= " primary key";
-
-                if ($query) $query = "ALTER TABLE $table MODIFY `$field` $type".$query;
-                if ($query) $operations[] = $query;
-                if ($query && $apply) $mysqli->query($query);
 
                 next($schema[$table]);
             }
