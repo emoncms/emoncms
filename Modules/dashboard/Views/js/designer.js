@@ -368,19 +368,19 @@ var designer = {
 	            	break;
 	            case selected_edges.left:
 	            	designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
-	                designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
-	                break;
+	            	designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
+	            	break;
 	            case selected_edges.bottom:
 	            	designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
 	            	break;
 	            case selected_edges.top:
-	                designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
-	                designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
-	                break;
+	            	designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
+	            	designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
+	            	break;
 	            case selected_edges.center:
 	            	designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
-	                designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));            	
-	                break;
+	            	designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));            	
+	            	break;
 	            }            
 	
 	            if (bottedge>parseInt($("#page-container").css("height"))){
