@@ -22,6 +22,8 @@
 
 */
 
+var selected_edges = {none : 0, left : 1, right : 2, top : 3, bottom : 4, center : 5};
+
 var designer = {
 
     'grid_size':20,
@@ -37,7 +39,7 @@ var designer = {
     'resize': {},
 
     'selected_box': null,
-    'selected_edge': null,
+    'selected_edge': selected_edges.none,
     'edit_mode': true,
     'create': null,
 
@@ -316,12 +318,12 @@ var designer = {
               var midx = resize['left']+(resize['width']/2);
               var midy = resize['top']+(resize['height']/2);
              
-              if (Math.abs(mx - rightedge)<20) selected_edge = "right";
-              else if (Math.abs(mx - resize['left'])<20) selected_edge = "left";
-                else if (Math.abs(my - bottedge)<20) selected_edge = "bottom";
-                  else if (Math.abs(my - resize['top'])<20) selected_edge = "top";
-                    else if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = "center";
-                      else selected_edge = null;
+              if (Math.abs(mx - rightedge)<20) selected_edge = selected_edges.right;
+              else if (Math.abs(mx - resize['left'])<20) selected_edge = selected_edges.left;
+                else if (Math.abs(my - bottedge)<20) selected_edge = selected_edges.bottom;
+                  else if (Math.abs(my - resize['top'])<20) selected_edge = selected_edges.top;
+                    else if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20) selected_edge = selected_edges.center;
+                      else selected_edge = selected_edges.none;
             }
           }
           else
@@ -339,53 +341,56 @@ var designer = {
 
         $(this.canvas).mouseup(function(event) { 
           designer.mousedown = false;
-          selected_edge = null;
+          selected_edge = selected_edges.none;
         });
 
-        $(this.canvas).mousemove(function(event) { 
-            if (designer.mousedown && designer.selected_box && selected_edge){
+        $(this.canvas).mousemove(function(event) {
+        	// On resize
+        	if (designer.mousedown && designer.selected_box && selected_edge){
 
-            var mx = 0, my = 0;
-            if(event.offsetX==undefined) // this works for Firefox
-            {
-              mx = (event.pageX - $(event.target).offset().left);
-              my = (event.pageY - $(event.target).offset().top);
-            } else {
-              mx = event.offsetX;
-              my = event.offsetY;
-            }
+            	var mx = 0, my = 0;
+            	if(event.offsetX==undefined) // this works for Firefox
+            	{
+            		mx = (event.pageX - $(event.target).offset().left);
+            		my = (event.pageY - $(event.target).offset().top);
+            	} else {
+            		mx = event.offsetX;
+            		my = event.offsetY;
+            	}
 
-            var rightedge = resize['left']+resize['width'];
-            var bottedge = resize['top']+resize['height'];
+            	var rightedge = resize['left']+resize['width'];
+            	var bottedge = resize['top']+resize['height'];
             
-            if (selected_edge == "right") 
-              designer.boxlist[designer.selected_box]['width'] = (designer.snap(mx)-resize['left']);
-            else if (selected_edge == "left") 
-              {
-                designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
-                designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
-              }
-              else if (selected_edge == "bottom") 
-                  designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
-                  else if (selected_edge == "top") 
-                  { 
-                    designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
-                    designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
-                  }
-                    else if (selected_edge == "center")
-                      { 
-                        designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
-                        designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));
-                      }
-
-            if (bottedge>parseInt($("#page-container").css("height"))){
-              $("#page-container").css("height",bottedge);
-              $("#can").attr("height",bottedge);
-              designer.page_height = bottedge;
-            }
-
-            designer.draw();
-          }
+            	switch(selected_edge)
+            	{
+	            case selected_edges.right:
+	            	designer.boxlist[designer.selected_box]['width'] = (designer.snap(mx)-resize['left']);
+	            	break;
+	            case selected_edges.left:
+	            	designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx));
+	                designer.boxlist[designer.selected_box]['width'] = rightedge - designer.snap(mx);
+	                break;
+	            case selected_edges.bottom:
+	            	designer.boxlist[designer.selected_box]['height'] = (designer.snap(my)-resize['top']);
+	            	break;
+	            case selected_edges.top:
+	                designer.boxlist[designer.selected_box]['top'] = (designer.snap(my));
+	                designer.boxlist[designer.selected_box]['height'] = bottedge - designer.snap(my);
+	                break;
+	            case selected_edges.center:
+	            	designer.boxlist[designer.selected_box]['left'] = (designer.snap(mx-designer.boxlist[designer.selected_box]['width']/2));
+	                designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));            	
+	                break;
+	            }            
+	
+	            if (bottedge>parseInt($("#page-container").css("height"))){
+	              $("#page-container").css("height",bottedge);
+	              $("#can").attr("height",bottedge);
+	              designer.page_height = bottedge;
+	            }
+	
+	            designer.draw();
+        	}
         });
 
         // On save click
