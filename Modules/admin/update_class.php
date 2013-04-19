@@ -41,7 +41,7 @@ class Update
             if (is_numeric($out[1])) $name = (int) $out[1]; else $name = $out[1];
 
             $inputexists = $this->mysqli->query("SELECT id FROM input WHERE `userid`='".$row->userid."' AND `nodeid`='$nodeid' AND `name`='$name'");
-            if (!$inputexists->num_rows && !$apply) $operations[] = "UPDATE input SET `name`='$name',`nodeid`='$nodeid' WHERE `id`='".$row->id."'";
+            if (!$inputexists->num_rows) $operations[] = "UPDATE input SET `name`='$name',`nodeid`='$nodeid' WHERE `id`='".$row->id."'";
             if (!$inputexists->num_rows && $apply) $this->mysqli->query("UPDATE input SET `name`='$name',`nodeid`='$nodeid' WHERE `id`='".$row->id."'");
           }
         }
@@ -88,7 +88,7 @@ class Update
               $inputid = $inputprocess[1];
               $inputexists = $this->mysqli->query("SELECT record FROM input WHERE `id`='$inputid'");
               $inputrow = $inputexists->fetch_object();
-              if (!$inputrow->record && !$apply) $operations[] = "UPDATE input SET `record`='1' WHERE `id`='$inputid'";
+              if (!$inputrow->record) $operations[] = "UPDATE input SET `record`='1' WHERE `id`='$inputid'";
               if (!$inputrow->record && $apply) $this->mysqli->query("UPDATE input SET `record`='1' WHERE `id`='$inputid'");
             }
           }
@@ -117,7 +117,7 @@ class Update
         if ($usernameout!=$username) {
           $userexists = $this->mysqli->query("SELECT id FROM users WHERE `username` = '$usernameout'");
           if (!$userexists->num_rows) {
-            if (!$apply) $operations[] = "Change username from $username to $usernameout";
+            $operations[] = "Change username from $username to $usernameout";
             if ($apply) $this->mysqli->query("UPDATE users SET `username`='$usernameout' WHERE `id`='$id'");
           } else {
             $operations[] = "Cannot change username from $username to $usernameout as username $usernameout already exists, please fix manually.";

@@ -13,7 +13,8 @@
 ?>
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -40,7 +41,7 @@
 
       </div>
 
-        <h3 style="position:absolute; top:0px; left:310px;"><span id="stats"></span></h3>
+        <h3 style="position:absolute; top:0px; left:410px;"><span id="stats"></span></h3>
     </div>
 
 <script id="source" language="javascript" type="text/javascript">

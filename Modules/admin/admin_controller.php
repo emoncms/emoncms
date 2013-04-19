@@ -42,12 +42,16 @@ function admin_controller()
             'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
           );
 
-          // In future versions we could check against db version number as to what updates should be applied
-          $updates[] = $update->u0001($applychanges);
-          $updates[] = $update->u0002($applychanges);
-          $updates[] = $update->u0003($applychanges);
+          if (!$updates[0]['operations']) {
 
-          $result = view("Modules/admin/update_view.php", array('updates'=>$updates));
+            // In future versions we could check against db version number as to what updates should be applied
+            $updates[] = $update->u0001($applychanges);
+            $updates[] = $update->u0002($applychanges);
+            $updates[] = $update->u0003($applychanges);
+
+          }
+
+          $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));
       }
     }
 
