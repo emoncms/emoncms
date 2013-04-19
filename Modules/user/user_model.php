@@ -183,7 +183,7 @@ class User
 
         if ($hash != $userData->password) 
         {
-            return array('success'=>false, 'message'=>_("Incorrect password, if your sure its correct try clearing your browser cache"));
+            return array('success'=>false, 'message'=>_("Incorrect username or password. If you're sure it's correct, try clearing your browser's cache."));
         }
         else
         {
