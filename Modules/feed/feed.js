@@ -18,6 +18,19 @@ var feed = {
   'remove':function(id)
   {
     $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
+  },
+
+  'get_kwhatpowers':function(feedid,points)
+  {
+    var feedIn = [];
+    $.ajax({                                      
+      url: path+'feed/kwhatpowers.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&points="+JSON.stringify(points),
+      dataType: 'json',
+      async: false,                      
+      success: function(data_in) { feedIn = data_in; } 
+    });
+    return feedIn;
   }
 
 }
