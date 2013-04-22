@@ -125,10 +125,11 @@ function load_menu()
     {
         if (filetype("Modules/".$dir[$i])=='dir') 
         {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
-            {
-                require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
-            }
+          $classname = $dir[$i].'_module';               
+          $module = new $classname();
+          
+          if ($module instanceof iMenuModule)
+            $module->getmenu($menu_left);
         }
     }
 
@@ -139,4 +140,77 @@ function load_menu()
 // Menu sort by order
 function menu_sort($a,$b) {
     return $a['order']>$b['order'];
+}
+
+//////// modules test
+function get_modules()
+{
+  $modules = array();
+  
+  $dir = scandir("Modules");
+    for ($i=2; $i<count($dir); $i++)
+    {
+        if (filetype("Modules/".$dir[$i])=='dir') 
+        {
+          $classname = $dir[$i].'_module';               
+          $modules[] = $classname;
+        }
+    }
+
+  return $modules;  
+}
+
+function __autoload($className)
+{ 
+  $file = 'Modules/'.str_replace('_module', '', $className).'/'.str_replace('_module', '_class.php', $className);
+
+  if(!file_exists($file))
+    return false;
+  else   
+    require_once $file;          
+}
+
+function rendertemplate($position)
+{
+  $modules = get_modules();
+  $render = "";
+  
+  foreach ($modules as $module)
+  {
+    $module_class = new $module();    
+    if ($module_class instanceof iHTLMModule) {      
+      $render = $render . $module_class->moduleHTMLRender($position);
+    }  
+  }  
+  echo $render;
+}
+
+function ModuleHolder($modulename)
+{
+  $render = "";
+  
+  $module_class = new $modulename;
+  if ($module_class instanceof iHTLMModule) {      
+      $render = $render . $module_class->moduleHTMLRender();
+  }  
+  echo $render;
+}
+
+
+interface iModule
+{ 
+  public function modulename();
+  public function moduleversion();
+  public function moduletype();
+  public function moduledescription();  
+}
+
+interface iMenuModule
+{
+  public function getmenu();  
+}
+
+interface iHTLMModule
+{
+  public function moduleHTMLRender();
 }

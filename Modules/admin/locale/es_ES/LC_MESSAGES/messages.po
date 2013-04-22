@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-20 14:27+0100\n"
-"PO-Revision-Date: 2013-03-20 14:32+0100\n"
+"POT-Creation-Date: 2013-04-11 14:04+0100\n"
+"PO-Revision-Date: 2013-04-11 14:04+0100\n"
 "Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -15,6 +15,10 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../admin_class.php:11
+msgid "Admin"
+msgstr "Administrar"
 
 #: ../../../admin_db_view.php:1
 msgid "Database setup, update and status check"
@@ -50,9 +54,29 @@ msgstr "Nombre"
 msgid "Status"
 msgstr "Estado"
 
+#: ../../../admin_main_view.php:7
+msgid "Update database"
+msgstr "Actualizar la base de datos"
+
+#: ../../../admin_main_view.php:8
+msgid ""
+"Run this after updating emoncms, after installing a new module or to check "
+"emoncms database status."
+msgstr ""
+"Ejecuta la comprobación después de actualizar EmonCMS, después de instalar "
+"un nuevo módulo o para comprobar el estado de la base de datos."
+
 #: ../../../admin_main_view.php:12
 msgid "Update & check"
 msgstr "Comprobar y actualizar"
+
+#: ../../../update_view.php:32
+msgid "Apply changes"
+msgstr "Guardar cambios"
+
+#: ../../../update_view.php:37
+msgid "Database is up to date "
+msgstr "La base de datos está actualizada"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -373,9 +397,6 @@ msgstr "Comprobar y actualizar"
 #~ msgid "API"
 #~ msgstr "API"
 
-#~ msgid "Admin"
-#~ msgstr "Administrar"
-
 #~ msgid "Account"
 #~ msgstr "Cuenta"
 
@@ -550,9 +571,6 @@ msgstr "Comprobar y actualizar"
 #~ msgid "Close"
 #~ msgstr "Cerrar"
 
-#~ msgid "Save changes"
-#~ msgstr "Guardar cambios"
-
 #~ msgid "Options"
 #~ msgstr "Opciones"
 
@@ -705,9 +723,6 @@ msgstr "Comprobar y actualizar"
 
 #~ msgid "Size"
 #~ msgstr "Tamaño"
-
-#~ msgid "Updated"
-#~ msgstr "Actualizado"
 
 #~ msgid "Value"
 #~ msgstr "Valor"

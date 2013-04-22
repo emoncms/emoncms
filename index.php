@@ -19,7 +19,7 @@
   require "core.php";
   require "route.php";
   require "locale.php";
-  
+    
   $path = get_application_path();
 
   // 2) Database
@@ -99,8 +99,8 @@
   }
   if ($route->format == 'html') 
   {
-    $menu = load_menu();
-    $output['mainmenu'] = view("Theme/menu_view.php", array());
+   // $menu = load_menu();
+   // $output['mainmenu'] = view("Theme/menu_view.php", array());
     if ($embed == 0) print view("Theme/theme.php", $output);
     if ($embed == 1) print view("Theme/embed.php", $output);
   }

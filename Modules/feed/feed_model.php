@@ -234,6 +234,11 @@ class Feed
     if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
     if (isset($fields->datatype)) $array[] = "`datatype` = '".intval($fields->datatype)."'";
     if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
+    if (isset($fields->time)) {
+      $updatetime = date("Y-n-j H:i:s", intval($fields->time)); 
+      $array[] = "`time` = '".$updatetime."'";
+    }
+    if (isset($fields->value)) $array[] = "`value` = '".intval($fields->value)."'";
     // Convert to a comma seperated string for the mysql query
     $fieldstr = implode(",",$array);
     $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
@@ -317,9 +322,20 @@ class Feed
     $start = intval($start);
     $end = intval($end);
 
-    echo "<br><br>".$start;
     $feedname = "feed_".trim($feedid)."";
     $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end' LIMIT 1");
+  }
+
+  public function deletedatarange($feedid,$start,$end)
+  {
+    $feedid = intval($feedid);
+    $start = intval($start/1000.0);
+    $end = intval($end/1000.0);
+
+    $feedname = "feed_".trim($feedid)."";
+    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
+
+    return true;
   }
 
   public function get_data($feedid,$start,$end,$dp)

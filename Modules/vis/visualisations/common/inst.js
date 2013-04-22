@@ -55,5 +55,5 @@
           start = ((new Date()).getTime())-(3600000*24*time);			//Get start time
           end = (new Date()).getTime();					        //Get end time
           timeWindowChanged = 1;
-          movingtime = 1;
+          //movingtime = 1;
         }

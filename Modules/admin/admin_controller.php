@@ -24,7 +24,9 @@ function admin_controller()
     if ($sessionadmin)
     {
       if ($route->action == 'view') $result = view("Modules/admin/admin_main_view.php", array());
-
+      
+      if ($route->action == 'modules') $result = view("Modules/admin/admin_modules_view.php", array());
+      
       if ($route->action == 'db')
       {
           $applychanges = get('apply');
@@ -42,12 +44,16 @@ function admin_controller()
             'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
           );
 
-          // In future versions we could check against db version number as to what updates should be applied
-          $updates[] = $update->u0001($applychanges);
-          $updates[] = $update->u0002($applychanges);
-          $updates[] = $update->u0003($applychanges);
+          if (!$updates[0]['operations']) {
 
-          $result = view("Modules/admin/update_view.php", array('updates'=>$updates));
+            // In future versions we could check against db version number as to what updates should be applied
+            $updates[] = $update->u0001($applychanges);
+            $updates[] = $update->u0002($applychanges);
+            $updates[] = $update->u0003($applychanges);
+
+          }
+
+          $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));
       }
     }
 

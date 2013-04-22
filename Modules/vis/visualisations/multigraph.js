@@ -50,7 +50,7 @@
 
     if (multigraph_editmode==true)
     {
-      update_multigraph_feedlist();
+      //update_multigraph_feedlist();
     }
   }
 
@@ -79,17 +79,19 @@ function multigraph_init(element)
   var out = 
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
       "<div id='graph'></div>"+
-      "<div style='position:absolute; top:20px; right:20px;'>"+
+      "<div style='position:absolute; top:20px; right:30px;'>"+
 
-        "<input class='time' type='button' value='D' time='1'/>"+
-        "<input class='time' type='button' value='W' time='7'/>"+
-        "<input class='time' type='button' value='M' time='30'/>"+
-        "<input class='time' type='button' value='Y' time='365'/> |"+ 
+        "<div class='btn-group'>"+
+        "<button class='btn time' type='button' time='1'>D</button>"+
+        "<button class='btn time' type='button' time='7'>W</button>"+
+        "<button class='btn time' type='button' time='30'>M</button>"+
+        "<button class='btn time' type='button' time='365'>Y</button></div> |"+ 
 
-        "<input id='zoomin' type='button' value='+'/>"+
-        "<input id='zoomout' type='button' value='-'/>"+
-        "<input id='left' type='button' value='<'/>"+
-        "<input id='right' type='button' value='>'/>"+
+        "<div class='btn-group'>"+
+        "<button id='zoomin' class='btn' >+</button>"+
+        "<button id='zoomout' class='btn' >-</button>"+
+        "<button id='left' class='btn' ><</button>"+
+        "<button id='right' class='btn' >></button></div>"+
 
       "</div>"+
     "</div>"
