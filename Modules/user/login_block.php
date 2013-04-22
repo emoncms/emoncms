@@ -55,7 +55,7 @@ global $path, $allowusersregister, $enable_rememberme;
       </p>
 
       <p class="register-item" style="display:none">
-        <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> or 
+        <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button><?php echo '&nbsp;'._('or').'&nbsp' ?> 
         <a id="cancel-link"><?php echo _('cancel'); ?></a>
       </p>
 

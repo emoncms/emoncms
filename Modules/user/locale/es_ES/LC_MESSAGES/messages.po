@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-22 09:40+0100\n"
-"PO-Revision-Date: 2013-03-22 09:40+0100\n"
+"POT-Creation-Date: 2013-04-19 14:06+0100\n"
+"PO-Revision-Date: 2013-04-19 14:06+0100\n"
 "Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -29,20 +29,18 @@ msgid "Password:"
 msgstr "Contraseña:"
 
 #: ../../../login_block.php:45
-#, fuzzy
 msgid "Confirm password:"
-msgstr "Contraseña actual:"
+msgstr "Confirma la contraseña:"
 
 #: ../../../login_block.php:52
-#, fuzzy
 msgid "Remember me"
-msgstr " Recordarme"
+msgstr "Recordarme"
 
 #: ../../../login_block.php:53
 msgid "Login"
 msgstr "Entrar"
 
-#: ../../../login_block.php:54
+#: ../../../login_block.php:54 ../../../login_block.php:58
 msgid "or"
 msgstr "o"
 
@@ -52,89 +50,91 @@ msgstr "regístrate"
 
 #: ../../../login_block.php:58
 msgid "Register"
-msgstr "Registrase"
+msgstr "Regístrate"
 
 #: ../../../login_block.php:59
 msgid "cancel"
-msgstr ""
+msgstr "cancelar"
 
-#: ../../../user_model.php:126
+#: ../../../user_model.php:128
 msgid "Missing username, password or email paramater"
 msgstr ""
 
-#: ../../../user_model.php:128 ../../../user_model.php:250
+#: ../../../user_model.php:130 ../../../user_model.php:259
 msgid "Username must only contain a-z and 0-9 characters"
 msgstr ""
 
-#: ../../../user_model.php:132 ../../../user_model.php:261
+#: ../../../user_model.php:134 ../../../user_model.php:270
 #, fuzzy
 msgid "Username already exists"
 msgstr "El usuario ya existe"
 
-#: ../../../user_model.php:134 ../../../user_model.php:270
-#, fuzzy
+#: ../../../user_model.php:136 ../../../user_model.php:279
 msgid "Email address format error"
-msgstr "Email no presente"
+msgstr "Debes usar una dirección de correo correcta"
 
-#: ../../../user_model.php:136 ../../../user_model.php:248
+#: ../../../user_model.php:138 ../../../user_model.php:257
 msgid "Username length error"
 msgstr ""
 
-#: ../../../user_model.php:137 ../../../user_model.php:219
-#: ../../../user_model.php:220
+#: ../../../user_model.php:139 ../../../user_model.php:228
+#: ../../../user_model.php:229
 msgid "Password length error"
 msgstr ""
 
-#: ../../../user_model.php:162
+#: ../../../user_model.php:152
+msgid "Error creating user"
+msgstr ""
+
+#: ../../../user_model.php:166
 #, fuzzy
 msgid "Username or password empty"
 msgstr "Usuario o contraseña inválidos"
 
-#: ../../../user_model.php:165
+#: ../../../user_model.php:172
 msgid ""
-"Username must only contain a-z and 0-9 characters, if you created an account "
-"before this rule was in place enter your username without the non a-z 0-9 "
-"characters to login and feel free to change your username on the profile "
-"page."
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
 msgstr ""
 
-#: ../../../user_model.php:172
+#: ../../../user_model.php:179
 #, fuzzy
 msgid "Username does not exist"
 msgstr "La fuente no existe"
 
-#: ../../../user_model.php:179
-#, fuzzy
-msgid "Incorrect password"
-msgstr "Contraseña actual:"
+#: ../../../user_model.php:186
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
 
-#: ../../../user_model.php:198
+#: ../../../user_model.php:207
 msgid "Login successful"
 msgstr ""
 
-#: ../../../user_model.php:239
+#: ../../../user_model.php:248
 #, fuzzy
 msgid "Old password incorect"
 msgstr "Contraseña antigua:"
 
-#: ../../../user_model.php:245
+#: ../../../user_model.php:254
 msgid ""
 "As your using a cookie based remember me login, please logout and log back "
 "in to change username"
 msgstr ""
 
-#: ../../../user_model.php:257
-#, fuzzy
+#: ../../../user_model.php:266
 msgid "Username updated"
-msgstr "Nombre de usuario"
+msgstr "Nombre de usuario actualizado"
 
-#: ../../../user_model.php:267
+#: ../../../user_model.php:276
 msgid ""
 "As your using a cookie based remember me login, please logout and log back "
 "in to change email"
 msgstr ""
 
-#: ../../../user_model.php:273
+#: ../../../user_model.php:282
 #, fuzzy
 msgid "Email updated"
 msgstr "actualizado"
@@ -172,14 +172,12 @@ msgid "Change Password"
 msgstr "Cambiar contraseña"
 
 #: ../../../profile/profile.php:63
-#, fuzzy
 msgid "Current password"
-msgstr "Contraseña actual:"
+msgstr "Contraseña actual"
 
 #: ../../../profile/profile.php:67
-#, fuzzy
 msgid "New password"
-msgstr "Nueva contraseña:"
+msgstr "Nueva contraseña"
 
 #: ../../../profile/profile.php:71
 msgid "Repeat new password"
@@ -187,15 +185,15 @@ msgstr "Confirma la contraseña"
 
 #: ../../../profile/profile.php:76
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: ../../../profile/profile.php:82
 msgid "My Profile"
-msgstr "Perfil"
+msgstr "Mi perfil"
 
 #: ../../../profile/profile.php:98
 msgid "Gravatar"
-msgstr ""
+msgstr "Gravatar"
 
 #: ../../../profile/profile.php:99
 msgid "Name"
@@ -221,6 +219,10 @@ msgstr ""
 #: ../../../profile/profile.php:228
 msgid "Passwords do not match"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Incorrect password"
+#~ msgstr "Contraseña actual:"
 
 #~ msgid ""
 #~ "Or if you are new enter a username and password above and click register"
