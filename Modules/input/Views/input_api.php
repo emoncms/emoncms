@@ -18,7 +18,7 @@
 </table>
 
 <h3><?php echo _('Available JSON commands'); ?></h3>
-<p><?php echo _('To use the json api the request url needs to include .json'); ?></p>
+<p><?php echo _('To use the json api the request url needs to include <b>.json</b>'); ?></p>
 
 <p><b><?php echo _('Post data'); ?></b></p>
 <table class="table">
