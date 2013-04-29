@@ -28,7 +28,7 @@
   <tr><td><?php echo _('Set the input entry time manually'); ?></td><td><a href="<?php echo $path; ?>input/post.json?time=<?php echo time(); ?>&node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>time=<?php echo time(); ?></b>&node=1&csv=100,200,300</a></td></tr>  
 </table>
 
-<p><b>APIKEY</b><br>
+<p><b><?php echo _('APIKEY'); ?></b><br>
 <?php echo _('To post data from a remote device you will need to include in the request url your write apikey. This give your device write access to your emoncms account, allowing it to post data.'); ?></p>
 <table class="table">
   <tr><td><?php echo _('For example using the first json type request above just add the apikey to the end like this:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?json={power:200}&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>"><?php echo $path; ?>input/post.json?json={power:200}<b>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?></b></a></td></tr>
@@ -40,7 +40,7 @@
 </table>
 <ul>
   <li><?php echo _('The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 10 seconds.'); ?></li>
-  <li><?php echo _('The second number is the node id, this is the unqiue identifer for the wireless node.'); ?></li>
+  <li><?php echo _('The second number is the node id, this is the unique identifer for the wireless node.'); ?></li>
   <li><?php echo _('All the numbers after the first two are data values. The first node here (node 10) has three data values: 250,100 and 20.'); ?></li>  
 </ul>
 

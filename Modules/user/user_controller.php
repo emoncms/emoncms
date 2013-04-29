@@ -36,7 +36,7 @@ function user_controller()
         if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) $user->logout();
 
-        if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
+        if ($route->action == '	changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
         if ($route->action == 'changeemail' && $session['write']) $result = $user->change_email($session['userid'],get('email'));
         if ($route->action == 'changepassword' && $session['write']) $result = $user->change_password($session['userid'],get('old'),get('new'));
 
