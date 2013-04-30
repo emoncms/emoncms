@@ -1,5 +1,5 @@
 <?php
 
-  $menu_left[] = array('name'=>"Input", 'path'=>"input/node" , 'session'=>"write", 'order' => 1 );
+  $menu_left[] = array('name'=> _("Input"), 'path'=>"input/node" , 'session'=>"write", 'order' => 1 );
 
 ?>
