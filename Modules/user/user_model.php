@@ -176,7 +176,7 @@ class User
 
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language FROM users WHERE username = '$username'");
 
-        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
+        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Incorrect username or password. If you're sure it's correct, try clearing your browser's cache."));
      
         $userData = $result->fetch_object();
         $hash = hash('sha256', $userData->salt . hash('sha256', $password));
