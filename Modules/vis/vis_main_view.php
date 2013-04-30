@@ -97,7 +97,7 @@ global $path;
 
   // 1) ON CLICK OF VISUALISATION OPTION:
 
-  $("#visselect").click(function(){
+  $("#visselect").change(function(){
 
     // Custom multigraph visualisation items
     if ($(this).val()=="multigraph")
