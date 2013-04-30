@@ -13,7 +13,7 @@ global $path, $session;
 
 ?>
 
-<div style="float:right;"><a href="../api">Input API Help</a></div>
+<div style="float:right;"><a href="../api"><?php echo _("Input API Help") ?></a></div>
 
 <h2><?php echo _('Input configuration:   '); ?><?php echo $inputid; ?></h2>
 <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
@@ -148,7 +148,7 @@ function generate_process_arg_box()
   if (process[1]==2) // Argument type is a feed to log to, or output as a kwhd feed and so on.
   {
       out +='<select class="processArgBox" name="arg" id="arg" onChange="update_process_arg_box()" style="width:140px;">'
-      out += '<option value="-1">CREATE NEW:</option>';
+      out += '<option value="-1"><?php echo _("CREATE NEW:"); ?></option>';
       for (i in feedlist) out += '<option value="'+feedlist[i].id+'">'+feedlist[i].name+'</option>';
       out +='</select>';
   }
