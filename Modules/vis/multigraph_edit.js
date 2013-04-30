@@ -137,7 +137,7 @@ function load_events()
 {
   var baseElement = "#box-options";
 
-  $(baseElement).on("click","#midselector",function(event){
+  $(baseElement).on("change","#midselector",function(event){
     multigraph_id = $(this).val();
     multigraph_feedlist = multigraph.get(multigraph_id);
     // Draw multigraph feedlist editor
