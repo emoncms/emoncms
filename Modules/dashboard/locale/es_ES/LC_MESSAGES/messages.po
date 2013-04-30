@@ -2,14 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-20 20:02+0100\n"
-"PO-Revision-Date: 2013-03-20 20:04+0100\n"
-"Last-Translator: \n"
+"POT-Creation-Date: 2013-05-01 00:36+0100\n"
+"PO-Revision-Date: 2013-05-01 00:37+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
+"Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: es_ES\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
@@ -40,8 +40,7 @@ msgstr "Descripción"
 msgid "Make this dashboard the first shown"
 msgstr "Hacer este panel como el primero que se muestra"
 
-#: ../../../Views/dashboard_config.php:34
-#: ../../../Views/dashboard_list.php:54
+#: ../../../Views/dashboard_config.php:34 ../../../Views/dashboard_list.php:54
 msgid "Main"
 msgstr "Principal"
 
@@ -49,8 +48,7 @@ msgstr "Principal"
 msgid "Activate this dashboard"
 msgstr "Activar este panel"
 
-#: ../../../Views/dashboard_config.php:39
-#: ../../../Views/dashboard_list.php:56
+#: ../../../Views/dashboard_config.php:39 ../../../Views/dashboard_list.php:56
 msgid "Published"
 msgstr "Publicado"
 
@@ -58,14 +56,16 @@ msgstr "Publicado"
 msgid "Anyone with the URL can see this dashboard"
 msgstr "Cualquiera con la dirección URL puede ver este panel"
 
-#: ../../../Views/dashboard_config.php:44
-#: ../../../Views/dashboard_list.php:55
+#: ../../../Views/dashboard_config.php:44 ../../../Views/dashboard_list.php:55
 msgid "Public"
 msgstr "Público"
 
 #: ../../../Views/dashboard_config.php:49
-msgid "Shows dashboard description on mouse over dashboard name in menu project"
-msgstr "Muestra la descripción del panel cuando se pasa el ratón sobre su nombre en el menú del proyecto"
+msgid ""
+"Shows dashboard description on mouse over dashboard name in menu project"
+msgstr ""
+"Muestra la descripción del panel cuando se pasa el ratón sobre su nombre en "
+"el menú del proyecto"
 
 #: ../../../Views/dashboard_config.php:49
 msgid "Show description"
@@ -76,8 +76,34 @@ msgid "Close"
 msgstr "Cerrar"
 
 #: ../../../Views/dashboard_config.php:56
+#: ../../../Views/dashboard_edit_view.php:36
 msgid "Save changes"
 msgstr "Guardar cambios"
+
+#: ../../../Views/dashboard_edit_view.php:32
+msgid "Configure element"
+msgstr "Configurar elemento"
+
+#: ../../../Views/dashboard_edit_view.php:35
+#: ../../../Views/dashboard_list.php:35
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../../../Views/dashboard_edit_view.php:44
+msgid "Configure"
+msgstr "Configuración"
+
+#: ../../../Views/dashboard_edit_view.php:45
+msgid "Delete"
+msgstr "Borrar"
+
+#: ../../../Views/dashboard_edit_view.php:47
+msgid "Not modified"
+msgstr "No modificado"
+
+#: ../../../Views/dashboard_edit_view.php:99
+msgid "Sauvegardé"
+msgstr ""
 
 #: ../../../Views/dashboard_list.php:15
 msgid "Dashboard"
@@ -98,10 +124,6 @@ msgstr "ATENCIÓN, el borrado será permanente"
 #: ../../../Views/dashboard_list.php:32
 msgid "Are you sure you want to delete this dashboard?"
 msgstr "¿Estás seguro de que quieres borrar este panel?"
-
-#: ../../../Views/dashboard_list.php:35
-msgid "Cancel"
-msgstr "Cancelar"
 
 #: ../../../Views/dashboard_list.php:36
 msgid "Delete permanently"
@@ -135,6 +157,10 @@ msgstr "Diseñador"
 msgid "View mode"
 msgstr "Vista"
 
+#: ../../../Views/dashboard_menu.php:59
+msgid "Configure dashboard"
+msgstr "Configurar panel"
+
 #: ../../../Views/dashboard_menu.php:62
 msgid "New"
 msgstr "Nuevo"
@@ -160,9 +186,6 @@ msgstr "Formato lista"
 
 #~ msgid "Public: "
 #~ msgstr "Público:"
-
-#~ msgid "New dashboard"
-#~ msgstr "Nuevo panel"
 
 #~ msgid "Thumb view"
 #~ msgstr "Formato iconos"
@@ -197,9 +220,6 @@ msgstr "Formato lista"
 #~ msgid "View"
 #~ msgstr "Vista"
 
-#~ msgid "Delete"
-#~ msgstr "Borrar"
-
 #~ msgid "Clone"
 #~ msgstr "Clonar"
 
@@ -208,9 +228,6 @@ msgstr "Formato lista"
 
 #~ msgid "Private share URL"
 #~ msgstr "URL privada"
-
-#~ msgid "Config"
-#~ msgstr "Configuración"
 
 #~ msgid "Explore Public Dashboards"
 #~ msgstr "Explorar paneles públicos"
