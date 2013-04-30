@@ -1,12 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms3\n"
+"Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:38+0100\n"
-"PO-Revision-Date: 2012-10-18 18:38+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
-"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
-"gaultier@telecom-bretagne.eu>\n"
+"POT-Creation-Date: 2013-04-29 19:25+0100\n"
+"PO-Revision-Date: 2013-04-29 19:26+0100\n"
+"Last-Translator: Baptiste Gaultier <b.gaultier@gmail.com>\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste.gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,85 +14,192 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2;plural=n>2\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+"X-Poedit-SearchPath-1: ../../../Views\n"
 
-#: ../../../feed_controller.php:200
-msgid "Feed "
-msgstr "Le flux"
-
-#: ../../../feed_controller.php:200
-msgid " deleted"
-msgstr "a &eacute;t&eacute; supprim&eacute;"
-
-#: ../../../feed_controller.php:201
-msgid "Feed does not exist"
-msgstr "Le flux n'existe pas"
-
-#: ../../../Views/feedapi_view.php:19
-#, fuzzy
-msgid "Feed API"
-msgstr "Le flux"
-
-#: ../../../Views/feedapi_view.php:21
-msgid "General"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:26
-msgid "Feed properties"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:32
-#, fuzzy
-msgid "Feed data"
-msgstr "Le flux"
-
-#: ../../../Views/feedapi_view.php:37
-#, fuzzy
-msgid "Delete feeds"
-msgstr "Supprimer le flux ?"
-
-#: ../../../Views/feedlist_view.php:17
-#, fuzzy
+#: ../../../Views/feedlist_view.php:16
 msgid "Feed API Help"
-msgstr "Aide de l'API"
+msgstr "Aide API"
 
-#: ../../../Views/feedlist_view.php:18 ../../../Views/feedlist_view.php:21
-#, fuzzy
-msgid "Deleted feeds"
-msgstr "Supprimer le flux ?"
-
-#: ../../../Views/feedlist_view.php:18
+#: ../../../Views/feedlist_view.php:19
 msgid "Feeds"
 msgstr "Flux"
 
-#: ../../../Views/feedlist_view.php:22
-#, fuzzy
-msgid "Delete feeds permanently"
-msgstr "Supprimer le flux ?"
+#: ../../../Views/feedlist_view.php:23
+msgid "No feeds created"
+msgstr "Aucun flux n'a &eacute;t&eacute; cr&eacute;&eacute;"
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:24
+msgid "Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. You may want to follow the link as a guide for generating your request."
+msgstr "Les flux permettent de garder un historique des données. La marche à suivre pour créer un flux est d'envoyer des données (voir l'onglet Sources); ces données apparaissent alors dans l'onglet Sources. Une fois que vous des Sources, vous pouvez les stocker directement ou bien appliquer une ou plusieurs opérations (de conversion, d'addition, de multiplication...) pour enfin les enregistrer dans un flux., vous pouvez les connecter directement à des aliments ou si vous voulez vous pouvez ajouter différents niveaux de traitement d'entrée pour vos entrées pour créer des choses telles que les données moyennes journalières ou de calibrer les entrées avant stockage. Vous pouvez suivre ce guide pour générer des requêtes :"
+
+#: ../../../Views/feedlist_view.php:24
+msgid "Feed API helper"
+msgstr "Aide API"
+
+#: ../../../Views/feedlist_view.php:31
+msgid "WARNING deleting a feed is permanent"
+msgstr "<b>Attention : </b> la suppression d'un flux est définitive"
+
+#: ../../../Views/feedlist_view.php:34
+msgid "Are you sure you want to delete this feed?"
+msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce flux ?"
+
+#: ../../../Views/feedlist_view.php:37
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../Views/feedlist_view.php:38
+msgid "Delete permanently"
+msgstr "Supprimer définitivement le flux ?"
+
+#: ../../../Views/feedlist_view.php:52
+msgid "Id"
+msgstr "Id"
+
+#: ../../../Views/feedlist_view.php:53
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:54
 msgid "Tag"
 msgstr "Tag"
 
-#: ../../../Views/feedlist_view.php:66
-msgid "Type"
-msgstr ""
+#: ../../../Views/feedlist_view.php:55
+msgid "Datatype"
+msgstr "Type"
 
-#: ../../../Views/feedlist_view.php:66
-msgid "Size"
-msgstr "Taille"
+#: ../../../Views/feedlist_view.php:56
+msgid "Public"
+msgstr "Public"
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:57
 msgid "Updated"
 msgstr "Actualis&eacute;"
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:58
 msgid "Value"
 msgstr "Valeur"
+
+#: ../../../Views/feedapi_view.php:19
+msgid "Feed API"
+msgstr "API flux"
+
+#: ../../../Views/feedapi_view.php:21
+msgid "Apikey authentication"
+msgstr "Cl&eacute;s d'API"
+
+#: ../../../Views/feedapi_view.php:22
+msgid "If you want to call any of the following actions when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr "Si vous souhaitez utiliser les liens ci-dessous alors que vous n'&ecirc;tes pas connect&eacute;, veuillez ajouter votre cl&eacute; d'API &agrave; la requ&ecirc;te : <b>&apikey=APIKEY</b>."
+
+#: ../../../Views/feedapi_view.php:23
+msgid "Read only:"
+msgstr "Acc&egrave;s en lecture seule : "
+
+#: ../../../Views/feedapi_view.php:27
+msgid "Read & Write:"
+msgstr "Acc&egrave;s en &eacute;criture : "
+
+#: ../../../Views/feedapi_view.php:31
+msgid "Html"
+msgstr "Requêtes générales"
+
+#: ../../../Views/feedapi_view.php:33
+msgid "The feed list view"
+msgstr "Liste des flux"
+
+#: ../../../Views/feedapi_view.php:34
+msgid "This page"
+msgstr "Cette page"
+
+#: ../../../Views/feedapi_view.php:37
+msgid "JSON"
+msgstr "json"
+
+#: ../../../Views/feedapi_view.php:38
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr "Vous devez ajouter <b>.json</b> &agrave; la fin de votre requête afin d'utiliser l'API json"
+
+#: ../../../Views/feedapi_view.php:40
+msgid "Returns a list of public feeds made public by the given user:"
+msgstr "Lister les flux rendus publics par un utilisateur :"
+
+#: ../../../Views/feedapi_view.php:41
+#: ../../../Views/feedapi_view.php:42
+msgid "Returns the present value of a given feed:"
+msgstr "Retourne la valeur courante du flux : "
+
+#: ../../../Views/feedapi_view.php:43
+msgid "Returns feed data:"
+msgstr "Retourne les valeurs du flux : "
+
+#: ../../../Views/feedapi_view.php:44
+msgid "Returns histogram data:"
+msgstr "Retourne les donn&eacute;es sous forme d'histogramme : "
+
+#: ../../../Views/feedapi_view.php:45
+msgid "Returns kWh consumed in a given power band using histogram data type: "
+msgstr "Retourne la somme des kWh consommés dans un intervalle de puissance :"
+
+#: ../../../Views/feedapi_view.php:46
+msgid "Returns id of a feed given by name: "
+msgstr "Retourne l'identifiant d'un flux :"
+
+#: ../../../Views/feedapi_view.php:47
+msgid "Empty feed bin:"
+msgstr "Vider la corbeille : "
+
+#: ../../../Views/feedapi_view.php:48
+msgid "Set a feed field:"
+msgstr "Modifier un champs :"
+
+#: ../../../Views/feedapi_view.php:49
+msgid "Insert a new datapoint:"
+msgstr "Insérer une nouvelle valeur : "
+
+#: ../../../Views/feedapi_view.php:50
+msgid "Update a datapoint:"
+msgstr "Modifier une valeur existante :"
+
+#: ../../../Views/feedapi_view.php:51
+msgid "Delete a datapoint:"
+msgstr "Supprimer une valeur : "
+
+#: ../../../Views/feedapi_view.php:52
+msgid "Delete a feed:"
+msgstr "Supprimer le flux : "
+
+#: ../../../Views/feedapi_view.php:53
+msgid "Restore a feed:"
+msgstr "Restaurer le flux : "
+
+#: ../../../Views/feedapi_view.php:54
+msgid "Export a feed:"
+msgstr "Exporter le flux : "
+
+#~ msgid "Feed "
+#~ msgstr "Le flux"
+
+#~ msgid " deleted"
+#~ msgstr "a &eacute;t&eacute; supprim&eacute;"
+
+#~ msgid "Feed does not exist"
+#~ msgstr "Le flux n'existe pas"
+
+#, fuzzy
+#~ msgid "Feed data"
+#~ msgstr "Le flux"
+
+#, fuzzy
+#~ msgid "Deleted feeds"
+#~ msgstr "Supprimer le flux ?"
+
+#~ msgid "Size"
+#~ msgstr "Taille"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de configuration de la base de donn&eacute;e emoncms"
@@ -231,9 +337,6 @@ msgstr "Valeur"
 #~ msgstr ""
 #~ "Les cl&eacute;s API sont utiles pour donner un acc&egrave;s &agrave; "
 #~ "emoncms sans avoir besoin de se connecter."
-
-#~ msgid "Read only access: "
-#~ msgstr "Acc&egrave;s en lecture seule : "
 
 #~ msgid "Allows to access in read only mode"
 #~ msgstr "Permet l'acc&egrave;s en lecture seule"
@@ -481,9 +584,6 @@ msgstr "Valeur"
 #~ msgid "Menu name: (lowercase a-z only)"
 #~ msgstr "Nom dans le menu (minuscules de a-z) : "
 
-#~ msgid "Id"
-#~ msgstr "id"
-
 #~ msgid "Dashboard"
 #~ msgstr "Tableau de bord"
 
@@ -492,9 +592,6 @@ msgstr "Valeur"
 
 #~ msgid "Published"
 #~ msgstr "Publi&eacute;"
-
-#~ msgid "Public"
-#~ msgstr "Public"
 
 #~ msgid "Actions"
 #~ msgstr "Actions"
@@ -580,9 +677,6 @@ msgstr "Valeur"
 #~ msgid "Daily data"
 #~ msgstr "Donn&eacute;es quotidienne"
 
-#~ msgid "Histogram data"
-#~ msgstr "Donn&eacute;es d'histogramme"
-
 #~ msgid "Tag feed"
 #~ msgstr "Tag du flux"
 
@@ -600,9 +694,6 @@ msgstr "Valeur"
 
 #~ msgid "Set notification behavior for this feed"
 #~ msgstr "Configurer les notifications pour ce flux"
-
-#~ msgid "Are you sure you want to delete feed: "
-#~ msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce flux : "
 
 #~ msgid "feed/delete"
 #~ msgstr "flux/supprimer"
@@ -639,9 +730,6 @@ msgstr "Valeur"
 
 #~ msgid "Are you sure you want to delete input: "
 #~ msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette source ? "
-
-#~ msgid "Delete input?"
-#~ msgstr "Supprimer source ?"
 
 #~ msgid "Password:"
 #~ msgstr "Mot de passe : "
