@@ -37,7 +37,7 @@ function languagecodetotext()
   <div id="account" style="width:230px;">
     <p>
       <span class="muted"><?php echo _('Username'); ?></span>
-      <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right">Edit</a></span>
+      <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
       <div id="edit-username-form" class="input-append" style="display:none">
         <input class="span2" id="appendedInputButton" type="text" style="width:150px">
         <button class="btn" type="button"><?php echo _('Save'); ?></button>
@@ -46,7 +46,7 @@ function languagecodetotext()
     </p>
     <p>
       <span class="muted"><?php echo _('Email'); ?></span>
-      <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right">Edit</a></span>
+      <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
       <div id="edit-email-form" class="input-append" style="display:none">
         <input class="span2" id="appendedInputButton" type="text" style="width:150px">
         <button class="btn" type="button"><?php echo _('Save'); ?></button>

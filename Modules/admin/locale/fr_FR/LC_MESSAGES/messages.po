@@ -1,12 +1,11 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms3\n"
+"Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:34+0100\n"
-"PO-Revision-Date: 2012-10-18 18:34+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
-"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
-"gaultier@telecom-bretagne.eu>\n"
+"POT-Creation-Date: 2013-04-30 12:10+0100\n"
+"PO-Revision-Date: 2013-04-30 12:16+0100\n"
+"Last-Translator: Baptiste Gaultier <b.gaultier@gmail.com>\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste.gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,7 +14,57 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.4\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../admin_db_view.php:1
+msgid "Database setup, update and status check"
+msgstr "Configuration, mise à jour et vérification de la base de données"
+
+#: ../../../admin_db_view.php:2
+msgid "This page displays the output of the database setup and update process which checks the database requirements of each module installed and enter any new table or fields if required."
+msgstr "This page displays the output of the database setup and update process which checks the database requirements of each module installed and enter any new table or fields if required."
+
+#: ../../../admin_db_view.php:3
+msgid "If all the item statuses below show ok that means your database is setup correctly."
+msgstr "Si la totalité des status sont indiqués comme ok alors la base de données est configurée correctement."
+
+#: ../../../admin_db_view.php:7
+msgid "Schema item"
+msgstr "Schema item"
+
+#: ../../../admin_db_view.php:7
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../admin_db_view.php:7
+msgid "Status"
+msgstr "Status"
+
+#: ../../../admin_main_view.php:7
+msgid "Update database"
+msgstr "Actualiser la base de données"
+
+#: ../../../admin_main_view.php:8
+msgid "Run this after updating emoncms, after installing a new module or to check emoncms database status."
+msgstr "Cliquez ici après la mise à jour d'emoncms, après l'installation d'un nouveau module ou pour vérifier l'intégrité de la base de données"
+
+#: ../../../admin_main_view.php:12
+msgid "Update & check"
+msgstr "Mettre à jour et vérifier"
+
+#: ../../../update_view.php:37
+msgid "Apply changes"
+msgstr "Appliquer"
+
+#: ../../../update_view.php:44
+msgid "Check for further updates"
+msgstr "Vérifier les mises à jour"
+
+#: ../../../update_view.php:51
+msgid "Database is up to date "
+msgstr "La base de données a été mise à jour"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de configuration de la base de donn&eacute;e emoncms"
@@ -204,9 +253,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Voici les visulations disponibles dans emoncms3. Veuillez entrer un "
 #~ "identifiant de flux dans les champs ci-dessous puis cliquer sur >"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
 
 #~ msgid "URL"
 #~ msgstr "Lien"
@@ -555,9 +601,6 @@ msgstr ""
 
 #~ msgid "Size"
 #~ msgstr "Taille"
-
-#~ msgid "Updated"
-#~ msgstr "Actualis&eacute;"
 
 #~ msgid "Value"
 #~ msgstr "Valeur"
