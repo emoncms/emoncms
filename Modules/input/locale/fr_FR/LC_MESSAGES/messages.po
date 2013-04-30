@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-04-29 14:40+0100\n"
-"PO-Revision-Date: 2013-04-29 15:35+0100\n"
+"PO-Revision-Date: 2013-04-30 12:25+0100\n"
 "Last-Translator: Baptiste Gaultier <b.gaultier@gmail.com>\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste.gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
@@ -118,7 +118,7 @@ msgstr "ajouter"
 
 #: ../../../Views/process_list.php:46
 msgid "Reset process list?"
-msgstr "R&eacute;initialis&eacute; les actions : "
+msgstr "Supprimer toutes les actions ?"
 
 #: ../../../Views/process_list.php:52
 msgid "Are you sure you want to delete input: "
