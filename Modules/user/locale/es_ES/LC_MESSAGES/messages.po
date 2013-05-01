@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-22 09:40+0100\n"
-"PO-Revision-Date: 2013-03-22 09:40+0100\n"
-"Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
+"POT-Creation-Date: 2013-05-01 00:55+0100\n"
+"PO-Revision-Date: 2013-05-01 01:03+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -29,14 +29,12 @@ msgid "Password:"
 msgstr "Contraseña:"
 
 #: ../../../login_block.php:45
-#, fuzzy
 msgid "Confirm password:"
-msgstr "Contraseña actual:"
+msgstr "Confirma la contraseña:"
 
 #: ../../../login_block.php:52
-#, fuzzy
 msgid "Remember me"
-msgstr " Recordarme"
+msgstr "Recordarme"
 
 #: ../../../login_block.php:53
 msgid "Login"
@@ -52,92 +50,89 @@ msgstr "regístrate"
 
 #: ../../../login_block.php:58
 msgid "Register"
-msgstr "Registrase"
+msgstr "Registrarse"
 
 #: ../../../login_block.php:59
 msgid "cancel"
-msgstr ""
+msgstr "cancelar"
 
-#: ../../../user_model.php:126
+#: ../../../user_model.php:128
 msgid "Missing username, password or email paramater"
 msgstr ""
+"Por favor, indica el nombre de usuario, la clave y la dirección de correo "
+"electrónica"
 
-#: ../../../user_model.php:128 ../../../user_model.php:250
+#: ../../../user_model.php:130 ../../../user_model.php:261
 msgid "Username must only contain a-z and 0-9 characters"
 msgstr ""
 
-#: ../../../user_model.php:132 ../../../user_model.php:261
-#, fuzzy
+#: ../../../user_model.php:134 ../../../user_model.php:272
 msgid "Username already exists"
 msgstr "El usuario ya existe"
 
-#: ../../../user_model.php:134 ../../../user_model.php:270
-#, fuzzy
+#: ../../../user_model.php:136 ../../../user_model.php:281
 msgid "Email address format error"
-msgstr "Email no presente"
+msgstr "Dirección de correo electrónico no válida"
 
-#: ../../../user_model.php:136 ../../../user_model.php:248
+#: ../../../user_model.php:138 ../../../user_model.php:259
 msgid "Username length error"
 msgstr ""
 
-#: ../../../user_model.php:137 ../../../user_model.php:219
-#: ../../../user_model.php:220
+#: ../../../user_model.php:139 ../../../user_model.php:230
+#: ../../../user_model.php:231
 msgid "Password length error"
 msgstr ""
 
-#: ../../../user_model.php:162
-#, fuzzy
-msgid "Username or password empty"
-msgstr "Usuario o contraseña inválidos"
-
-#: ../../../user_model.php:165
-msgid ""
-"Username must only contain a-z and 0-9 characters, if you created an account "
-"before this rule was in place enter your username without the non a-z 0-9 "
-"characters to login and feel free to change your username on the profile "
-"page."
+#: ../../../user_model.php:152
+msgid "Error creating user"
 msgstr ""
 
+#: ../../../user_model.php:166
+msgid "Username or password empty"
+msgstr "Usuario o contraseña vacios"
+
 #: ../../../user_model.php:172
-#, fuzzy
-msgid "Username does not exist"
-msgstr "La fuente no existe"
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
 
 #: ../../../user_model.php:179
-#, fuzzy
-msgid "Incorrect password"
-msgstr "Contraseña actual:"
+msgid ""
+"Incorrect username or password. If you're sure it's correct, try clearing "
+"your browser's cache."
+msgstr ""
 
-#: ../../../user_model.php:198
+#: ../../../user_model.php:209
 msgid "Login successful"
 msgstr ""
 
-#: ../../../user_model.php:239
+#: ../../../user_model.php:250
 #, fuzzy
 msgid "Old password incorect"
 msgstr "Contraseña antigua:"
 
-#: ../../../user_model.php:245
+#: ../../../user_model.php:256
 msgid ""
 "As your using a cookie based remember me login, please logout and log back "
 "in to change username"
 msgstr ""
 
-#: ../../../user_model.php:257
-#, fuzzy
+#: ../../../user_model.php:268
 msgid "Username updated"
-msgstr "Nombre de usuario"
+msgstr "Nombre de usuario actualizado"
 
-#: ../../../user_model.php:267
+#: ../../../user_model.php:278
 msgid ""
 "As your using a cookie based remember me login, please logout and log back "
 "in to change email"
 msgstr ""
 
-#: ../../../user_model.php:273
-#, fuzzy
+#: ../../../user_model.php:284
 msgid "Email updated"
-msgstr "actualizado"
+msgstr "Dirección de email actualizada"
 
 #: ../../../profile/profile.php:22
 msgid "es_ES"
@@ -148,13 +143,16 @@ msgid "fr_FR"
 msgstr "Francés"
 
 #: ../../../profile/profile.php:35
-#, fuzzy
 msgid "My account"
-msgstr "Cuenta"
+msgstr "Mi cuenta"
 
 #: ../../../profile/profile.php:39
 msgid "Username"
 msgstr "Nombre de usuario"
+
+#: ../../../profile/profile.php:40 ../../../profile/profile.php:49
+msgid "Edit"
+msgstr "Editar"
 
 #: ../../../profile/profile.php:43 ../../../profile/profile.php:52
 #: ../../../profile/profile.php:75
@@ -162,24 +160,20 @@ msgid "Save"
 msgstr "Guardar"
 
 #: ../../../profile/profile.php:48
-#, fuzzy
 msgid "Email"
-msgstr "Correo:"
+msgstr "Correo"
 
 #: ../../../profile/profile.php:57
-#, fuzzy
 msgid "Change Password"
 msgstr "Cambiar contraseña"
 
 #: ../../../profile/profile.php:63
-#, fuzzy
 msgid "Current password"
-msgstr "Contraseña actual:"
+msgstr "Contraseña actual"
 
 #: ../../../profile/profile.php:67
-#, fuzzy
 msgid "New password"
-msgstr "Nueva contraseña:"
+msgstr "Nueva contraseña"
 
 #: ../../../profile/profile.php:71
 msgid "Repeat new password"
@@ -202,9 +196,8 @@ msgid "Name"
 msgstr "Nombre"
 
 #: ../../../profile/profile.php:100
-#, fuzzy
 msgid "Location"
-msgstr "Hora local"
+msgstr "Ubicación"
 
 #: ../../../profile/profile.php:101
 msgid "Timezone"
@@ -220,7 +213,15 @@ msgstr ""
 
 #: ../../../profile/profile.php:228
 msgid "Passwords do not match"
-msgstr ""
+msgstr "Las contraseñas no concuerdan"
+
+#, fuzzy
+#~ msgid "Username does not exist"
+#~ msgstr "La fuente no existe"
+
+#, fuzzy
+#~ msgid "Incorrect password"
+#~ msgstr "Contraseña actual:"
 
 #~ msgid ""
 #~ "Or if you are new enter a username and password above and click register"
@@ -912,9 +913,6 @@ msgstr ""
 
 #~ msgid "Powered by "
 #~ msgstr "Creado con "
-
-#~ msgid "CKEditor"
-#~ msgstr "CKEditor"
 
 #~ msgid "delete"
 #~ msgstr "borrar"

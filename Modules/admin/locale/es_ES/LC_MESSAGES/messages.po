@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-20 14:27+0100\n"
-"PO-Revision-Date: 2013-03-20 14:32+0100\n"
-"Last-Translator: ilde <i.martinezmarchena@gmail.com>\n"
+"POT-Creation-Date: 2013-05-01 00:35+0100\n"
+"PO-Revision-Date: 2013-05-01 00:36+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -50,9 +50,31 @@ msgstr "Nombre"
 msgid "Status"
 msgstr "Estado"
 
+#: ../../../admin_main_view.php:7
+msgid "Update database"
+msgstr "Actualizar base de datos"
+
+#: ../../../admin_main_view.php:8
+msgid ""
+"Run this after updating emoncms, after installing a new module or to check "
+"emoncms database status."
+msgstr ""
+
 #: ../../../admin_main_view.php:12
 msgid "Update & check"
 msgstr "Comprobar y actualizar"
+
+#: ../../../update_view.php:37
+msgid "Apply changes"
+msgstr "Guardar cambios"
+
+#: ../../../update_view.php:44
+msgid "Check for further updates"
+msgstr ""
+
+#: ../../../update_view.php:51
+msgid "Database is up to date "
+msgstr "La base de datos está actualizada"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -550,9 +572,6 @@ msgstr "Comprobar y actualizar"
 #~ msgid "Close"
 #~ msgstr "Cerrar"
 
-#~ msgid "Save changes"
-#~ msgstr "Guardar cambios"
-
 #~ msgid "Options"
 #~ msgstr "Opciones"
 
@@ -705,9 +724,6 @@ msgstr "Comprobar y actualizar"
 
 #~ msgid "Size"
 #~ msgstr "Tamaño"
-
-#~ msgid "Updated"
-#~ msgstr "Actualizado"
 
 #~ msgid "Value"
 #~ msgstr "Valor"
