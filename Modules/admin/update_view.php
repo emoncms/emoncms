@@ -26,7 +26,7 @@
 ?>
 
 <br>
-<h2>Update database</h2>
+<h2><?php echo _("Update database"); ?></h2>
 
 <?php 
 
@@ -48,7 +48,7 @@
 ?>
 
 <div class="alert alert-success">
-  <b><?php echo _('Database is up to date '); ?></b>- Nothing to do
+  <b><?php echo _('Database is up to date '); ?></b> - <?php echo _('Nothing to do'); ?>
 </div>
 
 <?php } ?>

@@ -33,10 +33,10 @@
  <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
    <div id="graph"></div>
    <div style="position:absolute; top:20px; right:20px;">
-     <button class="viewWindow" time="1.0">1 hour</button>
-     <button class="viewWindow" time="0.50">30 min</button>
-     <button class="viewWindow" time="0.25">15 min</button>
-     <button class="viewWindow" time="0.01">1 min</button>
+     <button class="viewWindow" time="1.0">1 <?php echo _('hour') ?></button>
+     <button class="viewWindow" time="0.50">30 <?php echo _('min') ?></button>
+     <button class="viewWindow" time="0.25">15 <?php echo _('min') ?></button>
+     <button class="viewWindow" time="0.01">1 <?php echo _('min') ?></button>
    </div>
  </div>
 

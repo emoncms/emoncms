@@ -1,11 +1,12 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms\n"
+"Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-29 13:03+0100\n"
-"PO-Revision-Date: 2013-04-29 13:04+0100\n"
-"Last-Translator: Baptiste Gaultier <b.gaultier@gmail.com>\n"
-"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste.gaultier@telecom-bretagne.eu>\n"
+"POT-Creation-Date: 2013-05-01 11:54+0100\n"
+"PO-Revision-Date: 2013-05-01 11:56+0100\n"
+"Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
+"gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -13,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../login_block.php:30
@@ -22,7 +23,7 @@ msgstr "Identifiant : "
 
 #: ../../../login_block.php:35
 msgid "Email:"
-msgstr "Email:"
+msgstr "Adresse email :"
 
 #: ../../../login_block.php:40
 msgid "Password:"
@@ -30,17 +31,17 @@ msgstr "Mot de passe : "
 
 #: ../../../login_block.php:45
 msgid "Confirm password:"
-msgstr "Confirmer le mot de passe : "
+msgstr "Confirmation du mot de passe : "
 
 #: ../../../login_block.php:52
 msgid "Remember me"
-msgstr "Rester connect&eacute;"
+msgstr "Se souvenir de moi"
 
 #: ../../../login_block.php:53
 msgid "Login"
 msgstr "Connexion"
 
-#: ../../../login_block.php:54
+#: ../../../login_block.php:54 ../../../login_block.php:58
 msgid "or"
 msgstr "ou"
 
@@ -56,110 +57,132 @@ msgstr "S'inscrire"
 msgid "cancel"
 msgstr "annuler"
 
+#: ../../../user_menu.php:7
+msgid "Account"
+msgstr "Mon Compte"
+
+#: ../../../user_menu.php:8
+msgid "Logout"
+msgstr "Déconnexion"
+
 #: ../../../user_model.php:128
 msgid "Missing username, password or email paramater"
-msgstr "Nom d'utilisateur, adresse email ou mot de passe manquant"
+msgstr "Il manque le nom d'utilisateur, le mot de passe ou l'adresse email"
 
-#: ../../../user_model.php:130
-#: ../../../user_model.php:259
+#: ../../../user_model.php:130 ../../../user_model.php:259
 msgid "Username must only contain a-z and 0-9 characters"
-msgstr "Le nom d'utilisateur ne peut contenir que des lettres (a-z) et/ou des chiffres (0-9)"
+msgstr ""
+"Le nom d'utilisateur doit contenir uniquement des chiffres [0-9] et des "
+"lettres [a-z]"
 
-#: ../../../user_model.php:134
-#: ../../../user_model.php:270
+#: ../../../user_model.php:134 ../../../user_model.php:270
 msgid "Username already exists"
-msgstr "D&eacute;sol&eacute;, cet identifiant existe d&eacute;j&agrave;"
+msgstr "Désolé, cet identifiant existe déjà"
 
-#: ../../../user_model.php:136
-#: ../../../user_model.php:279
+#: ../../../user_model.php:136 ../../../user_model.php:279
 msgid "Email address format error"
-msgstr "Aucune adresse mail n'est renseign&eacute;e"
+msgstr "Aucune adresse mail n'est renseignée"
 
-#: ../../../user_model.php:138
-#: ../../../user_model.php:257
+#: ../../../user_model.php:138 ../../../user_model.php:257
 msgid "Username length error"
-msgstr "Nom d'utilisateur trop long"
+msgstr "La longueur du nom d'utilisateur est incorrect"
 
-#: ../../../user_model.php:139
-#: ../../../user_model.php:228
+#: ../../../user_model.php:139 ../../../user_model.php:228
 #: ../../../user_model.php:229
 msgid "Password length error"
-msgstr "Mot de passe trop long"
+msgstr "La longueur du mot de passe est incorrect"
 
 #: ../../../user_model.php:152
 msgid "Error creating user"
-msgstr "Une erreur s'est produite durant la cr&eacute;ation du compte"
+msgstr "Erreur lors de la création de l'utilisateur"
 
 #: ../../../user_model.php:166
 msgid "Username or password empty"
 msgstr "L'identifiant ou le mot de passe saisi est incorrect"
 
 #: ../../../user_model.php:172
-msgid "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
 msgstr ""
+"Le nom d'utilisateur doit contenir uniquement des chiffres [0-9] et des "
+"lettres [a-z], vous pouvez modifier votre nom d'utilisateur depuis la page "
+"de configuration de votre profil."
 
 #: ../../../user_model.php:179
 msgid "Username does not exist"
-msgstr "L'utilisateur n'existe pas"
+msgstr "Cet utilisateur n'existe pas"
 
 #: ../../../user_model.php:186
-msgid "Incorrect password, if your sure its correct try clearing your browser cache"
-msgstr "Mot de passe incorrect, si vous &ecirc;tes certain que celui-ci est correct alors videz le cache de votre navigateur"
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
+"Mot de passe incorrect, si vous êtes sûr de votre mot de passe, "
+"rafraîchissez le cache de votre navigateur"
 
 #: ../../../user_model.php:207
 msgid "Login successful"
-msgstr "Connexion r&eacute;ussie"
+msgstr "Connexion réussie"
 
 #: ../../../user_model.php:248
 msgid "Old password incorect"
-msgstr "L'ancien mot de passe n'est pas correct"
+msgstr "Mot de passe actuel : "
 
 #: ../../../user_model.php:254
-msgid "As your using a cookie based remember me login, please logout and log back in to change username"
-msgstr "Veuillez vous d&eacute;connecter puis vous reconnecter afin d'utiliser l'authentification par cookie"
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change username"
+msgstr ""
+"La connexion automatique est basée sur des cookies. Pour prendre en compte "
+"le changement de nom d'utilisateur il suffit de se déconnecter et "
+"reconnecter."
 
 #: ../../../user_model.php:266
 msgid "Username updated"
-msgstr "Le nom d'utilisateur  a &eacute;t&eacute; chang&eacute;"
+msgstr "Nom d'utilisateur mis à jour"
 
 #: ../../../user_model.php:276
-msgid "As your using a cookie based remember me login, please logout and log back in to change email"
-msgstr "Veuillez vous d&eacute;connecter puis vous reconnecter afin d'utiliser l'authentification par cookie"
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change email"
+msgstr ""
+"La connexion automatique est basée sur des cookies. Pour prendre en compte "
+"le changement d'adresse email il suffit de se déconnecter et reconnecter."
 
 #: ../../../user_model.php:282
 msgid "Email updated"
-msgstr "L'adresse email a &eacute;t&eacute; chang&eacute;"
+msgstr "Email mis à jour"
 
 #: ../../../profile/profile.php:22
 msgid "es_ES"
-msgstr "es_ES"
+msgstr "Espagnol"
 
 #: ../../../profile/profile.php:23
 msgid "fr_FR"
-msgstr "fr_FR"
+msgstr "Français"
 
 #: ../../../profile/profile.php:35
 msgid "My account"
-msgstr "Mon compte"
+msgstr "Mon Compte"
 
 #: ../../../profile/profile.php:39
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../../../profile/profile.php:40
-#: ../../../profile/profile.php:49
+#: ../../../profile/profile.php:40 ../../../profile/profile.php:49
 msgid "Edit"
-msgstr "&Eacute;diter"
+msgstr "Editer"
 
-#: ../../../profile/profile.php:43
-#: ../../../profile/profile.php:52
+#: ../../../profile/profile.php:43 ../../../profile/profile.php:52
 #: ../../../profile/profile.php:75
 msgid "Save"
 msgstr "Sauvegarder"
 
 #: ../../../profile/profile.php:48
 msgid "Email"
-msgstr "Email"
+msgstr "Adresse email"
 
 #: ../../../profile/profile.php:57
 msgid "Change Password"
@@ -167,15 +190,15 @@ msgstr "Modifier le mot de passe"
 
 #: ../../../profile/profile.php:63
 msgid "Current password"
-msgstr "Mot de passe : "
+msgstr "Ancien mot de passe : "
 
 #: ../../../profile/profile.php:67
 msgid "New password"
-msgstr "Nouveau mot de passe"
+msgstr "Nouveau mot de passe : "
 
 #: ../../../profile/profile.php:71
 msgid "Repeat new password"
-msgstr "Modifier le mot de passe"
+msgstr "Répétez le mot de passe :"
 
 #: ../../../profile/profile.php:76
 msgid "Cancel"
@@ -183,7 +206,7 @@ msgstr "Annuler"
 
 #: ../../../profile/profile.php:82
 msgid "My Profile"
-msgstr "Mon compte"
+msgstr "Mon profil"
 
 #: ../../../profile/profile.php:98
 msgid "Gravatar"
@@ -195,23 +218,23 @@ msgstr "Nom"
 
 #: ../../../profile/profile.php:100
 msgid "Location"
-msgstr "Localit&eacute;"
+msgstr "Localisation"
 
 #: ../../../profile/profile.php:101
 msgid "Timezone"
-msgstr "Fuseau horaire"
+msgstr "Timezone"
 
 #: ../../../profile/profile.php:102
 msgid "Language"
-msgstr "Langue"
+msgstr "Langage"
 
 #: ../../../profile/profile.php:103
 msgid "Bio"
-msgstr "Biographie"
+msgstr "Bio"
 
 #: ../../../profile/profile.php:228
 msgid "Passwords do not match"
-msgstr "Les mots de passes ne correspont pas"
+msgstr "Les mots de passe ne correspondent pas"
 
 #~ msgid ""
 #~ "Or if you are new enter a username and password above and click register"
@@ -288,9 +311,6 @@ msgstr "Les mots de passes ne correspont pas"
 
 #~ msgid "dashboards new"
 #~ msgstr "Nouveau tableau de bord"
-
-#~ msgid "Logout"
-#~ msgstr "D&eacute;connexion"
 
 #~ msgid "dashboard set"
 #~ msgstr "Tableau de bord modifi&eacute;"
@@ -612,7 +632,7 @@ msgstr "Les mots de passes ne correspont pas"
 #~ msgstr "Publier ce teableau de bord"
 
 #~ msgid "Make dashboard private"
-#~ msgstr "Rendre ce tableau de bord priv&eacute;"
+#~ msgstr "Rendre ce tableau de bord privé"
 
 #~ msgid "Make dashboard public"
 #~ msgstr "Rendre ce tableau de bord public"
@@ -797,7 +817,7 @@ msgstr "Les mots de passes ne correspont pas"
 #~ msgstr "Vista de gráfico de barras:"
 
 #~ msgid "English"
-#~ msgstr "Ingl&eacute;s"
+#~ msgstr "Inglés"
 
 #~ msgid "Spanish"
 #~ msgstr "Español"
