@@ -10,10 +10,11 @@
     http://openenergymonitor.org
   */
 
-  global $path, $session, $menu, $menu_right, $menu;
+  global $path, $session, $menu, $menu;
   if (!isset($session['profile'])) $session['profile'] = 0;
 
   $menu_left = $menu['left'];
+  $menu_right = $menu['right'];
   $menu_dropdown = $menu['dropdown'];
 ?>
 

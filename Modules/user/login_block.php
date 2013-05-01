@@ -33,29 +33,29 @@ global $path, $allowusersregister, $enable_rememberme;
 
       <p class="register-item" style="display:none">
         <?php echo _('Email:'); ?>   
-        <input type="text" name="email" style="width:94%"/>
+        <input type="text" name="email" style="width:94%" tabindex="2"/>
       </p>
 
       <p>
         <?php echo _('Password:'); ?><br/>
-        <input type="password" tabindex="2" name="password" style="width:94%"/>
+        <input type="password" tabindex="3" name="password" style="width:94%"/>
       </p>
 
       <p class="register-item" style="display:none">
         <?php echo _('Confirm password:'); ?><br/>
-        <input type="password" name="confirm-password" style="width:94%"/>
+        <input type="password" name="confirm-password" style="width:94%" tabindex="4"/>
       </p>
 
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
-        <?php if ($enable_rememberme) { ?><input type="checkbox" tabindex="3" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
-        <button id="login" class="btn btn-primary" tabindex="4" type="button"><?php echo _('Login'); ?></button> 
+        <?php if ($enable_rememberme) { ?><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
+        <button id="login" class="btn btn-primary" tabindex="6" type="button"><?php echo _('Login'); ?></button> 
         <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
       </p>
 
       <p class="register-item" style="display:none">
-        <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> or 
+        <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> <?php echo '&nbsp;'._('or').'&nbsp' ?> 
         <a id="cancel-link"><?php echo _('cancel'); ?></a>
       </p>
 

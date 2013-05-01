@@ -58,6 +58,8 @@ function controller($controller_name)
             $domain = "messages";
             bindtextdomain($domain, "Modules/".$controller_name."/locale");
             bind_textdomain_codeset($domain, 'UTF-8');
+            
+            
             textdomain($domain);
 
             require $controllerScript;
@@ -118,6 +120,7 @@ function load_db_schema()
 function load_menu()
 {
     $menu_left = array();
+    $menu_right = array();
     $menu_dropdown = array();
 
     $dir = scandir("Modules");
@@ -133,7 +136,7 @@ function load_menu()
     }
 
     usort($menu_left, "menu_sort");
-    return array('left'=>$menu_left, 'dropdown'=>$menu_dropdown);
+    return array('left'=>$menu_left, 'right'=>$menu_right, 'dropdown'=>$menu_dropdown);
 }
 
 // Menu sort by order

@@ -1,11 +1,12 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms\n"
+"Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-29 14:40+0100\n"
-"PO-Revision-Date: 2013-04-30 12:25+0100\n"
-"Last-Translator: Baptiste Gaultier <b.gaultier@gmail.com>\n"
-"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste.gaultier@telecom-bretagne.eu>\n"
+"POT-Creation-Date: 2013-04-28 01:39+0100\n"
+"PO-Revision-Date: 2013-04-28 01:40+0100\n"
+"Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
+"gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -13,20 +14,24 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../input_menu.php:3
+msgid "Input"
+msgstr "Sources de données"
 
 #: ../../../process_model.php:39
 msgid "Log to feed"
-msgstr "vers flux"
+msgstr "Stocker dans un flux"
 
 #: ../../../process_model.php:60
 msgid "Power to kWh"
-msgstr "watts vers kWh"
+msgstr "Watts vers KWh"
 
 #: ../../../process_model.php:67
 msgid "Power to kWh/d"
-msgstr "watts vers kWh/j"
+msgstr "Watts vers KWh/j"
 
 #: ../../../process_model.php:74
 msgid "x input"
@@ -34,7 +39,7 @@ msgstr " × source"
 
 #: ../../../process_model.php:81
 msgid "input on-time"
-msgstr "horodatage"
+msgstr "input on-time"
 
 #: ../../../process_model.php:88
 msgid "kWhinc to kWh/d"
@@ -42,7 +47,7 @@ msgstr "kWhinc vers kWh/j"
 
 #: ../../../process_model.php:95
 msgid "kWh to kWh/d (OLD)"
-msgstr "kWh vers kWh/j (ancien)"
+msgstr "kWh vers kWh/j"
 
 #: ../../../process_model.php:102
 msgid "update feed @time"
@@ -54,7 +59,7 @@ msgstr "+ source"
 
 #: ../../../process_model.php:116
 msgid "/ input"
-msgstr "&divide; source"
+msgstr "/ source"
 
 #: ../../../process_model.php:123
 msgid "phaseshift"
@@ -78,7 +83,7 @@ msgstr "moyenne"
 
 #: ../../../process_model.php:159
 msgid "heat flux"
-msgstr " flux thermique"
+msgstr "flux air chaud"
 
 #: ../../../process_model.php:167
 msgid "power gained to kWh/d"
@@ -86,11 +91,11 @@ msgstr "watts vers kWh/j"
 
 #: ../../../process_model.php:175
 msgid "pulse difference"
-msgstr "diff&eacute;rence des impulsions"
+msgstr "différence impulsion"
 
 #: ../../../process_model.php:183
 msgid "KWh to Power"
-msgstr "kWh vers watts"
+msgstr "kWh en puissance"
 
 #: ../../../process_model.php:190
 msgid "- input"
@@ -100,13 +105,211 @@ msgstr " - source"
 msgid "kWh to kWh/d"
 msgstr "kWh vers kWh/j"
 
+#: ../../../Views/input_api.php:3
+msgid "Input API"
+msgstr "API de gestion des Sources de données"
+
+#: ../../../Views/input_api.php:4
+msgid "Apikey authentication"
+msgstr "Authentification Apikey"
+
+#: ../../../Views/input_api.php:5
+msgid ""
+"If you want to call any of the following actions when your not logged in, "
+"add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr ""
+"Si vous voulez appeler ces fonctions sans être connecté, il suffit d'ajouter "
+"votre clé API sur l'url : &apikey=APIKEY"
+
+#: ../../../Views/input_api.php:6
+msgid "Read only:"
+msgstr "Accès en lecture seule : "
+
+#: ../../../Views/input_api.php:9
+msgid "Read & Write:"
+msgstr "Lecture / Ecriture :"
+
+#: ../../../Views/input_api.php:13
+msgid "Available HTML URLs"
+msgstr "Liste des pages HTML pour la configuration"
+
+#: ../../../Views/input_api.php:15
+msgid "The input list view"
+msgstr "Liste des Sources de données"
+
+#: ../../../Views/input_api.php:16
+msgid "This page"
+msgstr "Cette page (documentation de l'API)"
+
+#: ../../../Views/input_api.php:17
+msgid "Input processing configuration page"
+msgstr "Page de configuration des traitements "
+
+#: ../../../Views/input_api.php:20
+msgid "Available JSON commands"
+msgstr "Commandes JSON disponibles"
+
+#: ../../../Views/input_api.php:21
+msgid "To use the json api the request url needs to include .json"
+msgstr "Pour utiliser l'api json, vous devez ajouter .json à la fin de l'url"
+
+#: ../../../Views/input_api.php:23
+msgid "Post data"
+msgstr "Données transmises"
+
+#: ../../../Views/input_api.php:25
+msgid "JSON format:"
+msgstr "Format Json :"
+
+#: ../../../Views/input_api.php:26
+msgid "CSV format:"
+msgstr "Format CSV :"
+
+#: ../../../Views/input_api.php:27
+msgid "Assign inputs to a node group"
+msgstr "Associer la source à un groupe"
+
+#: ../../../Views/input_api.php:28
+msgid "Set the input entry time manually"
+msgstr "Modifier manuellement l'horodatage des données"
+
+#: ../../../Views/input_api.php:32
+msgid ""
+"To post data from a remote device you will need to include in the request "
+"url your write apikey. This give your device write access to your emoncms "
+"account, allowing it to post data."
+msgstr ""
+"Pour envoyer des données depuis un périphérique distant, vous devez ajouter "
+"votre clef API dans l'url. Cela permet d'accorder les accès en écriture à "
+"votre périphérique."
+
+#: ../../../Views/input_api.php:34
+msgid ""
+"For example using the first json type request above just add the apikey to "
+"the end like this:"
+msgstr ""
+"Par exemple, pour utiliser l'appel json ci-dessus, il suffit d'ajouter la "
+"clef API comme suit :"
+
+#: ../../../Views/input_api.php:37
+msgid "Bulk data"
+msgstr "Données brutes"
+
+#: ../../../Views/input_api.php:39
+msgid "You can provide data using bulk mode"
+msgstr ""
+"Vous pouvez transmettre vos données de manière brute avec un appel global"
+
+#: ../../../Views/input_api.php:42
+msgid ""
+"The first number of each node is the time offset, so for the first node it "
+"is 0 which means the packet for the first node arrived at 0 seconds. The "
+"second node arrived at 2 seconds and 3rd 10 seconds."
+msgstr ""
+"Le premier nombre de chaque liste entre [] correspond toujours à l'offset de "
+"temps. Par exemple, si la valeur est 0, la valeur doit être prise en compte "
+"avec un décalage de 0 seconde, la seconde mesure a un décalage de 2 secondes "
+"et la 3éme un décalage de 10 secondes."
+
+#: ../../../Views/input_api.php:43
+msgid ""
+"The second number is the node id, this is the unqiue identifer for the "
+"wireless node."
+msgstr ""
+"Le second nombre est l'Id du groupe de Source de données, il correspond à "
+"l'identification du groupe dans la liste des Sources de données."
+
+#: ../../../Views/input_api.php:44
+msgid ""
+"All the numbers after the first two are data values. The first node here "
+"(node 10) has three data values: 250,100 and 20."
+msgstr ""
+"Tous les nombres qui suivent les deux premiers sont des valeurs de chaque "
+"mesure à enregistrer. Par exemple, ici le groupe 10 contient 3 valeurs "
+"(250,100 et 20)."
+
+#: ../../../Views/input_api.php:48
+msgid "Input actions"
+msgstr "Liste des Sources de données"
+
+#: ../../../Views/input_api.php:50
+msgid "List of inputs"
+msgstr "Liste des sources de données"
+
+#: ../../../Views/input_api.php:51
+msgid "Delete an input"
+msgstr "Supprimer une source de données"
+
+#: ../../../Views/input_api.php:54
+msgid "Input process actions"
+msgstr "Action de traitement des données"
+
+#: ../../../Views/input_api.php:56
+msgid "Add an input process"
+msgstr "Ajouter un traitement sur les données"
+
+#: ../../../Views/input_api.php:57
+msgid "List input process list"
+msgstr "Liste des processus de traitement"
+
+#: ../../../Views/input_api.php:58
+msgid "Delete input process"
+msgstr "Supprimer un traitement de données"
+
+#: ../../../Views/input_api.php:59
+msgid "Move input process"
+msgstr "Changer la position d'un traitement dans la liste"
+
+#: ../../../Views/input_api.php:60
+msgid "Reset input process list"
+msgstr "Réinitialiser les processus de traitement"
+
+#: ../../../Views/input_node.php:23 ../../../Views/process_list.php:16
+msgid "Input API Help"
+msgstr "Aide de l'API"
+
+#: ../../../Views/input_node.php:26
+msgid "Inputs"
+msgstr "Sources de données"
+
+#: ../../../Views/input_node.php:30
+msgid "No inputs created"
+msgstr "Aucune Source de données disponible"
+
+#: ../../../Views/input_node.php:31
+msgid ""
+"Inputs is the main entry point for your monitoring device. Configure your "
+"device to post values here, you may want to follow the <a href=\"api\">Input "
+"API helper</a> as a guide for generating your request."
+msgstr "TEST ETEST a guide for generating your request."
+
+#: ../../../Views/input_node.php:47
+msgid "Node:"
+msgstr "Groupe"
+
+#: ../../../Views/input_node.php:48
+msgid "name"
+msgstr "Nom"
+
+#: ../../../Views/input_node.php:49
+msgid "Description"
+msgstr "Description"
+
+#: ../../../Views/input_node.php:50
+msgid "Process list"
+msgstr "Liste des Actions"
+
 #: ../../../Views/process_list.php:18
 msgid "Input configuration:   "
-msgstr "Configuration des sources : "
+msgstr "Définition des traitements sur vos données n°"
 
 #: ../../../Views/process_list.php:19
-msgid "Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list."
-msgstr "Les actions list&eacute;es ci-dessous sont ex&eacute;cut&eacute;es de fa&ccedil;on s&eacute;quentielle. Le r&eacute;sultat de chaque action est pass&eacute; comme entr&eacute;e &agrave; la ligne suivante."
+msgid ""
+"Input processes are executed sequentially with the result being passed back "
+"for further processing by the next processor in the input processing list."
+msgstr ""
+"Les processus de traitement de données sont exécutés séquentiellement. Le "
+"résultat de chaque étape est passé en entrée de l'étape suivante."
 
 #: ../../../Views/process_list.php:25
 msgid "New"
@@ -118,15 +321,15 @@ msgstr "ajouter"
 
 #: ../../../Views/process_list.php:46
 msgid "Reset process list?"
-msgstr "Supprimer toutes les actions ?"
+msgstr "Réinitialiser la liste des actions"
 
 #: ../../../Views/process_list.php:52
 msgid "Are you sure you want to delete input: "
-msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette source ? "
+msgstr "Etes vous sûr de vouloir supprimer cette source ? "
 
 #: ../../../Views/process_list.php:56
 msgid "Delete input?"
-msgstr "Supprimer source ?"
+msgstr "Supprimer la source"
 
 #: ../../../Views/process_list.php:99
 msgid "Order"
@@ -144,10 +347,9 @@ msgstr "Param&egrave;tre"
 msgid "Actions"
 msgstr "Actions"
 
-#: ../../../Views/process_list.php:108
-#: ../../../Views/process_list.php:112
+#: ../../../Views/process_list.php:108 ../../../Views/process_list.php:112
 msgid "Move up"
-msgstr "Remonter"
+msgstr "Monter"
 
 #: ../../../Views/process_list.php:117
 msgid "Delete"
@@ -155,801 +357,8 @@ msgstr "Supprimer"
 
 #: ../../../Views/process_list.php:122
 msgid "You have no processes defined"
-msgstr "Aucune action n'est d&eacute;finie"
-
-#: ../../../Views/input_node.php:23
-msgid "Input API Help"
-msgstr "Aide API"
-
-#: ../../../Views/input_node.php:26
-msgid "Inputs"
-msgstr "Sources"
-
-#: ../../../Views/input_node.php:30
-msgid "No inputs created"
-msgstr "Aucune source n'a &eacute;t&eacute; cr&eacute;&eacute;e"
-
-#: ../../../Views/input_node.php:31
-msgid "Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href=\"api\">Input API helper</a> as a guide for generating your request."
-msgstr "Les sources sont le point d'entr&eacute;e pour vos capteurs. Vos capteurs doievent &ecirc;tre configur&eacute;s pour envoyer leurs donn&eacutes ici, veuillez consulter l'<a href=\"api\">Aide API</a> afin de g&eacute;n&eacute;rer votre requ&ecirc;te."
-
-#: ../../../Views/input_node.php:47
-msgid "Node:"
-msgstr "N&oelig;ud"
-
-#: ../../../Views/input_node.php:48
-msgid "name"
-msgstr "Nom"
-
-#: ../../../Views/input_node.php:49
-msgid "Description"
-msgstr "Description"
-
-#: ../../../Views/input_node.php:50
-msgid "Process list"
-msgstr "Liste des actions"
-
-#: ../../../Views/input_api.php:3
-msgid "Input API"
-msgstr "API Source"
-
-#: ../../../Views/input_api.php:4
-msgid "Apikey authentication"
-msgstr "Cl&eacute; d'API"
-
-#: ../../../Views/input_api.php:5
-msgid "If you want to call any of the following actions when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY."
-msgstr "Si vous souhaitez utiliser les liens ci-dessous alors que vous n'&ecirc;tes pas connect&eacute;, veuillez ajouter votre cl&eacute; d'API &agrave; la requ&ecirc;te : <b>&apikey=APIKEY</b>."
-
-#: ../../../Views/input_api.php:6
-msgid "Read only:"
-msgstr "Acc&egrave;s en lecture seule : "
-
-#: ../../../Views/input_api.php:9
-msgid "Read & Write:"
-msgstr "Acc&egrave;s en &eacute;criture : "
-
-#: ../../../Views/input_api.php:13
-msgid "Available HTML URLs"
-msgstr "Requ&ecirc;tes générales"
-
-#: ../../../Views/input_api.php:15
-msgid "The input list view"
-msgstr "Lister les sources"
-
-#: ../../../Views/input_api.php:16
-msgid "This page"
-msgstr "Cette page"
-
-#: ../../../Views/input_api.php:17
-msgid "Input processing configuration page"
-msgstr "Configuration des sources"
-
-#: ../../../Views/input_api.php:20
-msgid "Available JSON commands"
-msgstr "Requ&ecirc;tes JSON"
-
-#: ../../../Views/input_api.php:21
-msgid "To use the json api the request url needs to include .json"
-msgstr "Vous devez ajouter <b>.json</b> &agrave; la fin de votre requête afin d'utiliser l'API json"
-
-#: ../../../Views/input_api.php:23
-msgid "Post data"
-msgstr "Envoyer des donn&eacute;es"
-
-#: ../../../Views/input_api.php:25
-msgid "JSON format:"
-msgstr "Format JSON : "
-
-#: ../../../Views/input_api.php:26
-msgid "CSV format:"
-msgstr "Format CSV : "
-
-#: ../../../Views/input_api.php:27
-msgid "Assign inputs to a node group"
-msgstr "Assigner une source &agrave; un n&oelig;ud sp&eacute;cifique"
-
-#: ../../../Views/input_api.php:28
-msgid "Set the input entry time manually"
-msgstr "Sp&eacute;cifier l'horodatage de la source manuellement"
-
-#: ../../../Views/input_api.php:31
-msgid "APIKEY"
-msgstr "Cl&eacute; d'API"
-
-#: ../../../Views/input_api.php:32
-msgid "To post data from a remote device you will need to include in the request url your write apikey. This give your device write access to your emoncms account, allowing it to post data."
-msgstr "Pour envoyer des donn&eacute;es depuis un capteur, vous devez sp&eacute;cifier votre <b>cl&eacute; d'API</b> (avec droits d'&eacute;criture)."
-
-#: ../../../Views/input_api.php:34
-msgid "For example using the first json type request above just add the apikey to the end like this:"
-msgstr "Voici &agrave; quoi ressemble une requ&ecirc;te <b>avec une cl&eacute; d'API</b> : "
-
-#: ../../../Views/input_api.php:37
-msgid "Bulk data"
-msgstr "Donn&eacute;es brutes"
-
-#: ../../../Views/input_api.php:39
-msgid "You can provide data using bulk mode"
-msgstr "Vous pouvez &eacute;galement fournir des donn&eacute;es brutes"
-
-#: ../../../Views/input_api.php:42
-msgid "The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 10 seconds."
-msgstr "Le premier param&egrave;tre de chaque nœud est le d&eacute;calage (exprim&eacute; en seconde). Dans cet exemple: le paquet pour le premier noeud est arriv&eacute; &agrave; 0 seconde. Le second nœud est arriv&eacute; &agrave; 2 secondes et le 3&egrave;me 10 secondes."
-
-#: ../../../Views/input_api.php:43
-msgid "The second number is the node id, this is the unique identifer for the wireless node."
-msgstr "Le second nombre est l'idenfiant du n&oelig;ud, c'est l'identifiant unique du capteur sans-fils."
-
-#: ../../../Views/input_api.php:44
-msgid "All the numbers after the first two are data values. The first node here (node 10) has three data values: 250,100 and 20."
-msgstr "Tous les nombres apr&egrave;s les deux premiers sont des donn&eacute;es. Le premier n&oelig;ud ici (n&oelig;ud 10) a trois donn&eacute;es : 250, 100 et 20."
-
-#: ../../../Views/input_api.php:48
-msgid "Input actions"
-msgstr "Actions"
-
-#: ../../../Views/input_api.php:50
-msgid "List of inputs"
-msgstr "Lister les sources"
-
-#: ../../../Views/input_api.php:51
-msgid "Delete an input"
-msgstr "Supprimer source"
-
-#: ../../../Views/input_api.php:54
-msgid "Input process actions"
-msgstr "Actions"
-
-#: ../../../Views/input_api.php:56
-msgid "Add an input process"
-msgstr "Ajouter une action"
-
-#: ../../../Views/input_api.php:57
-msgid "List input process list"
-msgstr "Lister les actions"
-
-#: ../../../Views/input_api.php:58
-msgid "Delete input process"
-msgstr "Supprimer source"
-
-#: ../../../Views/input_api.php:59
-msgid "Move input process"
-msgstr "D&eacute;placer une action"
-
-#: ../../../Views/input_api.php:60
-msgid "Reset input process list"
-msgstr "R&eacute;initialis&eacute; les actions"
-
-#~ msgid "Process list has been reset"
-#~ msgstr "La liste d'actions a &ecute;t&ecute; r&eacute;initialis&eacute;e "
-
-#, fuzzy
-#~ msgid "Node view"
-#~ msgstr "Vista previa"
-
-#~ msgid "Id"
-#~ msgstr "id"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
-
-#~ msgid "Updated"
-#~ msgstr "Actualis&eacute;"
-
-#~ msgid "Value"
-#~ msgstr "Valeur"
-
-#, fuzzy
-#~ msgid "New dashboard"
-#~ msgstr "Tableau de bord"
-
-#~ msgid "Emoncms database setup script"
-#~ msgstr "Script de configuration de la base de donn&eacute;e emoncms"
-
-#~ msgid "Continue to emoncms"
-#~ msgstr "Continuer vers emoncms"
-
-#~ msgid "to run script uncomment runnable"
-#~ msgstr ""
-#~ "Pour ex&eacute;cuter le script, d&eacutecommenter la variable runnable"
-
-#~ msgid "dashboards new"
-#~ msgstr "Nouveau tableau de bord"
-
-#~ msgid "Logout"
-#~ msgstr "D&eacute;connexion"
-
-#~ msgid "dashboard set"
-#~ msgstr "Tableau de bord modifi&eacute;"
-
-#~ msgid "dashboard set configuration"
-#~ msgstr "d&ecute;finir la configuration du tableau de bord"
-
-#~ msgid "Feed type changed"
-#~ msgstr "Le type a &eacute;t&eacute; chang&eacute;"
-
-#~ msgid "Feed does not exist"
-#~ msgstr "Le flux n'existe pas"
-
-#~ msgid "Feed tag changed"
-#~ msgstr "L’&eacute;tiquetage du flux a &eacute;t&eacute; modifi&eacute;"
-
-#~ msgid "Feed renamed"
-#~ msgstr "Le flux a &eacute;t&eacute; renomm&eacute;"
-
-#~ msgid "Feed "
-#~ msgstr "Le flux"
-
-#~ msgid " deleted"
-#~ msgstr "a &eacute;t&eacute; supprim&eacute;"
-
-#~ msgid "Invalid username or password"
-#~ msgstr "L'identifiant ou le mot de passe saisi est incorrect"
-
-#~ msgid "Welcome, you are now logged in"
-#~ msgstr "Salut, vous &ecirc;tes maintenant connect&eacute;"
-
-#~ msgid "Sorry username already exists"
-#~ msgstr "D&eacute;sol&eacute;, cet identifiant existe d&eacute;j&agrave;"
-
-#~ msgid "Please enter a username that is 4 to 30 characters long"
-#~ msgstr "Merci de choisir un identifiant de plus de 4 caract&egrave;res"
-
-#~ msgid "Please enter a password that is 4 to 30 characters long"
-#~ msgstr "Mercir de taper un mot de passe contenant "
-
-#~ msgid "Your new account has been created"
-#~ msgstr "Votre compte a &eacute;t&eacute; cr&eacute;&eacute;"
-
-#~ msgid "Your password has been changed"
-#~ msgstr "Votre mot de passe a &eacute;t&eacute; chang&eacute;"
-
-#~ msgid "Invalid password"
-#~ msgstr "Mot de passe incorrect"
-
-#~ msgid "No email address present"
-#~ msgstr "Aucune adresse mail n'est renseign&eacute;e"
-
-#~ msgid "New read apikey: "
-#~ msgstr "Nouvelle cl&eacute; API (lecture) : "
-
-#~ msgid "New write apikey: "
-#~ msgstr "Nouvelle &ecute; API (&eacute;criture) : "
-
-#~ msgid "You are logged out"
-#~ msgstr "Vous &ecirc;tes d&eacute;connect&eacute;"
-
-#~ msgid "Invalid token"
-#~ msgstr "Jeton invalide"
-
-#~ msgid "Restricted access"
-#~ msgstr "Acc&egrave;s restreint"
-
-#~ msgid "Message successfully sent!"
-#~ msgstr "Message envoy&eacute; avec succ&egrave;s"
-
-#~ msgid " is"
-#~ msgstr "est"
-
-#~ msgid " is inactive"
-#~ msgstr "est inactif"
-
-#~ msgid ""
-#~ "API keys are used to give authenticated access without login in via a "
-#~ "normal session."
-#~ msgstr ""
-#~ "Les cl&eacute;s API sont utiles pour donner un acc&egrave;s &agrave; "
-#~ "emoncms sans avoir besoin de se connecter."
-
-#~ msgid "Allows to access in read only mode"
-#~ msgstr "Permet l'acc&egrave;s en lecture seule"
-
-#~ msgid "new"
-#~ msgstr "g&eacute;n&eacute;rer"
-
-#~ msgid "Write only access: "
-#~ msgstr "Acc&egrave;s en &eacute;criture : "
-
-#~ msgid "Keep secret. Write mode access"
-#~ msgstr "Ne pas divulguer. Cl&eacute; API avec droits d'&eacute;criture"
-
-#~ msgid "Post API"
-#~ msgstr "API"
-
-#~ msgid ""
-#~ "Example: Click or copy this to your web browser or send from your "
-#~ "monitoring hardware"
-#~ msgstr ""
-#~ "Exemple : Cliquer ou copier ceci dans votre navigateur ou depuis votre "
-#~ "capteur"
-
-#~ msgid "try me"
-#~ msgstr "tester"
-
-#~ msgid "Visualisation API"
-#~ msgstr "API de visualisation"
-
-#~ msgid ""
-#~ "These are all the visualisations that are available in emoncms3. To view "
-#~ "a visualisation enter in a relevant feedid in the underlined boxes below "
-#~ "and then click on the > button."
-#~ msgstr ""
-#~ "Voici les visulations disponibles dans emoncms3. Veuillez entrer un "
-#~ "identifiant de flux dans les champs ci-dessous puis cliquer sur >"
-
-#~ msgid "URL"
-#~ msgstr "Lien"
-
-#~ msgid "View"
-#~ msgstr "Afficher"
-
-#~ msgid "Real-time graph"
-#~ msgstr "Temps-r&eacute;el"
-
-#~ msgid "Raw data graph"
-#~ msgstr "Donn&eacute;es brutes"
-
-#~ msgid "Bar graph"
-#~ msgstr "Histogramme"
-
-#~ msgid "All time histogram"
-#~ msgstr "Histogramme complet"
-
-#~ msgid "Daily histogram"
-#~ msgstr "Histogramme quotidien"
-
-#~ msgid "Zoom"
-#~ msgstr "Zoom"
-
-#~ msgid "kWh/d Comparison"
-#~ msgstr "Comparaison kWh/j"
-
-#~ msgid "Bar graph (ordered by height)"
-#~ msgstr "Histogramme (tri&eacute; par hauteur)"
-
-#~ msgid "Threshold ordered by height"
-#~ msgstr "Seuils (tri&eacute;s par hauteur)"
-
-#~ msgid "Multigraph"
-#~ msgstr "Graphiques multiples"
-
-#~ msgid "Datapoint Editor"
-#~ msgstr "&Eacute;diteur de points"
-
-#~ msgid "Other options:"
-#~ msgstr "Options"
-
-#~ msgid "Hide menu"
-#~ msgstr "Cacher le menu"
-
-#~ msgid ""
-#~ "Hide the top menu and footer by adding the attribute <i>&embed=1</i> to "
-#~ "the URL."
-#~ msgstr ""
-#~ "Cacher le menu et le pied de page en ajoutant l'attribut <i>&embed=1</i> "
-#~ "&agrave; l'adresse."
-
-#~ msgid "Share"
-#~ msgstr "Partager"
-
-#~ msgid "To share a visualisation use your read apikey. Add the attribute "
-#~ msgstr ""
-#~ "Pour partager un visulaisation, indiquer votre cl&eacute API (lecture). "
-#~ "Ajouter"
-
-#~ msgid " to the URL"
-#~ msgstr "&agrave; l'adresse"
-
-#, fuzzy
-#~ msgid "Reset Multigraph"
-#~ msgstr "Graphiques multiples"
-
-#, fuzzy
-#~ msgid "The multigraph can be reset using the <i>&clear=1</i> attribute."
-#~ msgstr ""
-#~ "Le graphe peut &ecirc;tre r&eacute;initialis&eacute; en utilisant "
-#~ "l'attribut  &clear=1."
-
-#~ msgid "Yes please"
-#~ msgstr "Oui"
-
-#~ msgid "Feeds"
-#~ msgstr "Flux"
-
-#~ msgid "Dashboards"
-#~ msgstr "Tableaux de bord"
-
-#~ msgid "Admin"
-#~ msgstr "Administration"
-
-#~ msgid "Account"
-#~ msgstr "Compte"
-
-#~ msgid "Notify settings"
-#~ msgstr "Configuration des notifications"
-
-#~ msgid "Notification recipiants (To): "
-#~ msgstr "Destinataire : "
-
-#~ msgid "Save"
-#~ msgstr "Sauvegarder"
-
-#~ msgid "Notify "
-#~ msgstr "Notifier"
-
-#~ msgid "Setup feed notifications"
-#~ msgstr "Configuration des notifications"
-
-#~ msgid "Notify when feed = value: "
-#~ msgstr "Envoyer quand le flux est &eacute;gal &agrave; cette valeur : "
-
-#, fuzzy
-#~ msgid "Notify when feed is inactive"
-#~ msgstr "Envoyer rapport quand le flux est inactif"
-
-#, fuzzy
-#~ msgid "Notify feed status periodically"
-#~ msgstr "Envoyer rapport p&eacute;riodiquement "
-
-#~ msgid "Edit mail settings"
-#~ msgstr "Configuration email"
-
-#~ msgid "User: "
-#~ msgstr "Identifiant : "
-
-#~ msgid "Select preferred language"
-#~ msgstr "S&eacute;lectionner la langue principale"
-
-#~ msgid "Browser language"
-#~ msgstr "Langue du navigateur"
-
-#~ msgid "Change details"
-#~ msgstr "Modification du compte"
-
-#~ msgid "Username:"
-#~ msgstr "Identifiant : "
-
-#~ msgid "Email:"
-#~ msgstr "Correo:"
-
-#~ msgid "Change"
-#~ msgstr "Modifier"
-
-#~ msgid "Change password"
-#~ msgstr "Modifier le mot de passe"
-
-#~ msgid "Current password:"
-#~ msgstr "Ancien mot de passe : "
-
-#~ msgid "New password:"
-#~ msgstr "Nouveau mot de passe : "
-
-#~ msgid "Account Statistics"
-#~ msgstr "Statistiques du compte"
-
-#~ msgid "Disk space use:"
-#~ msgstr "Espace disque utilis&eacute; : "
-
-#~ msgid "Up hits:"
-#~ msgstr "Up hits : "
-
-#~ msgid "Down hits:"
-#~ msgstr "Down hits : "
-
-#~ msgid "en_EN"
-#~ msgstr "Anglais"
-
-#~ msgid "es_ES"
-#~ msgstr "Espagnol"
-
-#~ msgid "nl_BE"
-#~ msgstr "Flamand"
-
-#~ msgid "nl_NL"
-#~ msgstr "N&eacute;erlandais"
-
-#~ msgid "fr_FR"
-#~ msgstr "Français"
-
-#~ msgid "Admin panel"
-#~ msgstr "Administration"
-
-#~ msgid "Total feed data disk space use: "
-#~ msgstr "Espace utilis&eacute; pour le stockage des flux : "
-
-#~ msgid "Users"
-#~ msgstr "Utilisateurs"
-
-#~ msgid "registered users"
-#~ msgstr "utilisateurs enregistr&eacute;s"
-
-#~ msgid "Username"
-#~ msgstr "Nombre d'utilisateur"
-
-#~ msgid "Memory use"
-#~ msgstr "M&eacute;moire"
-
-#~ msgid "Dashboard name: "
-#~ msgstr "Nom du tableau de bord : "
-
-#~ msgid "Description: "
-#~ msgstr "Description : "
-
-#~ msgid "Main: "
-#~ msgstr "Principal : "
-
-#~ msgid "Published: "
-#~ msgstr "Publi&eacute; : "
-
-#~ msgid "Public: "
-#~ msgstr "Public : "
-
-#~ msgid "Menu name: (lowercase a-z only)"
-#~ msgstr "Nom dans le menu (minuscules de a-z) : "
-
-#~ msgid "Main"
-#~ msgstr "Principal"
-
-#~ msgid "Published"
-#~ msgstr "Publi&eacute;"
-
-#~ msgid "Public"
-#~ msgstr "Public"
-
-#~ msgid "This is the main dashboard"
-#~ msgstr "Tableau de bord principal"
-
-#~ msgid "Set main dashboard"
-#~ msgstr "Choisir comme tableau de bord principal"
-
-#~ msgid "Unpublish dashboard"
-#~ msgstr "Ne plus publier"
-
-#~ msgid "Publish dashboard"
-#~ msgstr "Publier ce teableau de bord"
-
-#~ msgid "Make dashboard private"
-#~ msgstr "Rendre ce tableau de bord priv&eacute;"
-
-#~ msgid "Make dashboard public"
-#~ msgstr "Rendre ce tableau de bord public"
-
-#~ msgid "Draw"
-#~ msgstr "&Eacute;diter"
-
-#~ msgid "Public share URL"
-#~ msgstr "Adresse de partage (public)"
-
-#~ msgid "Private share URL"
-#~ msgstr "Adresse de partage"
-
-#~ msgid "Dashboards:"
-#~ msgstr "Tableaux de bord : "
-
-#~ msgid "Draw Editor"
-#~ msgstr "&Eacute;diter"
-
-#~ msgid "View mode"
-#~ msgstr "Vue"
-
-#~ msgid "Config"
-#~ msgstr "Configuration"
-
-#~ msgid "Thumb view"
-#~ msgstr "Aperçu"
-
-#~ msgid "List view"
-#~ msgstr "Liste"
-
-#~ msgid "User"
-#~ msgstr "Utilisateur"
-
-#~ msgid "Select graph type:"
-#~ msgstr "S&eacute;lectionner un type de graphique : "
-
-#~ msgid "Real-time"
-#~ msgstr "Temps-r&eacute;el"
-
-#~ msgid "Raw data"
-#~ msgstr "Donn&eacute;es brutes"
-
-#~ msgid "Histogram"
-#~ msgstr "Histogramme"
-
-#~ msgid "Feed type"
-#~ msgstr "Type de flux"
-
-#~ msgid "Undefined"
-#~ msgstr "Non d&eacute;fini"
-
-#~ msgid "Real-time data"
-#~ msgstr "Donn&eacute;es temps-r&eacute;el"
-
-#~ msgid "Tag feed"
-#~ msgstr "Tag du flux"
-
-#~ msgid "Rename feed"
-#~ msgstr "Renommer le flux"
-
-#~ msgid "Notify"
-#~ msgstr "Notifier"
-
-#~ msgid "Set notifications"
-#~ msgstr "Configurer les notifications"
-
-#~ msgid "Set notification behavior for this feed"
-#~ msgstr "Configurer les notifications pour ce flux"
-
-#~ msgid "Delete feed?"
-#~ msgstr "Supprimer le flux ?"
-
-#~ msgid "Are you sure you want to delete feed: "
-#~ msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce flux : "
-
-#~ msgid "feed/delete"
-#~ msgstr "flux/supprimer"
-
-#~ msgid "Tag"
-#~ msgstr "Tag"
-
-#~ msgid "Size"
-#~ msgstr "Taille"
-
-#~ msgid "s ago"
-#~ msgstr " secondes"
-
-#~ msgid " mins ago"
-#~ msgstr " minutes"
-
-#~ msgid " hours ago"
-#~ msgstr "heures"
-
-#~ msgid "inactive"
-#~ msgstr "inactif"
-
-#~ msgid "Password:"
-#~ msgstr "Mot de passe : "
-
-#~ msgid "Login"
-#~ msgstr "Connexion"
-
-#~ msgid ""
-#~ "Or if you are new enter a username and password above and click register"
-#~ msgstr ""
-#~ "Ou si vous &ecirc;tes un nouvel utilisateur, indiquer un identifiant et "
-#~ "un mot de passe puis cliquer sur S'inscrire"
-
-#~ msgid "Register"
-#~ msgstr "S'inscrire"
-
-#~ msgid "Old password:"
-#~ msgstr "Mot de passe actuel : "
-
-#~ msgid "CKEditor"
-#~ msgstr "&Eacute;diter"
-
-#~ msgid "delete"
-#~ msgstr "supprimer"
-
-#~ msgid "AUTODETECTLANGUAGE"
-#~ msgstr "Browser language"
-
-#~ msgid "Sorry, you need a valid apikey or be logged in to see this page"
-#~ msgstr ""
-#~ "Lo siento, necesitas una clave válida o estar loggeado para ver esta "
-#~ "página"
-
-#~ msgid "Reset"
-#~ msgstr "Resetear"
-
-#~ msgid "Language"
-#~ msgstr "Lenguaje"
-
-#~ msgid "API keys"
-#~ msgstr "Claves API"
-
-#~ msgid "converted feed: "
-#~ msgstr "fuente convertida:"
-
-#~ msgid "feed: "
-#~ msgstr "fuente:"
-
-#~ msgid " already converted"
-#~ msgstr " ya convertido"
-
-#~ msgid "Embed this graph"
-#~ msgstr "Incrustar este gráfico"
-
-#~ msgid "Realtime: "
-#~ msgstr "Tiempo real:"
-
-#~ msgid "Raw data: "
-#~ msgstr "Datos brutos:"
-
-#~ msgid "Bar graph view: "
-#~ msgstr "Vista de gráfico de barras:"
-
-#~ msgid "English"
-#~ msgstr "Ingl&eacute;s"
-
-#~ msgid "Spanish"
-#~ msgstr "Español"
-
-#~ msgid "Set"
-#~ msgstr "Establecer"
-
-#~ msgid "updated"
-#~ msgstr "actualizado"
-
-#~ msgid "Save current configuration"
-#~ msgstr "Guardar configuración actual"
-
-#~ msgid "Select Feeds"
-#~ msgstr "Seleccionar Fuentes"
-
-#~ msgid "Left"
-#~ msgstr "Izquierda"
-
-#~ msgid "Right"
-#~ msgstr "Derecha"
-
-#~ msgid "Fill"
-#~ msgstr "Rellenar"
-
-#~ msgid "Loading...  please wait about 5s"
-#~ msgstr "Cargando... por favor espere unos 5s"
-
-#~ msgid "Loading..."
-#~ msgstr "Cargando..."
-
-#~ msgid "2 Months"
-#~ msgstr "2 Meses"
-
-#~ msgid "Month"
-#~ msgstr "Mes"
-
-#~ msgid "Week"
-#~ msgstr "Semana"
-
-#~ msgid "Day"
-#~ msgstr "Día"
-
-#~ msgid "Hour"
-#~ msgstr "Hora"
-
-#~ msgid "Left vs"
-#~ msgstr "Izquierda vs"
-
-#~ msgid "Loading a feed can take time.. "
-#~ msgstr "Cargar una fuente puede llevar tiempo..."
-
-#~ msgid "1 day"
-#~ msgstr "1 día"
-
-#~ msgid "12 hours"
-#~ msgstr "12 horas"
-
-#~ msgid "1 hour"
-#~ msgstr "1 hora"
-
-#~ msgid "Date / Time"
-#~ msgstr "Fecha / Hora"
-
-#~ msgid "Total: "
-#~ msgstr "Total:"
-
-#~ msgid " kWh : pounds"
-#~ msgstr "kWh: libras"
-
-#~ msgid " a week, pounds"
-#~ msgstr "una semana, libras"
-
-#~ msgid " a year | Unit price: pounds"
-#~ msgstr "un año | Unidad: libras"
-
-#~ msgid "Last:"
-#~ msgstr "Último:"
-
-#~ msgid "Graph"
-#~ msgstr "Gráfico"
+msgstr "Vous n'avez aucun processus défini"
+
+#: ../../../Views/process_list.php:151
+msgid "CREATE NEW:"
+msgstr "Créer un nouveau :"
