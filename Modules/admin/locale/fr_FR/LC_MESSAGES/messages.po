@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-28 01:39+0100\n"
-"PO-Revision-Date: 2013-04-28 01:39+0100\n"
+"POT-Creation-Date: 2013-05-01 11:54+0100\n"
+"PO-Revision-Date: 2013-05-01 11:55+0100\n"
 "Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -65,6 +65,10 @@ msgstr ""
 #: ../../../admin_main_view.php:12
 msgid "Update & check"
 msgstr "Mise à jour & Analyse"
+
+#: ../../../admin_menu.php:7
+msgid "Admin"
+msgstr "Admin"
 
 #: ../../../update_view.php:37
 msgid "Apply changes"

@@ -1,5 +1,9 @@
 <?php
 
-  $menu_left[] = array('name'=> _("Input"), 'path'=>"input/node" , 'session'=>"write", 'order' => 1 );
+  $domain = "messages";
+  bindtextdomain($domain, "Modules/input/locale");
+  bind_textdomain_codeset($domain, 'UTF-8');
+
+  $menu_left[] = array('name'=> dgettext($domain, "Input"), 'path'=>"input/node" , 'session'=>"write", 'order' => 1 );
 
 ?>

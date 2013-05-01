@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-28 01:39+0100\n"
-"PO-Revision-Date: 2013-04-28 01:39+0100\n"
+"POT-Creation-Date: 2013-05-01 11:54+0100\n"
+"PO-Revision-Date: 2013-05-01 11:56+0100\n"
 "Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -41,7 +41,7 @@ msgstr "Se souvenir de moi"
 msgid "Login"
 msgstr "Connexion"
 
-#: ../../../login_block.php:54
+#: ../../../login_block.php:54 ../../../login_block.php:58
 msgid "or"
 msgstr "ou"
 
@@ -56,6 +56,14 @@ msgstr "S'inscrire"
 #: ../../../login_block.php:59
 msgid "cancel"
 msgstr "annuler"
+
+#: ../../../user_menu.php:7
+msgid "Account"
+msgstr "Mon Compte"
+
+#: ../../../user_menu.php:8
+msgid "Logout"
+msgstr "Déconnexion"
 
 #: ../../../user_model.php:128
 msgid "Missing username, password or email paramater"
@@ -303,9 +311,6 @@ msgstr "Les mots de passe ne correspondent pas"
 
 #~ msgid "dashboards new"
 #~ msgstr "Nouveau tableau de bord"
-
-#~ msgid "Logout"
-#~ msgstr "D&eacute;connexion"
 
 #~ msgid "dashboard set"
 #~ msgstr "Tableau de bord modifi&eacute;"
