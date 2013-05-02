@@ -31,7 +31,7 @@ function resetpassword_controller()
     // JSON API
     if ($route->format == 'json')
     {
-      if ($route->action == 'resetpassword') $result = true; //...send mail
+      if ($route->action == 'resetpassword') $result = true; //...send mail, generate token and set it on database in the user password
       
     }
 
