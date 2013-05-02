@@ -354,22 +354,20 @@ class Feed
     if (($end - $start) > (5000) && $dp>0) //why 5000?
     {
       $range = $end - $start;
-      $td = $range / $dp;
-
-      for ($i=0; $i<$dp; $i++)
-      {
-        $t = $start + $i*$td;
-        $tb = $start + ($i+1)*$td;
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` >$t AND `time` <$tb LIMIT 1");
-
-        if($result){
-          $row = $result->fetch_array();
-          $dataValue = $row['data'];               
+      $td = intval($range / $dp);
+      $result = $this->mysqli->query(
+        "SELECT FLOOR(time/$td) AS `time`, AVG(data) AS `data`".
+        " FROM $feedname".
+        " WHERE `time` > $start AND `time` < $end".
+        " GROUP BY 1");
+      if($result) {
+        while($row = $result->fetch_array()) {
+          $dataValue = $row['data'];
           if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
-            $time = $row['time'] * 1000;     
+            $time = $row['time'] * 1000 * $td;  
             $data[] = array($time , $dataValue); 
-          } 
-        }         
+          }
+        }
       }
     } else {
       $result = $this->mysqli->query("select * from $feedname WHERE time>$start AND time<$end order by time Desc");
