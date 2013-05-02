@@ -47,7 +47,15 @@ $("#resetpassword").click(function(){
   }
   else
   {
-    $("#mainresetform").html("<div class='alert alert-success'><?php echo _('Instructions for reset password will be send to the indicated email address.'); ?>&nbsp;<a href='<?php echo $path; ?>'><?php echo _('Return to login form'); ?></a></div>");    
+    $.ajax({ 
+      url: path+"resetpassword/resetpassword.json",
+      data: "email="+email,
+      dataType: 'json',
+      success: function(result){
+        if (result == true)        
+          $("#mainresetform").html("<div class='alert alert-success'><?php echo _('Instructions for reset password will be send to the indicated email address.'); ?>&nbsp;<a href='<?php echo $path; ?>'><?php echo _('Return to login form'); ?></a></div>");            
+      }
+    });        
   }
 });
 
