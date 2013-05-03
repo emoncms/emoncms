@@ -16,7 +16,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
   
 function resetpassword_controller()
 {
-    global $user, $path, $session, $route;
+    global $path, $route, $mysqli;
 
     $result = false;
 
@@ -31,7 +31,13 @@ function resetpassword_controller()
     // JSON API
     if ($route->format == 'json')
     {
-      if ($route->action == 'resetpassword') $result = true; //...send mail, generate token and set it on database in the user password
+      if ($route->action == 'resetpassword') {
+          require "Modules/resetpassword/resetpassword_model.php"; // 295
+          $resetpasswd = new ResetPasswd($mysqli);          
+          $result = $resetpasswd->resetpasswd($_GET['email']);
+          
+          //$result = true; //...check if email exists, send mail, generate token and set it on database in the user password without destroy it
+      }
       
     }
 

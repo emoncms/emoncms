@@ -52,6 +52,7 @@ $("#resetpassword").click(function(){
       data: "email="+email,
       dataType: 'json',
       success: function(result){
+        console.log(result);
         if (result == true)        
           $("#mainresetform").html("<div class='alert alert-success'><?php echo _('Instructions for reset password will be send to the indicated email address.'); ?>&nbsp;<a href='<?php echo $path; ?>'><?php echo _('Return to login form'); ?></a></div>");            
       }
