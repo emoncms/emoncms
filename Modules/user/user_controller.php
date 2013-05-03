@@ -26,6 +26,7 @@ function user_controller()
         if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array());
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         if ($route->action == 'logout' && $session['read']) {$user->logout(); header('Location: '.$path);}
+        if ($route->action == 'resetpassword') $result = $result = view("Modules/resetpassword/resetpassword.php", array());
     }
     
     // JSON API

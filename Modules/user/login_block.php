@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $allowusersregister, $enable_rememberme;
+global $path, $allowusersregister, $enable_rememberme, $recoverypass;
 
 ?>
 
@@ -58,6 +58,8 @@ global $path, $allowusersregister, $enable_rememberme;
         <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> or 
         <a id="cancel-link"><?php echo _('cancel'); ?></a>
       </p>
+      
+      <?php if ($recoverypass) { ?><a align="center" href="./resetpassword"><?php echo _('Forgot password?'); ?></a><?php } ?>
 
     </div>
 
