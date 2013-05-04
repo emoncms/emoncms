@@ -23,19 +23,12 @@
   $path = get_application_path();
 
   // 2) Database
-  $mysqli = @new mysqli($server,$username,$password,$database);
-  
-  // Can't connect to database, probably invalid credentials or server address
-  if ( $mysqli->connect_error ) {
-	echo "Can't connect to database, please verify your credentials in settings.php<br />";
-	echo $mysqli->connect_error;
-	die();
-  }
-  
+  $mysqli = new mysqli($server,$username,$password,$database);
+
   if (!$mysqli->connect_error && $dbtest==true) {
     require "Lib/dbschemasetup.php";
     if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
-  }
+  }  
 
   // 3) User sessions
   require "Modules/user/rememberme_model.php";

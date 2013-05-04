@@ -51,9 +51,4 @@
   // Skip database setup test - set to false once database has been setup.
   $dbtest = TRUE;
 
-  if ( $display_errors ) {
-	error_reporting(E_ALL | E_STRICT);
-  } else {
-	error_reporting(0);
-  }
-  ini_set("display_errors", $display_errors);
+?>
