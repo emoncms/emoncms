@@ -21,6 +21,10 @@ class User
 
     public function __construct($mysqli,$rememberme)
     {
+        //copy value from settings.php
+        global $enable_rememberme;
+        $this->enable_rememberme = $enable_rememberme;
+	
         $this->mysqli = $mysqli;
         $this->rememberme = $rememberme;
     }
