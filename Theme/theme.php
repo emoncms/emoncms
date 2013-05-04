@@ -138,7 +138,7 @@
             <a href="http://openenergymonitor.org">openenergymonitor.org</a> 
         </div>
 
-        <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+        <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.min.js"></script>
 
     </body>
 
