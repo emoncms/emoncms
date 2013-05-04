@@ -30,7 +30,7 @@
 	echo "Can't connect to database, please verify your credentials in settings.php<br />";
 	echo $mysqli->connect_error;
 	die();
-  } 
+  }
   
   if (!$mysqli->connect_error && $dbtest==true) {
     require "Lib/dbschemasetup.php";
