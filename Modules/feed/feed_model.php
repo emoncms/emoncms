@@ -351,32 +351,48 @@ class Feed
     $start = $start/1000; $end = $end/1000;
 
     $data = array();
-    if (($end - $start) > (5000) && $dp>0) //why 5000?
+    $range = $end - $start;
+    if ($range > 180000 && $dp > 0) // 50 hours
     {
-      $range = $end - $start;
       $td = $range / $dp;
-
+      $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? LIMIT 1");
+      $t = $start; $tb = 0;
+      $stmt->bind_param("ii", $t, $tb);
+      $stmt->bind_result($dataTime, $dataValue);
       for ($i=0; $i<$dp; $i++)
       {
-        $t = $start + $i*$td;
-        $tb = $start + ($i+1)*$td;
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` >$t AND `time` <$tb LIMIT 1");
-
-        if($result){
-          $row = $result->fetch_array();
-          $dataValue = $row['data'];               
+        $tb = $start + intval(($i+1)*$td);
+        $stmt->execute();
+        if ($stmt->fetch()) {
           if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
-            $time = $row['time'] * 1000;     
-            $data[] = array($time , $dataValue); 
-          } 
-        }         
+            $time = $dataTime * 1000;
+            $data[] = array($time, $dataValue);
+          }
+        }
+        $t = $tb;
       }
     } else {
-      $result = $this->mysqli->query("select * from $feedname WHERE time>$start AND time<$end order by time Desc");
-      while($row = $result->fetch_array()) {
-        $dataValue = $row['data'];
-        $time = $row['time'] * 1000;  
-        $data[] = array($time , $dataValue); 
+      if ($range > 5000 && $dp > 0)
+      {
+        $td = intval($range / $dp);
+        $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
+          " FROM $feedname WHERE time BETWEEN $start AND $end".
+          " GROUP BY 1";
+      } else {
+        $td = 1;
+        $sql = "SELECT time, data FROM $feedname".
+          " WHERE time BETWEEN $start AND $end ORDER BY time DESC";
+      }
+     
+      $result = $this->mysqli->query($sql);
+      if($result) {
+        while($row = $result->fetch_array()) {
+          $dataValue = $row['data'];
+          if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
+            $time = $row['time'] * 1000 * $td;  
+            $data[] = array($time , $dataValue); 
+          }
+        }
       }
     }
 
