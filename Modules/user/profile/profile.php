@@ -146,7 +146,8 @@ function languagecodetotext()
             }
             else
             {
-              $("#change-username-error").html(result.message).show();
+              $("#change-username-error").show();
+              $("#change-username-error").html(result.message);
             }
           }
         });
@@ -193,7 +194,8 @@ function languagecodetotext()
             }
             else
             {
-              $("#change-email-error").html(result.message).show();
+              $("#change-email-error").show();
+              $("#change-email-error").html(result.message);
             }
           }
         });
@@ -222,7 +224,8 @@ function languagecodetotext()
 
       if (newpassword != repeatnewpassword) 
       {
-        $("#change-password-error").html("<?php echo _('Passwords do not match'); ?>").show();
+        $("#change-password-error").show();
+        $("#change-password-error").html("<?php echo _('Passwords do not match'); ?>");
       }
       else
       {
@@ -244,7 +247,8 @@ function languagecodetotext()
             }
             else
             {
-              $("#change-password-error").html(result.message).show();
+              $("#change-password-error").show();
+              $("#change-password-error").html(result.message);
             }
           }
         });
