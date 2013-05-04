@@ -68,9 +68,9 @@ You may need to clear your cache if you find some of the interfaces buggy/missin
 ### NGINX Configuration
 To get the correct routing added when hosted with NGINX instead of Apache, add this to your config /etc/nginx/sites-enabled/default
 You might need to adjust to your path if not running in the subdirectory /emoncms/
-server {
-    location /emoncms/ {
-        index index.php;
-        try_files $uri $uri/ /emoncms/index.php?q=$uri&$args;
-    }
-}
+	server {
+		location /emoncms/ {
+			index index.php;
+			try_files $uri $uri/ /emoncms/index.php?q=$uri&$args;
+		}
+	}
