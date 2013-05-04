@@ -51,12 +51,12 @@ global $path, $allowusersregister, $enable_rememberme;
       <p class="login-item">
         <?php if ($enable_rememberme) { ?><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
         <button id="login" class="btn btn-primary" tabindex="6" type="button"><?php echo _('Login'); ?></button> 
-        <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"><?php echo _('register'); ?></a><?php } ?>
+        <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"  href="#"><?php echo _('register'); ?></a><?php } ?>
       </p>
 
       <p class="register-item" style="display:none">
         <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> <?php echo '&nbsp;'._('or').'&nbsp' ?> 
-        <a id="cancel-link"><?php echo _('cancel'); ?></a>
+        <a id="cancel-link" href="#"><?php echo _('cancel'); ?></a>
       </p>
 
     </div>
@@ -67,20 +67,37 @@ global $path, $allowusersregister, $enable_rememberme;
 <script>
 
 var path = "<?php echo $path; ?>";
+var register_open = false;
 
 $("#register-link").click(function(){
   $(".login-item").hide();
   $(".register-item").show();
   $("#error").hide();
+  register_open = true;
+  return false;
 });
 
 $("#cancel-link").click(function(){
   $(".login-item").show();
   $(".register-item").hide();
   $("#error").hide();
+  register_open = false;
+  return false;
 });
 
-$("#login").click(function(){
+$("input").keypress(function(event) {
+	//login or register when pressing enter
+    if (event.which == 13) {
+        event.preventDefault();
+		if ( register_open ) {
+			register();
+		} else {
+			login();
+		}        
+    }
+});
+
+function login(){
   var username = $("input[name='username']").val();
   var password = $("input[name='password']").val();
   var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
@@ -93,13 +110,11 @@ $("#login").click(function(){
 	}
 	else
 	{
-		$("#error").show();
-		$("#error").html(result.message);
+		$("#error").html(result.message).show();
 	}
+}
 
-});
-
-$("#register").click(function(){
+function register(){
   var username = $("input[name='username']").val();
   var password = $("input[name='password']").val();
   var confirmpassword = $("input[name='confirm-password']").val();
@@ -107,8 +122,7 @@ $("#register").click(function(){
 
   if (password != confirmpassword) 
   {
-    $("#error").show();
-    $("#error").html("Passwords do not match");
+    $("#error").html("Passwords do not match").show();
   }
   else
   {
@@ -124,11 +138,13 @@ $("#register").click(function(){
     }
     else
     {
-      $("#error").show();
-      $("#error").html(result.message);
+      $("#error").html(result.message).show();
     }
   }
-});
+}
+
+$("#login").click(login);
+$("#register").click(register);
 
     
 </script>
