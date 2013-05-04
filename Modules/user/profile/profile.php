@@ -213,7 +213,7 @@ function languagecodetotext()
       $("#changedetails").hide();
       $("#change-password-form").show();
     });
-
+ 
     $("#change-password-submit").click(function(){
 
       var oldpassword = $("#oldpassword").val();
