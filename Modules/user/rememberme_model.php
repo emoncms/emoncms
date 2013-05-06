@@ -72,6 +72,11 @@ class Rememberme {
         case self::TRIPLET_FOUND:
           $expire = time() + $this->expireTime;
           $newToken = $this->createToken();
+          
+          // remove old triplet before creating new one, otherwise since the salt is defaulted to "" it would create
+          // a new triplet with the same persistentToken in DB which will cause the next findTriplet to fail (finding the incorrect one) and remove the cookie again.
+          $this->cleanTriplet($cookieValues[0], $cookieValues[2]);
+          
           // create new cookie and register values in db - refresh token
           $this->storeTriplet($cookieValues[0], $newToken.$this->salt, $cookieValues[2].$this->salt, $expire);
           setcookie($this->cookieName,implode("|",array($cookieValues[0],$newToken, $cookieValues[2])),$expire,$this->path,"",false,true);
