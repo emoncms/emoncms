@@ -16,17 +16,16 @@ var list = {
 
     'init':function()
     {
-        var html = '<table class="table table-hover">';
-        for (field in list.fields)
-        {
-          html += '<tr field="'+field+'">';
-          html += '  <td type="name" class="muted" style="width:150px;">'+list.fields[field].title+'</td>';
-          html += '  <td type="value">'+list.fieldtypes[list.fields[field].type].draw(list.data[field])+'</td>';
-          html += '  <td type="edit" action="edit"><i class="icon-pencil" style="display:none"></i></td>';
-          html += '</tr>';
+        var table = $('<table class="table table-hover" />'),
+            tr;
+        for (field in list.fields) {
+            tr = $("<tr />").attr("field", field);
+            tr.append('  <td type="name" class="muted" style="width:150px;">'+list.fields[field].title+'</td>');
+            tr.append('  <td type="value">'+(list.fieldtypes[list.fields[field].type].draw(list.data[field])||'N/A')+'</td>');
+            tr.append('  <td type="edit" action="edit"><i class="icon-pencil" style="display:none"></i></td>');
+            table.append(tr);
         }
-        html += '</table>';
-        $(list.element).html(html);
+        $(list.element).html(table);
 
         $(list.element+" td[type=edit]").click(function() {
             var action = $(this).attr('action');
@@ -35,16 +34,14 @@ var list = {
             if (action=='edit')
             {
               $(list.element+" tr[field="+field+"] td[type=value]").html(list.fieldtypes[list.fields[field].type].edit(field,list.data[field]));
-              $(this).html("<a>Save</a>");
-              $(this).attr('action','save');
+              $(this).html("<a>Save</a>").attr('action','save');
             }
 
             if (action=='save')
             {
               list.data[field] = list.fieldtypes[list.fields[field].type].save(field);
               $(list.element+" tr[field="+field+"] td[type=value]").html(list.fieldtypes[list.fields[field].type].draw(list.data[field]));
-              $(this).html("<i class='icon-pencil' style='display:none'></i>");
-              $(this).attr('action','edit');
+              $(this).html("<i class='icon-pencil' style='display:none'></i>").attr('action','edit');
               $(list.element).trigger("onSave",[]);
             }
         });
@@ -64,8 +61,8 @@ var list = {
     {
         'text':
         {
-          'draw':function(value) { return value},
-          'edit':function(field,value) { return "<input type='text' value='"+value+"' / >" },
+          'draw':function(value) { return value; },
+          'edit':function(field,value) { return "<input type='text' value='"+(value||'')+"' / >"; },
           'save':function(field) { return $(list.element+' tr[field='+field+'] td[type=value] input').val();}
         },
 
@@ -87,16 +84,31 @@ var list = {
 
         'timezone':
         {
-          'draw':function(value) { var sign = ''; if (value>=0) sign = '+'; return "UTC "+sign+value+":00"; },
+          'draw':function(value) 
+          { 
+            var sign = value >= 0 ? '+' : ''; 
+            return "UTC "+sign+(value||0)+":00"; 
+          },
           'edit':function(field,value) 
           {
-            var options = '';
+            var select = $('<select />'),
+                selectedIndex = null,
+                sign;
+                
             for (var i=-12; i<=14; i++) { 
-              var selected = ""; if (value == i) selected = 'selected';
-              var sign = ''; if (i>=0) sign = '+';
-              options += "<option value="+i+" "+selected+">UTC "+sign+i+":00</option>";
+              var selected = ""; 
+              if (value == i) {
+                selected = 'selected';
+                selectedIndex = i;
+              }
+              sign = i >= 0 ? '+' : '';
+              select.append("<option value="+i+" "+selected+">UTC "+sign+i+":00</option>");
             }
-            return "<select>"+options+"</select>";
+            //If no selected index were set, then default to 0
+            if ( selectedIndex === null ) {
+                select.find("option[value='0']").attr('selected', 'selected');
+            }
+            return select.wrap('<p>').parent().html();  //return HTML-string
           },
           'save':function(field) { return $(list.element+' tr[field='+field+'] td[type=value] select').val();}
         },
