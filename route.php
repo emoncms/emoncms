@@ -29,6 +29,10 @@ class Route
 
     public function decode($q)
     {
+        // filter out the applications root to prevent invalid route-parsing
+        $q = str_replace(APPLICATION_ROOT, '', $q);
+        $q = trim($q, '/');
+	
         // filter out all except a-z and / .
         $q = preg_replace('/[^.\/A-Za-z0-9-]/', '', $q);
 
