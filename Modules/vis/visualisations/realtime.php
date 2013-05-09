@@ -1,7 +1,6 @@
-
-<html>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-
+<html>
+    <head>
 <!----------------------------------------------------------------------------------------------------
   
    All Emoncms code is released under the GNU Affero General Public License.
@@ -17,12 +16,13 @@
  <?php
   global $path, $embed;
  ?>
+        <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
+        <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+        <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
+    </head>
+    <body>
     
- <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-
  <!---------------------------------------------------------------------------------------------------
  // Time window buttons
  ---------------------------------------------------------------------------------------------------->
@@ -53,37 +53,43 @@
    var start = ((new Date()).getTime())-timeWindow;		//Get start time
    var end = (new Date()).getTime();				//Get end time
 
-   $('#graph').width($('#graph_bound').width());
-   $('#graph').height($('#graph_bound').height());
-   if (embed) $('#graph').height($(window).height());
+   var graph_bound = $('#graph_bound'),
+       graph = $("#graph");
+   
+   graph.width(graph_bound.width()).height(graph_bound.height());
+   if (embed) graph.height($(window).height());
 
    var data = [];
-
+   
    loop();
-   setInterval ( loop, 2000 );
 
    function loop()
    {
-     start = ((new Date()).getTime())-timeWindow;		//Get start time
-     end = (new Date()).getTime();				//Get end time
+     start = +new Date-timeWindow;		//Get start time
+     end = +new Date;   				//Get end time
      vis_feed_data();
    }
 
   $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    graph.width(graph_bound.width());
+    if (embed) graph.height($(window).height());
     plot();
   });
 
    function vis_feed_data()
    {
-     data = get_feed_data(feedid,start,end,2);
-     plot();
+     //fetch async to not block
+     get_feed_data_async(feedid,start,end,2, function(response){
+        data = response;
+        plot();
+        //start new loop 2sec after we got the async response through the callback
+        setTimeout(loop, 2000);
+     });
    }
   
    function plot()
    {
-     $.plot($("#graph"),
+     $.plot(graph,
        [{data: data, lines: { fill: true }}],
        {xaxis: { mode: "time", localTimezone: true},
        //grid: { show: true, hoverable: true, clickable: true },
