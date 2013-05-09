@@ -53,37 +53,43 @@
    var start = ((new Date()).getTime())-timeWindow;		//Get start time
    var end = (new Date()).getTime();				//Get end time
 
-   $('#graph').width($('#graph_bound').width());
-   $('#graph').height($('#graph_bound').height());
-   if (embed) $('#graph').height($(window).height());
+   var graph_bound = $('#graph_bound'),
+       graph = $("#graph");
+   
+   graph.width(graph_bound.width()).height(graph_bound.height());
+   if (embed) graph.height($(window).height());
 
    var data = [];
-
+   
    loop();
-   setInterval ( loop, 2000 );
 
    function loop()
    {
-     start = ((new Date()).getTime())-timeWindow;		//Get start time
-     end = (new Date()).getTime();				//Get end time
+     start = +new Date-timeWindow;		//Get start time
+     end = +new Date;   				//Get end time
      vis_feed_data();
    }
 
   $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    graph.width(graph_bound.width());
+    if (embed) graph.height($(window).height());
     plot();
   });
 
    function vis_feed_data()
    {
-     data = get_feed_data(feedid,start,end,2);
-     plot();
+     //fetch async to not block
+     get_feed_data_async(feedid,start,end,2, function(response){
+        data = response;
+        plot();
+        //start new loop 2sec after we got the async response through the callback
+        setTimeout(loop, 2000);
+     });
    }
   
    function plot()
    {
-     $.plot($("#graph"),
+     $.plot(graph,
        [{data: data, lines: { fill: true }}],
        {xaxis: { mode: "time", localTimezone: true},
        //grid: { show: true, hoverable: true, clickable: true },

@@ -33,6 +33,27 @@
     });
     return feedIn;
   }
+  
+  //-------------------------------------------------------------------------------
+  // Get feed data async with callback
+  //-------------------------------------------------------------------------------
+  function get_feed_data_async(feedID,start,end,dp,pfn)
+  {
+    var feedIn = [];
+    var query = "&id="+feedID+"&start="+start+"&end="+end+"&dp="+dp;
+    if (apikey!="") query+= "&apikey="+apikey;
+
+    $.ajax({                                    
+      url: path+'feed/data.json',                         
+      data: query,  
+      dataType: 'json',                           
+      success: function(datain) { 
+        if ( typeof pfn === "function" ) {
+            pfn(datain);
+        }
+      }
+    });
+  }
 
   //-------------------------------------------------------------------------------
   // Get histogram data

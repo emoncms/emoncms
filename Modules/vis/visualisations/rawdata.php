@@ -52,41 +52,47 @@
   var apikey = "<?php echo $apikey; ?>";
   var valid = "<?php echo $valid; ?>";
 
-  var plotfill = <?php echo $fill; ?>;
-  if (plotfill==1) plotfill = true; else plotfill = false;
+  var plotfill = <?php echo $fill; ?> == 1;
   var units = "<?php echo $units; ?>";
 
   var embed = <?php echo $embed; ?>;
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+  
+  var $graph_bound = $('#graph_bound');
+  var $graph = $('#graph').width($graph_bound.width()).height($('#graph_bound').height());
 
-  var timeWindow = (3600000*24.0*7);				//Initial time window
-  var start = ((new Date()).getTime())-timeWindow;		//Get start time
-  var end = (new Date()).getTime();				//Get end time
+  if (embed) $graph.height($(window).height());
+
+  var timeWindow = (3600000*24.0*7);	//Initial time window
+  var start = +new Date - timeWindow;	//Get start time
+  var end = +new Date;				    //Get end time
 
   var graph_data = [];
   vis_feed_data();
 
   $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    $graph.width($graph_bound.width());
+    if (embed) $graph.height($(window).height());
     plot();
   });
 
+ 
   function vis_feed_data()
   {
-    if (valid) graph_data = get_feed_data(feedid,start,end,1000);
-    var stats = power_stats(graph_data);
-    var out = "Average: "+stats['average'].toFixed(0)+units;
-    if (units=='W') out+= " | "+stats['kwh'].toFixed(2)+" kWh";
-    $("#stats").html(out);   
-    plot();
+    if (valid) {
+        get_feed_data_async(feedid,start,end,1000, function(response){
+            graph_data = response;
+            var stats = power_stats(graph_data);
+            var out = "Average: "+stats['average'].toFixed(0)+units;
+            if (units=='W') out+= " | "+stats['kwh'].toFixed(2)+" kWh";
+            $("#stats").html(out);   
+            plot();
+        });
+    }
   }
 
   function plot()
   {
-    var plot = $.plot($("#graph"), [{data: graph_data, lines: { show: true, fill: plotfill }}], {
+    var plot = $.plot($graph, [{data: graph_data, lines: { show: true, fill: plotfill }}], {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", localTimezone: true, min: start, max: end },
       selection: { mode: "xy" }
@@ -96,7 +102,7 @@
   //--------------------------------------------------------------------------------------
   // Graph zooming
   //--------------------------------------------------------------------------------------
-  $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
+  $graph.bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
   //----------------------------------------------------------------------------------------------
   // Operate buttons
   //----------------------------------------------------------------------------------------------
