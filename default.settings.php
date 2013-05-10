@@ -16,6 +16,9 @@
   Default router settings - in absence of stated path
 
   */
+  
+  //The sites application root if run in a sub directory e.g. domain.com/emoncms
+  define('APPLICATION_ROOT', str_replace($_SERVER['DOCUMENT_ROOT'], '', realpath(dirname(__FILE__))));
 
   // Default controller and action if none are specified and user is anonymous
   $default_controller = "user";
@@ -35,7 +38,7 @@
   Other
 
   */
-
+      
   // Theme location
   $theme = "basic";
   
@@ -51,4 +54,3 @@
   // Skip database setup test - set to false once database has been setup.
   $dbtest = TRUE;
 
-?>

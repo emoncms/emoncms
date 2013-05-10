@@ -23,8 +23,16 @@
   $path = get_application_path();
 
   // 2) Database
-  $mysqli = new mysqli($server,$username,$password,$database);
+  $mysqli = @new mysqli($server,$username,$password,$database);
 
+  if ( $mysqli->connect_error ) {
+	echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+	if ( $display_errors ) {
+		echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+	}
+	die();
+  }
+  
   if (!$mysqli->connect_error && $dbtest==true) {
     require "Lib/dbschemasetup.php";
     if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
