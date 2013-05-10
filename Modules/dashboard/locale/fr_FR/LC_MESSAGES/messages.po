@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-28 01:39+0100\n"
-"PO-Revision-Date: 2013-05-01 11:54+0100\n"
+"POT-Creation-Date: 2013-05-10 15:55+0100\n"
+"PO-Revision-Date: 2013-05-10 16:07+0100\n"
 "Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -17,7 +17,11 @@ msgstr ""
 "X-Generator: Poedit 1.5.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../dashboard_menu.php:4 ../../../Views/dashboard_list.php:15
+#: ../../../dashboard_langjs.php:3
+msgid "Changed, press to save"
+msgstr "Modifié, cliquez pour sauvegarder."
+
+#: ../../../dashboard_menu.php:7 ../../../Views/dashboard_list.php:15
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
@@ -82,32 +86,32 @@ msgid "Close"
 msgstr "Fermer"
 
 #: ../../../Views/dashboard_config.php:56
-#: ../../../Views/dashboard_edit_view.php:36
+#: ../../../Views/dashboard_edit_view.php:37
 msgid "Save changes"
 msgstr "Enregistrer les modifications"
 
-#: ../../../Views/dashboard_edit_view.php:32
+#: ../../../Views/dashboard_edit_view.php:33
 msgid "Configure element"
 msgstr "Configurer l'élement"
 
-#: ../../../Views/dashboard_edit_view.php:35
+#: ../../../Views/dashboard_edit_view.php:36
 #: ../../../Views/dashboard_list.php:35
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/dashboard_edit_view.php:44
+#: ../../../Views/dashboard_edit_view.php:45
 msgid "Configure"
 msgstr "Configuration"
 
-#: ../../../Views/dashboard_edit_view.php:45
+#: ../../../Views/dashboard_edit_view.php:46
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../../../Views/dashboard_edit_view.php:47
+#: ../../../Views/dashboard_edit_view.php:48
 msgid "Not modified"
 msgstr "Non modifié"
 
-#: ../../../Views/dashboard_edit_view.php:99
+#: ../../../Views/dashboard_edit_view.php:100
 msgid "Saved"
 msgstr "Sauvegardé"
 
