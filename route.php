@@ -30,7 +30,7 @@ class Route
     public function decode($q)
     {
         // filter out the applications root to prevent invalid route-parsing
-        $q = str_replace(APPLICATION_ROOT, '', $q);
+        $q = str_replace(dirname(server('SCRIPT_NAME')), '', $q);
         $q = trim($q, '/');
 	
         // filter out all except a-z and / .
