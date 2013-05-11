@@ -1,3 +1,15 @@
+/*
+   All emon_widgets code is released under the GNU General Public License v3.
+   See COPYRIGHT.txt and LICENSE.txt.
+
+    ---------------------------------------------------------------------
+    Part of the OpenEnergyMonitor project:
+    http://openenergymonitor.org
+
+    Author: Trystan Lea: trystan.lea@googlemail.com
+    If you have any questions please get in touch, try the forums here:
+    http://openenergymonitor.org/emon/forum
+ */
 
 function dial_widgetlist()
 {
@@ -8,8 +20,8 @@ function dial_widgetlist()
       "menu":"Widgets",
       "options":["feed","max","scale","units","type"],
       "optionstype":["feed","value","value","value","value"],
-      "optionsname":["Feed","Max value","Scale","Units","Type"],
-      "optionshint":["Feed value","Max value to show","Scale","Units shown","Type"]            
+      "optionsname":[LANG_JS["Feed"],LANG_JS["Max value"],LANG_JS["Scale"],LANG_JS["Units"],LANG_JS["Type"]],
+      "optionshint":[LANG_JS["Feed value"],LANG_JS["Max value to show"],LANG_JS["Scale to show"],LANG_JS["Units to show"],LANG_JS["Type to show"]]            
     }
   }
   return widgets;

@@ -18,8 +18,8 @@ function button_widgetlist()
       "menu":"Widgets",
       "options":["feed","value"],
       "optionstype":["feed","value"],
-      "optionsname":["Feed","Value"],
-      "optionshint":["Feed to set, control with caution, make sure device being controlled can operate safely in event of emoncms failure.","Starting value"] 
+      "optionsname":[LANG_JS["Feed"],LANG_JS["Value"]],
+      "optionshint":[LANG_JS["Feed to set, control with caution, make sure device being controlled can operate safely in event of emoncms failure."],LANG_JS["Starting value"]] 
     }
   }
 

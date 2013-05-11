@@ -1,3 +1,16 @@
+/*
+   All emon_widgets code is released under the GNU General Public License v3.
+   See COPYRIGHT.txt and LICENSE.txt.
+
+    ---------------------------------------------------------------------
+    Part of the OpenEnergyMonitor project:
+    http://openenergymonitor.org
+
+    Author: Trystan Lea: trystan.lea@googlemail.com
+    If you have any questions please get in touch, try the forums here:
+    http://openenergymonitor.org/emon/forum
+ */
+
 
 function cylinder_widgetlist()
 {
@@ -8,8 +21,8 @@ function cylinder_widgetlist()
       "menu":"Widgets",
       "options":["topfeed","botfeed"],
       "optionstype":["feed","feed"],
-      "optionsname":["Feed","Feed"],
-      "optionshint":["Top feed value","Bottom feed value"] 
+      "optionsname":[LANG_JS["Feed"],LANG_JS["Feed"]],
+      "optionshint":[LANG_JS["Top feed value"],LANG_JS["Bottom feed value"]] 
     }
   }
   return widgets;
@@ -40,19 +53,6 @@ function cylinder_slowupdate()
 function cylinder_fastupdate()
 {
 }
-
-/*
-   All emon_widgets code is released under the GNU General Public License v3.
-   See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
-    Author: Trystan Lea: trystan.lea@googlemail.com
-    If you have any questions please get in touch, try the forums here:
-    http://openenergymonitor.org/emon/forum
- */
 
   function draw_cylinder(ctx,cyl_bot,cyl_top,width,height)
   {
