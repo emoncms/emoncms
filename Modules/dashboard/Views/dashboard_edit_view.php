@@ -56,7 +56,6 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 <script type="application/javascript">
 
   var dashid = <?php echo $dashboard['id']; ?>;
-  var page_height = "<?php echo $dashboard['height']; ?>";
   var path = "<?php echo $path; ?>";
   var apikey = "";
   var feedlist = feed.list();
@@ -90,16 +89,22 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
   setInterval(function() { update(); }, 10000);
   setInterval(function() { fast_update(); }, 30);
 
+  
   $("#save-dashboard").click(function (){
+    //recalculate the height so the page_height is shrunk to the minimum but still wrapping all components
+    //otherwise a user can drag a component far down then up again and a too high value will be stored to db.
+    designer.page_height = 0;
+    designer.scan(); 
     $.ajax({
       type: "POST",
       url :  path+"dashboard/setcontent.json",
-      data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+page_height,
+      data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+designer.page_height,
       dataType: 'json',
       success : function(data) { console.log(data); if (data.success==true) $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>');
       } 
     });
   });
+  
 
   $(window).resize(function(){
     designer.draw();
