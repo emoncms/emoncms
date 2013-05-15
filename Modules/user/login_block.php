@@ -49,7 +49,7 @@ global $path, $allowusersregister, $enable_rememberme;
       <div id="error" class="alert alert-error" style="display:none;"></div>
 
       <p class="login-item">
-        <?php if ($enable_rememberme) { ?><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?><br><br><?php } ?>
+        <?php if ($enable_rememberme) { ?><label class="checkbox"><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?></label><br /><?php } ?>
         <button id="login" class="btn btn-primary" tabindex="6" type="button"><?php echo _('Login'); ?></button> 
         <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"  href="#"><?php echo _('register'); ?></a><?php } ?>
       </p>
