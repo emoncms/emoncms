@@ -20,8 +20,8 @@ function led_widgetlist()
       "menu":"Widgets",
       "options":["feed"],
       "optionstype":["feed"],
-      "optionsname":[LANG_JS["Feed"]],
-      "optionshint":[LANG_JS["Feed value"]] 
+      "optionsname":[_Tr("Feed")],
+      "optionshint":[_Tr("Feed value")] 
     }
   }
   return widgets;

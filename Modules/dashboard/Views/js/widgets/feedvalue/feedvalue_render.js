@@ -20,8 +20,8 @@ function feedvalue_widgetlist()
       "menu":"Widgets",
       "options":["feedname","units"],
       "optionstype":["feed","value"],
-      "optionsname":[LANG_JS["Feed"],LANG_JS["Units"]],
-      "optionshint":[LANG_JS["Feed value"],LANG_JS["Units to show"]] 
+      "optionsname":[_Tr("Feed"),_Tr("Units")],
+      "optionshint":[_Tr("Feed value"),_Tr("Units to show")] 
     }
   }
   return widgets;

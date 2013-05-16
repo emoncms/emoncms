@@ -20,8 +20,8 @@ function dial_widgetlist()
       "menu":"Widgets",
       "options":["feed","max","scale","units","type"],
       "optionstype":["feed","value","value","value","value"],
-      "optionsname":[LANG_JS["Feed"],LANG_JS["Max value"],LANG_JS["Scale"],LANG_JS["Units"],LANG_JS["Type"]],
-      "optionshint":[LANG_JS["Feed value"],LANG_JS["Max value to show"],LANG_JS["Scale to show"],LANG_JS["Units to show"],LANG_JS["Type to show"]]            
+      "optionsname":[_Tr("Feed"),_Tr("Max value"),_Tr("Scale"),_Tr("Units"),_Tr("Type")],
+      "optionshint":[_Tr("Feed value"),_Tr("Max value to show"),_Tr("Scale to show"),_Tr("Units to show"),_Tr("Type to show")]            
     }
   }
   return widgets;

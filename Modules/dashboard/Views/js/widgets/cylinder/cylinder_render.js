@@ -21,8 +21,8 @@ function cylinder_widgetlist()
       "menu":"Widgets",
       "options":["topfeed","botfeed"],
       "optionstype":["feed","feed"],
-      "optionsname":[LANG_JS["Feed"],LANG_JS["Feed"]],
-      "optionshint":[LANG_JS["Top feed value"],LANG_JS["Bottom feed value"]] 
+      "optionsname":[_Tr("Feed"),_Tr("Feed")],
+      "optionshint":[_Tr("Top feed value"),_Tr("Bottom feed value")] 
     }
   }
   return widgets;

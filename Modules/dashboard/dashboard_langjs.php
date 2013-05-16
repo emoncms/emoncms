@@ -67,3 +67,10 @@ LANG_JS["Ufac"]                         = '<?php echo addslashes(_("Ufac")); ?>'
 LANG_JS["Ufac value"]                   = '<?php echo addslashes(_("Ufac value")); ?>';    
 LANG_JS["Mid"]                          = '<?php echo addslashes(_("Mid")); ?>';
 LANG_JS["Mid value"]                    = '<?php echo addslashes(_("Mid value")); ?>';  
+
+
+function _Tr(key)
+{
+    // will return the default value if LANG_JS[key] is not defined.
+    return LANG_JS[key] || key; 
+}

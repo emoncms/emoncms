@@ -24,8 +24,8 @@ function jgauge_widgetlist()
       "menu":"Widgets",
       "options":["feed", "max", "units"],
       "optionstype":["feed","value","value"],
-      "optionsname":[LANG_JS["Feed"],LANG_JS["Max value"],LANG_JS["Units"]],
-      "optionshint":[LANG_JS["Feed"],LANG_JS["Max value to show"],LANG_JS["Units to show"]] 
+      "optionsname":[_Tr("Feed"),_Tr("Max value"),_Tr("Units")],
+      "optionshint":[_Tr("Feed"),_Tr("Max value to show"),_Tr("Units to show")] 
       
     }
   }
