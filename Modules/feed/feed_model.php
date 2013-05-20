@@ -225,7 +225,7 @@ class Feed
   public function set_feed_fields($id,$fields)
   {
     $id = intval($id);
-    $fields = json_decode($fields);
+    $fields = json_decode(stripslashes($fields));
 
     $array = array();
 
@@ -443,7 +443,7 @@ class Feed
     $feedid = intval($feedid);
     $feedname = "feed_".trim($feedid)."";
 
-    $points = json_decode($points);
+    $points = json_decode(stripslashes($points));
     
     $data = array();
 

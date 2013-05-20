@@ -100,7 +100,7 @@ class Dashboard
     {
       $userid = (int) $userid;
       $id = (int) $id;
-      $fields = json_decode($fields);
+      $fields = json_decode(stripslashes($fields));
 
       $array = array();
 
