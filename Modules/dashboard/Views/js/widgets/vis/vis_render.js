@@ -39,10 +39,10 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["power","kwhd","currency","pricekwh"],
-      "optionstype":["feedid","feedid","value","value"],
-      "optionsname":["Power","kwhd","Currency","Kwh price"],
-      "optionshint":["Power","KWHD","Currency shown","Set kwh price"], 
+      "options":["power","kwhd","currency","currency_after_val","pricekwh"],
+      "optionstype":["feedid","feedid","value","value","value"],
+      "optionsname":["Power","kwhd","Currency","Currency position","kWh price"],
+      "optionshint":["Power","KWHD","Currency shown","0 = before value, 1 = after value","Set kwh price"], 
       "html":""
     },
 
