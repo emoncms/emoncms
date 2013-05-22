@@ -67,7 +67,7 @@
       var path = "<?php echo $path; ?>";  
       var apikey = "<?php echo $apikey; ?>";  
       var embed = <?php echo $embed; ?>;
-
+	  
       $('#placeholder').width($('#test').width()-60);
       $('#placeholder').height($('#test').height()-120);
     //  if (embed) $('#graph').height($(window).height());
@@ -86,6 +86,7 @@
 
       var price = <?php echo $pricekwh ?>;
       var currency = "<?php echo $currency ?>";
+	  var currency_after_val = "<?php echo $currency_after_val ?>";
 
       var bot_kwhd_text = "";
 
@@ -96,7 +97,7 @@
         total += parseFloat(kwh_data[z][1]); ndays++;
       }
 
-      bot_kwhd_text = "Total: "+(total).toFixed(0)+" kWh : "+currency+(total*price).toFixed(0) + " | Average: "+(total/ndays).toFixed(1)+ " kWh : "+currency+((total/ndays)*price).toFixed(2)+" | "+currency+((total/ndays)*price*7).toFixed(0)+" a week, "+currency+((total/ndays)*price*365).toFixed(0)+" a year | Unit price: "+currency+price;
+      bot_kwhd_text = "Total: "+(total).toFixed(0)+" kWh : "+add_currency((total*price), 0)+" | Average: "+(total/ndays).toFixed(1)+" kWh : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" a week, "+add_currency((total/ndays)*price*365, 0)+" a year | Unit price: "+add_currency(price, 2);
 
       years = get_years(kwh_data);
       //set_annual_view();
@@ -106,20 +107,32 @@
 
       days = get_last_30days(kwh_data);
       set_last30days_view();
+	  
+	  // Rounds value and adds currency after or before the value
+	  function add_currency(value, decimal_places)
+	  {
+	    var val = value.toFixed(decimal_places);
+		
+		if (currency_after_val == '1') {
+			return val + currency;
+		} else {
+			return currency + val;
+		}
+	  }
 
-  function vis_feed_data()
-  {
-    var power_data = get_feed_data(feedid,start,end,500);
-    var stats = power_stats(power_data);
-    instgraph(power_data);
+	  function vis_feed_data()
+	  {
+	    var power_data = get_feed_data(feedid,start,end,500);
+	    var stats = power_stats(power_data);
+	    instgraph(power_data);
 
-    $("#out").html("");
+	    $("#out").html("");
 
-    var datetext = "";
-    if ((end-start)<3600000*25) {var mdate = new Date(start); datetext = mdate.format("dS mmm yyyy")}
+	    var datetext = "";
+	    if ((end-start)<3600000*25) {var mdate = new Date(start); datetext = mdate.format("dS mmm yyyy")}
             
-    $("#bot_out").html(datetext+": Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh | "+currency+(stats['kwh']*price).toFixed(2))
-  }
+	    $("#bot_out").html(datetext+": Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh | "+add_currency(stats['kwh']*price, 2));
+	  }
 
         //--------------------------------------------------------------
         // Zoom in on bar click
@@ -168,7 +181,7 @@
 
             if (view==0) $("#out").html(item.datapoint[1].toFixed(0)+" kWh | "+mdate.format("yyyy")+" | "+(item.datapoint[1]/years.days[item.dataIndex]).toFixed(1)+" kWh/d");
             if (view==1) $("#out").html(item.datapoint[1].toFixed(0)+" kWh | "+mdate.format("mmm yyyy")+" | "+(item.datapoint[1]/months.days[item.dataIndex]).toFixed(1)+" kWh/d ");
-            if (view==2) $("#out").html(item.datapoint[1].toFixed(1)+" kWh | "+currency+(item.datapoint[1]*price).toFixed(2)+" | "+currency+(item.datapoint[1]*price*365).toFixed(0)+"/y | "+mdate.format("dS mmm yyyy"));
+            if (view==2) $("#out").html(item.datapoint[1].toFixed(1)+" kWh | "+add_currency(item.datapoint[1]*price, 2)+" | "+add_currency(item.datapoint[1]*price*365, 0)+"/y | "+mdate.format("dS mmm yyyy"));
             if (view==3) $("#out").html(item.datapoint[1].toFixed(0)+" W");
           }
         });
