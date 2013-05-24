@@ -54,7 +54,8 @@
       'orderthreshold'=> array('options'=>array(array('feedid',3),array('power',1),array('thresholdA',6,500),array('thresholdB',6,2500))),
       'editrealtime'=> array('options'=>array(array('feedid',1))),
       'editdaily'=> array('options'=>array(array('feedid',2))),
-      'multigraph' => array ('action'=>'multigraph', 'options'=>array(array('mid',7)) )
+      'multigraph' => array ('action'=>'multigraph', 'options'=>array(array('mid',7)) ),
+      'compare' => array ('action'=>'compare', 'options'=>array(array('powerx',1),array('powery',1)))
     );
 
     $write_apikey = ""; $read_apikey = "";
