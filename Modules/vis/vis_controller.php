@@ -113,7 +113,7 @@
                         // Boolean not used at the moment
                         if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
                         if ($type==5) $array[$key] = preg_replace('/[^\w\s£$]/','',get($key))?get($key):$default;
-                        if ($type==6) $array[$key] = floatval((get($key)?get($key):$default));
+                        if ($type==6) $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
                         if ($type==7) $array[$key] = intval((get($key)?get($key):$default));
                     }
                 }

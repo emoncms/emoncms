@@ -65,7 +65,7 @@ class Input
     public function set_fields($id,$fields)
     {
         $id = intval($id);
-        $fields = json_decode($fields);
+        $fields = json_decode(stripslashes($fields));
 
         $array = array();
 
