@@ -227,8 +227,10 @@ class Process
         foreach ($pairs as $pair)    			        
         {
           $inputprocess = explode(":", $pair); 				                // Divide into process id and arg
-          $processid = $inputprocess[0];						                  // Process id
-          $arg = $inputprocess[1];	 					                        // Can be value or feed id
+          $processid = (int) $inputprocess[0];						            // Process id
+
+          $arg = 0;
+          if (isset($inputprocess[1])) $arg = $inputprocess[1];	 			// Can be value or feed id
 
           $process_public = $process_list[$processid][2];	            // get process public function name
           $value = $this->$process_public($arg,$time,$value);		      // execute process public function
@@ -612,6 +614,7 @@ class Process
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+      if (!$result)  return $value;
       $row = $result->fetch_array();
 
       $average = $row['data'];
