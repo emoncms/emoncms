@@ -1,3 +1,15 @@
+/*
+   All emon_widgets code is released under the GNU General Public License v3.
+   See COPYRIGHT.txt and LICENSE.txt.
+
+    ---------------------------------------------------------------------
+    Part of the OpenEnergyMonitor project:
+    http://openenergymonitor.org
+
+    Author: Trystan Lea: trystan.lea@googlemail.com
+    If you have any questions please get in touch, try the forums here:
+    http://openenergymonitor.org/emon/forum
+ */
 
 function led_widgetlist()
 {
@@ -8,8 +20,8 @@ function led_widgetlist()
       "menu":"Widgets",
       "options":["feed"],
       "optionstype":["feed"],
-      "optionsname":["Feed"],
-      "optionshint":["Feed source"] 
+      "optionsname":[_Tr("Feed")],
+      "optionshint":[_Tr("Feed value")] 
     }
   }
   return widgets;

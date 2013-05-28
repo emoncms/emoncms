@@ -65,7 +65,7 @@ var designer = {
     'snap': function(pos) {return Math.round(pos/designer.grid_size)*designer.grid_size;},
     
     'modified': function() {
-      $("#save-dashboard").attr('class','btn btn-warning').text("Changed, press to save");
+      $("#save-dashboard").attr('class','btn btn-warning').text(_Tr("Changed, press to save"));
     },
     
     'onbox': function(x,y) 

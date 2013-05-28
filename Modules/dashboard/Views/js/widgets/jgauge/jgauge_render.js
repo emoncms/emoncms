@@ -1,3 +1,16 @@
+/*
+   All emon_widgets code is released under the GNU General Public License v3.
+   See COPYRIGHT.txt and LICENSE.txt.
+
+    ---------------------------------------------------------------------
+    Part of the OpenEnergyMonitor project:
+    http://openenergymonitor.org
+
+    Author: Trystan Lea: trystan.lea@googlemail.com
+    If you have any questions please get in touch, try the forums here:
+    http://openenergymonitor.org/emon/forum
+ */
+
 // Global variables
 var img = null,
 	needle = null;
@@ -11,8 +24,8 @@ function jgauge_widgetlist()
       "menu":"Widgets",
       "options":["feed", "max", "units"],
       "optionstype":["feed","value","value"],
-      "optionsname":["Feed","Max value","Units"],
-      "optionshint":["Feed","Max value to show","Unit shown"] 
+      "optionsname":[_Tr("Feed"),_Tr("Max value"),_Tr("Units")],
+      "optionshint":[_Tr("Feed"),_Tr("Max value to show"),_Tr("Units to show")] 
       
     }
   }
