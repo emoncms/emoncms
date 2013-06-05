@@ -275,11 +275,12 @@ class Feed
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
-    // Check feed event if event module is installed
-    // if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-    //    require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-    //    check_feed_event($feedid,$updatetime,$feedtime,$value);
-    // }
+    //Check feed event if event module is installed
+    if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
+      require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
+      $event = new Event($this->mysqli);
+      $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
+    }
 
     return $value;
   }
@@ -307,11 +308,12 @@ class Feed
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
-    // Check feed event if event module is installed
-    // if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-    //    require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-    //    check_feed_event($feedid,$updatetime,$feedtime,$value);
-    // }
+    //Check feed event if event module is installed
+    if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
+      require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
+      $event = new Event($this->mysqli);
+      $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
+    }
     
     return $value;
   }
