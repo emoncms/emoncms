@@ -202,21 +202,29 @@ class Process
       );
 
       $list[24] = array(
-        "allow positive (set arg = 1)",
-        ProcessArg::VALUE,
+        "allow positive",
+        ProcessArg::NONE,
         "allowpositive",
         0,
         DataType::UNDEFINED
       );
 
       $list[25] = array(
-        "allow negative (set arg = 1)",
-        ProcessArg::VALUE,
+        "allow negative",
+        ProcessArg::NONE,
         "allownegative",
         0,
         DataType::UNDEFINED
       );
 
+      $list[26] = array(
+        "signed to unsigned",
+        ProcessArg::NONE,
+        "signed2unsigned",
+        0,
+        DataType::UNDEFINED
+      );
+      
       return $list;
     }
 
@@ -271,6 +279,12 @@ class Process
       return $value;
     }
 
+    public function signed2unsigned($arg, $time, $value)
+    {
+      if($value < 0) $value = $value + 65536;
+      return $value;
+    }
+    
     public function log_to_feed($id, $time, $value)
     {
       $this->feed->insert_data($id, $time, $time, $value);

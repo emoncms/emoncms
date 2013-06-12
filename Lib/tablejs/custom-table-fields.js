@@ -113,8 +113,16 @@ var customtablefields = {
                 key = '- inp'; type = 1; break;
               case 23:
                 key = 'kwhkwhd'; type = 2; break;
+              case 24:
+                key = '> 0'; type = 3; break;
+              case 25:
+                key = '< 0'; type = 3; break;
+              case 26:
+                key = 'unsign'; type = 3; break;
             }  
 
+            value = keyvalue[1];
+            
             switch(type)
             {
               case 0:
@@ -126,13 +134,16 @@ var customtablefields = {
               case 2:
                 type = 'feed: '; color = 'info';
                 break;
+              case 3:
+                type = ''; color = 'important';
+                value = '' // Argument type is NONE, we don't mind the value
+                break;
             }
 
-
             if (type == 'feed: ') { 
-              out += "<a href='"+path+"vis/auto?feedid="+keyvalue[1]+"'<span class='label label-"+color+"' title='"+type+keyvalue[1]+"' style='cursor:pointer'>"+key+"</span></a> "; 
+              out += "<a href='"+path+"vis/auto?feedid="+value+"'<span class='label label-"+color+"' title='"+type+value+"' style='cursor:pointer'>"+key+"</span></a> "; 
             } else {
-              out += "<span class='label label-"+color+"' title='"+type+keyvalue[1]+"' style='cursor:default'>"+key+"</span> ";
+              out += "<span class='label label-"+color+"' title='"+type+value+"' style='cursor:default'>"+key+"</span> ";
             }
           }
           
