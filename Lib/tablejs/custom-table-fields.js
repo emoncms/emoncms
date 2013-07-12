@@ -136,7 +136,7 @@ var customtablefields = {
                 break;
               case 3:
                 type = ''; color = 'important';
-                value = '' // Argument type is NONE, we don't mind the value
+                value = ''; // Argument type is NONE, we don't mind the value
                 break;
             }
 
