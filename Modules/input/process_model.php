@@ -414,7 +414,7 @@ class Process
       $ontime = $last->value;
       $last_time = strtotime($last->time);
 
-      if ($value == 1)
+      if ($value > 0)
       {
         $time_elapsed = ($time_now - $last_time);
         $ontime = $ontime + $time_elapsed;
