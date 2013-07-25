@@ -119,6 +119,10 @@ var customtablefields = {
                 key = '< 0'; type = 3; break;
               case 26:
                 key = 'unsign'; type = 3; break;
+              case 27:
+                key = 'max'; type = 2; break;
+              case 28:
+                key = 'min'; type = 2; break;
             }  
 
             value = keyvalue[1];
