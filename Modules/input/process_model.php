@@ -825,7 +825,7 @@ class Process
 	  
 	  // Otherwise runs to determine if there is a change in value
 	  {
-	  if (! ($last_time and ($value <= $last_val))) 
+	  if ($value > $last_val) 
 		{		
 		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
 		}
@@ -852,7 +852,7 @@ class Process
 	  
 	  // Otherwise runs to determine if there is a change in value
 	  {
-	  if (! ($last_time and ($value >= $last_val))) 
+	  if ($value < $last_val) 
 		{		
 		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
 		}
