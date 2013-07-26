@@ -224,6 +224,20 @@ class Process
         0,
         DataType::UNDEFINED
       );
+      $list[27] = array(
+        _("max value"),
+        ProcessArg::FEEDID,
+        "max_value",
+        1,
+        DataType::DAILY
+      );
+      $list[28] = array(
+        _("min value"),
+        ProcessArg::FEEDID,
+        "min_value",
+        1,
+        DataType::DAILY
+      );
       
       return $list;
     }
@@ -790,6 +804,60 @@ class Process
       $this->feed->insert_data($feedid,$time_now,$time_now,$power);
 
       return $power;
+    }
+    
+    	public function max_value($feedid, $time_now, $value)
+    {
+
+      // Get last values
+      $last = $this->feed->get_timevalue($feedid);
+      $last_val = $last['value'];
+	  $last_time = strtotime($last['time']);
+	  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+	  $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
+		
+	  // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new max)
+	  if ($time_check != $feedtime) {
+      $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
+	  }
+	  
+	  else
+	  
+	  // Otherwise runs to determine if there is a change in value
+	  {
+	  if ($value > $last_val) 
+		{		
+		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
+		}
+	  }
+      return $value;
+    }
+
+	public function min_value($feedid, $time_now, $value)
+    {
+
+      // Get last values
+      $last = $this->feed->get_timevalue($feedid);
+      $last_val = $last['value'];
+	  $last_time = strtotime($last['time']);
+	  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+	  $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
+		
+	  // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new min)
+	  if ($time_check != $feedtime) {
+	  $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
+	  }
+	  
+	  else
+	  
+	  // Otherwise runs to determine if there is a change in value
+	  {
+	  if ($value < $last_val) 
+		{		
+		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
+		}
+	  }
+      return $value;
     }
 }
   
