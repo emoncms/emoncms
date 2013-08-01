@@ -15,13 +15,32 @@ input[type="text"] {
 
 <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div></div>
 
-
-
 <div class="container">
-    <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
+    <div id="localheading"><h2>Preparing your feeds for conversion to timestore</h2></div>
 
-<div class='alert alert-info'><i class='icon-star'></i> <b>Upgrade to timestore:</b> You can now prepare your feeds for conversion to timestore for query speeds that are several magnitudes faster. Select your prefered conversion interval rates on the <a href="http://emoncms.org/feed/convert" >conversion page</a>.</div>
+<p>One of the central principles behind the <a src="mikestirling.co.uk/redmine/projects/timestore" >Timestore data storage</a> approach is that datapoints are stored at a fixed interval. Because you know that there is a datapoint every 10s you dont need to store the timestamp for each datapoint, you only need to store the timestamp for the first datapoint. The timestamp for every other datapoint can be worked out i.e:</p>
 
+<p><pre>timestamp = start + position * interval.</pre></p>
+
+<p>Storing time series data in this way makes it really easy and very fast to query. The tests so far have shown timestore to be <a src="http://openenergymonitor.blogspot.co.uk/2013/07/from-13-minutes-to-196ms-timestore-on.html" >several magnitudes faster</a> while also using significantly less disk space to use.</p>
+
+<p>The following interface provides an opportunity to review and select your preferred interval rate for each realtime feed that your logging.</p>
+
+<p>The Interval column states the average interval rate of the existing feed and is calculated simply as the end time minus the start time divided by the number of datapoints in the feed. This interval rate can be skewed if the monitor dropped off for a period, so its worth double checking that it is correct.</p>
+
+<p>You may wish to change your interval rate, if your logging temperature data at 5s intervals and 60s is enough to see the changes in temperature you want to see then select 60s as this reduces the disk use of the feed considerably.</p> 
+
+<p>To set the interval rate you wish your feed to be converted to, click on the <b>pencil button</b> to bring up in-line editing:</p>
+
+<img src="http://emoncms.org/Modules/feed/Views/step1.png" />
+
+<p>Click on the drop down menu under convert to and select from the list the interval you wish to use. Click on the tick button to complete.</p>
+
+<img src="http://emoncms.org/Modules/feed/Views/step2.png" />
+
+<p>Repeat the above steps for every feed you wish to convert and then once your done click on <b>Add feeds to conversion queue</b> button below</p>
+    
+<h2>Feed list</h2>
 
     <div id="table"></div>
 
@@ -45,9 +64,19 @@ input[type="text"] {
   </div>
 </div>
 
+<div id="addtoqueue" class="btn btn-large btn-info" >Add feeds to conversion queue</div>
+<div id="alreadyadded"></div>
+
 <script>
 
   var path = "<?php echo $path; ?>";
+
+  var converted = false;
+  $.ajax({ url: path+"user/getconvert.json", async: false, dataType: 'JSON', success: function(data){converted = data.convert;} });
+
+  console.log(converted);
+
+  if (converted) { $("#addtoqueue").hide(); $("#alreadyadded").html("<h2>Account already submitted for conversion, thankyou!</h2>");}
 
   // Extemd table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
@@ -58,11 +87,9 @@ input[type="text"] {
     'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
     'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
     'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"text"},
-    'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
-    'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"fixed"},
     'dpinterval':{'title':"<?php echo _('Interval'); ?>", 'type':"fixed"},
-
+    'convert':{'title':"<?php echo _('Covert to'); ?>", 'type':"select", 'options':{0:'not set',5:'5s',10:'10s',15:'15s',20:'20s',25:'25s',30:'30s',60:'60s',120:'2 mins',300:'5 mins',600:'10 mins',1800:'30 mins',3600:'1 hour',21600:'6 hours',43200:'12 hours',86400:'24 hours'}},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
 
@@ -83,6 +110,14 @@ input[type="text"] {
   function update()
   {
     table.data = feed.list();
+
+    var data = [];
+    for (z in table.data)
+    {
+      if (table.data[z]['datatype']==1 && table.data[z]['timestore']==0) data.push(table.data[z]);
+    }
+    table.data = eval(JSON.stringify(data));
+ 
     table.draw();
     if (table.data.length != 0) {
       $("#nofeeds").hide();
@@ -122,5 +157,14 @@ input[type="text"] {
 
     $('#myModal').modal('hide');
   });
+
+  $("#addtoqueue").click(function(){
+    console.log("Add to queue");
+
+    $.ajax({ url: path+"user/setconvert.json", async: false, dataType: 'JSON', success: function(data){converted = data.convert;} });
+    if (converted) { $("#addtoqueue").hide(); $("#alreadyadded").html("<h2>Account submitted for conversion, thankyou!</h2>");}
+
+  });
+
 
 </script>

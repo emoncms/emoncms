@@ -32,11 +32,14 @@ function input_controller()
   // There are no actions in the input module that can be performed with less than write privileges
   if (!$session['write']) return array('content'=>false);
 
-  global $feed;
+  global $feed, $timestore_adminkey;
   $result = false;
 
-  require "Modules/feed/feed_model.php"; // 540
-  $feed = new Feed($mysqli);
+  require "Modules/feed/timestore_class.php";
+  $timestore = new Timestore($timestore_adminkey);
+
+  include "Modules/feed/feed_model.php";
+  $feed = new Feed($mysqli,$timestore);
 
   require "Modules/input/input_model.php"; // 295
   $input = new Input($mysqli,$feed);

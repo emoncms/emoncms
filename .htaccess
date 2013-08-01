@@ -20,3 +20,8 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
 </IfModule>
+
+<Files index.php>
+    php_flag log_errors on
+    php_value error_log /home/trystan/error.log
+</Files>

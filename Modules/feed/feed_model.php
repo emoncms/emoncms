@@ -18,10 +18,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class Feed
 {
     private $mysqli;
+    private $timestore;
 
-    public function __construct($mysqli)
+    public function __construct($mysqli,$timestore)
     {
         $this->mysqli = $mysqli;
+        $this->timestore = $timestore;
     }
 
     public function create($userid,$name,$datatype)
@@ -129,7 +131,7 @@ class Feed
   {
     $userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE userid = $userid");
+    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,dpinterval,size,`convert`,timestore FROM feeds WHERE userid = $userid");
     if (!$result) return 0;
     $feeds = array();
     while ($row = $result->fetch_object()) 
@@ -137,6 +139,18 @@ class Feed
       // $row->size = get_feedtable_size($row->id);
       $row->time = strtotime($row->time)*1000;
       $row->tag = str_replace(" ","_",$row->tag);
+
+      $row->dpinterval = $row->dpinterval."s";
+      if ($row->dpinterval>=1*3600) $row->dpinterval = round($row->dpinterval / 3600)."h";
+
+      if ($row->size<1024*100) {
+        $row->size = number_format($row->size/1024,1)."kb";
+      } elseif ($row->size<1024*1024) {
+        $row->size = round($row->size/1024)."kb";
+      } elseif ($row->size>=1024*1024) {
+        $row->size = round($row->size/(1024*1024))."Mb";
+      }
+
       $row->public = (bool) $row->public;
       $feeds[] = $row; 
     }
@@ -201,11 +215,14 @@ class Feed
   public function get_field($id,$field)
   {
     $id = intval($id);
-    $field = preg_replace('/[^\w\s-]/','',$field);
 
-    $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
-    $row = $result->fetch_array();
-    if ($row) return $row[0]; else return 0;
+    if ($field!=NULL) {
+      $field = preg_replace('/[^\w\s-]/','',$field);
+      $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
+      $row = $result->fetch_array();
+      if ($row) return $row[0]; else return 0;
+    }
+    else return false;
   }
 
   public function get_timevalue($id)
@@ -233,6 +250,9 @@ class Feed
     if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
     if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
     if (isset($fields->datatype)) $array[] = "`datatype` = '".intval($fields->datatype)."'";
+
+    if (isset($fields->convert)) $array[] = "`convert` = '".intval($fields->convert)."'";
+
     if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
     if (isset($fields->time)) {
       $updatetime = date("Y-n-j H:i:s", intval($fields->time)); 
@@ -268,18 +288,39 @@ class Feed
 
     $feedname = "feed_".trim($feedid)."";
 
-    // a. Insert data value in feed table
-    $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
+    $qresult = $this->mysqli->query("SELECT timestore FROM feeds WHERE `id` = '$feedid'");
+    $row = $qresult->fetch_array();
+
+    if ($row['timestore']==1) {
+      $this->timestore->post_values($feedid,$feedtime*1000,array($value),null);
+    } else {
+      // a. Insert data value in feed table
+      $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
+    }
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
-    // Check feed event if event module is installed
-    // if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-    //    require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-    //    check_feed_event($feedid,$updatetime,$feedtime,$value);
-    // }
+    return $value;
+  }
+
+  public function insert_data_timestore($feedid,$updatetime,$feedtime,$value)
+  { 
+    if ($feedtime == null) $feedtime = time();
+    $feedid = intval($feedid);
+    $updatetime = intval($updatetime);
+    $feedtime = intval($feedtime);
+    $value = floatval($value);
+
+    $feedname = "feed_".trim($feedid)."";
+echo "here";
+    // a. Insert data value in feed table
+    $this->timestore->post_values($feedid,$feedtime*1000,array($value),null);
+
+    // b. Update feeds table
+    $updatetime = date("Y-n-j H:i:s", $updatetime); 
+    $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
     return $value;
   }
@@ -338,7 +379,32 @@ class Feed
     return true;
   }
 
-  public function get_data($feedid,$start,$end,$dp)
+  public function get_data_timestore($feedid,$start,$end,$dp)
+  {
+    $feedid = intval($feedid);
+    $start = intval($start/1000);
+    $end = intval($end/1000);
+    $dp = intval($dp);
+
+    if ($end == 0) $end = time();
+
+    //$result = $this->mysqli->query("SELECT `interval` FROM feeds WHERE id = '$feedid'");
+    //$row = $result->fetch_array();
+
+    $interval = 10;
+    //if (isset($row['interval'])) $interval = $row['interval'];
+
+    $start = round($start/$interval)*$interval;
+    $end = round($end/$interval)*$interval;
+    $npoints = round(($end - $start) / $interval);
+ 
+    if ($npoints>1000) $npoints = 1000;
+
+    $data = json_decode($this->timestore->get_series($feedid,0,$npoints,$start,$end,null));
+    return $data;
+  }
+
+  public function get_data_mysql($feedid,$start,$end,$dp)
   {
     $feedid = intval($feedid);
     $start = floatval($start);
@@ -525,8 +591,8 @@ class Feed
       set_time_limit (120);
 
       // Regulate mysql and apache load.
-      $block_size = 1000;
-      $sleep = 20000;
+      $block_size = 400;
+      $sleep = 80000;
 
       $feedname = "feed_".trim($feedid)."";
       $fileName = $feedname.'.csv';

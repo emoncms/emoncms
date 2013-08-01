@@ -290,6 +290,14 @@ class User
     // Get by userid methods
     //---------------------------------------------------------------------------------------
 
+    public function get_convert_status($userid)
+    {
+        $userid = intval($userid);
+        $result = $this->mysqli->query("SELECT `convert` FROM users WHERE id = '$userid';");
+        $row = $result->fetch_array();
+        return array('convert'=>(int)$row['convert']);
+    }
+
     public function get_username($userid)
     {
         $userid = intval($userid);
@@ -354,6 +362,13 @@ class User
     //---------------------------------------------------------------------------------------
     // Set by id methods
     //---------------------------------------------------------------------------------------
+
+    public function set_convert_status($userid)
+    {
+        $userid = intval($userid);
+        $this->mysqli->query("UPDATE users SET `convert` = '1' WHERE id='$userid'");
+        return array('convert'=>1);
+    }
 
     public function set_user_lang($userid, $lang)
     {

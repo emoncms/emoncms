@@ -278,6 +278,12 @@ class Process
       return $value;
     }
 
+    public function update_feed_data($id, $time, $value)
+    {
+
+      return $value;
+    }
+
     //---------------------------------------------------------------------------------------
     // Times value by current value of another input
     //---------------------------------------------------------------------------------------
@@ -454,6 +460,7 @@ class Process
       $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
       $row = $result->fetch_array();
 
+      $kwh_today = 0;
       if (!$row)
       {
         $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0','$value')");

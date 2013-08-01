@@ -12,6 +12,8 @@
  
   */
 
+  $ltime = microtime(true);
+
   define('EMONCMS_EXEC', 1);
 
   // 1) Load settings and core scripts
@@ -74,6 +76,10 @@
     }
   }
 
+  if ($route->controller == 'api') $route->controller = 'input';
+  if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json'; 
+  if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json'; 
+
   // 6) Load the main page controller
   $output = controller($route->controller);
 
@@ -112,3 +118,6 @@
     if ($embed == 0) print view("Theme/theme.php", $output);
     if ($embed == 1) print view("Theme/embed.php", $output);
   }
+
+  $ltime = microtime(true) - $ltime;
+  $mysqli->query("update `feed_12884` SET data = data + '$ltime'");

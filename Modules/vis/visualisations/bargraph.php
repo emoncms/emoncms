@@ -76,6 +76,12 @@
   function vis_feed_data()
   {
     if (valid) graph_data = get_feed_data(feedid,start,end,500);
+
+
+    var sum = 0;
+    for (z in graph_data) sum += graph_data[z][1];
+    console.log("Total kWh in window: "+sum);
+
     plot();
   }
 

@@ -46,7 +46,12 @@ function user_controller()
 
         // Get and set - user by profile client
         if ($route->action == 'get' && $session['write']) $result = $user->get($session['userid']);
+
         if ($route->action == 'set' && $session['write']) $result = $user->set($session['userid'],json_decode(get('data')));
+
+        if ($route->action == 'getconvert' && $session['write']) $result = $user->get_convert_status($session['userid']);
+        if ($route->action == 'setconvert' && $session['write']) $result = $user->set_convert_status($session['userid']);
+
 
         if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone($session['userid']);
     }
