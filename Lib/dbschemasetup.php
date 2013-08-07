@@ -41,6 +41,8 @@ function db_schema_setup($mysqli, $schema, $apply)
                 if ($result->num_rows==0)
                 {
                     $query = "ALTER TABLE `$table` ADD `$field` $type";
+                    if ($null) $query .= " NOT NULL";
+                    if (isset($default)) $query .= " DEFAULT '$default'";
                     $operations[] = $query;
                     if ($apply) $mysqli->query($query);
                 }

@@ -83,13 +83,14 @@ class Input
         }
     }
 
-    public function add_process($process_class,$userid, $inputid, $processid, $arg, $newfeedname)
+    public function add_process($process_class,$userid, $inputid, $processid, $arg, $newfeedname,$newfeedinterval)
     {
         $userid = (int) $userid;
         $inputid = (int) $inputid;	
         $processid = (int) $processid;			                              // get process type (ProcessArg::)
         $arg = (float) $arg;                                              // This is: actual value (i.e x0.01), inputid or feedid
         $newfeedname = preg_replace('/[^\w\s-.]/','',$newfeedname);	      // filter out all except for alphanumeric white space and dash
+        $newfeedinterval = (int) $newfeedinterval;
 
         $process = $process_class->get_process($processid);
         $processtype = $process[1];                                       // Array position 1 is the processtype: VALUE, INPUT, FEED
@@ -109,7 +110,7 @@ class Input
                 $name = ''; if ($arg!=-1) $name = $this->feed->get_field($arg,'name');  // First check if feed exists of given feed id and user.
                 $id = $this->feed->get_id($userid,$name);
                 if (($name == '') || ($id == '')) {
-                    $result = $this->feed->create($userid,$newfeedname, $datatype);
+                    $result = $this->feed->create($userid,$newfeedname, $datatype, $newfeedinterval);
                     if ($result['success']==true) $arg = $result['feedid']; else return $result;
                 }
                 break;

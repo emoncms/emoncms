@@ -26,8 +26,9 @@ class Feed
         $this->timestore = $timestore;
     }
 
-    public function create($userid,$name,$datatype)
+    public function create($userid,$name,$datatype,$newfeedinterval)
     {
+        $newfeedinterval = (int) $newfeedinterval;
         $userid = intval($userid);
         $name = preg_replace('/[^\w\s-]/','',$name);
         $datatype = intval($datatype);
@@ -36,21 +37,26 @@ class Feed
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
 
-        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public) VALUES ('$userid','$name','$datatype','false')");
+        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,timestore,dpinterval) VALUES ('$userid','$name','$datatype','false','1','$newfeedinterval')");
         $feedid = $this->mysqli->insert_id;
 
         if ($feedid>0) 
         {
           $feedname = "feed_".$feedid;
 
-          if ($datatype!=3) {										
+          if ($datatype==1)
+          {
+            $this->timestore->create_node($feedid,$newfeedinterval);
+          }
+
+          elseif ($datatype==2) {										
             $result = $this->mysqli->query(
             "CREATE TABLE $feedname (
 	      time INT UNSIGNED, data float,
             INDEX ( `time` ))");
           }
 
-          if ($datatype==3) {										
+          elseif ($datatype==3) {										
             $result = $this->mysqli->query(										
             "CREATE TABLE $feedname (
 	      time INT UNSIGNED, data float, data2 float,

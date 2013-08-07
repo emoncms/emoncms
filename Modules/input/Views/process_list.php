@@ -162,7 +162,8 @@ function generate_process_arg_box()
 function update_process_arg_box()
 {
   if ($('.processArgBox').val() == -1) {
-    $('#newProcessArgField').append('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ >');
+    
+    $('#newProcessArgField').append('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ ><select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option></select>');
   }
   else {
     $('#newfeedname').remove();
@@ -174,8 +175,14 @@ function process_add() {
 
   if ($('#arg').val() == -1) {
     datastring += '&newfeedname='+$('#newfeedname').val();
+    datastring += '&newfeedinterval='+$('#newfeedinterval').val();
     if ($('#newfeedname').val() == '') {
       alert('ERROR: You must enter a feed name!');
+      return false;
+    }
+
+    if ($('#newfeedinterval').val() == '') {
+      alert('ERROR: You must select a feed interval!');
       return false;
     }
   }

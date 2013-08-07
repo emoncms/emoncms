@@ -15,12 +15,10 @@ input[type="text"] {
 
 <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div></div>
 
-
-
 <div class="container">
     <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
 
-<div class='alert alert-info'><i class='icon-star'></i> <b>Upgrade to timestore:</b> You can now prepare your feeds for conversion to timestore for query speeds that are several magnitudes faster. Select your prefered conversion interval rates on the <a href="http://emoncms.org/feed/convert" >conversion page</a>.</div>
+<div class='alert alert-info'><i class='icon-star'></i> <b>Upgrade to timestore:</b> You can now prepare your feeds for conversion to timestore for query speeds that are several magnitudes faster. Select your prefered conversion interval rates on the <a href="<?php echo $path; ?>feed/convert" >conversion page</a>.</div>
 
 
     <div id="table"></div>

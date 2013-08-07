@@ -19,7 +19,8 @@ $schema['users'] = array(
     'location'=>array('type'=>'varchar(30)', 'default'=>''),
     'timezone' => array('type' => 'int(11)', 'default'=>0),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
-    'bio' => array('type' => 'text', 'default'=>'')
+    'bio' => array('type' => 'text', 'default'=>''),
+    'convert' => array('type' => 'int(11)', 'Null'=>'NO', 'default'=>0)
 );
 
 $schema['rememberme'] = array(

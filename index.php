@@ -120,4 +120,3 @@
   }
 
   $ltime = microtime(true) - $ltime;
-  $mysqli->query("update `feed_12884` SET data = data + '$ltime'");
