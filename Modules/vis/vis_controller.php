@@ -47,7 +47,7 @@
       'smoothie'=> array('options'=>array(array('feedid',1),array('ufac',6))),
       'histgraph'=> array('options'=>array(array('feedid',3),array('barwidth',7,50),array('start',7,0),array('end',7,0))),
       //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
-      'zoom'=> array('options'=>array(array('power',1),array('kwhd',2),array('currency',5,'&pound;'),array('pricekwh',6,0.14))),
+      'zoom'=> array('options'=>array(array('power',1),array('kwhd',2),array('currency',5,'&pound;'),array('currency_after_val', 7, 0), array('pricekwh',6,0.14))),
       //'comparison'=> array('options'=>array(array('feedid',3))),
       'stacked'=> array('options'=>array(array('bottom',2),array('top',2))),
       'stackedsolar'=> array('options'=>array(array('solar',2),array('consumption',2))),
@@ -115,7 +115,7 @@
 
                         // Boolean not used at the moment
                         if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
-                        if ($type==5) $array[$key] = preg_replace('/[^\w\s£$]/','',get($key))?get($key):$default;
+                        if ($type==5) $array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
                         if ($type==6) $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
                         if ($type==7) $array[$key] = intval((get($key)?get($key):$default));
                     }

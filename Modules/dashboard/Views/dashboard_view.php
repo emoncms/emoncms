@@ -1,5 +1,18 @@
-<?php global $session, $path; ?>
+<?php 
 
+/*
+All Emoncms code is released under the GNU Affero General Public License.
+See COPYRIGHT.txt and LICENSE.txt.
+
+---------------------------------------------------------------------
+Emoncms - open source energy visualisation
+Part of the OpenEnergyMonitor project:
+http://openenergymonitor.org
+*/
+
+  global $session, $path; ?>
+
+  <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/dashboard_langjs.php"></script>
   <link href="<?php echo $path; ?>Modules/dashboard/Views/js/widget.css" rel="stylesheet">
 
   <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>

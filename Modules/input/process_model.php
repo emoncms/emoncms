@@ -202,21 +202,43 @@ class Process
       );
 
       $list[24] = array(
-        "allow positive (set arg = 1)",
-        ProcessArg::VALUE,
+        "allow positive",
+        ProcessArg::NONE,
         "allowpositive",
         0,
         DataType::UNDEFINED
       );
 
       $list[25] = array(
-        "allow negative (set arg = 1)",
-        ProcessArg::VALUE,
+        "allow negative",
+        ProcessArg::NONE,
         "allownegative",
         0,
         DataType::UNDEFINED
       );
 
+      $list[26] = array(
+        "signed to unsigned",
+        ProcessArg::NONE,
+        "signed2unsigned",
+        0,
+        DataType::UNDEFINED
+      );
+      $list[27] = array(
+        _("max value"),
+        ProcessArg::FEEDID,
+        "max_value",
+        1,
+        DataType::DAILY
+      );
+      $list[28] = array(
+        _("min value"),
+        ProcessArg::FEEDID,
+        "min_value",
+        1,
+        DataType::DAILY
+      );
+      
       return $list;
     }
 
@@ -271,6 +293,12 @@ class Process
       return $value;
     }
 
+    public function signed2unsigned($arg, $time, $value)
+    {
+      if($value < 0) $value = $value + 65536;
+      return $value;
+    }
+    
     public function log_to_feed($id, $time, $value)
     {
       $this->feed->insert_data($id, $time, $time, $value);
@@ -406,7 +434,7 @@ class Process
       $ontime = $last->value;
       $last_time = strtotime($last->time);
 
-      if ($value == 1)
+      if ($value > 0)
       {
         $time_elapsed = ($time_now - $last_time);
         $ontime = $ontime + $time_elapsed;
@@ -783,6 +811,60 @@ class Process
       $this->feed->insert_data($feedid,$time_now,$time_now,$power);
 
       return $power;
+    }
+    
+    	public function max_value($feedid, $time_now, $value)
+    {
+
+      // Get last values
+      $last = $this->feed->get_timevalue($feedid);
+      $last_val = $last['value'];
+	  $last_time = strtotime($last['time']);
+	  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+	  $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
+		
+	  // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new max)
+	  if ($time_check != $feedtime) {
+      $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
+	  }
+	  
+	  else
+	  
+	  // Otherwise runs to determine if there is a change in value
+	  {
+	  if ($value > $last_val) 
+		{		
+		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
+		}
+	  }
+      return $value;
+    }
+
+	public function min_value($feedid, $time_now, $value)
+    {
+
+      // Get last values
+      $last = $this->feed->get_timevalue($feedid);
+      $last_val = $last['value'];
+	  $last_time = strtotime($last['time']);
+	  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+	  $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
+		
+	  // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new min)
+	  if ($time_check != $feedtime) {
+	  $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
+	  }
+	  
+	  else
+	  
+	  // Otherwise runs to determine if there is a change in value
+	  {
+	  if ($value < $last_val) 
+		{		
+		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
+		}
+	  }
+      return $value;
     }
 }
   

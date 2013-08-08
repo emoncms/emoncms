@@ -114,6 +114,10 @@ class Input
                     if ($result['success']==true) $arg = $result['feedid']; else return $result;
                 }
                 break;
+            case ProcessArg::NONE:                                           // If arg type none
+                $arg = 0;
+                $id = $arg;
+                break;
         }
 
         $list = $this->get_processlist($inputid);

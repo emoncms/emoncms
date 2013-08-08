@@ -1,3 +1,15 @@
+/*
+   All emon_widgets code is released under the GNU General Public License v3.
+   See COPYRIGHT.txt and LICENSE.txt.
+
+    ---------------------------------------------------------------------
+    Part of the OpenEnergyMonitor project:
+    http://openenergymonitor.org
+
+    Author: Trystan Lea: trystan.lea@googlemail.com
+    If you have any questions please get in touch, try the forums here:
+    http://openenergymonitor.org/emon/forum
+ */
 
 function vis_widgetlist()
 {
@@ -8,8 +20,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
-      "optionsname":["Feed"],
-      "optionshint":["Feed source"], 
+      "optionsname":[_Tr("Feed")],
+      "optionshint":[_Tr("Feed source")], 
       "html":""
     },
 
@@ -19,8 +31,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","fill","units"],
       "optionstype":["feedid","value","value"],
-      "optionsname":["Feed","Fill","Units"],
-      "optionshint":["Feed source","Fill value","Units shown"],       
+      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Units")],
+      "optionshint":[_Tr("Feed source"),_Tr("Fill value"),_Tr("Units to show")],       
       "html":""
     },
 
@@ -30,8 +42,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
-      "optionsname":["Feed"],
-      "optionshint":["Feed source"],       
+      "optionsname":[_Tr("Feed")],
+      "optionshint":[_Tr("Feed source")],       
       "html":""
     },
 
@@ -39,10 +51,10 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["power","kwhd","currency","pricekwh"],
-      "optionstype":["feedid","feedid","value","value"],
-      "optionsname":["Power","kwhd","Currency","Kwh price"],
-      "optionshint":["Power","KWHD","Currency shown","Set kwh price"], 
+      "options":["power","kwhd","currency","currency_after_val","pricekwh"],
+      "optionstype":["feedid","feedid","value","value","value"],
+      "optionsname":[_Tr("Power"),_Tr("kwhd"),_Tr("Currency"),_Tr("Currency position"),_Tr("Kwh price")],
+      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"),_Tr("Currency to show"),_Tr("0 = before value, 1 = after value"),_Tr("Set kwh price")],
       "html":""
     },
 
@@ -52,8 +64,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["power","kwhd"],
       "optionstype":["feedid","feedid"],
-      "optionsname":["Power","KWHD"],
-      "optionshint":["Power","kwhd"], 
+      "optionsname":[_Tr("Power"),_Tr("kwhd")],
+      "optionshint":[_Tr("Power to show"),_Tr("kwhd source")], 
       "html":""
     },
 
@@ -63,8 +75,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
-      "optionsname":["Feed"],
-      "optionshint":["Feed source"], 
+      "optionsname":[_Tr("Feed")],
+      "optionshint":[_Tr("Feed source")], 
       "html":""
     },
 
@@ -74,8 +86,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","thresholdA","thresholdB"],
       "optionstype":["feedid","value","value"],
-      "optionsname":["Feed","Threshold A","Thereshold B"],
-      "optionshint":["Feed source","",""], 
+      "optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B")],
+      "optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used")], 
       "html":""
     },
 
@@ -85,8 +97,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","power","thresholdA","thresholdB"],
       "optionstype":["feedid","feedid","value","value"],
-      "optionsname":["Feed","Power","Thereshold A","Thereshold B"],
-      "optionshint":["Feed source","","",""],       
+      "optionsname":[_Tr("Feed"),_Tr("Power"),_Tr("Threshold A"),_Tr("Threshold B")],
+      "optionshint":[_Tr("Feed source"),_Tr("Power"),_Tr("Threshold A used"),_Tr("Threshold B used")],       
       "html":""
     },
 
@@ -96,8 +108,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid"],
       "optionstype":["feedid"],
-      "optionsname":["Feed"],
-      "optionshint":["Feed source"],       
+      "optionsname":[_Tr("Feed")],
+      "optionshint":[_Tr("Feed source")],       
       "html":""
     },
 
@@ -107,8 +119,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["bottom","top"],
       "optionstype":["feedid","feedid"],
-      "optionsname":["Bottom","Top"],
-      "optionshint":["",""],       
+      "optionsname":[_Tr("Bottom"),_Tr("Top")],
+      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value")],       
       "html":""
     },
 
@@ -118,8 +130,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["solar","consumption"],
       "optionstype":["feedid","feedid"],
-      "optionsname":["Solar","Consumption"],
-      "optionshint":["Solar","Consumption"], 
+      "optionsname":[_Tr("Solar"),_Tr("Consumption")],
+      "optionshint":[_Tr("Solar feed value"),_Tr("Consumption feed value")], 
       "html":""
     },
 
@@ -129,8 +141,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["feedid","ufac"],
       "optionstype":["feedid","value"],
-      "optionsname":["Feed","Ufac"],
-      "optionshint":["Feed source",""],       
+      "optionsname":[_Tr("Feed"),_Tr("Ufac")],
+      "optionshint":[_Tr("Feed source"),_Tr("Ufac value")],       
       "html":""
     },
 
@@ -140,8 +152,8 @@ function vis_widgetlist()
       "menu":"Visualisations",
       "options":["mid"],
       "optionstype":["multigraph"],
-      "optionsname":["Mid"],
-      "optionshint":["Mid"],       
+      "optionsname":[_Tr("Mid")],
+      "optionshint":[_Tr("Mid value")],       
       "html":""
     }
   }

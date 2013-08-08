@@ -16,6 +16,7 @@
     const VALUE = 0;
     const INPUTID = 1;
     const FEEDID = 2;
+    const NONE = 3;
   }
 
   class DataType {
