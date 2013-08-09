@@ -670,5 +670,72 @@ class Feed
       exit;
   }
 
+  public function export_timestore($feedid,$layer)
+  {
+    $feedid = (int) $feedid;
+    $layer = (int) $layer;
+
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
+
+    // There is no need for the browser to cache the output
+    header("Cache-Control: no-cache, no-store, must-revalidate");
+
+    // Tell the browser to handle output as a csv file to be downloaded
+    header('Content-Description: File Transfer');
+    header("Content-type: application/octet-stream");
+    header("Content-Disposition: attachment; filename={$feedname}");
+
+    header("Expires: 0");
+    header("Pragma: no-cache");
+
+    // Write to output stream
+    $fh = @fopen( 'php://output', 'w' );
+
+    $primaryfeedname = "/var/lib/timestore/$feedname";
+    $primary = fopen($primaryfeedname, 'rb');
+    $primarysize = filesize($primaryfeedname);
+
+    $left_to_read = $primarysize;
+    do
+    {
+      if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+      $left_to_read -= $readsize;
+
+      $data = fread($primary,$readsize);
+      fwrite($fh,$data);
+    }
+    while ($left_to_read>0);
+
+    fclose($primary);
+    fclose($fh);
+    exit;
+  }
+  
+  public function export_timestore_meta($feedid)
+  {
+    $feedid = (int) $feedid;
+
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
+
+    // There is no need for the browser to cache the output
+    header("Cache-Control: no-cache, no-store, must-revalidate");
+
+    // Tell the browser to handle output as a csv file to be downloaded
+    header('Content-Description: File Transfer');
+    header("Content-type: application/octet-stream");
+    header("Content-Disposition: attachment; filename={$feedname}");
+
+    header("Expires: 0");
+    header("Pragma: no-cache");
+
+    $fh = @fopen( 'php://output', 'w' );
+    $meta = fopen("/var/lib/timestore/$feedname", 'rb');
+    fwrite($fh,fread($meta,268));
+
+    fclose($meta);
+    fclose($fh);
+    exit;
+  }
+
 }
 
