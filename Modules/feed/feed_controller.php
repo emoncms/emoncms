@@ -80,6 +80,7 @@ function feed_controller()
           if ($row['timestore'])
           {
             if ($route->action == "insert") $result = $feed->insert_data_timestore($feedid,time(),get("time"),get("value"));
+            if ($route->action == "delete") $result = $feed->delete_timestore($feedid);
           }
           else
           {

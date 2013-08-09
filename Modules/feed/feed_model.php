@@ -601,6 +601,13 @@ class Feed
     $this->mysqli->query("DROP TABLE feed_".$feedid);
   }
 
+  public function delete_timestore($feedid)
+  {
+    $feedid = intval($feedid);
+    $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid'");
+    $this->timestore->delete_node($feedid);
+  }
+
   public function export($feedid,$start)
   {
       // Feed id and start time of feed to export

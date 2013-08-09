@@ -28,6 +28,11 @@ class Timestore
     return $this->do_request('PUT',"/nodes/$node_id",$array,false,$this->adminkey);
   }
 
+  public function delete_node($node_id)
+  {
+    return $this->do_request('DELETE',"/nodes/$node_id",false,false,$this->adminkey);
+  }
+
   public function set_key($node_id,$key_name,$keyval)
   {
     $array = array('key'=>base64_encode($keyval));
