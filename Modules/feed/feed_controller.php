@@ -84,6 +84,8 @@ function feed_controller()
 
             if ($route->action == "export") $result = $feed->export_timestore($feedid,get('layer'));
             if ($route->action == "exportmeta") $result = $feed->export_timestore_meta($feedid);
+            
+            if ($route->action == "getmeta") $result = $feed->get_timestore_meta($feedid);
           }
           else
           {
