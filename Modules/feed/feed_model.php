@@ -736,6 +736,27 @@ class Feed
     fclose($fh);
     exit;
   }
+  
+  public function get_timestore_meta($feedid)
+  {
+    $feedid = (int) $feedid;
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
+
+    $out = array();
+    $meta = fopen("/var/lib/timestore/$feedname", 'rb');
+
+    fseek($meta,20);
+    $tmp = unpack("I",fread($meta,4)); 
+    $out['npoints'] = $tmp[1];
+    $tmp = unpack("I",fread($meta,8)); 
+    $out['start'] = $tmp[1];
+    $tmp = unpack("I",fread($meta,4)); 
+    $out['interval'] = $tmp[1];
+    fclose($meta);
+    
+   
+    return $out;
+  }
 
 }
 
