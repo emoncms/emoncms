@@ -320,4 +320,13 @@ class Input
         // as in feeds - as no actual feed data will be lost
         $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
     }
+    
+    public function delete_node($userid, $nodeid)
+    {
+        $userid = (int) $userid;
+        $nodeid = (int) $nodeid;
+        // Inputs are deleted permanentely straight away rather than a soft delete
+        // as in feeds - as no actual feed data will be lost
+        $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND nodeid = '$nodeid'");
+    }
 }

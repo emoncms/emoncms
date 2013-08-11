@@ -197,10 +197,13 @@ function input_controller()
       }
 
       if ($route->action == "list") $result = $input->getlist($session['userid']);
+      
+      if ($route->action == "deletenode") $result = $input->delete_node($session['userid'],get("nodeid"));
 
       if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
       {
           if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
+
           if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
 
           if ($route->action == "process")

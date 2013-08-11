@@ -82,7 +82,7 @@ function feed_controller()
             if ($route->action == "insert") $result = $feed->insert_data_timestore($feedid,time(),get("time"),get("value"));
             if ($route->action == "delete") $result = $feed->delete_timestore($feedid);
 
-            if ($route->action == "export") $result = $feed->export_timestore($feedid,get('layer'));
+            if ($route->action == "export") $result = $feed->export_timestore($feedid,get('layer'),get('start'));
             if ($route->action == "exportmeta") $result = $feed->export_timestore_meta($feedid);
             
             if ($route->action == "getmeta") $result = $feed->get_timestore_meta($feedid);

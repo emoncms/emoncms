@@ -670,11 +670,14 @@ class Feed
       exit;
   }
 
-  public function export_timestore($feedid,$layer)
+  public function export_timestore($feedid,$layer,$start)
   {
     $feedid = (int) $feedid;
     $layer = (int) $layer;
-
+    $start = (int) $start;
+    
+    $meta = $this->get_timestore_meta($feedid);
+    
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
 
     // There is no need for the browser to cache the output
@@ -694,18 +697,26 @@ class Feed
     $primaryfeedname = "/var/lib/timestore/$feedname";
     $primary = fopen($primaryfeedname, 'rb');
     $primarysize = filesize($primaryfeedname);
+    
+    //$localsize = intval((($start - $meta['start']) / $meta['interval']) * 4);
+    
+    $localsize = $start;
+    $localsize = intval($localsize / 4) * 4;
+    if ($localsize<0) $localsize = 0;
 
-    $left_to_read = $primarysize;
-    do
-    {
-      if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
-      $left_to_read -= $readsize;
+    fseek($primary,$localsize);
+    $left_to_read = $primarysize - $localsize;
+    if ($left_to_read>0){
+      do
+      {
+        if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+        $left_to_read -= $readsize;
 
-      $data = fread($primary,$readsize);
-      fwrite($fh,$data);
+        $data = fread($primary,$readsize);
+        fwrite($fh,$data);
+      }
+      while ($left_to_read>0);
     }
-    while ($left_to_read>0);
-
     fclose($primary);
     fclose($fh);
     exit;
@@ -730,7 +741,7 @@ class Feed
 
     $fh = @fopen( 'php://output', 'w' );
     $meta = fopen("/var/lib/timestore/$feedname", 'rb');
-    fwrite($fh,fread($meta,268));
+    fwrite($fh,fread($meta,272));
 
     fclose($meta);
     fclose($fh);
