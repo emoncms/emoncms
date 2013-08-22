@@ -20,7 +20,6 @@ Timestore also has an additional benefit of using averaged layers which ensures 
     cd /home/pi
     git clone https://github.com/mikestir/timestore.git
     cd timestore
-    git checkout float
     make
     sudo mkdir /var/lib/timestore
     cd /home/pi/timestore/src
