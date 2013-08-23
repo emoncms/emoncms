@@ -15,27 +15,24 @@ Disk use is also much smaller, A test feed stored in an indexed mysql table used
 **In-built averaging**
 Timestore also has an additional benefit of using averaged layers which ensures that requested data is representative of the window of time each datapoint covers.
 
-## 1) Download, make and start timestore
+## 1) Download, make and start timestore (using temporary for that includes installer)
 
     cd /home/pi
-    git clone https://github.com/mikestir/timestore.git
+    git clone https://github.com/TrystanLea/timestore
     cd timestore
-    make
-    sudo mkdir /var/lib/timestore
-    cd /home/pi/timestore/src
-    sudo ./timestore
+    sudo sh install
+    
+**Note the adminkey** at the end as you will want to paste this into the emoncms settings.php file.    
 
-The last line there starts timestore as a deamon, you can get the process id by typing
+The installer will start timestore, you can check that its running with:
 
-    pidof timestore
+    sudo /etc/init.d/timestore status
+    
+Start, stop and restart it with:
 
-and then stop it with:
-
-    kill PID-OF-TIMESTORE
-
-Alternatively timestore can be run in a terminal session by calling:
-
-    sudo ./timestore -d
+    sudo /etc/init.d/timestore start
+    sudo /etc/init.d/timestore stop
+    sudo /etc/init.d/timestore restart
 
 ## 2) Download Transitionary Timestore emoncms branch
 
@@ -55,7 +52,7 @@ Create settings.php from default.settings.php
 
     cp /var/www/emoncms/default.settings.php /var/www/emoncms/settings.php
 
-Enter your mysql database settings in settings.php
+Enter your mysql database settings and timestore adminkey as copied above in to settings.php
 
 Launch emoncms in your browser:
 
@@ -79,9 +76,7 @@ Download the emoncms *usefulscripts* folder, its best to place this in a non-web
 
     git clone https://github.com/emoncms/usefulscripts.git
 
-Open the export script located in *usefulscripts/convert\_to\_timestore/export.php* and enter in your mysql username, password and database name. Enter also your timestore admin password. The timestore admin password can be found by opening the password file by calling:
-
-    nano /var/lib/timestore/adminkey.txt
+Open the export script located in *usefulscripts/convert\_to\_timestore/export.php* and enter in your mysql username, password and database name. Enter also your timestore adminkey.
 
 Start the conversion! run export.php from the command line using:
 
