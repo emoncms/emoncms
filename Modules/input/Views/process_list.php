@@ -18,6 +18,8 @@ global $path, $session;
 <h2><?php echo _('Input configuration:   '); ?><?php echo $inputid; ?></h2>
 <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
 
+<div class="alert alert-info"><b>Feed intervals: </b>When selecting the feed interval select an interval that is the same as or longer than the update rate set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up. <b>Example:</b> if your emontx is pushing data to emoncms every 8 seconds set the feed interval rate to 10s.</div>
+
 <div id='inputprocesslist'></div>
 
     <form action="">
@@ -163,7 +165,7 @@ function update_process_arg_box()
 {
   if ($('.processArgBox').val() == -1) {
     
-    $('#newProcessArgField').append('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ ><select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option></select>');
+    $('#newProcessArgField').append('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ ><select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=500>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
   }
   else {
     $('#newfeedname').remove();
