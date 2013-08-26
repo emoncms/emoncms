@@ -13,120 +13,106 @@ global $path, $session;
 
 ?>
 
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
+<br>
 <div style="float:right;"><a href="../api"><?php echo _("Input API Help") ?></a></div>
 
-<h2><?php echo _('Input configuration:   '); ?><?php echo $inputid; ?></h2>
+<h2><?php echo _('Input configuration:   '); ?><span id="inputname"></span> (<?php echo $inputid; ?>)</h2>
 <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
 
-<div class="alert alert-info"><b>Feed intervals: </b>When selecting the feed interval select an interval that is the same as or longer than the update rate set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up. <b>Example:</b> if your emontx is pushing data to emoncms every 8 seconds set the feed interval rate to 10s.</div>
+<div class="alert alert-info"><b>Feed intervals: </b>When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</div>
 
-<div id='inputprocesslist'></div>
+<table class="table">
 
-    <form action="">
-<table class='catlist'>
-    <tr><td style='width:15%;'><?php echo _("New"); ?></td>
-      <td style='width:35%;'>
+  <tr>
+    <th style='width:10%;'></th>
+    <th style='width:5%;'><?php echo _('Order'); ?></th>
+    <th style='width:35%;'><?php echo _('Process'); ?></th>
+    <th style='width:40%;'><?php echo _('Arg'); ?></th>
+    <th><?php echo _('Actions'); ?></th>
+  </tr>
+
+  <tbody id="inputprocesslist"></tbody>
+  
+  <tr>
+    <td><?php echo _("New"); ?></td>
+    <td></td>
+    <td>
       <input type="hidden" name="inputid" value="<?php echo $inputid; ?>">
+      <!-- Populate list of input processes availabble -->
       <select class="processSelect" name="type" id="type">
         <?php for ($i=1; $i<=count($processlist); $i++) { ?>
         <option value="<?php echo $i; ?>"><?php echo $processlist[$i][0]; ?></option>
         <?php } ?>
-      </select></td>
-      <td style='width:40%;'><div id="newProcessArgField"></div></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td></td>
-      <td><input type="submit" value="<?php echo _('add'); ?>" class="button06" id="submit_add" style="width:100px;"/></td>
-    </tr>
-  </table>
-  </form>
-  <?php //} ?>
+      </select>
+    </td>
+    <!-- cointainer for new process arguments -->
+    <td><div id="newProcessArgField"></div></td>
+    <td><button id="submit_add" class="btn btn-primary"/><?php echo _('Add'); ?></button></td>
+  </tr>
+  
+</table>
 
-  <form action="<?php echo $path; ?>input/process/reset" method="get">
-    <input type="hidden" name="inputid" value="<?php echo $inputid; ?>">
-    <input type="submit" value="<?php echo _('Reset process list?'); ?>" class="btn btn-danger"/>
-  </form>
-  <hr/>
-
-  <?php $name = 'noname'; ?>
-
-  <?php $message = "<h2>" . _("Are you sure you want to delete input: ") . $name . "?</h2>"; ?>
-
-  <form action="<?php echo $path; ?>input/delete" method="get">
-    <input type="hidden" name="id" value="<?php echo $inputid; ?>">
-    <input type="submit" value="<?php echo _('Delete input?'); ?>" class="btn btn-danger"/>
-  </form>
+<hr/>
 
 <script type="text/javascript">
 
 var path = "<?php echo $path; ?>";
+ 
+var inputid = <?php echo $inputid; ?>;
 
 var processlist = <?php echo json_encode($processlist); ?>;
 var feedlist = <?php echo json_encode($feedlist); ?>;
 var inputlist = <?php echo json_encode($inputlist); ?>;
 
-function delete_process(inputid, processid)
-{
-  $.ajax({
-    url: path+"input/process/delete.json?inputid="+inputid+"&processid="+processid,
-    dataType: 'json',
-    success: location.reload()
-  })
-}
+console.log(inputlist);
 
-function move_process(inputid, processid, upordown)
+for (i in inputlist)
 {
-  $.ajax({
-    url: path+"input/process/move.json?inputid="+inputid+"&processid="+processid+"&moveby="+upordown,
-    dataType: 'json',
-    success: location.reload()
-  })  
+  if (inputlist[i].id == inputid)
+  {
+    $("#inputname").html(inputlist[i].nodeid+":"+inputlist[i].name+" "+inputlist[i].description);
+    break;
+  }
 }
 
 function update_list()
 {
-  console.log(path+"input/process/list.json?inputid=<?php echo $inputid; ?>");
-  $.ajax({
-      url: path+"input/process/list.json?inputid=<?php echo $inputid; ?>",
-      dataType: 'json',
-      async: false,
-      success: function(data)
-      {
-        inputprocesslist = data;
-        console.log(inputprocesslist);
+  var inputprocesslist = input.processlist(inputid);
+  
+  var i = 0;
+  var out="";
 
-        var i = 0;
+  for (z in inputprocesslist)
+  {
+    i++; // process id
+    out += '<tr>';  
+    
+      // Move process up or down                           
+      out += '<td>';                   
+      if (i > 1) {
+        out += '<a class="move-process" href="#" title="<?php echo _("Move up"); ?>" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';           
+      } 
 
-        var out="<table class='table table-hover'><tr><th style='width:10%;'></th><th style='width:5%;'><?php echo _('Order'); ?></th><th style='width:35%;'><?php echo _('Process'); ?></th><th style='width:40%;'><?php echo _('Arg'); ?></th><th><?php echo _('Actions'); ?></th></tr>";
-
-        for (z in inputprocesslist)
-        {
-          i++;
-          out += '<tr>';                             
-          out += '<td>';                   
-          
-          if (i > 1) {
-            out += '<a href="#" title="<?php echo _('Move up'); ?>" onclick="move_process(<?php echo $inputid; ?>,'+i+',-1)" ><i class="icon-arrow-up"></i></a>';           
-          } 
-
-          if (i < inputprocesslist.length) {
-            out += '<a href="#" title="<?php echo _('Move up'); ?>" onclick="move_process(<?php echo $inputid; ?>,'+i+',1)" ><i class="icon-arrow-down"></i></a>';            
-          }
-
-          out += "</td><td>"+i+"</td><td>"+inputprocesslist[z][0]+"</td><td>"+inputprocesslist[z][1]+"</td>";
-          out += "<td>";
-          out += '<a href="#" title="<?php echo _('Delete'); ?>" onclick="delete_process(<?php echo $inputid; ?>,'+i+')" ><i class="icon-trash"></i></a>';
-          out += "</td>";
-        }
-        
-        if (inputprocesslist.length==0) {
-          out += "</table><table class='catlist'><tr class='d0' ><td><?php echo _('You have no processes defined'); ?></td></tr>";
-        }
-        out +="</table>";
-        $('#inputprocesslist').html(out);
+      if (i < inputprocesslist.length) {
+        out += '<a class="move-process" href="#" title="<?php echo _("Move up"); ?>" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';            
       }
-  });
+      out += '</td>';  
+
+      // Process name and argument
+      out += "<td>"+i+"</td><td>"+inputprocesslist[z][0]+"</td><td>"+inputprocesslist[z][1]+"</td>";
+      
+      // Delete process button (icon)
+      out += '<td><a href="#" class="delete-process" title="<?php echo _('Delete'); ?>" processid='+i+'><i class="icon-trash"></i></a></td>';
+    
+    out += '</tr>';  
+  }
+  
+  if (inputprocesslist.length==0) {
+    out += "<tr class='alert'><td></td><td></td><td><b><?php echo _('You have no processes defined'); ?></b></td><td></td><td></td></tr>";
+  }
+  
+  $('#inputprocesslist').html(out);
 }
   
 function generate_process_arg_box()
@@ -160,12 +146,19 @@ function generate_process_arg_box()
   update_process_arg_box();
 }
 
-<?php // Add or remove newfeedname text box (for new feed name) if Create New feed is selected ?>
+// Add or remove newfeedname text box (for new feed name) if Create New feed is selected
 function update_process_arg_box()
 {
   if ($('.processArgBox').val() == -1) {
     
-    $('#newProcessArgField').append('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ ><select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=500>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
+    $('#newProcessArgField').append('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ >');
+    
+    // Only show interval selector for timestore based feeds: datatype = 1
+    var selected_processid = $('select#type').val();
+    if (processlist[selected_processid][4] == 1) 
+    {
+      $('#newProcessArgField').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=500>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
+    }
   }
   else {
     $('#newfeedname').remove();
@@ -188,8 +181,6 @@ function process_add() {
       return false;
     }
   }
-
-
 
   $.ajax({
     url: path+"input/process/add.json"+datastring,
@@ -219,9 +210,19 @@ $('.processArgBox').change(function() {
   update_process_arg_box();
 });
 
+$('.table').on('click', '.delete-process', function() {
+  input.delete_process(inputid,$(this).attr('processid'));
+  location.reload();
+});
+
+$('.table').on('click', '.move-process', function() {
+  input.move_process(inputid,$(this).attr('processid'),$(this).attr('moveby'));
+  location.reload();
+});
+
 $(document).ready(function() {
   update_list();
   generate_process_arg_box();
-}); 
+});
 
 </script>
