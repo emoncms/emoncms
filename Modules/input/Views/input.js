@@ -32,7 +32,7 @@ var input = {
   'processlist':function(inputid)
   {
     var result = {};
-    $.ajax({ url: path+"input/process/list.json", data: "inputid="+inputid, async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"input/process/list.json", data: "inputid="+inputid, async: false, dataType: 'json', success: function(data){result = data;} });
     return result;
   },
 
@@ -46,7 +46,7 @@ var input = {
   'move_process':function(inputid,processid,moveby)
   {
     var result = {};
-    $.ajax({ url: path+"input/process/moveby.json", data: "inputid="+inputid+"&processid="+processid+"&moveby="+moveby, async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"input/process/move.json", data: "inputid="+inputid+"&processid="+processid+"&moveby="+moveby, async: false, success: function(data){result = data;} });
     return result;
   },
 
