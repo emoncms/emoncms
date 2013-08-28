@@ -124,16 +124,20 @@ class Update
     function u0004($apply)
     {
       $operations = array();
-      $result = $this->mysqli->query("SELECT id,timestore,engine FROM feeds");
-      while ($row = $result->fetch_object()) 
-      {
-        $id = $row->id;
-        $timestore = $row->timestore;
-        
-        if ($timestore==1 && $row->engine==0) $operations[] = "Set feed engine for feed $id to timestore";
-        if ($timestore && $apply) $this->mysqli->query("UPDATE feeds SET `engine`='1' WHERE `id`='$id'");
+      $result = $this->mysqli->query("Show columns from feeds like 'timestore'");
+      $row = $result->fetch_array();
+      
+      if ($row) {
+        $result = $this->mysqli->query("SELECT id,timestore,engine FROM feeds");
+        while ($row = $result->fetch_object()) 
+        {
+          $id = $row->id;
+          $timestore = $row->timestore;
+          
+          if ($timestore==1 && $row->engine==0) $operations[] = "Set feed engine for feed $id to timestore";
+          if ($timestore && $apply) $this->mysqli->query("UPDATE feeds SET `engine`='1' WHERE `id`='$id'");
+        }
       }
-
       return array(
         'title'=>"Field name change",
         'description'=>"Changed to more generic field name called engine rather than timestore specific",
