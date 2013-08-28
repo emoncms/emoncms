@@ -48,7 +48,8 @@ function admin_controller()
             $updates[] = $update->u0001($applychanges);
             $updates[] = $update->u0002($applychanges);
             $updates[] = $update->u0003($applychanges);
-
+            $updates[] = $update->u0004($applychanges);
+            
           }
 
           $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));

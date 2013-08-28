@@ -11,6 +11,8 @@
   
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
+
+require_once('Lib/enum.php');
   
 // Check if settings.php file exists
 if(file_exists(dirname(__FILE__)."/settings.php"))

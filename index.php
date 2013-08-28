@@ -84,7 +84,9 @@
   $output = controller($route->controller);
 
   // If no controller of this name - then try username
-  if (!$output['content'] && $public_profile_enabled)
+  // need to actually test if there isnt a controller rather than if no content 
+  // is returned from the controller.
+  if (!$output['content'] && $public_profile_enabled && $route->controller!='admin')
   { 
     $userid = $user->get_id($route->controller);
     if ($userid) {

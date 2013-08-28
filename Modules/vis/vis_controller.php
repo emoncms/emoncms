@@ -19,11 +19,8 @@
 
     $result = false;
 
-    require "Modules/feed/timestore_class.php";
-    $timestore = new Timestore($timestore_adminkey);
-
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$timestore);
+    $feed = new Feed($mysqli,$timestore_adminkey);
 
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);

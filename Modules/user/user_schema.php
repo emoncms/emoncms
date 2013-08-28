@@ -9,8 +9,6 @@ $schema['users'] = array(
     'apikey_write' => array('type' => 'varchar(64)'),
     'apikey_read' => array('type' => 'varchar(64)'),
     'lastlogin' => array('type' => 'datetime'),
-    'uphits' => array('type' => 'int(11)', 'Null'=>'NO'),
-    'dnhits' => array('type' => 'int(11)', 'Null'=>'NO'),
     'admin' => array('type' => 'int(11)', 'Null'=>'NO'),
 
     // User profile fields
@@ -19,8 +17,7 @@ $schema['users'] = array(
     'location'=>array('type'=>'varchar(30)', 'default'=>''),
     'timezone' => array('type' => 'int(11)', 'default'=>0),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
-    'bio' => array('type' => 'text', 'default'=>''),
-    'convert' => array('type' => 'int(11)', 'Null'=>'NO', 'default'=>0)
+    'bio' => array('type' => 'text', 'default'=>'')
 );
 
 $schema['rememberme'] = array(

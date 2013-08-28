@@ -12,20 +12,6 @@
   // no direct access
   defined('EMONCMS_EXEC') or die('Restricted access');
 
-  class ProcessArg {
-    const VALUE = 0;
-    const INPUTID = 1;
-    const FEEDID = 2;
-    const NONE = 3;
-  }
-
-  class DataType {
-    const UNDEFINED = 0;
-    const REALTIME = 1;
-    const DAILY = 2;
-    const HISTOGRAM = 3;
-  }
-
 function input_controller()
 {
   global $mysqli, $user, $session, $route;
@@ -36,11 +22,8 @@ function input_controller()
   global $feed, $timestore_adminkey;
   $result = false;
 
-  require "Modules/feed/timestore_class.php";
-  $timestore = new Timestore($timestore_adminkey);
-
   include "Modules/feed/feed_model.php";
-  $feed = new Feed($mysqli,$timestore);
+  $feed = new Feed($mysqli,$timestore_adminkey);
 
   require "Modules/input/input_model.php"; // 295
   $input = new Input($mysqli,$feed);
