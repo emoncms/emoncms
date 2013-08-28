@@ -94,9 +94,9 @@ Click on the *Admin* tab (top-right) and run database update.
 
 Click on feeds, check that everything is working as expected, if your monitoring equipment is still posting you should see data coming in as usual.
 
-## 3) Convert your feeds to timestore
+## 3) Convert existing feeds to timestore
 
-So far we've got everything in place for using timestore but the feeds are still stored as mysql tables. To convert the feeds over to timestore based feeds there are several steps that need to be taken, a module has been written specifically for managing the conversion of the feeds, to download and run it:
+So far we've got everything in place for using timestore but any existing feeds are still stored as mysql tables. To convert existing mysql feeds over to timestore a module has been written specifically for managing the conversion of the feeds, to download and run it:
 
     cd /var/www/emoncms/Modules
 
