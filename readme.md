@@ -92,7 +92,24 @@ Log in with the administrator account (first account created)
 
 Click on the *Admin* tab (top-right) and run database update.
 
-Click on feeds, check that everything is working as expected, if your monitoring equipment is still posting you should see data coming in as usual. 
+Click on feeds, check that everything is working as expected, if your monitoring equipment is still posting you should see data coming in as usual.
+
+## 3) Convert your feeds to timestore
+
+So far we've got everything in place for using timestore but the feeds are still stored as mysql tables. To convert the feeds over to timestore based feeds there are several steps that need to be taken, a module has been written specifically for managing the conversion of the feeds, to download and run it:
+
+    cd /var/www/emoncms/Modules
+
+    git clone https://github.com/emoncms/converttotimestore
+    
+Again log in with the administrator account (first account created)
+Click on the *Admin* tab (top-right) and run database update.
+
+Navigate to the convert to timestore menu item in the dropdown menu titled Extras and follow the steps outlined.
+    
+    
+## Need help?
+See timestore forum discussion: [http://openenergymonitor.org/emon/node/2651](http://openenergymonitor.org/emon/node/2651)
 
 ## Upgrading from version 4.0
 
