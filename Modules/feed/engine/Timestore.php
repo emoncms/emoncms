@@ -186,12 +186,12 @@ class Timestore
   public function get_feed_size($feedid)
   {
     $size = 272;
-    $size += filesize(str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
-    $size += filesize(str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
-    $size += filesize(str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
-    $size += filesize(str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
-    $size += filesize(str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
-    $size += filesize(str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
+    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
+    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
+    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
+    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
+    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
+    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
     return $size;
   }
   
