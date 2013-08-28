@@ -1,67 +1,90 @@
-# Emoncms v5.0
+# Transitionary emoncms: mysql to timestore
+This branch of emoncms is to be used when converting from an existing installation with mysql data feeds over to timestore based storage.
 
-See main site: http://emoncms.org
+Timestore is time-series database designed specifically for time-series data developed by Mike Stirling.
 
-Emoncms is an open source energy visualisation web application, the main feature's include
+[mikestirling.co.uk/redmine/projects/timestore](mikestirling.co.uk/redmine/projects/timestore)
 
-## Input processing
-Input processing allows for conversion and processing before storage, there are over 15 different input processes from simple calibration to power to kWh-per-day data, or histogram data.
+**Faster Query speeds**
+With timestore feed data query requests are about 10x faster (2700ms using mysql vs 210ms using timestore).
+*Note:* initial benchmarks show timestore request time to be around 45ms need to investigate the slightly slower performance may be on the emoncms end rather than timestore.
 
-## Visualisation
-Zoom through large datasets with flot and ajax powered level-of-detail amazing super powered graphs!
+**Reduced Disk use**
+Disk use is also much smaller, A test feed stored in an indexed mysql table used 170mb, stored using timestore which does not need an index and is based on a fixed time interval the same feed used 42mb of disk space. 
 
-## Visual dashboard editor
-Create dashboards out of a series of widgets and visualisations with a fully visual drag and drop dashboard editor.
+**In-built averaging**
+Timestore also has an additional benefit of using averaged layers which ensures that requested data is representative of the window of time each datapoint covers.
 
-## Open Source
-We believe open source is a better way of doing things and that our cloud based web applications should also be open source.
+## 1) Download, make and start timestore (using temporary for that includes installer)
 
-Emoncms is part of the OpenEnergyMonitor project. A project to build a fully open source hardware and software energy monitoring platform.
-
-With Emoncms you can have full control of your data, you can install it on your own server or you can use this hosted service.
-
-Emoncms is licenced under the GPL Affero licence (AGPL)
-
-# Developers
-Emoncms is developed and has had contributions from the following people.
-
-- Trystan Lea		https://github.com/trystanlea (principal maintainer)
-- Ildefonso Martínez	https://github.com/ildemartinez
-- Matthew Wire		https://github.com/mattwire
-- Baptiste Gaultier	https://github.com/bgaultier
-- Paul Allen		https://github.com/MarsFlyer
-- James Moore		https://github.com/foozmeat		
-- Lloyda		https://github.com/lloyda
-- JSidrach		https://github.com/JSidrach
-- Jramer		https://github.com/jramer
-- Drsdre		https://github.com/drsdre
-- Dexa187		https://github.com/dexa187
-- Carlos Alonso Gabizó
-
-## Upgrading from version 4.0 (Modular emoncms)
-
-Download the latest version either by clicking on the zip icon in github or using git if you used git clone:
-
-    $ git pull origin master
+    cd /home/pi
+    git clone https://github.com/TrystanLea/timestore
+    cd timestore
+    sudo sh install
     
-Make a copy of your current settings.php file and create a new settings.php file from default.settings.php. Enter your emoncms database settings.
-Add the line:
- 
-    $updatelogin = true;
+**Note the adminkey** at the end as you will want to paste this into the emoncms settings.php file.    
+
+The installer will start timestore, you can check that its running with:
+
+    sudo /etc/init.d/timestore status
     
-to settings.php to enable a special database update only session, be sure to remove this line from settings.php once complete.
+Start, stop and restart it with:
 
-In your internet browser goto open the admin/view page:
+    sudo /etc/init.d/timestore start
+    sudo /etc/init.d/timestore stop
+    sudo /etc/init.d/timestore restart
 
-    http://localhost/emoncms/admin/view
-    
-Click on the database update and check button to launch the database update script. 
-You should now see a list of changes to be performed on your existing emoncms database.
-You may at this point want to backup your input and users table before applying the changes.
-Once your happy with the changes click on apply changes to automatically apply all changes.
+## 2) Download Transitionary Timestore emoncms branch
 
-That should be it.
+The transitionary branch keeps a lot of things like input processing and visualisations the same, just allowing for swapping out mysql for timestore for the realtime feed datatype only. It use both types of feed storage in parallel. This makes it easy to inspect the feed before conversion to work out the best interval rate to convert the feed too and then once the conversion is complete emoncms will automatically use the timestore feed data instead of the mysql data. There is also an interface for selecting the timestore interval to convert the feed to.
 
-You may need to clear your cache if you find some of the interfaces buggy/missing.
+In the /var/www/ folder:
 
+    cd /var/www
+
+First rename your current emoncms installation to something like emoncms_tmp so that you have a backup copy of your current install.
+
+Download the transitionary version, run:
+
+    git clone -b emoncmsorg https://github.com/emoncms/emoncms.git
+
+Create settings.php from default.settings.php
+
+    cp /var/www/emoncms/default.settings.php /var/www/emoncms/settings.php
+
+Enter your mysql database settings and timestore adminkey as copied above in to settings.php
+
+Launch emoncms in your browser:
+
+    http://IP-ADDRESS/emoncms
+
+Log in with the administrator account (first account created)
+
+Click on the *Admin* tab (top-right) and run database update.
+
+Click on feeds, check that everything is working as expected, if your monitoring equipment is still posting you should see data coming in as usual. 
+
+**Note:** You will notice at this point that there are two new fields *interval* and *Size*. You can populate these helper values by using a script found in the github repo emoncms/usefulscripts (further details below for conversion step), run the script usefulscripts/feedsize/feedstats.php from terminal, enter your mysql settings in the script before running it. 
+
+Click on the link to the conversion page. Follow the guide to select timestore interval rates for each of your realtime feeds. 
+
+Once complete click submit.
+
+## 3) Run conversion script 
+
+Download the emoncms *usefulscripts* folder, its best to place this in a non-web accessible directory rather than /var/www.
+
+    git clone https://github.com/emoncms/usefulscripts.git
+
+Open the export script located in *usefulscripts/convert\_to\_timestore/export.php* and enter in your mysql username, password and database name. Enter also your timestore adminkey.
+
+Start the conversion! run export.php from the command line using:
+
+    php export.php
+
+Once complete, check your emoncms feeds, historical data should now load much faster and data should still be coming in as normal.
+
+Your mysql feed data is still intact, before deleting it make sure your happy with the conversion interval of your newly converted timestore feeds.
+
+See timestore forum discussion: http://openenergymonitor.org/emon/node/2651
 

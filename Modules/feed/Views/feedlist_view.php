@@ -17,12 +17,16 @@ input[type="text"] {
 
 <div class="container">
     <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
+
     <div id="table"></div>
 
     <div id="nofeeds" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
         <p><?php echo _('Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
     </div>
+    
+    <hr>
+    <button id="refreshfeedsize" class="btn btn-small" >Refresh feed size <i class="icon-refresh" ></i></button>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
@@ -41,6 +45,7 @@ input[type="text"] {
 
 <script>
 
+
   var path = "<?php echo $path; ?>";
 
   // Extemd table library field types
@@ -53,7 +58,10 @@ input[type="text"] {
     'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
     'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"text"},
     'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
+    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE']},
     'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    'size':{'title':"<?php echo _('Size'); ?>", 'type':"fixed"},
+    
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
 
@@ -112,6 +120,10 @@ input[type="text"] {
     update();
 
     $('#myModal').modal('hide');
+  });
+  
+  $("#refreshfeedsize").click(function(){
+    $.ajax({ url: path+"feed/updatesize.json", success: function(data){update();} });
   });
 
 </script>

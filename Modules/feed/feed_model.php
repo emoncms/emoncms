@@ -18,14 +18,28 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class Feed
 {
     private $mysqli;
-
-    public function __construct($mysqli)
+    private $timestore;
+    private $histogram;
+    
+    public function __construct($mysqli,$timestore_adminkey)
     {
         $this->mysqli = $mysqli;
+        
+        // Load different storage engines
+
+        require "Modules/feed/engine/MysqlTimeSeries.php";
+        $this->mysqltimeseries = new MysqlTimeSeries($mysqli);
+        
+        require "Modules/feed/engine/Timestore.php";
+        $this->timestore = new Timestore($timestore_adminkey);
+
+        require "Modules/feed/engine/Histogram.php";
+        $this->histogram = new Histogram($mysqli);
     }
 
-    public function create($userid,$name,$datatype)
+    public function create($userid,$name,$datatype,$newfeedinterval)
     {
+        $newfeedinterval = (int) $newfeedinterval;
         $userid = intval($userid);
         $name = preg_replace('/[^\w\s-]/','',$name);
         $datatype = intval($datatype);
@@ -33,27 +47,19 @@ class Feed
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
+        
+        if ($datatype == 1) $engine = Engine::TIMESTORE; else $engine = Engine::MYSQL;
 
-        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public) VALUES ('$userid','$name','$datatype','false')");
+        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype','false','$engine')");
         $feedid = $this->mysqli->insert_id;
 
         if ($feedid>0) 
         {
           $feedname = "feed_".$feedid;
 
-          if ($datatype!=3) {										
-            $result = $this->mysqli->query(
-            "CREATE TABLE $feedname (
-	      time INT UNSIGNED, data float,
-            INDEX ( `time` ))");
-          }
-
-          if ($datatype==3) {										
-            $result = $this->mysqli->query(										
-            "CREATE TABLE $feedname (
-	      time INT UNSIGNED, data float, data2 float,
-            INDEX ( `time` ))");
-          }
+          if ($datatype==1)     $this->timestore->create($feedid,$newfeedinterval);
+          elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
+          elseif ($datatype==3) $this->histogram->create($feedid);
 
           return array('success'=>true, 'feedid'=>$feedid);										
         } else return array('success'=>false);
@@ -129,7 +135,7 @@ class Feed
   {
     $userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE userid = $userid");
+    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
     if (!$result) return 0;
     $feeds = array();
     while ($row = $result->fetch_object()) 
@@ -137,6 +143,15 @@ class Feed
       // $row->size = get_feedtable_size($row->id);
       $row->time = strtotime($row->time)*1000;
       $row->tag = str_replace(" ","_",$row->tag);
+
+      if ($row->size<1024*100) {
+        $row->size = number_format($row->size/1024,1)."kb";
+      } elseif ($row->size<1024*1024) {
+        $row->size = round($row->size/1024)."kb";
+      } elseif ($row->size>=1024*1024) {
+        $row->size = round($row->size/(1024*1024))."Mb";
+      }
+
       $row->public = (bool) $row->public;
       $feeds[] = $row; 
     }
@@ -154,8 +169,8 @@ class Feed
     { 
       // $row->size = get_feedtable_size($row->id);
       // $row->time = strtotime($row->time)*1000;
-      //$row->tag = str_replace(" ","_",$row->tag);
-      $feeds[] = $row; 
+      // $row->tag = str_replace(" ","_",$row->tag);
+      $feeds[] = $row;
     }
     return $feeds;
   }
@@ -201,11 +216,14 @@ class Feed
   public function get_field($id,$field)
   {
     $id = intval($id);
-    $field = preg_replace('/[^\w\s-]/','',$field);
 
-    $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
-    $row = $result->fetch_array();
-    if ($row) return $row[0]; else return 0;
+    if ($field!=NULL) {
+      $field = preg_replace('/[^\w\s-]/','',$field);
+      $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
+      $row = $result->fetch_array();
+      if ($row) return $row[0]; else return 0;
+    }
+    else return false;
   }
 
   public function get_timevalue($id)
@@ -233,6 +251,7 @@ class Feed
     if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
     if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
     if (isset($fields->datatype)) $array[] = "`datatype` = '".intval($fields->datatype)."'";
+
     if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
     if (isset($fields->time)) {
       $updatetime = date("Y-n-j H:i:s", intval($fields->time)); 
@@ -266,10 +285,11 @@ class Feed
     $feedtime = intval($feedtime);
     $value = floatval($value);
 
-    $feedname = "feed_".trim($feedid)."";
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $row = $qresult->fetch_array();
 
-    // a. Insert data value in feed table
-    $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
+    if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->insert($feedid,$feedtime,$value);
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
@@ -292,18 +312,13 @@ class Feed
     $updatetime = intval($updatetime);
     $feedtime = intval($feedtime);
     $value = floatval($value);
-             
-    $feedname = "feed_".trim($feedid)."";
 
-    // a. update or insert data value in feed table
-    $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $row = $qresult->fetch_array();
 
-    if (!$result) return $value;
-
-    $row = $result->fetch_array();
-    if ($row) $this->mysqli->query("UPDATE $feedname SET data = '$value', time = '$feedtime' WHERE time = '$feedtime'");
-    if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");}
-
+    if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->update($feedid,$feedtime,$value);
+    
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
@@ -317,266 +332,91 @@ class Feed
     
     return $value;
   }
-
-  public function delete_data($feedid,$start,$end)
+  
+  public function get_data($feedid,$start,$end)
   {
-    $feedid = intval($feedid);
-    $start = intval($start);
-    $end = intval($end);
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $row = $qresult->fetch_array();
 
-    $feedname = "feed_".trim($feedid)."";
-    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end' LIMIT 1");
+    if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
+    if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end);
   }
 
-  public function deletedatarange($feedid,$start,$end)
-  {
-    $feedid = intval($feedid);
-    $start = intval($start/1000.0);
-    $end = intval($end/1000.0);
-
-    $feedname = "feed_".trim($feedid)."";
-    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
-
-    return true;
-  }
-
-  public function get_data($feedid,$start,$end,$dp)
-  {
-    $feedid = intval($feedid);
-    $start = floatval($start);
-    $end = floatval($end);
-    $dp = intval($dp);
-
-    if ($end == 0) $end = time()*1000;
-
-    $feedname = "feed_".trim($feedid)."";
-    $start = $start/1000; $end = $end/1000;
-
-    $data = array();
-    $range = $end - $start;
-    if ($range > 180000 && $dp > 0) // 50 hours
-    {
-      $td = $range / $dp;
-      $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? LIMIT 1");
-      $t = $start; $tb = 0;
-      $stmt->bind_param("ii", $t, $tb);
-      $stmt->bind_result($dataTime, $dataValue);
-      for ($i=0; $i<$dp; $i++)
-      {
-        $tb = $start + intval(($i+1)*$td);
-        $stmt->execute();
-        if ($stmt->fetch()) {
-          if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
-            $time = $dataTime * 1000;
-            $data[] = array($time, $dataValue);
-          }
-        }
-        $t = $tb;
-      }
-    } else {
-      if ($range > 5000 && $dp > 0)
-      {
-        $td = intval($range / $dp);
-        $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
-          " FROM $feedname WHERE time BETWEEN $start AND $end".
-          " GROUP BY 1";
-      } else {
-        $td = 1;
-        $sql = "SELECT time, data FROM $feedname".
-          " WHERE time BETWEEN $start AND $end ORDER BY time DESC";
-      }
-     
-      $result = $this->mysqli->query($sql);
-      if($result) {
-        while($row = $result->fetch_array()) {
-          $dataValue = $row['data'];
-          if ($dataValue!=NULL) { // Remove this to show white space gaps in graph      
-            $time = $row['time'] * 1000 * $td;  
-            $data[] = array($time , $dataValue); 
-          }
-        }
-      }
-    }
-
-    return $data;
-  }
-
-  public function get_histogram_data($feedid,$start,$end)
-  {
-    $feedid = intval($feedid);
-    $start = intval($start);
-    $end = intval($end);
-
-    if ($end == 0) $end = time()*1000;
-    $feedname = "feed_".trim($feedid)."";
-    $start = $start/1000; $end = $end/1000;
-    $data = array();
-
-    // Histogram has an extra dimension so a sum and group by needs to be used.
-    $result = $this->mysqli->query("select data2, sum(data) as kWh from $feedname WHERE time>='$start' AND time<'$end' group by data2 order by data2 Asc"); 
-	
-    $data = array();                                      // create an array for them
-    while($row = $result->fetch_array())                 // for all the new lines
-    {
-      $dataValue = $row['kWh'];                           // get the datavalue
-      $data2 = $row['data2'];            		  // and the instant watts
-      $data[] = array($data2 , $dataValue);               // add time and data to the array
-    }
-    return $data;
-  }
-
-  public function get_kwhd_atpower($feedid, $min, $max)
-  {
-    $feedid = intval($feedid);
-    $min = intval($min);
-    $max = intval($max);
-
-    $feedname = "feed_".trim($feedid)."";
-    $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
-
-    $data = array();
-    while($row = $result->fetch_array()) $data[] = array($row['time']* 1000 , $row['kWh']); 
-
-    return $data;
-  }
-
-  public function get_kwhd_atpowers($feedid, $points)
-  {
-    $feedid = intval($feedid);
-    $feedname = "feed_".trim($feedid)."";
-
-    $points = json_decode(stripslashes($points));
-    
-    $data = array();
-
-    for ($i=0; $i<count($points)-1; $i++)
-    {
-      $min = intval($points[$i]);
-      $max = intval($points[$i+1]);
-
-      $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
-
-      while($row = $result->fetch_array()) 
-      { 
-        if (!isset($data[$row['time']])) {
-          $data[$row['time']] = array(0,0,0,0,0);
-          $data[$row['time']][0] = (int)$row['time']; 
-        }
-        $data[$row['time']][$i+1] = (float)$row['kWh']; 
-      }
-    }
-    $out = array();
-    foreach ($data as $item) $out[] = $item;
-
-    return $out;
-  }
-
-  /*
-
-  Feed table size
-
-  */
-
-  public function get_feedtable_size($feedid)
-  {
-    $feedid = intval($feedid);
-
-    $feedname = "feed_".$feedid;
-    $result = $this->mysqli->query("SHOW TABLE STATUS LIKE '$feedname'");
-    $row = $result->fetch_array();
-    $tablesize = $row['Data_length']+$row['Index_length'];
-    return $tablesize;
-  }
-
-  public function get_user_feeds_size($userid)
-  {
-    $userid = intval($userid);
-
-    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid'");
-    $total = 0;
-    if ($result) {
-      while ($row = $result->fetch_array()) {
-        $total += get_feedtable_size($row['id']);
-      }
-    }
-
-    return $total;
-  }
-
-  /*
-
-  Feed wastebin, restore and permanent deletion
-
-  */
-
+  
   public function delete($feedid)
   {
     $feedid = intval($feedid);
+    
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $row = $qresult->fetch_array();
+
+    if ($row['engine']==Engine::TIMESTORE) return $this->timestore->delete($feedid);
+    if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->delete($feedid);
+    
     $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid'");
-    $this->mysqli->query("DROP TABLE feed_".$feedid);
   }
-
-  public function export($feedid,$start)
+  
+  public function update_user_feeds_size($userid)
   {
-      // Feed id and start time of feed to export
-      $feedid = intval($feedid);
-      $start = intval($start);
-
-      // Open database etc here
-      // Extend timeout limit from 30s to 2mins
-      set_time_limit (120);
-
-      // Regulate mysql and apache load.
-      $block_size = 1000;
-      $sleep = 20000;
-
-      $feedname = "feed_".trim($feedid)."";
-      $fileName = $feedname.'.csv';
-
-      // There is no need for the browser to cache the output
-      header("Cache-Control: no-cache, no-store, must-revalidate");
-
-      // Tell the browser to handle output as a csv file to be downloaded
-      header('Content-Description: File Transfer');
-      header("Content-type: text/csv");
-      header("Content-Disposition: attachment; filename={$fileName}");
-
-      header("Expires: 0");
-      header("Pragma: no-cache");
-
-      // Write to output stream
-      $fh = @fopen( 'php://output', 'w' );
-
-      // Load new feed blocks until there is no more data 
-      $moredata_available = 1;
-      while ($moredata_available)
-      {
-          // 1) Load a block
-          $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time>$start  
-          ORDER BY time Asc Limit $block_size");
-
-          $moredata_available = 0;
-          while($row = $result->fetch_array()) 
-          {
-            
-              // Write block as csv to output stream
-              if (!isset($row['data2'])) {
-                fputcsv($fh, array($row['time'],$row['data']));
-              } else {
-                fputcsv($fh, array($row['time'],$row['data'],$row['data2']));
-              }
-
-              // Set new start time so that we read the next block along
-              $start = $row['time'];
-              $moredata_available = 1;
-          }
-          // 2) Sleep for a bit
-          usleep($sleep);
-      }
-
-      fclose($fh);
-      exit;
+    $total = 0;
+    $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE `userid` = '$userid'");
+    while ($row = $result->fetch_array())
+    {
+      $size = 0;
+      $feedid = $row['id'];
+      if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
+      if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
+      $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
+      $total += $size;
+    }
+    return $total;
+  }
+  
+  // MysqlTimeSeries specific functions that we need to make available to the controller
+  
+  public function mysqltimeseries_export($feedid,$start) {
+    return $this->mysqltimeseries->export($feedid,$start);
+  }
+  
+  public function mysqltimeseries_delete_data_point($feedid,$time) {
+    return $this->mysqltimeseries->delete_data_point($feedid,$time);
+  }
+  
+  public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
+    return $this->mysqltimeseries->delete_data_range($feedid,$start,$end);
+  }
+  
+  // Timestore specific functions that we need to make available to the controller
+  
+  public function timestore_export($feedid,$start,$layer) {
+    return $this->timestore->export($feedid,$start,$layer);
+  }
+  
+  public function timestore_export_meta($feedid) {
+    return $this->timestore->export_meta($feedid);
   }
 
+  public function timestore_get_meta($feedid) {
+    return $this->timestore->get_meta($feedid);
+  }
+  
+  public function timestore_scale_range($feedid,$start,$end,$value) {
+    return $this->timestore->scale_range($feedid,$start,$end,$value);
+  }
+  
+  // Histogram specific functions that we need to make available to the controller
+  
+  public function histogram_get_power_vs_kwh($feedid,$start,$end) {
+    return $this->histogram->get_power_vs_kwh($feedid,$start,$end);
+  }
+  
+  public function histogram_get_kwhd_atpower($feedid, $min, $max) {
+    return $this->histogram->get_kwhd_atpower($feedid, $min, $max);
+  }
+  
+  public function histogram_get_kwhd_atpowers($feedid, $points) {
+    return $this->histogram->get_kwhd_atpowers($feedid, $points);
+  }
+  
 }
 

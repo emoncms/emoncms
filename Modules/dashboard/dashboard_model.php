@@ -28,7 +28,7 @@ class Dashboard
     public function create($userid)
     {
       $userid = (int) $userid;
-      $this->mysqli->query("INSERT INTO dashboard (`userid`) VALUES ('$userid')");
+      $this->mysqli->query("INSERT INTO dashboard (`userid`,`alias`) VALUES ('$userid','')");
       return $this->mysqli->insert_id;
     }
 

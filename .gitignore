@@ -17,3 +17,5 @@ Modules/rss
 Modules/adminusers
 Modules/feedconvert
 Modules/report
+Modules/notify
+Modules/converttotimestore

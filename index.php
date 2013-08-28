@@ -12,6 +12,8 @@
  
   */
 
+  $ltime = microtime(true);
+
   define('EMONCMS_EXEC', 1);
 
   // 1) Load settings and core scripts
@@ -74,11 +76,17 @@
     }
   }
 
+  if ($route->controller == 'api') $route->controller = 'input';
+  if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json'; 
+  if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json'; 
+
   // 6) Load the main page controller
   $output = controller($route->controller);
 
   // If no controller of this name - then try username
-  if (!$output['content'] && $public_profile_enabled)
+  // need to actually test if there isnt a controller rather than if no content 
+  // is returned from the controller.
+  if (!$output['content'] && $public_profile_enabled && $route->controller!='admin')
   { 
     $userid = $user->get_id($route->controller);
     if ($userid) {
@@ -112,3 +120,5 @@
     if ($embed == 0) print view("Theme/theme.php", $output);
     if ($embed == 1) print view("Theme/embed.php", $output);
   }
+
+  $ltime = microtime(true) - $ltime;

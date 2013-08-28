@@ -11,6 +11,7 @@
   $server   = "localhost";
   $database = "";
 
+  $timestore_adminkey = "";
   /*
 
   Default router settings - in absence of stated path
