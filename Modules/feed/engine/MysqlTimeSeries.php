@@ -27,7 +27,7 @@ class MysqlTimeSeries
     $result = $this->mysqli->query(
     "CREATE TABLE $feedname (
   time INT UNSIGNED, data float,
-    INDEX ( `time` ))");
+    INDEX ( `time` )) ENGINE=MYISAM");
   }
   
   public function insert($feedid,$time,$value)

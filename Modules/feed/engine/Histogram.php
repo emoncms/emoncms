@@ -27,7 +27,7 @@ class Histogram
     $result = $this->mysqli->query(										
     "CREATE TABLE $feedname (
   time INT UNSIGNED, data float, data2 float,
-    INDEX ( `time` ))");
+    INDEX ( `time` )) ENGINE=MYISAM");
   }
 
   /**

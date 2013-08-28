@@ -152,7 +152,7 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, uphits, dnhits, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 , 0, 0 );")) {
+        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
         	return array('success'=>false, 'message'=>_("Error creating user"));
         }
         
@@ -424,17 +424,5 @@ class User
         $apikey = md5(uniqid(mt_rand(), true));
         $this->mysqli->query("UPDATE users SET apikey_write = '$apikey' WHERE id='$userid'");
         return $apikey;
-    }
-
-    public function inc_uphits($userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("update users SET uphits = uphits + 1 WHERE id='$userid'");
-    }
-
-    public function inc_dnhits($userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("update users SET dnhits = dnhits + 1 WHERE id='$userid'");
     }
 }
