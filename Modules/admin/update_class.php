@@ -1,18 +1,5 @@
 <?php
 
-class ProcessArg {
-  const VALUE = 0;
-  const INPUTID = 1;
-  const FEEDID = 2;
-  const NONE = 3;
-}
-
-class DataType {
-  const UNDEFINED = 0;
-  const REALTIME = 1;
-  const DAILY = 2;
-  const HISTOGRAM = 3;
-}
 
 class Update
 {
@@ -130,6 +117,30 @@ class Update
       return array(
         'title'=>"Username format change",
         'description'=>"All . characters have been removed from usernames as the . character conflicts with the new routing implementation where emoncms thinks that the part after the . is the format the page should be in.",
+        'operations'=>$operations
+      );
+    }
+    
+    function u0004($apply)
+    {
+      $operations = array();
+      $result = $this->mysqli->query("Show columns from feeds like 'timestore'");
+      $row = $result->fetch_array();
+      
+      if ($row) {
+        $result = $this->mysqli->query("SELECT id,timestore,engine FROM feeds");
+        while ($row = $result->fetch_object()) 
+        {
+          $id = $row->id;
+          $timestore = $row->timestore;
+          
+          if ($timestore==1 && $row->engine==0) $operations[] = "Set feed engine for feed $id to timestore";
+          if ($timestore && $apply) $this->mysqli->query("UPDATE feeds SET `engine`='1' WHERE `id`='$id'");
+        }
+      }
+      return array(
+        'title'=>"Field name change",
+        'description'=>"Changed to more generic field name called engine rather than timestore specific",
         'operations'=>$operations
       );
     }

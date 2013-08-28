@@ -54,6 +54,11 @@
     <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
     <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
     </div>
+    
+    <div style="width:100% height:50px; background-color:#ddd; padding:10px; margin:10px;">
+    Multiply data in window by: <input type="text" id="multiplyvalue" style="width:150px;" value="" />
+    <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
+    </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
   <div class="modal-header">
@@ -130,6 +135,20 @@
     $.ajax({                                      
       url: path+'feed/update.json',                         
       data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue,
+      dataType: 'json',
+      async: false,                      
+      success: function() {} 
+    });
+    vis_feed_data();
+  });
+  
+  $('#multiply-submit').click(function () {
+
+    var multiplyvalue = $("#multiplyvalue").val();
+    
+    $.ajax({                                      
+      url: path+'feed/scalerange.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&value="+multiplyvalue,
       dataType: 'json',
       async: false,                      
       success: function() {} 

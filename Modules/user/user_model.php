@@ -152,7 +152,7 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, uphits, dnhits, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 , 0, 0 );")) {
+        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
         	return array('success'=>false, 'message'=>_("Error creating user"));
         }
         
@@ -290,6 +290,14 @@ class User
     // Get by userid methods
     //---------------------------------------------------------------------------------------
 
+    public function get_convert_status($userid)
+    {
+        $userid = intval($userid);
+        $result = $this->mysqli->query("SELECT `convert` FROM users WHERE id = '$userid';");
+        $row = $result->fetch_array();
+        return array('convert'=>(int)$row['convert']);
+    }
+
     public function get_username($userid)
     {
         $userid = intval($userid);
@@ -355,6 +363,13 @@ class User
     // Set by id methods
     //---------------------------------------------------------------------------------------
 
+    public function set_convert_status($userid)
+    {
+        $userid = intval($userid);
+        $this->mysqli->query("UPDATE users SET `convert` = '1' WHERE id='$userid'");
+        return array('convert'=>1);
+    }
+
     public function set_user_lang($userid, $lang)
     {
         $this->mysqli->query("UPDATE users SET lang = '$lang' WHERE id='$userid'");
@@ -409,17 +424,5 @@ class User
         $apikey = md5(uniqid(mt_rand(), true));
         $this->mysqli->query("UPDATE users SET apikey_write = '$apikey' WHERE id='$userid'");
         return $apikey;
-    }
-
-    public function inc_uphits($userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("update users SET uphits = uphits + 1 WHERE id='$userid'");
-    }
-
-    public function inc_dnhits($userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("update users SET dnhits = dnhits + 1 WHERE id='$userid'");
     }
 }
