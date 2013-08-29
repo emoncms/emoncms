@@ -350,10 +350,10 @@ class Feed
     $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
     $row = $qresult->fetch_array();
 
-    if ($row['engine']==Engine::TIMESTORE) return $this->timestore->delete($feedid);
-    if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->delete($feedid);
+    if ($row['engine']==Engine::TIMESTORE) $this->timestore->delete($feedid);
+    if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->delete($feedid);
     
-    $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid'");
+    $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
   }
   
   public function update_user_feeds_size($userid)
