@@ -317,7 +317,7 @@ class Feed
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
-    if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->update($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
     
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
