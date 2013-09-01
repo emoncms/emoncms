@@ -46,7 +46,9 @@ class MysqlTimeSeries
     $row = $result->fetch_array();
     
     if ($row) $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE time = '$time'");
-    if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','0')");}
+    if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");}
+    
+    return $value;
   }
   
   public function get_data($feedid,$start,$end)
