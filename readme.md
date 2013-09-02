@@ -54,7 +54,7 @@ Timestore also has an additional benefit of using averaged layers which ensures 
 
 If the adminkey could not be found, it may be that timestore failed to start:
 
-To check if timestore is running with:
+To check if timestore is running type:
 
     sudo /etc/init.d/timestore status
     
