@@ -24,6 +24,8 @@ class MysqlTimeSeries
   */
   public function create($feedid)
   {
+    $feedname = "feed_".trim($feedid)."";
+    
     $result = $this->mysqli->query(
     "CREATE TABLE $feedname (
   time INT UNSIGNED, data float,
