@@ -53,13 +53,13 @@ class MysqlTimeSeries
     return $value;
   }
   
-  public function get_data($feedid,$start,$end)
+  public function get_data($feedid,$start,$end,$dp)
   {
     //echo $feedid;
+    $dp = intval($dp);
     $feedid = intval($feedid);
     $start = floatval($start);
     $end = floatval($end);
-    $dp = 800;
 
     if ($end == 0) $end = time()*1000;
 
