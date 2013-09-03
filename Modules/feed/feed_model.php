@@ -318,9 +318,9 @@ class Feed
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($row['engine']==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
-    
+
     // b. Update feeds table
-    $updatetime = date("Y-n-j H:i:s", $updatetime); 
+    $updatetime = date("Y-n-j H:i:s", $updatetime);
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
     //Check feed event if event module is installed
@@ -333,13 +333,13 @@ class Feed
     return $value;
   }
   
-  public function get_data($feedid,$start,$end)
+  public function get_data($feedid,$start,$end,$dp)
   {
     $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
-    if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end);
+    if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
   }
 
   
