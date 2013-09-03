@@ -52,7 +52,9 @@ Timestore also has an additional benefit of using averaged layers which ensures 
     
 **Note the adminkey** at the end as you will want to paste this into the emoncms settings.php file.
 
-The installer will start timestore, you can check that its running with:
+If the adminkey could not be found, it may be that timestore failed to start:
+
+To check if timestore is running type:
 
     sudo /etc/init.d/timestore status
     
@@ -61,8 +63,17 @@ Start, stop and restart it with:
     sudo /etc/init.d/timestore start
     sudo /etc/init.d/timestore stop
     sudo /etc/init.d/timestore restart
+    
+To read the adminkey manually type:
+
+    cat /var/lib/timestore/adminkey.txt
+    
 
 ## 2) Install (git clone) or upgrade (git pull) emoncms
+
+First make sure you have php5-curl installed:
+
+    sudo apt-get install php5-curl
 
 In the /var/www/ folder:
 
