@@ -145,4 +145,8 @@ Emoncms is developed and has had contributions from the following people.
 - Drsdre		https://github.com/drsdre
 - Dexa187		https://github.com/dexa187
 - Carlos Alonso Gabizó
+- PlaneteDomo   https://github.com/PlaneteDomo
+- Paul Reed     https://github.com/Paul-Reed
+- thunderace    https://github.com/thunderace
+- pacaj2am      https://github.com/pacaj2am
 
