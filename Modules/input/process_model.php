@@ -36,7 +36,7 @@ class Process
       // Data type
 
       $list[1] = array(
-        _("Log to feed (TIMESTORE)"),
+        _("Log to feed"),
         ProcessArg::FEEDID,
         "log_to_feed",
         1,

@@ -21,8 +21,15 @@ class Feed
     private $timestore;
     private $histogram;
     
+    private $default_engine = Engine::PHPTIMESERIES;
+    
     public function __construct($mysqli,$timestore_adminkey)
     {
+        // Not the best way to bring the variable in but a quick fix for now
+        // while the feature is tested.
+        global $default_engine;
+        if (isset($default_engine)) $this->default_engine = $default_engine;
+        
         $this->mysqli = $mysqli;
         
         // Load different storage engines
@@ -32,9 +39,12 @@ class Feed
         
         require "Modules/feed/engine/Timestore.php";
         $this->timestore = new Timestore($timestore_adminkey);
-
+       
         require "Modules/feed/engine/Histogram.php";
         $this->histogram = new Histogram($mysqli);
+        
+        require "Modules/feed/engine/PHPTimeSeries.php";
+        $this->phptimeseries = new PHPTimeSeries();
     }
 
     public function create($userid,$name,$datatype,$newfeedinterval)
@@ -48,7 +58,7 @@ class Feed
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
         
-        if ($datatype == 1) $engine = Engine::TIMESTORE; else $engine = Engine::MYSQL;
+        if ($datatype == 1) $engine = $this->default_engine; else $engine = Engine::MYSQL;
 
         $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype','false','$engine')");
         $feedid = $this->mysqli->insert_id;
@@ -57,10 +67,15 @@ class Feed
         {
           $feedname = "feed_".$feedid;
 
-          if ($datatype==1)     $this->timestore->create($feedid,$newfeedinterval);
+          if ($datatype==1) {
+            if ($this->default_engine == Engine::TIMESTORE) $this->timestore->create($feedid,$newfeedinterval);
+            if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
+            if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
+          }
           elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
           elseif ($datatype==3) $this->histogram->create($feedid);
-
+        
+          
           return array('success'=>true, 'feedid'=>$feedid);										
         } else return array('success'=>false);
   }
@@ -290,6 +305,7 @@ class Feed
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->insert($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
@@ -318,6 +334,7 @@ class Feed
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($row['engine']==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime);
@@ -340,6 +357,7 @@ class Feed
 
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
     if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
+    if ($row['engine']==Engine::PHPTIMESERIES) return $this->phptimeseries->get_data($feedid,$start,$end,$dp);
   }
 
   
@@ -352,7 +370,8 @@ class Feed
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->delete($feedid);
     if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->delete($feedid);
-    
+    if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->delete($feedid);
+        
     $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
   }
   
@@ -366,6 +385,7 @@ class Feed
       $feedid = $row['id'];
       if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
       if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
+      if ($row['engine']==Engine::PHPTIMESERIES) $size = $this->phptimeseries->get_feed_size($feedid);
       $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
       $total += $size;
     }

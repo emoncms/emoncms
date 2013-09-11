@@ -20,6 +20,8 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     // Load settigs.php
     require_once('settings.php');
     
+    if (!isset($default_engine)) $default_engine = Engine::TIMESTORE;
+    
     // Set display errors
     if (isset($display_errors) && ($display_errors)) {
         error_reporting(E_ALL);      

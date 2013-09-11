@@ -11,7 +11,19 @@
   $server   = "localhost";
   $database = "";
 
+  // By setting the default engine to MYSQL, realtime feeds will be created as MYSQL feeds providing full backwards compatibility
+  
+  // PHPTIMESERIES is another feed engine option that might be of interest, faster than MYSQL but maintaining the data in the same
+  // form as mysql data is stored.
+  
+  // TIMESTORE is the default engine and requires installation of timestore, timestore is the fastest engine and also has other advantages like in built averaging.
+  
+  $default_engine = Engine::TIMESTORE;
+  
+  
+  
   $timestore_adminkey = "";
+
   /*
 
   Default router settings - in absence of stated path

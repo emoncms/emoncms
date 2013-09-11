@@ -9,7 +9,7 @@
   http://openenergymonitor.org
 */
   
-global $path, $session;
+global $path, $session, $default_engine;
 
 ?>
 
@@ -57,6 +57,7 @@ global $path, $session;
 
 <script type="text/javascript">
 
+var default_engine = <?php echo $default_engine; ?>;
 var path = "<?php echo $path; ?>";
  
 var inputid = <?php echo $inputid; ?>;
@@ -136,7 +137,7 @@ function generate_process_arg_box()
   if (process[1]==2) // Argument type is a feed to log to, or output as a kwhd feed and so on.
   {
       out +='<select class="processArgBox" name="arg" id="arg" onChange="update_process_arg_box()" style="width:140px;">'
-      out += '<option value="-1"><?php echo _("CREATE NEW:"); ?></option>';
+      out +='<option value="-1"><?php echo _("CREATE NEW:"); ?></option>';
       for (i in feedlist) out += '<option value="'+feedlist[i].id+'">'+feedlist[i].name+'</option>';
       out +='</select>';
   }
@@ -157,7 +158,9 @@ function update_process_arg_box()
     var selected_processid = $('select#type').val();
     if (processlist[selected_processid][4] == 1) 
     {
-      $('#newProcessArgField').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=500>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
+      if (default_engine==1) {
+        $('#newProcessArgField').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=500>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
+      }
     }
   }
   else {
