@@ -165,6 +165,7 @@ function update_process_arg_box()
   }
   else {
     $('#newfeedname').remove();
+    $('#newfeedinterval').remove();
   }
 }
 
