@@ -199,8 +199,10 @@ function list_format_updated(time)
 // Format value dynamically 
 function list_format_value(value)
 {
-  if (value>10) value = (1*value).toFixed(1);
-  if (value>100) value = (1*value).toFixed(0);
+  if (value>=10) value = (1*value).toFixed(1);
+  if (value>=100) value = (1*value).toFixed(0);
   if (value<10) value = (1*value).toFixed(2);
+  if (value<=-10) value = (1*value).toFixed(1);
+  if (value<=-100) value = (1*value).toFixed(0);
   return value;
 }
