@@ -215,17 +215,18 @@ Follow the guide here step 4 onwards: [http://emoncms.org/site/docs/gettext](htt
 
 If your upgrading from emoncms version 5 up to 6 you will need to:
 
-- install timestore as in step 1 above.
-- install php curl:
+Install timestore as in step 1 above.
+
+Install php curl:
     
     sudo apt-get install php5-curl
 
-- run git pull in your emoncms directory
+Run git pull in your emoncms directory
 
     cd /var/www/emoncms
     git pull
     
-- create a fresh copy of default.settings.php with your mysql database settings and setting the timestore adminkey as in step 6 above. 
+Create a fresh copy of default.settings.php with your mysql database settings and setting the timestore adminkey as in step 6 above. 
 
 Log in with the administrator account (first account created)
 
