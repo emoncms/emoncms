@@ -41,6 +41,22 @@ Disk use is also much smaller, A test feed stored in an indexed mysql table used
 **In-built averaging**
 Timestore also has an additional benefit of using averaged layers which ensures that requested data is representative of the window of time each datapoint covers.
 
+### Using MYSQL or PHPTimeSeries instead of Timestore
+
+If your a familiar with mysql and want to use mysql to do your own queries and processing of the feed data you may want to select mysql as the default data store rather than timestore. The disadvantage of MYSQL is that it is much slower than timestore for common timeseries queries such as zooming through timeseries data.
+
+There is also another feed engine called PHPTimeSeries which provides improved timeseries query speed than mysql but is still slower than timestore. Its main avantages is that it does not require additional installation of timestore as it uses native php file access, it also stores the data in the same data file .MYD format as mysql which means you can switch from mysql to phptimeseries by copying the .MYD mysql data files directly out of your mysql directory into the PHPTimeSeries directory without additional conversion.
+
+To select either MYSQL or PHPTimeSeries instead of timestore as your default engine set the default engine setting in the emoncms settings.php file to:
+
+    $default_engine = Engine::MYSQL;
+    
+or: 
+
+    $default_engine = Engine::PHPTIMESERIES;
+
+If you do not wish to use timestore you can skip to step 2 of the installation process.
+
 # Installation and upgrading
 
 ## 1) Download, make and start timestore
