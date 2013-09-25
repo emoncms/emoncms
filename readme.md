@@ -57,11 +57,13 @@ or:
 
 If you do not wish to use timestore you can skip to step 2 of the installation process.
 
-# Installation and upgrading
+# Installation
+
+The following details how to install emoncms on linux from scratch including lamp server install and config.
 
 ## 1) Download, make and start timestore
 
-    cd /home/pi
+    cd /home/username
     git clone https://github.com/TrystanLea/timestore
     cd timestore
     sudo sh install
@@ -84,36 +86,130 @@ To read the adminkey manually type:
 
     cat /var/lib/timestore/adminkey.txt
     
+## 2) Install Apache, Mysql and PHP (LAMP Server)
+    
+When installing mysql and the blue dialog appears enter a password for root user, note the password down as you will need it later.
 
-## 2) Install (git clone) or upgrade (git pull) emoncms
+    $ sudo apt-get install apache2
+    $ sudo apt-get install mysql-server mysql-client
+    $ sudo apt-get install php5 libapache2-mod-php5
+    $ sudo apt-get install php5-mysql  
+    $ sudo apt-get install php5-curl
+    
+## 3) Enable mod rewrite
 
-First make sure you have php5-curl installed:
+Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
-    sudo apt-get install php5-curl
+    $ sudo a2enmod rewrite
+    $ sudo nano /etc/apache2/sites-enabled/000-default
 
-In the /var/www/ folder:
+Change (line 7 and line 11), "AllowOverride None" to "AllowOverride All".
+That is the sections <Directory /> and <Directory /var/www/>.
+[Ctrl + X ] then [Y] then [Enter] to Save and exit.
 
-    cd /var/www
 
-If you do not yet have emoncms installed, run:
+Restart the lamp server:
 
-    git clone https://github.com/emoncms/emoncms.git
+    $ sudo /etc/init.d/apache2 restart
+
+## 4) Install the emoncms application via git
+
+Git is a source code management and revision control system but at this stage we use it to just download and update the emoncms application.
+
+    $ sudo apt-get install git-core
+    
+First cd into the var directory:
+
+    $ cd /var/
+
+Set the permissions of the www directory to be owned by your username:
+
+    $ sudo chown $USER www
+
+Cd into www directory
+
+    $ cd www
+
+If you do not yet have emoncms installed, git clone to download:
+
+    $ git clone https://github.com/emoncms/emoncms.git
     
 If you do already have emoncms installed via the git clone command you can download the latest changes with:
 
     git pull
 
-Create a fresh settings.php file from default.settings.php
+Alternatively download emoncms and unzip to your server:
+[https://github.com/emoncms/emoncms](https://github.com/emoncms/emoncms)
 
-    cp /var/www/emoncms/default.settings.php /var/www/emoncms/settings.php
+## 5) Create a MYSQL database
 
-Enter your mysql database settings and timestore adminkey as copied above in to settings.php
+    $ mysql -u root -p
 
-**Upgrade raspberrypi module:** at this point if you are using the raspberrypi module, it would be worth updating that too.
+Enter the mysql password that you set above.
+Then enter the sql to create a database:
+
+    mysql> CREATE DATABASE emoncms;
+
+Exit mysql by:
+
+    mysql> exit
+
+### 6) Set emoncms database settings.
+
+cd into the emoncms directory where the settings file is located
+
+    $ cd /var/www/emoncms/
+
+Make a copy of default.settings.php and call it settings.php
+
+    $ cp default.settings.php settings.php
+
+Open settings.php in an editor:
+
+    $ nano settings.php
+
+Enter in your database settings.
+
+    $username = "USERNAME";
+    $password = "PASSWORD";
+    $server   = "localhost";
+    $database = "emoncms";
+    
+If your using timestore enter the adminkey as copied in step 1 above:    
+    
+    $timestore_adminkey = "";
+    
+If your not using timestore set the default engine to your selected engine:
+
+    $default_engine = Engine::MYSQL;
+    
+or
+
+    $default_engine = Engine::PHPTIMESERIES;
+
+Save (Ctrl-X), type Y and exit
 
 Launch emoncms in your browser:
 
     http://IP-ADDRESS/emoncms
+
+Create an account and login.
+
+# Upgrading
+
+If your upgrading from emoncms version 5 up to 6 you will need to:
+
+- install timestore as in step 1 above.
+- install php curl:
+    
+    sudo apt-get install php5-curl
+
+- run git pull in your emoncms directory
+
+    cd /var/www/emoncms
+    git pull
+    
+- create a fresh copy of default.settings.php with your mysql database settings and setting the timestore adminkey as in step 6 above. 
 
 Log in with the administrator account (first account created)
 
@@ -121,7 +217,7 @@ Click on the *Admin* tab (top-right) and run database update.
 
 Click on feeds, check that everything is working as expected, if your monitoring equipment is still posting you should see data coming in as usual.
 
-## 3) Convert existing feeds to timestore
+## Converting existing feeds to timestore
 
 So far we've got everything in place for using timestore but any existing feeds are still stored as mysql tables. To convert existing mysql feeds over to timestore a module has been written specifically for managing the conversion of the feeds, to download and run it:
 
