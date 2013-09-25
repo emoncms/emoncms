@@ -196,8 +196,9 @@ Save (Ctrl-X), type Y and exit
 The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen. 
 
 Create an account by entering your email and password and clicking register to complete.
+<br><br>
 
-## 8) PHP Suhosin module configuration (Debian 6, not required in ubuntu)
+#### PHP Suhosin module configuration (Debian 6, not required in ubuntu)
 
 Dashboard editing needs to pass parameters through HTTP-GET mechanism and on Debian 6 the max
 allowable length of a single parameter is very small (512 byte). This is a problem for designing of dashboard
@@ -206,7 +207,7 @@ and when you exceed this threshold all created dashboard are lost...
 To overcome this problem modify "suhosin.get.max_value_length" in /etc/php5/conf.d/suhosin.ini" to large
 value (8000, 16000 should be fine).
 
-#### (Optional) Enable Multi lingual support using gettext
+#### Enable Multi lingual support using gettext
 
 Follow the guide here step 4 onwards: [http://emoncms.org/site/docs/gettext](http://emoncms.org/site/docs/gettext)
 
