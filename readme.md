@@ -57,6 +57,8 @@ or:
 
 If you do not wish to use timestore you can skip to step 2 of the installation process.
 
+If you want to try PHPTimeSeries see optional PHPTimeSeries step below.
+
 # Installation
 
 The following details how to install emoncms on linux from scratch including lamp server install and config.
@@ -85,6 +87,13 @@ Start, stop and restart it with:
 To read the adminkey manually type:
 
     cat /var/lib/timestore/adminkey.txt
+    
+## (Optional) Create PHPTimeSeries data folder
+
+If you wish to try the phptimeseries engine:
+
+    sudo mkdir /var/lib/phptimeseries
+    sudo chown www-data:root /var/lib/phptimeseries
     
 ## 2) Install Apache, Mysql and PHP (LAMP Server)
     
