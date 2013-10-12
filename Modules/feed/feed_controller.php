@@ -90,6 +90,8 @@ function feed_controller()
             if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
             if ($route->action == "deletedatarange") $result = $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
 
+          } elseif ($row['engine']==Engine::PHPTIMESERIES)  {
+            if ($route->action == "export") $result = $feed->phptimeseries_export($feedid,get('start'));
           }
         }
       }

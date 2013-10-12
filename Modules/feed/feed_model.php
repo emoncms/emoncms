@@ -437,6 +437,11 @@ class Feed
   public function histogram_get_kwhd_atpowers($feedid, $points) {
     return $this->histogram->get_kwhd_atpowers($feedid, $points);
   }
+
+  // PHPTimeSeries specific functions that we need to make available to the controller
   
+  public function phptimeseries_export($feedid,$start) {
+    return $this->phptimeseries->export($feedid,$start);
+  }
 }
 

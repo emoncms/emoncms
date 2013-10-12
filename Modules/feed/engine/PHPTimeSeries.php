@@ -190,4 +190,54 @@ class PHPTimeSeries
     }
     return -1;
   }
+  
+  public function export($feedid,$start)
+  {
+    $feedid = (int) $feedid;
+    $start = (int) $start;
+    
+    $feedname = "feed_$feedid.MYD";
+
+    // There is no need for the browser to cache the output
+    header("Cache-Control: no-cache, no-store, must-revalidate");
+
+    // Tell the browser to handle output as a csv file to be downloaded
+    header('Content-Description: File Transfer');
+    header("Content-type: application/octet-stream");
+    header("Content-Disposition: attachment; filename={$feedname}");
+
+    header("Expires: 0");
+    header("Pragma: no-cache");
+
+    // Write to output stream
+    $fh = @fopen( 'php://output', 'w' );
+
+    $primaryfeedname = "/var/lib/phptimeseries/$feedname";
+    $primary = fopen($primaryfeedname, 'rb');
+    $primarysize = filesize($primaryfeedname);
+    
+    //$localsize = intval((($start - $meta['start']) / $meta['interval']) * 4);
+    
+    $localsize = $start;
+    $localsize = intval($localsize / 9) * 9;
+    if ($localsize<0) $localsize = 0;
+
+    fseek($primary,$localsize);
+    $left_to_read = $primarysize - $localsize;
+    if ($left_to_read>0){
+      do
+      {
+        if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+        $left_to_read -= $readsize;
+
+        $data = fread($primary,$readsize);
+        fwrite($fh,$data);
+      }
+      while ($left_to_read>0);
+    }
+    fclose($primary);
+    fclose($fh);
+    exit;
+  }
+
 }
