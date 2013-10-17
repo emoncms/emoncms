@@ -46,6 +46,17 @@ function vis_widgetlist()
       "optionshint":[_Tr("Feed source")],       
       "html":""
     },
+    
+    "timestoredaily": 
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid"],
+      "optionstype":["feedid","units"],
+      "optionsname":[_Tr("Feed"),_Tr("Units")],
+      "optionshint":[_Tr("Feed source"),_Tr("Units to show")],       
+      "html":""
+    },
 
     "zoom": 
     {
