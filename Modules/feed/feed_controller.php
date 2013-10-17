@@ -68,6 +68,7 @@ function feed_controller()
           if ($route->action == 'kwhatpowers') $result = $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
 
           if ($route->action == 'data') $result = $feed->get_data($feedid,get('start'),get('end'),get('dp'));
+          if ($route->action == 'timestoreaverage') $result = $feed->get_timestore_average($feedid,get('start'),get('end'),get('interval'));
         }
      
         // write session required

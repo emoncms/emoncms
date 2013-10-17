@@ -34,6 +34,19 @@ var feed = {
     });
     return feedIn;
   },
+  
+  'get_timestore_average':function(feedid,start,end,interval)
+  {
+    var feedIn = [];
+    $.ajax({                                      
+      url: path+'feed/timestoreaverage.json',                         
+      data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval,
+      dataType: 'json',
+      async: false,                      
+      success: function(data_in) { feedIn = data_in; } 
+    });
+    return feedIn;
+  },
 
   'get_kwhatpowers':function(feedid,points)
   {

@@ -1,10 +1,10 @@
 
 function power_stats(data)
 {
-  var npoints = 0;
+  var npoints = 1;
 
   var stats = [];
-  stats['average'] = 0;
+  stats['average'] = 1*data[0][1];
   stats['kwh'] = 0;
 
   for (var i=1; i<data.length; i++)

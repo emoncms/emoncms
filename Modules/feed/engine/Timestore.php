@@ -58,6 +58,24 @@ class Timestore
     return $data;
   }
   
+  public function get_average($feedid,$start,$end,$interval)
+  {
+    $feedid = intval($feedid);
+    $start = intval($start/1000);
+    $end = intval($end/1000);
+    $interval = intval($interval);
+    
+    if ($end == 0) $end = time();
+    
+    $npoints = round(($end - $start) / $interval);
+    $end = $start+(($npoints-1)*$interval);
+    
+    if ($npoints>1000) $npoints = 1000;
+
+    $data = json_decode($this->timestoreApi->get_series($feedid,0,$npoints,$start,$end,null));
+    return $data;
+  }
+  
   public function scale_range($feedid,$start,$end,$value)
   {
     $feedid = intval($feedid);
@@ -161,11 +179,15 @@ class Timestore
   {
     $feedid = (int) $feedid;
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
-
+    
     $out = array();
     $meta = fopen("/var/lib/timestore/$feedname", 'rb');
 
-    fseek($meta,20);
+    fseek($meta,8);
+    $tmp = unpack("h*",fread($meta,8)); 
+    $out['nodeid'] = (int) strrev($tmp[1]);
+    $tmp = unpack("I",fread($meta,4)); 
+    $out['nmetrics'] = $tmp[1];
     $tmp = unpack("I",fread($meta,4)); 
     $out['npoints'] = $tmp[1];
     $tmp = unpack("I",fread($meta,8)); 
@@ -174,7 +196,6 @@ class Timestore
     $out['interval'] = $tmp[1];
     fclose($meta);
     
-   
     return $out;
   }  
   
