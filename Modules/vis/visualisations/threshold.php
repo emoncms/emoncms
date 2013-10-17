@@ -84,7 +84,7 @@
         bars: { show: true,align: "center",barWidth: (3600*18*1000),fill: true }
       },
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", localTimezone: true, min: start, max: end, minTickSize: [1, "day"], tickLength: 1 },
+      xaxis: { mode: "time", timezone: "browser", min: start, max: end, minTickSize: [1, "day"], tickLength: 1 },
       selection: { mode: "xy" },
       legend: { position: "nw"}
     });

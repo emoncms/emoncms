@@ -92,7 +92,7 @@ $(window).resize(function(){
   var options = {
     //points: {show:true},
     bars: { show: true, align: "center", barWidth: 0.75*interval*1000, fill: true},
-    xaxis: { mode: "time", min: view.start, max: view.end, minTickSize: [interval, "second"] },
+    xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
     grid: {hoverable: true, clickable: true},
     selection: { mode: "x" }
   }
@@ -162,7 +162,7 @@ $(function() {
     var options = {
       //points: {show:true},
       bars: { show: true, align: "center", barWidth: 0.75*interval*1000, fill: true},
-      xaxis: { mode: "time", min: view.start, max: view.end, minTickSize: [interval, "second"] },
+      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
       grid: {hoverable: true, clickable: true},
       selection: { mode: "x" }
     }

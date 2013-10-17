@@ -190,13 +190,13 @@
     {data: powerX, lines: { show: true }},
     {data: powerY_cal, lines: { show: true }}], {
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", localTimezone: true, min: start, max: end },
+      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
       selection: { mode: "xy" }
     });
 
     var plot = $.plot($("#diff"), [{color:2, data: diff, lines: { show: true }}], {
       grid: { show: true, hoverable: true },
-      xaxis: { mode: "time", localTimezone: true, min: start, max: end }
+      xaxis: { mode: "time", timezone: "browser", min: start, max: end }
     });
 
     var plot = $.plot($("#line"), [

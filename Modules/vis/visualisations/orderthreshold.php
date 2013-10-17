@@ -156,7 +156,7 @@
 
       $.plot($("#graph"), [{data: power_data, lines: { show: true, fill: true }}], {
         grid: { show: true, hoverable: true, clickable: true },
-        xaxis: { mode: "time", localTimezone: true, min: start, max: end },
+        xaxis: { mode: "time", timezone: "browser", min: start, max: end },
         selection: { mode: "xy" }
       });
     }
