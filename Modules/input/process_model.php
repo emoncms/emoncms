@@ -485,7 +485,7 @@ class Process
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       $feedname = "feed_".trim($feedid)."";
-      $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
+      $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time'");
       $row = $result->fetch_array();
 
       $kwh_today = 0;
@@ -497,7 +497,7 @@ class Process
       {
         $kwh_start_of_day = $row['data2'];
         $kwh_today = $value - $kwh_start_of_day;
-        $this->mysqli->query("UPDATE $feedname SET data = '$kwh_today' WHERE `time` = '$time'");
+        $this->mysqli->query("UPDATE $feedname SET data = '$kwh_today' WHERE time = '$time'");
       }
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
@@ -664,7 +664,7 @@ class Process
       }
       else
       {
-        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`,`data2`) VALUES ('$feedtime','$value','1')");
+        $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$feedtime','$value','1')");
       }
 
       $updatetime = date("Y-n-j H:i:s", $time_now);

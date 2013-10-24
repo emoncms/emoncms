@@ -37,10 +37,10 @@ function db_schema_setup($mysqli, $schema, $apply)
                 if (isset($schema[$table][$field]['Extra'])) $extra = $schema[$table][$field]['Extra']; else $extra = null;
 
                 // if field exists:
-                $result = $mysqli->query("SHOW COLUMNS FROM `$table` LIKE '$field'");
+                $result = $mysqli->query("SHOW COLUMNS FROM $table LIKE '$field'");
                 if ($result->num_rows==0)
                 {
-                    $query = "ALTER TABLE `$table` ADD `$field` $type";
+                    $query = "ALTER TABLE $table ADD $field $type";
                     if ($null) $query .= " NOT NULL";
                     if (isset($default)) $query .= " DEFAULT '$default'";
                     $operations[] = $query;
@@ -48,7 +48,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                 }
                 else
                 {
-                  $result = $mysqli->query("DESCRIBE $table `$field`");
+                  $result = $mysqli->query("DESCRIBE $table $field");
                   $array = $result->fetch_array();
                   $query = "";
                   
@@ -58,7 +58,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                   if ($array['Extra']!=$extra && $extra=="auto_increment") $query .= " auto_increment";
                   if ($array['Key']!=$key && $key=="PRI") $query .= " primary key";
 
-                  if ($query) $query = "ALTER TABLE $table MODIFY `$field` $type".$query;
+                  if ($query) $query = "ALTER TABLE $table MODIFY $field $type".$query;
                   if ($query) $operations[] = $query;
                   if ($query && $apply) $mysqli->query($query);
                 } 
@@ -79,7 +79,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                 if (isset($schema[$table][$field]['default'])) $default = $schema[$table][$field]['default']; else $default = null;
                 if (isset($schema[$table][$field]['Extra'])) $extra = $schema[$table][$field]['Extra']; else $extra = null;
 
-                $query .= '`'.$field.'`';
+                $query .= ''.$field.'';
                 $query .= " $type";
                 if ($default) $query .= " Default '$default'";
                 if ($null=="NO") $query .= " not null";

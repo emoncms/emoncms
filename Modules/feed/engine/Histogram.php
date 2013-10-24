@@ -27,7 +27,7 @@ class Histogram
     $result = $this->mysqli->query(										
     "CREATE TABLE $feedname (
   time INT UNSIGNED, data float, data2 float,
-    INDEX ( `time` )) ENGINE=MYISAM");
+    INDEX ( time )) ENGINE=MYISAM");
   }
 
   /**
@@ -79,7 +79,7 @@ class Histogram
     $max = intval($max);
 
     $feedname = "feed_".trim($feedid)."";
-    $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
+    $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM $feedname WHERE data2>='$min' AND data2<='$max' group by time");
 
     $data = array();
     while($row = $result->fetch_array()) $data[] = array($row['time']* 1000 , $row['kWh']); 
@@ -109,7 +109,7 @@ class Histogram
       $min = intval($points[$i]);
       $max = intval($points[$i+1]);
 
-      $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM `$feedname` WHERE `data2`>='$min' AND `data2`<='$max' group by time");
+      $result = $this->mysqli->query("SELECT time, sum(data) as kWh FROM $feedname WHERE data2>='$min' AND data2<='$max' group by time");
 
       while($row = $result->fetch_array()) 
       { 

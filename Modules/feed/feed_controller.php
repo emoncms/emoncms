@@ -52,7 +52,7 @@ function feed_controller()
       $feedid = (int) get('id');
       // Actions that operate on a single existing feed that all use the feedid to select:
       // First we load the meta data for the feed that we want
-      $qresult = $mysqli->query("SELECT userid,public,engine FROM feeds WHERE `id` = '$feedid'");
+      $qresult = $mysqli->query("SELECT userid,public,engine FROM feeds WHERE id = '$feedid'");
       $row = $qresult->fetch_array();
 
       if ($row) // if the feed exists

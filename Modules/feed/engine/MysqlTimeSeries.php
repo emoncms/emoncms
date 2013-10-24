@@ -29,13 +29,13 @@ class MysqlTimeSeries
     $result = $this->mysqli->query(
     "CREATE TABLE $feedname (
   time INT UNSIGNED, data float,
-    INDEX ( `time` )) ENGINE=MYISAM");
+    INDEX (time)) ENGINE=MYISAM");
   }
   
   public function insert($feedid,$time,$value)
   {
     $feedname = "feed_".trim($feedid)."";
-    $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");
+    $this->mysqli->query("INSERT INTO $feedname (time, data) VALUES ('$time','$value')");
   }
   
   public function update($feedid,$time,$value)
@@ -48,7 +48,7 @@ class MysqlTimeSeries
     $row = $result->fetch_array();
     
     if ($row) $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE time = '$time'");
-    if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");}
+    if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (time, data) VALUES ('$time','$value')");}
     
     return $value;
   }
@@ -183,7 +183,7 @@ class MysqlTimeSeries
     $time = intval($time);
 
     $feedname = "feed_".trim($feedid)."";
-    $this->mysqli->query("DELETE FROM $feedname where `time` = '$time' LIMIT 1");
+    $this->mysqli->query("DELETE FROM $feedname where time = '$time' LIMIT 1");
   }
 
   public function deletedatarange($feedid,$start,$end)
@@ -193,7 +193,7 @@ class MysqlTimeSeries
     $end = intval($end/1000.0);
 
     $feedname = "feed_".trim($feedid)."";
-    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
+    $this->mysqli->query("DELETE FROM $feedname where time >= '$start' AND time <= '$end'");
 
     return true;
   }

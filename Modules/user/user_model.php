@@ -309,7 +309,7 @@ class User
     public function get_apikey_read($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT `apikey_read` FROM users WHERE `id`='$userid'");
+        $result = $this->mysqli->query("SELECT apikey_read FROM users WHERE id='$userid'");
         $row = $result->fetch_object();
         return $row->apikey_read;
     }
@@ -317,7 +317,7 @@ class User
     public function get_apikey_write($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT `apikey_write` FROM users WHERE `id`='$userid'");
+        $result = $this->mysqli->query("SELECT apikey_write FROM users WHERE id='$userid'");
         $row = $result->fetch_object();
         return $row->apikey_write;
     }

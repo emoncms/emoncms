@@ -24,14 +24,14 @@ class Multigraph
     public function create($userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`) VALUES ('$userid','')");
+        $this->mysqli->query("INSERT INTO multigraph (userid,feedlist) VALUES ('$userid','')");
         return $this->mysqli->insert_id;  
     }
 
     public function delete($id,$userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("DELETE FROM multigraph WHERE `id` = '$id' AND `userid` = '$userid'");
+        $this->mysqli->query("DELETE FROM multigraph WHERE id = '$id' AND userid = '$userid'");
     }
 
     public function set($id, $userid, $feedlist)
@@ -39,7 +39,7 @@ class Multigraph
         $id = intval($id);
         $userid = intval($userid);
         $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
-        $this->mysqli->query("UPDATE multigraph SET `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
+        $this->mysqli->query("UPDATE multigraph SET feedlist = '$feedlist' WHERE id='$id' AND userid='$userid'");
     }
 
     /*
@@ -50,7 +50,7 @@ class Multigraph
     {
         $id = intval($id);
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE `id`='$id'");
+        $result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE id='$id'");
         $result = $result->fetch_array();
         $feedlist = json_decode($result['feedlist']);
         return $feedlist;
@@ -59,7 +59,7 @@ class Multigraph
     public function getlist($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,name,feedlist FROM multigraph WHERE `userid`='$userid'");
+        $result = $this->mysqli->query("SELECT id,name,feedlist FROM multigraph WHERE userid='$userid'");
 
         $multigraphs = array();
         while ($row = $result->fetch_object())

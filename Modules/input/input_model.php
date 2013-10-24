@@ -70,11 +70,11 @@ class Input
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-.]/','',$fields->name)."'";
+        if (isset($fields->description)) $array[] = "description = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
+        if (isset($fields->name)) $array[] = "name = '".preg_replace('/[^\w\s-.]/','',$fields->name)."'";
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
-        $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE `id` = '$id'");
+        $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE id = '$id'");
 
         if ($this->mysqli->affected_rows>0){
             return array('success'=>true, 'message'=>'Field updated');
@@ -131,7 +131,7 @@ class Input
     public function exists($inputid)
     {
       $inputid = (int) $inputid;
-      $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
+      $result = $this->mysqli->query("SELECT id FROM input WHERE id = '$inputid'");
       if ($result->num_rows == 1) return true; else return false;
     }
 
@@ -197,7 +197,7 @@ class Input
     public function get_inputs($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,processList,record FROM input WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,processList,record FROM input WHERE userid = '$userid'");
 
         $dbinputs = array();
         while ($row = $result->fetch_object()) {

@@ -21,14 +21,19 @@ class Feed
     private $timestore;
     private $histogram;
     
-    private $default_engine = Engine::PHPTIMESERIES;
+    private $default_log_engine = Engine::PHPTIMESERIES;
     
     public function __construct($mysqli,$timestore_adminkey)
     {
         // Not the best way to bring the variable in but a quick fix for now
         // while the feature is tested.
+<<<<<<< HEAD
         global $default_engine;
         if (isset($default_engine)) $this->default_engine = $default_engine;
+=======
+        global $default_log_engine;
+        if (isset($default_log_engine)) $this->default_log_engine = $default_log_engine;
+>>>>>>> ef562b1... Remove useless MySQL propriatary backtics
         
         $this->mysqli = $mysqli;
         
@@ -100,7 +105,7 @@ class Feed
     $userid = intval($userid);
     $feedid = intval($feedid);
 
-    $result = $this->mysqli->query("SELECT id FROM feeds WHERE `userid` = '$userid' AND `id` = '$feedid'");
+    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND id = '$feedid'");
     $row = $result->fetch_array();
     if ($row) return 1;
     return 0;
@@ -111,7 +116,7 @@ class Feed
     $userid = intval($userid);
     $feedid = intval($feedid);
 
-    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE `id` = '$feedid'");
+    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE id = '$feedid'");
     $row = $result->fetch_array();
 
     if ($row['public']==true) return 1;
@@ -126,7 +131,7 @@ class Feed
     $feedid = intval($feedid);
     $datatype = intval($datatype);
 
-    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE `id` = '$feedid' AND `datatype` = '$datatype'");
+    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE id = '$feedid' AND datatype = '$datatype'");
     $row = $result->fetch_array();
 
     if ($row['public']==true) return 1;
@@ -177,7 +182,7 @@ class Feed
   {
     $userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id,name,value FROM feeds WHERE `userid` = '$userid' AND public = '1'");
+    $result = $this->mysqli->query("SELECT id,name,value FROM feeds WHERE userid = '$userid' AND public = '1'");
     if (!$result) return 0;
     $feeds = array();
     while ($row = $result->fetch_object()) 
@@ -234,7 +239,7 @@ class Feed
 
     if ($field!=NULL) {
       $field = preg_replace('/[^\w\s-]/','',$field);
-      $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
+      $result = $this->mysqli->query("SELECT $field FROM feeds WHERE id = '$id'");
       $row = $result->fetch_array();
       if ($row) return $row[0]; else return 0;
     }
@@ -263,19 +268,19 @@ class Feed
     $array = array();
 
     // Repeat this line changing the field name to add fields that can be updated:
-    if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
-    if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
-    if (isset($fields->datatype)) $array[] = "`datatype` = '".intval($fields->datatype)."'";
+    if (isset($fields->name)) $array[] = "name = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
+    if (isset($fields->tag)) $array[] = "tag = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
+    if (isset($fields->datatype)) $array[] = "datatype = '".intval($fields->datatype)."'";
 
-    if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
+    if (isset($fields->public)) $array[] = "public = '".intval($fields->public)."'";
     if (isset($fields->time)) {
       $updatetime = date("Y-n-j H:i:s", intval($fields->time)); 
-      $array[] = "`time` = '".$updatetime."'";
+      $array[] = "time = '".$updatetime."'";
     }
-    if (isset($fields->value)) $array[] = "`value` = '".intval($fields->value)."'";
+    if (isset($fields->value)) $array[] = "value = '".intval($fields->value)."'";
     // Convert to a comma seperated string for the mysql query
     $fieldstr = implode(",",$array);
-    $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
+    $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE id = '$id'");
 
     if ($this->mysqli->affected_rows>0){
       return array('success'=>true, 'message'=>'Field updated');
@@ -300,7 +305,7 @@ class Feed
     $feedtime = intval($feedtime);
     $value = floatval($value);
 
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
@@ -329,7 +334,7 @@ class Feed
     $feedtime = intval($feedtime);
     $value = floatval($value);
 
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
@@ -352,7 +357,7 @@ class Feed
   
   public function get_data($feedid,$start,$end,$dp)
   {
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
@@ -362,7 +367,7 @@ class Feed
   
   public function get_timestore_average($feedid,$start,$end,$interval)
   {
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_average($feedid,$start,$end,$interval);
@@ -373,20 +378,20 @@ class Feed
   {
     $feedid = intval($feedid);
     
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->delete($feedid);
     if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->delete($feedid);
     if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->delete($feedid);
         
-    $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
+    $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid'");
   }
   
   public function update_user_feeds_size($userid)
   {
     $total = 0;
-    $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE `userid` = '$userid'");
+    $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE userid = '$userid'");
     while ($row = $result->fetch_array())
     {
       $size = 0;
@@ -394,7 +399,7 @@ class Feed
       if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
       if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
       if ($row['engine']==Engine::PHPTIMESERIES) $size = $this->phptimeseries->get_feed_size($feedid);
-      $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
+      $this->mysqli->query("UPDATE feeds SET size = '$size' WHERE id= '$feedid'");
       $total += $size;
     }
     return $total;

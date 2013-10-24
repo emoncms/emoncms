@@ -28,7 +28,7 @@ class Dashboard
     public function create($userid)
     {
       $userid = (int) $userid;
-      $this->mysqli->query("INSERT INTO dashboard (`userid`,`alias`) VALUES ('$userid','')");
+      $this->mysqli->query("INSERT INTO dashboard (userid,alias) VALUES ('$userid','')");
       return $this->mysqli->insert_id;
     }
 
@@ -51,7 +51,12 @@ class Dashboard
 	    // Name for cloned dashboard
 	    $name = $row['name']._(' clone');
 
-      $this->mysqli->query("INSERT INTO dashboard (`userid`,`content`,`name`,`description`) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
+<<<<<<< HEAD
+      $this->mysqli->query("INSERT INTO dashboard (userid,content,name,description) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
+=======
+      $sql = ("INSERT INTO dashboard (userid, content, name, description) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
+      $result = db_query($this->conn, $sql);
+>>>>>>> ef562b1... Remove useless MySQL propriatary backtics
 	
 	    return $this->mysqli->insert_id;
     }
@@ -109,27 +114,27 @@ class Dashboard
       // content, height, name, alias, description, main, public, published, showdescription
       // Repeat this line changing the field name to add fields that can be updated:
 
-      if (isset($fields->height)) $array[] = "`height` = '".intval($fields->height)."'";
-      if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$fields->content)."'";
+      if (isset($fields->height)) $array[] = "height = '".intval($fields->height)."'";
+      if (isset($fields->content)) $array[] = "content = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$fields->content)."'";
 
-      if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
-      if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
-      if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
+      if (isset($fields->name)) $array[] = "name = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
+      if (isset($fields->alias)) $array[] = "alias = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
+      if (isset($fields->description)) $array[] = "description = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
 
       if (isset($fields->main)) 
       {
         $main = (bool)$fields->main;
         if ($main) $this->mysqli->query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' and id<>'$id'");
-        $array[] = "`main` = '".$main ."'";
+        $array[] = "main = '".$main ."'";
       }
 
-      if (isset($fields->public)) $array[] = "`public` = '".((bool)$fields->public)."'";
-      if (isset($fields->published)) $array[] = "`published` = '".((bool)$fields->published)."'";
-      if (isset($fields->showdescription)) $array[] = "`public` = '".((bool)$fields->showdescription)."'";
+      if (isset($fields->public)) $array[] = "public = '".((bool)$fields->public)."'";
+      if (isset($fields->published)) $array[] = "published = '".((bool)$fields->published)."'";
+      if (isset($fields->showdescription)) $array[] = "public = '".((bool)$fields->showdescription)."'";
       // Convert to a comma seperated string for the mysql query
       $fieldstr = implode(",",$array);
 
-      $this->mysqli->query("UPDATE dashboard SET ".$fieldstr." WHERE userid='$userid' and `id` = '$id'");
+      $this->mysqli->query("UPDATE dashboard SET ".$fieldstr." WHERE userid='$userid' and id = '$id'");
 
       if ($this->mysqli->affected_rows>0){
         return array('success'=>true, 'message'=>'Field updated');
