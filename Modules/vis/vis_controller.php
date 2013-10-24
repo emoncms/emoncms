@@ -15,15 +15,15 @@
 
   function vis_controller()
   {
-    global $mysqli, $session, $route, $user, $timestore_adminkey;
+    global $conn, $session, $route, $user, $timestore_adminkey;
 
     $result = false;
 
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$timestore_adminkey);
+    $feed = new Feed($conn,$timestore_adminkey);
 
     require "Modules/vis/multigraph_model.php";
-    $multigraph = new Multigraph($mysqli);
+    $multigraph = new Multigraph($conn);
 
     $visdir = "vis/visualisations/";
  

@@ -9,10 +9,10 @@
 
   */
 
-  global $mysqli, $session,$path;
+  global $conn, $session,$path;
 
   require "Modules/vis/multigraph_model.php";
-  $multigraph = new Multigraph($mysqli);
+  $multigraph = new Multigraph($conn);
   $multigraphs = $multigraph->getlist($session['userid']);
   
   

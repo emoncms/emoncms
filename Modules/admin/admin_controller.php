@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin;
+    global $conn, $session, $route, $updatelogin;
 
     // Allow for special admin session if updatelogin property is set to true in settings.php 
     // Its important to use this with care and set updatelogin to false or remove from settings 
@@ -33,13 +33,13 @@ function admin_controller()
           require "Modules/admin/update_class.php";
           require_once "Lib/dbschemasetup.php";
 
-          $update = new Update($mysqli);
+          $update = new Update($conn);
 
           $updates = array();
           $updates[] = array(
             'title'=>"Database schema", 
             'description'=>"", 
-            'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+            'operations'=>db_schema_setup($conn, load_db_schema(), $applychanges)
           );
 
           if (!$updates[0]['operations']) {

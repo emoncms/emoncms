@@ -25,10 +25,10 @@
 
   function dashboard_controller()
   {
-    global $mysqli, $path, $session, $route, $user;
+    global $conn, $path, $session, $route, $user;
 
     require "Modules/dashboard/dashboard_model.php";
-    $dashboard = new Dashboard($mysqli);
+    $dashboard = new Dashboard($conn);
 
     // id, userid, content, height, name, alias, description, main, public, published, showdescription
 

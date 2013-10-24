@@ -9,6 +9,7 @@
   $username = "";
   $password = "";
   $server   = "localhost";
+  $port     = "";
   $database = "";
 
   // By setting the default engine to MYSQL, realtime feeds will be created as MYSQL feeds providing full backwards compatibility
@@ -18,7 +19,8 @@
   
   // TIMESTORE is the default engine and requires installation of timestore, timestore is the fastest engine and also has other advantages like in built averaging.
   
-  $default_engine = Engine::TIMESTORE;
+  $default_log_engine = Engine::TIMESTORE;
+  $default_engine = Engine::MYSQL;
   
   
   

@@ -17,34 +17,40 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Feed
 {
-    private $mysqli;
+    private $conn;
     private $timestore;
     private $histogram;
     
-    private $default_log_engine = Engine::PHPTIMESERIES;
+    private $default_engine;
+    private $default_log_engine;
     
-    public function __construct($mysqli,$timestore_adminkey)
+    public function __construct($conn,$timestore_adminkey)
     {
         // Not the best way to bring the variable in but a quick fix for now
         // while the feature is tested.
-        global $default_engine;
-        if (isset($default_engine)) $this->default_engine = $default_engine;
+        global $default_engine, $default_log_engine;
+        if (isset($default_engine)) $this->default_engine = $default_engine; else $this->default_engine = Engine::MYSQL;
+        if (isset($default_log_engine)) $this->default_log_engine = $default_log_engine; else $this->default_log_engine = Engine::TIMESTORE;
         
-        $this->mysqli = $mysqli;
+        $this->conn = $conn;
         
         // Load different storage engines
 
-        require "Modules/feed/engine/MysqlTimeSeries.php";
-        $this->mysqltimeseries = new MysqlTimeSeries($mysqli);
+	if ($default_log_engine == Engine::MYSQL) {
+            require "Modules/feed/engine/dbTimeSeries.php";
+            $this->dbtimeseries = new dbTimeSeries($conn);
+	}
         
         require "Modules/feed/engine/Timestore.php";
         $this->timestore = new Timestore($timestore_adminkey);
        
         require "Modules/feed/engine/Histogram.php";
-        $this->histogram = new Histogram($mysqli);
+        $this->histogram = new Histogram($conn);
         
-        require "Modules/feed/engine/PHPTimeSeries.php";
-        $this->phptimeseries = new PHPTimeSeries();
+	if ($default_log_engine == Engine::PHPTIMESERIES) {
+            require "Modules/feed/engine/PHPTimeSeries.php";
+            $this->phptimeseries = new PHPTimeSeries();
+	}
     }
 
     public function create($userid,$name,$datatype,$newfeedinterval)
@@ -53,86 +59,111 @@ class Feed
         $userid = intval($userid);
         $name = preg_replace('/[^\w\s-]/','',$name);
         $datatype = intval($datatype);
+	$retval = false;
 
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
         
-        if ($datatype == DataType::REALTIME) $engine = $this->default_engine; else $engine = Engine::MYSQL;
+        if ($datatype == DataType::REALTIME) $engine = $this->default_log_engine; else $engine = $this->default_engine;
 
-        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype','false','$engine')");
-        $feedid = $this->mysqli->insert_id;
+        $sql = ("INSERT INTO feeds (userid, name, datatype, public, engine) VALUES ('$userid', '$name', '$datatype', 'false', '$engine');");
+        $result = db_query($this->conn, $sql);
+        $feedid = db_lastval($this->conn, $result);
 
-        if ($feedid>0) 
-        {
-          $feedname = "feed_".$feedid;
+        if (!$feedid > 0)
+	    return array('success'=>false);
 
-          if ($datatype==DataType::REALTIME) {
-            if ($this->default_engine == Engine::TIMESTORE) $this->timestore->create($feedid,$newfeedinterval);
-            if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
-            if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
-          }
-          elseif ($datatype==DataType::DAILY) $this->mysqltimeseries->create($feedid);
-          elseif ($datatype==DataType::HISTOGRAM) $this->histogram->create($feedid);
-        
-          
-          return array('success'=>true, 'feedid'=>$feedid);										
-        } else return array('success'=>false);
+	$feedname = "feed_" . $feedid . "";
+
+	switch ($datatype) {
+	case (DataType::REALTIME):
+		switch ($this->default_log_engine) {
+		case (Engine::MYSQL):
+			$retval = $this->dbtimeseries->create($feedid);
+			break;
+		case (Engine::PHPTIMESERIES):
+			$retval = $this->phptimeseries->create($feedid);
+			break;
+		case (Engine::TIMESTORE):
+		default: /* Fallthrough, TIMESTORE is default logging engine */
+			$retval = $this->timestore->create($feedid,$newfeedinterval);
+			break;
+		}
+		break;
+	case (DataType::DAILY):
+		$retval = $this->dbtimeseries->create($feedid);
+		break;
+	case (DataType::HISTOGRAM):
+		$retval = $this->histogram->create($feedid);
+		break;
+	default:
+		$retval = false;
+		break;
+	}
+
+	return ($retval) ? array('success'=>true, 'feedid'=>$feedid) : array('success'=>false);
   }
 
   public function exists($feedid)
   {
-    $feedid = intval($feedid);
-    $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
-    if ($result->num_rows>0) return true; else return false;
+	$feedid = intval($feedid);
+	$sql = ("SELECT count(id) AS id FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
+	return ($row['id'] > 0) ? TRUE : FALSE;
   }
 
   public function get_id($userid,$name)
   {
-    $userid = intval($userid);
-    $name = preg_replace('/[^\w\s-]/','',$name);
-    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
-    if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+	$userid = intval($userid);
+	$name = preg_replace('/[^\w\s-]/','',$name);
+	$sql = ("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
+	return ($row['id'] > 0) ? $row['id'] : FALSE;
   }
 
   public function belongs_to_user($feedid,$userid)
   {
-    $userid = intval($userid);
-    $feedid = intval($feedid);
+	$userid = intval($userid);
+	$feedid = intval($feedid);
 
-    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND id = '$feedid'");
-    $row = $result->fetch_array();
-    if ($row) return 1;
-    return 0;
+	$sql = ("SELECT id FROM feeds WHERE userid = '$userid' AND id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
+
+	return ($row['id']) ? TRUE : FALSE;
   }
 
   public function belongs_to_user_or_public($feedid,$userid)
   {
-    $userid = intval($userid);
-    $feedid = intval($feedid);
+	$userid = intval($userid);
+	$feedid = intval($feedid);
 
-    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE id = '$feedid'");
-    $row = $result->fetch_array();
+	$sql = ("SELECT userid, public FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
 
-    if ($row['public']==true) return 1;
-    if ($row['userid']==$userid && $userid!=0) return 1;
-
-    return 0;
+	return (($row['public'] == TRUE) || ($userid != 0 && $row['userid'] == $userid)) ? TRUE : FALSE;
   }
 
   public function feedtype_belongs_user_or_public($feedid,$userid,$datatype)
   {
-    $userid = intval($userid);
-    $feedid = intval($feedid);
-    $datatype = intval($datatype);
+	$userid = intval($userid);
+	$feedid = intval($feedid);
+	$datatype = intval($datatype);
 
-    $result = $this->mysqli->query("SELECT userid, public FROM feeds WHERE id = '$feedid' AND datatype = '$datatype'");
-    $row = $result->fetch_array();
+	$sql = ("SELECT userid, public FROM feeds WHERE id = '$feedid' AND datatype = '$datatype';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
 
-    if ($row['public']==true) return 1;
-    if ($row['userid']==$userid && $userid!=0) return 1;
-
-    return 0;
+	return (($row['public'] == TRUE) || ($userid != 0 && $row['userid'] == $userid)) ? TRUE : FALSE;
   }
 
   /*
@@ -148,68 +179,93 @@ class Feed
 
   public function get_user_feeds($userid)
   {
-    $userid = intval($userid);
+	$userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
-    if (!$result) return 0;
-    $feeds = array();
-    while ($row = $result->fetch_object()) 
-    { 
-      // $row->size = get_feedtable_size($row->id);
-      $row->time = strtotime($row->time)*1000;
-      $row->tag = str_replace(" ","_",$row->tag);
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT id, name, datatype, tag, UNIX_TIMESTAMP(time) AS time, value, public, size, engine FROM feeds WHERE userid = $userid;");
+		break;
+	default:
+		$sql = NULL;
+		break;
+	}
+	$result = db_query($this->conn, $sql);
+	if (!$result)
+		return 0;
 
-      if ($row->size<1024*100) {
-        $row->size = number_format($row->size/1024,1)."kb";
-      } elseif ($row->size<1024*1024) {
-        $row->size = round($row->size/1024)."kb";
-      } elseif ($row->size>=1024*1024) {
-        $row->size = round($row->size/(1024*1024))."Mb";
-      }
+	$feeds = array();
+	while ($row = db_fetch_object($result)) {
+		// $row->size = get_feedtable_size($row->id);
+		$row->time *= 1000;
+		$row->tag = str_replace(" ", "_", $row->tag);
 
-      $row->public = (bool) $row->public;
-      $feeds[] = $row; 
-    }
-    return $feeds;
+		if ($row->size < 1024 * 100) {
+			$row->size = number_format($row->size / 1024, 1) . " KiB";
+		} elseif ($row->size < 1024 * 1024) {
+			$row->size = round($row->size / 1024) . " KiB";
+		} elseif ($row->size >= 1024 * 1024) {
+			$row->size = round($row->size / (1024 * 1024)) . " MiB";
+		}
+
+		$row->public = (bool)$row->public;
+		$feeds[] = $row;
+	}
+	return $feeds;
   }
 
   public function get_user_public_feeds($userid)
   {
-    $userid = intval($userid);
+	$userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id,name,value FROM feeds WHERE userid = '$userid' AND public = '1'");
-    if (!$result) return 0;
-    $feeds = array();
-    while ($row = $result->fetch_object()) 
-    { 
-      // $row->size = get_feedtable_size($row->id);
-      // $row->time = strtotime($row->time)*1000;
-      // $row->tag = str_replace(" ","_",$row->tag);
-      $feeds[] = $row;
-    }
-    return $feeds;
+	$sql = ("SELECT id, name, value FROM feeds WHERE userid = '$userid' AND public = '1';");
+	$result = db_query($this->conn, $sql);
+	if (!$result)
+		return 0;
+
+	$feeds = array();
+	while ($row = db_fetch_object($result)) {
+		// $row->size = get_feedtable_size($row->id);
+		// $row->time = strtotime($row->time)*1000;
+		// $row->tag = str_replace(" ","_",$row->tag);
+		$feeds[] = $row;
+	}
+	return $feeds;
   }
 
   public function get_user_feed_ids($userid)
   {
-    $userid = intval($userid);
+	$userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid'");
-    if (!$result) return 0;
-    $feeds = array();
-    while ($row = $result->fetch_object()) { $feeds[] = $row->id; }
-    return $feeds;
+	$sql = ("SELECT id FROM feeds WHERE userid = '$userid';");
+	$result = db_query($this->conn, $sql);
+	if (!$result)
+		return 0;
+	
+	$feeds = array();
+	while ($row = db_fetch_object($result))
+		$feeds[] = $row->id;
+
+	 return $feeds;
   }
 
   public function get_user_feed_names($userid)
   {
-    $userid = intval($userid);
+	$userid = intval($userid);
 
-    $result = $this->mysqli->query("SELECT id,name,datatype,public FROM feeds WHERE userid = '$userid'");
-    if (!$result) return 0;
-    $feeds = array();
-    while ($row = $result->fetch_array()) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name'],'datatype'=>$row['datatype'],'public'=>$row['public']); }
-    return $feeds;
+	$sql = ("SELECT id, name, datatype, public FROM feeds WHERE userid = '$userid';");
+	$result = db_query($this->conn, $sql);
+
+	if (!$result)
+		return 0;
+
+	$feeds = array();
+	while ($row = db_fetch_array($result))
+		$feeds[] = array('id'=>$row['id'],
+				 'name'=>$row['name'],
+				 'datatype'=>$row['datatype'],
+				 'public'=>$row['public']);
+
+	return $feeds;
   }
 
   /*
@@ -220,33 +276,47 @@ class Feed
 
   public function get($id)
   {
-    $id = intval($id);
+	$id = intval($id);
 
-    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE id = $id");
-    $row = $result->fetch_object();
-    $row->public = (bool) $row->public;
-    return $row;
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT id, name, datatype, tag, UNIX_TIMESTAMP(time) AS time, value, public FROM feeds WHERE id = '$id';");
+		break;
+	default:
+		$sql = NULL;
+		break;
+	}
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_object($result);
+
+	$row->public = (bool)$row->public;
+	return $row;
   }
 
   public function get_field($id,$field)
   {
-    $id = intval($id);
+	$id = intval($id);
 
-    if ($field!=NULL) {
-      $field = preg_replace('/[^\w\s-]/','',$field);
-      $result = $this->mysqli->query("SELECT $field FROM feeds WHERE id = '$id'");
-      $row = $result->fetch_array();
-      if ($row) return $row[0]; else return 0;
-    }
-    else return false;
+	if ($field != NULL) {
+		$field = preg_replace('/[^\w\s-]/', '', $field);
+		$sql = ("SELECT $field FROM feeds WHERE id = '$id';");
+		$result = db_query($this->conn, $sql);
+		if ($result)
+			$row = db_fetch_array($result);
+		return ($row) ? $row[0] : 0;
+	} else {
+		return FALSE;
+	}
   }
 
   public function get_timevalue($id)
   {
-    $id = intval($id);
+	$id = intval($id);
 
-    $result = $this->mysqli->query("SELECT time,value FROM feeds WHERE id = '$id'");
-    return $result->fetch_array();
+	$sql = ("SELECT time, value FROM feeds WHERE id = '$id';");
+	$result = db_query($this->conn, $sql);
+	return db_fetch_array($result);
   }
 
   /*
@@ -275,9 +345,10 @@ class Feed
     if (isset($fields->value)) $array[] = "value = '".intval($fields->value)."'";
     // Convert to a comma seperated string for the mysql query
     $fieldstr = implode(",",$array);
-    $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE id = '$id'");
+    $sql = ("UPDATE feeds SET " . $fieldstr . " WHERE id = '$id';");
+    $result = db_query($this->conn, $sql);
 
-    if ($this->mysqli->affected_rows>0){
+    if (db_affected_rows($this->conn, $result)>0){
       return array('success'=>true, 'message'=>'Field updated');
     } else {
       return array('success'=>false, 'message'=>'Field could not be updated');
@@ -293,133 +364,200 @@ class Feed
   */
 
   public function insert_data($feedid,$updatetime,$feedtime,$value)
-  { 
-    if ($feedtime == null) $feedtime = time();
-    $feedid = intval($feedid);
-    $updatetime = intval($updatetime);
-    $feedtime = intval($feedtime);
-    $value = floatval($value);
+  {
+	if ($feedtime == NULL)
+		$feedtime = time();
+	$feedid = intval($feedid);
+	$updatetime = intval($updatetime);
+	$feedtime = intval($feedtime);
+	$value = floatval($value);
 
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
-    $row = $qresult->fetch_array();
+	$sql = ("SELECT engine FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
 
-    if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
-    if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->insert($feedid,$feedtime,$value);
-    if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
+	switch ($row['engine']) {
+	case (Engine::MYSQL):
+		$this->dbtimeseries->insert($feedid, $feedtime, $value);
+		break;
+	case (Engine::PHPTIMESERIES):
+		$this->phptimeseries->post($feedid, $feedtime, $value);
+		break;
+	case (Engine::TIMESTORE): /* Fallthrough, TIMESTORE is default logging engine */
+	default:
+		$this->timestore->post($feedid, $feedtime, $value);
+		break;
+	}
 
-    // b. Update feeds table
-    $updatetime = date("Y-n-j H:i:s", $updatetime); 
-    $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
+	// b. Update feeds table
+	$updatetime = date("Y-n-j H:i:s P", $updatetime);
+	$sql = ("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id = '$feedid';");
+	db_query($this->conn, $sql);
 
-    //Check feed event if event module is installed
-    if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-      require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-      $event = new Event($this->mysqli);
-      $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
-    }
+	//Check feed event if event module is installed
+	if (is_dir(realpath(dirname(__FILE__)) . '/../event/')) {
+		require_once(realpath(dirname(__FILE__)) . '/../event/event_model.php');
+		$event = new Event($this->conn);
+		$event->check_feed_event($feedid, $updatetime, $feedtime, $value);
+	}
 
-    return $value;
+	return $value;
   }
 
   public function update_data($feedid,$updatetime,$feedtime,$value)
-  {        
-    if ($feedtime == null) $feedtime = time();
-    $feedid = intval($feedid);
-    $updatetime = intval($updatetime);
-    $feedtime = intval($feedtime);
-    $value = floatval($value);
+  {
+	if ($feedtime == NULL)
+		$feedtime = time();
+	$feedid = intval($feedid);
+	$updatetime = intval($updatetime);
+	$feedtime = intval($feedtime);
+	$value = floatval($value);
 
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
-    $row = $qresult->fetch_array();
+	$sql = ("SELECT engine FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
 
-    if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
-    if ($row['engine']==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
-    if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
+	switch ($row['engine']) {
+	case (Engine::MYSQL):
+		$this->dbtimeseries->update($feedid, $feedtime, $value);
+		break;
+	case (Engine::PHPTIMESERIES):
+		$this->phptimeseries->post($feedid, $feedtime, $value);
+		break;
+	case (Engine::TIMESTORE): /* Fallthrough, TIMESTORE is default logging engine */
+	default:
+		$this->timestore->post($feedid, $feedtime, $value);
+		break;
+	}
 
-    // b. Update feeds table
-    $updatetime = date("Y-n-j H:i:s", $updatetime);
-    $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
+	// b. Update feeds table
+	$updatetime = date("Y-n-j H:i:s", $updatetime);
+	$sql = ("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id = '$feedid';");
+	db_query($this->conn, $sql);
 
-    //Check feed event if event module is installed
-    if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-      require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-      $event = new Event($this->mysqli);
-      $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
-    }
-    
-    return $value;
+	//Check feed event if event module is installed
+	if (is_dir(realpath(dirname(__FILE__)) . '/../event/')) {
+		require_once(realpath(dirname(__FILE__)) . '/../event/event_model.php');
+		$event = new Event($this->conn);
+		$event->check_feed_event($feedid, $updatetime, $feedtime, $value);
+	}
+
+	return $value;
   }
-  
+
   public function get_data($feedid,$start,$end,$dp)
   {
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
-    $row = $qresult->fetch_array();
+	$sql = ("SELECT engine FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
+	$result = FALSE;
 
-    if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
-    if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
-    if ($row['engine']==Engine::PHPTIMESERIES) return $this->phptimeseries->get_data($feedid,$start,$end,$dp);
+	switch ($row['engine']) {
+	case (Engine::MYSQL):
+		$result = $this->dbtimeseries->get_data($feedid, $start, $end, $dp);
+		break;
+	case (Engine::PHPTIMESERIES):
+		$result = $this->phptimeseries->get_data($feedid, $start, $end, $dp);
+		break;
+	case (Engine::TIMESTORE): /* Fallthrough, TIMESTORE is default logging engine */
+	default:
+		$result = $this->timestore->get_data($feedid, $start, $end);
+		break;
+	}
+
+	return $result;
   }
-  
+
   public function get_timestore_average($feedid,$start,$end,$interval)
   {
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
-    $row = $qresult->fetch_array();
+	$sql = ("SELECT engine FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
 
-    if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_average($feedid,$start,$end,$interval);
+	return ($row['engine']==Engine::TIMESTORE) ? $this->timestore->get_average($feedid,$start,$end,$interval) : FALSE;
   }
 
-  
   public function delete($feedid)
   {
-    $feedid = intval($feedid);
-    
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE id = '$feedid'");
-    $row = $qresult->fetch_array();
+	$feedid = intval($feedid);
 
-    if ($row['engine']==Engine::TIMESTORE) $this->timestore->delete($feedid);
-    if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->delete($feedid);
-    if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->delete($feedid);
-        
-    $this->mysqli->query("DELETE FROM feeds WHERE id = '$feedid'");
+	$sql = ("SELECT engine FROM feeds WHERE id = '$feedid';");
+	$result = db_query($this->conn, $sql);
+	if ($result)
+		$row = db_fetch_array($result);
+
+	switch ($row['engine']) {
+	case (Engine::MYSQL):
+		$this->dbtimeseries->delete($feedid);
+		break;
+	case (Engine::PHPTIMESERIES):
+		$this->phptimeseries->delete($feedid);
+		break;
+	case (Engine::TIMESTORE): /* Fallthrough, TIMESTORE is default logging engine */
+	default:
+		$this->timestore->delete($feedid);
+		break;
+	}
+
+	$sql = ("DELETE FROM feeds WHERE id = '$feedid';");
+	db_query($this->conn, $sql);
   }
-  
+
   public function update_user_feeds_size($userid)
   {
-    $total = 0;
-    $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE userid = '$userid'");
-    while ($row = $result->fetch_array())
-    {
-      $size = 0;
-      $feedid = $row['id'];
-      if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
-      if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
-      if ($row['engine']==Engine::PHPTIMESERIES) $size = $this->phptimeseries->get_feed_size($feedid);
-      $this->mysqli->query("UPDATE feeds SET size = '$size' WHERE id= '$feedid'");
-      $total += $size;
-    }
-    return $total;
+	$total = 0;
+	$sql = ("SELECT id, engine FROM feeds WHERE userid = '$userid';");
+	$result = db_query($this->conn, $sql);
+	if (!$result)
+		return 0;
+
+	while ($row = db_fetch_array($result)) {
+		$size = 0;
+		$feedid = $row['id'];
+
+		switch ($row['engine']) {
+		case (Engine::MYSQL):
+			$size = $this->dbtimeseries->get_feed_size($feedid);
+			break;
+		case (Engine::PHPTIMESERIES):
+			$size = $this->phptimeseries->get_feed_size($feedid);
+			break;
+		case (Engine::TIMESTORE): /* Fallthrough, TIMESTORE is default logging engine */
+		default:
+			$size = $this->timestore->get_feed_size($feedid);
+			break;
+		}
+		$sql = ("UPDATE feeds SET size = '$size' WHERE id = '$feedid';");
+		db_query($this->conn, $sql);
+		$total += $size;
+	}
+	return $total;
   }
-  
+
   // MysqlTimeSeries specific functions that we need to make available to the controller
-  
-  public function mysqltimeseries_export($feedid,$start) {
-    return $this->mysqltimeseries->export($feedid,$start);
+
+  public function dbtimeseries_export($feedid,$start) {
+    return $this->dbtimeseries->export($feedid,$start);
   }
-  
-  public function mysqltimeseries_delete_data_point($feedid,$time) {
-    return $this->mysqltimeseries->delete_data_point($feedid,$time);
+
+  public function dbtimeseries_delete_data_point($feedid,$time) {
+    return $this->dbtimeseries->delete_data_point($feedid,$time);
   }
-  
-  public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
-    return $this->mysqltimeseries->delete_data_range($feedid,$start,$end);
+
+  public function dbtimeseries_delete_data_range($feedid,$start,$end) {
+    return $this->dbtimeseries->delete_data_range($feedid,$start,$end);
   }
-  
+
   // Timestore specific functions that we need to make available to the controller
-  
+
   public function timestore_export($feedid,$start,$layer) {
     return $this->timestore->export($feedid,$start,$layer);
   }
-  
+
   public function timestore_export_meta($feedid) {
     return $this->timestore->export_meta($feedid);
   }
@@ -427,29 +565,28 @@ class Feed
   public function timestore_get_meta($feedid) {
     return $this->timestore->get_meta($feedid);
   }
-  
+
   public function timestore_scale_range($feedid,$start,$end,$value) {
     return $this->timestore->scale_range($feedid,$start,$end,$value);
   }
-  
+
   // Histogram specific functions that we need to make available to the controller
-  
+
   public function histogram_get_power_vs_kwh($feedid,$start,$end) {
     return $this->histogram->get_power_vs_kwh($feedid,$start,$end);
   }
-  
+
   public function histogram_get_kwhd_atpower($feedid, $min, $max) {
     return $this->histogram->get_kwhd_atpower($feedid, $min, $max);
   }
-  
+
   public function histogram_get_kwhd_atpowers($feedid, $points) {
     return $this->histogram->get_kwhd_atpowers($feedid, $points);
   }
 
   // PHPTimeSeries specific functions that we need to make available to the controller
-  
+
   public function phptimeseries_export($feedid,$start) {
     return $this->phptimeseries->export($feedid,$start);
   }
 }
-

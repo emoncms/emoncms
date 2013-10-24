@@ -6,7 +6,7 @@ class Timestore
   /**
    * Constructor.
    *
-   * @param api $mysqli Instance of mysqli
+   * @param api $timestore_admimnkey adminkey of timestore
    *
    * @api
   */

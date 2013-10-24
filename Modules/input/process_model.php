@@ -14,15 +14,19 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Process
 {
-    private $mysqli;
+    private $conn;
     private $input;
     private $feed;
+    private $default_engine;
 
-    public function __construct($mysqli,$input,$feed)
+    public function __construct($conn,$input,$feed)
     {
-        $this->mysqli = $mysqli;
+        global $default_engine;
+
+        $this->conn = $conn;
         $this->input = $input;
-        $this->feed = $feed;
+	$this->feed = $feed;
+        $this->default_engine = $default_engine;
     }
 
     public function get_process_list()
@@ -317,16 +321,18 @@ class Process
     //---------------------------------------------------------------------------------------
     public function times_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
+      $sql = ("SELECT value FROM input WHERE id = '$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
       $value = $value * $row['value'];
       return $value;
     }
 
     public function divide_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
+      $sql = ("SELECT value FROM input WHERE id = '$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
      
       if($row['value'] > 0){
           return $value / $row['value'];
@@ -337,24 +343,27 @@ class Process
 
     public function add_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
+      $sql = ("SELECT value FROM input WHERE id = '$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
       $value = $value + $row['value'];
       return $value;
     }
 
     public function subtract_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
+      $sql = ("SELECT value FROM input WHERE id = '$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
       $value = $value - $row['value'];
       return $value;
     }
 
     public function add_feed($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM feeds WHERE id = '$id'");
-      $row = $result->fetch_array();
+      $sql = ("SELECT value FROM feeds WHERE id = '$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
       $value = $value + $row['value'];
       return $value;
     }
@@ -451,18 +460,43 @@ class Process
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       // First we check if there is an entry for the feed in the kwhdproc table
-      $result = $this->mysqli->query("SELECT * FROM kwhdproc WHERE feedid = '$feedid'");
-      $row = $result->fetch_array();
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT time, kwh FROM kwhdproc WHERE feedid = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	$result = db_query($this->conn, $sql);
+	$row = db_fetch_array($result);
 
       // If there is not we create an entry
-      if (!$row)
-        $this->mysqli->query("INSERT INTO kwhdproc (feedid,time,kwh) VALUES ('$feedid','0','0')");
+      if (!$row) {
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("INSERT INTO kwhdproc (feedid, time, kwh) VALUES ('$feedid', '0', '0');");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
+      }
 
       // We then check if the entries time is the same as todays time if it isnt its a new day
       // and we need to put the kwh figure for the start of the day in the kwhdproc table
       if ($time != $row['time'])
       {
-        $this->mysqli->query("UPDATE kwhdproc SET kwh = '$value', time = '$time' WHERE feedid='$feedid'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE kwhdproc SET kwh = '$value', time = '$time' WHERE feedid = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
         $start_day_kwh_value = $value;
       }
       else
@@ -485,23 +519,55 @@ class Process
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       $feedname = "feed_".trim($feedid)."";
-      $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time'");
-      $row = $result->fetch_array();
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT data2 FROM $feedname WHERE time = '$time';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
+	$row = db_fetch_array($result);
 
       $kwh_today = 0;
       if (!$row)
       {
-        $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0','$value')");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES ('$time', '0', '$value');");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
       }
       else
       {
         $kwh_start_of_day = $row['data2'];
         $kwh_today = $value - $kwh_start_of_day;
-        $this->mysqli->query("UPDATE $feedname SET data = '$kwh_today' WHERE time = '$time'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE $feedname SET data = '$kwh_today' WHERE time = '$time';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
       }
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
-      $this->mysqli->query("UPDATE feeds SET value = '$kwh_today', time = '$updatetime', datatype = '2' WHERE id='$feedid'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE feeds SET value = '$kwh_today', time = '$updatetime', datatype = '2' WHERE id = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
 
       return $value;
     }
@@ -515,8 +581,9 @@ class Process
       $feedname = "feed_" . trim($feedid) . "";
 
       // Get the current input id
-      $result = $this->mysqli->query("Select * from input where processlist like '%:$feedid%';");
-      $rowfound = $result->fetch_array();
+      $sql = ("SELECT id, processlist FROM input WHERE processlist LIKE '%:$feedid%';");
+      $result = db_query($this->conn, $sql);
+      $rowfound = db_fetch_array($result);
       if ($rowfound)
       {
         $inputid = trim($rowfound['id']);
@@ -526,10 +593,11 @@ class Process
         $logfeedid = trim($matches[1]);
         // Now need to get the last but one value in the main log to feed table
         $oldfeedname = "feed_" . trim($logfeedid) . "";
-        $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 2;");
-        $lastentryrow = $lastentry->fetch_array();
+        $sql = ("SELECT data FROM $oldfeedname ORDER BY time DESC LIMIT 2;");
+        $lastentry = db_query($this->conn, $sql);
+        $lastentryrow = db_fetch_array($lastentry);
         // Calling again so can get the 2nd row
-        $lastentryrow = $lastentry->fetch_array();
+        $lastentryrow = db_fetch_array($lastentry);
         $prevValue = trim($lastentryrow['data']);
         $ratechange = $value - $prevValue;
         // now put this rate change into the correct feed table
@@ -599,8 +667,16 @@ class Process
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       // Get the last time
-      $result = $this->mysqli->query("SELECT * FROM feeds WHERE id = '$feedid'");
-      $last_row = $result->fetch_array();
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT time FROM feeds WHERE id = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	$result = db_query($this->conn, $sql);
+      $last_row = db_fetch_array($result);
 
       if ($last_row)
       {
@@ -613,18 +689,42 @@ class Process
       }
 
       // Get last value
-      $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT data2 FROM $feedname WHERE time = '$time' AND data2 = '$new_value';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	$result = db_query($this->conn, $sql);
 
       if (!$result) return $value;
 
-      $last_row = $result->fetch_array();
+      $last_row = db_fetch_array($result);
 
       if (!$last_row)
       {
-        $result = $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0.0','$new_value')");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES ('$time', '0.0', '$new_value');");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	$result = db_query($this->conn, $sql);
 
         $updatetime = date("Y-n-j H:i:s", $time_now);
-        $this->mysqli->query("UPDATE feeds SET value = $new_value, time = '$updatetime' WHERE id='$feedid'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE feeds SET value = '$new_value', time = '$updatetime' WHERE id = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
         $new_kwh = $kwh_inc;
       }
       else
@@ -634,10 +734,26 @@ class Process
       }
 
       // update kwhd feed
-      $this->mysqli->query("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
-      $this->mysqli->query("UPDATE feeds SET value = '$new_value', time = '$updatetime' WHERE id='$feedid'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE feeds SET value = '$new_value', time = '$updatetime' WHERE id = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
 
       return $value;
     }
@@ -648,9 +764,18 @@ class Process
       $feedname = "feed_" . trim($feedid) . "";
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
-      $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT data, data2 FROM $feedname WHERE time = '$feedtime';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	$result = db_query($this->conn, $sql);
+
       if (!$result)  return $value;
-      $row = $result->fetch_array();
+      $row = db_fetch_array($result);
 
       $average = $row['data'];
       $size = $row['data2'];
@@ -660,15 +785,39 @@ class Process
 
       if ($row)
       {
-        $this->mysqli->query("UPDATE $feedname SET data = '$new_average', data2 = '$size' WHERE time = '$feedtime'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE $feedname SET data = '$new_average', data2 = '$size' WHERE time = '$feedtime';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
       }
       else
       {
-        $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$feedtime','$value','1')");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES ('$feedtime', '$value', '1');");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
       }
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
-      $this->mysqli->query("UPDATE feeds SET value = '$new_average', time = '$updatetime' WHERE id='$feedid'");
+	switch ($this->default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("UPDATE feeds SET value = '$new_average', time = '$updatetime' WHERE id = '$feedid';");
+		break;
+	default:
+		$sql = "";
+		break;
+	}
+	db_query($this->conn, $sql);
 
       return $value;
     }
@@ -684,8 +833,9 @@ class Process
 	  $feedname = "feed_".trim($feedid)."";
        
 	  // Get the current input id 
-	  $result = $this->mysqli->query("Select * from input where processlist like '%:$feedid%';");
-	  $rowfound = $result->fetch_array();
+          $sql = ("SELECT id, processlist FROM input WHERE processlist LIKE '%:$feedid%';");
+          $result = db_query($this->conn, $sql);
+          $rowfound = db_fetch_array($result);
 	  if ($rowfound)
 	  {
 		  $inputid = trim($rowfound['id']);
@@ -700,14 +850,21 @@ class Process
 		  // Find a previous reading that is at least 10 minutes apart from the current reading and average the in-between readings to smooth out fluctuations
 		  // Without this we will get unstable readings
 
-		
-		  $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 1,128;");  
-		  $lastentryrow = $lastentry->fetch_array(); 
+		switch ($this->default_engine) {
+		case (Engine::MYSQL):
+			$sql = ("SELECT time, data FROM $oldfeedname ORDER BY time DESC LIMIT 1, 128;");
+			break;
+		default:
+			$sql = "";
+			break;
+		}
+		$lastentry = db_query($this->conn, $sql);
+		  $lastentryrow = db_fetch_array($lastentry);
 
 		  $time_prev  = trim($lastentryrow['time']);	//Read the time of previous reading
 		  $prevValue  = trim($lastentryrow['data']);	//Get previous reading
 
-		  while($lastentryrow = $lastentry->fetch_array()) {
+		  while($lastentryrow = db_fetch_array($lastentry)) {
 
 		  $time_prev  = trim($lastentryrow['time']);
 		  $prevValue  = trim($lastentryrow['data']);	 

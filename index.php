@@ -18,6 +18,7 @@
 
   // 1) Load settings and core scripts
   require "process_settings.php";
+  require "Lib/db.php";
   require "core.php";
   require "route.php";
   require "locale.php";
@@ -25,31 +26,28 @@
   $path = get_application_path();
 
   // 2) Database
-  $mysqli = @new mysqli($server,$username,$password,$database);
-
-  if ( $mysqli->connect_error ) {
+  $conn = db_connect($server, $port, $username, $password, $database);
+  if (!$conn) {
 	echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
-	if ( $display_errors ) {
-		echo "Error message: <b>" . $mysqli->connect_error . "</b>";
-	}
+	if ( $display_errors )
+		echo "Error message: <b>" . db_connect_error($conn) . "</b>";
 	die();
+  } else {
+	if ($dbtest == true) {
+		require "Lib/dbschemasetup.php";
+		if (!db_check($conn, $database))
+			db_schema_setup($conn, load_db_schema(), true);
+	}
   }
-  
-  if (!$mysqli->connect_error && $dbtest==true) {
-    require "Lib/dbschemasetup.php";
-    if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
-  }  
 
   // 3) User sessions
   require "Modules/user/rememberme_model.php";
-  $rememberme = new Rememberme($mysqli);
+  $rememberme = new Rememberme($conn);
   require("Modules/user/user_model.php");
-  $user = new User($mysqli,$rememberme);
+  $user = new User($conn, $rememberme);
 
-  if (get('apikey'))
-    $session = $user->apikey_session($_GET['apikey']);
-  else
-    $session = $user->emon_session_start();
+  $apikey = get('apikey');
+  $session = ($apikey) ? $user->apikey_session(get('apikey')) : $user->emon_session_start();
 
   // 4) Language
   if (!isset($session['lang'])) $session['lang']='';
@@ -77,8 +75,8 @@
   }
 
   if ($route->controller == 'api') $route->controller = 'input';
-  if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json'; 
-  if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json'; 
+  if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json';
+  if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json';
 
   // 6) Load the main page controller
   $output = controller($route->controller);

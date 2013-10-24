@@ -17,11 +17,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-  global $mysqli, $session, $route, $timestore_adminkey;
+  global $conn, $session, $route, $timestore_adminkey;
   $result = false;
 
   include "Modules/feed/feed_model.php";
-  $feed = new Feed($mysqli,$timestore_adminkey);
+  $feed = new Feed($conn,$timestore_adminkey);
 
   if ($route->format == 'html')
   {
@@ -52,8 +52,9 @@ function feed_controller()
       $feedid = (int) get('id');
       // Actions that operate on a single existing feed that all use the feedid to select:
       // First we load the meta data for the feed that we want
-      $qresult = $mysqli->query("SELECT userid,public,engine FROM feeds WHERE id = '$feedid'");
-      $row = $qresult->fetch_array();
+      $sql = ("SELECT userid, public, engine FROM feeds WHERE id = '$feedid';");
+      $qresult = db_query($conn, $sql);
+      $row = db_fetch_array($qresult);
 
       if ($row) // if the feed exists
       {
@@ -87,9 +88,9 @@ function feed_controller()
             if ($route->action == "getmeta") $result = $feed->timestore_get_meta($feedid);
             if ($route->action == "scalerange") $result = $feed->timestore_scale_range($feedid,get('start'),get('end'),get('value'));
           } elseif ($row['engine']==Engine::MYSQL)  {
-            if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));
-            if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
-            if ($route->action == "deletedatarange") $result = $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
+            if ($route->action == "export") $result = $feed->dbtimeseries_export($feedid,get('start'));
+            if ($route->action == "deletedatapoint") $result = $feed->dbtimeseries_delete_data_point($feedid,get('feedtime'));
+            if ($route->action == "deletedatarange") $result = $feed->dbtimeseries_delete_data_range($feedid,get('start'),get('end'));
 
           } elseif ($row['engine']==Engine::PHPTIMESERIES)  {
             if ($route->action == "export") $result = $feed->phptimeseries_export($feedid,get('start'));

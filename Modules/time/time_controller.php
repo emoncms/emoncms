@@ -14,7 +14,7 @@
 
   function time_controller()
   {
-    global $mysqli,$session, $route;
+    global $conn,$session, $route;
 
     $result = false;
 
@@ -23,7 +23,7 @@
     if ($route->action == 'local' && $session['read'])
     {
       $userid = $session['userid'];
-      $result = $mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+      $result = $conn->query("SELECT timezone FROM users WHERE id = '$userid';");
       $row = $result->fetch_object();
 
       $time = (time() + ($row->timezone*3600));

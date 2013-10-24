@@ -15,7 +15,23 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-function db_schema_setup($mysqli, $schema, $apply)
+function db_schema_setup($conn, $schema, $apply)
+{
+	global $default_engine;
+
+	switch ($default_engine) {
+	case Engine::MYSQL:
+		$retval = mysql_db_schema_setup($conn, $schema, $apply);
+		break;
+	default:
+		$retval = NULL;
+		break;
+	}
+
+	return $retval;
+}
+
+function mysql_db_schema_setup($mysqli, $schema, $apply)
 {
     $operations = array();
     while ($table = key($schema))

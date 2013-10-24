@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-  global $mysqli, $user, $session, $route;
+  global $conn, $user, $session, $route;
 
   // There are no actions in the input module that can be performed with less than write privileges
   if (!$session['write']) return array('content'=>false);
@@ -23,13 +23,13 @@ function input_controller()
   $result = false;
 
   include "Modules/feed/feed_model.php";
-  $feed = new Feed($mysqli,$timestore_adminkey);
+  $feed = new Feed($conn,$timestore_adminkey);
 
   require "Modules/input/input_model.php"; // 295
-  $input = new Input($mysqli,$feed);
+  $input = new Input($conn,$feed);
 
   require "Modules/input/process_model.php"; // 886
-  $process = new Process($mysqli,$input,$feed);
+  $process = new Process($conn,$input,$feed);
 
   if ($route->format == 'html')
   {
