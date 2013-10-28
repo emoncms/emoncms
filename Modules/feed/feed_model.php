@@ -185,7 +185,7 @@ class Feed
     $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
 
     while($row = $result->fetch_object()){
-        $redis->hAdd("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatybe, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
+        $redis->hMSet("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatybe, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
     }
 
     }
