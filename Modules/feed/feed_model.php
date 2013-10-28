@@ -46,7 +46,21 @@ class Feed
         require "Modules/feed/engine/PHPTimeSeries.php";
         $this->phptimeseries = new PHPTimeSeries();
     }
-
+    
+    public function get_redis(){
+        $redis = new Redis();
+        $redis->connect("127.0.0.1");
+        
+        return $redis;
+    }
+    
+    public function set_update_value_redis($feedid, $value, $updatetime){
+        
+        $redis = $this->get_redis();
+        $redis->hMset("feed:lastvalue:$feedid", array(value => $value, time => $updatetime));
+        
+    }
+    
     public function create($userid,$name,$datatype,$newfeedinterval)
     {
         $newfeedinterval = (int) $newfeedinterval;
@@ -72,9 +86,9 @@ class Feed
             if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
             if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
           }
+
           elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
-          elseif ($datatype==3) $this->histogram->create($feedid);
-        
+          elseif ($datatype==3) $this->histogram->create($feedid);        
           
           return array('success'=>true, 'feedid'=>$feedid);										
         } else return array('success'=>false);
@@ -149,10 +163,38 @@ class Feed
   public function get_user_feeds($userid)
   {
     $userid = intval($userid);
+    
+    $redis = $this->get_redis();
+    
+    if($redis->exists('user:feeds:$userid')){
+        $user_feeds = $redis->sMembers('user:feeds:$userid');        
+        
+    }
+    else{
+
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = $userid");
+    
+    $user_feeds = array();
+    
+    while($row = $reslt->fetch_array(MYSQLI_NUM)){
+        array_push($user_feeds, $row[0]);   
+    }
+
+    $redis->sAdd('user:feeds:$userid',$user_feeds);
 
     $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
+
+    while($row = $result->fetch_object()){
+        $redis->hAdd("feed:$row->id", array(name => $row->name, datatype => $row->datatybe, tag => $row->tag, time => $row->time, value => $row->value, ppublic => $row->public, size => $row->size, engine => $row->engine ));        
+    }
+
+    }
+
+    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
+
     if (!$result) return 0;
     $feeds = array();
+
     while ($row = $result->fetch_object()) 
     { 
       // $row->size = get_feedtable_size($row->id);
@@ -277,6 +319,8 @@ class Feed
     $fieldstr = implode(",",$array);
     $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
 
+
+
     if ($this->mysqli->affected_rows>0){
       return array('success'=>true, 'message'=>'Field updated');
     } else {
@@ -311,6 +355,8 @@ class Feed
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
+    $this->set_update_value_redis($feedid, $value, $updatetime);
+
     //Check feed event if event module is installed
     if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
       require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
@@ -340,6 +386,8 @@ class Feed
     $updatetime = date("Y-n-j H:i:s", $updatetime);
     $this->mysqli->query("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id='$feedid'");
 
+    $this->set_update_value_redis($feedid, $value, $updatetime);
+
     //Check feed event if event module is installed
     if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
       require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
@@ -358,14 +406,6 @@ class Feed
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
     if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
     if ($row['engine']==Engine::PHPTIMESERIES) return $this->phptimeseries->get_data($feedid,$start,$end,$dp);
-  }
-  
-  public function get_timestore_average($feedid,$start,$end,$interval)
-  {
-    $qresult = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
-    $row = $qresult->fetch_array();
-
-    if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_average($feedid,$start,$end,$interval);
   }
 
   
