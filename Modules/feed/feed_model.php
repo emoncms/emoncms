@@ -176,8 +176,8 @@ class Feed
     
     $user_feeds = array();
     
-    while($row = $reslt->fetch_array(MYSQLI_NUM)){
-        array_push($user_feeds, $row[0]);   
+    while($row = $result->fetch_object()){
+        $user_feeds[] = $row->id;   
     }
 
     $redis->sAdd('user:feeds:$userid',$user_feeds);
