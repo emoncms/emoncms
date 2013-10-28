@@ -165,107 +165,111 @@ class Feed
     $userid = intval($userid);
     
     $redis = $this->get_redis();
+
+    $user_feeds = array();
     
     if($redis->exists("user:feeds:$userid")){
         $user_feeds = $redis->sMembers("user:feeds:$userid");        
         
     }
-    else{
+    else
+    {
+	
+      $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");    
 
-        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = $userid");
+      
+      while($row = $result->fetch_object()){
+
+	$redis->sAdd("user:feeds:$userid", $row->id);
+	$redis->hMSet("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatype, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
+	$user_feeds = $row->id;
+      }
+
+    }
+
+    $feeds = array();
+
+    foreach($user_feed as $feed_id){
+      $row = $redis->hGetAll("feed:$feed_id");
+      $feeds[] = $row;      
+    }
     
-    $user_feeds = array();
-    
-    while($row = $result->fetch_object()){
-        $user_feeds[] = $row->id;   
-    }
-
-    foreach($user_feeds as $feed){
-      $redis->sAdd("user:feeds:$userid", $feed);
-    }
-
-    $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
-
-    while($row = $result->fetch_object()){
-        $redis->hMSet("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatype, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
-    }
-
-    }
-
+    return $feeds;
+    /*
     $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
 
     if (!$result) return 0;
     $feeds = array();
 
     while ($row = $result->fetch_object()) 
-    { 
+      { 
       // $row->size = get_feedtable_size($row->id);
-      $row->time = strtotime($row->time)*1000;
-      $row->tag = str_replace(" ","_",$row->tag);
+	$row->time = strtotime($row->time)*1000;
+	$row->tag = str_replace(" ","_",$row->tag);
+	
+	if ($row->size<1024*100) {
+	  $row->size = number_format($row->size/1024,1)."kb";
+	} elseif ($row->size<1024*1024) {
+	  $row->size = round($row->size/1024)."kb";
+	} elseif ($row->size>=1024*1024) {
+	  $row->size = round($row->size/(1024*1024))."Mb";
+	}
 
-      if ($row->size<1024*100) {
-        $row->size = number_format($row->size/1024,1)."kb";
-      } elseif ($row->size<1024*1024) {
-        $row->size = round($row->size/1024)."kb";
-      } elseif ($row->size>=1024*1024) {
-        $row->size = round($row->size/(1024*1024))."Mb";
+	$row->public = (bool) $row->public;
+	$feeds[] = $row; 
       }
-
-      $row->public = (bool) $row->public;
-      $feeds[] = $row; 
-    }
-    return $feeds;
+      return $feeds; */
   }
 
   public function get_user_public_feeds($userid)
   {
     $userid = intval($userid);
-
+    
     $result = $this->mysqli->query("SELECT id,name,value FROM feeds WHERE `userid` = '$userid' AND public = '1'");
     if (!$result) return 0;
     $feeds = array();
     while ($row = $result->fetch_object()) 
-    { 
-      // $row->size = get_feedtable_size($row->id);
-      // $row->time = strtotime($row->time)*1000;
-      // $row->tag = str_replace(" ","_",$row->tag);
-      $feeds[] = $row;
-    }
+      { 
+	// $row->size = get_feedtable_size($row->id);
+	// $row->time = strtotime($row->time)*1000;
+	// $row->tag = str_replace(" ","_",$row->tag);
+	$feeds[] = $row;
+      }
     return $feeds;
   }
-
+  
   public function get_user_feed_ids($userid)
   {
     $userid = intval($userid);
-
+    
     $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid'");
     if (!$result) return 0;
     $feeds = array();
     while ($row = $result->fetch_object()) { $feeds[] = $row->id; }
     return $feeds;
   }
-
+  
   public function get_user_feed_names($userid)
   {
     $userid = intval($userid);
-
+    
     $result = $this->mysqli->query("SELECT id,name,datatype,public FROM feeds WHERE userid = '$userid'");
     if (!$result) return 0;
     $feeds = array();
     while ($row = $result->fetch_array()) { $feeds[] = array('id'=>$row['id'],'name'=>$row['name'],'datatype'=>$row['datatype'],'public'=>$row['public']); }
     return $feeds;
   }
-
+  
   /*
-
-  Feeds table GET public functions
-
+    
+    Feeds table GET public functions
+    
   */
-
+  
   public function get($id)
   {
     $id = intval($id);
-
+    
     $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public FROM feeds WHERE id = $id");
     $row = $result->fetch_object();
     $row->public = (bool) $row->public;
