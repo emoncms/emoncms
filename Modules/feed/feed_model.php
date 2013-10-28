@@ -189,7 +189,7 @@ class Feed
 
     $feeds = array();
 
-    foreach($user_feed as $feed_id){
+    foreach($user_feeds as $feed_id){
       $row = $redis->hGetAll("feed:$feed_id");
       $feeds[] = $row;      
     }
