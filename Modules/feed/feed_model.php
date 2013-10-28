@@ -182,7 +182,7 @@ class Feed
 
 	$redis->sAdd("user:feeds:$userid", $row->id);
 	$redis->hMSet("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatype, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
-	$user_feeds = $row->id;
+	$user_feeds[] = $row->id;
       }
 
     }
