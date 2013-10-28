@@ -180,7 +180,9 @@ class Feed
         $user_feeds[] = $row->id;   
     }
 
-    $redis->sAdd("user:feeds:$userid",$user_feeds);
+    foreach($user_feeds as $feed){
+      $redis->sAdd("user:feeds:$userid", $feed);
+    }
 
     $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
 
