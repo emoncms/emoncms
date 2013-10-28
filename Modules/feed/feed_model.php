@@ -57,7 +57,7 @@ class Feed
     public function set_update_value_redis($feedid, $value, $updatetime){
         
         $redis = $this->get_redis();
-        $redis->hMset("feed:lastvalue:$feedid", array(value => $value, time => $updatetime));
+        $redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
         
     }
     
