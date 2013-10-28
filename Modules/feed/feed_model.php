@@ -166,8 +166,8 @@ class Feed
     
     $redis = $this->get_redis();
     
-    if($redis->exists('user:feeds:$userid')){
-        $user_feeds = $redis->sMembers('user:feeds:$userid');        
+    if($redis->exists("user:feeds:$userid")){
+        $user_feeds = $redis->sMembers("user:feeds:$userid");        
         
     }
     else{
@@ -180,12 +180,12 @@ class Feed
         $user_feeds[] = $row->id;   
     }
 
-    $redis->sAdd('user:feeds:$userid',$user_feeds);
+    $redis->sAdd("user:feeds:$userid",$user_feeds);
 
     $result = $this->mysqli->query("SELECT id,name,datatype,tag,time,value,public,size,engine FROM feeds WHERE userid = $userid");
 
     while($row = $result->fetch_object()){
-        $redis->hMSet("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatybe, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
+        $redis->hMSet("feed:$row->id", array('name' => $row->name, 'datatype' => $row->datatype, 'tag' => $row->tag, 'time' => $row->time, 'value' => $row->value, 'public' => $row->public, 'size' => $row->size, 'engine' => $row->engine ));        
     }
 
     }
