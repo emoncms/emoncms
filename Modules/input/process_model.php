@@ -35,27 +35,9 @@ class Process
       // No. of datafields if creating feed
       // Data type
 
-      $list[1] = array(
-        _("Log to feed"),
-        ProcessArg::FEEDID,
-        "log_to_feed",
-        1,
-        DataType::REALTIME
-      );
-      $list[2] = array(
-        "x",
-        ProcessArg::VALUE,
-        "scale",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[3] = array(
-        "+",
-        ProcessArg::VALUE,
-        "offset",
-        0,
-        DataType::UNDEFINED
-      );
+      $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME);
+      $list[2] = array("x",ProcessArg::VALUE,"scale",0,DataType::UNDEFINED);
+      $list[3] = array("+",ProcessArg::VALUE,"offset",0,DataType::UNDEFINED);
       $list[4] = array(
         _("Power to kWh"),
         ProcessArg::FEEDID,
@@ -147,6 +129,7 @@ class Process
         2,
         DataType::HISTOGRAM
       );
+      
       $list[17] = array(
         _("average"),
         ProcessArg::FEEDID,
@@ -317,19 +300,14 @@ class Process
     //---------------------------------------------------------------------------------------
     public function times_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
-      $value = $value * $row['value'];
-      return $value;
+      return $value * $this->input->get_last_value($id);
     }
 
     public function divide_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
-     
-      if($row['value'] > 0){
-          return $value / $row['value'];
+      $lastval = $this->input->get_last_value($id);
+      if($lastval > 0){
+          return $value / $lastval;
       }else{
           return null; // should this be null for a divide by zero?
       }
@@ -337,25 +315,18 @@ class Process
 
     public function add_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
-      $value = $value + $row['value'];
-      return $value;
+      return $value + $this->input->get_last_value($id);
     }
 
     public function subtract_input($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM input WHERE id = '$id'");
-      $row = $result->fetch_array();
-      $value = $value - $row['value'];
-      return $value;
+      return $value - $this->input->get_last_value($id);
     }
 
     public function add_feed($id, $time, $value)
     {
-      $result = $this->mysqli->query("SELECT value FROM feeds WHERE id = '$id'");
-      $row = $result->fetch_array();
-      $value = $value + $row['value'];
+      $last = $this->feed->get_timevalue($feedid);
+      $value = $value + $last['value'];
       return $value;
     }
 
@@ -369,7 +340,7 @@ class Process
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
       $last_kwh = $last['value'];
-      $last_time = strtotime($last['time']);
+      $last_time = $last['time'];
 
       if ($last_time)
       {
@@ -391,7 +362,7 @@ class Process
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
       $last_kwh = $last['value'];
-      $last_time = strtotime($last['time']);
+      $last_time = $last['time'];
 
       if ($last_time)
       {
@@ -409,14 +380,8 @@ class Process
 
     public function kwhinc_to_kwhd($feedid, $time_now, $value)
     {
-      $new_kwh = 0;
-
-      // Get last value
       $last = $this->feed->get_timevalue($feedid);
-      $last_kwh = $last['value'];
-
-      $kwh_inc = $value / 1000.0;
-      $new_kwh = $last_kwh + $kwh_inc;
+      $new_kwh = $last['value'] + ($value / 1000.0);
 
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
       $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
@@ -430,14 +395,13 @@ class Process
     public function input_ontime($feedid, $time_now, $value)
     {
       // Get last value
-      $last = $this->feed->get($feedid);
-      $ontime = $last->value;
-      $last_time = strtotime($last->time);
+      $last = $this->feed->get_timevalue($feedid);
+      $ontime = $last->value; 
 
       if ($value > 0)
       {
-        $time_elapsed = ($time_now - $last_time);
-        $ontime = $ontime + $time_elapsed;
+        $time_elapsed = $time_now - $last->time;
+        $ontime += $time_elapsed;
       }
 
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
@@ -559,16 +523,11 @@ class Process
       return $value;
     }
 
-    public function accumulator($arg, $time, $value)
+    public function accumulator($feedid, $time, $value)
     {
-      $feedid = $arg;
-
-      $last_value = $this->feed->get_field($feedid,'value');
-
-      $value = $last_value + $value;
-
+      $last = $this->feed->get_timevalue($feedid);
+      $value = $last['value'] + $value;
       $this->feed->insert_data($feedid, $time, $time, $value);
-
       return $value;
     }
 
@@ -599,18 +558,12 @@ class Process
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       // Get the last time
-      $result = $this->mysqli->query("SELECT * FROM feeds WHERE id = '$feedid'");
-      $last_row = $result->fetch_array();
-
-      if ($last_row)
-      {
-        $last_time = strtotime($last_row['time']);
-        if (!$last_time)
-          $last_time = $time_now;
-        // kWh calculation
-        $time_elapsed = ($time_now - $last_time);
-        $kwh_inc = ($time_elapsed * $value) / 3600000;
-      }
+      $lastvalue = $this->feed->get_timevalue($feedid);
+      $last_time = $lastvalue['time'];
+       
+      // kWh calculation
+      $time_elapsed = ($time_now - $last_time);
+      $kwh_inc = ($time_elapsed * $value) / 3600000;
 
       // Get last value
       $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
@@ -623,8 +576,7 @@ class Process
       {
         $result = $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0.0','$new_value')");
 
-        $updatetime = date("Y-n-j H:i:s", $time_now);
-        $this->mysqli->query("UPDATE feeds SET value = $new_value, time = '$updatetime' WHERE id='$feedid'");
+        $this->feed->set_update_value_redis($feedid, $new_value, $time_now);
         $new_kwh = $kwh_inc;
       }
       else
@@ -636,9 +588,7 @@ class Process
       // update kwhd feed
       $this->mysqli->query("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value'");
 
-      $updatetime = date("Y-n-j H:i:s", $time_now);
-      $this->mysqli->query("UPDATE feeds SET value = '$new_value', time = '$updatetime' WHERE id='$feedid'");
-
+      $this->feed->set_update_value_redis($feedid, $new_value, $time_now);
       return $value;
     }
 
@@ -667,20 +617,17 @@ class Process
         $this->mysqli->query("INSERT INTO $feedname (`time`,`data`,`data2`) VALUES ('$feedtime','$value','1')");
       }
 
-      $updatetime = date("Y-n-j H:i:s", $time_now);
-      $this->mysqli->query("UPDATE feeds SET value = '$new_average', time = '$updatetime' WHERE id='$feedid'");
-
+      $this->feed->set_update_value_redis($feedid, $new_value, $time_now);
       return $value;
     }
-
- 
-   //------------------------------------------------------------------------------------------------------
-  // Calculate the energy used to heat up water based on the rate of change for the current and a previous temperature reading
-  // See http://harizanov.com/2012/05/measuring-the-solar-yield/ for more info on how to use it
-  //------------------------------------------------------------------------------------------------------
+    
+    //------------------------------------------------------------------------------------------------------
+    // Calculate the energy used to heat up water based on the rate of change for the current and a previous temperature reading
+    // See http://harizanov.com/2012/05/measuring-the-solar-yield/ for more info on how to use it
+    //------------------------------------------------------------------------------------------------------
     public function heat_flux($feedid,$time_now,$value)
     {
-   // Get the feed
+    // Get the feed
 	  $feedname = "feed_".trim($feedid)."";
        
 	  // Get the current input id 
@@ -720,152 +667,119 @@ class Process
 		  $TimeDelta  = $time_now - $time_prev;		//Calculate time in seconds that has elapsed since then
 		
 		  $ratechange = ($ratechange*4186/$TimeDelta);     //Calculate the temperature change per second
-									  //Specific heat of Water (4186 J/kg/K)
-									  //Multiply by the volume in liters in emoncms as a next step of the processing
-      }
-	  return($ratechange);
+									  // Specific heat of Water (4186 J/kg/K)
+									  // Multiply by the volume in liters in emoncms as a next step of the processing
     }
+	  return($ratechange);
+  }
 
 
   //For solar hot water heater, I need the positive amounts only to be able to calculate the energy harvested in a day. 
   //Negative values are when the hot water tank loses energy i.e. due to heat loss OR when being used for a shower, but I want the daily gain in energy only
 
-    public function power_acc_to_kwhd($feedid,$time_now,$value)
-    {
-        if ($value>0) {
-            $new_kwh = 0;
+  public function power_acc_to_kwhd($feedid,$time_now,$value)
+  {
+    if ($value>0) {
+      $new_kwh = 0;
 
-            // Get last value
-            $last = $this->feed->get_timevalue($feedid);
-            $last_kwh = $last['value'];
-            $last_time = strtotime($last['time']);
-
-            if ($last_time) {
-                // kWh calculation
-                $time_elapsed = ($time_now - $last_time);
-                $kwh_inc = ($time_elapsed * $value) / 3600000;
-                $new_kwh = $last_kwh + $kwh_inc;
-            }
-
-            $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-            $this->feed->update_data($feedid,$time_now,$feedtime,$new_kwh);
-
-            return $value;
-        }
-    }
-
-    public function pulse_diff($feedid,$time_now,$value)
-    {
-      // Wrap around signed int to unsigned int
-      if ($value < 0) {
-              $value = 65536 + $value;
+      $last = $this->feed->get_timevalue($feedid);
+      if ($last['time']) {
+        // kWh calculation
+        $time_elapsed = ($time_now - $last['time']);
+        $kwh_inc = ($time_elapsed * $value) / 3600000;
+        $new_kwh = $last['value'] + $kwh_inc;
       }
 
-      if($value>0) {
-   
-      $pulse_diff = 0;
+      $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+      $this->feed->update_data($feedid,$time_now,$feedtime,$new_kwh);
 
-      // Get last value
-      error_log("Feed:".$feedid);
+      return $value;
+    }
+  }
+
+  public function pulse_diff($feedid,$time_now,$value)
+  {
+    // Wrap around signed int to unsigned int
+    if ($value < 0) {
+      $value = 65536 + $value;
+    }
+
+    if($value>0)
+    {
+      $pulse_diff = 0;
       $last = $this->feed->get_timevalue($feedid);
-      $last_value = $last['value'];
-      $last_time = strtotime($last['time']); 
-     
-      if ($last_time) {
+      if ($last['time']) {
         // Need to handle resets of the pulse value (and negative 2**15?)
-        if ($value >= $last_value)
-        {
-          $pulse_diff = $value - $last_value;
-        }
-        else
-        {
+        if ($value >= $last['value']) {
+          $pulse_diff = $value - $last['value'];
+        } else {
           $pulse_diff = $value;
         }
       }
-      error_log("Value:".$value." Last:".$last_value." Diff:".$pulse_diff);
       
       // Save to allow next difference calc. 
       $this->feed->insert_data($feedid,$time_now,$time_now,$value);
 
       return $pulse_diff;
-    	}
+    }
+  }
+    
+  public function kwh_to_power($feedid,$time_now,$value)
+  {
+    $power = 0;
+
+    // Get last time
+    error_log("Feed:".$feedid);
+    $last = $this->feed->get_timevalue($feedid);
+    $last_value = $last['value'];
+    $last_time = $last['time']; 
+
+    if ($last_time) {
+      $time_elapsed = ($time_now - $last_time);   // seconds
+      error_log("Time elapsed:".$time_elapsed);
+      $power = ($value * 3600 / $time_elapsed);
     }
     
-    public function kwh_to_power($feedid,$time_now,$value)
-    {
+    $this->feed->insert_data($feedid,$time_now,$time_now,$power);
 
-      $power = 0;
-
-      // Get last time
-      error_log("Feed:".$feedid);
-      $last = $this->feed->get_timevalue($feedid);
-      $last_value = $last['value'];
-      $last_time = strtotime($last['time']); 
-
-      if ($last_time) {
-        $time_elapsed = ($time_now - $last_time);   // seconds
-        error_log("Time elapsed:".$time_elapsed);
-        $power = ($value * 3600 / $time_elapsed);
-      }
-      
-      $this->feed->insert_data($feedid,$time_now,$time_now,$power);
-
-      return $power;
-    }
+    return $power;
+  }
     
-    	public function max_value($feedid, $time_now, $value)
-    {
-
-      // Get last values
-      $last = $this->feed->get_timevalue($feedid);
-      $last_val = $last['value'];
-	  $last_time = strtotime($last['time']);
-	  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-	  $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
-		
-	  // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new max)
-	  if ($time_check != $feedtime) {
+  public function max_value($feedid, $time_now, $value)
+  {
+    // Get last values
+    $last = $this->feed->get_timevalue($feedid);
+    $last_val = $last['value'];
+    $last_time = $last['time'];
+    $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+    $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
+	
+    // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new max)
+    if ($time_check != $feedtime) {
       $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
-	  }
-	  
-	  else
-	  
-	  // Otherwise runs to determine if there is a change in value
-	  {
-	  if ($value > $last_val) 
-		{		
-		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
-		}
-	  }
-      return $value;
+    } else {
+      if ($value > $last_val) $this->feed->update_data($feedid, $time_now, $feedtime, $value);
     }
+    return $value;
+  }
 
-	public function min_value($feedid, $time_now, $value)
-    {
+  public function min_value($feedid, $time_now, $value)
+  {
+    // Get last values
+    $last = $this->feed->get_timevalue($feedid);
+    $last_val = $last['value'];
+    $last_time = $last['time'];
+    $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+    $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
 
-      // Get last values
-      $last = $this->feed->get_timevalue($feedid);
-      $last_val = $last['value'];
-	  $last_time = strtotime($last['time']);
-	  $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-	  $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
-		
-	  // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new min)
-	  if ($time_check != $feedtime) {
-	  $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
-	  }
-	  
-	  else
-	  
-	  // Otherwise runs to determine if there is a change in value
-	  {
-	  if ($value < $last_val) 
-		{		
-		$this->feed->update_data($feedid, $time_now, $feedtime, $value);
-		}
-	  }
-      return $value;
+    // Runs on setup and midnight to reset current value - (otherwise db sets 0 as new min)
+    if ($time_check != $feedtime) {
+      $this->feed->insert_data($feedid, $time_now, $feedtime, $value);
+    } else {
+      if ($value < $last_val) $this->feed->update_data($feedid, $time_now, $feedtime, $value);
     }
+    return $value;
+  }
 }
   
 ?>
