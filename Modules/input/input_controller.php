@@ -30,6 +30,8 @@ function input_controller()
 
   require "Modules/input/process_model.php"; // 886
   $process = new Process($mysqli,$input,$feed);
+  
+  
 
   if ($route->format == 'html')
   {
@@ -100,7 +102,7 @@ function input_controller()
                     $input->create_input($userid, $nodeid, $name);
                     $dbinputs[$nodeid][$name] = true;
                   } else { 
-                    if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                    $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                     if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
                   }
                   $result = 'ok';
@@ -144,7 +146,7 @@ function input_controller()
                 $input->create_input($session['userid'], $nodeid, $name);
                 $dbinputs[$nodeid][$name] = true;
               } else { 
-                if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                 if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
               }
               $result = 'ok';
@@ -166,10 +168,12 @@ function input_controller()
               $value = (float) $csv[$i];
 
               if (!isset($dbinputs[$nodeid][$name])) {
-                $input->create_input($session['userid'], $nodeid, $name);
+                $iid = $input->create_input($session['userid'], $nodeid, $name);
                 $dbinputs[$nodeid][$name] = true;
+                $dbinputs[$nodeid][$name] = array('id'=>$iid);
+                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
               } else { 
-                if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                 if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
               }
               $result = 'ok';
@@ -180,8 +184,7 @@ function input_controller()
       }
 
       if ($route->action == "list") $result = $input->getlist($session['userid']);
-      
-      if ($route->action == "deletenode") $result = $input->delete_node($session['userid'],get("nodeid"));
+      if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
 
       if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
       {
