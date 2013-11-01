@@ -51,12 +51,7 @@ class Dashboard
 	    // Name for cloned dashboard
 	    $name = $row['name']._(' clone');
 
-<<<<<<< HEAD
       $this->mysqli->query("INSERT INTO dashboard (userid,content,name,description) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
-=======
-      $sql = ("INSERT INTO dashboard (userid, content, name, description) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
-      $result = db_query($this->conn, $sql);
->>>>>>> ef562b1... Remove useless MySQL propriatary backtics
 	
 	    return $this->mysqli->insert_id;
     }

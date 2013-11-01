@@ -13,7 +13,7 @@ class Update
     function u0001($apply)
     {
       $operations = array();
-      $result = $this->mysqli->query("SELECT userid,id,name,nodeid,time,processList FROM input");
+      $result = $this->mysqli->query("SELECT userid,id,name,nodeid,time,processlist FROM input");
       while ($row = $result->fetch_object()) 
       {
 
@@ -60,12 +60,12 @@ class Update
       $process_list = $process->get_process_list();
 
       $operations = array();
-      $result = $this->mysqli->query("SELECT userid,id,processList,time,record FROM input");
+      $result = $this->mysqli->query("SELECT userid,id,processlist,time,record FROM input");
       while ($row = $result->fetch_object())
       {
-        if ($row->processList)
+        if ($row->processlist)
         {
-          $pairs = explode(",",$row->processList);
+          $pairs = explode(",",$row->processlist);
           foreach ($pairs as $pair)    			        
           {
             $inputprocess = explode(":", $pair);

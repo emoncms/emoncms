@@ -27,13 +27,8 @@ class Feed
     {
         // Not the best way to bring the variable in but a quick fix for now
         // while the feature is tested.
-<<<<<<< HEAD
         global $default_engine;
         if (isset($default_engine)) $this->default_engine = $default_engine;
-=======
-        global $default_log_engine;
-        if (isset($default_log_engine)) $this->default_log_engine = $default_log_engine;
->>>>>>> ef562b1... Remove useless MySQL propriatary backtics
         
         $this->mysqli = $mysqli;
         

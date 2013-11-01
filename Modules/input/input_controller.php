@@ -68,7 +68,7 @@ function input_controller()
         // We start by loading all user inputs in a single database call
         // The intention here is to minimize database calls as these are what takes time
         // We then construct an input object that is easily searchable against input 
-        // that is recieved in the request and that contains the processList
+        // that is recieved in the request and that contains the processlist
 
         $userid = $session['userid'];
         $dbinputs = $input->get_inputs($userid);
@@ -101,11 +101,11 @@ function input_controller()
                     $dbinputs[$nodeid][$name] = true;
                   } else { 
                     if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                    if ($dbinputs[$nodeid][$name]['processlist']) $tmp[] = array('value'=>$value,'processlist'=>$dbinputs[$nodeid][$name]['processlist']);
                   }
                   $result = 'ok';
                 }
-                foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+                foreach ($tmp as $i) $process->input($time,$i['value'],$i['processlist']);
               }
             }
           }
@@ -145,12 +145,12 @@ function input_controller()
                 $dbinputs[$nodeid][$name] = true;
               } else { 
                 if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                if ($dbinputs[$nodeid][$name]['processlist']) $tmp[] = array('value'=>$value,'processlist'=>$dbinputs[$nodeid][$name]['processlist']);
               }
               $result = 'ok';
             }
           }
-          foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+          foreach ($tmp as $i) $process->input($time,$i['value'],$i['processlist']);
         }
 
         if (isset($_GET['csv']))
@@ -170,12 +170,12 @@ function input_controller()
                 $dbinputs[$nodeid][$name] = true;
               } else { 
                 if ($dbinputs[$nodeid][$name]['record']) $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                if ($dbinputs[$nodeid][$name]['processlist']) $tmp[] = array('value'=>$value,'processlist'=>$dbinputs[$nodeid][$name]['processlist']);
               }
               $result = 'ok';
             }
           }
-          foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+          foreach ($tmp as $i) $process->input($time,$i['value'],$i['processlist']);
         }
       }
 

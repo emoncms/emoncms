@@ -242,10 +242,10 @@ class Process
       return $list;
     }
 
-    public function input($time, $value, $processList)
+    public function input($time, $value, $processlist)
     {
         $process_list = $this->get_process_list();
-        $pairs = explode(",",$processList);
+        $pairs = explode(",", $processlist);
         foreach ($pairs as $pair)    			        
         {
           $inputprocess = explode(":", $pair); 				                // Divide into process id and arg
@@ -515,12 +515,12 @@ class Process
       $feedname = "feed_" . trim($feedid) . "";
 
       // Get the current input id
-      $result = $this->mysqli->query("Select * from input where processList like '%:$feedid%';");
+      $result = $this->mysqli->query("Select * from input where processlist like '%:$feedid%';");
       $rowfound = $result->fetch_array();
       if ($rowfound)
       {
         $inputid = trim($rowfound['id']);
-        $processlist = $rowfound['processList'];
+        $processlist = $rowfound['processlist'];
         // Now get the feed for the log to feed command for the input
         $logfeed = preg_match('/1:(\d+)/', $processlist, $matches);
         $logfeedid = trim($matches[1]);
@@ -684,12 +684,12 @@ class Process
 	  $feedname = "feed_".trim($feedid)."";
        
 	  // Get the current input id 
-	  $result = $this->mysqli->query("Select * from input where processList like '%:$feedid%';");
+	  $result = $this->mysqli->query("Select * from input where processlist like '%:$feedid%';");
 	  $rowfound = $result->fetch_array();
 	  if ($rowfound)
 	  {
 		  $inputid = trim($rowfound['id']);
-		  $processlist = $rowfound['processList'];
+		  $processlist = $rowfound['processlist'];
 		  // Now get the feed for the log to feed command for the input 
 		  $logfeed = preg_match('/1:(\d+)/',$processlist,$matches);
 		  $logfeedid = trim($matches[1]);

@@ -59,7 +59,7 @@ class Input
 
     private function set_processlist($id, $processlist)
     {
-      $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
+      $this->mysqli->query("UPDATE input SET processlist = '$processlist' WHERE id='$id'");
     }
 
     public function set_fields($id,$fields)
@@ -197,13 +197,13 @@ class Input
     public function get_inputs($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,processList,record FROM input WHERE userid = '$userid'");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,processlist,record FROM input WHERE userid = '$userid'");
 
         $dbinputs = array();
         while ($row = $result->fetch_object()) {
             if ($row->nodeid==null) $row->nodeid = 0;
             if (!isset($dbinputs[$row->nodeid])) $dbinputs[$row->nodeid] = array();
-            $dbinputs[$row->nodeid][$row->name] = array('id'=>$row->id, 'processList'=>$row->processList, 'record'=>$row->record);
+            $dbinputs[$row->nodeid][$row->name] = array('id'=>$row->id, 'processlist'=>$row->processlist, 'record'=>$row->record);
         }
         return $dbinputs;
     }
@@ -239,10 +239,10 @@ class Input
         $nodeid = (int) $nodeid;
         $name = (int) $name;
 
-        $result = $this->mysqli->query("SELECT id,processList,record FROM input WHERE nodeid='$nodeid' AND name='$name' AND userid='$userid'");
+        $result = $this->mysqli->query("SELECT id,processlist,record FROM input WHERE nodeid='$nodeid' AND name='$name' AND userid='$userid'");
         if ($result) {
             $row = $result->fetch_object();
-            return array('id'=>$row->id, 'processList'=>$row->processList, 'record'=>$row->record);
+            return array('id'=>$row->id, 'processlist'=>$row->processlist, 'record'=>$row->record);
         }
         else
             return false;
@@ -264,9 +264,9 @@ class Input
     public function get_processlist($id)
     {
         $id = (int) $id;
-        $result = $this->mysqli->query("SELECT processList FROM input WHERE id='$id'");
+        $result = $this->mysqli->query("SELECT processlist FROM input WHERE id='$id'");
         $array = $result->fetch_array();
-        return $array['processList'];
+        return $array['processlist'];
     }
 
     //-----------------------------------------------------------------------------------------------
