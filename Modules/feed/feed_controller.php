@@ -87,7 +87,7 @@ function feed_controller()
             if ($route->action == "exportmeta") $result = $feed->timestore_export_meta($feedid);
             if ($route->action == "getmeta") $result = $feed->timestore_get_meta($feedid);
             if ($route->action == "scalerange") $result = $feed->timestore_scale_range($feedid,get('start'),get('end'),get('value'));
-          } elseif ($row['engine']==Engine::MYSQL)  {
+          } elseif (($row['engine'] == Engine::MYSQL) && ($row['engine'] == Engine::POSTGRESQL)) {
             if ($route->action == "export") $result = $feed->dbtimeseries_export($feedid,get('start'));
             if ($route->action == "deletedatapoint") $result = $feed->dbtimeseries_delete_data_point($feedid,get('feedtime'));
             if ($route->action == "deletedatarange") $result = $feed->dbtimeseries_delete_data_range($feedid,get('start'),get('end'));

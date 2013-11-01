@@ -151,6 +151,8 @@ class Update
       $operations = array();
       if ($default_engine == Engine::MYSQL)
           $sql = ("SHOW columns FROM feeds LIKE 'timestore';");
+      else
+          $sql = ("SELECT column_name FROM information_schema.columns WHERE table_name = 'feeds' AND column_name = 'timestore';");
      $result = db_query($this->conn, $sql);
      $row = db_fetch_array($result);
       

@@ -310,6 +310,9 @@ class User
 	case (Engine::MYSQL):
 		$sql = ("SELECT `convert` FROM users WHERE id = '$userid';"); /* reserved word, convert */
 		break;
+	case (Engine::POSTGRESQL):
+		$sql = ("SELECT \"convert\" FROM users WHERE id = '$userid';"); /* reserved word, convert */
+		break;
 	default:
 		$sql = "";
 		break;
@@ -395,10 +398,15 @@ class User
 
     public function set_convert_status($userid)
     {
+	global $default_engine;
+
         $userid = intval($userid);
 	switch ($this->default_engine) {
 	case (Engine::MYSQL):
 		$sql = ("UPDATE users SET `convert` = '1' WHERE id='$userid';"); /* reserved word, convert */
+		break;
+	case (Engine::POSTGRESQL):
+		$sql = ("UPDATE users SET \"convert\" = '1' WHERE id='$userid';"); /* reserved word, convert */
 		break;
 	default:
 		$sql = "";

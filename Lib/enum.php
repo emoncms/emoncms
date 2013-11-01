@@ -18,4 +18,5 @@
     const MYSQL = 0;
     const TIMESTORE = 1;
     const PHPTIMESERIES = 2;
+    const POSTGRESQL = 3;
   }

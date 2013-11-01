@@ -461,6 +461,9 @@ class Process
 
       // First we check if there is an entry for the feed in the kwhdproc table
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("SELECT extract(epoch FROM date_trunc('day', time)) AS time, kwh FROM kwhdproc WHERE feedid = '$feedid';");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("SELECT time, kwh FROM kwhdproc WHERE feedid = '$feedid';");
 		break;
@@ -474,6 +477,9 @@ class Process
       // If there is not we create an entry
       if (!$row) {
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("INSERT INTO kwhdproc (feedid, time, kwh) VALUES ('$feedid', to_timestamp(0), '0');");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("INSERT INTO kwhdproc (feedid, time, kwh) VALUES ('$feedid', '0', '0');");
 		break;
@@ -489,6 +495,9 @@ class Process
       if ($time != $row['time'])
       {
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("UPDATE kwhdproc SET kwh = '$value', time = to_timestamp($time) WHERE feedid = '$feedid';");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("UPDATE kwhdproc SET kwh = '$value', time = '$time' WHERE feedid = '$feedid';");
 		break;
@@ -520,6 +529,9 @@ class Process
 
       $feedname = "feed_".trim($feedid)."";
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("SELECT data2 FROM $feedname WHERE time = to_timestamp($time));");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("SELECT data2 FROM $feedname WHERE time = '$time';");
 		break;
@@ -534,6 +546,9 @@ class Process
       if (!$row)
       {
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES (to_timestamp($time), '0', '$value');");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES ('$time', '0', '$value');");
 		break;
@@ -549,6 +564,9 @@ class Process
         $kwh_today = $value - $kwh_start_of_day;
 	switch ($this->default_engine) {
 	case (Engine::MYSQL):
+		$sql = ("UPDATE $feedname SET data = '$kwh_today' WHERE time = to_timestamp($time);");
+		break;
+	case (Engine::MYSQL):
 		$sql = ("UPDATE $feedname SET data = '$kwh_today' WHERE time = '$time';");
 		break;
 	default:
@@ -560,6 +578,7 @@ class Process
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL): /* Fallthrough */
 	case (Engine::MYSQL):
 		$sql = ("UPDATE feeds SET value = '$kwh_today', time = '$updatetime', datatype = '2' WHERE id = '$feedid';");
 		break;
@@ -668,6 +687,9 @@ class Process
 
       // Get the last time
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("SELECT extract(epoch FROM time) AS time FROM feeds WHERE id = '$feedid';");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("SELECT time FROM feeds WHERE id = '$feedid';");
 		break;
@@ -691,6 +713,9 @@ class Process
       // Get last value
 	switch ($this->default_engine) {
 	case (Engine::MYSQL):
+		$sql = ("SELECT data2 FROM $feedname WHERE time = to_timestamp($time) AND data2 = '$new_value';");
+		break;
+	case (Engine::MYSQL):
 		$sql = ("SELECT data2 FROM $feedname WHERE time = '$time' AND data2 = '$new_value';");
 		break;
 	default:
@@ -706,6 +731,9 @@ class Process
       if (!$last_row)
       {
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES (to_timestamp($time), '0.0', '$new_value');");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES ('$time', '0.0', '$new_value');");
 		break;
@@ -717,6 +745,7 @@ class Process
 
         $updatetime = date("Y-n-j H:i:s", $time_now);
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL): /* Fallthrough */
 	case (Engine::MYSQL):
 		$sql = ("UPDATE feeds SET value = '$new_value', time = '$updatetime' WHERE id = '$feedid';");
 		break;
@@ -746,6 +775,7 @@ class Process
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL): /* Fallthrough */
 	case (Engine::MYSQL):
 		$sql = ("UPDATE feeds SET value = '$new_value', time = '$updatetime' WHERE id = '$feedid';");
 		break;
@@ -765,6 +795,9 @@ class Process
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("SELECT data, data2 FROM $feedname WHERE time = to_timestamp($feedtime);");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("SELECT data, data2 FROM $feedname WHERE time = '$feedtime';");
 		break;
@@ -786,6 +819,9 @@ class Process
       if ($row)
       {
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("UPDATE $feedname SET data = '$new_average', data2 = '$size' WHERE time = to_timestamp($feedtime);");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("UPDATE $feedname SET data = '$new_average', data2 = '$size' WHERE time = '$feedtime';");
 		break;
@@ -798,6 +834,9 @@ class Process
       else
       {
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL):
+		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES (to_timestamp($feedtime), '$value', '1');");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("INSERT INTO $feedname (time, data, data2) VALUES ('$feedtime', '$value', '1');");
 		break;
@@ -810,6 +849,7 @@ class Process
 
       $updatetime = date("Y-n-j H:i:s", $time_now);
 	switch ($this->default_engine) {
+	case (Engine::POSTGRESQL): /* Fallthrough */
 	case (Engine::MYSQL):
 		$sql = ("UPDATE feeds SET value = '$new_average', time = '$updatetime' WHERE id = '$feedid';");
 		break;
@@ -851,6 +891,9 @@ class Process
 		  // Without this we will get unstable readings
 
 		switch ($this->default_engine) {
+		case (Engine::POSTGRESQL):
+			$sql = ("SELECT extract(epoch FROM time) AS time, data FROM $oldfeedname ORDER BY time DESC LIMIT 1, 128;");
+			break;
 		case (Engine::MYSQL):
 			$sql = ("SELECT time, data FROM $oldfeedname ORDER BY time DESC LIMIT 1, 128;");
 			break;

@@ -16,6 +16,10 @@ class dbTimeSeries
 		global $default_log_engine;
 
 		switch ($default_log_engine) {
+		case (Engine::POSTGRESQL):
+			require "Modules/feed/engine/PgsqlTimeSeries.php";
+			$this->db = new PgsqlTimeSeries($conn);
+			break;
 		case (Engine::MYSQL):
 			require "Modules/feed/engine/MysqlTimeSeries.php";
 			$this->db = new MysqlTimeSeries($conn);
