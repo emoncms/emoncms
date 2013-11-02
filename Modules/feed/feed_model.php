@@ -58,7 +58,7 @@ class Feed
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
         
-        if ($datatype == 1) $engine = $this->default_engine; else $engine = Engine::MYSQL;
+        if ($datatype == DataType::REALTIME) $engine = $this->default_engine; else $engine = Engine::MYSQL;
 
         $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype','false','$engine')");
         $feedid = $this->mysqli->insert_id;
@@ -67,13 +67,13 @@ class Feed
         {
           $feedname = "feed_".$feedid;
 
-          if ($datatype==1) {
+          if ($datatype==DataType::REALTIME) {
             if ($this->default_engine == Engine::TIMESTORE) $this->timestore->create($feedid,$newfeedinterval);
             if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
             if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
           }
-          elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
-          elseif ($datatype==3) $this->histogram->create($feedid);
+          elseif ($datatype==DataType::DAILY) $this->mysqltimeseries->create($feedid);
+          elseif ($datatype==DataType::HISTOGRAM) $this->histogram->create($feedid);
         
           
           return array('success'=>true, 'feedid'=>$feedid);										

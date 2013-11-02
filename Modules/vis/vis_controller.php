@@ -78,10 +78,10 @@
         {
             $feedid = intval(get('feedid'));
             $datatype = $feed->get_field($feedid,'datatype');
-            if ($datatype == 0) $result = "Feed type or authentication not valid";
-            if ($datatype == 1) $route->action = 'rawdata';
-            if ($datatype == 2) $route->action = 'bargraph';
-            if ($datatype == 3) $route->action = 'histgraph';
+            if ($datatype == DataType::UNDEFINED) $result = "Feed type or authentication not valid";
+            if ($datatype == DataType::REALTIME) $route->action = 'rawdata';
+            if ($datatype == DataType::DAILY) $route->action = 'bargraph';
+            if ($datatype == DataType::HISTOGRAM) $route->action = 'histgraph';
         }
 
         while ($vis = current($visualisations))
