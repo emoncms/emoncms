@@ -26,7 +26,6 @@ class Timestore
   
   public function post($feedid,$time,$value)
   {
-
     // IMPORTANT: This puts a limit on the range of timestamps that can be accepted
     // if you need to post or update datapoints that are older than 5 years and newer than the current time + 48 hours in the future
     // then change these values:
@@ -58,6 +57,25 @@ class Timestore
     return $data;
   }
   
+  public function lastvalue($feedid)
+  {
+    $feedid = (int) $feedid;
+    $meta = $this->get_meta($feedid);
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
+    
+    $primaryfeedname = "/var/lib/timestore/$feedname";
+    $fh = fopen($primaryfeedname, 'rb');
+    $size = filesize($primaryfeedname);
+    
+    fseek($fh,$size-4);
+    $d = fread($fh,4);
+    fclose($fh);
+    
+    $val = unpack("f",$d);
+    $time = date("Y-n-j H:i:s", $meta['start'] + $meta['interval'] * $meta['npoints']);
+    return array('time'=>$time, 'value'=>$val[1]);
+  }
+  
   public function get_average($feedid,$start,$end,$interval)
   {
     $feedid = intval($feedid);
@@ -83,15 +101,15 @@ class Timestore
     $end = intval($end/1000.0);
     
     
-    $meta = $this->get_timestore_meta($feedid);
+    $meta = $this->get_meta($feedid);
 
     $npoints = round(($end - $start) / $meta['interval']);
-    $data = json_decode($this->timestore->get_series($feedid,0,$npoints,$start,$end,null));
+    $data = json_decode($this->timestoreApi->get_series($feedid,0,$npoints,$start,$end,null));
 
     foreach ($data as $point)
     {
       $time = $point[0];
-      $this->timestore->post_values($feedid,$time,array($point[1] * $value),null);
+      $this->timestoreApi->post_values($feedid,$time,array($point[1] * $value),null);
     }
 
     return true;

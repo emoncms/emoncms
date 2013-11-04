@@ -339,9 +339,12 @@ class Process
 
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
+      $last['time'] = strtotime($last['time']);
+      if (!isset($last['value'])) $last['value'] = 0;
       $last_kwh = $last['value'];
+      
       $last_time = $last['time'];
-
+      
       if ($last_time)
       {
         // kWh calculation
@@ -361,6 +364,8 @@ class Process
 
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
+      $last['time'] = strtotime($last['time']);
+      
       $last_kwh = $last['value'];
       $last_time = $last['time'];
 
@@ -396,11 +401,13 @@ class Process
     {
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
-      $ontime = $last->value; 
-
+      $last['time'] = strtotime($last['time']);
+      if (!isset($last['value'])) $last['value'] = 0;
+      $ontime = $last['value']; 
+      
       if ($value > 0)
       {
-        $time_elapsed = $time_now - $last->time;
+        $time_elapsed = $time_now - $last['time'];
         $ontime += $time_elapsed;
       }
 
@@ -412,6 +419,7 @@ class Process
 
     public function kwh_to_kwhd($feedid, $time_now, $value)
     {
+
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       // First we check if there is an entry for the feed in the kwhdproc table
@@ -446,6 +454,7 @@ class Process
   
     public function kwh_to_kwhd2($feedid, $time_now, $value)
     {
+      
       $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
       $feedname = "feed_".trim($feedid)."";
@@ -474,6 +483,7 @@ class Process
   //--------------------------------------------------------------------------------
   public function ratechange($feedid, $time_now, $value)
   {
+    
     // Get the feed
     $feedname = "feed_" . trim($feedid) . "";
 
@@ -490,6 +500,7 @@ class Process
       // Now need to get the last but one value in the main log to feed table
       $oldfeedname = "feed_" . trim($logfeedid) . "";
       $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 2;");
+      if ($lastentry) {
       $lastentryrow = $lastentry->fetch_array();
       // Calling again so can get the 2nd row
       $lastentryrow = $lastentry->fetch_array();
@@ -497,7 +508,10 @@ class Process
       $ratechange = $value - $prevValue;
       // now put this rate change into the correct feed table
       $this->feed->insert_data($feedid, $time_now, $time_now, $ratechange);
+      }
     }
+    
+
   }
 
   public function save_to_input($arg, $time, $value)
@@ -523,6 +537,7 @@ class Process
 
   public function accumulator($feedid, $time, $value)
   {
+   
     $last = $this->feed->get_timevalue($feedid);
     $value = $last['value'] + $value;
     $this->feed->insert_data($feedid, $time, $time, $value);
@@ -534,6 +549,7 @@ class Process
   //---------------------------------------------------------------------------------
   public function histogram($feedid, $time_now, $value)
   {
+    
     ///return $value;
 
     $feedname = "feed_" . trim($feedid) . "";
@@ -557,7 +573,7 @@ class Process
 
     // Get the last time
     $lastvalue = $this->feed->get_timevalue($feedid);
-    $last_time = $lastvalue['time'];
+    $last_time = strtotime($lastvalue['time']);
      
     // kWh calculation
     $time_elapsed = ($time_now - $last_time);
@@ -593,6 +609,7 @@ class Process
   // Calculates a daily average of a value
   public function average($feedid, $time_now, $value)
   {
+    
     $feedname = "feed_" . trim($feedid) . "";
     $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
 
@@ -615,7 +632,8 @@ class Process
       $this->mysqli->query("INSERT INTO $feedname (`time`,`data`,`data2`) VALUES ('$feedtime','$value','1')");
     }
 
-    $this->feed->set_update_value_redis($feedid, $new_value, $time_now);
+    $this->feed->set_update_value_redis($feedid, $value, $time_now);
+    
     return $value;
   }
     
@@ -625,6 +643,8 @@ class Process
   //------------------------------------------------------------------------------------------------------
   public function heat_flux($feedid,$time_now,$value)
   {
+   
+    
     // Get the feed
 	  $feedname = "feed_".trim($feedid)."";
        
@@ -645,8 +665,9 @@ class Process
 		  // Find a previous reading that is at least 10 minutes apart from the current reading and average the in-between readings to smooth out fluctuations
 		  // Without this we will get unstable readings
 
-		
-		  $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 1,128;");  
+		  $ratechange = 0;
+		  $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 1,128;"); 
+		  if ($lastentry) { 
 		  $lastentryrow = $lastentry->fetch_array(); 
 
 		  $time_prev  = trim($lastentryrow['time']);	//Read the time of previous reading
@@ -664,8 +685,10 @@ class Process
 		  $ratechange = ($ratechange*4186/$TimeDelta);     //Calculate the temperature change per second
       // Specific heat of Water (4186 J/kg/K)
 		  // Multiply by the volume in liters in emoncms as a next step of the processing
+		  }
     }
 	  return($ratechange);
+
   }
 
 
@@ -678,6 +701,7 @@ class Process
       $new_kwh = 0;
 
       $last = $this->feed->get_timevalue($feedid);
+      $last['time'] = strtotime($last['time']);
       if ($last['time']) {
         // kWh calculation
         $time_elapsed = ($time_now - $last['time']);
@@ -703,6 +727,7 @@ class Process
     {
       $pulse_diff = 0;
       $last = $this->feed->get_timevalue($feedid);
+      $last['time'] = strtotime($last['time']);
       if ($last['time']) {
         // Need to handle resets of the pulse value (and negative 2**15?)
         if ($value >= $last['value']) {
@@ -723,6 +748,7 @@ class Process
   {
     $power = 0;
     $last = $this->feed->get_timevalue($feedid);
+    $last['time'] = strtotime($last['time']);
 
     if ($last['time']) {
       $time_elapsed = ($time_now - $last['time']);
@@ -738,7 +764,7 @@ class Process
     // Get last values
     $last = $this->feed->get_timevalue($feedid);
     $last_val = $last['value'];
-    $last_time = $last['time'];
+    $last_time = strtotime($last['time']);
     $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
     $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
 	
@@ -756,7 +782,7 @@ class Process
     // Get last values
     $last = $this->feed->get_timevalue($feedid);
     $last_val = $last['value'];
-    $last_time = $last['time'];
+    $last_time = strtotime($last['time']);
     $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
     $time_check = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
 
@@ -769,5 +795,4 @@ class Process
     return $value;
   }
 }
-  
-?>
+

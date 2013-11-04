@@ -38,9 +38,16 @@ class Input
         $id = $this->mysqli->insert_id;
         
         $this->redis->sAdd("user:inputs:$userid", $id);
-	      $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>"",'record'=>0));   
+	      $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));   
 	      
 	      return $id;     
+    }
+    
+    public function exists($inputid)
+    {
+      $inputid = (int) $inputid;
+      $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
+      if ($result->num_rows == 1) return true; else return false;
     }
 
     // USES: redis input
@@ -124,7 +131,7 @@ class Input
                 break;
             case ProcessArg::INPUTID:                 // If arg type input
                 if (!$this->exists($arg)) return array('success'=>false, 'message'=>'Input does not exist!');
-                $this->record($arg,true);
+
                 break;
             case ProcessArg::FEEDID:                  // If arg type feed
                 $name = ''; if ($arg!=-1) $name = $this->feed->get_field($arg,'name');  // First check if feed exists of given feed id and user.
@@ -329,6 +336,25 @@ class Input
         $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
         $this->redis->del("input:$inputid");
         $this->redis->srem("user:inputs:$userid",$inputid);
+    }
+    
+    public function clean($userid)
+    {
+      $result = "";
+      $qresult = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid'");
+      while ($row = $qresult->fetch_array())
+      {
+        $inputid = $row['id'];
+        if ($row['processList']==NULL || $row['processList']=='')
+        {
+          $result = $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+          $this->redis->del("input:$inputid");
+          $this->redis->srem("user:inputs:$userid",$inputid);
+
+          $result .= "Deleted input: $inputid <br>";
+        }
+      }
+      return $result;
     }
     
     // Redis cache loaders

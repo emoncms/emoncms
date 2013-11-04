@@ -14,6 +14,8 @@
 
 function input_controller()
 {
+  //return array('content'=>"ok");
+  
   global $mysqli, $user, $session, $route;
 
   // There are no actions in the input module that can be performed with less than write privileges
@@ -182,7 +184,8 @@ function input_controller()
           foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
         }
       }
-
+   
+      if ($route->action == "clean") $result = $input->clean($session['userid']);
       if ($route->action == "list") $result = $input->getlist($session['userid']);
       if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
 

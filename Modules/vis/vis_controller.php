@@ -68,7 +68,7 @@
         if ($route->action == 'list' && $session['write'])
         {
             $multigraphs = $multigraph->getlist($session['userid']);
-            $feedlist = $feed->get_user_feed_names($session['userid']);
+            $feedlist = $feed->get_user_feeds($session['userid']);
             $result = view("Modules/vis/vis_main_view.php", array('user' => $user->get($session['userid']), 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
         }
 
@@ -106,9 +106,13 @@
                
                         if ($type==1 || $type==2 || $type==3) 
                         {
-                            $array[$key] = intval(get($key));
-                            $array[$key.'name'] = $feed->get_field(intval(get($key)),'name');
-                            if (!$feed->feedtype_belongs_user_or_public($array[$key], $session['userid'], $type)) $array['valid'] = false;
+                            $feedid = (int) get($key);
+                            $f = $feed->get($feedid);
+                            $array[$key] = $feedid;
+                            $array[$key.'name'] = $f['name'];
+                            
+                            if ($f['userid']!=$session['userid'] || $f['datatype']!=$type) $array['valid'] = false;
+                            if ($f['public'] && $f['datatype']==$type) $array['valid'] = true;
                         }
 
                         // Boolean not used at the moment
