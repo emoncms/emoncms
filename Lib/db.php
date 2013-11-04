@@ -47,6 +47,23 @@ function db_connect_error($conn)
 	return $retval;
 }
 
+function db_check($conn, $database)
+{
+	global $default_engine;
+
+	switch ($default_engine) {
+	case (Engine::MYSQL):
+		$sql = ("SELECT count(table_schema) FROM information_schema.tables WHERE table_schema = '$database';");
+		break;
+	default:
+		break;
+	}
+	$result = db_query($conn, $sql);
+	$row = db_fetch_array($result);
+
+	return ($row['0'] > 0) ? TRUE : FALSE;
+}
+
 function db_query($conn, $query)
 {
 	global $default_engine;

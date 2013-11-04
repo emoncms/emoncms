@@ -37,22 +37,6 @@ function get_application_path()
     return $path;
 }
 
-function db_check($conn, $database)
-{
-  global $default_engine;
-
-  switch ($default_engine) {
-  case (Engine::MYSQL):
-      $sql = ("SELECT count(table_schema) FROM information_schema.tables WHERE table_schema = '$database';");
-      break;
-  default:
-      break;
-  }
-  $result = db_query($conn, $sql);
-  $row = db_fetch_array($result);
-  if ($row['0']>0) return true; else return false;
-}
-
 function controller($controller_name)
 {
     $output = array('content'=>'');
