@@ -114,6 +114,20 @@ class MysqlTimeSeries
 
     return $data;
   }
+
+  public function lastvalue($feedid)
+  {
+    $feedid = (int) $feedid;
+    $feedname = "feed_".trim($feedid)."";
+    
+    $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time DESC LIMIT 1");
+    if ($result){
+      $row = $result->fetch_array();
+      return array('time'=>$row['time'], 'value'=>$row['data']);
+    } else {
+      return array('time'=>0, 'value'=>0);
+    }
+  }
   
   public function export($feedid,$start)
   {

@@ -12,6 +12,7 @@ class Timestore
   */
   
   private $timestoreApi;
+  private $dir = "/var/lib/timestore/";
   
   public function __construct($timestore_adminkey)
   {
@@ -63,7 +64,7 @@ class Timestore
     $meta = $this->get_meta($feedid);
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
     
-    $primaryfeedname = "/var/lib/timestore/$feedname";
+    $primaryfeedname = $this->dir.$feedname;
     $fh = fopen($primaryfeedname, 'rb');
     $size = filesize($primaryfeedname);
     
@@ -139,7 +140,7 @@ class Timestore
     // Write to output stream
     $fh = @fopen( 'php://output', 'w' );
 
-    $primaryfeedname = "/var/lib/timestore/$feedname";
+    $primaryfeedname = $this->dir.$feedname;
     $primary = fopen($primaryfeedname, 'rb');
     $primarysize = filesize($primaryfeedname);
     
@@ -185,7 +186,7 @@ class Timestore
     header("Pragma: no-cache");
 
     $fh = @fopen( 'php://output', 'w' );
-    $meta = fopen("/var/lib/timestore/$feedname", 'rb');
+    $meta = fopen($this->dir.$feedname, 'rb');
     fwrite($fh,fread($meta,272));
 
     fclose($meta);
@@ -199,7 +200,7 @@ class Timestore
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
     
     $out = array();
-    $meta = fopen("/var/lib/timestore/$feedname", 'rb');
+    $meta = fopen($this->dir.$feedname, 'rb');
 
     fseek($meta,8);
     $tmp = unpack("h*",fread($meta,8)); 
@@ -225,12 +226,12 @@ class Timestore
   public function get_feed_size($feedid)
   {
     $size = 272;
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
     return $size;
   }
   

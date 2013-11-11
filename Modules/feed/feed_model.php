@@ -251,7 +251,7 @@ class Feed
     
     $engine = $this->redis->hget("feed:$feedid",'engine');
     if ($engine==Engine::TIMESTORE) return $this->timestore->lastvalue($feedid);
-    // if ($engine==Engine::MYSQL) return $this->mysqltimeseries->lastvalue($feedid);
+    if ($engine==Engine::MYSQL) return $this->mysqltimeseries->lastvalue($feedid);
     // if ($engine==Engine::PHPTIMESERIES) return $this->phptimeseries->lastvalue($feedid);  
   }
 
