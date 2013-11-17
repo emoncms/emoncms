@@ -30,6 +30,20 @@ class PHPTimeSeries
     $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
     $filesize = filesize($this->dir."feed_$feedid.MYD");
     
+    $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
+    if ($csize!=$filesize) {
+      // correct corrupt data
+      fclose($fh);
+      
+      // extend file by required number of bytes
+      $fh = fopen($this->dir."feed_$feedid.MYD", 'wb');
+      fseek($fh,$csize);
+      fwrite($fh, pack("CIf",249,$time,$value));
+      fclose($fh);
+      
+      return $value;
+    }
+    
     // If there is data then read last value
     if ($filesize>=9) {
     

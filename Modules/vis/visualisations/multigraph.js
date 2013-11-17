@@ -81,6 +81,12 @@ function multigraph_init(element)
       "<div id='graph'></div>"+
       "<div style='position:absolute; top:20px; right:30px;'>"+
 
+
+        "<div class='input-prepend input-append' style='margin:0'>"+
+        "<span class='add-on'>Tooltip:</span>"+
+        "<span class='add-on'><input id='enableTooltip' type='checkbox' checked ></span>"+
+        "</div> | "+
+        
         "<div class='btn-group'>"+
         "<button class='btn time' type='button' time='1'>D</button>"+
         "<button class='btn time' type='button' time='7'>W</button>"+
