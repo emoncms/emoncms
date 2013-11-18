@@ -41,13 +41,13 @@ Disk use is also much smaller, A test feed stored in an indexed mysql table used
 **In-built averaging**
 Timestore also has an additional benefit of using averaged layers which ensures that requested data is representative of the window of time each datapoint covers.
 
-### Using MYSQL, POSTGRESQL or PHPTimeSeries instead of Timestore for logging
+### Using MYSQL, POSTGRESQL, SQLITE or PHPTimeSeries instead of Timestore for logging
 
 If your a familiar with mysql and want to use mysql to do your own queries and processing of the feed data you may want to select mysql as the default data store rather than timestore. The disadvantage of MYSQL is that it is much slower than timestore for common timeseries queries such as zooming through timeseries data.
 
 There is also another feed engine called PHPTimeSeries which provides improved timeseries query speed than mysql but is still slower than timestore. Its main avantages is that it does not require additional installation of timestore as it uses native php file access, it also stores the data in the same data file .MYD format as mysql which means you can switch from mysql to phptimeseries by copying the .MYD mysql data files directly out of your mysql directory into the PHPTimeSeries directory without additional conversion.
 
-To select either MYSQL, POSTGRESQL or PHPTimeSeries instead of timestore as your default logging engine set the default engine setting in the emoncms settings.php file to:
+To select either MYSQL, POSTGRESQL, SQLITE or PHPTimeSeries instead of timestore as your default logging engine set the default engine setting in the emoncms settings.php file to:
 
     $default_log_engine = Engine::MYSQL;
     
@@ -179,6 +179,19 @@ Quit from the postgres shell:
 
    emoncms=# \q
 
+## 5.3) Create a SQLite database
+SQLite databases will be automatically created by whatever file is referenced from
+the settings.php file. This is a relative path to where index.php is stored. A safe
+default would be '../../data/emoncms.db'. The data directory will have to be created
+and whatever the webserver runs as be given permission.
+
+   # mkdir /var/www/emoncms.org/data/
+   # chown apache:apache /var/www/emoncms.org/data
+   # chmod 775 /var/www/emoncms.org/data
+
+In the above example the emoncms installation would live in
+'/var/www/emoncms.org/htdocs/emoncms/index.php' so when adapt as necassery.
+
 ## 6) Set emoncms database settings.
 
 cd into the emoncms directory where the settings file is located
@@ -216,6 +229,11 @@ or
 
     $default_engine = Engine::POSTGRESQL;
     $default_log_engine = Engine::PHPTIMESERIES;
+
+or even
+
+    $default_engine = Engine::SQLITE;
+    $default_log_engine = Engine::SQLITE;
 
 Save (Ctrl-X), type Y and exit
 

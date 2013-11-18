@@ -20,6 +20,10 @@ class dbTimeSeries
 			require "Modules/feed/engine/PgsqlTimeSeries.php";
 			$this->db = new PgsqlTimeSeries($conn);
 			break;
+		case (Engine::SQLITE):
+			require "Modules/feed/engine/SqliteTimeSeries.php";
+			$this->db = new SqliteTimeSeries($conn);
+			break;
 		case (Engine::MYSQL):
 			require "Modules/feed/engine/MysqlTimeSeries.php";
 			$this->db = new MysqlTimeSeries($conn);

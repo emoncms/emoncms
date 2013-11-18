@@ -310,6 +310,7 @@ class User
 	case (Engine::MYSQL):
 		$sql = ("SELECT `convert` FROM users WHERE id = '$userid';"); /* reserved word, convert */
 		break;
+	case (Engine::SQLITE): /* Fall through, same calling as postgresql */
 	case (Engine::POSTGRESQL):
 		$sql = ("SELECT \"convert\" FROM users WHERE id = '$userid';"); /* reserved word, convert */
 		break;
@@ -405,6 +406,7 @@ class User
 	case (Engine::MYSQL):
 		$sql = ("UPDATE users SET `convert` = '1' WHERE id='$userid';"); /* reserved word, convert */
 		break;
+	case (Config::SQLITE): /* Fall through, same calling as postgresql */
 	case (Engine::POSTGRESQL):
 		$sql = ("UPDATE users SET \"convert\" = '1' WHERE id='$userid';"); /* reserved word, convert */
 		break;

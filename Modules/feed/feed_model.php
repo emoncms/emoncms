@@ -36,7 +36,7 @@ class Feed
         
         // Load different storage engines
 
-	if (($default_log_engine == Engine::MYSQL) || ($default_log_engine == Engine::POSTGRESQL)) {
+	if (($default_log_engine == Engine::MYSQL) || ($default_log_engine == Engine::POSTGRESQL) || ($default_log_engine == Engine::SQLITE)) {
             require "Modules/feed/engine/dbTimeSeries.php";
             $this->dbtimeseries = new dbTimeSeries($conn);
 	}
@@ -80,6 +80,7 @@ class Feed
 	case (DataType::REALTIME):
 		switch ($this->default_log_engine) {
 		case (Engine::POSTGRESQL): /* Fallthrough, dbtimeseries handles all db's */
+		case (Engine::SQLITE): /* Fallthrough, dbtimeseries handles all db's */
 		case (Engine::MYSQL):
 			$retval = $this->dbtimeseries->create($feedid);
 			break;
@@ -186,6 +187,9 @@ class Feed
 	case (Engine::POSTGRESQL):
 		$sql = ("SELECT id, name, datatype, tag, extract(epoch FROM time) AS time, value, public, size, engine FROM feeds WHERE userid = $userid;");
 		break;
+	case (Engine::SQLITE):
+		$sql = ("SELECT id, name, datatype, tag, strftime('%s', time) AS time, value, public, size, engine FROM feeds WHERE userid = $userid;");
+		break;
 	case (Engine::MYSQL):
 		$sql = ("SELECT id, name, datatype, tag, UNIX_TIMESTAMP(time) AS time, value, public, size, engine FROM feeds WHERE userid = $userid;");
 		break;
@@ -285,6 +289,9 @@ class Feed
 	switch ($this->default_engine) {
 	case (Engine::POSTGRESQL):
 		$sql = ("SELECT id, name, datatype, tag, extract(epoch FROM time) AS time, value, public FROM feeds WHERE id = '$id';");
+		break;
+	case (Engine::SQLITE):
+		$sql = ("SELECT id, name, datatype, tag, strftime('%s', time) AS time, value, public FROM feeds WHERE id = '$id';");
 		break;
 	case (Engine::MYSQL):
 		$sql = ("SELECT id, name, datatype, tag, UNIX_TIMESTAMP(time) AS time, value, public FROM feeds WHERE id = '$id';");
@@ -389,6 +396,7 @@ class Feed
 
 	switch ($row['engine']) {
 	case (Engine::POSTGRESQL): /* Fallthrough, dbtimeseries handles all db's */
+	case (Engine::SQLITE): /* Fallthrough, dbtimeseries handles all db's */
 	case (Engine::MYSQL):
 		$this->dbtimeseries->insert($feedid, $feedtime, $value);
 		break;
@@ -404,6 +412,7 @@ class Feed
 	// b. Update feeds table
 	$updatetime = date("Y-n-j H:i:s P", $updatetime);
 	$sql = ("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id = '$feedid';");
+	var_dump($sql);
 	db_query($this->conn, $sql);
 
 	//Check feed event if event module is installed
@@ -432,6 +441,7 @@ class Feed
 
 	switch ($row['engine']) {
 	case (Engine::POSTGRESQL): /* Fallthrough, dbtimeseries handles all db's */
+	case (Engine::SQLITE): /* Fallthrough, dbtimeseries handles all db's */
 	case (Engine::MYSQL):
 		$this->dbtimeseries->update($feedid, $feedtime, $value);
 		break;
@@ -469,6 +479,7 @@ class Feed
 
 	switch ($row['engine']) {
 	case (Engine::POSTGRESQL): /* Fallthrough, dbtimeseries handles all db's */
+	case (Engine::SQLITE): /* Fallthrough, dbtimeseries handles all db's */
 	case (Engine::MYSQL):
 		$result = $this->dbtimeseries->get_data($feedid, $start, $end, $dp);
 		break;
@@ -505,6 +516,7 @@ class Feed
 
 	switch ($row['engine']) {
 	case (Engine::POSTGRESQL): /* Fallthrough, dbtimeseries handles all db's */
+	case (Engine::SQLITE): /* Fallthrough, dbtimeseries handles all db's */
 	case (Engine::MYSQL):
 		$this->dbtimeseries->delete($feedid);
 		break;
@@ -535,6 +547,7 @@ class Feed
 
 		switch ($row['engine']) {
 		case (Engine::POSTGRESQL): /* Fallthrough, dbtimeseries handles all db's */
+		case (Engine::SQLITE): /* Fallthrough, dbtimeseries handles all db's */
 		case (Engine::MYSQL):
 			$size = $this->dbtimeseries->get_feed_size($feedid);
 			break;

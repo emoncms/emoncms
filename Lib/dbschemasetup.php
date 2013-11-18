@@ -26,12 +26,216 @@ function db_schema_setup($conn, $schema, $apply)
 	case Engine::POSTGRESQL:
 		$retval = pgsql_db_schema_setup($conn, $schema, $apply);
 		break;
+	case Engine::SQLITE:
+		$retval = sqlite_db_schema_setup($conn, $schema, $apply);
+		break;
 	default:
 		$retval = NULL;
 		break;
 	}
 
 	return $retval;
+}
+
+function sqlite_db_schema_setup($conn, $schema, $apply)
+{
+	$operations = array();
+	while ($table = key($schema)) {
+	/* if table exists: */
+		$sql = ("SELECT count(tbl_name) AS found FROM sqlite_master WHERE type='table' AND tbl_name = '" . $table . "';");
+		$result = $conn->query($sql);
+		if (($result != NULL ) && ($result !== FALSE))
+			$found = $result->fetchColumn();
+		else
+			$found = FALSE;
+		$result->closeCursor();
+
+		if ($found) {
+			/* $out[] = array('Table',$table,"ok");
+			 *-----------------------------------------------------
+			 * Check table fields from schema
+			 *-----------------------------------------------------
+			 */
+			while ($field = key($schema[$table])) {
+				$type = $schema[$table][$field]['type'];
+				/* Convert some mysql specifics to standard SQL */
+				if (strpos($type, "int(11)") !== FALSE) /* int(11) is always int with 4 bytes width */
+					$type = "INTEGER";
+				if (strpos($type, "tinyint(1)") !== FALSE) {
+					$type = "BOOLEAN";
+					if ($schema[$table][$field]['default']) {
+						$default = 'TRUE';
+					} else  {
+						$default = 'FALSE';
+					}
+				} else {
+					if (isset($schema[$table][$field]['default'])) {
+						$default = $schema[$table][$field]['default'];
+					} else  {
+						$default = FALSE;
+					}
+				}
+				if (strpos($type, "datetime") !== FALSE)
+					$type = "TIMESTAMP WITH TIME ZONE";
+
+				if (strpos($type, "float") !== FALSE)
+					$type = "REAL";
+
+				if (isset($schema[$table][$field]['Null']))
+					$null = $schema[$table][$field]['Null'];
+				else
+					$null = "YES";
+
+				if (isset($schema[$table][$field]['Key']))
+					$key = $schema[$table][$field]['Key'];
+				else
+					$key = null;
+
+				if (isset($schema[$table][$field]['Extra'])) {
+					$extra = $schema[$table][$field]['Extra'];
+					$pos = strpos($extra, 'auto_increment');
+					if ($pos !== FALSE) {
+						$type = 'INTEGER PRIMARY KEY';
+						$extra = str_replace('auto_increment', '', $extra);
+					}
+				} else {
+					$extra = NULL;
+				}
+
+				/* if field exists: */
+				$sql = ("SELECT * FROM '$table';");
+				$result = $conn->query($sql);
+				$field_found = FALSE;
+				for ($i = 0; $i < $result->ColumnCount(); $i++)
+					if ($result->getColumnMeta($i)['name'] == '$field')
+						$field_found = TRUE;
+				if ($field_found == FALSE) {
+					$query = "ALTER TABLE $table ADD $field $type;";
+					if ($null)
+						$query .= " NOT NULL;";
+					if ($default !== FALSE)
+						$query .= " DEFAULT '$default';";
+
+					$operations[] = $query;
+					if ($apply)
+						$conn->query($query);
+				} else {
+					/* Alter datatypes if the columns exist HIGHLY experimental! */
+					$sql = ("SELECT sql FROM sqlite_master WHERE type = 'table' AND tbl_name = '$table';");
+					$result = $conn->query($sql);
+					$result->closeCursor();
+					$array = $result->fetch(PDO::FETCH_ASSOC);
+					$query = "";
+
+					$start = strpos($array['sql'], '(');
+					$end = strpos($array['sql'], ')');
+					$str = substr($array['sql'], $start, $end - $start);
+					$data_tuple = explode(',', $str);
+					foreach ($data_tuple as $tuple) {
+						/* Skip anything before the first space. We ignore the fact that
+						 * column names could contain spaces, because they shouldn't!
+						 */
+						$skip = strpos($tuple, ' ');
+						if (substr_compare($tuple, $type, $skip, NULL, TRUE))
+							$query .= ";";
+						if (($default !== FALSE) && substr_compare($tuple, "DEFAULT", $skip, NULL, TRUE))
+							$query .= " DEFAULT '$default'";
+						if (substr_compare($tuple, "NOT NULL", $skip, NULL, TRUE))
+							$query .= " NOT NULL";
+					}
+					//if ($array['Extra'] != $extra && $extra == "serial")
+					//	$query .= " "; /* we can't just randomly start auto incrementing */
+					//if ($array['Key'] != $key && $key == "PRI")
+					//	$query .= " ADD PRIMARY KEY"; /* Changing the primary key cannot be done like this either, what if the key spans multiple columns? */
+
+					if ($query)
+						$query = "ALTER TABLE $table MODIFY $field $type" . $query;
+					if ($query)
+						$operations[] = $query;
+					if ($query && $apply)
+						$conn->query($query);
+				}
+				next($schema[$table]);
+			}
+		} else {
+			/*-----------------------------------------------------
+			 * Create table from schema
+			 *-----------------------------------------------------
+			 */
+			$unique = "";
+			$query = "CREATE TABLE $table (";
+			while ($field = key($schema[$table])) {
+				$primarykey = "";
+				$type = $schema[$table][$field]['type'];
+				/* Convert some mysql specifics to standard SQL */
+				if (strpos($type, "int(11)") !== FALSE) /* int(11) is always int with 4 bytes width */
+					$type = "INTEGER";
+				if (strpos($type, "tinyint(1)") !== FALSE) {
+					$type = "BOOLEAN";
+					if ($schema[$table][$field]['default']) {
+						$default = 'TRUE';
+					} else  {
+						$default = 'FALSE';
+					}
+				} else {
+					if (isset($schema[$table][$field]['default']) !== FALSE) {
+						$default = $schema[$table][$field]['default'];
+					} else  {
+						$default = FALSE;
+					}
+				}
+				if (strpos($type, "datetime") !== FALSE)
+					$type = "TIMESTAMP WITH TIME ZONE";
+				if (strpos($type, "float") !== FALSE)
+					$type = "REAL";
+				if (isset($schema[$table][$field]['Null']))
+					$null = $schema[$table][$field]['Null'];
+				else
+					$null = "YES";
+				if (isset($schema[$table][$field]['Key']))
+					$key = $schema[$table][$field]['Key'];
+				else
+					$key = null;
+				if (isset($schema[$table][$field]['Extra'])) {
+					$extra = $schema[$table][$field]['Extra'];
+					if (strpos($extra, 'auto_increment') !== FALSE) {
+						$primarykey = "PRIMARY KEY";
+						$extra = str_replace("auto_increment", "", $extra);
+					}
+				} else {
+					$extra = null;
+				}
+
+				$query .= " $field";
+				$query .= " $type";
+				$query .= " $primarykey";
+				if ($default !== FALSE)
+					$query .= " DEFAULT '$default'";
+				if ($null == "NO")
+					$query .= " NOT NULL";
+				if ($extra)
+					$query .= " $extra";
+				if ($key) {
+					if ($unique)
+						$unique .= ", ";
+					$unique .= "$field";
+				}
+
+				next($schema[$table]);
+				if (key($schema[$table]))
+					$query .= ", ";
+			}
+			if ($unique)
+				$query .= ", UNIQUE ($unique)";
+			$query .= ");";
+			if ($query)
+				$operations[] = $query;
+			if ($query && $apply)
+				$conn->query($query);
+		}
+		next($schema);
+	}
+	return $operations;
 }
 
 function pgsql_db_schema_setup($conn, $schema, $apply)
