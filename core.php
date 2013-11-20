@@ -37,13 +37,6 @@ function get_application_path()
     return $path;
 }
 
-function db_check($mysqli,$database)
-{
-  $result = $mysqli->query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
-  $row = $result->fetch_array();
-  if ($row['0']>0) return true; else return false;
-}
-
 function controller($controller_name)
 {
     $output = array('content'=>'');

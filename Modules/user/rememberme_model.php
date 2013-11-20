@@ -5,7 +5,7 @@
 
 class Rememberme {
 
-    private $mysqli;
+    private $conn;
   
     /**
      * Cookie settings
@@ -51,10 +51,14 @@ class Rememberme {
           TRIPLET_NOT_FOUND =  0,
           TRIPLET_INVALID   = -1;
 
+    private $default_engine;
 
-    public function __construct($mysqli)
+    public function __construct($conn)
     {
-        $this->mysqli = $mysqli;
+	global $default_engine;
+
+        $this->conn = $conn;
+	$this->default_engine = $default_engine;
     }
 
     /**
@@ -175,11 +179,24 @@ class Rememberme {
     private function findTriplet($userid, $token, $persistentToken) {
       // We don't store the sha1 as binary values because otherwise we could not use
       // proper XML test data
-      $sql = "SELECT IF(SHA1('$token') = token, 1, -1) AS token_match " .
-             "FROM rememberme WHERE userid = '$userid' " .
-             "AND persistentToken = SHA1('$persistentToken') LIMIT 1 ";
-      $result = $this->mysqli->query($sql);
-      $row = $result->fetch_array();
+      if ($this->default_engine == Engine::POSTGRESQL)
+        $sql = "SELECT CASE WHEN encode(digest('$token', 'sha1'), 'base64') = token THEN '1' ELSE '-1' END AS token_match " .
+               "FROM rememberme WHERE userid = '$userid' " .
+               "AND persistentToken = encode(digest('$persistentToken', 'sha1'), 'base64') LIMIT 1;";
+      if ($this->default_engine == Engine::SQLITE) {
+		$token = hash('sha1', $token);
+		$persistentToken = hash('sha1', $persistentToken);
+		$sql = "SELECT CASE WHEN token = '$token' THEN '1' ELSE '-1' END AS token_match " .
+		       "FROM rememberme WHERE userid = '$userid' " .
+		       "AND persistentToken = '$persistentToken' LIMIT 1;";
+      }
+      if ($this->default_engine == Engine::MYSQL)
+        $sql = "SELECT IF(SHA1('$token') = token, 1, -1) AS token_match " .
+               "FROM rememberme WHERE userid = '$userid' " .
+               "AND persistentToken = SHA1('$persistentToken') LIMIT 1 ";
+
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
        
       if(!$row['token_match']) {
         return self::TRIPLET_NOT_FOUND;
@@ -195,17 +212,35 @@ class Rememberme {
     private function storeTriplet($userid, $token, $persistentToken, $expire=0) 
     {
         $date = date("Y-m-d H:i:s", $expire);
-        $this->mysqli->query("INSERT INTO rememberme (userid, token, persistentToken, expire) VALUES ('$userid', SHA1('$token'), SHA1('$persistentToken'), '$date')");
+	if ($this->default_engine == Engine::POSTGRESQL)
+	    $sql = ("INSERT INTO rememberme (userid, token, persistentToken, expire) VALUES ('$userid', encode(digest('$token', 'sha1'), 'base64'), encode(digest('$persistentToken', 'sha1'), 'base64'), '$date')");
+	if ($this->default_engine == Engine::SQLITE) {
+		$token = hash('sha1', $token);
+		$persistentToken = hash('sha1', $persistentToken);
+		$sql = ("INSERT INTO rememberme (userid, token, persistentToken, expire) VALUES ('$userid', '$token', '$persistentToken', '$date');");
+	}
+	if ($this->default_engine == Engine::MYSQL)
+	        $sql = ("INSERT INTO rememberme (userid, token, persistentToken, expire) VALUES ('$userid', SHA1('$token'), SHA1('$persistentToken'), '$date')");
+        db_query($this->conn, $sql);
     }
 
     private function cleanTriplet($userid, $persistentToken) 
     {
-        $this->mysqli->query("DELETE FROM rememberme WHERE userid = '$userid'  AND persistentToken = SHA1('$persistentToken')");
+	if ($this->default_engine == Engine::POSTGRESQL)
+		$sql = ("DELETE FROM rememberme WHERE userid = '$userid'  AND persistentToken = encode(digest('$persistentToken', 'sha1'), 'base64')");
+	if ($this->default_engine == Engine::SQLITE) {
+		$persistentToken = hash('sha1', $persistentToken);
+		$sql = ("DELETE FROM rememberme WHERE userid = '$userid' AND persistentToken = '$persistentToken';");
+	}
+	if ($this->default_engine == Engine::MYSQL)
+		$sql = ("DELETE FROM rememberme WHERE userid = '$userid'  AND persistentToken = SHA1('$persistentToken')");
+        db_query($this->conn, $sql);
     }
 
     private function cleanAllTriplets($userid) 
     {
-        $this->mysqli->query("DELETE FROM rememberme WHERE userid = '$userid'");
+        $sql = ("DELETE FROM rememberme WHERE userid = '$userid'");
+        db_query($this->conn, $sql);
     }
 
 }

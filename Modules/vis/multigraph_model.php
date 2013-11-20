@@ -14,24 +14,27 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Multigraph
 {
-    private $mysqli;
+    private $conn;
 
-    public function __construct($mysqli)
+    public function __construct($conn)
     {
-        $this->mysqli = $mysqli;
+        $this->conn = $conn;
     }
 
     public function create($userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`) VALUES ('$userid','')");
-        return $this->mysqli->insert_id;  
+        $sql = ("INSERT INTO multigraph (userid, feedlist) VALUES('$userid', '');");
+	$result = db_query($this->conn, $sql);
+
+        return db_lastval($this->conn, $result);
     }
 
     public function delete($id,$userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("DELETE FROM multigraph WHERE `id` = '$id' AND `userid` = '$userid'");
+        $sql = ("DELETE FROM multigraph WHERE id = '$id' AND userid = '$userid';");
+	db_query($this->conn, $sql);
     }
 
     public function set($id, $userid, $feedlist)
@@ -39,7 +42,8 @@ class Multigraph
         $id = intval($id);
         $userid = intval($userid);
         $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
-        $this->mysqli->query("UPDATE multigraph SET `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
+        $sql = ("UPDATE multigraph SET feedlist = '$feedlist' WHERE id = '$id' AND userid = '$userid';");
+	db_query($this->conn, $sql);
     }
 
     /*
@@ -50,19 +54,22 @@ class Multigraph
     {
         $id = intval($id);
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE `id`='$id'");
-        $result = $result->fetch_array();
+        $sql = ("SELECT feedlist FROM multigraph WHERE id = '$id';");
+	$qresult = db_query($this->conn, $sql);
+        $result = db_fetch_array($qresult);
         $feedlist = json_decode($result['feedlist']);
+
         return $feedlist;
     }
 
     public function getlist($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,name,feedlist FROM multigraph WHERE `userid`='$userid'");
+        $sql = ("SELECT id, name, feedlist FROM multigraph WHERE userid = '$userid';");
+	$result = db_query($this->conn, $sql);
 
         $multigraphs = array();
-        while ($row = $result->fetch_object())
+        while ($row = db_fetch_object($result))
         {
             $multigraphs[] = array('id'=>$row->id,'name'=>$row->name,'feedlist'=>$row->feedlist);
         }

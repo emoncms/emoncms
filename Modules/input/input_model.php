@@ -14,12 +14,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Input
 {
-    private $mysqli;
+    private $conn;
     private $feed;
 
-    public function __construct($mysqli,$feed)
+    public function __construct($conn,$feed)
     {
-        $this->mysqli = $mysqli;
+        $this->conn = $conn;
         $this->feed = $feed;
     }
 
@@ -28,7 +28,8 @@ class Input
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
         $name = preg_replace('/[^\w\s-.]/','',$name);
-        $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
+        $sql = ("INSERT INTO input (userid, name, nodeid) VALUES ('$userid', '$name', '$nodeid');");
+        db_query($this->conn, $sql);
     }
 
     public function set_timevalue($id, $time, $value)
@@ -38,7 +39,8 @@ class Input
         $value = (float) $value;
 
         $time = date("Y-n-j H:i:s", $time);
-        $this->mysqli->query("UPDATE input SET time='$time', value = '$value' WHERE id = '$id'");
+        $sql = ("UPDATE input SET time = '$time', value = '$value' WHERE id = '$id';");
+        db_query($this->conn, $sql);
     }
 
     public function belongs_to_user($userid, $inputid)
@@ -46,20 +48,23 @@ class Input
         $userid = (int) $userid;
         $inputid = (int) $inputid;
 
-        $result = $this->mysqli->query("SELECT id FROM input WHERE userid = '$userid' AND id = '$inputid'");
-        if ($result->fetch_array()) return true; else return false;
+        $sql = ("SELECT id FROM input WHERE userid = '$userid' AND id = '$inputid';");
+        $result = db_query($this->conn, $sql);
+        if (db_fetch_array($result)) return true; else return false;
     }
 
     public function record($id,$state)
     {
         $id = (int) $id;
         $state = (bool) $state;
-        $result = $this->mysqli->query("UPDATE input SET record = '$state' WHERE id='$id'");
+        $sql = ("UPDATE input SET record = '$state' WHERE id = '$id';");
+        db_query($this->conn, $sql);
     }
 
     private function set_processlist($id, $processlist)
     {
-      $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
+        $sql = ("UPDATE input SET processlist = '$processlist' WHERE id = '$id';");
+        db_query($this->conn, $sql);
     }
 
     public function set_fields($id,$fields)
@@ -70,13 +75,14 @@ class Input
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-.]/','',$fields->name)."'";
+        if (isset($fields->description)) $array[] = "description = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
+        if (isset($fields->name)) $array[] = "name = '".preg_replace('/[^\w\s-.]/','',$fields->name)."'";
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
-        $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE `id` = '$id'");
+        $sql = ("UPDATE input SET " . $fieldstr . " WHERE id = '$id';");
+        $result = db_query($this->conn, $sql);
 
-        if ($this->mysqli->affected_rows>0){
+        if (db_affected_rows($this->conn, $result)>0){
             return array('success'=>true, 'message'=>'Field updated');
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');
@@ -131,8 +137,10 @@ class Input
     public function exists($inputid)
     {
       $inputid = (int) $inputid;
-      $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
-      if ($result->num_rows == 1) return true; else return false;
+      $sql = ("SELECT count(id) AS inputid FROM input WHERE id = '$inputid';");
+      $result = db_query($this->conn, $sql);
+      $exists = db_fetch($this->conn, $result);
+      return ($exists['inputid'] > 0) ?TRUE : FALSE;
     }
 
     /******
@@ -197,13 +205,14 @@ class Input
     public function get_inputs($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,processList,record FROM input WHERE `userid` = '$userid'");
+        $sql = ("SELECT id, nodeid, name, processlist, record FROM input WHERE userid = '$userid';");
+        $result = db_query($this->conn, $sql);
 
         $dbinputs = array();
-        while ($row = $result->fetch_object()) {
+        while ($row = db_fetch_object($result)) {
             if ($row->nodeid==null) $row->nodeid = 0;
             if (!isset($dbinputs[$row->nodeid])) $dbinputs[$row->nodeid] = array();
-            $dbinputs[$row->nodeid][$row->name] = array('id'=>$row->id, 'processList'=>$row->processList, 'record'=>$row->record);
+            $dbinputs[$row->nodeid][$row->name] = array('id'=>$row->id, 'processlist'=>$row->processlist, 'record'=>$row->record);
         }
         return $dbinputs;
     }
@@ -214,19 +223,21 @@ class Input
     public function getlist($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT * FROM input WHERE userid = '$userid'");
+        $sql = ("SELECT * FROM input WHERE userid = '$userid';");
+        $result = db_query($this->conn, $sql);
         $inputs = array();
-        while ($row = $result->fetch_object()) $inputs[] = $row;
+        while ($row = db_fetch_object($result)) $inputs[] = $row;
         return $inputs;
     }
 
     public function get_id($userid, $nodeid, $name)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id FROM input WHERE nodeid='$nodeid' AND name='$name' AND userid='$userid'");
+        $sql = ("SELECT id FROM input WHERE nodeid='$nodeid' AND name='$name' AND userid='$userid';");
+        $result = db_query($this->conn, $sql);
         if ($result)
         {
-            $array = $result->fetch_array();
+            $array = db_fetch_array($result);
             return $array['id'];
         }
         else
@@ -239,10 +250,11 @@ class Input
         $nodeid = (int) $nodeid;
         $name = (int) $name;
 
-        $result = $this->mysqli->query("SELECT id,processList,record FROM input WHERE nodeid='$nodeid' AND name='$name' AND userid='$userid'");
+        $sql = ("SELECT id, processlist, record FROM input WHERE nodeid = '$nodeid' AND name = '$name' AND userid = '$userid';");
+        $result = db_query($this->conn, $sql);
         if ($result) {
-            $row = $result->fetch_object();
-            return array('id'=>$row->id, 'processList'=>$row->processList, 'record'=>$row->record);
+            $row = db_fetch_object($result);
+            return array('id'=>$row->id, 'processlist'=>$row->processlist, 'record'=>$row->record);
         }
         else
             return false;
@@ -251,10 +263,11 @@ class Input
     public function get_name($id)
     {
         $id = (int) $id;
-        $result = $this->mysqli->query("SELECT name FROM input WHERE id='$id'");
+        $sql = ("SELECT name FROM input WHERE id='$id';");
+        $result = db_query($this->conn, $sql);
         if ($result)
         {
-            $array = $result->fetch_array();
+            $array = db_fetch_array($result);
             return $array['name'];
         }
         else
@@ -264,9 +277,10 @@ class Input
     public function get_processlist($id)
     {
         $id = (int) $id;
-        $result = $this->mysqli->query("SELECT processList FROM input WHERE id='$id'");
-        $array = $result->fetch_array();
-        return $array['processList'];
+        $sql = ("SELECT processlist FROM input WHERE id='$id';");
+        $result = db_query($this->conn, $sql);
+	$array = db_fetch_array($result);
+        return $array['processlist'];
     }
 
     //-----------------------------------------------------------------------------------------------
@@ -318,7 +332,8 @@ class Input
         $inputid = (int) $inputid;
         // Inputs are deleted permanentely straight away rather than a soft delete
         // as in feeds - as no actual feed data will be lost
-        $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+        $sql = ("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid';");
+        db_query($this->conn, $sql);
     }
     
     public function delete_node($userid, $nodeid)
@@ -327,6 +342,7 @@ class Input
         $nodeid = (int) $nodeid;
         // Inputs are deleted permanentely straight away rather than a soft delete
         // as in feeds - as no actual feed data will be lost
-        $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND nodeid = '$nodeid'");
+        $sql = ("DELETE FROM input WHERE userid = '$userid' AND nodeid = '$nodeid';");
+        db_query($this->conn, $sql);
     }
 }

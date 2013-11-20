@@ -20,7 +20,10 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     // Load settigs.php
     require_once('settings.php');
     
-    if (!isset($default_engine)) $default_engine = Engine::TIMESTORE;
+    if (!isset($default_engine)) $default_engine = Engine::MYSQL;
+    if (!isset($default_log_engine)) $default_log_engine = Engine::TIMESTORE;
+    if ($default_log_engine != Engine::TIMESTORE && $default_log_engine != $default_engine)
+	    $default_log_engine = $default_engine;
     
     // Set display errors
     if (isset($display_errors) && ($display_errors)) {

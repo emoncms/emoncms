@@ -18,25 +18,28 @@ defined('EMONCMS_EXEC') or die('Restricted access');
  */
 class Dashboard
 {
-    private $mysqli;
+    private $conn;
 
-    public function __construct($mysqli)
+    public function __construct($conn)
     {
-        $this->mysqli = $mysqli;
+        $this->conn = $conn;
     }
 
     public function create($userid)
     {
       $userid = (int) $userid;
-      $this->mysqli->query("INSERT INTO dashboard (`userid`,`alias`) VALUES ('$userid','')");
-      return $this->mysqli->insert_id;
+      $sql = ("INSERT INTO dashboard (userid, alias) VALUES ('$userid', '');");
+      $result = db_query($this->conn, $sql);
+
+      return db_lastval($this->conn, $result);
     }
 
     public function delete($id)
     {
       $id = (int) $id;
-      $result = $this->mysqli->query("DELETE FROM dashboard WHERE id = '$id'");
-      return $result;
+      $sql = ("DELETE FROM dashboard WHERE id = '$id';");
+      $result = db_query($this->conn, $sql);
+      return $result; /* check if affected rows is more appropiate here */
     }
 
     public function dashclone($userid, $id)
@@ -45,15 +48,17 @@ class Dashboard
       $id = (int) $id;
 
 	    // Get content, name and description from origin dashboard
-      $result = $this->mysqli->query("SELECT content,name,description FROM dashboard WHERE userid = '$userid' AND id='$id'");
-      $row = $result->fetch_array();
+      $sql = ("SELECT content, name, description FROM dashboard WHERE userid = '$userid' AND id='$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
 	
 	    // Name for cloned dashboard
 	    $name = $row['name']._(' clone');
 
-      $this->mysqli->query("INSERT INTO dashboard (`userid`,`content`,`name`,`description`) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
+      $sql = ("INSERT INTO dashboard (userid, content, name, description) VALUES ('$userid', '{$row['content']}', '$name', '{$row['description']}');");
+      $result = db_query($this->conn, $sql);
 	
-	    return $this->mysqli->insert_id;
+	    return db_lastval($this->conn, $result);
     }
 
     public function get_list($userid, $public, $published)
@@ -63,10 +68,10 @@ class Dashboard
       $qB = ""; $qC = "";
       if ($public==true) $qB = " and public=1";
       if ($published==true) $qC = " and published=1";
-      $result = $this->mysqli->query("SELECT id, name, alias, description, main, published, public, showdescription FROM dashboard WHERE userid='$userid'".$qB.$qC);
-
+      $sql = ("SELECT id, name, alias, description, main, published, public, showdescription FROM dashboard WHERE userid='$userid'".$qB.$qC);
+      $result = db_query($this->conn, $sql);
       $list = array();
-      while ($row = $result->fetch_object()) 
+      while ($row = db_fetch_object($result))
       { 
         $list[] = array (
           'id' => (int) $row->id,
@@ -87,13 +92,17 @@ class Dashboard
       $userid = (int) $userid;
       $id = (int) $id;
       $height = (int) $height;
-      $content = $this->mysqli->real_escape_string($content);
+      $content = db_real_escape_string($this->conn, $content);
       
       //echo $content;
 
-      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid = '$userid' AND id='$id'");
-      $row = $result->fetch_array();
-      if ($row) $this->mysqli->query("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid='$userid' AND id='$id'");
+      $sql = ("SELECT id FROM dashboard WHERE userid = '$userid' AND id = '$id';");
+      $result = db_query($this->conn, $sql);
+      $row = db_fetch_array($result);
+      if ($row) {
+          $sql = ("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid = '$userid' AND id = '$id';");
+          db_query($this->conn, $sql);
+      }
 
       return array('success'=>true);
     }
@@ -109,29 +118,33 @@ class Dashboard
       // content, height, name, alias, description, main, public, published, showdescription
       // Repeat this line changing the field name to add fields that can be updated:
 
-      if (isset($fields->height)) $array[] = "`height` = '".intval($fields->height)."'";
-      if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$fields->content)."'";
+      if (isset($fields->height)) $array[] = "height = '".intval($fields->height)."'";
+      if (isset($fields->content)) $array[] = "content = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$fields->content)."'";
 
-      if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
-      if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
-      if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
+      if (isset($fields->name)) $array[] = "name = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
+      if (isset($fields->alias)) $array[] = "alias = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
+      if (isset($fields->description)) $array[] = "description = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
 
       if (isset($fields->main)) 
       {
         $main = (bool)$fields->main;
-        if ($main) $this->mysqli->query("UPDATE dashboard SET main = FALSE WHERE userid='$userid' and id<>'$id'");
-        $array[] = "`main` = '".$main ."'";
+        if ($main) {
+	    $sql = ("UPDATE dashboard SET main = FALSE WHERE userid = '$userid' and id <> '$id';");
+	    db_query($this->conn, $sql);
+	}
+        $array[] = "main = '" . $main . "'";
       }
 
-      if (isset($fields->public)) $array[] = "`public` = '".((bool)$fields->public)."'";
-      if (isset($fields->published)) $array[] = "`published` = '".((bool)$fields->published)."'";
-      if (isset($fields->showdescription)) $array[] = "`public` = '".((bool)$fields->showdescription)."'";
+      if (isset($fields->public)) $array[] = "public = '".((bool)$fields->public)."'";
+      if (isset($fields->published)) $array[] = "published = '".((bool)$fields->published)."'";
+      if (isset($fields->showdescription)) $array[] = "public = '".((bool)$fields->showdescription)."'";
       // Convert to a comma seperated string for the mysql query
       $fieldstr = implode(",",$array);
 
-      $this->mysqli->query("UPDATE dashboard SET ".$fieldstr." WHERE userid='$userid' and `id` = '$id'");
+      $sql = ("UPDATE dashboard SET " . $fieldstr . " WHERE userid = '$userid' and id = '$id';");
+      $result = db_query($this->conn, $sql);
 
-      if ($this->mysqli->affected_rows>0){
+      if (db_affected_rows($this->conn, $result)>0){
         return array('success'=>true, 'message'=>'Field updated');
       } else {
         return array('success'=>false, 'message'=>'Field could not be updated');
@@ -142,19 +155,20 @@ class Dashboard
     public function get_main($userid)
     {
       $userid = (int) $userid;
-      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and main=TRUE");
-      return $result->fetch_array();
+      $sql = ("SELECT * FROM dashboard WHERE userid = '$userid' AND main = 'TRUE';");
+      $result = db_query($this->conn, $sql);
+      return db_fetch_array($result);
     }
 
     public function get($userid, $id, $public, $published)
     {
       $userid = (int) $userid;
       $id = (int) $id;
-      $qB = ""; if ($public==true) $qB = " and public=1";
-      $qC = ""; if ($published==true) $qC = " and published=1";
-
-      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and id='$id'".$qB.$qC);
-      return $result->fetch_array();
+      $qB = ""; if ($public==true) $qB = " AND public = 1";
+      $qC = ""; if ($published==true) $qC = " AND published = 1";
+      $sql = ("SELECT * FROM dashboard WHERE userid = '$userid' and id = '$id'" . $qB . $qC . ";");
+      $result = db_query($this->conn, $sql);
+      return db_fetch_array($result);
     }
 
     // Returns the $id dashboard from $userid
@@ -162,11 +176,11 @@ class Dashboard
     {
       $userid = (int) $userid;
       $alias = preg_replace('/[^\w\s-]/','',$alias);
-      $qB = ""; if ($public==true) $qB = " and public=1";
-      $qC = ""; if ($published==true) $qC = " and published=1";
-
-      $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'".$qB.$qC);
-      return $result->fetch_array();
+      $qB = ""; if ($public==true) $qB = " AND public = 1";
+      $qC = ""; if ($published==true) $qC = " AND published = 1";
+      $sql = ("SELECT * FROM dashboard WHERE userid = '$userid' AND alias = '$alias'" . $qB . $qC . ";");
+      $result = db_query($this->conn, $sql);
+      return db_fetch_array($result);
     }
 
     public function build_menu($userid,$location)

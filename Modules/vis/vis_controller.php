@@ -15,15 +15,15 @@
 
   function vis_controller()
   {
-    global $mysqli, $session, $route, $user, $timestore_adminkey;
+    global $conn, $session, $route, $user, $timestore_adminkey;
 
     $result = false;
 
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$timestore_adminkey);
+    $feed = new Feed($conn,$timestore_adminkey);
 
     require "Modules/vis/multigraph_model.php";
-    $multigraph = new Multigraph($mysqli);
+    $multigraph = new Multigraph($conn);
 
     $visdir = "vis/visualisations/";
  
@@ -78,10 +78,10 @@
         {
             $feedid = intval(get('feedid'));
             $datatype = $feed->get_field($feedid,'datatype');
-            if ($datatype == 0) $result = "Feed type or authentication not valid";
-            if ($datatype == 1) $route->action = 'rawdata';
-            if ($datatype == 2) $route->action = 'bargraph';
-            if ($datatype == 3) $route->action = 'histgraph';
+            if ($datatype == DataType::UNDEFINED) $result = "Feed type or authentication not valid";
+            if ($datatype == DataType::REALTIME) $route->action = 'rawdata';
+            if ($datatype == DataType::DAILY) $route->action = 'bargraph';
+            if ($datatype == DataType::HISTOGRAM) $route->action = 'histgraph';
         }
 
         while ($vis = current($visualisations))
