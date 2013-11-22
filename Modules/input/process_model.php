@@ -29,198 +29,36 @@ class Process
     {
       $list = array();
 
-      // Process description
-      // Arg type
-      // public function Name
-      // No. of datafields if creating feed
-      // Data type
-
+      // description | Arg type | function | No. of datafields if creating feed | Datatype
+      
       $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME);
-      $list[2] = array("x",ProcessArg::VALUE,"scale",0,DataType::UNDEFINED);
-      $list[3] = array("+",ProcessArg::VALUE,"offset",0,DataType::UNDEFINED);
-      $list[4] = array(
-        _("Power to kWh"),
-        ProcessArg::FEEDID,
-        "power_to_kwh",
-        1,
-        DataType::REALTIME
-      );
-      $list[5] = array(
-        _("Power to kWh/d"),
-        ProcessArg::FEEDID,
-        "power_to_kwhd",
-        1,
-        DataType::DAILY
-      );
-      $list[6] = array(
-        _("x input"),
-        ProcessArg::INPUTID,
-        "times_input",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[7] = array(
-        _("input on-time"),
-        ProcessArg::FEEDID,
-        "input_ontime",
-        1,
-        DataType::DAILY
-      );
-      $list[8] = array(
-        _("kWhinc to kWh/d"),
-        ProcessArg::FEEDID,
-        "kwhinc_to_kwhd",
-        1,
-        DataType::DAILY
-      );
-      $list[9] = array(
-        _("kWh to kWh/d (OLD)"),
-        ProcessArg::FEEDID,
-        "kwh_to_kwhd",
-        1,
-        DataType::DAILY
-      );
-      $list[10] = array(
-        _("update feed @time"),
-        ProcessArg::FEEDID,
-        "update_feed_data",
-        1,
-        DataType::UNDEFINED
-      );
-      $list[11] = array(
-        _("+ input"),
-        ProcessArg::INPUTID,
-        "add_input",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[12] = array(
-        _("/ input"),
-        ProcessArg::INPUTID,
-        "divide_input",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[13] = array(
-        _("phaseshift"),
-        ProcessArg::VALUE,
-        "phaseshift",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[14] = array(
-        _("accumulator"),
-        ProcessArg::FEEDID,
-        "accumulator",
-        1,
-        DataType::REALTIME
-      );
-      $list[15] = array(
-        _("rate of change"),
-        ProcessArg::FEEDID,
-        "ratechange",
-        1,
-        DataType::REALTIME
-      );
-      $list[16] = array(
-        _("histogram"),
-        ProcessArg::FEEDID,
-        "histogram",
-        2,
-        DataType::HISTOGRAM
-      );
-      
-      $list[17] = array(
-        _("average"),
-        ProcessArg::FEEDID,
-        "average",
-        2,
-        DataType::HISTOGRAM
-      );
-
-      $list[18] = array(
-        _("heat flux"),
-        ProcessArg::FEEDID,
-        "heat_flux",
-        1,
-        DataType::REALTIME
-      );
-
-      $list[19] = array(
-        _("power gained to kWh/d"),
-        ProcessArg::FEEDID,
-        "power_acc_to_kwhd",
-        1,
-        DataType::DAILY
-      );
-      
-      $list[20] = array(
-        _("pulse difference"),
-        ProcessArg::FEEDID,
-        "pulse_diff",
-        1,
-        DataType::REALTIME  
-      );
-      
-      $list[21] = array(
-        _("KWh to Power"),
-        ProcessArg::FEEDID,
-        "kwh_to_power",
-        1,
-        DataType::REALTIME  
-      );
-      $list[22] = array(
-        _("- input"),
-        ProcessArg::INPUTID,
-        "subtract_input",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[23] = array(
-        _("kWh to kWh/d"),
-        ProcessArg::FEEDID,
-        "kwh_to_kwhd2",
-        2,
-        DataType::HISTOGRAM
-      );
-
-      $list[24] = array(
-        "allow positive",
-        ProcessArg::NONE,
-        "allowpositive",
-        0,
-        DataType::UNDEFINED
-      );
-
-      $list[25] = array(
-        "allow negative",
-        ProcessArg::NONE,
-        "allownegative",
-        0,
-        DataType::UNDEFINED
-      );
-
-      $list[26] = array(
-        "signed to unsigned",
-        ProcessArg::NONE,
-        "signed2unsigned",
-        0,
-        DataType::UNDEFINED
-      );
-      $list[27] = array(
-        _("max value"),
-        ProcessArg::FEEDID,
-        "max_value",
-        1,
-        DataType::DAILY
-      );
-      $list[28] = array(
-        _("min value"),
-        ProcessArg::FEEDID,
-        "min_value",
-        1,
-        DataType::DAILY
-      );
+      $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED);
+      $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED);
+      $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME);
+      $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY);
+      $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED);
+      $list[7] = array(_("input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY);
+      $list[8] = array(_("kWhinc to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY);
+      $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd",1,DataType::DAILY);
+      $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::UNDEFINED);
+      $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED);
+      $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED);
+      $list[13] = array(_("phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED);
+      $list[14] = array(_("accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME);
+      $list[15] = array(_("rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME);
+      $list[16] = array(_("histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM);
+      $list[17] = array(_("average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM);
+      $list[18] = array(_("heat flux"),ProcessArg::FEEDID,"heat_flux",1,DataType::REALTIME);
+      $list[19] = array(_("power gained to kWh/d"),ProcessArg::FEEDID,"power_acc_to_kwhd",1,DataType::DAILY);
+      $list[20] = array(_("pulse difference"),ProcessArg::FEEDID,"pulse_diff",1,DataType::REALTIME);
+      $list[21] = array(_("KWh to Power"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME);
+      $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED);
+      $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd2",2,DataType::HISTOGRAM);
+      $list[24] = array(_("allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED);
+      $list[25] = array(_("allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED);
+      $list[26] = array(_("signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED);
+      $list[27] = array(_("max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY);
+      $list[28] = array(_("min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY);
       
       return $list;
     }
