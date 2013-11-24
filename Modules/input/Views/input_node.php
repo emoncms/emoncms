@@ -66,9 +66,6 @@ input[type="text"] {
   function update()
   {
     table.data = input.list();
-    for (z in table.data) {
-      table.data[z].time = table.data[z].time;
-    }
     table.draw();
     if (table.data.length != 0) {
       $("#noinputs").hide();

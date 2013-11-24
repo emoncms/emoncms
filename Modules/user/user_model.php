@@ -20,7 +20,7 @@ class User
     private $enable_rememberme = false;
     private $redis;
     
-    public function __construct($mysqli,$rememberme)
+    public function __construct($mysqli,$redis,$rememberme)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
         global $enable_rememberme;
@@ -29,8 +29,7 @@ class User
         $this->mysqli = $mysqli;
         $this->rememberme = $rememberme;
      
-        $this->redis = new Redis();
-        $this->redis->connect("127.0.0.1");
+        $this->redis = $redis;
     }
 
     //---------------------------------------------------------------------------------------

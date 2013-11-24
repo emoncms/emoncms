@@ -22,6 +22,7 @@ class Timestore
   
   public function create($feedid,$newfeedinterval)
   {
+    if ($newfeedinterval<5) $newfeedinterval = 5;
     $this->timestoreApi->create_node($feedid,$newfeedinterval);
   }
   
@@ -35,7 +36,11 @@ class Timestore
     $start = $now-(3600*24*365*5); // 5 years in past
     $end = $now+(3600*48);         // 48 hours in future
     
-    $this->timestoreApi->post_values($feedid,$time*1000,array($value),null);
+    if ($time>$start && $time<$end)
+    {
+      $this->timestoreApi->post_values($feedid,$time*1000,array($value),null);
+    }
+    
   }
   
   public function get_data($feedid,$start,$end)
@@ -100,7 +105,6 @@ class Timestore
     $feedid = intval($feedid);
     $start = intval($start/1000.0);
     $end = intval($end/1000.0);
-    
     
     $meta = $this->get_meta($feedid);
 

@@ -183,14 +183,17 @@ class Process
       
       $last_time = $last['time'];
       
-      if ($last_time)
+      // only update if last datapoint was less than 2 hour old
+      // this is to reduce the effect of monitor down time on creating
+      // often large kwh readings.
+      if ($last_time && (time()-$last_time)<7200)
       {
         // kWh calculation
         $time_elapsed = ($time_now - $last_time);
         $kwh_inc = ($time_elapsed * $value) / 3600000;
         $new_kwh = $last_kwh + $kwh_inc;
       }
-
+      
       $this->feed->insert_data($feedid, $time_now, $time_now, $new_kwh);
 
       return $value;
@@ -203,18 +206,18 @@ class Process
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
       $last['time'] = strtotime($last['time']);
-      
-      $last_kwh = $last['value'];
-      $last_time = $last['time'];
+      if (!isset($last['value'])) $last['value'] = 0;
+      $last_kwh = $last['value']*1;
+      $last_time = $last['time']*1;
 
-      if ($last_time)
+      if ($last_time && ((time()-$last_time)<7200))
       {
         // kWh calculation
         $time_elapsed = ($time_now - $last_time);
         $kwh_inc = ($time_elapsed * $value) / 3600000;
         $new_kwh = $last_kwh + $kwh_inc;
       }
-
+      
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
       $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
 
@@ -414,9 +417,13 @@ class Process
     $last_time = strtotime($lastvalue['time']);
      
     // kWh calculation
-    $time_elapsed = ($time_now - $last_time);
-    $kwh_inc = ($time_elapsed * $value) / 3600000;
-
+    if ((time()-$last_time)<7200) {
+      $time_elapsed = ($time_now - $last_time);
+      $kwh_inc = ($time_elapsed * $value) / 3600000;
+    } else {
+      $kwh_inc = 0;
+    }
+    
     // Get last value
     $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time' AND data2 = '$new_value'");
 
@@ -540,7 +547,7 @@ class Process
 
       $last = $this->feed->get_timevalue($feedid);
       $last['time'] = strtotime($last['time']);
-      if ($last['time']) {
+      if ($last['time'] && ((time()-$last['time'])<7200)) {
         // kWh calculation
         $time_elapsed = ($time_now - $last['time']);
         $kwh_inc = ($time_elapsed * $value) / 3600000;

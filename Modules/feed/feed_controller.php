@@ -17,11 +17,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-  global $mysqli, $session, $route, $timestore_adminkey;
+  global $mysqli, $redis, $session, $route, $timestore_adminkey;
   $result = false;
 
   include "Modules/feed/feed_model.php";
-  $feed = new Feed($mysqli,$timestore_adminkey);
+  $feed = new Feed($mysqli,$redis,$timestore_adminkey);
 
   if ($route->format == 'html')
   {
@@ -62,7 +62,7 @@ function feed_controller()
         // if public or belongs to user
         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
         {
-          if ($route->action == "value") $result = $feed->get_field($feedid,'value');
+          if ($route->action == "value") $result = $feed->get_value($feedid);
           if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
           if ($route->action == "aget") $result = $feed->get($feedid);
           

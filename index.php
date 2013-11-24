@@ -27,6 +27,9 @@
   // 2) Database
   $mysqli = @new mysqli($server,$username,$password,$database);
 
+  $redis = new Redis();
+  $redis->connect("127.0.0.1");
+
   if ( $mysqli->connect_error ) {
 	echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
 	if ( $display_errors ) {
@@ -44,7 +47,7 @@
   require "Modules/user/rememberme_model.php";
   $rememberme = new Rememberme($mysqli);
   require("Modules/user/user_model.php");
-  $user = new User($mysqli,$rememberme);
+  $user = new User($mysqli,$redis,$rememberme);
 
   if (get('apikey'))
     $session = $user->apikey_session($_GET['apikey']);
@@ -99,6 +102,8 @@
       $output = controller($public_profile_controller);
     }
   }
+  
+  $mysqli->close();
 
   // 7) Output
   if ($route->format == 'json') 
@@ -122,3 +127,8 @@
   }
 
   $ltime = microtime(true) - $ltime;
+  
+  // if ($session['userid']>0) {
+  //  $redis->incr("user:postcount:".$session['userid']);
+  //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
+  // }

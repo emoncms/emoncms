@@ -16,7 +16,7 @@ function input_controller()
 {
   //return array('content'=>"ok");
   
-  global $mysqli, $user, $session, $route;
+  global $mysqli, $redis, $user, $session, $route;
 
   // There are no actions in the input module that can be performed with less than write privileges
   if (!$session['write']) return array('content'=>false);
@@ -25,10 +25,10 @@ function input_controller()
   $result = false;
 
   include "Modules/feed/feed_model.php";
-  $feed = new Feed($mysqli,$timestore_adminkey);
+  $feed = new Feed($mysqli,$redis, $timestore_adminkey);
 
   require "Modules/input/input_model.php"; // 295
-  $input = new Input($mysqli,$feed);
+  $input = new Input($mysqli,$redis, $feed);
 
   require "Modules/input/process_model.php"; // 886
   $process = new Process($mysqli,$input,$feed);
@@ -101,8 +101,10 @@ function input_controller()
                   $name = $i - 1;
                   $value = (float) $item[$i];
                   if (!isset($dbinputs[$nodeid][$name])) {
-                    $input->create_input($userid, $nodeid, $name);
+                    $inputid = $input->create_input($userid, $nodeid, $name);
                     $dbinputs[$nodeid][$name] = true;
+                    $dbinputs[$nodeid][$name] = array('id'=>$inputid);
+                    $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                   } else { 
                     $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                     if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
@@ -125,6 +127,7 @@ function input_controller()
 			
       if ($route->action == 'post')
       {
+        $userid = $session['userid'];
         $dbinputs = $input->get_inputs($session['userid']);
         $nodeid = intval(get('node'));
         if ($nodeid>2000000000) $nodeid = 0;
@@ -145,8 +148,10 @@ function input_controller()
               $value = (float) $keyvalue[1];
 
               if (!isset($dbinputs[$nodeid][$name])) {
-                $input->create_input($session['userid'], $nodeid, $name);
+                $inputid = $input->create_input($userid, $nodeid, $name);
                 $dbinputs[$nodeid][$name] = true;
+                $dbinputs[$nodeid][$name] = array('id'=>$inputid);
+                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
               } else { 
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                 if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
@@ -170,9 +175,9 @@ function input_controller()
               $value = (float) $csv[$i];
 
               if (!isset($dbinputs[$nodeid][$name])) {
-                $iid = $input->create_input($session['userid'], $nodeid, $name);
+                $inputid = $input->create_input($userid, $nodeid, $name);
                 $dbinputs[$nodeid][$name] = true;
-                $dbinputs[$nodeid][$name] = array('id'=>$iid);
+                $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
               } else { 
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);

@@ -24,7 +24,7 @@ class Feed
     
     private $default_engine = Engine::PHPTIMESERIES;
     
-    public function __construct($mysqli,$timestore_adminkey)
+    public function __construct($mysqli,$redis,$timestore_adminkey)
     {
         // Not the best way to bring the variable in but a quick fix for now
         // while the feature is tested.
@@ -47,8 +47,7 @@ class Feed
         require "Modules/feed/engine/PHPTimeSeries.php";
         $this->phptimeseries = new PHPTimeSeries();
         
-        $this->redis = new Redis();
-        $this->redis->connect("127.0.0.1");
+        $this->redis = $redis;
     }
     
     public function set_update_value_redis($feedid, $value, $time)
@@ -174,7 +173,7 @@ class Feed
     {
       $row = $this->redis->hGetAll("feed:$id");
       
-      if ($row->public) {
+      if ($row['public']) {
         $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
         $row['time'] = strtotime($lastvalue['time']);
         $row['value'] = $lastvalue['value'];
@@ -242,6 +241,25 @@ class Feed
     }
     
     return $lastvalue;
+  }
+
+  public function get_value($id)
+  {
+    $id = (int) $id;
+    
+    // Get the timevalue from redis if it exists
+    if ($this->redis->exists("feed:lastvalue:$id"))
+    {
+      $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
+    }
+    else
+    {
+      // if it does not load it in to redis from the actual feed data.
+      $lastvalue = $this->get_timevalue_from_data($id);
+      $this->redis->hMset("feed:lastvalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
+    }
+    
+    return $lastvalue['value'];
   }
   
   public function get_timevalue_from_data($feedid)

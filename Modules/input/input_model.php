@@ -18,13 +18,12 @@ class Input
     private $feed;
     private $redis;
 
-    public function __construct($mysqli,$feed)
+    public function __construct($mysqli,$redis,$feed)
     {
         $this->mysqli = $mysqli;
         $this->feed = $feed;
         
-        $this->redis = new Redis();
-        $this->redis->connect("127.0.0.1");
+        $this->redis = $redis;
     }
 
     // USES: redis input & user
@@ -32,13 +31,19 @@ class Input
     {
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
-        $name = preg_replace('/[^\w\s-.]/','',$name);
-        $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
-        
-        $id = $this->mysqli->insert_id;
-        
-        $this->redis->sAdd("user:inputs:$userid", $id);
-	      $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));   
+
+        if ($nodeid<32)
+        {
+
+          $name = preg_replace('/[^\w\s-.]/','',$name);
+          $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
+          
+          $id = $this->mysqli->insert_id;
+          
+          $this->redis->sAdd("user:inputs:$userid", $id);
+	        $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>"")); 
+	        
+	      }
 	      
 	      return $id;     
     }
