@@ -412,7 +412,6 @@ class Feed
 	// b. Update feeds table
 	$updatetime = date("Y-n-j H:i:s P", $updatetime);
 	$sql = ("UPDATE feeds SET value = '$value', time = '$updatetime' WHERE id = '$feedid';");
-	var_dump($sql);
 	db_query($this->conn, $sql);
 
 	//Check feed event if event module is installed
