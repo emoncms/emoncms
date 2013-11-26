@@ -338,7 +338,7 @@ class Feed
     //Check feed event if event module is installed
     if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
       require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-      $event = new Event($this->mysqli);
+      $event = new Event($this->mysqli,$this->redis);
       $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
     }
 
@@ -366,7 +366,7 @@ class Feed
     //Check feed event if event module is installed
     if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
       require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-      $event = new Event($this->mysqli);
+      $event = new Event($this->mysqli,$this->redis);
       $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
     }
 
