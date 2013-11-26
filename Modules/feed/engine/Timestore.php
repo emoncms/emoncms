@@ -70,16 +70,24 @@ class Timestore
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
     
     $primaryfeedname = $this->dir.$feedname;
-    $fh = fopen($primaryfeedname, 'rb');
-    $size = filesize($primaryfeedname);
     
-    fseek($fh,$size-4);
-    $d = fread($fh,4);
-    fclose($fh);
-    
-    $val = unpack("f",$d);
-    $time = date("Y-n-j H:i:s", $meta['start'] + $meta['interval'] * $meta['npoints']);
-    return array('time'=>$time, 'value'=>$val[1]);
+    if (file_exists($primaryfeedname))
+    {
+      $fh = fopen($primaryfeedname, 'rb');
+      $size = filesize($primaryfeedname);
+      
+      fseek($fh,$size-4);
+      $d = fread($fh,4);
+      fclose($fh);
+      
+      $val = unpack("f",$d);
+      $time = date("Y-n-j H:i:s", $meta['start'] + $meta['interval'] * $meta['npoints']);
+      return array('time'=>$time, 'value'=>$val[1]);
+    }
+    else
+    {
+      return array('time'=>0, 'value'=>0);
+    }
   }
   
   public function get_average($feedid,$start,$end,$interval)
