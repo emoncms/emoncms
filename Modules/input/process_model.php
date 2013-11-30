@@ -582,7 +582,7 @@ class Process
         }
       }
       
-      // Save to allow next difference calc. 
+      // Save to allow next difference calc.
       $this->feed->insert_data($feedid,$time_now,$time_now,$value);
 
       return $pulse_diff;

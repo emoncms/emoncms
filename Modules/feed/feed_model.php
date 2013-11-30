@@ -71,7 +71,7 @@ class Feed
         
         if ($datatype == 1) $engine = $this->default_engine; else $engine = Engine::MYSQL;
 
-        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype','false','$engine')");
+        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype',false,'$engine')");
         $feedid = $this->mysqli->insert_id;
 
         if ($feedid>0) 
@@ -361,6 +361,10 @@ class Feed
     if ($engine==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
     if ($engine==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
 
+    // need to find a way to not update if value being updated is older than the last value 
+    // in the database, redis lastvalue is last update time rather than last datapoint time. 
+    // So maybe we need to store both in redis.
+    
     $this->set_update_value_redis($feedid, $value, $updatetime);
 
     //Check feed event if event module is installed
