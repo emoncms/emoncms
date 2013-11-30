@@ -1,0 +1,334 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-25 17:07+0100\n"
+"PO-Revision-Date: 2013-09-25 19:02+0100\n"
+"Last-Translator: Troels Leegaard <tleegaard@gmail.com>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../input_menu.php:7
+msgid "Input"
+msgstr "Input"
+
+#: ../../../process_model.php:39
+msgid "Log to feed"
+msgstr "Log til feed"
+
+#: ../../../process_model.php:60
+msgid "Power to kWh"
+msgstr "Effekt til kWh"
+
+#: ../../../process_model.php:67
+msgid "Power to kWh/d"
+msgstr "Effekt til kWh/dag"
+
+#: ../../../process_model.php:74
+msgid "x input"
+msgstr "* input"
+
+#: ../../../process_model.php:81
+msgid "input on-time"
+msgstr "input on-time"
+
+#: ../../../process_model.php:88
+msgid "kWhinc to kWh/d"
+msgstr "kWhinc til kWh/dag"
+
+#: ../../../process_model.php:95
+msgid "kWh to kWh/d (OLD)"
+msgstr "kWh til kWh/d (Gammel udgave)"
+
+#: ../../../process_model.php:102
+msgid "update feed @time"
+msgstr "Opdate feed @tidspunkt"
+
+#: ../../../process_model.php:109
+msgid "+ input"
+msgstr "+ input"
+
+#: ../../../process_model.php:116
+msgid "/ input"
+msgstr "/ input"
+
+#: ../../../process_model.php:123
+msgid "phaseshift"
+msgstr "Faseforskydning"
+
+#: ../../../process_model.php:130
+msgid "accumulator"
+msgstr "Akkumulator"
+
+#: ../../../process_model.php:137
+msgid "rate of change"
+msgstr "Ændringshastighed"
+
+#: ../../../process_model.php:144
+msgid "histogram"
+msgstr "Histogram"
+
+#: ../../../process_model.php:151
+msgid "average"
+msgstr "Gennemsnit"
+
+#: ../../../process_model.php:159
+msgid "heat flux"
+msgstr "Varmeflux"
+
+#: ../../../process_model.php:167
+msgid "power gained to kWh/d"
+msgstr "Effekt opnået til kWh/dag"
+
+#: ../../../process_model.php:175
+msgid "pulse difference"
+msgstr "Puls-forskel"
+
+#: ../../../process_model.php:183
+msgid "KWh to Power"
+msgstr "kWh til effekt"
+
+#: ../../../process_model.php:190
+msgid "- input"
+msgstr "- input"
+
+#: ../../../process_model.php:197
+msgid "kWh to kWh/d"
+msgstr "kWh til kWh/dag"
+
+#: ../../../process_model.php:228
+msgid "max value"
+msgstr "Maksimumværdi"
+
+#: ../../../process_model.php:235
+msgid "min value"
+msgstr "Minimumværdi"
+
+#: ../../../Views/input_node.php:23
+#: ../../../Views/process_list.php:18
+msgid "Input API Help"
+msgstr "Input-API-hjælp"
+
+#: ../../../Views/input_node.php:26
+msgid "Inputs"
+msgstr "Input"
+
+#: ../../../Views/input_node.php:30
+msgid "No inputs created"
+msgstr "Ingen input er oprettede"
+
+#: ../../../Views/input_node.php:31
+msgid "Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href=\"api\">Input API helper</a> as a guide for generating your request."
+msgstr "Input er hvor pakker fra dine noder ankommer. Konfigurér dine noder til at sende pakker hertil. Se evt. <a href=\"api\">API'en</a> hvis du har brug for yderligere hjælp til dette."
+
+#: ../../../Views/input_node.php:47
+msgid "Node:"
+msgstr "Node"
+
+#: ../../../Views/input_node.php:48
+msgid "name"
+msgstr "Nr"
+
+#: ../../../Views/input_node.php:49
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: ../../../Views/input_node.php:50
+msgid "Process list"
+msgstr "Handlingliste"
+
+#: ../../../Views/process_list.php:20
+msgid "Input configuration:   "
+msgstr "Konfigurer input:"
+
+#: ../../../Views/process_list.php:21
+msgid "Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list."
+msgstr "Handlinger gennemløbes i den anførte rækkefølge. Resultatet af de enkelte handlingerr benyttes som input i de(n) følgende handlinger."
+
+#: ../../../Views/process_list.php:29
+msgid "Order"
+msgstr "Rækkefølge"
+
+#: ../../../Views/process_list.php:30
+msgid "Process"
+msgstr "Handling"
+
+#: ../../../Views/process_list.php:31
+msgid "Arg"
+msgstr "Argument"
+
+#: ../../../Views/process_list.php:32
+msgid "Actions"
+msgstr "Slet"
+
+#: ../../../Views/process_list.php:38
+msgid "New"
+msgstr "Ny"
+
+#: ../../../Views/process_list.php:51
+msgid "Add"
+msgstr "Tilføj"
+
+#: ../../../Views/process_list.php:95
+#: ../../../Views/process_list.php:99
+msgid "Move up"
+msgstr "Flyt op"
+
+#: ../../../Views/process_list.php:107
+msgid "Delete"
+msgstr "Slet"
+
+#: ../../../Views/process_list.php:113
+msgid "You have no processes defined"
+msgstr "Du har ingen definerede handlinger"
+
+#: ../../../Views/process_list.php:140
+msgid "CREATE NEW:"
+msgstr "Opret ny:"
+
+#: ../../../Views/input_api.php:3
+msgid "Input API"
+msgstr "Input-API"
+
+#: ../../../Views/input_api.php:4
+msgid "Apikey authentication"
+msgstr "APIKEY autentificering"
+
+#: ../../../Views/input_api.php:5
+msgid "If you want to call any of the following actions when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr "Hvis du ønsker at kalde en af disse funktioner, når du ikke er logget ind, skal du tilføje din APIKEY til URL'en: &apikey=APIKEY."
+
+#: ../../../Views/input_api.php:6
+msgid "Read only:"
+msgstr "Læserettigheder:"
+
+#: ../../../Views/input_api.php:9
+msgid "Read & Write:"
+msgstr "Læse- og skriverettigheder:"
+
+#: ../../../Views/input_api.php:13
+msgid "Available HTML URLs"
+msgstr "Tilgængelige HTML-URL's"
+
+#: ../../../Views/input_api.php:15
+msgid "The input list view"
+msgstr "Liste over input"
+
+#: ../../../Views/input_api.php:16
+msgid "This page"
+msgstr "Denne side"
+
+#: ../../../Views/input_api.php:17
+msgid "Input processing configuration page"
+msgstr "Konfigurationsside for inputhandlinger"
+
+#: ../../../Views/input_api.php:20
+msgid "Available JSON commands"
+msgstr "Tilgængelige JSON-kommandoer"
+
+#: ../../../Views/input_api.php:21
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr "For at bruge JSON-API skal URL'en indeholde <b>.json</b>"
+
+#: ../../../Views/input_api.php:23
+msgid "Post data"
+msgstr "Tilføj data"
+
+#: ../../../Views/input_api.php:25
+msgid "JSON format:"
+msgstr "JSON-format:"
+
+#: ../../../Views/input_api.php:26
+msgid "CSV format:"
+msgstr "CSV-format:"
+
+#: ../../../Views/input_api.php:27
+msgid "Assign inputs to a node group"
+msgstr "Tilknyt input til en node-gruppe"
+
+#: ../../../Views/input_api.php:28
+msgid "Set the input entry time manually"
+msgstr "Indstil tidspunktet for input manuelt"
+
+#: ../../../Views/input_api.php:31
+msgid "APIKEY"
+msgstr "APIKEY"
+
+#: ../../../Views/input_api.php:32
+msgid "To post data from a remote device you will need to include in the request url your write apikey. This give your device write access to your emoncms account, allowing it to post data."
+msgstr "For at logge data fra en ekstern enhed, skal din APIKEY være del af URL'en, da der ellers ikke er skrive-adgang."
+
+#: ../../../Views/input_api.php:34
+msgid "For example using the first json type request above just add the apikey to the end like this:"
+msgstr "Eksempelvis, ved brug af den første json-forespørgsel ovenfor, skal du blot tilføje din APIKEY således:"
+
+#: ../../../Views/input_api.php:37
+msgid "Bulk data"
+msgstr "Bulk data"
+
+#: ../../../Views/input_api.php:39
+msgid "You can provide data using bulk mode"
+msgstr "Du kan logge data vha. bulk"
+
+#: ../../../Views/input_api.php:42
+msgid "The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 10 seconds."
+msgstr "Det første tal for hver node angiver tidsforskellen. For den første node er denne 0, hvilket betyder at pakken fra den første node ankom for 0 sek. siden. Den anden nodes pakke ankom for 2 sek. siden og den tredje nodes pakke for 10 sek. siden."
+
+#: ../../../Views/input_api.php:43
+msgid "The second number is the node id, this is the unique identifer for the wireless node."
+msgstr "Det andet tal er node-ID'et. ID'et er unikt og bruges til at identificere noden."
+
+#: ../../../Views/input_api.php:44
+msgid "All the numbers after the first two are data values. The first node here (node 10) has three data values: 250,100 and 20."
+msgstr "Alle tallene efter de to første er dataværdier. Det første node-ID her (node 10) har tre værdier: 250, 100 og 20."
+
+#: ../../../Views/input_api.php:48
+msgid "Input actions"
+msgstr "Input-handlinger"
+
+#: ../../../Views/input_api.php:50
+msgid "List of inputs"
+msgstr "Input-liste"
+
+#: ../../../Views/input_api.php:51
+msgid "Delete an input"
+msgstr "Slet input"
+
+#: ../../../Views/input_api.php:54
+msgid "Input process actions"
+msgstr "Handling for input"
+
+#: ../../../Views/input_api.php:56
+msgid "Add an input process"
+msgstr "Tilføj en handling for dette input"
+
+#: ../../../Views/input_api.php:57
+msgid "List input process list"
+msgstr "Vis handlingslisten for input"
+
+#: ../../../Views/input_api.php:58
+msgid "Delete input process"
+msgstr "Slet inputhandling"
+
+#: ../../../Views/input_api.php:59
+msgid "Move input process"
+msgstr "Flyt inputhandling"
+
+#: ../../../Views/input_api.php:60
+msgid "Reset input process list"
+msgstr "Nulstil handlingslisten for input"
+
+#~ msgid "Reset process list?"
+#~ msgstr "Nulstil handlingslisten"
+#~ msgid "Are you sure you want to delete input: "
+#~ msgstr "Er du sikker på at du vil slettet dette input?"
+#~ msgid "Delete input?"
+#~ msgstr "Slet dette input"
+

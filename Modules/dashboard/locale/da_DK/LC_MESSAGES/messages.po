@@ -1,0 +1,335 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-25 16:27+0100\n"
+"PO-Revision-Date: 2013-09-25 16:43+0100\n"
+"Last-Translator: Troels Leegaard <tleegaard@gmail.com>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../dashboard_langjs.php:13
+msgid "Changed, press to save"
+msgstr "Ændret. Tryk for at gemme"
+
+#: ../../../dashboard_langjs.php:16
+msgid "Feed"
+msgstr "Feed"
+
+#: ../../../dashboard_langjs.php:17
+msgid "Feed value"
+msgstr "Feed-værdi"
+
+#: ../../../dashboard_langjs.php:19
+msgid "Value"
+msgstr "Værdi"
+
+#: ../../../dashboard_langjs.php:20
+msgid "Value to show"
+msgstr "Værdi at vise"
+
+#: ../../../dashboard_langjs.php:22
+msgid "Units"
+msgstr "Enheder"
+
+#: ../../../dashboard_langjs.php:23
+msgid "Units to show"
+msgstr "Enheder at vise"
+
+#: ../../../dashboard_langjs.php:25
+msgid "Type"
+msgstr "Type"
+
+#: ../../../dashboard_langjs.php:26
+msgid "Type to show"
+msgstr "Type at vise"
+
+#: ../../../dashboard_langjs.php:28
+msgid "Max value"
+msgstr "Maksimumværdi"
+
+#: ../../../dashboard_langjs.php:29
+msgid "Max value to show"
+msgstr "Maksimumværdi at vise"
+
+#: ../../../dashboard_langjs.php:33
+msgid "Feed to set, control with caution, make sure device being controlled can operate safely in event of emoncms failure."
+msgstr "Feed der skal opdateres. Brug med forsigtighed, og vær sikker på at enheden der kontrolleres kan fungere selvstændigt, i tilfælde af at emoncms fejler. "
+
+#: ../../../dashboard_langjs.php:34
+msgid "Starting value"
+msgstr "Startværdi"
+
+#: ../../../dashboard_langjs.php:37
+msgid "Bottom"
+msgstr "Nederste"
+
+#: ../../../dashboard_langjs.php:38
+msgid "Top"
+msgstr "Øverste"
+
+#: ../../../dashboard_langjs.php:39
+msgid "Bottom feed value"
+msgstr "Nedre feedværdi"
+
+#: ../../../dashboard_langjs.php:40
+msgid "Top feed value"
+msgstr "Øverste feedværdi"
+
+#: ../../../dashboard_langjs.php:43
+msgid "Scale"
+msgstr "Skalér"
+
+#: ../../../dashboard_langjs.php:44
+msgid "Scale to show"
+msgstr "Skalér for at vise"
+
+#: ../../../dashboard_langjs.php:48
+msgid "Fill"
+msgstr "Fyld"
+
+#: ../../../dashboard_langjs.php:49
+msgid "Fill value"
+msgstr "Fyldværdi"
+
+#: ../../../dashboard_langjs.php:50
+msgid "Currency"
+msgstr "Valuta"
+
+#: ../../../dashboard_langjs.php:51
+msgid "Currency to show"
+msgstr "Valuta at vise"
+
+#: ../../../dashboard_langjs.php:52
+msgid "Kwh price"
+msgstr "kWh-pris"
+
+#: ../../../dashboard_langjs.php:53
+msgid "Set kwh price"
+msgstr "Indstil kWh-pris"
+
+#: ../../../dashboard_langjs.php:54
+msgid "kwhd"
+msgstr "kWh/d"
+
+#: ../../../dashboard_langjs.php:55
+msgid "kwhd source"
+msgstr "kWh/d-kilde"
+
+#: ../../../dashboard_langjs.php:56
+msgid "Power"
+msgstr "Effekt"
+
+#: ../../../dashboard_langjs.php:57
+msgid "Power to show"
+msgstr "Effekt at vise"
+
+#: ../../../dashboard_langjs.php:58
+msgid "Threshold A"
+msgstr "Grænse A"
+
+#: ../../../dashboard_langjs.php:59
+msgid "Threshold B"
+msgstr "Grænse B"
+
+#: ../../../dashboard_langjs.php:60
+msgid "Threshold A used"
+msgstr "Grænse A benyttet"
+
+#: ../../../dashboard_langjs.php:61
+msgid "Threshold B used"
+msgstr "Grænse B benyttet"
+
+#: ../../../dashboard_langjs.php:62
+msgid "Consumption"
+msgstr "Forbrug"
+
+#: ../../../dashboard_langjs.php:63
+msgid "Solar"
+msgstr "Solenergi"
+
+#: ../../../dashboard_langjs.php:64
+msgid "Consumption feed value"
+msgstr "Forbrug feedid"
+
+#: ../../../dashboard_langjs.php:65
+msgid "Solar feed value"
+msgstr "Solenergi feedid"
+
+#: ../../../dashboard_langjs.php:66
+msgid "Ufac"
+msgstr ""
+
+#: ../../../dashboard_langjs.php:67
+msgid "Ufac value"
+msgstr ""
+
+#: ../../../dashboard_langjs.php:68
+msgid "Mid"
+msgstr "Middel"
+
+#: ../../../dashboard_langjs.php:69
+msgid "Mid value"
+msgstr "Middelværdi"
+
+#: ../../../dashboard_menu.php:7
+#: ../../../Views/dashboard_list.php:15
+msgid "Dashboard"
+msgstr "Instrumentbord"
+
+#: ../../../dashboard_model.php:52
+msgid " clone"
+msgstr " klon"
+
+#: ../../../Views/dashboard_edit_view.php:33
+msgid "Configure element"
+msgstr "Konfigurér element"
+
+#: ../../../Views/dashboard_edit_view.php:36
+#: ../../../Views/dashboard_list.php:35
+msgid "Cancel"
+msgstr "Annullér"
+
+#: ../../../Views/dashboard_edit_view.php:37
+#: ../../../Views/dashboard_config.php:56
+msgid "Save changes"
+msgstr "Gem ændringer"
+
+#: ../../../Views/dashboard_edit_view.php:45
+msgid "Configure"
+msgstr "Konfigurér"
+
+#: ../../../Views/dashboard_edit_view.php:46
+msgid "Delete"
+msgstr "Slet"
+
+#: ../../../Views/dashboard_edit_view.php:48
+msgid "Not modified"
+msgstr "Ikke ændret"
+
+#: ../../../Views/dashboard_edit_view.php:104
+msgid "Saved"
+msgstr "Gemt"
+
+#: ../../../Views/dashboard_list.php:19
+msgid "No dashboards created"
+msgstr "Ingen instrumentbord oprettet"
+
+#: ../../../Views/dashboard_list.php:20
+msgid "Maybe you would like to add your first dashboard using the button"
+msgstr "Måske vil du gerne oprette dit første instrumentbord ved at trykke på knappen"
+
+#: ../../../Views/dashboard_list.php:29
+msgid "WARNING deleting a dashboard is permanent"
+msgstr "ADVARSEL: Sletning af instrumentbord er permanent"
+
+#: ../../../Views/dashboard_list.php:32
+msgid "Are you sure you want to delete this dashboard?"
+msgstr "Er du sikker på at du ønsker at slette instrumentbordet?"
+
+#: ../../../Views/dashboard_list.php:36
+msgid "Delete permanently"
+msgstr "Slet permanent"
+
+#: ../../../Views/dashboard_list.php:50
+msgid "Id"
+msgstr "ID"
+
+#: ../../../Views/dashboard_list.php:51
+msgid "Name"
+msgstr "Navn"
+
+#: ../../../Views/dashboard_list.php:52
+msgid "Alias"
+msgstr "Alias"
+
+#: ../../../Views/dashboard_list.php:53
+msgid "Description"
+msgstr "Beskrivelse"
+
+#: ../../../Views/dashboard_list.php:54
+#: ../../../Views/dashboard_config.php:34
+msgid "Main"
+msgstr "Primære"
+
+#: ../../../Views/dashboard_list.php:55
+#: ../../../Views/dashboard_config.php:44
+msgid "Public"
+msgstr "Offentlige"
+
+#: ../../../Views/dashboard_list.php:56
+#: ../../../Views/dashboard_config.php:39
+msgid "Published"
+msgstr "Udgivne"
+
+#: ../../../Views/dashboard_config.php:20
+msgid "Dashboard Configuration"
+msgstr "Opsætning af instrumentbord"
+
+#: ../../../Views/dashboard_config.php:25
+msgid "Dashboard name: "
+msgstr "Navn på instrumentbord:"
+
+#: ../../../Views/dashboard_config.php:27
+msgid "Menu name: (lowercase a-z only)"
+msgstr "Menunavn: (små bogstaver a-z)"
+
+#: ../../../Views/dashboard_config.php:29
+msgid "Description: "
+msgstr "Beskrivelse"
+
+#: ../../../Views/dashboard_config.php:34
+msgid "Make this dashboard the first shown"
+msgstr "Gør dette instrumentbord til det først viste"
+
+#: ../../../Views/dashboard_config.php:39
+msgid "Activate this dashboard"
+msgstr "Aktivér dette instrumentbord"
+
+#: ../../../Views/dashboard_config.php:44
+msgid "Anyone with the URL can see this dashboard"
+msgstr "Alle med denne URL kan se instrumentbordet"
+
+#: ../../../Views/dashboard_config.php:49
+msgid "Shows dashboard description on mouse over dashboard name in menu project"
+msgstr "Vis beskrivelse for instrumentbordet når musen holdes over instrumentbordets navn i menuen"
+
+#: ../../../Views/dashboard_config.php:49
+msgid "Show description"
+msgstr "Vis beskrivelse"
+
+#: ../../../Views/dashboard_config.php:55
+msgid "Close"
+msgstr "Luk"
+
+#: ../../../Views/dashboard_menu.php:44
+msgid "Dashboards:"
+msgstr "Instrumentborde:"
+
+#: ../../../Views/dashboard_menu.php:54
+msgid "Draw Editor"
+msgstr "Tegne-editor"
+
+#: ../../../Views/dashboard_menu.php:58
+msgid "View mode"
+msgstr "Visningstilstand"
+
+#: ../../../Views/dashboard_menu.php:59
+msgid "Configure dashboard"
+msgstr "Konfigurér instrumentbord"
+
+#: ../../../Views/dashboard_menu.php:62
+msgid "New"
+msgstr "Ny"
+
+#: ../../../Views/dashboard_menu.php:64
+msgid "List view"
+msgstr "Listevisning"
+

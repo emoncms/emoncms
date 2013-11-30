@@ -1,0 +1,99 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-25 19:31+0100\n"
+"PO-Revision-Date: 2013-09-25 19:31+0100\n"
+"Last-Translator: Troels Leegaard <tleegaard@gmail.com>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../vis_main_view.php:27
+msgid "Visualisations"
+msgstr "Visualiseringer"
+
+#: ../../../vis_main_view.php:33
+msgid "Select visualisation:"
+msgstr "Vælg visualisering:"
+
+#: ../../../vis_main_view.php:43
+msgid "Set options:"
+msgstr "Angiv indstillinger:"
+
+#: ../../../vis_main_view.php:45
+msgid "Note:"
+msgstr "Note:"
+
+#: ../../../vis_main_view.php:45
+msgid "If a feed does not appear in the selection box, check that the type has been set on the feeds page."
+msgstr "Hvis et feed ikke vises i dialogboksen, så tjek venligst om feedtypen er korrekt indstillet på siden for feeds."
+
+#: ../../../vis_main_view.php:53
+msgid "View"
+msgstr "Vis"
+
+#: ../../../vis_main_view.php:54
+msgid "Full screen"
+msgstr "Fuld skærm"
+
+#: ../../../vis_main_view.php:62
+msgid "Embed in your website:"
+msgstr "Indlejring på hjemmeside:"
+
+#: ../../../vis_main_view.php:135
+msgid "Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public."
+msgstr "Nogle af de valgte feeds er ikke offentlige. For at indlejre disse på din hjemmeside skal derfor enten gøre dem offentlige eller tilføj din APIKEY til URL'en."
+
+#: ../../../vis_main_view.php:135
+msgid "To embed privately:"
+msgstr "For privat indlejring:"
+
+#: ../../../vis_menu.php:7
+msgid "Vis"
+msgstr "Visualiser"
+
+#: ../../../vis_controller.php:14
+msgid "Restricted access"
+msgstr "Adgangskodebeskyttet område"
+
+#: ../../../visualisations/realtime.php:36
+msgid "hour"
+msgstr "time"
+
+#: ../../../visualisations/realtime.php:37
+#: ../../../visualisations/realtime.php:38
+#: ../../../visualisations/realtime.php:39
+msgid "min"
+msgstr "minut"
+
+#: ../../../visualisations/editrealtime.php:54
+#: ../../../visualisations/editrealtime.php:60
+msgid "Save"
+msgstr "Gem"
+
+#: ../../../visualisations/editrealtime.php:55
+msgid "Delete data in window"
+msgstr "Slet data der vises i vinduet"
+
+#: ../../../visualisations/editrealtime.php:66
+msgid "WARNING deleting feed data is permanent"
+msgstr "ADVARSEL: Sletning af datapunkter er permanent"
+
+#: ../../../visualisations/editrealtime.php:69
+msgid "Are you sure you want to delete the data in this window?"
+msgstr "Er du sikker på at du vil slette datapunkterne der vises i vinduet?"
+
+#: ../../../visualisations/editrealtime.php:72
+msgid "Cancel"
+msgstr "Annullér"
+
+#: ../../../visualisations/editrealtime.php:73
+msgid "Delete permanently"
+msgstr "Slet permanent"
