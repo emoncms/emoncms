@@ -110,7 +110,7 @@ class Dashboard
       // Repeat this line changing the field name to add fields that can be updated:
 
       if (isset($fields->height)) $array[] = "`height` = '".intval($fields->height)."'";
-      if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%]/','',$fields->content)."'";
+      if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\w\s-.#<>?",;:=&\/%~]/','',$fields->content)."'";
 
       if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
       if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
