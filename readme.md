@@ -11,6 +11,14 @@ To run the redis branch you will need redis server installed and the phpredis cl
     sudo apt-get install redis-server
     sudo pecl install redis
 
+If you'r currently running the emoncms master branch and want to test the redis branch its best to create a new folder for the redis branch keeping your current setup intact.
+
+    cd /var/www
+    git clone -b redismetadata https://github.com/emoncms/emoncms.git redis
+
+Copy over the settings.php file from your existing emoncms install.
+
+
 # Emoncms v6 (timestore+)
 
 See main site: http://emoncms.org
