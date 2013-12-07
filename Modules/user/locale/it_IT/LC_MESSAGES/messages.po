@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-18 18:42+0100\n"
-"PO-Revision-Date: 2013-12-07 15:33+0100\n"
+"PO-Revision-Date: 2013-12-07 15:35+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -155,11 +155,11 @@ msgstr "Spagnolo"
 
 #: ../../../user_view.php:89
 msgid "nl_BE"
-msgstr "Belgio"
+msgstr "Belga"
 
 #: ../../../user_view.php:90
 msgid "nl_NL"
-msgstr "Olanda"
+msgstr "Olandese"
 
 #: ../../../user_view.php:91
 msgid "fr_FR"
