@@ -1,0 +1,169 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-18 18:42+0100\n"
+"PO-Revision-Date: 2013-12-07 15:35+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.1\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: ../../../login_block.php:33 ../../../user_view.php:59
+msgid "Username:"
+msgstr "Nome utente:"
+
+#: ../../../login_block.php:37
+msgid "Password:"
+msgstr ""
+
+#: ../../../login_block.php:41
+msgid "Login"
+msgstr ""
+
+#: ../../../login_block.php:49
+msgid ""
+"Or if you are new enter a username and password above and click register"
+msgstr ""
+"O se sei nuovo inserisci un nome utente e una password e fai clic su "
+"registrati"
+
+#: ../../../login_block.php:49
+msgid "Register"
+msgstr "Registrati"
+
+#: ../../../user_controller.php:57
+msgid "Invalid username or password"
+msgstr "Nome utente o password non validi"
+
+#: ../../../user_controller.php:62
+msgid "Welcome, you are now logged in"
+msgstr "Benvenuto, ora sei connesso"
+
+#: ../../../user_controller.php:90 ../../../user_controller.php:154
+msgid "Sorry username already exists"
+msgstr "Il nome utente esiste già"
+
+#: ../../../user_controller.php:95 ../../../user_controller.php:158
+msgid "Please enter a username that is 4 to 30 characters long"
+msgstr "Inserisci un nome utente compreso tra i 4 e i 30 caratteri"
+
+#: ../../../user_controller.php:100 ../../../user_controller.php:127
+msgid "Please enter a password that is 4 to 30 characters long"
+msgstr "Inserisci una password compresa tra i 4 e i 30 caratteri"
+
+#: ../../../user_controller.php:108
+msgid "Your new account has been created"
+msgstr "Il tuo nuovo account è stato creato"
+
+#: ../../../user_controller.php:131
+msgid "Your password has been changed"
+msgstr "La tua password è stata modificata"
+
+#: ../../../user_controller.php:136
+msgid "Invalid password"
+msgstr "Password non valida"
+
+#: ../../../user_controller.php:162
+msgid "No email address present"
+msgstr "Nessun indirizzo email presente"
+
+#: ../../../user_controller.php:166
+msgid "Username and password updated"
+msgstr "Nome utente e password aggiornati"
+
+#: ../../../user_controller.php:182
+msgid "New read apikey: "
+msgstr ""
+
+#: ../../../user_controller.php:198
+msgid "New write apikey: "
+msgstr ""
+
+#: ../../../user_controller.php:215
+msgid "You are logged out"
+msgstr "Sei disconnesso"
+
+#: ../../../user_controller.php:220
+msgid "Invalid token"
+msgstr "Token non valido"
+
+#: ../../../user_view.php:17
+msgid "User: "
+msgstr "Utente:"
+
+#: ../../../user_view.php:23
+msgid "Select preferred language"
+msgstr "Seleziona la lingua preferita"
+
+#: ../../../user_view.php:27 ../../../user_view.php:29
+msgid "Browser language"
+msgstr "Sfoglia le lingue"
+
+#: ../../../user_view.php:42
+msgid "Save"
+msgstr "Salva"
+
+#: ../../../user_view.php:48
+msgid "Local time"
+msgstr "Ora locale"
+
+#: ../../../user_view.php:50
+msgid "Time offset in hours:"
+msgstr ""
+
+#: ../../../user_view.php:53
+msgid "Set"
+msgstr "Setta"
+
+#: ../../../user_view.php:57
+msgid "Change details"
+msgstr "Cambia i dettagli"
+
+#: ../../../user_view.php:62
+msgid "Email:"
+msgstr ""
+
+#: ../../../user_view.php:65 ../../../user_view.php:76
+msgid "Change"
+msgstr "Cambia"
+
+#: ../../../user_view.php:69
+msgid "Change password"
+msgstr "Cambia password"
+
+#: ../../../user_view.php:70
+msgid "Current password:"
+msgstr "Password corrente:"
+
+#: ../../../user_view.php:73
+msgid "New password:"
+msgstr "Nuova password:"
+
+#: ../../../user_view.php:87
+msgid "en_EN"
+msgstr "Inglese"
+
+#: ../../../user_view.php:88
+msgid "es_ES"
+msgstr "Spagnolo"
+
+#: ../../../user_view.php:89
+msgid "nl_BE"
+msgstr "Belga"
+
+#: ../../../user_view.php:90
+msgid "nl_NL"
+msgstr "Olandese"
+
+#: ../../../user_view.php:91
+msgid "fr_FR"
+msgstr "Francese"
+
+msgid "AUTODETECTLANGUAGE"
+msgstr "Use language browser"
