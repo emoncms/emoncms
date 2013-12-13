@@ -159,6 +159,8 @@ class PHPTimeSeries
   
   public function lastvalue($feedid)
   {
+    if (!file_exists($this->dir."feed_$feedid.MYD"))  return false;
+    
     $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
     $filesize = filesize($this->dir."feed_$feedid.MYD");
 
