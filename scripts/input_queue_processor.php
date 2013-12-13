@@ -16,7 +16,7 @@
   $fp = fopen("runlock", "w");
   if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
 
-  chdir("/var/www/redismdque");
+  chdir("/var/www/latest");
 
   require "process_settings.php";
   $mysqli = new mysqli($server,$username,$password,$database);
@@ -84,26 +84,23 @@
     if ($line_str)
     {
       $rn++;
-      // echo $line_str."\n";
+      
+      //echo $line_str."\n";
+      $packet = json_decode($line_str);
+      
+      $userid = $packet->userid;
+      $time = $packet->time;
+      $nodeid = $packet->nodeid;
+      $data = $packet->data;      
 
-      $line_parts = explode(',',$line_str);
-      
-      // The first and second value in the csv is userid, time and nodeid
-      $userid = $line_parts[0];
-      $time = $line_parts[1];
-      $nodeid = $line_parts[2];
-      
       // Load current user input meta data
       // It would be good to avoid repeated calls to this
       $dbinputs = $input->get_inputs($userid);
       
       $tmp = array();
-      
-      // For each node input
-      $name = 1;
-      for ($i=3; $i<count($line_parts); $i++)
+
+      foreach ($data as $name => $value) 
       {
-        $value = $line_parts[$i];
         if (!isset($dbinputs[$nodeid][$name])) {
           $inputid = $input->create_input($userid, $nodeid, $name);
           $dbinputs[$nodeid][$name] = true;
@@ -115,8 +112,6 @@
           
           if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
         }
-
-        $name++;
       }
       
       foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);

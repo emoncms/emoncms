@@ -31,34 +31,36 @@ class Process
 
       // description | Arg type | function | No. of datafields if creating feed | Datatype
       
-      $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME);
-      $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED);
-      $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED);
-      $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME);
-      $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY);
-      $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED);
-      $list[7] = array(_("input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY);
-      $list[8] = array(_("kWhinc to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY);
-      $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd",1,DataType::DAILY);
-      $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::UNDEFINED);
-      $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED);
-      $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED);
-      $list[13] = array(_("phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED);
-      $list[14] = array(_("accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME);
-      $list[15] = array(_("rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME);
-      $list[16] = array(_("histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM);
-      $list[17] = array(_("average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM);
-      $list[18] = array(_("heat flux"),ProcessArg::FEEDID,"heat_flux",1,DataType::REALTIME);
-      $list[19] = array(_("power gained to kWh/d"),ProcessArg::FEEDID,"power_acc_to_kwhd",1,DataType::DAILY);
-      $list[20] = array(_("pulse difference"),ProcessArg::FEEDID,"pulse_diff",1,DataType::REALTIME);
-      $list[21] = array(_("KWh to Power"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME);
-      $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED);
-      $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd2",2,DataType::HISTOGRAM);
-      $list[24] = array(_("allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED);
-      $list[25] = array(_("allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED);
-      $list[26] = array(_("signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED);
-      $list[27] = array(_("max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY);
-      $list[28] = array(_("min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY);
+      $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main");                  // checked
+      $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED,"Calibration");                           // checked
+      $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED,"Calibration");                          // checked
+      $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power");               // checked
+      $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power");               // checked
+      $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED,"Input");                   // checked
+      $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input");                 // checked
+      $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power");      // checked
+      $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted");       // need to remove
+      $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::UNDEFINED,"Deleted");  // need to remove
+      $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    // checked
+      $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 // checked
+      $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                // need to remove
+      $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc");                 // checked
+      $list[15] = array(_("Rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc");               // checked
+      $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power");                   // checked
+      $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted");               // need to remove
+      $list[18] = array(_("Heat flux"),ProcessArg::FEEDID,"heat_flux",1,DataType::REALTIME,"Deleted");                  // to be reintroduced in post-processing
+      $list[19] = array(_("Power gained to kWh/d"),ProcessArg::FEEDID,"power_acc_to_kwhd",1,DataType::DAILY,"Deleted"); // need to remove - result can be achieved with allow_positive & power_to_kwhd
+      $list[20] = array(_("Total pulse count to pulse increment"),ProcessArg::FEEDID,"pulse_diff",1,DataType::REALTIME,"Pulse");            // checked - look into implementation that doesnt need to store the ref feed
+      $list[21] = array(_("kWh to Power"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME,"Power");              // fixed works now with redis - look into state implementation without feed
+      $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED,"Input");               // checked
+      $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd",2,DataType::DAILY,"Power");                  // fixed works now with redis
+      $list[24] = array(_("Allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED,"Limits");           // checked
+      $list[25] = array(_("Allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED,"Limits");           // checked
+      $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc");       // checked
+      $list[27] = array(_("Max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc");                        // checked
+      $list[28] = array(_("Min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc");                        // checked
+      
+      // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
       
       return $list;
     }
@@ -127,12 +129,6 @@ class Process
       return $value;
     }
 
-    public function update_feed_data($id, $time, $value)
-    {
-
-      return $value;
-    }
-
     //---------------------------------------------------------------------------------------
     // Times value by current value of another input
     //---------------------------------------------------------------------------------------
@@ -177,11 +173,11 @@ class Process
 
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
+      
       $last['time'] = strtotime($last['time']);
       if (!isset($last['value'])) $last['value'] = 0;
-      $last_kwh = $last['value'];
-      
-      $last_time = $last['time'];
+      $last_kwh = $last['value']*1;
+      $last_time = $last['time']*1;
       
       // only update if last datapoint was less than 2 hour old
       // this is to reduce the effect of monitor down time on creating
@@ -190,8 +186,13 @@ class Process
       {
         // kWh calculation
         $time_elapsed = ($time_now - $last_time);
-        $kwh_inc = ($time_elapsed * $value) / 3600000;
+        $kwh_inc = ($time_elapsed * $value) / 3600000.0;
         $new_kwh = $last_kwh + $kwh_inc;
+      } else {
+        // in the event that redis is flushed the last time will
+        // likely be > 7200s ago and so kwh inc is not calculated
+        // rather than enter 0 we enter the last value
+        $new_kwh = $last_kwh;
       }
       
       $this->feed->insert_data($feedid, $time_now, $time_now, $new_kwh);
@@ -205,6 +206,7 @@ class Process
 
       // Get last value
       $last = $this->feed->get_timevalue($feedid);
+      
       $last['time'] = strtotime($last['time']);
       if (!isset($last['value'])) $last['value'] = 0;
       $last_kwh = $last['value']*1;
@@ -214,8 +216,13 @@ class Process
       {
         // kWh calculation
         $time_elapsed = ($time_now - $last_time);
-        $kwh_inc = ($time_elapsed * $value) / 3600000;
+        $kwh_inc = ($time_elapsed * $value) / 3600000.0;
         $new_kwh = $last_kwh + $kwh_inc;
+      } else {
+        // in the event that redis is flushed the last time will
+        // likely be > 7200s ago and so kwh inc is not calculated
+        // rather than enter 0 we enter the last value
+        $new_kwh = $last_kwh;
       }
       
       $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
@@ -223,18 +230,31 @@ class Process
 
       return $value;
     }
-
-    public function kwhinc_to_kwhd($feedid, $time_now, $value)
+    
+    public function kwh_to_kwhd($feedid, $time_now, $value)
     {
-      $last = $this->feed->get_timevalue($feedid);
-      $new_kwh = $last['value'] + ($value / 1000.0);
+      global $redis;
 
-      $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-      $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
-
+      $currentkwhd = $this->feed->get_timevalue($feedid);
+      
+      if ($redis->exists("process:kwhtokwhd:$feedid")) {
+        $lastkwhvalue = $redis->hmget("process:kwhtokwhd:$feedid",array('time','value'));
+        $kwhinc = $value - $lastkwhvalue['value'];
+        
+        // kwh values should always be increasing so ignore ones that are less
+        // assume they are errors
+        if ($kwhinc<0) { $kwhinc = 0; $value = $lastkwhvalue['value']; }
+        
+        $new_kwh = $currentkwhd['value'] + $kwhinc;
+        
+        $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+        $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
+      }
+      $redis->hMset("process:kwhtokwhd:$feedid", array('time' => $time_now, 'value' => $value));
+          
       return $value;
     }
-
+      
     //---------------------------------------------------------------------------------------
     // input on-time counter
     //---------------------------------------------------------------------------------------
@@ -246,7 +266,7 @@ class Process
       if (!isset($last['value'])) $last['value'] = 0;
       $ontime = $last['value']; 
       
-      if ($value > 0)
+      if ($value > 0 && (($time_now-$last['time'])<7200))
       {
         $time_elapsed = $time_now - $last['time'];
         $ontime += $time_elapsed;
@@ -258,132 +278,56 @@ class Process
       return $value;
     }
 
-    public function kwh_to_kwhd($feedid, $time_now, $value)
-    {
-
-      $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-
-      // First we check if there is an entry for the feed in the kwhdproc table
-      $result = $this->mysqli->query("SELECT * FROM kwhdproc WHERE feedid = '$feedid'");
-      $row = $result->fetch_array();
-
-      // If there is not we create an entry
-      if (!$row)
-        $this->mysqli->query("INSERT INTO kwhdproc (feedid,time,kwh) VALUES ('$feedid','0','0')");
-
-      // We then check if the entries time is the same as todays time if it isnt its a new day
-      // and we need to put the kwh figure for the start of the day in the kwhdproc table
-      if ($time != $row['time'])
-      {
-        $this->mysqli->query("UPDATE kwhdproc SET kwh = '$value', time = '$time' WHERE feedid='$feedid'");
-        $start_day_kwh_value = $value;
-      }
-      else
-      {
-        // If it isnt the start of the day then we need to get the start of the day kwh figure
-        $start_day_kwh_value = $row['kwh'];
-      }
-
-      // 3) Calculate todays kwh figure
-      $kwhd = $value - $start_day_kwh_value;
-
-      // 4) Update feed kwhd
-      $this->feed->update_data($feedid, $time_now, $time, $kwhd);
-
-      return $value;
-    }
-  
-    public function kwh_to_kwhd2($feedid, $time_now, $value)
-    {
-      
-      $time = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-
-      $feedname = "feed_".trim($feedid)."";
-      $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
-      $row = $result->fetch_array();
-
-      $kwh_today = 0;
-      if (!$row)
-      {
-        $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0','$value')");
-      }
-      else
-      {
-        $kwh_start_of_day = $row['data2'];
-        $kwh_today = $value - $kwh_start_of_day;
-        $this->mysqli->query("UPDATE $feedname SET data = '$kwh_today' WHERE `time` = '$time'");
-      }
-
-      $this->feed->set_update_value_redis($feedid, $kwh_today, $time_now);
-      
-      return $value;
-    }
-
   //--------------------------------------------------------------------------------
   // Display the rate of change for the current and last entry
   //--------------------------------------------------------------------------------
-  public function ratechange($feedid, $time_now, $value)
+  public function ratechange($feedid, $time, $value)
   {
+    global $redis;
     
-    // Get the feed
-    $feedname = "feed_" . trim($feedid) . "";
-
-    // Get the current input id
-    $result = $this->mysqli->query("Select * from input where processList like '%:$feedid%';");
-    $rowfound = $result->fetch_array();
-    if ($rowfound)
-    {
-      $inputid = trim($rowfound['id']);
-      $processlist = $rowfound['processList'];
-      // Now get the feed for the log to feed command for the input
-      $logfeed = preg_match('/1:(\d+)/', $processlist, $matches);
-      $logfeedid = trim($matches[1]);
-      // Now need to get the last but one value in the main log to feed table
-      $oldfeedname = "feed_" . trim($logfeedid) . "";
-      $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 2;");
-      if ($lastentry) {
-      $lastentryrow = $lastentry->fetch_array();
-      // Calling again so can get the 2nd row
-      $lastentryrow = $lastentry->fetch_array();
-      $prevValue = trim($lastentryrow['data']);
-      $ratechange = $value - $prevValue;
-      // now put this rate change into the correct feed table
-      $this->feed->insert_data($feedid, $time_now, $time_now, $ratechange);
-      }
+    if ($redis->exists("process:ratechange:$feedid")) {
+      $lastvalue = $redis->hmget("process:ratechange:$feedid",array('time','value'));
+      $ratechange = $value - $lastvalue['value'];
+      $this->feed->insert_data($feedid, $time, $time, $ratechange);
     }
+    $redis->hMset("process:ratechange:$feedid", array('time' => $time, 'value' => $value));
     
-
+    // return $ratechange;
   }
 
-  public function save_to_input($arg, $time, $value)
+  public function save_to_input($inputid, $time, $value)
   {
-    $name = $arg;
-    $userid = $_SESSION['userid'];
-
-    $id = $this->input->get_id($userid, $name);
-    // If input does not exist this return's a zero
-    if ($id == 0)
-    {
-      $this->input->create_timevalue($userid, $name, $time, $value);
-      // Create input if it does not exist
-    }
-    else
-    {
-      $this->input->set_timevalue($id, $time, $value);
-      // Set time and value if it does
-    }
-
+    $this->input->set_timevalue($inputid, $time, $value);
     return $value;
   }
 
+  public function kwhinc_to_kwhd($feedid, $time_now, $value)
+  {
+    $last = $this->feed->get_timevalue($feedid);
+    $new_kwh = $last['value'] + ($value / 1000.0);
+
+    $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+    $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
+
+    return $value;
+  }
+    
   public function accumulator($feedid, $time, $value)
   {
-   
     $last = $this->feed->get_timevalue($feedid);
     $value = $last['value'] + $value;
     $this->feed->insert_data($feedid, $time, $time, $value);
     return $value;
   }
+  /*
+  public function accumulator_daily($feedid, $time_now, $value)
+  {
+    $last = $this->feed->get_timevalue($feedid);
+    $value = $last['value'] + $value;
+    $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+    $this->feed->update_data($feedid, $time_now, $feedtime, $value);
+    return $value;
+  }*/
 
   //---------------------------------------------------------------------------------
   // This method converts power to energy vs power (Histogram)
@@ -451,122 +395,9 @@ class Process
     return $value;
   }
 
-  // Calculates a daily average of a value
-  public function average($feedid, $time_now, $value)
-  {
-    
-    $feedname = "feed_" . trim($feedid) . "";
-    $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-
-    $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
-    if (!$result)  return $value;
-    $row = $result->fetch_array();
-
-    $average = $row['data'];
-    $size = $row['data2'];
-
-    $new_average = (($average * $size) + $value) / ($size + 1);
-    $size = $size + 1;
-
-    if ($row)
-    {
-      $this->mysqli->query("UPDATE $feedname SET data = '$new_average', data2 = '$size' WHERE time = '$feedtime'");
-    }
-    else
-    {
-      $this->mysqli->query("INSERT INTO $feedname (`time`,`data`,`data2`) VALUES ('$feedtime','$value','1')");
-    }
-
-    $this->feed->set_update_value_redis($feedid, $value, $time_now);
-    
-    return $value;
-  }
-    
-  //------------------------------------------------------------------------------------------------------
-  // Calculate the energy used to heat up water based on the rate of change for the current and a previous temperature reading
-  // See http://harizanov.com/2012/05/measuring-the-solar-yield/ for more info on how to use it
-  //------------------------------------------------------------------------------------------------------
-  public function heat_flux($feedid,$time_now,$value)
-  {
-   
-    
-    // Get the feed
-	  $feedname = "feed_".trim($feedid)."";
-       
-	  // Get the current input id 
-	  $result = $this->mysqli->query("Select * from input where processList like '%:$feedid%';");
-	  $rowfound = $result->fetch_array();
-	  if ($rowfound)
-	  {
-		  $inputid = trim($rowfound['id']);
-		  $processlist = $rowfound['processList'];
-		  // Now get the feed for the log to feed command for the input 
-		  $logfeed = preg_match('/1:(\d+)/',$processlist,$matches);
-		  $logfeedid = trim($matches[1]);
-		  // Now need to get the last but one value in the main log to feed table
-		  $oldfeedname = "feed_".trim($logfeedid)."";
-
-		  // Read previous N readings, starting not from the latest one, but the one before it (LIMIT 1,N)
-		  // Find a previous reading that is at least 10 minutes apart from the current reading and average the in-between readings to smooth out fluctuations
-		  // Without this we will get unstable readings
-
-		  $ratechange = 0;
-		  $lastentry = $this->mysqli->query("Select * from $oldfeedname order by time desc LIMIT 1,128;"); 
-		  if ($lastentry) { 
-		  $lastentryrow = $lastentry->fetch_array(); 
-
-		  $time_prev  = trim($lastentryrow['time']);	//Read the time of previous reading
-		  $prevValue  = trim($lastentryrow['data']);	//Get previous reading
-
-		  while($lastentryrow = $lastentry->fetch_array()) {
-		    $time_prev  = trim($lastentryrow['time']);
-		    $prevValue  = trim($lastentryrow['data']);	 
-		    if(($time_now-$time_prev)> 60*10) break;
-		  }
-
-		  $ratechange = $value - $prevValue;
-		  $TimeDelta  = $time_now - $time_prev;		//Calculate time in seconds that has elapsed since then
-		
-		  $ratechange = ($ratechange*4186/$TimeDelta);     //Calculate the temperature change per second
-      // Specific heat of Water (4186 J/kg/K)
-		  // Multiply by the volume in liters in emoncms as a next step of the processing
-		  }
-    }
-	  return($ratechange);
-
-  }
-
-
-  //For solar hot water heater, I need the positive amounts only to be able to calculate the energy harvested in a day. 
-  //Negative values are when the hot water tank loses energy i.e. due to heat loss OR when being used for a shower, but I want the daily gain in energy only
-
-  public function power_acc_to_kwhd($feedid,$time_now,$value)
-  {
-    if ($value>0) {
-      $new_kwh = 0;
-
-      $last = $this->feed->get_timevalue($feedid);
-      $last['time'] = strtotime($last['time']);
-      if ($last['time'] && ((time()-$last['time'])<7200)) {
-        // kWh calculation
-        $time_elapsed = ($time_now - $last['time']);
-        $kwh_inc = ($time_elapsed * $value) / 3600000;
-        $new_kwh = $last['value'] + $kwh_inc;
-      }
-
-      $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-      $this->feed->update_data($feedid,$time_now,$feedtime,$new_kwh);
-
-      return $value;
-    }
-  }
-
   public function pulse_diff($feedid,$time_now,$value)
   {
-    // Wrap around signed int to unsigned int
-    if ($value < 0) {
-      $value = 65536 + $value;
-    }
+    $value = $this->signed2unsigned(false,false, $value);
 
     if($value>0)
     {
@@ -589,18 +420,20 @@ class Process
     }
   }
     
-  public function kwh_to_power($feedid,$time_now,$value)
+  public function kwh_to_power($feedid,$time,$value)
   {
-    $power = 0;
-    $last = $this->feed->get_timevalue($feedid);
-    $last['time'] = strtotime($last['time']);
-
-    if ($last['time']) {
-      $time_elapsed = ($time_now - $last['time']);
-      $power = ($last['value'] * 3600 / $time_elapsed);
-    }
+    global $redis;
     
-    $this->feed->insert_data($feedid,$time_now,$time_now,$power);
+    if ($redis->exists("process:kwhtopower:$feedid")) {
+      $lastvalue = $redis->hmget("process:kwhtopower:$feedid",array('time','value'));
+      $kwhinc = $value - $lastvalue['value'];
+      $joules = $kwhinc * 3600000.0;
+      $timeelapsed = ($time - $lastvalue['time']);
+      $power = $joules / $timeelapsed;
+      $this->feed->insert_data($feedid, $time, $time, $power);
+    }
+    $redis->hMset("process:kwhtopower:$feedid", array('time' => $time, 'value' => $value));
+    
     return $power;
   }
     
@@ -639,5 +472,19 @@ class Process
     }
     return $value;
   }
+
+  // No longer used
+  public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing
+  public function update_feed_data($id, $time, $value)  { return $value; }
+  public function phaseshift($id, $time, $value) { return $value; }
+  public function kwh_to_kwhd_old($feedid, $time_now, $value) { return $value; }
+  public function power_acc_to_kwhd($feedid,$time_now,$value) { return $value; } // Process can now be achieved with allow positive process before power to kwhd
+  
+  //------------------------------------------------------------------------------------------------------
+  // Calculate the energy used to heat up water based on the rate of change for the current and a previous temperature reading
+  // See http://harizanov.com/2012/05/measuring-the-solar-yield/ for more info on how to use it
+  //------------------------------------------------------------------------------------------------------
+  public function heat_flux($feedid,$time_now,$value) { return $value; } // Removed to be reintroduced as a post-processing based visualisation calculated on the fly.
+    
 }
 

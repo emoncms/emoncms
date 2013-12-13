@@ -120,9 +120,8 @@ class MysqlTimeSeries
     $feedid = (int) $feedid;
     $feedname = "feed_".trim($feedid)."";
     
-    $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time DESC LIMIT 1");
-    if ($result){
-      $row = $result->fetch_array();
+    $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time Desc LIMIT 1");
+    if ($result && $row = $result->fetch_array()){
       $row['time'] = date("Y-n-j H:i:s", $row['time']);
       return array('time'=>$row['time'], 'value'=>$row['data']);
     } else {

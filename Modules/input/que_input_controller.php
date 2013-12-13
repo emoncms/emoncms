@@ -37,165 +37,181 @@ function input_controller()
 
   if ($route->format == 'html')
   {
-      if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
-      if ($route->action == 'node') $result =  view("Modules/input/Views/input_node.php", array());
-      if ($route->action == 'process') 
-      {
-          $result = view("Modules/input/Views/process_list.php", 
-          array(
-              'inputid'=> intval(get('inputid')), 
-              'processlist' => $process->get_process_list(),
-              'inputlist' => $input->getlist($session['userid']),
-              'feedlist'=> $feed->get_user_feeds($session['userid'],0)
-          ));
-      }
+    if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
+    if ($route->action == 'node') $result =  view("Modules/input/Views/input_node.php", array());
+    if ($route->action == 'process') 
+    {
+      $result = view("Modules/input/Views/process_list.php", 
+      array(
+          'inputid'=> intval(get('inputid')), 
+          'processlist' => $process->get_process_list(),
+          'inputlist' => $input->getlist($session['userid']),
+          'feedlist'=> $feed->get_user_feeds($session['userid'],0)
+      ));
+    }
   }
 
   if ($route->format == 'json')
   {
-      /*
-        
-        input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]] 
+    // input/post.json?node=10&csv=100,200,300
+    // input/post.json?node=10&json={power:100,solar:200}
+    // input/bulk.json?data=[[0,10,100,200],[5,10,100,200],[10,10,100,200]]
 
-        The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 4 seconds. 
-
-        The second number is the node id, this is the unqiue identifer for the wireless node. 
-
-        All the numbers after the first two are data values. The first node here (node 16) has only once data value: 1137. 
-
-      */
-
-      if ($route->action == 'bulk')
-      {
-        $data = json_decode(get('data'));
-
-        // We start by loading all user inputs in a single database call
-        // The intention here is to minimize database calls as these are what takes time
-        // We then construct an input object that is easily searchable against input 
-        // that is recieved in the request and that contains the processList
-
-        $userid = $session['userid'];
-
-        // In the next part we go through the recieved request and start by checking if the
-        // recieved inputs exist against the input object. If not we create an input.
-
-        $len = count($data);
-        if ($len>0)
-        {
-          if (isset($data[$len-1][0])) 
-          {
-            $offset = (int) $data[$len-1][0];
-            $start_time = time() - $offset;
+    // input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]] 
+    // The first number of each node is the time offset, so for the first node it is 0 which means the packet 
+    // for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 4 seconds. 
+    // The second number is the node id, this is the unqiue identifer for the wireless node. 
+    // All the numbers after the first two are data values. The first node here (node 16) has only once data value: 1137.
      
+    if ($route->action == 'bulk')
+    {
+      $valid = true;
+      $data = json_decode(get('data'));
+    
+      $userid = $session['userid'];
+
+      $len = count($data);
+      if ($len>0)
+      {
+        if (isset($data[$len-1][0])) 
+        {
+          $offset = (int) $data[$len-1][0];
+          if ($offset>=0)
+          {
+            $start_time = time() - $offset;
+   
             foreach ($data as $item)
             {
-              if (count($item)>1)
+              if (count($item)>2)
               {
-                $time = $start_time + (int) $item[0];
-                $nodeid = $item[1];
-
-                $inputs = array();
-                for ($i=2; $i<count($item); $i++)
+                // check for correct time format
+                $itemtime = (int) $item[0];
+                if ($itemtime>=0)
                 {
-                  $value = (float) $item[$i];
-                  $inputs[] = $value;
-                }
-                $redis->rpush('buffer',$userid.','.$time.','.$nodeid.",".implode($inputs,',')); 
-              }
+                  $time = $start_time + (int) $itemtime;
+                  $nodeid = $item[1];
+
+                  $inputs = array();
+                  $name = 1;
+                  for ($i=2; $i<count($item); $i++)
+                  {
+                    $value = (float) $item[$i];
+                    $inputs[$name] = $value;
+                    $name ++;
+                  }
+                  
+                  $array = array(
+                    'userid'=>$userid,
+                    'time'=>$time,
+                    'nodeid'=>$nodeid,
+                    'data'=>$inputs
+                  );
+              
+                  $str = json_encode($array);
+              
+                  if ($redis->llen('buffer')<10000) {
+                    $redis->rpush('buffer',$str);
+                  } else {
+                    $valid = false; $error = "Too many connections, input queue is full";
+                  }
+                  
+                } else { $valid = false; $error = "Format error, time index given is negative"; }
+              } else { $valid = false; $error = "Format error, bulk item needs at least 3 values"; }
             }
-          }
-        }
-        $result = 'ok';
-      }
-
-      /*
-
-      input/post.json?node=10&json={power1:100,power2:200,power3:300}
-      input/post.json?node=10&csv=100,200,300
-
-      */
+          } else { $valid = false; $error = "Format error, time index given is negative"; }
+        } else { $valid = false; $error = "Format error, last item in bulk data does not contain any data"; }
+      } else { $valid = false; $error = "Format error, json string supplied is not valid"; }
       
-      if ($route->action == 'post' && isset($_GET['json']))
+      if ($valid) $result = 'ok'; else $result = "Error: $error\n";
+    }
+
+    // input/post.json?node=10&json={power1:100,power2:200,power3:300}
+    // input/post.json?node=10&csv=100,200,300
+		
+    if ($route->action == 'post')
+    {
+      $valid = true; $error = "";
+      
+      $nodeid = get('node');
+      if ($nodeid && !is_numeric($nodeid)) { $valid = false; $error = "Nodeid must be an integer between 0 and 30, nodeid given was not numeric"; }
+      if ($nodeid<0 || $nodeid>30) { $valid = false; $error = "nodeid must be an integer between 0 and 30, nodeid given was out of range"; }
+      $nodeid = (int) $nodeid;
+      
+      if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+              
+      $data = array();
+      
+      $datain = false;
+      // code below processes input regardless of json or csv type
+      if (isset($_GET['json'])) $datain = get('json');
+      if (isset($_GET['csv'])) $datain = get('csv');
+      if (isset($_GET['data'])) $datain = get('data');
+      if (isset($_POST['data'])) $datain = post('data');  
+              
+      if ($datain!="")
       {
-        $dbinputs = $input->get_inputs($session['userid']);
-        $nodeid = intval(get('node'));
-        if ($nodeid>2000000000) $nodeid = 0;
-        if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+        $json = preg_replace('/[^\w\s-.:,]/','',$datain);
+        $datapairs = explode(',', $json);
 
-        if (isset($_GET['json']))
+        $csvi = 0;
+        for ($i=0; $i<count($datapairs); $i++)
         {
-          $json = preg_replace('/[^\w\s-.:,]/','',get('json'));
-          $datapairs = explode(',', $json);
-
-          $tmp = array();
-          for ($i=0; $i<count($datapairs); $i++)
-          {
-            $keyvalue = explode(':', $datapairs[$i]);
-            $name = $keyvalue[0];
-            if ($name!='' && isset($keyvalue[1]))
-            {
-              $value = (float) $keyvalue[1];
-
-              if (!isset($dbinputs[$nodeid][$name])) {
-                $inputid = $input->create_input($userid, $nodeid, $name);
-                $dbinputs[$nodeid][$name] = true;
-                $dbinputs[$nodeid][$name] = array('id'=>$inputid);
-                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-              } else { 
-                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
-              }
-              $result = 'ok';
-            }
+          $keyvalue = explode(':', $datapairs[$i]);
+          
+          if (isset($keyvalue[1])) {
+            if ($keyvalue[0]=='') {$valid = false; $error = "Format error, json key missing or invalid character"; }
+            if (!is_numeric($keyvalue[1])) {$valid = false; $error = "Format error, json value is not numeric"; }
+            $data[$keyvalue[0]] = (float) $keyvalue[1];
+          } else {
+            if (!is_numeric($keyvalue[0])) {$valid = false; $error = "Format error: csv value is not numeric"; }
+            $data[$csvi+1] = (float) $keyvalue[0];
+            $csvi ++;
           }
-          foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+        }
+    
+        $packet = array(
+          'userid' => $session['userid'],
+          'time' => $time,
+          'nodeid' => $nodeid,
+          'data'=>$data
+        );
+        
+        if (count($data)>0 && $valid) {
+          $str = json_encode($packet);
+          if ($redis->llen('buffer')<10000) {
+            $redis->rpush('buffer',$str);
+          } else {
+            $valid = false; $error = "Too many connections, input queue is full";
+          }
         }
       }
-			
-      if ($route->action == 'post' && isset($_GET['csv']))
+      else
       {
-        $userid = $session['userid']; 
-        $nodeid = intval(get('node'));
-        if ($nodeid>2000000000) $nodeid = 0;
-        if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+        $valid = false; $error = "Request contains no data via csv, json or data tag";
+      }        
+      
+      if ($valid) $result = 'ok'; else $result = "Error: $error\n";
+    }
+ 
+    if ($route->action == "clean") $result = $input->clean($session['userid']);
+    if ($route->action == "list") $result = $input->getlist($session['userid']);
+    if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
 
-        if (isset($_GET['csv']))
-        {
-          $csv = preg_replace('/[^0-9,.-]/','',get('csv')); 
-          $csv = explode(',',$csv);
+    if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
+    {
+      if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
 
-          $inputs = array();
-          for ($i=0; $i<count($csv); $i++)
-          {
-            if ($csv[$i]!='') {
-              $value = (float) $csv[$i];
-              $inputs[] = $value;
-            }
-          }
-          $redis->rpush('buffer',$userid.','.$time.','.$nodeid.",".implode($inputs,','));      
-        }
-        $result = 'ok';
+      if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
+
+      if ($route->action == "process")
+      { 
+        if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'));
+        if ($route->subaction == "list") $result = $input->get_processlist_desc($process, get("inputid"));
+        if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
+        if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
+        if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
       }
-   
-      if ($route->action == "clean") $result = $input->clean($session['userid']);
-      if ($route->action == "list") $result = $input->getlist($session['userid']);
-      if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
-
-      if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
-      {
-          if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
-
-          if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
-
-          if ($route->action == "process")
-          { 
-              if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'));
-              if ($route->subaction == "list") $result = $input->get_processlist_desc($process, get("inputid"));
-              if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
-              if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
-              if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
-          }
-      }
+    }
   } 
 
   return array('content'=>$result);

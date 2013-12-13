@@ -269,6 +269,7 @@ class Input
     {
         // LOAD REDIS
         $id = (int) $id;
+        if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
         return $this->redis->hget("input:$id",'name');
     }
 
@@ -277,6 +278,7 @@ class Input
     {
         // LOAD REDIS
         $id = (int) $id;
+        if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
         return $this->redis->hget("input:$id",'processList');
     }
     
@@ -363,6 +365,22 @@ class Input
     }
     
     // Redis cache loaders
+
+    private function load_input_to_redis($inputid)
+    {
+      $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid'");
+      $row = $result->fetch_object();
+      
+      $this->redis->sAdd("user:inputs:$userid", $row->id);
+      $this->redis->hMSet("input:$row->id",array(
+        'id'=>$row->id,
+        'nodeid'=>$row->nodeid,
+        'name'=>$row->name,
+        'description'=>$row->description,
+        'processList'=>$row->processList
+      ));
+      
+    }
     
     private function load_to_redis($userid)
     {
