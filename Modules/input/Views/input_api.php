@@ -36,12 +36,13 @@
 
 <p><b><?php echo _('Bulk data'); ?></b>
 <table class="table">
-  <tr><td><?php echo _('You can provide data using bulk mode'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,10,250,100,20],[2,12,1437,3164],[10,10,252,80,21]]"><?php echo $path; ?>input/bulk.json?data=[[0,10,250,100,20],[2,12,1437,3164],[10,10,252,80,21]]</a></td></tr>
+  <tr><td><?php echo _('You can provide data using bulk mode'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,10,250,100,20],[2,12,1437,3164],[10,10,252,80,21]]&offset=-60"><?php echo $path; ?>input/bulk.json?data=[[0,10,250,100,20],[2,12,1437,3164],[10,10,252,80,21]]&offset=-60</a></td></tr>
 </table>
 <ul>
   <li><?php echo _('The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 10 seconds.'); ?></li>
   <li><?php echo _('The second number is the node id, this is the unique identifer for the wireless node.'); ?></li>
   <li><?php echo _('All the numbers after the first two are data values. The first node here (node 10) has three data values: 250,100 and 20.'); ?></li>  
+  <li><?php echo _('The optional offset=-60 parameter means that the last packet was received 60 seconds before the json command was sent.'); ?></li>  
 </ul>
 
 <br>

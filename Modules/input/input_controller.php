@@ -51,13 +51,21 @@ function input_controller()
   {
       /*
         
-        input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]] 
+        input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]&offset=-60
+
+        Parameters:
+
+        - data:	
 
         The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 4 seconds. 
 
-        The second number is the node id, this is the unqiue identifer for the wireless node. 
+        The second number is the node id, this is the unique identifer for the wireless node. 
 
-        All the numbers after the first two are data values. The first node here (node 16) has only once data value: 1137. 
+        All the numbers after the first two are data values. The first node here (node 16) has only one data value: 1137. 
+
+        - offset:
+
+        The optional offset=-60 parameter means that the last packet was received 60 seconds before the json command was sent.        
 
       */
 
@@ -81,14 +89,17 @@ function input_controller()
         {
           if (isset($data[$len-1][0])) 
           {
-            $offset = (int) $data[$len-1][0];
-            $start_time = time() - $offset;
+            
+	    $offset = json_decode(get('offset'));
+            if ($offset === NULL) { $offset = 0; }
+
+            $time_ref = time() - (int) $data[$len-1][0] + (int) $offset;
      
             foreach ($data as $item)
             {
               if (count($item)>1)
               {
-                $time = $start_time + (int) $item[0];
+                $time = $time_ref + (int) $item[0];
                 $nodeid = $item[1];
 
                 $tmp = array();
