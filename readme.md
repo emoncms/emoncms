@@ -1,3 +1,24 @@
+# Emoncms v7 (redis)
+
+As part of recent work to improve the performance of emoncms because of high load's on emoncms.org this branch was developed to use redis to store feed and input meta data including last feed time and value fields which where causing significant write load on the server.
+
+Using redis in this way leads to quite a big performance improvement. Enabling almost 5 times the request rate in benchmarking.
+
+Blog post: [http://openenergymonitor.blogspot.co.uk/2013/11/improving-emoncms-performance-with_8.html](http://openenergymonitor.blogspot.co.uk/2013/11/improving-emoncms-performance-with_8.html)
+
+To run the redis branch you will need redis server installed and the phpredis client:
+
+    sudo apt-get install redis-server
+    sudo pecl install redis
+
+If you'r currently running the emoncms master branch and want to test the redis branch its best to create a new folder for the redis branch keeping your current setup intact.
+
+    cd /var/www
+    git clone -b redismetadata https://github.com/emoncms/emoncms.git redis
+
+Copy over the settings.php file from your existing emoncms install.
+
+
 # Emoncms v6 (timestore+)
 
 See main site: http://emoncms.org
@@ -287,4 +308,5 @@ Emoncms is developed and has had contributions from the following people.
 - Paul Reed     https://github.com/Paul-Reed
 - thunderace    https://github.com/thunderace
 - pacaj2am      https://github.com/pacaj2am
+- Ynyr Edwards  https://github.com/ynyreds
 

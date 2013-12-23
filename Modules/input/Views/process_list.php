@@ -41,9 +41,7 @@ global $path, $session, $default_engine;
       <input type="hidden" name="inputid" value="<?php echo $inputid; ?>">
       <!-- Populate list of input processes availabble -->
       <select class="processSelect" name="type" id="type">
-        <?php for ($i=1; $i<=count($processlist); $i++) { ?>
-        <option value="<?php echo $i; ?>"><?php echo $processlist[$i][0]; ?></option>
-        <?php } ?>
+       
       </select>
     </td>
     <!-- cointainer for new process arguments -->
@@ -63,6 +61,34 @@ var path = "<?php echo $path; ?>";
 var inputid = <?php echo $inputid; ?>;
 
 var processlist = <?php echo json_encode($processlist); ?>;
+
+      
+var processgroups = [];
+var i = 0;
+for (z in processlist)
+{
+  i++;
+  var group = processlist[z][5];
+  if (group!="Deleted") {
+    if (!processgroups[group]) processgroups[group] = []
+    processlist[z]['id'] = i;
+    processgroups[group].push(processlist[z]);
+  }
+}
+
+
+var out = "";
+for (z in processgroups)
+{
+  out += "<optgroup label='"+z+"'>";
+  for (p in processgroups[z])
+  {
+    out += "<option value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+"</option>";
+  }
+  out += "</optgroup>";
+}
+$(".processSelect").html(out);
+
 var feedlist = <?php echo json_encode($feedlist); ?>;
 var inputlist = <?php echo json_encode($inputlist); ?>;
 
@@ -159,7 +185,7 @@ function update_process_arg_box()
     if (processlist[selected_processid][4] == 1) 
     {
       if (default_engine==1) {
-        $('#newProcessArgField').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=500>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
+        $('#newProcessArgField').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=300>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
       }
     }
   }

@@ -45,13 +45,10 @@
 <p><a href="<?php echo $path; ?>feed/list.json"><?php echo $path; ?>feed/list.json</a></p>
 
 <p><a href="<?php echo $path; ?>feed/create.json?name=&type="><?php echo $path; ?>feed/create.json?name=&type=</a></p>
-<p><a href="<?php echo $path; ?>feed/emptybin.json"><?php echo $path; ?>feed/emptybin.json</a></p>
 
 <p><a href="<?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}"><?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}</a></p>
 <p><a href="<?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0</a></p>
 <p><a href="<?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0</a></p>
 <p><a href="<?php echo $path; ?>feed/deletedatapoint.json?id=0&feedtime=UNIXTIME"><?php echo $path; ?>feed/deletedatapoint.json?id=0&feedtime=UNIXTIME</a></p>
 <p><a href="<?php echo $path; ?>feed/delete.json?id=0"><?php echo $path; ?>feed/delete.json?id=0</a></p>
-<p><a href="<?php echo $path; ?>feed/restore.json?id=0"><?php echo $path; ?>feed/restore.json?id=0</a></p>
-<p><a href="<?php echo $path; ?>feed/export.json?id=0&start=UNIXTIME"><?php echo $path; ?>feed/export.json?id=0&start=UNIXTIME</a></p>
 

@@ -69,6 +69,8 @@ var table = {
         $(table.element).html("<table class='table table-hover'>"+html+"</table>");
 
         if (table.eventsadded==false) {table.add_events(); table.eventsadded = true}
+        
+        $(table.element).trigger("onDraw");
     },
 
     'draw_row': function(row)

@@ -26,6 +26,7 @@ global $path;
 
 <h2><?php echo _("Visualisations"); ?></h2>
 
+<div id="vispage">
 <div style="float:left">
 
 <div style="width:320px; background-color:#efefef; margin-bottom:10px; border: 1px solid #ddd;">
@@ -66,11 +67,13 @@ global $path;
 
 </div>
 
-<div style="width:600px; height:420px; float:right">
+<div id="vis_bound" style="width:600px; height:420px; float:right">
     <div id="visiframe"><div style="height:400px; border: 1px solid #ddd; " ></div></div>
 </div>
 
 <div id="visurl"></div>
+
+</div>
 
 <script type="application/javascript">
   var path = "<?php echo $path; ?>";
@@ -191,6 +194,20 @@ global $path;
     }
     out += "</select>";
     return out;
+  }
+  
+  vis_resize();
+  $(window).resize(function(){vis_resize();});
+  
+  function vis_resize()
+  {
+    var viswidth = $("#vispage").width() - 340;
+    var visheight = viswidth * (3/4);
+    
+    $("#vis_bound").width(viswidth);
+    $("#vis_bound").height(visheight);
+    $("#visiframe").width(viswidth);
+    $("#visiframe").height(visheight);
   }
 
 </script>

@@ -176,6 +176,7 @@ var customtablefields = {
 // Calculate and color updated time
 function list_format_updated(time)
 {
+  time = time * 1000;
   var now = (new Date()).getTime();
   var update = (new Date(time)).getTime();
   var lastupdate = (now-update)/1000;

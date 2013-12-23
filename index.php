@@ -11,7 +11,7 @@
   http://openenergymonitor.org
  
   */
-
+  
   $ltime = microtime(true);
 
   define('EMONCMS_EXEC', 1);
@@ -27,12 +27,23 @@
   // 2) Database
   $mysqli = @new mysqli($server,$username,$password,$database);
 
+  if (!class_exists('Redis')) {
+    echo "Can't connect to redis database, phpredis is not installed, see readme for redis installation"; die;
+  }
+  
+  $redis = new Redis(); 
+  $connected = $redis->connect("127.0.0.1");
+  
+  if (!$connected) {
+	  echo "Can't connect to redis database, it may be that redis-server is not installed or started see readme for redis installation"; die;
+  }
+
   if ( $mysqli->connect_error ) {
-	echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
-	if ( $display_errors ) {
-		echo "Error message: <b>" . $mysqli->connect_error . "</b>";
-	}
-	die();
+	  echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+	  if ( $display_errors ) {
+		  echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+	  }
+	  die();
   }
   
   if (!$mysqli->connect_error && $dbtest==true) {
@@ -44,7 +55,7 @@
   require "Modules/user/rememberme_model.php";
   $rememberme = new Rememberme($mysqli);
   require("Modules/user/user_model.php");
-  $user = new User($mysqli,$rememberme);
+  $user = new User($mysqli,$redis,$rememberme);
 
   if (get('apikey'))
     $session = $user->apikey_session($_GET['apikey']);
@@ -99,6 +110,8 @@
       $output = controller($public_profile_controller);
     }
   }
+  
+  $mysqli->close();
 
   // 7) Output
   if ($route->format == 'json') 
@@ -122,3 +135,8 @@
   }
 
   $ltime = microtime(true) - $ltime;
+  
+  // if ($session['userid']>0) {
+  //  $redis->incr("user:postcount:".$session['userid']);
+  //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
+  // }

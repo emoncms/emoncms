@@ -24,15 +24,36 @@ class PHPTimeSeries
     $fh = fopen($this->dir."feed_$feedid.MYD", 'a');
   }
   
+  // POST OR UPDATE 
+  //
+  // - fix if filesize is incorrect (not a multiple of 9)
+  // - append if file is empty
+  // - append if datapoint is in the future
+  // - update if datapoint is older than last datapoint value
   public function post($feedid,$time,$value)
   {
     // Get last value
     $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
     $filesize = filesize($this->dir."feed_$feedid.MYD");
     
+    $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
+    if ($csize!=$filesize) {
+      // correct corrupt data
+      fclose($fh);
+      
+      // extend file by required number of bytes
+      $fh = fopen($this->dir."feed_$feedid.MYD", 'wb');
+      fseek($fh,$csize);
+      fwrite($fh, pack("CIf",249,$time,$value));
+      fclose($fh);
+      
+      return $value;
+    }
+    
     // If there is data then read last value
     if ($filesize>=9) {
     
+      // read the last value appended to the file
       fseek($fh,$filesize-9);
       $d = fread($fh,9);
       $array = unpack("x/Itime/fvalue",$d);
@@ -134,6 +155,27 @@ class PHPTimeSeries
     }
     
     return $data;
+  }
+  
+  public function lastvalue($feedid)
+  {
+    if (!file_exists($this->dir."feed_$feedid.MYD"))  return false;
+    
+    $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+    $filesize = filesize($this->dir."feed_$feedid.MYD");
+
+    if ($filesize>=9)
+    {
+      fseek($fh,$filesize-9);
+      $d = fread($fh,9);
+      $array = unpack("x/Itime/fvalue",$d);
+      $array['time'] = date("Y-n-j H:i:s", $array['time']);
+      return $array;
+    }
+    else 
+    {
+      return false;
+    }
   }
 
   private function binarysearch($fh,$time,$filesize)

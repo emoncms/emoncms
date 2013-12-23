@@ -12,6 +12,7 @@ class Timestore
   */
   
   private $timestoreApi;
+  private $dir = "/var/lib/timestore/";
   
   public function __construct($timestore_adminkey)
   {
@@ -21,12 +22,12 @@ class Timestore
   
   public function create($feedid,$newfeedinterval)
   {
-    $ret = $this->timestoreApi->create_node($feedid,$newfeedinterval);
+    if ($newfeedinterval<5) $newfeedinterval = 5;
+    $this->timestoreApi->create_node($feedid,$newfeedinterval);
   }
   
   public function post($feedid,$time,$value)
   {
-
     // IMPORTANT: This puts a limit on the range of timestamps that can be accepted
     // if you need to post or update datapoints that are older than 5 years and newer than the current time + 48 hours in the future
     // then change these values:
@@ -35,7 +36,11 @@ class Timestore
     $start = $now-(3600*24*365*5); // 5 years in past
     $end = $now+(3600*48);         // 48 hours in future
     
-    $this->timestoreApi->post_values($feedid,$time*1000,array($value),null);
+    if ($time>$start && $time<$end)
+    {
+      $this->timestoreApi->post_values($feedid,$time*1000,array($value),null);
+    }
+    
   }
   
   public function get_data($feedid,$start,$end)
@@ -56,6 +61,33 @@ class Timestore
 
     $data = json_decode($this->timestoreApi->get_series($feedid,0,$npoints,$start,$end,null));
     return $data;
+  }
+  
+  public function lastvalue($feedid)
+  {
+    $feedid = (int) $feedid;
+    $meta = $this->get_meta($feedid);
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
+    
+    $primaryfeedname = $this->dir.$feedname;
+    
+    if (file_exists($primaryfeedname))
+    {
+      $fh = fopen($primaryfeedname, 'rb');
+      $size = filesize($primaryfeedname);
+      
+      fseek($fh,$size-4);
+      $d = fread($fh,4);
+      fclose($fh);
+      
+      $val = unpack("f",$d);
+      $time = date("Y-n-j H:i:s", $meta['start'] + $meta['interval'] * $meta['npoints']);
+      return array('time'=>$time, 'value'=>$val[1]);
+    }
+    else
+    {
+      return array('time'=>0, 'value'=>0);
+    }
   }
   
   public function get_average($feedid,$start,$end,$interval)
@@ -82,16 +114,15 @@ class Timestore
     $start = intval($start/1000.0);
     $end = intval($end/1000.0);
     
-    
-    $meta = $this->get_timestore_meta($feedid);
+    $meta = $this->get_meta($feedid);
 
     $npoints = round(($end - $start) / $meta['interval']);
-    $data = json_decode($this->timestore->get_series($feedid,0,$npoints,$start,$end,null));
+    $data = json_decode($this->timestoreApi->get_series($feedid,0,$npoints,$start,$end,null));
 
     foreach ($data as $point)
     {
       $time = $point[0];
-      $this->timestore->post_values($feedid,$time,array($point[1] * $value),null);
+      $this->timestoreApi->post_values($feedid,$time,array($point[1] * $value),null);
     }
 
     return true;
@@ -121,7 +152,7 @@ class Timestore
     // Write to output stream
     $fh = @fopen( 'php://output', 'w' );
 
-    $primaryfeedname = "/var/lib/timestore/$feedname";
+    $primaryfeedname = $this->dir.$feedname;
     $primary = fopen($primaryfeedname, 'rb');
     $primarysize = filesize($primaryfeedname);
     
@@ -167,7 +198,7 @@ class Timestore
     header("Pragma: no-cache");
 
     $fh = @fopen( 'php://output', 'w' );
-    $meta = fopen("/var/lib/timestore/$feedname", 'rb');
+    $meta = fopen($this->dir.$feedname, 'rb');
     fwrite($fh,fread($meta,272));
 
     fclose($meta);
@@ -181,7 +212,7 @@ class Timestore
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
     
     $out = array();
-    $meta = fopen("/var/lib/timestore/$feedname", 'rb');
+    $meta = fopen($this->dir.$feedname, 'rb');
 
     fseek($meta,8);
     $tmp = unpack("h*",fread($meta,8)); 
@@ -207,12 +238,12 @@ class Timestore
   public function get_feed_size($feedid)
   {
     $size = 272;
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
-    $size += filesize("/var/lib/timestore/".str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
     return $size;
   }
   

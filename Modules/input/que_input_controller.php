@@ -69,7 +69,6 @@ function input_controller()
       $data = json_decode(get('data'));
     
       $userid = $session['userid'];
-      $dbinputs = $input->get_inputs($userid);
 
       $len = count($data);
       if ($len>0)
@@ -101,24 +100,21 @@ function input_controller()
                     $name ++;
                   }
                   
-                  $tmp = array();
-                  foreach ($inputs as $name => $value) 
-                  {
-                    if (!isset($dbinputs[$nodeid][$name])) {
-                      $inputid = $input->create_input($userid, $nodeid, $name);
-                      $dbinputs[$nodeid][$name] = true;
-                      $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
-                      $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                    } else {
-                      $inputid = $dbinputs[$nodeid][$name]['id'];
-                      $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                      
-                      if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
-                    }
+                  $array = array(
+                    'userid'=>$userid,
+                    'time'=>$time,
+                    'nodeid'=>$nodeid,
+                    'data'=>$inputs
+                  );
+              
+                  $str = json_encode($array);
+              
+                  if ($redis->llen('buffer')<10000) {
+                    $redis->rpush('buffer',$str);
+                  } else {
+                    $valid = false; $error = "Too many connections, input queue is full";
                   }
                   
-                  foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);        
-                   
                 } else { $valid = false; $error = "Format error, time index given is negative"; }
               } else { $valid = false; $error = "Format error, bulk item needs at least 3 values"; }
             }
@@ -172,27 +168,22 @@ function input_controller()
             $csvi ++;
           }
         }
-
-        $userid = $session['userid'];
-        $dbinputs = $input->get_inputs($userid);
+    
+        $packet = array(
+          'userid' => $session['userid'],
+          'time' => $time,
+          'nodeid' => $nodeid,
+          'data'=>$data
+        );
         
-        $tmp = array();
-        foreach ($data as $name => $value) 
-        {
-          if (!isset($dbinputs[$nodeid][$name])) {
-            $inputid = $input->create_input($userid, $nodeid, $name);
-            $dbinputs[$nodeid][$name] = true;
-            $dbinputs[$nodeid][$name] = array('id'=>$inputid);
-            $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+        if (count($data)>0 && $valid) {
+          $str = json_encode($packet);
+          if ($redis->llen('buffer')<10000) {
+            $redis->rpush('buffer',$str);
           } else {
-            $inputid = $dbinputs[$nodeid][$name]['id'];
-            $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-            
-            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+            $valid = false; $error = "Too many connections, input queue is full";
           }
         }
-        
-        foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);        
       }
       else
       {

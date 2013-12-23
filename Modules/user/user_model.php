@@ -14,12 +14,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
-
+    
     private $mysqli;
     private $rememberme;
     private $enable_rememberme = false;
-
-    public function __construct($mysqli,$rememberme)
+    private $redis;
+    
+    public function __construct($mysqli,$redis,$rememberme)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
         global $enable_rememberme;
@@ -27,6 +28,8 @@ class User
 		
         $this->mysqli = $mysqli;
         $this->rememberme = $rememberme;
+     
+        $this->redis = $redis;
     }
 
     //---------------------------------------------------------------------------------------
@@ -35,44 +38,60 @@ class User
 
     public function apikey_session($apikey_in)
     {
+        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
         $session = array();
 
         //----------------------------------------------------
         // Check for apikey login
         //----------------------------------------------------
-        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
-
-        $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
-        if ($result->num_rows == 1) 
+        if($this->redis->exists("writeapikey:$apikey_in"))
         {
-            $row = $result->fetch_array();
-            if ($row['id'] != 0)
+          $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
+          $session['read'] = 1;
+          $session['write'] = 1;
+          $session['admin'] = 0;
+          $session['editmode'] = TRUE;
+          $session['lang'] = "en";
+        }
+        else
+        {        
+          $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
+          if ($result->num_rows == 1) 
+          {
+              $row = $result->fetch_array();
+              if ($row['id'] != 0)
+              {
+                  //session_regenerate_id();
+                  $session['userid'] = $row['id'];
+                  $session['read'] = 1;
+                  $session['write'] = 1;
+                  $session['admin'] = 0;
+                  $session['editmode'] = TRUE;
+                  $session['lang'] = "en";
+                  
+                  $this->redis->set("writeapikey:$apikey_in",$row['id']);
+              }
+          }
+          else
+          {
+            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
+            if ($result->num_rows == 1) 
             {
-                //session_regenerate_id();
-                $session['userid'] = $row['id'];
-                $session['read'] = 1;
-                $session['write'] = 0;
-                $session['admin'] = 0;
-                $session['editmode'] = TRUE;
-                $session['lang'] = "en";
+                $row = $result->fetch_array();
+                if ($row['id'] != 0)
+                {
+                    //session_regenerate_id();
+                    $session['userid'] = $row['id'];
+                    $session['read'] = 1;
+                    $session['write'] = 0;
+                    $session['admin'] = 0;
+                    $session['editmode'] = TRUE;
+                    $session['lang'] = "en";
+                }
             }
+          }
         }
 
-        $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
-        if ($result->num_rows == 1) 
-        {
-            $row = $result->fetch_array();
-            if ($row['id'] != 0)
-            {
-                //session_regenerate_id();
-                $session['userid'] = $row['id'];
-                $session['read'] = 1;
-                $session['write'] = 1;
-                $session['admin'] = 0;
-                $session['editmode'] = TRUE;
-                $session['lang'] = "en";
-            }
-        }
         //----------------------------------------------------
         return $session;
     }

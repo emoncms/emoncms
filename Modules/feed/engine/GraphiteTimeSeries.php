@@ -17,7 +17,7 @@ class GraphiteTimeSeries
   {
     $this->host = $host;
     $this->port = $port;
-    $this->connect_write();
+    if ($host && $port) $this->connect_write();
     $this->root = "emoncms";
   }
 

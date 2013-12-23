@@ -14,9 +14,9 @@ input[type="text"] {
 #table td:nth-of-type(2) { width:10%;}
 #table td:nth-of-type(3) { width:25%;}
 
-#table td:nth-of-type(5) { width:30px; text-align: center; }
-#table td:nth-of-type(6) { width:30px; text-align: center; }
 #table td:nth-of-type(7) { width:30px; text-align: center; }
+#table td:nth-of-type(8) { width:30px; text-align: center; }
+#table td:nth-of-type(9) { width:30px; text-align: center; }
 </style>
 
 <br>
@@ -48,8 +48,8 @@ input[type="text"] {
     'name':{'title':'<?php echo _("name"); ?>','type':"text"},
     'description':{'title':'<?php echo _('Description'); ?>','type':"text"},
     'processList':{'title':'<?php echo _('Process list'); ?>','type':"processlist"},
-    // 'time':{'title':'last updated', 'type':"updated"},
-    // 'value':{'type':"value"},
+    'time':{'title':'last updated', 'type':"updated"},
+    'value':{'type':"value"},
 
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
