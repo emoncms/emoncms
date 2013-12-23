@@ -45,6 +45,11 @@ class Feed
         
         require "Modules/feed/engine/PHPTimeSeries.php";
         $this->phptimeseries = new PHPTimeSeries();
+        
+        global $graphite_host;
+        global $graphite_port;
+        require "Modules/feed/engine/GraphiteTimeSeries.php";
+        $this->graphitetimeseries = new GraphiteTimeSeries($graphite_host, $graphite_port);
     }
 
     public function create($userid,$name,$datatype,$newfeedinterval)
@@ -71,6 +76,7 @@ class Feed
             if ($this->default_engine == Engine::TIMESTORE) $this->timestore->create($feedid,$newfeedinterval);
             if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
             if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
+            if ($this->default_engine == Engine::GRAPHITE) $this->graphitetimeseries->create($feedid);
           }
           elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
           elseif ($datatype==3) $this->histogram->create($feedid);
@@ -306,6 +312,7 @@ class Feed
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->insert($feedid,$feedtime,$value);
     if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::GRAPHITE) $this->graphitetimeseries->post($feedid,$feedtime,$value);
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime); 
@@ -335,6 +342,7 @@ class Feed
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($row['engine']==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
     if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
+    if ($row['engine']==Engine::GRAPHITE) $this->graphitetimeseries->post($feedid,$feedtime,$value);
 
     // b. Update feeds table
     $updatetime = date("Y-n-j H:i:s", $updatetime);
@@ -358,6 +366,7 @@ class Feed
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
     if ($row['engine']==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
     if ($row['engine']==Engine::PHPTIMESERIES) return $this->phptimeseries->get_data($feedid,$start,$end,$dp);
+    if ($row['engine']==Engine::GRAPHITE) return $this->graphitetimeseries->get_data($feedid,$start,$end,$dp);
   }
   
   public function get_timestore_average($feedid,$start,$end,$interval)
@@ -366,6 +375,7 @@ class Feed
     $row = $qresult->fetch_array();
 
     if ($row['engine']==Engine::TIMESTORE) return $this->timestore->get_average($feedid,$start,$end,$interval);
+    if ($row['engine']==Engine::GRAPHITE) return $this->graphitetimeseries->get_average($feedid,$start,$end,$interval);
   }
 
   
@@ -379,6 +389,7 @@ class Feed
     if ($row['engine']==Engine::TIMESTORE) $this->timestore->delete($feedid);
     if ($row['engine']==Engine::MYSQL) $this->mysqltimeseries->delete($feedid);
     if ($row['engine']==Engine::PHPTIMESERIES) $this->phptimeseries->delete($feedid);
+    if ($row['engine']==Engine::GRAPHITE) $this->graphitetimeseries->delete($feedid);
         
     $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
   }
@@ -394,6 +405,7 @@ class Feed
       if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
       if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
       if ($row['engine']==Engine::PHPTIMESERIES) $size = $this->phptimeseries->get_feed_size($feedid);
+      if ($row['engine']==Engine::GRAPHITE) $size = $this->graphitetimeseries->get_feed_size($feedid);
       $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
       $total += $size;
     }

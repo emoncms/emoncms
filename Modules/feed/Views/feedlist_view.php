@@ -58,7 +58,7 @@ input[type="text"] {
     'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
     'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"text"},
     'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
-    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES']},
+    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE']},
     'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"fixed"},
     
