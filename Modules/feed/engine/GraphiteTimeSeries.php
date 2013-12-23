@@ -338,12 +338,17 @@ class GraphiteTimeSeries
   public function deletedatarange($feedid,$start,$end)
   {
     $feedid = intval($feedid);
-    $start = intval($start/1000.0);
-    $end = intval($end/1000.0);
+    $start = floatval($start);
+    $end = floatval($end);
+    $start = intval($start/1000); $end = intval($end/1000);
+    if ($end == 0) $end = intval(time());
 
-    $feedname = "feed_".trim($feedid)."";
-    $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
-
+    $raw_datapoints = $this->get_graphite_data($feedid, $start, $end);
+    $count = 0;
+    $sum = 0;
+    foreach ($raw_datapoints as $item) {
+      $this->delete_data_point($feedid, $item[0]);
+    }
     return true;
   }
   
@@ -354,11 +359,9 @@ class GraphiteTimeSeries
   
   public function get_feed_size($feedid)
   {  
-    $feedname = "feed_".$feedid;
-    $result = $this->mysqli->query("SHOW TABLE STATUS LIKE '$feedname'");
-    $row = $result->fetch_array();
-    $tablesize = $row['Data_length']+$row['Index_length'];
-    return $tablesize;
+    // Graphite can't do this remotely
+    // Entirely dependent on the storage-schemas.conf file
+    return 0;
   }
   
 }
