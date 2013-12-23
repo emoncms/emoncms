@@ -21,6 +21,7 @@ class Feed
     private $timestore;
     private $histogram;
     private $redis;
+    private $graphitetimeseries;
     
     private $default_engine = Engine::PHPTIMESERIES;
     
@@ -48,6 +49,12 @@ class Feed
         $this->phptimeseries = new PHPTimeSeries();
         
         $this->redis = $redis;
+        
+        global $graphite_host;
+        global $graphite_port;
+        
+        require "Modules/feed/engine/GraphiteTimeSeries.php";
+        $this->graphitetimeseries = new GraphiteTimeSeries($graphite_host, $graphite_port);
     }
     
     public function set_update_value_redis($feedid, $value, $time)
@@ -95,6 +102,7 @@ class Feed
             if ($this->default_engine == Engine::TIMESTORE) $this->timestore->create($feedid,$newfeedinterval);
             if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
             if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
+            if ($this->default_engine == Engine::GRAPHITE) $this->graphitetimeseries->create($feedid);
           }
           elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
           elseif ($datatype==3) $this->histogram->create($feedid);
@@ -332,6 +340,7 @@ class Feed
     if ($engine==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($engine==Engine::MYSQL) $this->mysqltimeseries->insert($feedid,$feedtime,$value);
     if ($engine==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
+    if ($engine==Engine::GRAPHITE) $this->graphitetimeseries->post($feedid,$feedtime,$value);
 
     $this->set_update_value_redis($feedid, $value, $updatetime);
 
@@ -360,6 +369,7 @@ class Feed
     if ($engine==Engine::TIMESTORE) $this->timestore->post($feedid,$feedtime,$value);
     if ($engine==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
     if ($engine==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
+    if ($engine==Engine::GRAPHITE) $this->graphitetimeseries->post($feedid,$feedtime,$value);
 
     // need to find a way to not update if value being updated is older than the last value 
     // in the database, redis lastvalue is last update time rather than last datapoint time. 
@@ -386,6 +396,7 @@ class Feed
     if ($engine==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
     if ($engine==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
     if ($engine==Engine::PHPTIMESERIES) return $this->phptimeseries->get_data($feedid,$start,$end,$dp);
+    if ($engine==Engine::GRAPHITE) return $this->graphitetimeseries->get_data($feedid,$start,$end,$dp);
   }
   
   public function get_timestore_average($feedid,$start,$end,$interval)
@@ -395,6 +406,7 @@ class Feed
     
     $engine = $this->redis->hget("feed:$feedid",'engine');
     if ($engine==Engine::TIMESTORE) return $this->timestore->get_average($feedid,$start,$end,$interval);
+    if ($engine==Engine::GRAPHITE) return $this->graphitetimeseries->get_average($feedid,$start,$end,$interval);
   }
 
   
@@ -407,6 +419,7 @@ class Feed
     if ($engine==Engine::TIMESTORE) $this->timestore->delete($feedid);
     if ($engine==Engine::MYSQL) $this->mysqltimeseries->delete($feedid);
     if ($engine==Engine::PHPTIMESERIES) $this->phptimeseries->delete($feedid);
+    if ($engine==Engine::GRAPHITE) $this->graphitetimeseries->delete($feedid);
         
     $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
     
@@ -426,6 +439,7 @@ class Feed
       if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
       if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
       if ($row['engine']==Engine::PHPTIMESERIES) $size = $this->phptimeseries->get_feed_size($feedid);
+      if ($row['engine']==Engine::GRAPHITE) $size = $this->graphitetimeseries->get_feed_size($feedid);
       $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
       $this->redis->hset("feed:$feedid",'size',$size);
       $total += $size;

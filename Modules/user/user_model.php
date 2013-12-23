@@ -148,7 +148,7 @@ class User
     public function register($username, $password, $email)
     {
         // Input validation, sanitisation and error reporting
-        if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email paramater"));
+        if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
 
         if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
         $username = $this->mysqli->real_escape_string($username);
