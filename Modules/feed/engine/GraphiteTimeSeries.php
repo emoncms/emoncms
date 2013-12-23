@@ -65,7 +65,7 @@ class GraphiteTimeSeries
    * @param integer $feedid The feedid of the timestore to fetch from
    * @param integer $start The unix timestamp in seconds of the start of the data range
    * @param integer $end The unix timestamp in seconds of the end of the data range
-   * @returns array The requested raw data from Graphite
+   * @returns array The requested raw data from Graphite, as [timestamp,value]
   */
   private function get_graphite_data($feedid,$start,$end)
   {
@@ -166,7 +166,7 @@ class GraphiteTimeSeries
    * Adds a data point to the time store
    *
    * @param integer $feedid The feedid of the timestore to add to
-   * @param integer $time The unix timestamp of the data point
+   * @param integer $time The unix timestamp of the data point, in seconds
    * @param integer $value The value of the data point
   */
   public function post($feedid,$time,$value)
@@ -198,7 +198,7 @@ class GraphiteTimeSeries
     $end = floatval($end);
     $start = intval($start/1000); $end = intval($end/1000);
 
-    if ($end == 0) $end = intval(time()*1000);
+    if ($end == 0) $end = intval(time());
     $dp = intval($dp);
     if ($dp < 50) $dp = 50;    # realtime widget is silly
     $raw_datapoints = $this->get_graphite_data($feedid, $start, $end);
@@ -221,7 +221,7 @@ class GraphiteTimeSeries
     $start = floatval($start);
     $end = floatval($end);
     $start = intval($start/1000); $end = intval($end/1000);
-    if ($end == 0) $end = intval(time()*1000);
+    if ($end == 0) $end = intval(time());
 
     $raw_datapoints = $this->get_graphite_data($feedid, $start, $end);
     $count = 0;
