@@ -21,7 +21,8 @@ class Timestore
   
   public function create($feedid,$newfeedinterval)
   {
-    $this->timestoreApi->create_node($feedid,$newfeedinterval);
+    $ret = $this->timestoreApi->create_node($feedid,$newfeedinterval);
+    error_log("Trying to create: $ret");
   }
   
   public function post($feedid,$time,$value)
