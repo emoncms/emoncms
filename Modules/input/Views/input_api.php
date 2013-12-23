@@ -36,13 +36,19 @@
 
 <p><b><?php echo _('Bulk data'); ?></b>
 <table class="table">
-  <tr><td><?php echo _('You can provide data using bulk mode'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,10,250,100,20],[2,12,1437,3164],[10,10,252,80,21]]"><?php echo $path; ?>input/bulk.json?data=[[0,10,250,100,20],[2,12,1437,3164],[10,10,252,80,21]]</a></td></tr>
+  <tr><td><?php echo _('You can provide data using bulk mode'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]"><?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]</a></td></tr>
 </table>
 <ul>
-  <li><?php echo _('The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 10 seconds.'); ?></li>
+  <li><?php echo _('The first number of each node is the time offset (see below).'); ?></li>
   <li><?php echo _('The second number is the node id, this is the unique identifer for the wireless node.'); ?></li>
-  <li><?php echo _('All the numbers after the first two are data values. The first node here (node 10) has three data values: 250,100 and 20.'); ?></li>  
+  <li><?php echo _('All the numbers after the first two are data values. The second node here (node 17) has two data values: 1437 and 3164.'); ?></li>
+  <li><?php echo _('Optional offset and time parameters allow the sender to set the time reference for the packets. If none is specified, it is assumed that the last packet just arrived. The time for the other packets is then calculated accordingly.'); ?></li>
 </ul>
+<table class="table">
+  <tr><td><?php echo _('Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to now):'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]"><?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]</a></td></tr>
+  <tr><td><?php echo _('Time offset format (-6 is -16 seconds to now):'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10"><?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]<b>&offset=-10</b></a></td></tr>
+  <tr><td><?php echo _('Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 UTC))'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=1387730127"><?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]<b>&time=1387730127</b></a></td></tr>
+</table>
 
 <br>
 <p><b><?php echo _('Input actions'); ?></b>
