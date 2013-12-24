@@ -133,7 +133,7 @@ class MysqlTimeSeries
   {
       // Feed id and start time of feed to export
       $feedid = intval($feedid);
-      $start = intval($start);
+      $start = intval($start)-1;
 
       // Open database etc here
       // Extend timeout limit from 30s to 2mins
@@ -171,7 +171,6 @@ class MysqlTimeSeries
           $moredata_available = 0;
           while($row = $result->fetch_array()) 
           {
-            
               // Write block as csv to output stream
               if (!isset($row['data2'])) {
                 fputcsv($fh, array($row['time'],$row['data']));

@@ -161,7 +161,11 @@ class Timestore
     $localsize = $start;
     $localsize = intval($localsize / 4) * 4;
     if ($localsize<0) $localsize = 0;
-
+    
+    // Get the first point which will be updated rather than appended
+    if ($localsize>=4) $localsize = $localsize - 4;
+    
+    
     fseek($primary,$localsize);
     $left_to_read = $primarysize - $localsize;
     if ($left_to_read>0){
