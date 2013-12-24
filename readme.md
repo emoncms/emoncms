@@ -10,6 +10,11 @@ To upgrade you will need redis server installed and the phpredis client:
 
     sudo apt-get install redis-server
     sudo pecl install redis
+    
+Add pecl redis module to php5 config
+    
+    sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
 
 # Emoncms v6 (timestore+)
 
