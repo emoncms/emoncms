@@ -28,7 +28,7 @@
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph"></div>
-      <div style="position:absolute; top:20px; right:20px;">
+      <div style="position:absolute; top:20px; right:20px; opacity:0.5;">
 
         <input id="mode" type="button" value="power" /> | 
 

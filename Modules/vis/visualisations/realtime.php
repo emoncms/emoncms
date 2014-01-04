@@ -32,7 +32,7 @@
 
  <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
    <div id="graph"></div>
-   <div style="position:absolute; top:20px; right:20px;">
+   <div style="position:absolute; top:20px; right:20px; opacity:0.5;">
      <button class="viewWindow" time="1.0">1 <?php echo _('hour') ?></button>
      <button class="viewWindow" time="0.50">30 <?php echo _('min') ?></button>
      <button class="viewWindow" time="0.25">15 <?php echo _('min') ?></button>

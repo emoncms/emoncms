@@ -79,7 +79,7 @@ function multigraph_init(element)
   var out = 
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
       "<div id='graph'></div>"+
-      "<div style='position:absolute; top:20px; right:30px;'>"+
+      "<div style='position:absolute; top:20px; right:30px; opacity:0.5;'>"+
 
 
         "<div class='input-prepend input-append' style='margin:0'>"+

@@ -29,7 +29,7 @@
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph"></div>
-      <div style="position:absolute; top:20px; right:20px;">
+      <div style="position:absolute; top:20px; right:20px; opacity:0.5;">
 
         <input class="time" type="button" value="D" time="1"/>
         <input class="time" type="button" value="W" time="7"/>
