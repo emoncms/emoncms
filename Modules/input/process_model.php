@@ -504,6 +504,7 @@ class Process
 
     $this->feed->set_update_value_redis($feedid, $daily_sum, $time_now);
     
+    //N.B.Feed needs to update at least daily so that current value is updated (to zero if necessary)
     return $daily_sum;
   }
 
@@ -533,6 +534,7 @@ class Process
 
     $this->feed->set_update_value_redis($feedid, $hourly_sum, $time_now);
     
+    //N.B.Feed needs to update at least hourly so that current value is updated (to zero if necessary)
     return $hourly_sum;
   }
 
