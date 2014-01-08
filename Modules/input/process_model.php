@@ -60,7 +60,6 @@ class Process
       $list[27] = array(_("Max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc");                        // checked
       $list[28] = array(_("Min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc");                        // checked
       $list[29] = array(_("sum_daily"),ProcessArg::FEEDID,"sum_daily",1,DataType::DAILY);
-      $list[30] = array(_("sum_hourly"),ProcessArg::FEEDID,"sum_hourly",1,DataType::DAILY);
    
       // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
       
@@ -506,36 +505,6 @@ class Process
     
     //N.B.Feed needs to update at least daily so that current value is updated (to zero if necessary)
     return $daily_sum;
-  }
-
-// Calculates an hourly sum of a value
-  public function sum_hourly($feedid, $time_now, $value)
-  {
-    
-    $feedname = "feed_" . trim($feedid) . "";
-    $feedtime = mktime(date("H",$time_now), 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-    $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
-    if (!$result)  return $value;
-    $row = $result->fetch_array();
-
-    $sum = $row['data'];    	
-    $new_sum = ($sum + $value);    	
-
-    if ($row)
-    {
-      $this->mysqli->query("UPDATE $feedname SET data = '$new_sum' WHERE time = '$feedtime'");
-	$hourly_sum = $new_sum;
-    }
-    else
-    {
-      $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
-	$hourly_sum = $value;
-    }
-
-    $this->feed->set_update_value_redis($feedid, $hourly_sum, $time_now);
-    
-    //N.B.Feed needs to update at least hourly so that current value is updated (to zero if necessary)
-    return $hourly_sum;
   }
 
 
