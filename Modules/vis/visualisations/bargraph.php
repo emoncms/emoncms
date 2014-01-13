@@ -55,7 +55,9 @@
   var embed = <?php echo $embed; ?>;
   var valid = "<?php echo $valid; ?>";
 
-  var valid = "<?php echo $valid; ?>";
+  // Eventually We can store the plot colors in the DB, and use a php command to stick it here
+  var plotColour = null;
+  
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
@@ -87,7 +89,7 @@
 
   function plot()
   {
-    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], {
+    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, color: plotColour}], {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: start, max: end },
       yaxis: {min: 0},
