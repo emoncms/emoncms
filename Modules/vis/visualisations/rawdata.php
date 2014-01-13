@@ -87,7 +87,7 @@
         get_feed_data_async(feedid,start,end,1000, function(response){
             graph_data = response;
             var stats = power_stats(graph_data);
-            var out = "Average: "+stats['average'].toFixed(0)+units;
+            var out = "Average: "+stats['average'].toFixed(1)+units;
             if (units=='W') out+= " | "+stats['kwh'].toFixed(2)+" kWh";
             $("#stats").html(out);   
             plot();
@@ -97,11 +97,13 @@
 
   function plot()
   {
-    var plot = $.plot($graph, [{data: graph_data, lines: { show: true, fill: plotfill }}], {
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-      selection: { mode: "xy" }
-    });
+    var plot = $.plot($graph, 
+      [{data: graph_data, lines: { show: true, fill: plotfill }}], 
+      {
+        grid: { show: true, hoverable: true, clickable: true },
+        xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+        selection: { mode: "x" }
+      });
   }
 
   //--------------------------------------------------------------------------------------
