@@ -17,12 +17,12 @@ var table = {
     'deletedata':true,
 
     'sortfield':null,
-
+    'sortable':true,
     'groupprefix':"",
      
     'draw':function()
     {
-        if (table.data) {
+        if (table.data && table.sortable) {
           table.data.sort(function(a,b) {
             if(a[table.sortfield]<b[table.sortfield]) return -1;
             if(a[table.sortfield]>b[table.sortfield]) return 1;
