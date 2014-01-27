@@ -57,15 +57,13 @@
 	var apikey = "<?php echo $apikey; ?>";
 	var valid = "<?php echo $valid; ?>";
 
-	// Eventually We can store the plot colors in the DB, and use a php command to stick it here
-	var plotColour = null;
-	
+
 	var plotfill = <?php echo $fill; ?> == 1;
 	var units = "<?php echo $units; ?>";
 	var embed = <?php echo $embed; ?>;
 	
 	// Eventually We can store the plot colors in the DB, and use a php command to stick it here
-	var plotColour = null;
+	var plotColour = "<?php echo $colour; ?>";
 	
 	var $graph_bound = $('#graph_bound');
 	var $graph = $('#graph').width($graph_bound.width()).height($('#graph_bound').height());
