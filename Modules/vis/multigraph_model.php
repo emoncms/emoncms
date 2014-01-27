@@ -14,58 +14,58 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Multigraph
 {
-    private $mysqli;
+	private $mysqli;
 
-    public function __construct($mysqli)
-    {
-        $this->mysqli = $mysqli;
-    }
+	public function __construct($mysqli)
+	{
+		$this->mysqli = $mysqli;
+	}
 
-    public function create($userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`) VALUES ('$userid','')");
-        return $this->mysqli->insert_id;  
-    }
+	public function create($userid)
+	{
+		$userid = intval($userid);
+		$this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`) VALUES ('$userid','')");
+		return $this->mysqli->insert_id;
+	}
 
-    public function delete($id,$userid)
-    {
-        $userid = intval($userid);
-        $this->mysqli->query("DELETE FROM multigraph WHERE `id` = '$id' AND `userid` = '$userid'");
-    }
+	public function delete($id,$userid)
+	{
+		$userid = intval($userid);
+		$this->mysqli->query("DELETE FROM multigraph WHERE `id` = '$id' AND `userid` = '$userid'");
+	}
 
-    public function set($id, $userid, $feedlist)
-    {
-        $id = intval($id);
-        $userid = intval($userid);
-        $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
-        $this->mysqli->query("UPDATE multigraph SET `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
-    }
+	public function set($id, $userid, $feedlist)
+	{
+		$id = intval($id);
+		$userid = intval($userid);
+		$feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
+		$this->mysqli->query("UPDATE multigraph SET `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
+	}
 
-    /*
-    userid not used
-    need to implement public multigraph feature, only return feedlist if multigraph is public or user session
-    */
-    public function get($id, $userid)
-    {
-        $id = intval($id);
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE `id`='$id'");
-        $result = $result->fetch_array();
-        $feedlist = json_decode($result['feedlist']);
-        return $feedlist;
-    }
+	/*
+	userid not used
+	need to implement public multigraph feature, only return feedlist if multigraph is public or user session
+	*/
+	public function get($id, $userid)
+	{
+		$id = intval($id);
+		$userid = intval($userid);
+		$result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE `id`='$id'");
+		$result = $result->fetch_array();
+		$feedlist = json_decode($result['feedlist']);
+		return $feedlist;
+	}
 
-    public function getlist($userid)
-    {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,name,feedlist FROM multigraph WHERE `userid`='$userid'");
+	public function getlist($userid)
+	{
+		$userid = intval($userid);
+		$result = $this->mysqli->query("SELECT id,name,feedlist FROM multigraph WHERE `userid`='$userid'");
 
-        $multigraphs = array();
-        while ($row = $result->fetch_object())
-        {
-            $multigraphs[] = array('id'=>$row->id,'name'=>$row->name,'feedlist'=>$row->feedlist);
-        }
-        return $multigraphs;
-    }
+		$multigraphs = array();
+		while ($row = $result->fetch_object())
+		{
+			$multigraphs[] = array('id'=>$row->id,'name'=>$row->name,'feedlist'=>$row->feedlist);
+		}
+		return $multigraphs;
+	}
 }

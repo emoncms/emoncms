@@ -1,26 +1,26 @@
-<?php 
+<?php
 
 /*
-  All Emoncms code is released under the GNU Affero General Public License.
-  See COPYRIGHT.txt and LICENSE.txt.
+	All Emoncms code is released under the GNU Affero General Public License.
+	See COPYRIGHT.txt and LICENSE.txt.
 
-  ---------------------------------------------------------------------
-  Emoncms - open source energy visualisation
-  Part of the OpenEnergyMonitor project:
-  http://openenergymonitor.org
+	---------------------------------------------------------------------
+	Emoncms - open source energy visualisation
+	Part of the OpenEnergyMonitor project:
+	http://openenergymonitor.org
 */
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-  global $path; 
- 
-  $languages = get_available_languages();
+	global $path;
+
+	$languages = get_available_languages();
 
 function languagecodetotext()
 {
-  _('es_ES');
-  _('fr_FR');
+	_('es_ES');
+	_('fr_FR');
 }
 
 ?>
@@ -31,235 +31,235 @@ function languagecodetotext()
 
 <div class="row">
 
-  <div class="span4">
-   <h3><?php echo _('My account'); ?></h3>
+	<div class="span4">
+	 <h3><?php echo _('My account'); ?></h3>
 
-  <div id="account" style="width:230px;">
-    <p>
-      <span class="muted"><?php echo _('Username'); ?></span>
-      <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
-      <div id="edit-username-form" class="input-append" style="display:none">
-        <input class="span2" id="appendedInputButton" type="text" style="width:150px">
-        <button class="btn" type="button"><?php echo _('Save'); ?></button>
-      </div>
-      <div id="change-username-error" class="alert alert-error" style="display:none; width:170px"></div>
-    </p>
-    <p>
-      <span class="muted"><?php echo _('Email'); ?></span>
-      <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
-      <div id="edit-email-form" class="input-append" style="display:none">
-        <input class="span2" id="appendedInputButton" type="text" style="width:150px">
-        <button class="btn" type="button"><?php echo _('Save'); ?></button>
-      </div>
-      <div id="change-email-error" class="alert alert-error" style="display:none; width:170px"></div>
-    </p>
-    <p>
-      <a id="changedetails"><?php echo _('Change Password'); ?></a>
-    </p>
-  </div>
+	<div id="account" style="width:230px;">
+		<p>
+			<span class="muted"><?php echo _('Username'); ?></span>
+			<span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
+			<div id="edit-username-form" class="input-append" style="display:none">
+				<input class="span2" id="appendedInputButton" type="text" style="width:150px">
+				<button class="btn" type="button"><?php echo _('Save'); ?></button>
+			</div>
+			<div id="change-username-error" class="alert alert-error" style="display:none; width:170px"></div>
+		</p>
+		<p>
+			<span class="muted"><?php echo _('Email'); ?></span>
+			<span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
+			<div id="edit-email-form" class="input-append" style="display:none">
+				<input class="span2" id="appendedInputButton" type="text" style="width:150px">
+				<button class="btn" type="button"><?php echo _('Save'); ?></button>
+			</div>
+			<div id="change-email-error" class="alert alert-error" style="display:none; width:170px"></div>
+		</p>
+		<p>
+			<a id="changedetails"><?php echo _('Change Password'); ?></a>
+		</p>
+	</div>
 
-  <div id="change-password-form" style="display:none">
-    <p>
-      <span class="muted"><?php echo _('Current password'); ?></span>
-      <br><input id="oldpassword" type="password" />
-    </p>
-    <p>
-      <span class="muted"><?php echo _('New password'); ?></span>
-      <br><input id="newpassword" type="password" />
-    </p>
-    <p>
-      <span class="muted"><?php echo _('Repeat new password'); ?></span>
-      <br><input id="repeatnewpassword" type="password" />
-    </p>
-    <div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
-    <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
-    <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
-  </div>
+	<div id="change-password-form" style="display:none">
+		<p>
+			<span class="muted"><?php echo _('Current password'); ?></span>
+			<br><input id="oldpassword" type="password" />
+		</p>
+		<p>
+			<span class="muted"><?php echo _('New password'); ?></span>
+			<br><input id="newpassword" type="password" />
+		</p>
+		<p>
+			<span class="muted"><?php echo _('Repeat new password'); ?></span>
+			<br><input id="repeatnewpassword" type="password" />
+		</p>
+		<div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
+		<input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
+		<input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
+	</div>
 
-  </div>
+	</div>
 
-  <div class="span8">
-    <h3><?php echo _('My Profile'); ?></h3>
-    <div id="table"></div>
-  </div>
+	<div class="span8">
+		<h3><?php echo _('My Profile'); ?></h3>
+		<div id="table"></div>
+	</div>
 
 </div>
 
 <script>
 
-    var path = "<?php echo $path; ?>";
-    var lang = <?php echo json_encode($languages); ?>;
+	var path = "<?php echo $path; ?>";
+	var lang = <?php echo json_encode($languages); ?>;
 
-    list.data = user.get();
+	list.data = user.get();
 
-    var currentlanguage = list.data.language;
+	var currentlanguage = list.data.language;
 
-    list.fields = {
-      'gravatar':{'title':"<?php echo _('Gravatar'); ?>", 'type':'gravatar'},
-      'name':{'title':"<?php echo _('Name'); ?>", 'type':'text'},
-      'location':{'title':"<?php echo _('Location'); ?>", 'type':'text'},
-      'timezone':{'title':"<?php echo _('Timezone'); ?>", 'type':'timezone'},
-      'language':{'title':"<?php echo _('Language'); ?>", 'type':'select', 'options':lang},
-      'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'}
-    }
+	list.fields = {
+		'gravatar':{'title':"<?php echo _('Gravatar'); ?>", 'type':'gravatar'},
+		'name':{'title':"<?php echo _('Name'); ?>", 'type':'text'},
+		'location':{'title':"<?php echo _('Location'); ?>", 'type':'text'},
+		'timezone':{'title':"<?php echo _('Timezone'); ?>", 'type':'timezone'},
+		'language':{'title':"<?php echo _('Language'); ?>", 'type':'select', 'options':lang},
+		'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'}
+	}
 
-    list.init();
+	list.init();
 
-    $("#table").bind("onSave", function(e){
-      user.set(list.data);
+	$("#table").bind("onSave", function(e){
+		user.set(list.data);
 
-      // refresh the page if the language has been changed.
-      if (list.data.language!=currentlanguage) window.location.href = path+"user/view";
-    });
+		// refresh the page if the language has been changed.
+		if (list.data.language!=currentlanguage) window.location.href = path+"user/view";
+	});
 
-    //------------------------------------------------------
-    // Username
-    //------------------------------------------------------
-    $(".username").html(list.data['username']);
-    $("#input-username").val(list.data['username']);
+	//------------------------------------------------------
+	// Username
+	//------------------------------------------------------
+	$(".username").html(list.data['username']);
+	$("#input-username").val(list.data['username']);
 
-    $("#edit-username").click(function(){
-      $("#username-view").hide();
-      $("#edit-username-form").show();
-      $("#edit-username-form input").val(list.data.username);
-    });
+	$("#edit-username").click(function(){
+		$("#username-view").hide();
+		$("#edit-username-form").show();
+		$("#edit-username-form input").val(list.data.username);
+	});
 
-    $("#edit-username-form button").click(function(){
+	$("#edit-username-form button").click(function(){
 
-      var username = $("#edit-username-form input").val();
+		var username = $("#edit-username-form input").val();
 
-      if (username!=list.data.username)
-      {
-        $.ajax({
-          url: path+"user/changeusername.json",
-          data: "&username="+username,
-          dataType: 'json',
-          success: function(result)
-          {
-            if (result.success)
-            {
-              $("#username-view").show();
-              $("#edit-username-form").hide();
-              list.data.username = username;
-              $(".username").html(list.data.username);
-              $("#change-username-error").hide();
-            }
-            else
-            {
-              $("#change-username-error").html(result.message).show();
-            }
-          }
-        });
-      }
-      else
-      {
-        $("#username-view").show();
-        $("#edit-username-form").hide();
-        $("#change-username-error").hide();
-      }
-    });
+		if (username!=list.data.username)
+		{
+			$.ajax({
+				url: path+"user/changeusername.json",
+				data: "&username="+username,
+				dataType: 'json',
+				success: function(result)
+				{
+					if (result.success)
+					{
+						$("#username-view").show();
+						$("#edit-username-form").hide();
+						list.data.username = username;
+						$(".username").html(list.data.username);
+						$("#change-username-error").hide();
+					}
+					else
+					{
+						$("#change-username-error").html(result.message).show();
+					}
+				}
+			});
+		}
+		else
+		{
+			$("#username-view").show();
+			$("#edit-username-form").hide();
+			$("#change-username-error").hide();
+		}
+	});
 
-    //------------------------------------------------------
-    // Email
-    //------------------------------------------------------
-    $(".email").html(list.data['email']);
-    $("#input-email").val(list.data['email']);
+	//------------------------------------------------------
+	// Email
+	//------------------------------------------------------
+	$(".email").html(list.data['email']);
+	$("#input-email").val(list.data['email']);
 
-    $("#edit-email").click(function(){
-      $("#email-view").hide();
-      $("#edit-email-form").show();
-      $("#edit-email-form input").val(list.data.email);
-    });
+	$("#edit-email").click(function(){
+		$("#email-view").hide();
+		$("#edit-email-form").show();
+		$("#edit-email-form input").val(list.data.email);
+	});
 
-    $("#edit-email-form button").click(function(){
+	$("#edit-email-form button").click(function(){
 
-      var email = $("#edit-email-form input").val();
+		var email = $("#edit-email-form input").val();
 
-      if (email!=list.data.email)
-      {
-        $.ajax({
-          url: path+"user/changeemail.json",
-          data: "&email="+email,
-          dataType: 'json',
-          success: function(result)
-          {
-            if (result.success)
-            {
-              $("#email-view").show();
-              $("#edit-email-form").hide();
-              list.data.email = email;
-              $(".email").html(list.data.email);
-              $("#change-email-error").hide();
-            }
-            else
-            {
-              $("#change-email-error").html(result.message).show();
-            }
-          }
-        });
-      }
-      else
-      {
-        $("#email-view").show();
-        $("#edit-email-form").hide();
-        $("#change-email-error").hide();
-      }
-    });
+		if (email!=list.data.email)
+		{
+			$.ajax({
+				url: path+"user/changeemail.json",
+				data: "&email="+email,
+				dataType: 'json',
+				success: function(result)
+				{
+					if (result.success)
+					{
+						$("#email-view").show();
+						$("#edit-email-form").hide();
+						list.data.email = email;
+						$(".email").html(list.data.email);
+						$("#change-email-error").hide();
+					}
+					else
+					{
+						$("#change-email-error").html(result.message).show();
+					}
+				}
+			});
+		}
+		else
+		{
+			$("#email-view").show();
+			$("#edit-email-form").hide();
+			$("#change-email-error").hide();
+		}
+	});
 
-    //------------------------------------------------------
-    // Password
-    //------------------------------------------------------
-    $("#changedetails").click(function(){
-      $("#changedetails").hide();
-      $("#change-password-form").show();
-    });
+	//------------------------------------------------------
+	// Password
+	//------------------------------------------------------
+	$("#changedetails").click(function(){
+		$("#changedetails").hide();
+		$("#change-password-form").show();
+	});
 
-    $("#change-password-submit").click(function(){
+	$("#change-password-submit").click(function(){
 
-      var oldpassword = $("#oldpassword").val();
-      var newpassword = $("#newpassword").val();
-      var repeatnewpassword = $("#repeatnewpassword").val();
+		var oldpassword = $("#oldpassword").val();
+		var newpassword = $("#newpassword").val();
+		var repeatnewpassword = $("#repeatnewpassword").val();
 
-      if (newpassword != repeatnewpassword) 
-      {
-        $("#change-password-error").html("<?php echo _('Passwords do not match'); ?>").show();
-      }
-      else
-      {
-        $.ajax({
-          url: path+"user/changepassword.json",
-          data: "old="+oldpassword+"&new="+newpassword,
-          dataType: 'json',
-          success: function(result)
-          {
-            if (result.success)
-            {
-              $("#oldpassword").val('');
-              $("#newpassword").val('');
-              $("#repeatnewpassword").val('');
-              $("#change-password-error").hide();
+		if (newpassword != repeatnewpassword)
+		{
+			$("#change-password-error").html("<?php echo _('Passwords do not match'); ?>").show();
+		}
+		else
+		{
+			$.ajax({
+				url: path+"user/changepassword.json",
+				data: "old="+oldpassword+"&new="+newpassword,
+				dataType: 'json',
+				success: function(result)
+				{
+					if (result.success)
+					{
+						$("#oldpassword").val('');
+						$("#newpassword").val('');
+						$("#repeatnewpassword").val('');
+						$("#change-password-error").hide();
 
-              $("#change-password-form").hide();
-              $("#changedetails").show();
-            }
-            else
-            {
-              $("#change-password-error").html(result.message).show();
-            }
-          }
-        });
-      }
-    });
+						$("#change-password-form").hide();
+						$("#changedetails").show();
+					}
+					else
+					{
+						$("#change-password-error").html(result.message).show();
+					}
+				}
+			});
+		}
+	});
 
-    $("#change-password-cancel").click(function(){
-      $("#oldpassword").val('');
-      $("#newpassword").val('');
-      $("#repeatnewpassword").val('');
-      $("#change-password-error").hide();
+	$("#change-password-cancel").click(function(){
+		$("#oldpassword").val('');
+		$("#newpassword").val('');
+		$("#repeatnewpassword").val('');
+		$("#change-password-error").hide();
 
-      $("#change-password-form").hide();
-      $("#changedetails").show();
-    });
+		$("#change-password-form").hide();
+		$("#changedetails").show();
+	});
 
 
 </script>

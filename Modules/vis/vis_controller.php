@@ -26,7 +26,7 @@
 		$multigraph = new Multigraph($mysqli);
 
 		$visdir = "vis/visualisations/";
- 
+
 		/*
 			1 - realtime
 			2 - daily
@@ -74,7 +74,7 @@
 				$result = view("Modules/vis/vis_main_view.php", array('user' => $user->get($session['userid']), 'feedlist'=>$feedlist, 'apikey'=>$read_apikey, 'visualisations'=>$visualisations, 'multigraphs'=>$multigraphs));
 			}
 
-			
+
 			// Auto - automatically selects visualisation based on datatype
 			// and is used primarily for quick checking feeds from the feeds page.
 			if ($route->action == "auto")
@@ -97,7 +97,7 @@
 				// If the visualisation has a set property called action
 				// then override the visualisation key and use the set action instead
 				if (isset($vis['action'])) $viskey = $vis['action'];
-			
+
 				if ($route->action == $viskey)
 				{
 
@@ -114,31 +114,31 @@
 							if (isset($option[2])) $default = $option[2]; else $default = "";
 
 
-							if ($type==1 || $type==2 || $type==3) 
+							if ($type==1 || $type==2 || $type==3)
 							{
 								$feedid = (int) get($key);
 								if ($feedid) {
 									$f = $feed->get($feedid);
 									$array[$key] = $feedid;
 									$array[$key.'name'] = $f['name'];
-								
+
 									if ($f['userid']!=$session['userid'] || $f['datatype']!=$type) $array['valid'] = false;
 									if ($f['public'] && $f['datatype']==$type) $array['valid'] = true;
 								} else {
 									$array['valid'] = false;
 								}
-								
+
 							}
 
 							// Boolean not used at the moment
-							if ($type==4) 
-								if (get($key)==true || get($key)==false) 
+							if ($type==4)
+								if (get($key)==true || get($key)==false)
 									$array[$key] = get($key); else $array[$key] = $default;
-							if ($type==5) 
+							if ($type==5)
 								$array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
-							if ($type==6) 
+							if ($type==6)
 								$array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
-							if ($type==7) 
+							if ($type==7)
 								$array[$key] = intval((get($key)?get($key):$default));
 
 							# we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since

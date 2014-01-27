@@ -1,5 +1,5 @@
-<?php 
-  global $path; 
+<?php
+	global $path;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
@@ -7,7 +7,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <style>
 input[type="text"] {
-     width: 88%; 
+		 width: 88%;
 }
 </style>
 
@@ -16,125 +16,125 @@ input[type="text"] {
 <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div></div>
 
 <div class="container">
-    <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
+	<div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
 
-    <div id="table"></div>
+	<div id="table"></div>
 
-    <div id="nofeeds" class="alert alert-block hide">
-        <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
-        <p><?php echo _('Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
-    </div>
-    
-    <hr>
-    <button id="refreshfeedsize" class="btn btn-small" >Refresh feed size <i class="icon-refresh" ></i></button>
+	<div id="nofeeds" class="alert alert-block hide">
+			<h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
+			<p><?php echo _('Feeds are where your monitoring data is stored. The recommended route for creating feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
+	</div>
+
+	<hr>
+	<button id="refreshfeedsize" class="btn btn-small" >Refresh feed size <i class="icon-refresh" ></i></button>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel"><?php echo _('WARNING deleting a feed is permanent'); ?></h3>
-  </div>
-  <div class="modal-body">
-    <p><?php echo _('Are you sure you want to delete this feed?'); ?></p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-    <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
-  </div>
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+		<h3 id="myModalLabel"><?php echo _('WARNING deleting a feed is permanent'); ?></h3>
+	</div>
+	<div class="modal-body">
+		<p><?php echo _('Are you sure you want to delete this feed?'); ?></p>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+		<button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+	</div>
 </div>
 
 <script>
 
 
-  var path = "<?php echo $path; ?>";
+	var path = "<?php echo $path; ?>";
 
-  // Extemd table library field types
-  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
+	// Extemd table library field types
+	for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
-  table.element = "#table";
+	table.element = "#table";
 
-  table.fields = {
-    'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
-    'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
-    'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"text"},
-    'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
-    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE']},
-    'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
-    'size':{'title':"<?php echo _('Size'); ?>", 'type':"fixed"},
-    
-    'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
-    'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
+	table.fields = {
+		'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
+		'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
+		'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"text"},
+		'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
+		'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE']},
+		'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+		'size':{'title':"<?php echo _('Size'); ?>", 'type':"fixed"},
 
-    // Actions
-    'edit-action':{'title':'', 'type':"edit"},
-    'delete-action':{'title':'', 'type':"delete"},
-    'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="}
+		'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
+		'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
 
-  }
+		// Actions
+		'edit-action':{'title':'', 'type':"edit"},
+		'delete-action':{'title':'', 'type':"delete"},
+		'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="}
 
-  table.groupby = 'tag';
-  table.deletedata = false;
+	}
 
-  table.draw();
+	table.groupby = 'tag';
+	table.deletedata = false;
 
-  update();
+	table.draw();
 
-  function update()
-  {
-    table.data = feed.list();
-    
-    for (z in table.data)
-    {
-      if (table.data[z].size<1024*100) {
-        table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
-      } else if (table.data[z].size<1024*1024) {
-        table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
-      } else if (table.data[z].size>=1024*1024) {
-        table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
-      }
-    }
-    table.draw();
-    if (table.data.length != 0) {
-      $("#nofeeds").hide();
-      $("#apihelphead").show();      
-      $("#localheading").show();      
-    } else {
-      $("#nofeeds").show();
-      $("#localheading").hide();
-      $("#apihelphead").hide(); 
-    }
-  }
+	update();
 
-  var updater = setInterval(update, 5000);
+	function update()
+	{
+		table.data = feed.list();
 
-  $("#table").bind("onEdit", function(e){
-    clearInterval(updater);
-  });
+		for (z in table.data)
+		{
+			if (table.data[z].size<1024*100) {
+				table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
+			} else if (table.data[z].size<1024*1024) {
+				table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
+			} else if (table.data[z].size>=1024*1024) {
+				table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
+			}
+		}
+		table.draw();
+		if (table.data.length != 0) {
+			$("#nofeeds").hide();
+			$("#apihelphead").show();
+			$("#localheading").show();
+		} else {
+			$("#nofeeds").show();
+			$("#localheading").hide();
+			$("#apihelphead").hide();
+		}
+	}
 
-  $("#table").bind("onSave", function(e,id,fields_to_update){
-    feed.set(id,fields_to_update); 
-    updater = setInterval(update, 5000);
-  });
+	var updater = setInterval(update, 5000);
 
-  $("#table").bind("onDelete", function(e,id,row){
-    $('#myModal').modal('show');
-    $('#myModal').attr('feedid',id);
-    $('#myModal').attr('feedrow',row);
-  });
+	$("#table").bind("onEdit", function(e){
+		clearInterval(updater);
+	});
 
-  $("#confirmdelete").click(function()
-  {
-    var id = $('#myModal').attr('feedid');
-    var row = $('#myModal').attr('feedrow');
-    feed.remove(id); 
-    table.remove(row);
-    update();
+	$("#table").bind("onSave", function(e,id,fields_to_update){
+		feed.set(id,fields_to_update);
+		updater = setInterval(update, 5000);
+	});
 
-    $('#myModal').modal('hide');
-  });
-  
-  $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", success: function(data){update();} });
-  });
+	$("#table").bind("onDelete", function(e,id,row){
+		$('#myModal').modal('show');
+		$('#myModal').attr('feedid',id);
+		$('#myModal').attr('feedrow',row);
+	});
+
+	$("#confirmdelete").click(function()
+	{
+		var id = $('#myModal').attr('feedid');
+		var row = $('#myModal').attr('feedrow');
+		feed.remove(id);
+		table.remove(row);
+		update();
+
+		$('#myModal').modal('hide');
+	});
+
+	$("#refreshfeedsize").click(function(){
+		$.ajax({ url: path+"feed/updatesize.json", success: function(data){update();} });
+	});
 
 </script>

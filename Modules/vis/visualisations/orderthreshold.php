@@ -1,15 +1,15 @@
 <!--
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
+	 All Emoncms code is released under the GNU Affero General Public License.
+	 See COPYRIGHT.txt and LICENSE.txt.
 
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
+		---------------------------------------------------------------------
+		Emoncms - open source energy visualisation
+		Part of the OpenEnergyMonitor project:
+		http://openenergymonitor.org
 -->
 
 <?php
-  global $path, $embed;
+	global $path, $embed;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
@@ -22,146 +22,146 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
- 
+
 <?php if (!$embed) { ?>
 <h2>Threshold Order</h2>
 <?php } ?>
 
-    <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-      <div id="graph"></div>
-        <h3 style="position:absolute; top:10px; right:12px; text-align:right;"><span id="stats"></span> <input id="back" type="button" value="Reload" /></h3>
-    </div>
+<div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+	<div id="graph"></div>
+	<h3 style="position:absolute; top:10px; right:12px; text-align:right;"><span id="stats"></span> <input id="back" type="button" value="Reload" /></h3>
+</div>
 
 <script id="source" language="javascript" type="text/javascript">
 
-  var embed = <?php echo $embed; ?>;
+	var embed = <?php echo $embed; ?>;
 
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+	$('#graph').width($('#graph_bound').width());
+	$('#graph').height($('#graph_bound').height());
+	if (embed) $('#graph').height($(window).height());
 
-  var feedid = <?php echo $feedid; ?>; 
-  var powerfeed = <?php echo $power; ?>; 
+	var feedid = <?php echo $feedid; ?>;
+	var powerfeed = <?php echo $power; ?>;
 
-  var thresholdA = <?php echo $thresholdA; ?>;   
-  var thresholdB = <?php echo $thresholdB; ?>;
-  
-  var path = "<?php echo $path; ?>";
-  var apikey = "<?php echo $apikey; ?>";
+	var thresholdA = <?php echo $thresholdA; ?>;
+	var thresholdB = <?php echo $thresholdB; ?>;
 
-  var timeWindow = (3600000*24.0*7);				//Initial time window
-  var start = ((new Date()).getTime())-timeWindow;		//Get start time
-  var end = (new Date()).getTime();				//Get end time
+	var path = "<?php echo $path; ?>";
+	var apikey = "<?php echo $apikey; ?>";
 
-  // First we load the kwh data at given power ranges:
-  var dataA = get_kwhatpower(feedid,0,thresholdA);
-  var dataB = get_kwhatpower(feedid,thresholdA+1,thresholdB);
-  var dataC = get_kwhatpower(feedid,thresholdB+1,20000);
+	var timeWindow = (3600000*24.0*7);				//Initial time window
+	var start = ((new Date()).getTime())-timeWindow;		//Get start time
+	var end = (new Date()).getTime();				//Get end time
 
-  // Next we merge all the above bars into an array that shares the same timestamp
-  var data = {};
-  for (z in dataA){
-    if (!data[dataA[z][0]]) data[dataA[z][0]] = [];  
-    data[dataA[z][0]][0] = 1*dataA[z][1];
-    data[dataA[z][0]][1] = 0;
-    data[dataA[z][0]][2] = 0;
-  }
-  for (z in dataB) 
-  {
-    if (!data[dataB[z][0]]) data[dataB[z][0]] = [];  
-    data[dataB[z][0]][1] = 1*dataB[z][1];
-  }
+	// First we load the kwh data at given power ranges:
+	var dataA = get_kwhatpower(feedid,0,thresholdA);
+	var dataB = get_kwhatpower(feedid,thresholdA+1,thresholdB);
+	var dataC = get_kwhatpower(feedid,thresholdB+1,20000);
 
-  for (z in dataC)
-  {
-    if (!data[dataC[z][0]]) data[dataC[z][0]] = [];  
-    data[dataC[z][0]][2] = 1*dataC[z][1];
-  }
+	// Next we merge all the above bars into an array that shares the same timestamp
+	var data = {};
+	for (z in dataA){
+		if (!data[dataA[z][0]]) data[dataA[z][0]] = [];
+		data[dataA[z][0]][0] = 1*dataA[z][1];
+		data[dataA[z][0]][1] = 0;
+		data[dataA[z][0]][2] = 0;
+	}
+	for (z in dataB)
+	{
+		if (!data[dataB[z][0]]) data[dataB[z][0]] = [];
+		data[dataB[z][0]][1] = 1*dataB[z][1];
+	}
 
-  // Remove the timestamp replacing it with an index - we still include timestamp for reference
-  var data2 = []; var i = 0;
-  for (z in data) {data2[i] = data[z]; data2[i][3] = z; i++;}
+	for (z in dataC)
+	{
+		if (!data[dataC[z][0]]) data[dataC[z][0]] = [];
+		data[dataC[z][0]][2] = 1*dataC[z][1];
+	}
 
-  // Sort.
-  for(x = 0; x < data2.length; x++) {
-    for(y = 0; y < (data2.length-1); y++) {
-      var sumA = data2[y][0]+data2[y][1]+data2[y][2];
-      var sumB = data2[y+1][0]+data2[y+1][1]+data2[y+1][2];
+	// Remove the timestamp replacing it with an index - we still include timestamp for reference
+	var data2 = []; var i = 0;
+	for (z in data) {data2[i] = data[z]; data2[i][3] = z; i++;}
 
-      if(sumA < sumB) {
-        holder = data2[y+1];
-        data2[y+1] = data2[y];
-        data2[y] = holder;
-      }
-    }
-  }
+	// Sort.
+	for(x = 0; x < data2.length; x++) {
+		for(y = 0; y < (data2.length-1); y++) {
+			var sumA = data2[y][0]+data2[y][1]+data2[y][2];
+			var sumB = data2[y+1][0]+data2[y+1][1]+data2[y+1][2];
 
-  // Seperate the sorted array out again into 3 seperate arrays
-  dataA = []; dataB = []; dataC = []; var timedata = []; i = 0;
-  for (z in data2) {
-    
-      dataA[i] = []; dataB[i] = []; dataC[i] = [];
-      dataA[i][1] = data2[z][0];
-      dataB[i][1] = data2[z][1];
-      dataC[i][1] = data2[z][2];
-      dataA[i][0] = i;
-      dataB[i][0] = i;
-      dataC[i][0] = i;
-      timedata[i] = data2[z][3];	// Copy timestamp for reference
+			if(sumA < sumB) {
+				holder = data2[y+1];
+				data2[y+1] = data2[y];
+				data2[y] = holder;
+			}
+		}
+	}
 
-      i++;
-  }
+	// Seperate the sorted array out again into 3 seperate arrays
+	dataA = []; dataB = []; dataC = []; var timedata = []; i = 0;
+	for (z in data2) {
 
-  $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
-    draw_ordered_kwhd_histogram();
-  });
+		dataA[i] = []; dataB[i] = []; dataC[i] = [];
+		dataA[i][1] = data2[z][0];
+		dataB[i][1] = data2[z][1];
+		dataC[i][1] = data2[z][2];
+		dataA[i][0] = i;
+		dataB[i][0] = i;
+		dataC[i][0] = i;
+		timedata[i] = data2[z][3];	// Copy timestamp for reference
 
-  draw_ordered_kwhd_histogram();
+		i++;
+	}
 
-  function draw_ordered_kwhd_histogram()
-  {
-  // Draw the plot
-  $.plot($("#graph"), [{color: "#c1a81f", data:dataA}, {color: "#dec225", data:dataB}, {color: "#deb368", data:dataC}], 
-  {
-    series: {
-      stack: true,
-      bars: { show: true,align: "center",fill: true }
-    },
-    grid: { show: true, hoverable: true, clickable: true },
-    legend: { position: "nw"}
-  });
-  }
+	$(window).resize(function(){
+		$('#graph').width($('#graph_bound').width());
+		if (embed) $('#graph').height($(window).height());
+		draw_ordered_kwhd_histogram();
+	});
 
-  $("#graph").bind("plothover", function (event, pos, item) { 
-    //var mdate = new Date(item.datapoint[0]);
-    if (item) {
-      if (item.seriesIndex == 0) val = dataA[item.dataIndex][1]; 
-      if (item.seriesIndex == 1) val = dataB[item.dataIndex][1]; 
-      if (item.seriesIndex == 2) val = dataC[item.dataIndex][1]; 
-      var total = dataA[item.dataIndex][1] + dataB[item.dataIndex][1] + dataC[item.dataIndex][1];
-      var mdate = new Date(1*timedata[item.dataIndex]);
-      $("#stats").html(val.toFixed(1)+"kWh of "+total.toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy")+" | ");
-    }
-  });
+	draw_ordered_kwhd_histogram();
 
-  $("#graph").bind("plotclick", function (event, pos, item)
-  {
-    if (item!=null)
-    {
-      var start = 1*timedata[item.dataIndex];
-      var end = start + (3600000*24.0);
-      var power_data = get_feed_data(powerfeed,start,end,500);
+	function draw_ordered_kwhd_histogram()
+	{
+	// Draw the plot
+	$.plot($("#graph"), [{color: "#c1a81f", data:dataA}, {color: "#dec225", data:dataB}, {color: "#deb368", data:dataC}],
+	{
+		series: {
+			stack: true,
+			bars: { show: true,align: "center",fill: true }
+		},
+		grid: { show: true, hoverable: true, clickable: true },
+		legend: { position: "nw"}
+	});
+	}
 
-      $.plot($("#graph"), [{data: power_data, lines: { show: true, fill: true }}], {
-        grid: { show: true, hoverable: true, clickable: true },
-        xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-        selection: { mode: "xy" }
-      });
-    }
-  });
-  $('#back').click(function () { draw_ordered_kwhd_histogram(); });
+	$("#graph").bind("plothover", function (event, pos, item) {
+		//var mdate = new Date(item.datapoint[0]);
+		if (item) {
+			if (item.seriesIndex == 0) val = dataA[item.dataIndex][1];
+			if (item.seriesIndex == 1) val = dataB[item.dataIndex][1];
+			if (item.seriesIndex == 2) val = dataC[item.dataIndex][1];
+			var total = dataA[item.dataIndex][1] + dataB[item.dataIndex][1] + dataC[item.dataIndex][1];
+			var mdate = new Date(1*timedata[item.dataIndex]);
+			$("#stats").html(val.toFixed(1)+"kWh of "+total.toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy")+" | ");
+		}
+	});
+
+	$("#graph").bind("plotclick", function (event, pos, item)
+	{
+		if (item!=null)
+		{
+			var start = 1*timedata[item.dataIndex];
+			var end = start + (3600000*24.0);
+			var power_data = get_feed_data(powerfeed,start,end,500);
+
+			$.plot($("#graph"), [{data: power_data, lines: { show: true, fill: true }}], {
+				grid: { show: true, hoverable: true, clickable: true },
+				xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+				selection: { mode: "xy" }
+			});
+		}
+	});
+	$('#back').click(function () { draw_ordered_kwhd_histogram(); });
 
 </script>
 
