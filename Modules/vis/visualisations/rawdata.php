@@ -166,18 +166,26 @@
 							}
 						})
 
-			function showTooltip(x, y, contents, z) {
-				$('<div id="tooltip">' + contents + '</div>').css({
+			function showTooltip(x, y, contents, z)
+			{
+
+				var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
+				var elem = $('<div id="tooltip">' + contents + '</div>').appendTo("body").show();
+
+				elem.css({
 					position: 'absolute',
-					display: 'none',
-					top: y - 30,
-					left: x - 100,
+					display: 'inline-block',
 					'font-weight':'bold',
 					border: '1px solid rgb(255, 221, 221)',
 					padding: '2px',
 					'background-color': z,
 					opacity: '0.8'
-				}).appendTo("body").show();
+				});
+				//x = x - elem.width();
+				elem.css({
+					top: y - elem.height() - offset,
+					left: x - elem.width() - offset,
+				});
 			};
 			//----------------------------------------------------------------------------------------------
 			// Operate buttons
@@ -192,3 +200,4 @@
 
 	</body>
 </html>
+
