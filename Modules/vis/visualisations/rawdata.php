@@ -63,7 +63,7 @@
 			var embed = <?php echo $embed; ?>;
 
 			// Eventually We can store the plot colors in the DB, and use a php command to stick it here
-			var plotColour = "<?php echo $colour; ?>";
+			var plotColour = "#<?php echo $colour; ?>";
 
 			var $graph_bound = $('#graph_bound');
 			var $graph = $('#graph').width($graph_bound.width()).height($('#graph_bound').height());
@@ -100,13 +100,38 @@
 
 			function plot()
 			{
-				var plot = $.plot($graph,
-					[{data: graph_data, lines: { show: true, fill: plotfill }, color: plotColour}],
-					{
-						grid: { show: true, hoverable: true, clickable: true },
-						xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-						selection: { mode: "x" }
-					});
+				var plotData = [
+									{
+										data: graph_data,
+										color: plotColour,
+										lines:
+										{
+											show: true,
+											fill: plotfill
+										}
+									}
+								];
+
+				var plotOptions = {
+						grid:
+						{
+							show: true,
+							hoverable: true,
+							clickable: true
+						},
+						xaxis:
+						{
+							mode: "time",
+							timezone: "browser",
+							min: start,
+							max: end
+						},
+						selection:
+						{
+							mode: "x"
+						}
+					};
+				var plot = $.plot($graph, plotData, plotOptions);
 			}
 
 			//--------------------------------------------------------------------------------------
