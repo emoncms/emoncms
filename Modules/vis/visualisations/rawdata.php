@@ -62,8 +62,8 @@
 			var units = "<?php echo $units; ?>";
 			var embed = <?php echo $embed; ?>;
 
-			// Eventually We can store the plot colors in the DB, and use a php command to stick it here
 			var plotColour = "#<?php echo $colour; ?>";
+			var toolTipPrecision = 2;		// Show two decimal places
 
 			var $graph_bound = $('#graph_bound');
 			var $graph = $('#graph').width($graph_bound.width()).height($('#graph_bound').height());
@@ -137,7 +137,48 @@
 			//--------------------------------------------------------------------------------------
 			// Graph zooming
 			//--------------------------------------------------------------------------------------
-			$graph.bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
+			$graph.bind("plotselected",
+					function (event, ranges)
+					{
+						start = ranges.xaxis.from;
+						end = ranges.xaxis.to;
+						vis_feed_data();
+					}
+				);
+			$graph.bind("plothover",
+				function (event, pos, item)
+					{
+							if (item) {
+								if (previousPoint != item.datapoint)
+								{
+									previousPoint = item.datapoint;
+
+									$("#tooltip").remove();
+									var itemTime = item.datapoint[0];
+									var itemVal = item.datapoint[1];
+									showTooltip(item.pageX, item.pageY, itemVal.toFixed(toolTipPrecision) + " " + units, "#DDDDDD");
+								}
+							}
+							else
+							{
+								$("#tooltip").remove();
+								previousPoint = null;
+							}
+						})
+
+			function showTooltip(x, y, contents, z) {
+				$('<div id="tooltip">' + contents + '</div>').css({
+					position: 'absolute',
+					display: 'none',
+					top: y - 30,
+					left: x - 100,
+					'font-weight':'bold',
+					border: '1px solid rgb(255, 221, 221)',
+					padding: '2px',
+					'background-color': z,
+					opacity: '0.8'
+				}).appendTo("body").show();
+			};
 			//----------------------------------------------------------------------------------------------
 			// Operate buttons
 			//----------------------------------------------------------------------------------------------
