@@ -32,18 +32,14 @@ class Input
 		$userid = (int) $userid;
 		$nodeid = (int) $nodeid;
 
-		if ($nodeid<32)
-		{
+		$name = preg_replace('/[^\w\s-.]/','',$name);
+		$this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
 
-			$name = preg_replace('/[^\w\s-.]/','',$name);
-			$this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
+		$id = $this->mysqli->insert_id;
 
-			$id = $this->mysqli->insert_id;
+		$this->redis->sAdd("user:inputs:$userid", $id);
+		$this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
 
-			$this->redis->sAdd("user:inputs:$userid", $id);
-			$this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
-
-			}
 
 			return $id;
 	}
