@@ -32,7 +32,7 @@ function multigraphGUI()
 
 	$("#viewbtn").hide();
 	var multigraphs = multigraph.getlist();
-	console.log("Multigraphs = ", multigraphs);
+	// console.log("Multigraphs = ", multigraphs);
 	$("#box-options").html(multigraphDropdown(multigraphs));
 }
 
@@ -41,7 +41,7 @@ function multigraphDropdown(multigraphs)
 	var options = "";
 	for (z in multigraphs)
 	{
-		console.log("item[z]", multigraphs[z]);
+		// console.log("item[z]", multigraphs[z]);
 		options +="<option value='"+multigraphs[z]['id']+"'>Multigraph: "+multigraphs[z]['id']+"</option>";
 	}
 
@@ -70,28 +70,41 @@ function draw_multigraph_feedlist_editor()
 	console.log("Moving time start: "+movingtime);
 
 	var out = "<table class='table' style='table-layout:fixed; width:300px;' >";
-	out += "<tr><th style='width:100px;' >Feed</th><th>Left</th><th>Right</th><th>Fill</th><th></th></tr>";
+	out += "<tr><th style='width:130px;' >Feed</th><th style='text-align: center;'>Left</th><th style='text-align: center;'>Right</th><th style='text-align: center;'>Fill</th><th style='padding:0px; width:30px;'></th></tr>";
 
 	for (z in multigraph_feedlist)
 	{
 		out += "<tr>";
 
-		out += "<td style='word-wrap:break-word;'>"+multigraph_feedlist[z]['name']+"</td>";
+		out += "<td style='vertical-align:middle;word-wrap:break-word;'>"+multigraph_feedlist[z]['name']+"</td>";
 
 		var checked = ""; if (multigraph_feedlist[z]['left']) checked = "checked";
-		out += "<td><input listid='"+z+"' class='left' type='checkbox' "+checked+" / ></td>";
+		out += "<td style='text-align: center;'><input listid='"+z+"' class='left' type='checkbox' "+checked+" / ></td>";
 
 		var checked = ""; if (multigraph_feedlist[z]['right']) checked = "checked";
-		out += "<td><input listid='"+z+"' class='right' type='checkbox' "+checked+" / ></td>";
+		out += "<td style='text-align: center;'><input listid='"+z+"' class='right' type='checkbox' "+checked+" / ></td>";
 
 		var checked = ""; if (multigraph_feedlist[z]['fill']) checked = "checked";
-		out += "<td><input listid='"+z+"' class='fill' type='checkbox' "+checked+" / ></td>";
+		out += "<td style='text-align: center;'><input listid='"+z+"' class='fill' type='checkbox' "+checked+" / ></td>";
 
 		out += "<td><i listid='"+z+"' class='icon-remove'></i></td>";
 		out += "</tr>";
+
+		var setColour = "";
+		if (multigraph_feedlist[z]['lineColour'])
+		{
+			setColour = multigraph_feedlist[z]['lineColour'];
+		}
+
+		out += "<tr>";
+		out += "<td style='vertical-align:middle;border-color:transparent;'>Line Colour:</td>";
+		out += "<td colspan='3' style='vertical-align:middle;border-color:transparent;'>  <input listid='"+z+"' style='width:125px' id='lineColour' type='text' value='"+setColour+"'></td>";
+
+		out += "</tr>";
+		out
 	}
 
-	out += "<tr><td><select id='feedselect' style='width:120px;'>";
+	out += "<tr><td><select id='feedselect' style='width:220px;'>";
 	for (z in feedlist)
 	{
 		if (feedlist[z]['datatype']==1 || feedlist[z]['datatype']==2)
@@ -102,8 +115,9 @@ function draw_multigraph_feedlist_editor()
 	out += "</select></td>";
 	out += "<td></td>";
 	out += "<td></td>";
+	out += "<td><input id='add' type='button' class='button05' value='Add'/ ></td>";
 	out += "<td></td>";
-	out += "<td><input id='add' type='button' class='button05' value='Add'/ ></td></tr>";
+	out += "</tr>";
 
 	out += "<tr><td>Floating time</strong></td>";
 	var checked = ""; if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0) checked = "checked";
@@ -175,13 +189,33 @@ function load_events()
 		$("#saved").hide();
 	});
 
+	// Event for every change event in the lineColour input for each line in the plot.
+	$(baseElement).on("input","#lineColour",function(event){
+		var z = $(this).attr('listid');
+		multigraph_feedlist[z]["lineColour"] = $(this)[0].value;
+
+		// Not feeding data into the visualization on change since you can type fast enough that doing so makes it feel slow.
+		// vis_feed_data();
+
+		$("#saved").hide();
+	});
+
+	// This only fires when the user either deselects the lineColour text-box, or hits enter
+	// THEN we update the plot.
+	$(baseElement).on("change","#lineColour",function(event){
+		vis_feed_data();
+		$("#saved").hide();
+	});
+
+
 	$(baseElement).on("click",".left",function(event){
 		console.log("Click left:");
 		console.log($(this)[0].checked);
 
 		var z = $(this).attr('listid');
 		multigraph_feedlist[z]['left'] = $(this)[0].checked;
-		if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true) multigraph_feedlist[z]['right'] = false;
+		if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true)
+			multigraph_feedlist[z]['right'] = false;
 		$(".right[listid="+z+"]").attr("checked",false);
 
 		vis_feed_data();
@@ -195,7 +229,8 @@ function load_events()
 
 		var z = $(this).attr('listid');
 		multigraph_feedlist[z]['right'] = $(this)[0].checked;
-		if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true) multigraph_feedlist[z]['left'] = false;
+		if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true)
+			multigraph_feedlist[z]['left'] = false;
 		$(".left[listid="+z+"]").attr("checked",false);
 		vis_feed_data();
 		$("#saved").hide();

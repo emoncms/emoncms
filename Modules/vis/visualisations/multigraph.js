@@ -7,14 +7,70 @@ function convert_to_plotlist(multigraph_feedlist)
 	var plotlist = [];
 	for (z in multigraph_feedlist)
 	{
-		if (multigraph_feedlist[z]['datatype']==1) plotlist[z] = {id: multigraph_feedlist[z]['id'], selected: 1, plot: {data: null, label: multigraph_feedlist[z]['name'], lines: { show: true, fill: multigraph_feedlist[z]['fill'] } } };
+		if (multigraph_feedlist[z]['datatype']==1)
+		{
+			plotlist[z] = {
+			                    id: multigraph_feedlist[z]['id'],
+			                    selected: 1,
+			                    plot:
+			                    {
+			                        data: null,
+			                        label: multigraph_feedlist[z]['name'],
+			                        lines:
+			                        {
+			                            show: true,
+			                            fill: multigraph_feedlist[z]['fill']
+			                        }
+			                    }
+			                };
+		}
 
-		if (multigraph_feedlist[z]['datatype']==2) plotlist[z] = {id: multigraph_feedlist[z]['id'], selected: 1, plot: {data: null, label: multigraph_feedlist[z]['name'], bars: { show: true, align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill']} } };
+		else if (multigraph_feedlist[z]['datatype']==2)
+		{
+			plotlist[z] = {
+			                id: multigraph_feedlist[z]['id'],
+			                    selected: 1,
+			                    plot:
+			                    {
+			                        data: null,
+			                        label: multigraph_feedlist[z]['name'],
+			                        bars:
+			                        {
+			                            show: true,
+			                            align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill']
+			                        }
+			                    }
+			                };
+		}
+		else
+		{
+			console.log("ERROR: Unknown plot datatype! Datatype: ", multigraph_feedlist[z]['datatype']);
+		}
 
-		if (multigraph_feedlist[z]['left']==true) plotlist[z].plot.yaxis = 1;
-		if (multigraph_feedlist[z]['right']==true) plotlist[z].plot.yaxis = 2;
+		if (multigraph_feedlist[z]['left']==true)
+		{
+			plotlist[z].plot.yaxis = 1;
+		}
+		else if (multigraph_feedlist[z]['right']==true)
+		{
+			plotlist[z].plot.yaxis = 2;
+		}
+		else
+		{
+			console.log("ERROR: Unknown plot alignment! Alignment setting: ", multigraph_feedlist[z]['right']);
+		}
 
-		if (multigraph_feedlist[z]['left']==false && multigraph_feedlist[z]['right']==false) plotlist[z].selected = 0;
+		// Only set the plotcolour variable if we have a value to set it with
+		if (multigraph_feedlist[z]["lineColour"])
+		{
+			plotlist[z].plot.color = multigraph_feedlist[z]["lineColour"];
+		}
+
+
+		if (multigraph_feedlist[z]['left']==false && multigraph_feedlist[z]['right']==false)
+		{
+			plotlist[z].selected = 0;
+		}
 
 	}
 	return plotlist;
@@ -37,10 +93,20 @@ function vis_feed_data()
 	console.log(plotlist);
 	plotdata = [];
 	for(var i in plotlist) {
-		if (timeWindowChanged) plotlist[i].plot.data = null;
+		if (timeWindowChanged)
+		{
+			plotlist[i].plot.data = null;
+		}
 		if (plotlist[i].selected) {
-			if (!plotlist[i].plot.data) plotlist[i].plot.data = get_feed_data(plotlist[i].id,start,end,400);
-			if ( plotlist[i].plot.data) plotdata.push(plotlist[i].plot);
+			if (!plotlist[i].plot.data)
+			{
+				plotlist[i].plot.data = get_feed_data(plotlist[i].id, start, end, 400);
+			}
+
+			if ( plotlist[i].plot.data)
+			{
+				plotdata.push(plotlist[i].plot);
+			}
 		}
 	}
 
@@ -59,7 +125,7 @@ function plot()
 	$.plot($("#graph"), plotdata, {
 		grid: { show: true, hoverable: true, clickable: true },
 		xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-		selection: { mode: "xy" },
+		selection: { mode: "x" },
 		legend: { position: "nw"}
 	});
 }
