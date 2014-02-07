@@ -36,8 +36,9 @@ class PHPTimestore
     $now = time();
     $start = $now-(3600*24*365*5); // 5 years in past
     $end = $now+(3600*48);         // 48 hours in future
+    $rc = 0;
     
-    if ($time>$start && $time<$end)
+    if ($timestamp>$start && $timestamp<$end)
     {
       
       $value = (float) $value;
