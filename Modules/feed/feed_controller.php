@@ -46,7 +46,7 @@ function feed_controller()
       $result = $feed->get_id($session['userid'],get('name'));
     }
     elseif ($route->action == "create" && $session['write']) {
-      $result = $feed->create($session['userid'],get('name'),get('type'));
+      $result = $feed->create($session['userid'],get('name'),get('type'),get('interval'));
     }
     elseif ($route->action == "updatesize" && $session['write']) {
       $result = $feed->update_user_feeds_size($session['userid']);
@@ -63,6 +63,7 @@ function feed_controller()
         if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
         {
           if ($route->action == "value") $result = $feed->get_value($feedid);
+          if ($route->action == "timevalue") $result = $feed->get_timevalue_seconds($feedid);
           if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
           if ($route->action == "aget") $result = $feed->get($feedid);
           

@@ -28,6 +28,8 @@ class Histogram
     "CREATE TABLE $feedname (
   time INT UNSIGNED, data float, data2 float,
     INDEX ( `time` )) ENGINE=MYISAM");
+    
+    return true;
   }
 
   /**

@@ -19,6 +19,7 @@ class Feed
 {
     private $mysqli;
     private $timestore;
+    private $phptimestore;
     private $histogram;
     private $redis;
     private $graphitetimeseries;
@@ -41,6 +42,9 @@ class Feed
         
         require "Modules/feed/engine/Timestore.php";
         $this->timestore = new Timestore($timestore_adminkey);
+        
+        require "Modules/feed/engine/PHPTimestore.php";
+        $this->phptimestore = new PHPTimestore();
        
         require "Modules/feed/engine/Histogram.php";
         $this->histogram = new Histogram($mysqli);
@@ -97,18 +101,31 @@ class Feed
 	        ));
 	              
           $feedname = "feed_".$feedid;
-
-          if ($datatype==1) {
-            if ($this->default_engine == Engine::TIMESTORE) $this->timestore->create($feedid,$newfeedinterval);
-            if ($this->default_engine == Engine::MYSQL) $this->mysqltimeseries->create($feedid);
-            if ($this->default_engine == Engine::PHPTIMESERIES) $this->phptimeseries->create($feedid);
-            if ($this->default_engine == Engine::GRAPHITE) $this->graphitetimeseries->create($feedid);
-          }
-          elseif ($datatype==2) $this->mysqltimeseries->create($feedid);
-          elseif ($datatype==3) $this->histogram->create($feedid);
-        
+ 
+          $engineresult = false;
           
-          return array('success'=>true, 'feedid'=>$feedid);										
+          if ($datatype==1) {
+            if ($this->default_engine == Engine::TIMESTORE) $engineresult = $this->timestore->create($feedid,$newfeedinterval);
+            if ($this->default_engine == Engine::PHPTIMESTORE) $engineresult = $this->phptimestore->create($feedid,$newfeedinterval);
+            if ($this->default_engine == Engine::MYSQL) $engineresult = $this->mysqltimeseries->create($feedid);
+            if ($this->default_engine == Engine::PHPTIMESERIES) $engineresult = $this->phptimeseries->create($feedid);
+            if ($this->default_engine == Engine::GRAPHITE) $engineresult = $this->graphitetimeseries->create($feedid);
+          }
+          elseif ($datatype==2) $engineresult = $this->mysqltimeseries->create($feedid);
+          elseif ($datatype==3) $engineresult = $this->histogram->create($feedid);
+        
+          if ($engineresult == false)
+          {
+            $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
+                
+            $userid = $this->redis->hget("feed:$feedid",'userid');
+            $this->redis->del("feed:$feedid");
+            $this->redis->srem("user:feeds:$userid",$feedid);
+                
+            return array('success'=>false);
+          }
+          
+          return array('success'=>true, 'feedid'=>$feedid, 'result'=>$engineresult);										
         } else return array('success'=>false);
   }
 
@@ -250,6 +267,26 @@ class Feed
     
     return $lastvalue;
   }
+  
+  public function get_timevalue_seconds($id)
+  {
+    $id = (int) $id;
+    
+    // Get the timevalue from redis if it exists
+    if ($this->redis->exists("feed:lastvalue:$id"))
+    {
+      $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
+    }
+    else
+    {
+      // if it does not load it in to redis from the actual feed data.
+      $lastvalue = $this->get_timevalue_from_data($id);
+      $this->redis->hMset("feed:lastvalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
+    }
+    
+    $lastvalue['time'] = strtotime($lastvalue['time']);
+    return $lastvalue;
+  }
 
   public function get_value($id)
   {
@@ -278,7 +315,8 @@ class Feed
     $engine = $this->redis->hget("feed:$feedid",'engine');
     if ($engine==Engine::TIMESTORE) return $this->timestore->lastvalue($feedid);
     if ($engine==Engine::MYSQL) return $this->mysqltimeseries->lastvalue($feedid);
-    if ($engine==Engine::PHPTIMESERIES) return $this->phptimeseries->lastvalue($feedid);  
+    if ($engine==Engine::PHPTIMESERIES) return $this->phptimeseries->lastvalue($feedid); 
+    if ($engine==Engine::PHPTIMESTORE) return $this->phptimestore->lastvalue($feedid); 
   }
 
   /*
@@ -341,6 +379,7 @@ class Feed
     if ($engine==Engine::MYSQL) $this->mysqltimeseries->insert($feedid,$feedtime,$value);
     if ($engine==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
     if ($engine==Engine::GRAPHITE) $this->graphitetimeseries->post($feedid,$feedtime,$value);
+    if ($engine==Engine::PHPTIMESTORE) $this->phptimestore->post($feedid,$feedtime,$value);
 
     $this->set_update_value_redis($feedid, $value, $updatetime);
 
@@ -370,7 +409,7 @@ class Feed
     if ($engine==Engine::MYSQL) $value = $this->mysqltimeseries->update($feedid,$feedtime,$value);
     if ($engine==Engine::PHPTIMESERIES) $this->phptimeseries->post($feedid,$feedtime,$value);
     if ($engine==Engine::GRAPHITE) $this->graphitetimeseries->post($feedid,$feedtime,$value);
-
+    if ($engine==Engine::PHPTIMESTORE) $this->phptimestore->post($feedid,$feedtime,$value);
     // need to find a way to not update if value being updated is older than the last value 
     // in the database, redis lastvalue is last update time rather than last datapoint time. 
     // So maybe we need to store both in redis.
@@ -391,12 +430,13 @@ class Feed
   {
     $feedid = (int) $feedid;
     if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-    
+
     $engine = $this->redis->hget("feed:$feedid",'engine');
     if ($engine==Engine::TIMESTORE) return $this->timestore->get_data($feedid,$start,$end);
     if ($engine==Engine::MYSQL) return $this->mysqltimeseries->get_data($feedid,$start,$end,$dp);
     if ($engine==Engine::PHPTIMESERIES) return $this->phptimeseries->get_data($feedid,$start,$end,$dp);
     if ($engine==Engine::GRAPHITE) return $this->graphitetimeseries->get_data($feedid,$start,$end,$dp);
+    if ($engine==Engine::PHPTIMESTORE) return $this->phptimestore->get_data($feedid,$start,$end);
   }
   
   public function get_timestore_average($feedid,$start,$end,$interval)
@@ -438,6 +478,7 @@ class Feed
       $feedid = $row['id'];
       if ($row['engine']==Engine::MYSQL) $size = $this->mysqltimeseries->get_feed_size($feedid);
       if ($row['engine']==Engine::TIMESTORE) $size = $this->timestore->get_feed_size($feedid);
+      if ($row['engine']==Engine::PHPTIMESTORE) $size = $this->phptimestore->get_feed_size($feedid);
       if ($row['engine']==Engine::PHPTIMESERIES) $size = $this->phptimeseries->get_feed_size($feedid);
       if ($row['engine']==Engine::GRAPHITE) $size = $this->graphitetimeseries->get_feed_size($feedid);
       $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");

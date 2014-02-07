@@ -3,6 +3,13 @@ var feed = {
 
   apikey: "",
 
+  'create':function(name, type, interval)
+  {
+    var result = {};
+    $.ajax({ url: path+"feed/create.json", data: "name="+name+"&type="+type+"&interval="+interval, dataType: 'json', async: false, success: function(data){result = data.feedid;} });
+    return result;
+  },
+  
   'list':function()
   {
     var result = {};
