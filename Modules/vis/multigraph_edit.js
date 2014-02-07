@@ -32,16 +32,24 @@ function multigraphGUI()
 
 	$("#viewbtn").hide();
 	var multigraphs = multigraph.getlist();
+	console.log("Multigraphs = ", multigraphs);
 	$("#box-options").html(multigraphDropdown(multigraphs));
 }
 
 function multigraphDropdown(multigraphs)
 {
 	var options = "";
-	for (z in multigraphs) options +="<option value='"+multigraphs[z]['id']+"'>Multigraph: "+multigraphs[z]['id']+"</option>";
+	for (z in multigraphs)
+	{
+		console.log("item[z]", multigraphs[z]);
+		options +="<option value='"+multigraphs[z]['id']+"'>Multigraph: "+multigraphs[z]['id']+"</option>";
+	}
 
 	var out = "<div class='alert'>No multigraphs created yet, click new to create one:</div>";
-	if (options) out = "<select id='midselector' style='width:150px'><option>Select multigraph:</option>"+options+"</select>";
+	if (options)
+	{
+		out = "<select id='midselector' style='width:150px'><option>Select multigraph:</option>"+options+"</select>";
+	}
 	return out+"<button id='new-multigraph-button' class='btn btn-info' style='float:right'>New multigraph</button><div id='feedtable' ></div>";
 }
 
@@ -54,9 +62,10 @@ function multigraphDropdown(multigraphs)
 function draw_multigraph_feedlist_editor()
 {
 	if (!multigraph_feedlist) multigraph_feedlist = [];
-	if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0
-) movingtime=0;
-	else movingtime=1;
+	if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] == 0)
+		movingtime=0;
+	else
+		movingtime=1;
 
 	console.log("Moving time start: "+movingtime);
 

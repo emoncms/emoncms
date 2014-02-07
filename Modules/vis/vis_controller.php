@@ -196,7 +196,7 @@
 		// echo "VAR DUMP END==============================================================================";
 		// echo "";
 
-		return array('content'=>"$result");
+		return array('content'=>$result);
 	}
 
 ?>
