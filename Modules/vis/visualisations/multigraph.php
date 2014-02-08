@@ -53,22 +53,28 @@
 		}
 	});
 
-	function showTooltip(x, y, contents) {
-		$('<div id="tooltip">' + contents + '</div>').css( {
+	function showTooltip(x, y, contents, bgColour) {
+		var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
+		var elem = $('<div id="tooltip">' + contents + '</div>').css({
 			position: 'absolute',
 			display: 'none',
-			top: y + 5,
-			left: x + 5,
-			border: '1px solid #fdd',
+			'font-weight':'bold',
+			border: '1px solid rgb(255, 221, 221)',
 			padding: '2px',
-			'background-color': '#fee',
-			opacity: 0.80
+			'background-color': bgColour,
+			opacity: '0.8'
 		}).appendTo("body").fadeIn(200);
+		//x = x - elem.width();
+		elem.css({
+			top: y - elem.height() - offset,
+			left: x - elem.width() - offset,
+		});
 	}
 
 	var previousPoint = null;
 	$("#multigraph").bind("plothover", function (event, pos, item)
 	{
+		console.log("tooltip!");
 		$("#x").text(pos.x.toFixed(2));
 		$("#y").text(pos.y2.toFixed(2));
 
@@ -82,29 +88,27 @@
 					y = item.datapoint[1].toFixed(2);
 
 					// create a new javascript Date object based on the timestamp
+					// This implementation is clumsy, but the js native date.toTimeString() returns
+					// strings like "08:53:35 GMT-0800", and there is no easy way to turn off the "GMT-xxxx" segment
+					// blargh
 					var date = new Date(parseInt(x));
 					// hours part from the timestamp
 					var hours = date.getHours();
-					// minutes part from the timestamp
 					var minutes = date.getMinutes();
-					// seconds part from the timestamp
 					var seconds = date.getSeconds();
 					if (hours < 10)
-					{
 						hours = "0"+hours;
-					}
 					if (minutes < 10)
-					{
 						minutes = "0"+minutes;
-					}
 					if (seconds < 10)
-					{
 						seconds = "0"+seconds;
-					}
+
 					// will display time in 10:30:23 format
 					var formattedTime = hours + ':' + minutes + ':' + seconds;
 
-					showTooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y);
+					// I'd like to eventually add colour hinting to the background of the tooltop.
+					// This is why showTooltip has the bgColour parameter.
+					showTooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y, "#DDDDDD");
 				}
 			} else {
 				$("#tooltip").remove();

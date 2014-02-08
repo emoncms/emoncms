@@ -156,6 +156,9 @@
 									$("#tooltip").remove();
 									var itemTime = item.datapoint[0];
 									var itemVal = item.datapoint[1];
+
+									// I'd like to eventually add colour hinting to the background of the tooltop.
+									// This is why showTooltip has the bgColour parameter.
 									showTooltip(item.pageX, item.pageY, itemVal.toFixed(toolTipPrecision) + " " + units, "#DDDDDD");
 								}
 							}
@@ -166,21 +169,20 @@
 							}
 						})
 
-			function showTooltip(x, y, contents, z)
+			function showTooltip(x, y, contents, bgColour)
 			{
 
 				var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
-				var elem = $('<div id="tooltip">' + contents + '</div>').appendTo("body").show();
-
-				elem.css({
+				var elem = $('<div id="tooltip">' + contents + '</div>').css({
 					position: 'absolute',
-					display: 'inline-block',
+					display: 'none',
 					'font-weight':'bold',
 					border: '1px solid rgb(255, 221, 221)',
 					padding: '2px',
-					'background-color': z,
+					'background-color': bgColour,
 					opacity: '0.8'
-				});
+				}).appendTo("body").fadeIn(200);
+				//x = x - elem.width();
 				//x = x - elem.width();
 				elem.css({
 					top: y - elem.height() - offset,
