@@ -24,6 +24,10 @@ class Timestore
 	{
 		if ($newfeedinterval<5) $newfeedinterval = 5;
 		$this->timestoreApi->create_node($feedid,$newfeedinterval);
+
+	if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) 
+		return true;
+	return false;
 	}
 
 	public function post($feedid,$time,$value)

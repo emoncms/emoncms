@@ -19,4 +19,5 @@
 		const TIMESTORE = 1;
 		const PHPTIMESERIES = 2;
 		const GRAPHITE = 3;
+		const PHPTIMESTORE = 4;
 	}

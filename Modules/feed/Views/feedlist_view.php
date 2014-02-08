@@ -7,7 +7,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <style>
 input[type="text"] {
-		 width: 88%;
+		width: 88%;
 }
 </style>
 
@@ -58,7 +58,7 @@ input[type="text"] {
 		'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
 		'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"text"},
 		'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"select", 'options':['','REALTIME','DAILY','HISTOGRAM']},
-		'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE']},
+		'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"select", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE']},
 		'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
 		'size':{'title':"<?php echo _('Size'); ?>", 'type':"fixed"},
 

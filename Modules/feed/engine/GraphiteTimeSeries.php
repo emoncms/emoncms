@@ -159,6 +159,7 @@ class GraphiteTimeSeries
 	public function create($feedid)
 	{
 		// Graphite will build this when the first data is inserted
+		return true;
 	}
 
 	/**
