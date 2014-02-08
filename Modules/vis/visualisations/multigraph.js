@@ -7,6 +7,7 @@ function convert_to_plotlist(multigraph_feedlist)
 	var plotlist = [];
 	for (z in multigraph_feedlist)
 	{
+		console.log("Feeding multigraph data");
 		if (multigraph_feedlist[z]['datatype']==1)
 		{
 			plotlist[z] = {
@@ -63,7 +64,16 @@ function convert_to_plotlist(multigraph_feedlist)
 		// Only set the plotcolour variable if we have a value to set it with
 		if (multigraph_feedlist[z]["lineColour"])
 		{
-			plotlist[z].plot.color = multigraph_feedlist[z]["lineColour"];
+			// Some browsers really want the leading "#". It works without in chrome, not in IE and opera.
+			// What the hell, people?
+			if (multigraph_feedlist[z]["lineColour"].indexOf("#") == -1)
+			{
+				plotlist[z].plot.color = "#" + multigraph_feedlist[z]["lineColour"];
+			}
+			else
+			{
+				plotlist[z].plot.color = multigraph_feedlist[z]["lineColour"];
+			}
 		}
 
 
