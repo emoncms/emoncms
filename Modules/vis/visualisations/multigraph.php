@@ -89,7 +89,18 @@
 					var minutes = date.getMinutes();
 					// seconds part from the timestamp
 					var seconds = date.getSeconds();
-
+					if (hours < 10)
+					{
+						hours = "0"+hours;
+					}
+					if (minutes < 10)
+					{
+						minutes = "0"+minutes;
+					}
+					if (seconds < 10)
+					{
+						seconds = "0"+seconds;
+					}
 					// will display time in 10:30:23 format
 					var formattedTime = hours + ':' + minutes + ':' + seconds;
 
