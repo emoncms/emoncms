@@ -106,7 +106,14 @@
 		if (item)
 		{
 			var mdate = new Date(item.datapoint[0]);
-			$("#stats").html((item.datapoint[1]).toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+			if ((item.datapoint[1]) < 1)
+			{
+				$("#stats").html(((item.datapoint[1]) * 1000 ).toFixed(1)+"Wh | "+mdate.format("ddd, mmm dS, yyyy"));
+			}
+			else
+			{
+				$("#stats").html((item.datapoint[1]).toFixed(2)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+			}
 		}
 	});
 	//----------------------------------------------------------------------------------------------
