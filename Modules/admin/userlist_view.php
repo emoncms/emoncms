@@ -1,12 +1,12 @@
-<?php
-	global $path;
+<?php 
+  global $path; 
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <style>
 input[type="text"] {
-	width: 88%;
+     width: 88%; 
 }
 </style>
 
@@ -16,29 +16,29 @@ input[type="text"] {
 
 <script>
 
-	var path = "<?php echo $path; ?>";
+  var path = "<?php echo $path; ?>";
+  
+  var admin = {
+    'userlist':function()
+    {
+      var result = {};
+      $.ajax({ url: path+"admin/userlist.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+      return result;
+    }
+  }
+  
+  // Extend table library field types
+  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
-	var admin = {
-		'userlist':function()
-		{
-			var result = {};
-			$.ajax({ url: path+"admin/userlist.json", dataType: 'json', async: false, success: function(data) {result = data;} });
-			return result;
-		}
-	}
+  table.element = "#table";
 
-	// Extend table library field types
-	for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-
-	table.element = "#table";
-
-	table.fields = {
-		'id':{'title':"<?php echo _('Id'); ?>", 'type':"textlink", 'link':"setuser?id="},
-		'username':{'title':"<?php echo _('Name'); ?>", 'type':"fixed"},
-		'email':{'title':"<?php echo _('Tag'); ?>", 'type':"fixed"}
-	}
-
-	table.data = admin.userlist();
-	table.draw();
-
+  table.fields = {
+    'id':{'title':"<?php echo _('Id'); ?>", 'type':"textlink", 'link':"setuser?id="},
+    'username':{'title':"<?php echo _('Name'); ?>", 'type':"fixed"},
+    'email':{'title':"<?php echo _('Tag'); ?>", 'type':"fixed"}
+  }
+  
+  table.data = admin.userlist();
+  table.draw();
+  
 </script>
