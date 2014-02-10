@@ -22,7 +22,7 @@ class Input
     {
         $this->mysqli = $mysqli;
         $this->feed = $feed;
-        
+
         $this->redis = $redis;
     }
 
@@ -33,18 +33,28 @@ class Input
         $nodeid = (int) $nodeid;
 
 
+        if (!isset($max_node_id_limit))
+        {
+            $max_node_id_limit = 32;    // Default to 32 if not overridden
+        }
+
+
+        if ($nodeid<$max_node_id_limit)
+        {
+
           $name = preg_replace('/[^\w\s-.]/','',$name);
           $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
-          
+
           $id = $this->mysqli->insert_id;
-          
+
           $this->redis->sAdd("user:inputs:$userid", $id);
-	        $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>"")); 
-	        
-	      
-	      return $id;     
+	        $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+
+	      }
+
+	      return $id;
     }
-    
+
     public function exists($inputid)
     {
       $inputid = (int) $inputid;
@@ -61,7 +71,7 @@ class Input
 
         // $time = date("Y-n-j H:i:s", $time);
         // $this->mysqli->query("UPDATE input SET time='$time', value = '$value' WHERE id = '$id'");
-        
+
         $this->redis->hMset("input:lastvalue:$id", array('value' => $value, 'time' => $time));
     }
 
@@ -81,7 +91,7 @@ class Input
       // CHECK REDIS
       $this->redis->hset("input:$id",'processList',$processlist);
       $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
-      
+
     }
 
     // USES: redis input
@@ -98,12 +108,12 @@ class Input
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
         $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE `id` = '$id'");
-        
+
         // CHECK REDIS?
         // UPDATE REDIS
         if (isset($fields->name)) $this->redis->hset("input:$id",'name',$fields->name);
-        if (isset($fields->description)) $this->redis->hset("input:$id",'description',$fields->description);        
-        
+        if (isset($fields->description)) $this->redis->hset("input:$id",'description',$fields->description);
+
         if ($this->mysqli->affected_rows>0){
             return array('success'=>true, 'message'=>'Field updated');
         } else {
@@ -115,7 +125,7 @@ class Input
     public function add_process($process_class,$userid, $inputid, $processid, $arg, $newfeedname,$newfeedinterval)
     {
         $userid = (int) $userid;
-        $inputid = (int) $inputid;	
+        $inputid = (int) $inputid;
         $processid = (int) $processid;			                              // get process type (ProcessArg::)
         $arg = (float) $arg;                                              // This is: actual value (i.e x0.01), inputid or feedid
         $newfeedname = preg_replace('/[^\w\s-.]/','',$newfeedname);	      // filter out all except for alphanumeric white space and dash
@@ -196,13 +206,13 @@ class Input
         $process_list = $this->get_processlist($id);
         $array = explode(",", $process_list);
         $index = $index - 1; // Array is 0-based. Index from process page is 1-based.
-        
+
         $newindex = $index + $moveby; // Calc new index in array
         // Check if $newindex is greater than size of list
         if ($newindex > (count($array)-1)) $newindex = (count($array)-1);
         // Check if $newindex is less than 0
         if ($newindex < 0) $newindex = 0;
-        
+
         $replace = $array[$newindex]; // Save entry that will be replaced
         $array[$newindex] = $array[$index];
         $array[$index] = $replace;
@@ -224,10 +234,10 @@ class Input
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
-       
-        $dbinputs = array(); 
-        $inputids = $this->redis->sMembers("user:inputs:$userid");        
-        
+
+        $dbinputs = array();
+        $inputids = $this->redis->sMembers("user:inputs:$userid");
+
         foreach ($inputids as $id)
         {
           $row = $this->redis->hGetAll("input:$id");
@@ -235,7 +245,7 @@ class Input
           if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
           $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
         }
-        
+
         return $dbinputs;
     }
 
@@ -247,7 +257,7 @@ class Input
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
-        
+
         $inputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
         foreach ($inputids as $id)
@@ -278,13 +288,13 @@ class Input
         if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
         return $this->redis->hget("input:$id",'processList');
     }
-    
+
     public function get_last_value($id)
     {
       $id = (int) $id;
       return $this->redis->hget("input:lastvalue:$id",'value');
     }
-    
+
 
     //-----------------------------------------------------------------------------------------------
     // Gets the inputs process list and converts id's into descriptive text
@@ -341,7 +351,7 @@ class Input
         $this->redis->del("input:$inputid");
         $this->redis->srem("user:inputs:$userid",$inputid);
     }
-    
+
     public function clean($userid)
     {
       $result = "";
@@ -360,14 +370,14 @@ class Input
       }
       return $result;
     }
-    
+
     // Redis cache loaders
 
     private function load_input_to_redis($inputid)
     {
       $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid'");
       $row = $result->fetch_object();
-      
+
       $this->redis->sAdd("user:inputs:$userid", $row->id);
       $this->redis->hMSet("input:$row->id",array(
         'id'=>$row->id,
@@ -376,13 +386,13 @@ class Input
         'description'=>$row->description,
         'processList'=>$row->processList
       ));
-      
+
     }
-    
+
     private function load_to_redis($userid)
     {
       $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid'");
-      while ($row = $result->fetch_object()) 
+      while ($row = $result->fetch_object())
       {
         $this->redis->sAdd("user:inputs:$userid", $row->id);
 	      $this->redis->hMSet("input:$row->id",array(
