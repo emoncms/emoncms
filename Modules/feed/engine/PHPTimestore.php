@@ -2,366 +2,365 @@
 
 class PHPTimestore
 {
-	private $dir = "/var/lib/timestore/";
-
-	public function __construct()
-	{
-
-	}
-
-	public function create($feedid,$interval)
-	{
-		if ($interval<5) $interval = 5;
-		// Check to ensure we dont overwrite an existing feed
+  private $dir = "/var/lib/timestore/";
+  
+  public function __construct()
+  {
+  
+  }
+  
+  public function create($feedid,$interval)
+  {
+    if ($interval<5) $interval = 5;
+    // Check to ensure we dont overwrite an existing feed
 		if (!$meta = $this->get_meta($feedid))
 		{
-
-			// Set initial feed meta data
-			$meta = new stdClass();
-			$meta->feedid = $feedid;
-			$meta->npoints = 0;
-			$meta->start = 0;
-			$meta->nmetrics = 1;
-			$meta->interval = $interval;
-
-			// Save meta data
-			$this->save_meta($feedid,$meta);
-		}
-
-		if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) return true;
-		return false;
-	}
-
-	public function post($feedid, $timestamp, $value)
-	{
-		$now = time();
-		$start = $now-(3600*24*365*5); // 5 years in past
-		$end = $now+(3600*48);         // 48 hours in future
-		$rc = 0;
-
-		if ($timestamp>$start && $timestamp<$end)
-		{
-
-			$value = (float) $value;
-			// If meta data file does not exist then exit
+    
+      // Set initial feed meta data
+      $meta = new stdClass();
+      $meta->feedid = $feedid;
+      $meta->npoints = 0;
+      $meta->start = 0;
+      $meta->nmetrics = 1;
+      $meta->interval = $interval;
+      
+      // Save meta data
+      $this->save_meta($feedid,$meta);
+    }
+    
+    if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) return true;
+    return false;
+  }
+  
+  public function post($feedid, $timestamp, $value)
+  {
+    $now = time();
+    $start = $now-(3600*24*365*5); // 5 years in past
+    $end = $now+(3600*48);         // 48 hours in future
+    $rc = 0;
+    
+    if ($timestamp>$start && $timestamp<$end)
+    {
+      
+      $value = (float) $value;
+      // If meta data file does not exist then exit
 			if (!$meta = $this->get_meta($feedid))
 			{
 				return false;
 			}
-
-			/* For a new file this point represents the start of the database */
-			$timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
+      
+	    /* For a new file this point represents the start of the database */
+	    $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
 			if ($meta->npoints == 0)
 			{
-				$meta->start = $timestamp;
-			}
-
-			/* Sanity checks */
+		    $meta->start = $timestamp;
+	    }
+	
+	    /* Sanity checks */
 			if ($timestamp < $meta->start)
 			{
-				return false; // in the past
-			}
-
-			/* Determine position of point in the top-level */
-			$point = floor(($timestamp - $meta->start) / $meta->interval);
-
-			/* Update layers */
-			$rc = $this->update_layer($meta,0,$point,$meta->npoints,$value);
+		    return false; // in the past
+	    }	
+	
+	    /* Determine position of point in the top-level */
+	    $point = floor(($timestamp - $meta->start) / $meta->interval);
+	
+	    /* Update layers */
+	    $rc = $this->update_layer($meta,0,$point,$meta->npoints,$value);
 			if ($rc == 0)
 			{
-				/* Update metadata with new number of top-level points */
-				if ($point >= $meta->npoints)
-				{
-					$meta->npoints = $point + 1;
-					$this->save_meta($feedid,$meta);
-				}
-			}
-
-		}
-		return $rc;
-	}
-
-	public function update_layer($meta,$layer,$point,$npoints,$value)
-	{
-		$decimation = array(20, 6, 6, 4, 7);
-
-
-		// print "$layer $point $npoints $value\n";
-		$tsdb_max_padding_block = 1024 * 1024;
-
-		$fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat", 'c+');
-
+		    /* Update metadata with new number of top-level points */		
+		    if ($point >= $meta->npoints)
+		    {
+			    $meta->npoints = $point + 1;
+	        $this->save_meta($feedid,$meta);
+	      }
+	    }
+	
+	  }
+	  return $rc;
+  }  
+  
+  public function update_layer($meta,$layer,$point,$npoints,$value)
+  {
+    $decimation = array(20, 6, 6, 4, 7);
+    
+    
+    // print "$layer $point $npoints $value\n";
+    $tsdb_max_padding_block = 1024 * 1024;
+   
+    $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat", 'c+');
+    
 		if ($point > $npoints)
 		{
-			$npadding = ($point - $npoints);
-
+		  $npadding = ($point - $npoints);
+		  
 			if ($npadding>2500000)
 			{
 				echo "ERROR 2!!!";
 				return false;
 			}
-
-			// Maximum points per block
-			$pointsperblock = $tsdb_max_padding_block / 4; // 262144
-
-			// If needed is less than max set to padding needed:
-			if ($npadding < $pointsperblock) $pointsperblock = $npadding;
-
-			// Fill padding buffer
-			$buf = '';
+		  // Maximum points per block
+		  $pointsperblock = $tsdb_max_padding_block / 4; // 262144
+    
+      // If needed is less than max set to padding needed:
+      if ($npadding < $pointsperblock) $pointsperblock = $npadding;
+      
+      // Fill padding buffer
+      $buf = '';
 			for ($n = 0; $n < $pointsperblock; $n++)
 			{
-				$buf .= pack("f",NAN);
-			}
-
-
-			fseek($fh,4*$npoints);
-
-			do {
+        $buf .= pack("f",NAN);
+		  }
+		
+      
+      fseek($fh,4*$npoints);
+      
+      do {
 				if ($npadding < $pointsperblock)
 				{
-					$pointsperblock = $npadding;
-					$buf = ''; for ($n = 0; $n < $pointsperblock; $n++) $buf .= pack("f",NAN);
-				}
-				fwrite($fh, $buf);
-				$npadding -= $pointsperblock;
-			} while ($npadding);
-		}
-
-		// Write point back to file
-		fseek($fh, 4*$point);
-		if (!is_nan($value)) fwrite($fh,pack("f",$value));
-
+          $pointsperblock = $npadding;
+          $buf = ''; for ($n = 0; $n < $pointsperblock; $n++) $buf .= pack("f",NAN);
+        }
+        fwrite($fh, $buf);
+        $npadding -= $pointsperblock;
+      } while ($npadding); 
+    }
+    
+    // Write point back to file
+	  fseek($fh, 4*$point);
+	  if (!is_nan($value)) fwrite($fh,pack("f",$value));
+    
 		if ($layer<5)
 		{
-
-			// Averaging
-			$first_point = floor($point / $decimation[$layer]) * $decimation[$layer];
-
-			// Read in points
-			fseek($fh, 4*$first_point);
-			$d = fread($fh, 4 * $decimation[$layer]);
-			$count = strlen($d)/4;
-			$d = unpack("f*",$d);
-			fclose($fh);
-
-			// Calculate average of points
-			$sum_count = 0;
-			$sum = 0.0;
-
-			$i=0;
+    
+      // Averaging
+	    $first_point = floor($point / $decimation[$layer]) * $decimation[$layer];
+	
+	    // Read in points
+	    fseek($fh, 4*$first_point);
+	    $d = fread($fh, 4 * $decimation[$layer]);
+      $count = strlen($d)/4;
+      $d = unpack("f*",$d);
+	    fclose($fh);
+	
+	    // Calculate average of points
+      $sum_count = 0;
+      $sum = 0.0;
+	
+	    $i=0;
 			while ($count--)
 			{
-					$i++;
+        	$i++;
 					if (is_nan($d[$i]))
 					{
-						// Skip unknown values
-						continue;
-					}
-
-					// Summing
-					$sum += $d[$i];
-					$sum_count ++;
-			}
+				    // Skip unknown values
+				    continue;
+			    }
+			
+			    // Summing
+			    $sum += $d[$i];
+			    $sum_count ++;
+	    }
 
 			if ($sum_count>0)
 			{
-				$average = $sum / $sum_count;
-			} else {
-				$average = NAN;
-			}
-
-
-			$this->update_layer($meta,$layer+1,floor($point/$decimation[$layer]),floor(($npoints+$decimation[$layer]-1)/$decimation[$layer]),$average);
-		}
-
-		return 0;
+		    $average = $sum / $sum_count;
+	    } else {
+		    $average = NAN;
+	    }
+	  
+	  
+	    $this->update_layer($meta,$layer+1,floor($point/$decimation[$layer]),floor(($npoints+$decimation[$layer]-1)/$decimation[$layer]),$average);
+	  }
+	  
+	  return 0;
 	}
+  
+  // Alternate timestore version
+  
+  public function get_data($feedid,$start,$end)
+  {
+    $feedid = intval($feedid);
+    $start = intval($start/1000);
+    $end = intval($end/1000);
 
-	// Alternate timestore version
-	
-	public function get_data($feedid,$start,$end)
-	{
-		$feedid = intval($feedid);
-		$start = intval($start/1000);
-		$end = intval($end/1000);
+    if ($end == 0) $end = time();
 
-		if ($end == 0) $end = time();
+    $meta = $this->get_meta($feedid);
 
-		$meta = $this->get_meta($feedid);
-
-		$start = round($start/$meta->interval)*$meta->interval;
-		$end = round($end/$meta->interval)*$meta->interval;
-		$npoints = round(($end - $start) / $meta->interval);
+    $start = round($start/$meta->interval)*$meta->interval;
+    $end = round($end/$meta->interval)*$meta->interval;
+    $npoints = round(($end - $start) / $meta->interval);
  
-		if ($npoints>1000) $npoints = 1000;
+    if ($npoints>1000) $npoints = 1000;
 
-		$data = $this->tsdb_get_series($meta,$start,$end,$npoints);
+    $data = $this->tsdb_get_series($meta,$start,$end,$npoints);
+    return $data;
+  }
+  
+  public function get_average($feedid,$start,$end,$interval)
+  {
+    $feedid = intval($feedid);
+    $start = intval($start/1000);
+    $end = intval($end/1000);
+    $interval = intval($interval);
+    
+    if ($end == 0) $end = time();
+    
+    $meta = $this->get_meta($feedid);
+    
+    $npoints = round(($end - $start) / $interval);
+    $end = $start+(($npoints-1)*$interval);
+    
+    if ($npoints>1000) $npoints = 1000;
+
+    $data = $this->tsdb_get_series($meta,$start,$end,$npoints);
+    return $data;
+  }
+  
+  public function tsdb_get_series($meta,$start,$end,$npoints)
+  {	
+    $meta->decimation = array(20, 6, 6, 4, 7);
+
+	  /* Sanity check */
+	  if ($end < $start) return false;
+	  if ($npoints == 0) return false;
+
+	  /* Determine best layer to use for sourcing the result */
+	  if ($npoints == 1) {
+		  /* Special case - returns the value in between the start and end points */
+		  $end = $start = ($start + $end) / 2;
+		  $out_interval = 0;
+	  } else {
+		  $out_interval = floor(($end - $start) / ($npoints-1)); /* 1 less interval than points */
+		  if (($end - $start) < ($npoints - 1)) {
+			  /* Minimum interval for output points is 1 second */
+			  $npoints = $end - $start + 1;
+			  $out_interval = 1;
+		  }
+	  }
+	
+	  $layer_interval = $meta->interval;
+	  for ($layer = 0; $layer < 5; $layer++) {
+		  if ($meta->decimation[$layer] == 0) {
+			  /* This is the last layer - we have to use it */
+			  break;
+		  }
+		  if ($layer_interval * $meta->decimation[$layer] > $out_interval) {
+			  /* Next layer is downsampled too much, so use this one */
+			  break;
+		  }
+		  $layer_interval *= $meta->decimation[$layer];
+	  }
+	  
+	
+	  if ($out_interval > $layer_interval) $naverage = floor($out_interval / $layer_interval); else $naverage = 1;
+	  // equivalent to: $naverage = ($out_interval > $layer_interval) ? $out_interval / $layer_interval : 1;
+	
+	  /* Generate output points by averaging all available input points between the start
+	   * and end times for each output step.  Output timestamps are rounded down onto the
+	   * input interval - there is no interpolation. */
+	   
+	  // Alternative approach, all reads in one block at the start 
+	     
+	  $data = array();
+
+    // Open the timestore layer file for reading in data in range between start and end
+    $feedname = str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
+    $primaryfeedname = $this->dir.$feedname;
+	  $fh = fopen($primaryfeedname, 'rb');
+	  
+	  // Ensure start and end are within limits
+	  if ($start<$meta->start) $start = $meta->start;
+	  //if ($end>$meta->start+($meta->npoints*$meta->interval)) $end = $meta->start+($meta->npoints*$meta->interval);
+	  if ($end<$start) return array();
+	  
+	  // Calculate start point in file
+	  $point = floor(($start - $meta->start) / $layer_interval);
+	  // and range of datapoints to read
+	  $range = ceil(($end - $start) / $layer_interval);
+	  // seek to the position of the start point
+	  fseek($fh, 4 * $point);
+	  // Read in the full range of datapoints
+	  $layer_values = unpack("f*",fread($fh, 4 * $range));
+	  fclose($fh);
+	  
+	  // Downsample to the desired number of datapoints - or as close as we can get within an integer multiple of the lower layer
+	  
+	  $count = count($layer_values)-1;
+	  
+    //print "point: ".$point."<br>";
+    //print "range: ".$range."<br>";
+    $ts = $meta->start + $layer_interval * $point;	  
+    //print "time: ".date("Y-n-j H:i:s", $ts)."<br>";
+    
+	  //print "out_interval: ".$out_interval."<br>";
+	  //print "layer_interval: ".$layer_interval."<br>";
+	  //print "naverage: ".$naverage."<br>";
+	  //print "count: ".$count."<br>";
+	  
+	  //print "Layer values: <br>";
+	  
+	  // Read in steps of tge averaged block size
+	  for ($i=1; $i<$count-$naverage; $i+=$naverage)
+	  {
+	    // Calculate the average value of each block
+	    $point_sum = 0;
+	    $points_in_sum = 0;
+      for ($n=0; $n<$naverage; $n++)
+		  {
+		    if (!is_nan($layer_values[$i+$n]))
+		    {
+		      $point_sum += $layer_values[$i+$n];
+		      $points_in_sum++;
+		      
+		      $ts = $meta->start + $layer_interval * ($point+$i+$n-1);
+		      //print date("Y-n-j H:i:s",$ts)." ".$layer_values[$i+$n]."<br>";
+		    }
+		  } 
+		  
+		  // If there was a value in the block then add to data array
+	    if ($points_in_sum) {
+	      $timestamp = $meta->start + $layer_interval * ($point+$i-1);
+	      $average = $point_sum / $points_in_sum;
+	      $data[] = array($timestamp*1000,$average);
+	      //print "--".$average."<br>";
+	    }
+	  
+	  }
+	  
 		return $data;
-	}
-	
-	public function get_average($feedid,$start,$end,$interval)
-	{
-		$feedid = intval($feedid);
-		$start = intval($start/1000);
-		$end = intval($end/1000);
-		$interval = intval($interval);
-		
-		if ($end == 0) $end = time();
-		
-		$meta = $this->get_meta($feedid);
-		
-		$npoints = round(($end - $start) / $interval);
-		$end = $start+(($npoints-1)*$interval);
-		
-		if ($npoints>1000) $npoints = 1000;
-
-		$data = $this->tsdb_get_series($meta,$start,$end,$npoints);
-		return $data;
-	}
-	
-	public function tsdb_get_series($meta,$start,$end,$npoints)
-	{	
-		$meta->decimation = array(20, 6, 6, 4, 7);
-
-		/* Sanity check */
-		if ($end < $start) return false;
-		if ($npoints == 0) return false;
-
-		/* Determine best layer to use for sourcing the result */
-		if ($npoints == 1) {
-			/* Special case - returns the value in between the start and end points */
-			$end = $start = ($start + $end) / 2;
-			$out_interval = 0;
-		} else {
-			$out_interval = floor(($end - $start) / ($npoints-1)); /* 1 less interval than points */
-			if (($end - $start) < ($npoints - 1)) {
-				/* Minimum interval for output points is 1 second */
-				$npoints = $end - $start + 1;
-				$out_interval = 1;
-			}
-		}
-	
-		$layer_interval = $meta->interval;
-		for ($layer = 0; $layer < 5; $layer++) {
-			if ($meta->decimation[$layer] == 0) {
-				/* This is the last layer - we have to use it */
-				break;
-			}
-			if ($layer_interval * $meta->decimation[$layer] > $out_interval) {
-				/* Next layer is downsampled too much, so use this one */
-				break;
-			}
-			$layer_interval *= $meta->decimation[$layer];
-		}
-		
-	
-		if ($out_interval > $layer_interval) $naverage = floor($out_interval / $layer_interval); else $naverage = 1;
-		// equivalent to: $naverage = ($out_interval > $layer_interval) ? $out_interval / $layer_interval : 1;
-	
-		/* Generate output points by averaging all available input points between the start
-		 * and end times for each output step.  Output timestamps are rounded down onto the
-		 * input interval - there is no interpolation. */
-		 
-		// Alternative approach, all reads in one block at the start 
-			 
-		$data = array();
-
-		// Open the timestore layer file for reading in data in range between start and end
-		$feedname = str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
-		$primaryfeedname = $this->dir.$feedname;
-		$fh = fopen($primaryfeedname, 'rb');
-		
-		// Ensure start and end are within limits
-		if ($start<$meta->start) $start = $meta->start;
-		//if ($end>$meta->start+($meta->npoints*$meta->interval)) $end = $meta->start+($meta->npoints*$meta->interval);
-		if ($end<$start) return array();
-		
-		// Calculate start point in file
-		$point = floor(($start - $meta->start) / $layer_interval);
-		// and range of datapoints to read
-		$range = ceil(($end - $start) / $layer_interval);
-		// seek to the position of the start point
-		fseek($fh, 4 * $point);
-		// Read in the full range of datapoints
-		$layer_values = unpack("f*",fread($fh, 4 * $range));
-		fclose($fh);
-		
-		// Downsample to the desired number of datapoints - or as close as we can get within an integer multiple of the lower layer
-		
-		$count = count($layer_values)-1;
-		
-		//print "point: ".$point."<br>";
-		//print "range: ".$range."<br>";
-		$ts = $meta->start + $layer_interval * $point;	  
-		//print "time: ".date("Y-n-j H:i:s", $ts)."<br>";
-		
-		//print "out_interval: ".$out_interval."<br>";
-		//print "layer_interval: ".$layer_interval."<br>";
-		//print "naverage: ".$naverage."<br>";
-		//print "count: ".$count."<br>";
-		
-		//print "Layer values: <br>";
-		
-		// Read in steps of tge averaged block size
-		for ($i=1; $i<$count-$naverage; $i+=$naverage)
-		{
-			// Calculate the average value of each block
-			$point_sum = 0;
-			$points_in_sum = 0;
-			for ($n=0; $n<$naverage; $n++)
-			{
-				if (!is_nan($layer_values[$i+$n]))
-				{
-					$point_sum += $layer_values[$i+$n];
-					$points_in_sum++;
-					
-					$ts = $meta->start + $layer_interval * ($point+$i+$n-1);
-					//print date("Y-n-j H:i:s",$ts)." ".$layer_values[$i+$n]."<br>";
-				}
-			} 
-			
-			// If there was a value in the block then add to data array
-			if ($points_in_sum) {
-				$timestamp = $meta->start + $layer_interval * ($point+$i-1);
-				$average = $point_sum / $points_in_sum;
-				$data[] = array($timestamp*1000,$average);
-				//print "--".$average."<br>";
-			}
-		
-		}
-		
-		return $data;
-	}
-	
+  }
+  
 	// Alternative implementation of the get_data function, uses timestore pre-compiled averages but does not calculate
 	// further averages from the averaged layers, this method is not by default in use
-	public function get_data_alternative($feedid,$start,$end)
-	{
-		$decimation = array(20, 6, 6, 4, 7);
-		//$feedid = 21; $start = 1317572497; $end = 1317692497; $dp = 10;
-		$feedid = intval($feedid);
-		$start = intval($start/1000);
-		$end = intval($end/1000);
-		$dp = 1000;
+  public function get_data_alternative($feedid,$start,$end)
+  {
+    $decimation = array(20, 6, 6, 4, 7);
+    //$feedid = 21; $start = 1317572497; $end = 1317692497; $dp = 10;
+    $feedid = intval($feedid);
+    $start = intval($start/1000);
+    $end = intval($end/1000);
+    $dp = 1000;
 
-		// Load the timestore meta data
-		$meta = $this->get_meta($feedid);
-		if (!$meta) return false;
+    // Load the timestore meta data
+    $meta = $this->get_meta($feedid);
+    if (!$meta) return false;
+    
+    // The number of datapoints in the query range:
+    $dp_in_range = ($end - $start) / $meta->interval;
 
-		// The number of datapoints in the query range:
-		$dp_in_range = ($end - $start) / $meta->interval;
-
-		// Divided by the number we need gives the number of datapoints to skip
-		// i.e if we want 1000 datapoints out of 100,000 then we need to get one
-		// datapoints every 100 datapoints.
-		$skipsize = round($dp_in_range / $dp);
-		if ($skipsize<1) $skipsize = 1;
-
-		$interval = $meta->interval;
-
-		$layer = 0;
-
+    // Divided by the number we need gives the number of datapoints to skip
+    // i.e if we want 1000 datapoints out of 100,000 then we need to get one
+    // datapoints every 100 datapoints.
+    $skipsize = round($dp_in_range / $dp);
+    if ($skipsize<1) $skipsize = 1;
+    
+    $interval = $meta->interval;
+    
+    $layer = 0;
+    
 		if ($skipsize>=20)
 		{
 			$layer = 1; $interval *= 20;
@@ -382,297 +381,297 @@ class PHPTimestore
 		{
 			$layer = 5; $interval *= 7;
 		}
-
-		$dp_in_range = ($end - $start) / $interval;
-		$skipsize = round($dp_in_range / $dp);
+    
+    $dp_in_range = ($end - $start) / $interval;
+    $skipsize = round($dp_in_range / $dp);
 		if ($skipsize<1)
 		{
 			$skipsize = 1;
 		}
+    
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
+    $primaryfeedname = $this->dir.$feedname;
+    $filesize = filesize($primaryfeedname);
 
-		$feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
-		$primaryfeedname = $this->dir.$feedname;
-		$filesize = filesize($primaryfeedname);
-
-		// Calculate the starting datapoint position in the timestore file
-		if ($start>$meta->start){
-			$startpos = ceil(($start - $meta->start) / $interval);
+    // Calculate the starting datapoint position in the timestore file 
+    if ($start>$meta->start){
+      $startpos = ceil(($start - $meta->start) / $interval);
 		}
 		else
 		{
-			$startpos = 0;
-		}
+      $startpos = 0;
+    }
 
-		$data = array();
-		$time = 0; $i = 0;
+    $data = array();
+    $time = 0; $i = 0;
 
-		// The datapoints are selected within a loop that runs until we reach a
-		// datapoint that is beyond the end of our query range
-		$fh = fopen($primaryfeedname, 'rb');
-		while($time<=$end)
-		{
-			// $position steps forward by skipsize every loop
-			$pos = ($startpos + ($i * $skipsize));
+    // The datapoints are selected within a loop that runs until we reach a 
+    // datapoint that is beyond the end of our query range
+    $fh = fopen($primaryfeedname, 'rb');
+    while($time<=$end)
+    {
+      // $position steps forward by skipsize every loop 
+      $pos = ($startpos + ($i * $skipsize));
 
-			// Exit the loop if the position is beyond the end of the file
+      // Exit the loop if the position is beyond the end of the file
 			if ($pos*4 > $filesize-4)
 			{
 				break;
 			}
 
-			// read from the file
-			fseek($fh,$pos*4);
-			$val = unpack("f",fread($fh,4));
+      // read from the file
+      fseek($fh,$pos*4);
+      $val = unpack("f",fread($fh,4));
+      
+      // calculate the datapoint time
+      $time = $meta->start + $pos * $interval;
+      
+      // add to the data array if its not a nan value
+      if (!is_nan($val[1])) $data[] = array($time*1000,$val[1]);
+      
+      $i++;
+    }
+    return $data;
+  }
+  
+  public function lastvalue($feedid)
+  {
+    $feedid = (int) $feedid;
+    $meta = $this->get_meta($feedid);
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
+    
+    $primaryfeedname = $this->dir.$feedname;
+    
+    if (file_exists($primaryfeedname))
+    {
+      $fh = fopen($primaryfeedname, 'rb');
+      $size = filesize($primaryfeedname);
+      
+      fseek($fh,$size-4);
+      $d = fread($fh,4);
+      fclose($fh);
+      
+      $val = unpack("f",$d);
+      $time = date("Y-n-j H:i:s", $meta->start + $meta->interval * $meta->npoints);
+      return array('time'=>$time, 'value'=>$val[1]);
+    }
+    else
+    {
+      return array('time'=>0, 'value'=>0);
+    }
+  }
+  
+  public function scale_range($feedid,$start,$end,$value)
+  {
+    // not yet implemented
+  }
+  
+  public function delete_range($feedid,$start,$end)
+  {
+    // not yet implemented
+  }
+	
+  public function get_meta($feedid)
+  {
+    $feedid = (int) $feedid;
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
+    
+    if (!file_exists($this->dir.$feedname)) return false;
+    
+    $meta = new stdClass();
+    $metafile = fopen($this->dir.$feedname, 'rb');
 
-			// calculate the datapoint time
-			$time = $meta->start + $pos * $interval;
+    fseek($metafile,8);
+    $d = fread($metafile,8);
+    $tmp = unpack("h*",$d);
+    $meta->feedid = (int) strrev($tmp[1]);
+    $tmp = unpack("I",fread($metafile,4)); 
+    $meta->nmetrics = $tmp[1];
+    $tmp = unpack("I",fread($metafile,4)); 
+    $meta->npoints = $tmp[1];
+    $tmp = unpack("I",fread($metafile,8)); 
+    $meta->start = $tmp[1];
+    $tmp = unpack("I",fread($metafile,4)); 
+    $meta->interval = $tmp[1];
+    fclose($metafile);
+    
+    return $meta;
+  }
+  
+  public function save_meta($feedid,$meta)
+  {
+    $feedid = (int) $feedid;
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
+    
+     
+    $metafile = fopen($this->dir.$feedname, 'wb');
 
-			// add to the data array if its not a nan value
-			if (!is_nan($val[1])) $data[] = array($time*1000,$val[1]);
+    fwrite($metafile,pack("I",0));
+    fwrite($metafile,pack("I",0));
+    fwrite($metafile,pack("h*",strrev(str_pad($feedid, 16, '0', STR_PAD_LEFT))));
+    fwrite($metafile,pack("I",$meta->nmetrics));
+    fwrite($metafile,pack("I",$meta->npoints));
+    fwrite($metafile,pack("I",$meta->start));
+    fwrite($metafile,pack("I",0));
+    fwrite($metafile,pack("I",$meta->interval));
+    
+    //$decimation = array(20, 6, 6, 4, 7);
+    //foreach ($decimation as $d) fwrite($metafile,pack("I",$d));
+    
+    //$flags = array(); for($i=0; $i<32; $i++) $flags[]=0;
+    //foreach ($flags as $d) fwrite($metafile,pack("I",$d));
+    
+    fclose($metafile);
+    return $meta;
+  }
+  
+  public function get_feed_size($feedid)
+  {
+    $size = 272;
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
+    $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
+    return $size;
+  }
+  
+  public function export($feedid,$layer,$start)
+  {
+    $feedid = (int) $feedid;
+    $layer = (int) $layer;
+    $start = (int) $start;
+    
+    $meta = $this->get_meta($feedid);
+    
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
 
-			$i++;
-		}
-		return $data;
-	}
+    // There is no need for the browser to cache the output
+    header("Cache-Control: no-cache, no-store, must-revalidate");
 
-	public function lastvalue($feedid)
-	{
-		$feedid = (int) $feedid;
-		$meta = $this->get_meta($feedid);
-		$feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
+    // Tell the browser to handle output as a csv file to be downloaded
+    header('Content-Description: File Transfer');
+    header("Content-type: application/octet-stream");
+    header("Content-Disposition: attachment; filename={$feedname}");
 
-		$primaryfeedname = $this->dir.$feedname;
+    header("Expires: 0");
+    header("Pragma: no-cache");
 
-		if (file_exists($primaryfeedname))
-		{
-			$fh = fopen($primaryfeedname, 'rb');
-			$size = filesize($primaryfeedname);
+    // Write to output stream
+    $fh = @fopen( 'php://output', 'w' );
 
-			fseek($fh,$size-4);
-			$d = fread($fh,4);
-			fclose($fh);
+    $primaryfeedname = $this->dir.$feedname;
+    $primary = fopen($primaryfeedname, 'rb');
+    $primarysize = filesize($primaryfeedname);
+    
+    //$localsize = intval((($start - $meta['start']) / $meta['interval']) * 4);
+    
+    $localsize = $start;
+    $localsize = intval($localsize / 4) * 4;
+    if ($localsize<0) $localsize = 0;
+    
+    // Get the first point which will be updated rather than appended
+    if ($localsize>=4) $localsize = $localsize - 4;
+    
+    
+    fseek($primary,$localsize);
+    $left_to_read = $primarysize - $localsize;
+    if ($left_to_read>0){
+      do
+      {
+        if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+        $left_to_read -= $readsize;
 
-			$val = unpack("f",$d);
-			$time = date("Y-n-j H:i:s", $meta->start + $meta->interval * $meta->npoints);
-			return array('time'=>$time, 'value'=>$val[1]);
-		}
-		else
-		{
-			return array('time'=>0, 'value'=>0);
-		}
-	}
+        $data = fread($primary,$readsize);
+        fwrite($fh,$data);
+      }
+      while ($left_to_read>0);
+    }
+    fclose($primary);
+    fclose($fh);
+    exit;
+  }
+  
+  public function export_meta($feedid)
+  {
+    $feedid = (int) $feedid;
 
+    $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
 
-	public function scale_range($feedid,$start,$end,$value)
-	{
-		// not yet implemented
-	}
+    // There is no need for the browser to cache the output
+    header("Cache-Control: no-cache, no-store, must-revalidate");
 
-	public function delete_range($feedid,$start,$end)
-	{
-		// not yet implemented
-	}
+    // Tell the browser to handle output as a csv file to be downloaded
+    header('Content-Description: File Transfer');
+    header("Content-type: application/octet-stream");
+    header("Content-Disposition: attachment; filename={$feedname}");
 
-	public function get_meta($feedid)
-	{
-		$feedid = (int) $feedid;
-		$feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
+    header("Expires: 0");
+    header("Pragma: no-cache");
 
-		if (!file_exists($this->dir.$feedname)) return false;
+    $fh = @fopen( 'php://output', 'w' );
+    $meta = fopen($this->dir.$feedname, 'rb');
+    fwrite($fh,fread($meta,272));
 
-		$meta = new stdClass();
-		$metafile = fopen($this->dir.$feedname, 'rb');
-
-		fseek($metafile,8);
-		$d = fread($metafile,8);
-		$tmp = unpack("h*",$d);
-		$meta->feedid = (int) strrev($tmp[1]);
-		$tmp = unpack("I",fread($metafile,4));
-		$meta->nmetrics = $tmp[1];
-		$tmp = unpack("I",fread($metafile,4));
-		$meta->npoints = $tmp[1];
-		$tmp = unpack("I",fread($metafile,8));
-		$meta->start = $tmp[1];
-		$tmp = unpack("I",fread($metafile,4));
-		$meta->interval = $tmp[1];
-		fclose($metafile);
-
-		return $meta;
-	}
-
-	public function save_meta($feedid,$meta)
-	{
-		$feedid = (int) $feedid;
-		$feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
-
-
-		$metafile = fopen($this->dir.$feedname, 'wb');
-
-		fwrite($metafile,pack("I",0));
-		fwrite($metafile,pack("I",0));
-		fwrite($metafile,pack("h*",strrev(str_pad($feedid, 16, '0', STR_PAD_LEFT))));
-		fwrite($metafile,pack("I",$meta->nmetrics));
-		fwrite($metafile,pack("I",$meta->npoints));
-		fwrite($metafile,pack("I",$meta->start));
-		fwrite($metafile,pack("I",0));
-		fwrite($metafile,pack("I",$meta->interval));
-
-		//$decimation = array(20, 6, 6, 4, 7);
-		//foreach ($decimation as $d) fwrite($metafile,pack("I",$d));
-
-		//$flags = array(); for($i=0; $i<32; $i++) $flags[]=0;
-		//foreach ($flags as $d) fwrite($metafile,pack("I",$d));
-
-		fclose($metafile);
-		return $meta;
-	}
-
-	public function get_feed_size($feedid)
-	{
-		$size = 272;
-		$size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
-		$size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
-		$size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
-		$size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
-		$size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
-		$size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
-		return $size;
-	}
-
-	public function export($feedid,$layer,$start)
-	{
-		$feedid = (int) $feedid;
-		$layer = (int) $layer;
-		$start = (int) $start;
-
-		$meta = $this->get_meta($feedid);
-
-		$feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
-
-		// There is no need for the browser to cache the output
-		header("Cache-Control: no-cache, no-store, must-revalidate");
-
-		// Tell the browser to handle output as a csv file to be downloaded
-		header('Content-Description: File Transfer');
-		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename={$feedname}");
-
-		header("Expires: 0");
-		header("Pragma: no-cache");
-
-		// Write to output stream
-		$fh = @fopen( 'php://output', 'w' );
-
-		$primaryfeedname = $this->dir.$feedname;
-		$primary = fopen($primaryfeedname, 'rb');
-		$primarysize = filesize($primaryfeedname);
-
-		//$localsize = intval((($start - $meta['start']) / $meta['interval']) * 4);
-
-		$localsize = $start;
-		$localsize = intval($localsize / 4) * 4;
-		if ($localsize<0) $localsize = 0;
-
-		// Get the first point which will be updated rather than appended
-		if ($localsize>=4) $localsize = $localsize - 4;
-
-
-		fseek($primary,$localsize);
-		$left_to_read = $primarysize - $localsize;
-		if ($left_to_read>0){
-			do
-			{
-				if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
-				$left_to_read -= $readsize;
-
-				$data = fread($primary,$readsize);
-				fwrite($fh,$data);
-			}
-			while ($left_to_read>0);
-		}
-		fclose($primary);
-		fclose($fh);
-		exit;
-	}
-
-	public function export_meta($feedid)
-	{
-		$feedid = (int) $feedid;
-
-		$feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
-
-		// There is no need for the browser to cache the output
-		header("Cache-Control: no-cache, no-store, must-revalidate");
-
-		// Tell the browser to handle output as a csv file to be downloaded
-		header('Content-Description: File Transfer');
-		header("Content-type: application/octet-stream");
-		header("Content-Disposition: attachment; filename={$feedname}");
-
-		header("Expires: 0");
-		header("Pragma: no-cache");
-
-		$fh = @fopen( 'php://output', 'w' );
-		$meta = fopen($this->dir.$feedname, 'rb');
-		fwrite($fh,fread($meta,272));
-
-		fclose($meta);
-		fclose($fh);
-		exit;
-	}
-
-	public function delete($feedid)
-	{
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb");
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
-		unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
-	}
-
+    fclose($meta);
+    fclose($fh);
+    exit;
+  }
+  
+  public function delete($feedid)
+  {
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb");
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_3_.dat");
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
+    unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
+  }
+  
 }
-		/*
-		
-		For reference
-		
-		// Current Timestore approach to second part of tsdb_get_series above, many reads in small blocks
-		
-		// while ($npoints--)
-		for ($i=0; $i<$npoints; $i++)
-		{
-			$start += $out_interval;
-			// Determine if this point is in-range of the input table
-			if ($start < $meta->start || $start >= $meta->start + $meta->npoints * $meta->interval) {
-				// No - there is no data at this time point
-				continue;
-			}
 
-			// There may be data for this point in the table.  Calculate the range of input points
-			// covered by the output period and read them for averaging
-			$point = floor(($start - $meta->start) / $layer_interval);
-			
-			fseek($fh, 4 * $point);
-			$layer_values = unpack("f*",fread($fh, 4 * $naverage));
-			
-			// Generate average ignoring any NAN points
-			$timestamp = $start;
-			$value = 0.0;
-			$actual_naverage = 0;
-			
-			for ($n=0; $n<$naverage; $n++)
-			{
-				if (!is_nan($layer_values[$n+1])) {
-					$value += $layer_values[$n+1];
-					$actual_naverage++;
-				}
-			}
-			
-			if ($actual_naverage) {
-				// A valid point was generated
-				$value /= (double) $actual_naverage;
-				$actual_npoints[] = array($timestamp*1000,$value);
-			}
-		}
-		*/
+	  /*
+	  
+	  For reference
+	  
+	  // Current Timestore approach to second part of tsdb_get_series above, many reads in small blocks
+	  
+	  // while ($npoints--)
+	  for ($i=0; $i<$npoints; $i++)
+	  {
+	    $start += $out_interval;
+		  // Determine if this point is in-range of the input table
+		  if ($start < $meta->start || $start >= $meta->start + $meta->npoints * $meta->interval) {
+			  // No - there is no data at this time point
+			  continue;
+		  }
+
+		  // There may be data for this point in the table.  Calculate the range of input points
+		  // covered by the output period and read them for averaging
+		  $point = floor(($start - $meta->start) / $layer_interval);
+		  
+		  fseek($fh, 4 * $point);
+		  $layer_values = unpack("f*",fread($fh, 4 * $naverage));
+		  
+		  // Generate average ignoring any NAN points
+		  $timestamp = $start;
+		  $value = 0.0;
+		  $actual_naverage = 0;
+		  
+		  for ($n=0; $n<$naverage; $n++)
+		  {
+			  if (!is_nan($layer_values[$n+1])) {
+				  $value += $layer_values[$n+1];
+				  $actual_naverage++;
+			  }
+		  }
+		  
+		  if ($actual_naverage) {
+			  // A valid point was generated
+			  $value /= (double) $actual_naverage;
+			  $actual_npoints[] = array($timestamp*1000,$value);
+		  }
+	  }
+	  */

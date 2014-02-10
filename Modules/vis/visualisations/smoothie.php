@@ -4,13 +4,16 @@ http://openenergymonitor.org/emon/node/600
 -->
 
 <?php
-	global $path, $embed;
-	$feedid2 =null;
+
+  global $path, $embed;
+
+  $feedid2 =null;
+
 ?>
 
 <style type="text/css">
-	html, body { background-color:#000000;}
-	bar { height: 32px; background: red; }
+    html, body { background-color:#000000;}
+    bar { height: 32px; background: red; }
 </style>
 
 <script type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/smoothie/smoothie.js"></script>
@@ -23,87 +26,87 @@ http://openenergymonitor.org/emon/node/600
 <canvas id="mycanvas" style="width: 100%; height: 100%;"></canvas>
 <?php if (!$embed) { ?> </div> <?php } ?>
 
-<script id="source" language="javascript" type="text/javascript">
-	var feedid = <?php echo $feedid; ?>;
-	var path = "<?php echo $path; ?>";
-	var apikey = "<?php echo $apikey; ?>";
-	var ufac = "<?php echo $ufac; ?>";
-	var feedid2 = "<?php echo $feedid2; ?>";
+	<script id="source" language="javascript" type="text/javascript">
+	    var feedid = <?php echo $feedid; ?>;
+	    var path = "<?php echo $path; ?>";
+	    var apikey = "<?php echo $apikey; ?>";	
+	    var ufac = "<?php echo $ufac; ?>";
+	    var feedid2 = "<?php echo $feedid2; ?>"; 
 
-	var smoothie = new SmoothieChart();
-	smoothie.streamTo(document.getElementById("mycanvas"), ufac);
+	    var smoothie = new SmoothieChart();
+	    smoothie.streamTo(document.getElementById("mycanvas"), ufac);   
+   
+	    var start = ((new Date()).getTime()) - 10000;
+	    var end = (new Date()).getTime();
 
-	var start = ((new Date()).getTime()) - 10000;
-	var end = (new Date()).getTime();
+	    var line1 = new TimeSeries();
 
-	var line1 = new TimeSeries();
+	    if (feedid2 != "")
+	      var line2 = new TimeSeries();
 
-	if (feedid2 != "")
-	  var line2 = new TimeSeries();
+	    // Used to filter out repeated data (Might be bad)
+	    var old	= 0;
+	    var old1	= 0;
 
-	// Used to filter out repeated data (Might be bad)
-	var old	= 0;
-	var old1	= 0;
+	    var canvas = document.getElementById('mycanvas'),
+	    context = canvas.getContext('2d');
+	    window.addEventListener('resize', resizeCanvas, false);
 
-	var canvas = document.getElementById('mycanvas'),
-	context = canvas.getContext('2d');
-	window.addEventListener('resize', resizeCanvas, false);
-
-	function resizeCanvas() {
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
-	}
-	resizeCanvas();
+	    function resizeCanvas() {
+		canvas.width = window.innerWidth;
+		canvas.height = window.innerHeight;
+	    }
+	    resizeCanvas();
 
 
-	doSome();
-	setInterval ( doSome, 2000 );
+		doSome();
+		setInterval ( doSome, 2000 );
 
-	function doSome()
-	{
-		start = ((new Date()).getTime()) - 10000;
-		end = (new Date()).getTime();
+		function doSome()
+		{	
+		    start = ((new Date()).getTime()) - 10000;   
+		    end = (new Date()).getTime();
 
-		vis_feed_data(apikey,feedid,start,end,line1,0);
-		if (feedid2 != "")
-		vis_feed_data(apikey,feedid2,start,end,line2,1);
-	}
-
-	function vis_feed_data(apikey,feedid,start,end,line,oldref)
-	{
-		$.ajax({
-		url: path+'feed/data.json',
-		data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&dp=0",
-		dataType: 'json',
-		success: function(data)
-		{
-			var prev;
-			if (oldref == 0)
-			prev = old;
-			else
-			prev = old1;
-
-			if (data[1] != undefined && data[1][1] != prev)
-			{
-			line.append(new Date().getTime(), data[1][1]);
-			if (oldref == 0)
-				old = data[1][1];
-			else
-				old1 = data[1][1];
-			}
+		    vis_feed_data(apikey,feedid,start,end,line1,0);
+		    if (feedid2 != "")
+			vis_feed_data(apikey,feedid2,start,end,line2,1);
 		}
-		});
-	}
 
-	smoothie.addTimeSeries(line1,
-	{ strokeStyle:'rgb(0, 255, 0)',
-	fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:3 });
+		function vis_feed_data(apikey,feedid,start,end,line,oldref)
+		{
+		    $.ajax({                                      
+			url: path+'feed/data.json',                         
+			data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&dp=0",
+			dataType: 'json',                           
+			success: function(data) 
+			{
+			    var prev;
+			    if (oldref == 0)
+				prev = old;
+			    else
+				prev = old1;
 
-	if (feedid2 != "")
-	{
-		smoothie.addTimeSeries(line2,
-		{ strokeStyle:'rgb(255, 0, 0)',
-		fillStyle:'rgba(255, 0, 0, 0.4)', lineWidth:3 });
-	}
+			    if (data[1] != undefined && data[1][1] != prev)
+			    {
+				line.append(new Date().getTime(), data[1][1]);
+				if (oldref == 0)
+				    old = data[1][1];
+				else
+				    old1 = data[1][1];
+			    }
+			} 
+		    });
+		}
+		
+		smoothie.addTimeSeries(line1, 
+		{ strokeStyle:'rgb(0, 255, 0)', 
+		fillStyle:'rgba(0, 255, 0, 0.4)', lineWidth:3 });
+		
+		if (feedid2 != "")
+		{
+		    smoothie.addTimeSeries(line2, 
+		    { strokeStyle:'rgb(255, 0, 0)', 
+		    fillStyle:'rgba(255, 0, 0, 0.4)', lineWidth:3 });
+		}
 
-</script>
+	</script>
