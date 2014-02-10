@@ -47,8 +47,8 @@
 				<input id="right" type="button" value=">"/>
 
 			</div>
-
 			<h3 style="position:absolute; top:0px; left:410px;"><span id="stats"></span></h3>
+
 		</div>
 
 		<script id="source" language="javascript" type="text/javascript">
@@ -65,6 +65,13 @@
 			var embed = <?php echo $embed; ?>;
 
 			var plotColour = "#<?php echo $colour; ?>";
+			// Some browsers want the colour codes to be prepended with a "#". Therefore, we
+			// add one if it's not already there
+			if (plotColour.indexOf("#") == -1)
+			{
+				plotColour = "#" + plotColour;
+			}
+
 			var toolTipPrecision = 2;		// Show two decimal places
 
 			var $graph_bound = $('#graph_bound');

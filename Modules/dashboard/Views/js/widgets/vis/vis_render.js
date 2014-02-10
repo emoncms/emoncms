@@ -14,18 +14,18 @@
 function vis_widgetlist()
 {
 	var widgets = {
-		"realtime": 
+		"realtime":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid"],
 			"optionstype":["feedid"],
 			"optionsname":[_Tr("Feed")],
-			"optionshint":[_Tr("Feed source")], 
+			"optionshint":[_Tr("Feed source")],
 			"html":""
 		},
 
-		"rawdata": 
+		"rawdata":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
@@ -36,29 +36,29 @@ function vis_widgetlist()
 			"html":""
 		},
 
-		"bargraph": 
+		"bargraph":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
-			"options":["feedid"],
-			"optionstype":["feedid"],
-			"optionsname":[_Tr("Feed")],
-			"optionshint":[_Tr("Feed source")],       
+			"options":["feedid","colour"],
+			"optionstype":["feedid","value"],
+			"optionsname":[_Tr("Feed"),_Tr("Colour")],
+			"optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
 			"html":""
 		},
-		
-		"timestoredaily": 
+
+		"timestoredaily":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid","units"],
 			"optionstype":["feedid","value"],
 			"optionsname":[_Tr("Feed"),_Tr("Units")],
-			"optionshint":[_Tr("Feed source"),_Tr("Units to show")],       
+			"optionshint":[_Tr("Feed source"),_Tr("Units to show")],
 			"html":""
 		},
 
-		"zoom": 
+		"zoom":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
@@ -69,102 +69,102 @@ function vis_widgetlist()
 			"html":""
 		},
 
-		"simplezoom": 
+		"simplezoom":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["power","kwhd"],
 			"optionstype":["feedid","feedid"],
 			"optionsname":[_Tr("Power"),_Tr("kwhd")],
-			"optionshint":[_Tr("Power to show"),_Tr("kwhd source")], 
+			"optionshint":[_Tr("Power to show"),_Tr("kwhd source")],
 			"html":""
 		},
 
-		"histgraph": 
+		"histgraph":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid"],
 			"optionstype":["feedid"],
 			"optionsname":[_Tr("Feed")],
-			"optionshint":[_Tr("Feed source")], 
+			"optionshint":[_Tr("Feed source")],
 			"html":""
 		},
 
-		"threshold": 
+		"threshold":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid","thresholdA","thresholdB"],
 			"optionstype":["feedid","value","value"],
 			"optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B")],
-			"optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used")], 
+			"optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used")],
 			"html":""
 		},
 
-		"orderthreshold": 
+		"orderthreshold":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid","power","thresholdA","thresholdB"],
 			"optionstype":["feedid","feedid","value","value"],
 			"optionsname":[_Tr("Feed"),_Tr("Power"),_Tr("Threshold A"),_Tr("Threshold B")],
-			"optionshint":[_Tr("Feed source"),_Tr("Power"),_Tr("Threshold A used"),_Tr("Threshold B used")],       
+			"optionshint":[_Tr("Feed source"),_Tr("Power"),_Tr("Threshold A used"),_Tr("Threshold B used")],
 			"html":""
 		},
 
-		"orderbars": 
+		"orderbars":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid"],
 			"optionstype":["feedid"],
 			"optionsname":[_Tr("Feed")],
-			"optionshint":[_Tr("Feed source")],       
+			"optionshint":[_Tr("Feed source")],
 			"html":""
 		},
 
-		"stacked": 
+		"stacked":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["bottom","top"],
 			"optionstype":["feedid","feedid"],
 			"optionsname":[_Tr("Bottom"),_Tr("Top")],
-			"optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value")],       
+			"optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value")],
 			"html":""
 		},
 
-		"stackedsolar": 
+		"stackedsolar":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["solar","consumption"],
 			"optionstype":["feedid","feedid"],
 			"optionsname":[_Tr("Solar"),_Tr("Consumption")],
-			"optionshint":[_Tr("Solar feed value"),_Tr("Consumption feed value")], 
+			"optionshint":[_Tr("Solar feed value"),_Tr("Consumption feed value")],
 			"html":""
 		},
 
-		"smoothie": 
+		"smoothie":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["feedid","ufac"],
 			"optionstype":["feedid","value"],
 			"optionsname":[_Tr("Feed"),_Tr("Ufac")],
-			"optionshint":[_Tr("Feed source"),_Tr("Ufac value")],       
+			"optionshint":[_Tr("Feed source"),_Tr("Ufac value")],
 			"html":""
 		},
 
-		"multigraph": 
+		"multigraph":
 		{
 			"offsetx":0,"offsety":0,"width":400,"height":300,
 			"menu":"Visualisations",
 			"options":["mid"],
 			"optionstype":["multigraph"],
 			"optionsname":[_Tr("Mid")],
-			"optionshint":[_Tr("Mid value")],       
+			"optionshint":[_Tr("Mid value")],
 			"html":""
 		}
 	}
