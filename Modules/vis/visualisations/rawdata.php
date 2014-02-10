@@ -31,8 +31,10 @@
 		<?php } ?>
 
 		<div id="graph_bound" style="width:100%; height:400px; position:relative; ">
-			<div id="graph"></div>
-			<div style="position:absolute; top:20px; left:40px; opacity:0.5;">
+			<div id="graph">
+
+			</div>
+			<div id="graph_buttons" style="position:absolute; top:20px; left:40px; opacity:0.5; display: none;">
 
 				<input class="time" type="button" value="D" time="1"/>
 				<input class="time" type="button" value="W" time="7"/>
@@ -74,6 +76,8 @@
 			var start = +new Date - timeWindow;	//Get start time
 			var end = +new Date;				    //Get end time
 
+			var previousPoint = [0,0];		// Define previousPoint so we don't get errors at startup
+
 			var graph_data = [];
 			vis_feed_data();
 
@@ -91,9 +95,13 @@
 								graph_data = response;
 								var stats = power_stats(graph_data);
 								var out = "Average: "+stats['average'].toFixed(1)+units;
-								if (units=='W') out+= " | "+stats['kwh'].toFixed(2)+" kWh";
+								if (units=='W')
+								{
+										out+= " | "+stats['kwh'].toFixed(2)+" kWh";
+								}
 								$("#stats").html(out);
 								plot();
+
 						});
 				}
 			}
@@ -189,6 +197,13 @@
 					left: x - elem.width() - offset,
 				});
 			};
+
+			// Fade in/out the control buttons on mouse-over the plot container
+			$("#graph_bound").mouseenter(function(){
+				$("#graph_buttons").stop().fadeIn();
+			}).mouseleave(function(){
+				$("#graph_buttons").stop().fadeOut();
+			});
 			//----------------------------------------------------------------------------------------------
 			// Operate buttons
 			//----------------------------------------------------------------------------------------------

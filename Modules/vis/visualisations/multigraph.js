@@ -155,7 +155,7 @@ function multigraph_init(element)
 	var out =
 		"<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
 			"<div id='graph'></div>"+
-			"<div style='position:absolute; top:20px; right:30px; opacity:0.5;'>"+
+			"<div id='graph_buttons' style='position:absolute; top:20px; right:30px; opacity:0.5; display: none;'>"+
 
 
 				"<div class='input-prepend input-append' style='margin:0'>"+
@@ -188,6 +188,14 @@ function multigraph_init(element)
 		$('#graph').width($('#graph_bound').width());
 		if (embed) $('#graph').height($(window).height());
 		plot();
+	});
+
+
+	// Fade in/out the control buttons on mouse-over the plot container
+	$("#graph_bound").mouseenter(function(){
+		$("#graph_buttons").stop().fadeIn();
+	}).mouseleave(function(){
+		$("#graph_buttons").stop().fadeOut();
 	});
 
 	//--------------------------------------------------------------------------------------

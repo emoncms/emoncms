@@ -74,7 +74,6 @@
 	var previousPoint = null;
 	$("#multigraph").bind("plothover", function (event, pos, item)
 	{
-		console.log("tooltip!");
 		$("#x").text(pos.x.toFixed(2));
 		$("#y").text(pos.y2.toFixed(2));
 
@@ -116,6 +115,8 @@
 			}
 		}
 	});
+
+
 
 </script>
 
