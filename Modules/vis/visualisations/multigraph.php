@@ -91,7 +91,6 @@
 					// strings like "08:53:35 GMT-0800", and there is no easy way to turn off the "GMT-xxxx" segment
 					// blargh
 					var date = new Date(parseInt(x));
-					// hours part from the timestamp
 					var hours = date.getHours();
 					var minutes = date.getMinutes();
 					var seconds = date.getSeconds();

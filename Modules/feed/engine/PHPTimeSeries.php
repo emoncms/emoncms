@@ -23,8 +23,7 @@ class PHPTimeSeries
 	{
 		$fh = fopen($this->dir."feed_$feedid.MYD", 'a');
 		fclose($fh);
-		if (file_exists($this->dir."feed_$feedid.MYD")) 
-			return true;
+		if (file_exists($this->dir."feed_$feedid.MYD")) return true;
 		return false;
 	}
 

@@ -462,6 +462,7 @@ class Feed
 
 		$engine = $this->redis->hget("feed:$feedid",'engine');
 		if ($engine==Engine::TIMESTORE) return $this->timestore->get_average($feedid,$start,$end,$interval);
+		if ($engine==Engine::PHPTIMESTORE) return $this->phptimestore->get_average($feedid,$start,$end,$interval);
 		if ($engine==Engine::GRAPHITE) return $this->graphitetimeseries->get_average($feedid,$start,$end,$interval);
 	}
 

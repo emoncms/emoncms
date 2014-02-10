@@ -109,7 +109,6 @@
 					{
 						foreach ($vis['options'] as $option)
 						{
-							echo "\n";
 							$key = $option[0]; $type = $option[1];
 							if (isset($option[2])) $default = $option[2]; else $default = "";
 
@@ -178,23 +177,6 @@
 				if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
 		}
 
-		// echo "";
-		// echo var_dump($route);
-		// echo "";
-
-		// echo "";
-		// echo var_dump($viskey);
-		// echo "";
-
-
-		// echo "Backtrace:";
-		// echo var_dump(debug_backtrace());
-		// echo "";
-
-		// echo "VAR DUMP==============================================================================";
-		// echo var_dump($result);
-		// echo "VAR DUMP END==============================================================================";
-		// echo "";
 
 		return array('content'=>$result);
 	}
