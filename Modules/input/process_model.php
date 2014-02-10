@@ -59,6 +59,7 @@ class Process
 		$list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc");       // checked
 		$list[27] = array(_("Max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc");                        // checked
 		$list[28] = array(_("Min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc");                        // checked
+		$list[29] = array(_("Daily Sum"),ProcessArg::FEEDID,"sum_daily",1,DataType::DAILY);
 
 		// $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
@@ -471,6 +472,38 @@ class Process
 			if ($value < $last_val) $this->feed->update_data($feedid, $time_now, $feedtime, $value);
 		}
 		return $value;
+	}
+	// Calculates a daily sum of a value
+	public function sum_daily($feedid, $time_now, $value)
+	{
+
+		$feedname = "feed_" . trim($feedid) . "";
+		$feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+
+		$result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$feedtime'");
+		if (!$result)  return $value;
+		$row = $result->fetch_array();
+
+		$sum = $row['data'];
+
+		$new_sum = ($sum + $value);
+
+		if ($row)
+		{
+			$this->mysqli->query("UPDATE $feedname SET data = '$new_sum' WHERE time = '$feedtime'");
+			$daily_sum = $new_sum;
+		}
+		else
+		{
+			$this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$feedtime','$value')");
+			$daily_sum = $value;
+		}
+
+		$this->feed->set_update_value_redis($feedid, $daily_sum, $time_now);
+
+		// TODO: Add daily trigger to force update.
+		//N.B.Feed needs to update at least daily so that current value is updated (to zero if necessary)
+		return $daily_sum;
 	}
 
 	// No longer used
