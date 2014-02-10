@@ -12,6 +12,8 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
+
+
 class Input
 {
     private $mysqli;
@@ -29,30 +31,33 @@ class Input
     // USES: redis input & user
     public function create_input($userid, $nodeid, $name)
     {
-        $userid = (int) $userid;
-        $nodeid = (int) $nodeid;
+      global $max_node_id_limit;
+      $userid = (int) $userid;
+      $nodeid = (int) $nodeid;
+
+      if (!isset($max_node_id_limit))
+      {
+          $max_node_id_limit = 32;    // Default to 32 if not overridden
+      }
+
+      if ($nodeid<$max_node_id_limit)
+      {
+
+        $name = preg_replace('/[^\w\s-.]/','',$name);
+        $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
+
+        $id = $this->mysqli->insert_id;
+
+        $this->redis->sAdd("user:inputs:$userid", $id);
+        $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+
+        return $id;
+
+      }
+
+      // TODO: We need to throw an error here if there is no return value?
 
 
-        if (!isset($max_node_id_limit))
-        {
-            $max_node_id_limit = 32;    // Default to 32 if not overridden
-        }
-
-
-        if ($nodeid<$max_node_id_limit)
-        {
-
-          $name = preg_replace('/[^\w\s-.]/','',$name);
-          $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
-
-          $id = $this->mysqli->insert_id;
-
-          $this->redis->sAdd("user:inputs:$userid", $id);
-	        $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
-
-	      }
-
-	      return $id;
     }
 
     public function exists($inputid)
@@ -126,9 +131,9 @@ class Input
     {
         $userid = (int) $userid;
         $inputid = (int) $inputid;
-        $processid = (int) $processid;			                              // get process type (ProcessArg::)
+        $processid = (int) $processid;                                    // get process type (ProcessArg::)
         $arg = (float) $arg;                                              // This is: actual value (i.e x0.01), inputid or feedid
-        $newfeedname = preg_replace('/[^\w\s-.]/','',$newfeedname);	      // filter out all except for alphanumeric white space and dash
+        $newfeedname = preg_replace('/[^\w\s-.]/','',$newfeedname);       // filter out all except for alphanumeric white space and dash
         $newfeedinterval = (int) $newfeedinterval;
 
         $process = $process_class->get_process($processid);
@@ -395,13 +400,13 @@ class Input
       while ($row = $result->fetch_object())
       {
         $this->redis->sAdd("user:inputs:$userid", $row->id);
-	      $this->redis->hMSet("input:$row->id",array(
-	        'id'=>$row->id,
-	        'nodeid'=>$row->nodeid,
-	        'name'=>$row->name,
-	        'description'=>$row->description,
-	        'processList'=>$row->processList
-	      ));
+        $this->redis->hMSet("input:$row->id",array(
+          'id'=>$row->id,
+          'nodeid'=>$row->nodeid,
+          'name'=>$row->name,
+          'description'=>$row->description,
+          'processList'=>$row->processList
+        ));
       }
     }
 

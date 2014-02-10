@@ -16,7 +16,7 @@ function input_controller()
 {
 	//return array('content'=>"ok");
 
-	global $mysqli, $redis, $user, $session, $route;
+	global $mysqli, $redis, $user, $session, $route, $max_node_id_limit;
 
 	// There are no actions in the input module that can be performed with less than write privileges
 	if (!$session['write']) return array('content'=>false);
@@ -104,12 +104,15 @@ function input_controller()
 									$tmp = array();
 									foreach ($inputs as $name => $value)
 									{
-										if (!isset($dbinputs[$nodeid][$name])) {
+										if (!isset($dbinputs[$nodeid][$name]))
+										{
 											$inputid = $input->create_input($userid, $nodeid, $name);
 											$dbinputs[$nodeid][$name] = true;
 											$dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
 											$input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-										} else {
+										}
+										else
+										{
 											$inputid = $dbinputs[$nodeid][$name]['id'];
 											$input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
 
@@ -119,14 +122,46 @@ function input_controller()
 
 									foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
 
-								} else { $valid = false; $error = "Format error, time index given is negative"; }
-							} else { $valid = false; $error = "Format error, bulk item needs at least 3 values"; }
+								}
+								else
+								{
+									$valid = false;
+									$error = "Format error, time index given is negative";
+								}
+							}
+							else
+							{
+								$valid = false;
+								$error = "Format error, bulk item needs at least 3 values";
+							}
 						}
-					} else { $valid = false; $error = "Format error, time index given is negative"; }
-				} else { $valid = false; $error = "Format error, last item in bulk data does not contain any data"; }
-			} else { $valid = false; $error = "Format error, json string supplied is not valid"; }
+					}
+					else
+					{
+						$valid = false;
+						$error = "Format error, time index given is negative";
+					}
+				}
+				else
+				{
+					$valid = false;
+					$error = "Format error, last item in bulk data does not contain any data";
+				}
+			}
+			else
+			{
+				$valid = false;
+				$error = "Format error, json string supplied is not valid";
+			}
 
-			if ($valid) $result = 'ok'; else $result = "Error: $error\n";
+			if ($valid)
+			{
+				$result = 'ok';
+			}
+			else
+			{
+				$result = "Error: $error\n";
+			}
 		}
 
 		// input/post.json?node=10&json={power1:100,power2:200,power3:300}
@@ -138,13 +173,28 @@ function input_controller()
 
 			$nodeid = get('node');
 
+			$error = " old".$max_node_id_limit;
+
 			if (!isset($max_node_id_limit))
 			{
 				$max_node_id_limit = 32;
 			}
 
-			if ($nodeid && !is_numeric($nodeid)) { $valid = false; $error = "Nodeid must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was not numeric"; }
-			if ($nodeid<0 || $nodeid > $max_node_id_limit) { $valid = false; $error = "nodeid must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was out of range"; }
+			$error .= " new".$max_node_id_limit;
+
+			if ($nodeid && !is_numeric($nodeid))
+			{
+				$valid = false; $error .= "Given Nodeid was not numeric. NodeID must be a positive integer between 0 and ".$max_node_id_limit.".";
+			}
+
+			if ($nodeid<0 || $nodeid > $max_node_id_limit)
+			{
+				$valid = false; $error .= "nodeid must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was out of range";
+			}
+			if (!$valid)
+			{
+				return array('content'=>"$error");
+			}
 
 			$nodeid = (int) $nodeid;
 
@@ -206,7 +256,10 @@ function input_controller()
 				$valid = false; $error = "Request contains no data via csv, json or data tag";
 			}
 
-			if ($valid) $result = 'ok'; else $result = "Error: $error\n";
+			if ($valid)
+				$result = 'ok';
+			else
+				$result = "Error: $error\n";
 		}
 
 		if ($route->action == "clean") $result = $input->clean($session['userid']);
