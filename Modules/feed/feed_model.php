@@ -310,30 +310,13 @@ class Feed
   public function get_timevalue_from_data($feedid)
   {
     $feedid = (int) $feedid;
-		if (!$this->exist($feedid))
-		{
-			return array('success'=>false, 'message'=>'Feed does not exist');
-		}
+    if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
     
     $engine = $this->redis->hget("feed:$feedid",'engine');
-		if ($engine==Engine::TIMESTORE)
-		{
-			return $this->timestore->lastvalue($feedid);
-		}
-		if ($engine==Engine::MYSQL)
-		{
-			return $this->mysqltimeseries->lastvalue($feedid);
-		}
-		if ($engine==Engine::PHPTIMESERIES)
-		{
-			return $this->phptimeseries->lastvalue($feedid);
-		}
-		if ($engine==Engine::PHPTIMESTORE)
-		{
-			return $this->phptimestore->lastvalue($feedid);
-		}
-
-		return array('success'=>false, 'message'=>'Unknown error fetching feed ID');
+    if ($engine==Engine::TIMESTORE) return $this->timestore->lastvalue($feedid);
+    if ($engine==Engine::MYSQL) return $this->mysqltimeseries->lastvalue($feedid);
+    if ($engine==Engine::PHPTIMESERIES) return $this->phptimeseries->lastvalue($feedid); 
+    if ($engine==Engine::PHPTIMESTORE) return $this->phptimestore->lastvalue($feedid); 
   }
 
   /*

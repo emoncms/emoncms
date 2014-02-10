@@ -13,8 +13,7 @@ class PHPTimestore
   {
     if ($interval<5) $interval = 5;
     // Check to ensure we dont overwrite an existing feed
-		if (!$meta = $this->get_meta($feedid))
-		{
+    if (!$meta = $this->get_meta($feedid)) {
     
       // Set initial feed meta data
       $meta = new stdClass();
@@ -44,21 +43,16 @@ class PHPTimestore
       
       $value = (float) $value;
       // If meta data file does not exist then exit
-			if (!$meta = $this->get_meta($feedid))
-			{
-				return false;
-			}
+      if (!$meta = $this->get_meta($feedid)) return false;
       
 	    /* For a new file this point represents the start of the database */
 	    $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
-			if ($meta->npoints == 0)
-			{
+	    if ($meta->npoints == 0) {
 		    $meta->start = $timestamp;
 	    }
 	
 	    /* Sanity checks */
-			if ($timestamp < $meta->start)
-			{
+	    if ($timestamp < $meta->start) {
 		    return false; // in the past
 	    }	
 	
@@ -67,8 +61,7 @@ class PHPTimestore
 	
 	    /* Update layers */
 	    $rc = $this->update_layer($meta,0,$point,$meta->npoints,$value);
-			if ($rc == 0)
-			{
+	    if ($rc == 0) {
 		    /* Update metadata with new number of top-level points */		
 		    if ($point >= $meta->npoints)
 		    {
@@ -91,15 +84,10 @@ class PHPTimestore
    
     $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat", 'c+');
     
-		if ($point > $npoints)
-		{
+    if ($point > $npoints) {
 		  $npadding = ($point - $npoints);
 		  
-			if ($npadding>2500000)
-			{
-				echo "ERROR 2!!!";
-				return false;
-			}
+		  if ($npadding>2500000) {echo "ERROR 2!!!"; return false;}
 		  // Maximum points per block
 		  $pointsperblock = $tsdb_max_padding_block / 4; // 262144
     
@@ -108,8 +96,7 @@ class PHPTimestore
       
       // Fill padding buffer
       $buf = '';
-			for ($n = 0; $n < $pointsperblock; $n++)
-			{
+		  for ($n = 0; $n < $pointsperblock; $n++) {
         $buf .= pack("f",NAN);
 		  }
 		
@@ -117,8 +104,7 @@ class PHPTimestore
       fseek($fh,4*$npoints);
       
       do {
-				if ($npadding < $pointsperblock)
-				{
+        if ($npadding < $pointsperblock) { 
           $pointsperblock = $npadding;
           $buf = ''; for ($n = 0; $n < $pointsperblock; $n++) $buf .= pack("f",NAN);
         }
@@ -131,8 +117,7 @@ class PHPTimestore
 	  fseek($fh, 4*$point);
 	  if (!is_nan($value)) fwrite($fh,pack("f",$value));
     
-		if ($layer<5)
-		{
+    if ($layer<5) {
     
       // Averaging
 	    $first_point = floor($point / $decimation[$layer]) * $decimation[$layer];
@@ -149,11 +134,9 @@ class PHPTimestore
       $sum = 0.0;
 	
 	    $i=0;
-			while ($count--)
-			{
+	    while ($count--) {
         	$i++;
-					if (is_nan($d[$i]))
-					{
+			    if (is_nan($d[$i])) {
 				    // Skip unknown values
 				    continue;
 			    }
@@ -163,8 +146,7 @@ class PHPTimestore
 			    $sum_count ++;
 	    }
 
-			if ($sum_count>0)
-			{
+	    if ($sum_count>0) {
 		    $average = $sum / $sum_count;
 	    } else {
 		    $average = NAN;
@@ -361,33 +343,15 @@ class PHPTimestore
     
     $layer = 0;
     
-		if ($skipsize>=20)
-		{
-			$layer = 1; $interval *= 20;
-		}
-		if ($skipsize>=20*6)
-		{
-			$layer = 2; $interval *= 6;
-		}
-		if ($skipsize>=20*6*6)
-		{
-			$layer = 3; $interval *= 6;
-		}
-		if ($skipsize>=20*6*6*4)
-		{
-			$layer = 4; $interval *= 4;
-		}
-		if ($skipsize>=20*6*6*4*7)
-		{
-			$layer = 5; $interval *= 7;
-		}
+    if ($skipsize>=20) { $layer = 1; $interval *= 20; } 
+    if ($skipsize>=20*6) { $layer = 2; $interval *= 6; } 
+    if ($skipsize>=20*6*6) { $layer = 3; $interval *= 6; } 
+    if ($skipsize>=20*6*6*4) { $layer = 4; $interval *= 4; } 
+    if ($skipsize>=20*6*6*4*7) { $layer = 5; $interval *= 7; } 
     
     $dp_in_range = ($end - $start) / $interval;
     $skipsize = round($dp_in_range / $dp);
-		if ($skipsize<1)
-		{
-			$skipsize = 1;
-		}
+    if ($skipsize<1) $skipsize = 1;  
     
     $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
     $primaryfeedname = $this->dir.$feedname;
@@ -396,9 +360,7 @@ class PHPTimestore
     // Calculate the starting datapoint position in the timestore file 
     if ($start>$meta->start){
       $startpos = ceil(($start - $meta->start) / $interval);
-		}
-		else
-		{
+    } else {
       $startpos = 0;
     }
 
@@ -414,10 +376,7 @@ class PHPTimestore
       $pos = ($startpos + ($i * $skipsize));
 
       // Exit the loop if the position is beyond the end of the file
-			if ($pos*4 > $filesize-4)
-			{
-				break;
-			}
+      if ($pos*4 > $filesize-4) break;
 
       // read from the file
       fseek($fh,$pos*4);
