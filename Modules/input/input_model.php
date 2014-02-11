@@ -33,6 +33,23 @@ class Input
     public function check_node_id_valid($nodeid)
     {
         global $max_node_id_limit;
+        //
+        // Holy SHIT php is stupid. (int)"wat" returns 0. What the HELL?
+        //
+        // Issues: is_numeric allows all sorts of crazy crap. Octal? Yep.
+        // e-notation (+0123.45e6)? Yep. Hex? Yep. PHP doesn't seem to have
+        // a good way to check if a string will cast to a valid *integer*
+        // also, !crazy shit! like (int) Array({stuff})resuling in numeric "1"
+        // is apparently a thing (the php developers are on crack).
+        //
+        // Anyways, I'd still like to catch non-integer numbers at some point,
+        // but just checking against isNumeric will probably catch *most*
+        // of the potential issues
+        if (!is_numeric ($nodeid))
+        {
+            return false;
+        }
+
         $nodeid = (int) $nodeid;
 
         if (!isset($max_node_id_limit))
