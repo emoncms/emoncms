@@ -13,8 +13,8 @@
 
 function dial_widgetlist()
 {
-	var widgets =
-	{
+  var widgets =
+  {
     "dial":
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
@@ -22,9 +22,9 @@ function dial_widgetlist()
       "options":["feed","max","scale","units","type"],
       "optionstype":["feed","value","value","value","value"],
       "optionsname":[_Tr("Feed"),_Tr("Max value"),_Tr("Scale"),_Tr("Units"),_Tr("Type")],
-      "optionshint":[_Tr("Feed value"),_Tr("Max value to show"),_Tr("Scale to show"),_Tr("Units to show"),_Tr("Type to show")]            
+      "optionshint":[_Tr("Feed value"),_Tr("Max value to show"),_Tr("Scale to show"),_Tr("Units to show"),_Tr("Type to show")]
     }
-	};
+  };
   return widgets;
 }
 
@@ -63,12 +63,12 @@ function dial_fastupdate()
 
   function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type)
   {
-    if (!ctx) return; 
+    if (!ctx) return;
     maxvalue = 1 * maxvalue || 3000;
     units = units || "";
-		var size = 0;
-		if (width<height) size = width/2;
-		else size = height/2;
+    var size = 0;
+    if (width<height) size = width/2;
+    else size = height/2;
     size = size - (size*0.058/2);
     x = width/2; y = height/2;
 
@@ -79,7 +79,7 @@ function dial_fastupdate()
     var offset = 0;
     var segment = ["#c0e392","#9dc965","#87c03f","#70ac21","#378d42","#046b34"];
 
-		type = type || 0;
+    type = type || 0;
 
     if (type == 0)
     {
@@ -136,18 +136,18 @@ function dial_fastupdate()
     if (position>maxvalue) position = maxvalue;
     var a = 1.75 - ((position/maxvalue) * 1.5) + offset;
 
-	width = 0.785;
+  width = 0.785;
   var c=3*0.785;
-  var pos = 0; 
+  var pos = 0;
   var inner = size * 0.48;
 
   // Segments
-	for (var z in segment)
+  for (var z in segment)
   {
     ctx.fillStyle = segment[z];
     ctx.beginPath();
     ctx.arc(x,y,size,c+pos,c+pos+width+0.01,false);
-    ctx.lineTo(x,y); 
+    ctx.lineTo(x,y);
     ctx.closePath();
     ctx.fill();
     pos += width;
@@ -158,7 +158,7 @@ function dial_fastupdate()
   ctx.strokeStyle = "#fff";
   ctx.beginPath();
   ctx.arc(x,y,size,c,c+pos,false);
-  ctx.lineTo(x,y); 
+  ctx.lineTo(x,y);
   ctx.closePath();
   ctx.stroke();
 
@@ -171,31 +171,31 @@ function dial_fastupdate()
   ctx.lineWidth = (size*0.052).toFixed(0);
   //---------------------------------------------------------------
   ctx.beginPath();
-  ctx.moveTo(x+Math.sin(Math.PI*a-0.2)*inner,y+Math.cos(Math.PI*a-0.2)*inner); 
-  ctx.lineTo(x+Math.sin(Math.PI*a)*size,y+Math.cos(Math.PI*a)*size); 
-  ctx.lineTo(x+Math.sin(Math.PI*a+0.2)*inner,y+Math.cos(Math.PI*a+0.2)*inner); 
+  ctx.moveTo(x+Math.sin(Math.PI*a-0.2)*inner,y+Math.cos(Math.PI*a-0.2)*inner);
+  ctx.lineTo(x+Math.sin(Math.PI*a)*size,y+Math.cos(Math.PI*a)*size);
+  ctx.lineTo(x+Math.sin(Math.PI*a+0.2)*inner,y+Math.cos(Math.PI*a+0.2)*inner);
   ctx.arc(x,y,inner,1-(Math.PI*a-0.2),1-(Math.PI*a+5.4),true);
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
-  
+
   //---------------------------------------------------------------
 
   ctx.fillStyle = "#fff";
   ctx.textAlign    = "center";
   ctx.font = "bold "+(size*0.28)+"px arial";
-	if (position>100)
-	{
-		position = position.toFixed(0);
-	}
-	else if (position>10)
-	{
-		position = position.toFixed(1);
-	}
-	else
-	{
-		position = position.toFixed(2);
-	}
+  if (position>100)
+  {
+    position = position.toFixed(0);
+  }
+  else if (position>10)
+  {
+    position = position.toFixed(1);
+  }
+  else
+  {
+    position = position.toFixed(2);
+  }
   ctx.fillText(position+units,x,y+(size*0.125));
 
   }

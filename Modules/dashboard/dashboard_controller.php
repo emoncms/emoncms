@@ -1,30 +1,30 @@
 <?php
 
-  /*
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
+/*
+ All Emoncms code is released under the GNU Affero General Public License.
+ See COPYRIGHT.txt and LICENSE.txt.
 
     ---------------------------------------------------------------------
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
-  */
+*/
 
-  // dashboard/new						New dashboard
-  // dashboard/delete 				POST: id=			Delete dashboard
-  // dashboard/clone					POST: id=			Clone dashboard
-  // dashboard/thumb 					List dashboards
-  // dashboard/list         	List mode
-  // dashboard/view?id=1			View and run dashboard (id)
-  // dashboard/edit?id=1			Edit dashboard (id) with the draw editor
-  // dashboard/ckeditor?id=1	Edit dashboard (id) with the CKEditor
-  // dashboard/set POST				Set dashboard
-  // dashboard/setconf POST 	Set dashboard configuration
+// dashboard/new						New dashboard
+// dashboard/delete 				POST: id=			Delete dashboard
+// dashboard/clone					POST: id=			Clone dashboard
+// dashboard/thumb 					List dashboards
+// dashboard/list         	List mode
+// dashboard/view?id=1			View and run dashboard (id)
+// dashboard/edit?id=1			Edit dashboard (id) with the draw editor
+// dashboard/ckeditor?id=1	Edit dashboard (id) with the CKEditor
+// dashboard/set POST				Set dashboard
+// dashboard/setconf POST 	Set dashboard configuration
 
-  defined('EMONCMS_EXEC') or die('Restricted access');
+defined('EMONCMS_EXEC') or die('Restricted access');
 
-  function dashboard_controller()
-  {
+function dashboard_controller()
+{
     global $mysqli, $path, $session, $route, $user;
 
     require "Modules/dashboard/dashboard_model.php";
@@ -36,15 +36,15 @@
 
     if ($route->format == 'html')
     {
-        if ($route->action == "list" && $session['write']) 
+        if ($route->action == "list" && $session['write'])
         {
             $result = view("Modules/dashboard/Views/dashboard_list.php",array());
 
-            $menu = $dashboard->build_menu($session['userid'],"view"); 
+            $menu = $dashboard->build_menu($session['userid'],"view");
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('menu'=>$menu, 'type'=>"view"));
         }
 
-        if ($route->action == "view" && $session['read']) 
+        if ($route->action == "view" && $session['read'])
         {
             if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
             elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
@@ -56,11 +56,11 @@
               $result = view("Modules/dashboard/Views/dashboard_list.php",array());
             }
 
-            $menu = $dashboard->build_menu($session['userid'],"view");    
+            $menu = $dashboard->build_menu($session['userid'],"view");
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"view"));
         }
 
-        if ($route->action == "edit" && $session['write']) 
+        if ($route->action == "edit" && $session['write'])
         {
             if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
             elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
@@ -88,6 +88,6 @@
     // $result = $dashboard->get_main($session['userid'])
 
     return array('content'=>$result, 'submenu'=>$submenu);
-  }
+}
 
 ?>

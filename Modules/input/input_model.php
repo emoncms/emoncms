@@ -121,9 +121,9 @@ class Input
     // USES: redis input
     private function set_processlist($id, $processlist)
     {
-      // CHECK REDIS
-      $this->redis->hset("input:$id",'processList',$processlist);
-      $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
+        // CHECK REDIS
+        $this->redis->hset("input:$id",'processList',$processlist);
+        $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
 
     }
 
@@ -258,8 +258,8 @@ class Input
     // USES: redis input
     public function reset_process($id)
     {
-       $id = (int) $id;
-       $this->set_processlist($id, "");
+        $id = (int) $id;
+        $this->set_processlist($id, "");
     }
 
     // USES: redis input & user
@@ -273,10 +273,10 @@ class Input
 
         foreach ($inputids as $id)
         {
-          $row = $this->redis->hGetAll("input:$id");
-          if ($row['nodeid']==null) $row['nodeid'] = 0;
-          if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-          $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
+            $row = $this->redis->hGetAll("input:$id");
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
+            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
         }
 
         return $dbinputs;
@@ -295,11 +295,11 @@ class Input
         $inputids = $this->redis->sMembers("user:inputs:$userid");
         foreach ($inputids as $id)
         {
-          $row = $this->redis->hGetAll("input:$id");
-          $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-          $row['time'] = $lastvalue['time'];
-          $row['value'] = $lastvalue['value'];
-          $inputs[] = $row;
+            $row = $this->redis->hGetAll("input:$id");
+            $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
+            $row['time'] = $lastvalue['time'];
+            $row['value'] = $lastvalue['value'];
+            $inputs[] = $row;
         }
         return $inputs;
     }
@@ -324,8 +324,8 @@ class Input
 
     public function get_last_value($id)
     {
-      $id = (int) $id;
-      return $this->redis->hget("input:lastvalue:$id",'value');
+        $id = (int) $id;
+        return $this->redis->hget("input:lastvalue:$id",'value');
     }
 
 
@@ -357,15 +357,15 @@ class Input
                 $processDescription = $process[0];
                 // gets process description
                 if ($process[1] == ProcessArg::INPUTID)
-                  $arg = $this->get_name($arg);
+                    $arg = $this->get_name($arg);
                 // if input: get input name
                 elseif ($process[1] == ProcessArg::FEEDID)
-                  $arg = $this->feed->get_field($arg,'name');
+                    $arg = $this->feed->get_field($arg,'name');
                 // if feed: get feed name
 
                 $list[] = array(
-                  $processDescription,
-                  $arg
+                    $processDescription,
+                    $arg
                 );
                 // Populate list array
             }
@@ -387,55 +387,55 @@ class Input
 
     public function clean($userid)
     {
-      $result = "";
-      $qresult = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid'");
-      while ($row = $qresult->fetch_array())
-      {
-        $inputid = $row['id'];
-        if ($row['processList']==NULL || $row['processList']=='')
+        $result = "";
+        $qresult = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid'");
+        while ($row = $qresult->fetch_array())
         {
-          $result = $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-          $this->redis->del("input:$inputid");
-          $this->redis->srem("user:inputs:$userid",$inputid);
+            $inputid = $row['id'];
+            if ($row['processList']==NULL || $row['processList']=='')
+            {
+                $result = $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+                $this->redis->del("input:$inputid");
+                $this->redis->srem("user:inputs:$userid",$inputid);
 
-          $result .= "Deleted input: $inputid <br>";
+                $result .= "Deleted input: $inputid <br>";
+            }
         }
-      }
-      return $result;
+        return $result;
     }
 
     // Redis cache loaders
 
     private function load_input_to_redis($inputid)
     {
-      $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid'");
-      $row = $result->fetch_object();
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid'");
+        $row = $result->fetch_object();
 
-      $this->redis->sAdd("user:inputs:$userid", $row->id);
-      $this->redis->hMSet("input:$row->id",array(
-        'id'=>$row->id,
-        'nodeid'=>$row->nodeid,
-        'name'=>$row->name,
-        'description'=>$row->description,
-        'processList'=>$row->processList
-      ));
+        $this->redis->sAdd("user:inputs:$userid", $row->id);
+        $this->redis->hMSet("input:$row->id",array(
+            'id'=>$row->id,
+            'nodeid'=>$row->nodeid,
+            'name'=>$row->name,
+            'description'=>$row->description,
+            'processList'=>$row->processList
+        ));
 
     }
 
     private function load_to_redis($userid)
     {
-      $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid'");
-      while ($row = $result->fetch_object())
-      {
-        $this->redis->sAdd("user:inputs:$userid", $row->id);
-        $this->redis->hMSet("input:$row->id",array(
-          'id'=>$row->id,
-          'nodeid'=>$row->nodeid,
-          'name'=>$row->name,
-          'description'=>$row->description,
-          'processList'=>$row->processList
-        ));
-      }
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid'");
+        while ($row = $result->fetch_object())
+        {
+            $this->redis->sAdd("user:inputs:$userid", $row->id);
+            $this->redis->hMSet("input:$row->id",array(
+                'id'=>$row->id,
+                'nodeid'=>$row->nodeid,
+                'name'=>$row->name,
+                'description'=>$row->description,
+                'processList'=>$row->processList
+            ));
+        }
     }
 
 }

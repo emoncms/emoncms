@@ -14,14 +14,14 @@
 function feedvalue_widgetlist()
 {
   var widgets = {
-    "feedvalue": 
+    "feedvalue":
     {
       "offsetx":-40,"offsety":-30,"width":80,"height":60,
       "menu":"Widgets",
       "options":["feedname","units"],
       "optionstype":["feed","value"],
       "optionsname":[_Tr("Feed"),_Tr("Units")],
-      "optionshint":[_Tr("Feed value"),_Tr("Units to show")] 
+      "optionshint":[_Tr("Feed value"),_Tr("Units to show")]
     }
   }
   return widgets;
@@ -62,6 +62,7 @@ function feedvalue_slowupdate()
 
 function feedvalue_fastupdate()
 {
+
 }
 
 

@@ -13,7 +13,7 @@
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
-  
+
 function user_controller()
 {
     global $user, $path, $session, $route ,$allowusersregister;
@@ -27,7 +27,7 @@ function user_controller()
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         if ($route->action == 'logout' && $session['read']) {$user->logout(); header('Location: '.$path);}
     }
-    
+
     // JSON API
     if ($route->format == 'json')
     {
