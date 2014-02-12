@@ -19,16 +19,16 @@ function dial_widgetlist()
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
       "menu":"Widgets",
-      "options":["feed","max","scale","units","type"],
-      "optionstype":["feed","value","value","value","dropbox"],
-      "optionsname":[_Tr("Feed"),_Tr("Max value"),_Tr("Scale"),_Tr("Units"),_Tr("Type")],
-      "optionshint":[_Tr("Feed value"),_Tr("Max value to show"),_Tr("Scale to show"),_Tr("Units to show"),_Tr("Type to show")],
+      "options":["feed"                ,"max"                    ,"scale"              ,"units"              ,"offset"                                                                      ,"type"],
+      "optionstype":["feed"            ,"value"                  ,"value"              ,"value"              ,"value"                                                                       ,"dropbox"],
+      "optionsname":[_Tr("Feed")       ,_Tr("Max value")         ,_Tr("Scale")         ,_Tr("Units")         ,_Tr("Offset")                                                                 ,_Tr("Type")         ],
+      "optionshint":[_Tr("Feed value") ,_Tr("Max value to show") ,_Tr("Scale to show") ,_Tr("Units to show") ,_Tr("Static offset. Subtracted from value before computing needle position")  ,_Tr("Type to show") ],
       "optionsdata":[
         [],
         [],
         [],
         [],
-        [       // Options for the type combobox. Item is [typeID, "description"]
+        [        // Options for the type combobox. Item is [typeID, "description"]
           [0,    "Light <-> dark green, Zero at left"],
           [1,    "Red <-> Green, Zero at center"],
           [2,    "Green <-> Red, Zero at left"],
@@ -64,7 +64,15 @@ function dial_draw()
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
-      draw_gauge(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val*scale, $(this).attr("max"), $(this).attr("units"),$(this).attr("type"));
+      draw_gauge(widgetcanvas[id],
+                 0,
+                 0,
+                 $(this).width(),
+                 $(this).height(),val*scale,
+                 $(this).attr("max"),
+                 $(this).attr("units"),
+                 $(this).attr("type"),
+                 $(this).attr("offset"));
     }
   });
 }
@@ -81,7 +89,7 @@ function dial_fastupdate()
 
 
 
-function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type)
+function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset)
 {
   if (!ctx) return;
 
@@ -89,6 +97,10 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type)
   maxvalue = 1 * maxvalue || 3000;
   // if units == false: "". Else units
   units = units || "";
+  offset = 1*offset || 0;
+  var rawValue = position
+  position = position-offset
+
   var size = 0;
   if (width<height) size = width/2;
   else size = height/2;
@@ -212,19 +224,19 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type)
   ctx.fillStyle = "#fff";
   ctx.textAlign    = "center";
   ctx.font = "bold "+(size*0.28)+"px arial";
-  if (position>100)
+  if (rawValue>100)
   {
-    position = position.toFixed(0);
+    rawValue = rawValue.toFixed(0);
   }
-  else if (position>10)
+  else if (rawValue>10)
   {
-    position = position.toFixed(1);
+    rawValue = rawValue.toFixed(1);
   }
   else
   {
-    position = position.toFixed(2);
+    rawValue = rawValue.toFixed(2);
   }
-  ctx.fillText(position+units,x,y+(size*0.125));
+  ctx.fillText(rawValue+units,x,y+(size*0.125));
 
 }
 
