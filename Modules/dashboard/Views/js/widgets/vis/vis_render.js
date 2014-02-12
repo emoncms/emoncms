@@ -73,10 +73,10 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["power","kwhd"],
-      "optionstype":["feedid","feedid"],
-      "optionsname":[_Tr("Power"),_Tr("kwhd")],
-      "optionshint":[_Tr("Power to show"),_Tr("kwhd source")], 
+      "options":["power","kwhd", "temp"],
+      "optionstype":["feedid","feedid","feedid"],
+      "optionsname":[_Tr("Power"),_Tr("kwhd"), _Tr("temp")],
+      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"), _Tr("average temperature")], 
       "html":""
     },
 

@@ -50,7 +50,7 @@
       'stacked'=> array('options'=>array(array('bottom',2),array('top',2))),
       'stackedsolar'=> array('options'=>array(array('solar',2),array('consumption',2))),
       'threshold'=> array('options'=>array(array('feedid',3),array('thresholdA',6,500),array('thresholdB',6,2500))),
-      'simplezoom'=> array('options'=>array(array('power',1),array('kwhd',2))),
+      'simplezoom'=> array('options'=>array(array('power',1),array('kwhd',2),array('temp',1))),
       'orderbars'=> array('options'=>array(array('feedid',2))),
       'orderthreshold'=> array('options'=>array(array('feedid',3),array('power',1),array('thresholdA',6,500),array('thresholdB',6,2500))),
       'editrealtime'=> array('options'=>array(array('feedid',1))),

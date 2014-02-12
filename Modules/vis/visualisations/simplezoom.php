@@ -21,6 +21,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
  
 <?php if (!$embed) { ?>
 <h2>Simpler kWh/d zoomer</h2>
@@ -59,6 +60,7 @@
 
   var power = "<?php echo $power; ?>";
   var kwhd = "<?php echo $kwhd; ?>";
+  var temp = "<?php echo $temp; ?>";
 
   var timeWindow = (3600000*24.0*30);				//Initial time window
   var start = ((new Date()).getTime())-timeWindow;		//Get start time
@@ -68,12 +70,14 @@
   var panning = false;
 
   var timeWindowChanged = 0;
+  var interval = 3600*24;
 
   var plotdata = [];
 
   var feedlist = [];
-  feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
-  feedlist[1] = {id: kwhd, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+  feedlist[0] = {id: power, selected: 0, type: 0, plot: {data: null, lines: { show: true, fill: true } } };
+  feedlist[1] = {id: kwhd, selected: 1, type: 0, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+  feedlist[2] = {id: temp, selected: 1, type: 1, plot: {data: null, points: { show: true, fill: true }, lines: { show: true, fill: false } } };
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
@@ -100,8 +104,20 @@
     for(var i in feedlist) {
       if (timeWindowChanged) feedlist[i].plot.data = null;
       if (feedlist[i].selected) {        
-        if (!feedlist[i].plot.data) feedlist[i].plot.data = get_feed_data(feedlist[i].id,start,end,500);
-        if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
+        if (!feedlist[i].plot.data) {
+          if (feedlist[i].type == 0) {
+            // Normal get feed data
+            feedlist[i].plot.data = get_feed_data(feedlist[i].id,start,end,500);
+          } else if (feedlist[i].type == 1) {
+            // Get timestore daily average
+            var d = new Date()
+            var n = d.getTimezoneOffset();
+            var offset = n / -60;
+            var datastart = (Math.round((start/1000.0)/interval) * interval)+3600*offset;
+            feedlist[i].plot.data = feed.get_timestore_average(feedlist[i].id,datastart*1000,end+(interval*1000),interval);
+          }
+        }
+        if (feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
       }
     }
 
@@ -155,6 +171,7 @@
       timeWindowChanged = 1;
       feedlist[0].selected = 1;
       feedlist[1].selected = 0;
+      feedlist[2].selected = 0;
       $('#mode').val("kwhd");
       vis_feed_data();
     }
@@ -176,10 +193,12 @@
       start = kwhd_start; end = kwhd_end; timeWindowChanged = 1;
       feedlist[0].selected = 0;
       feedlist[1].selected = 1;
+      feedlist[2].selected = 1;
       $('#mode').val("power");
     } else if ($(this).val() == "power") {
       feedlist[0].selected = 1;
       feedlist[1].selected = 0;
+      feedlist[2].selected = 0;
       $('#mode').val("kwhd");
     }
     vis_feed_data();
