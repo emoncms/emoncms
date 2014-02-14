@@ -95,7 +95,7 @@
                 [{data: data, lines: { fill: true }}],
                 {xaxis: { mode: "time", timezone: "browser"},
                 //grid: { show: true, hoverable: true, clickable: true },
-                selection: { mode: "xy" }
+                selection: { mode: "x" }
             });
             }
 

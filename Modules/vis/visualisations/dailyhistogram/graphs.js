@@ -49,7 +49,7 @@ function plotHistogram(data, start, end)
   }], {
     xaxis: { mode: null },
     grid: { show: true, hoverable: true, clickable: true },
-    selection: { mode: "xy" }
+    selection: { mode: "x" }
   } );
 }
 
