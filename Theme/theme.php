@@ -19,59 +19,66 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
         <style>
-          html, body { height: 100%; }
-
-          #wrap {
-            min-height: 100%;
-            height: auto !important;
-            height: 100%;
-            /* Negative indent footer by it's height */
-            margin: 0 auto -40px;
-          }
-
-          #push,
-          #footer {
-            height: 30px;
-          }
-
-          #footer {
-            background-color: #f5f5f5;
-
-            text-align: center;
-            font-size: 13px;
-            font-weight: bold;
-
-            padding-top:10px;
-          }
-
-          #footer a {
-            color: #77b4d9;
-            text-decoration: none;
-          }
-
-          #submenu {
-            width:100%; 
-            background-color:#ddd; 
-            height:27px;
-          }
-
-          #topspacer {padding-top: 42px;}
-
-          @media (min-width: 768px) and (max-width: 979px) {
-            #topspacer {margin-top:-20px; padding-top: 0px; }
-          }
-
-          /* Lastly, apply responsive CSS fixes as necessary */
-          @media (max-width: 767px) {
-            #submenu,
-            #footer {
-              margin-left: -20px;
-              margin-right: -20px;
-              padding-left: 20px;
-              padding-right: 20px;
+            html, body
+            {
+                height: 100%;
             }
-            #topspacer {margin-top:-20px; padding-top: 0px; }
-          }
+
+            #wrap {
+                min-height: 100%;
+                height: auto !important;
+                height: 100%;
+                /* Negative indent footer by it's height */
+                margin: 0 auto -40px;
+            }
+
+            #push,
+            #footer {
+                height: 30px;
+            }
+
+            #footer {
+                background-color: #f5f5f5;
+
+                text-align: center;
+                font-size: 13px;
+                font-weight: bold;
+
+                padding-top:10px;
+            }
+
+            #footer a {
+                color: #77b4d9;
+                text-decoration: none;
+            }
+
+            #submenu {
+                width:100%;
+                background-color:#ddd;
+                height:27px;
+            }
+
+            #topspacer {padding-top: 42px;}
+
+            @media (min-width: 768px) and (max-width: 979px) {
+                #topspacer {margin-top:-20px; padding-top: 0px; }
+            }
+
+            /* Lastly, apply responsive CSS fixes as necessary */
+            @media (max-width: 767px) {
+                #submenu,
+                #footer {
+                    margin-left: -20px;
+                    margin-right: -20px;
+                    padding-left: 20px;
+                    padding-right: 20px;
+                }
+                #topspacer
+                {
+                    margin-top:-20px;
+                     padding-top: 0px;
+                }
+            }
 
         </style>
 
@@ -100,7 +107,7 @@
                     <div class="nav-collapse collapse">
                       <?php if (!isset($runmenu)) $runmenu = '';
                             echo $mainmenu.$runmenu;
-                      ?> 
+                      ?>
                     </div>
                 </div>
             </div>
@@ -108,13 +115,13 @@
 
         <div id="topspacer"></div>
 
-        <?php if (isset($submenu) && ($submenu)) { ?>  
+        <?php if (isset($submenu) && ($submenu)) { ?>
           <div id="submenu">
               <div class="container">
-                  <?php echo $submenu; ?> 
+                  <?php echo $submenu; ?>
               </div>
           </div><br>
-        <?php } ?> 
+        <?php } ?>
 
         <?php
           if (!isset($fullwidth)) $fullwidth = false;
@@ -130,12 +137,12 @@
         <?php } ?>
 
 
-        <div style="clear:both; height:60px;"></div> 
+        <div style="clear:both; height:60px;"></div>
         </div>
 
         <div id="footer">
             <?php echo _('Powered by '); ?>
-            <a href="http://openenergymonitor.org">openenergymonitor.org</a> 
+            <a href="http://openenergymonitor.org">openenergymonitor.org</a>
         </div>
 
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>

@@ -14,21 +14,21 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
-    
+
     private $mysqli;
     private $rememberme;
     private $enable_rememberme = false;
     private $redis;
-    
+
     public function __construct($mysqli,$redis,$rememberme)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
         global $enable_rememberme;
         $this->enable_rememberme = $enable_rememberme;
-		
+
         $this->mysqli = $mysqli;
         $this->rememberme = $rememberme;
-     
+
         $this->redis = $redis;
     }
 
@@ -46,36 +46,36 @@ class User
         //----------------------------------------------------
         if($this->redis->exists("writeapikey:$apikey_in"))
         {
-          $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
-          $session['read'] = 1;
-          $session['write'] = 1;
-          $session['admin'] = 0;
-          $session['editmode'] = TRUE;
-          $session['lang'] = "en";
+            $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
+            $session['read'] = 1;
+            $session['write'] = 1;
+            $session['admin'] = 0;
+            $session['editmode'] = TRUE;
+            $session['lang'] = "en";
         }
         else
-        {        
-          $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
-          if ($result->num_rows == 1) 
-          {
-              $row = $result->fetch_array();
-              if ($row['id'] != 0)
-              {
-                  //session_regenerate_id();
-                  $session['userid'] = $row['id'];
-                  $session['read'] = 1;
-                  $session['write'] = 1;
-                  $session['admin'] = 0;
-                  $session['editmode'] = TRUE;
-                  $session['lang'] = "en";
-                  
-                  $this->redis->set("writeapikey:$apikey_in",$row['id']);
-              }
-          }
-          else
-          {
+        {
+            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
+            if ($result->num_rows == 1)
+            {
+                $row = $result->fetch_array();
+                if ($row['id'] != 0)
+                {
+                    //session_regenerate_id();
+                    $session['userid'] = $row['id'];
+                    $session['read'] = 1;
+                    $session['write'] = 1;
+                    $session['admin'] = 0;
+                    $session['editmode'] = TRUE;
+                    $session['lang'] = "en";
+
+                    $this->redis->set("writeapikey:$apikey_in",$row['id']);
+                }
+            }
+            else
+            {
             $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
-            if ($result->num_rows == 1) 
+            if ($result->num_rows == 1)
             {
                 $row = $result->fetch_array();
                 if ($row['id'] != 0)
@@ -89,7 +89,7 @@ class User
                     $session['lang'] = "en";
                 }
             }
-          }
+            }
         }
 
         //----------------------------------------------------
@@ -104,18 +104,18 @@ class User
         {
             // if php session exists
             if (!empty($_SESSION['userid'])) {
-              // if rememberme emoncms cookie exists but is not valid then  
-              // a valid cookie is a cookie who's userid, token and persistant token match a record in the db
-              if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
+                // if rememberme emoncms cookie exists but is not valid then
+                // a valid cookie is a cookie who's userid, token and persistant token match a record in the db
+                if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
                 $this->logout();
-              }
-            } 
-            else 
+                }
+            }
+            else
             {
 
-              $loginresult = $this->rememberme->login();
-              if ($loginresult) 
-              {
+                $loginresult = $this->rememberme->login();
+                if ($loginresult)
+                {
                 // Remember me login
                 $_SESSION['userid'] = $loginresult;
                 $_SESSION['read'] = 1;
@@ -123,13 +123,13 @@ class User
                 // There is a chance that an attacker has stolen the login token, so we store
                 // the fact that the user was logged in via RememberMe (instead of login form)
                 $_SESSION['cookielogin'] = true;
-              }
-              else
-              {
-                if($this->rememberme->loginTokenWasInvalid()) {
-                  // Stolen
                 }
-              }
+                else
+                {
+                if($this->rememberme->loginTokenWasInvalid()) {
+                    // Stolen
+                }
+                }
             }
         }
 
@@ -172,9 +172,9 @@ class User
         $apikey_read = md5(uniqid(mt_rand(), true));
 
         if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
-        	return array('success'=>false, 'message'=>_("Error creating user"));
+            return array('success'=>false, 'message'=>_("Error creating user"));
         }
-        
+
         // Make the first user an admin
         $userid = $this->mysqli->insert_id;
         if ($userid == 1) $this->mysqli->query("UPDATE users SET admin = 1 WHERE id = '1'");
@@ -189,8 +189,8 @@ class User
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
 
         // filter out all except for alphanumeric white space and dash
-        //if (!ctype_alnum($username)) 
-        $username_out = preg_replace('/[^\w\s-]/','',$username); 
+        //if (!ctype_alnum($username))
+        $username_out = preg_replace('/[^\w\s-]/','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
@@ -200,11 +200,11 @@ class User
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language FROM users WHERE username = '$username'");
 
         if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
-     
+
         $userData = $result->fetch_object();
         $hash = hash('sha256', $userData->salt . hash('sha256', $password));
 
-        if ($hash != $userData->password) 
+        if ($hash != $userData->password)
         {
             return array('success'=>false, 'message'=>_("Incorrect password, if your sure its correct try clearing your browser cache"));
         }
@@ -283,7 +283,7 @@ class User
 
         $result = $this->mysqli->query("SELECT id FROM users WHERE username = '$username'");
         $row = $result->fetch_array();
-        if (!$row[0]) 
+        if (!$row[0])
         {
             $this->mysqli->query("UPDATE users SET username = '$username' WHERE id = '$userid'");
             return array('success'=>true, 'message'=>_("Username updated"));
@@ -344,7 +344,7 @@ class User
     public function get_lang($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT lang FROM users WHERE id = '$userid';"); 
+        $result = $this->mysqli->query("SELECT lang FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
         return $row['lang'];
     }

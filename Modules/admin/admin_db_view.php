@@ -4,20 +4,20 @@
 <br>
 
 <table class="table" >
-<tr><th><?php echo _('Schema item'); ?></th><th><?php echo _('Name'); ?></th><th><?php echo _('Status'); ?></th></tr>
-<?php $i=0; foreach ($out as $line) { $i++; ?>
+    <tr><th><?php echo _('Schema item'); ?></th><th><?php echo _('Name'); ?></th><th><?php echo _('Status'); ?></th></tr>
+    <?php $i=0; foreach ($out as $line) { $i++; ?>
 
-<?php if ($line[0]=='Table') { ?>
+    <?php if ($line[0]=='Table') { ?>
 
-<tr class="d<?php echo ($i & 1); ?>" ><th><?php echo $line[0]; ?></th><th><?php echo $line[1]; ?></th><th><?php echo $line[2]; ?></th></tr>
+    <tr class="d<?php echo ($i & 1); ?>" ><th><?php echo $line[0]; ?></th><th><?php echo $line[1]; ?></th><th><?php echo $line[2]; ?></th></tr>
 
-<?php } ?>
+    <?php } ?>
 
-<?php if ($line[0]=='field') { ?>
+    <?php if ($line[0]=='field') { ?>
 
-<tr class="d<?php echo ($i & 1); ?>" ><td><i><?php echo $line[0]; ?></i></td><td><i><?php echo $line[1]; ?></i></td><td><i><?php echo $line[2]; ?></i></td></tr>
+    <tr class="d<?php echo ($i & 1); ?>" ><td><i><?php echo $line[0]; ?></i></td><td><i><?php echo $line[1]; ?></i></td><td><i><?php echo $line[2]; ?></i></td></tr>
 
-<?php } ?>
+    <?php } ?>
 
-<?php } ?>
+    <?php } ?>
 </table>

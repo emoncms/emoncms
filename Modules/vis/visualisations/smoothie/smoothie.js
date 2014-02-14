@@ -44,7 +44,7 @@ function TimeSeries(options) {
   options.resetBounds = options.resetBounds || false; // Enable or disable the resetBounds timer
   this.options = options;
   this.data = [];
-  
+
   this.maxValue = Number.NaN; // The maximum value ever seen in this time series.
   this.minValue = Number.NaN; // The minimum value ever seen in this time series.
 
@@ -93,7 +93,7 @@ SmoothieChart.prototype.addTimeSeries = function(timeSeries, options) {
 };
 
 SmoothieChart.prototype.removeTimeSeries = function(timeSeries) {
-	this.seriesSet.splice(this.seriesSet.indexOf(timeSeries), 1);
+  this.seriesSet.splice(this.seriesSet.indexOf(timeSeries), 1);
 };
 
 SmoothieChart.prototype.streamTo = function(canvas, delay) {
@@ -131,7 +131,7 @@ SmoothieChart.prototype.render = function(canvas, time) {
 
   // Move the origin.
   canvasContext.translate(dimensions.left, dimensions.top);
-  
+
   // Create a clipped rectangle - anything we draw will be constrained to this rectangle.
   // This prevents the occasional pixels from curves near the edges overrunning and creating
   // screen cheese (that phrase should neeed no explanation).
@@ -182,15 +182,15 @@ SmoothieChart.prototype.render = function(canvas, time) {
   var minValue = Number.NaN;
 
   for (var d = 0; d < this.seriesSet.length; d++) {
-      // TODO(ndunn): We could calculate / track these values as they stream in.
-      var timeSeries = this.seriesSet[d].timeSeries;
-      if (!isNaN(timeSeries.maxValue)) {
-          maxValue = !isNaN(maxValue) ? Math.max(maxValue, timeSeries.maxValue) : timeSeries.maxValue;
-      }
+    // TODO(ndunn): We could calculate / track these values as they stream in.
+    var timeSeries = this.seriesSet[d].timeSeries;
+    if (!isNaN(timeSeries.maxValue)) {
+        maxValue = !isNaN(maxValue) ? Math.max(maxValue, timeSeries.maxValue) : timeSeries.maxValue;
+    }
 
-      if (!isNaN(timeSeries.minValue)) {
-          minValue = !isNaN(minValue) ? Math.min(minValue, timeSeries.minValue) : timeSeries.minValue;
-      }
+    if (!isNaN(timeSeries.minValue)) {
+        minValue = !isNaN(minValue) ? Math.min(minValue, timeSeries.minValue) : timeSeries.minValue;
+    }
   }
 
   if (isNaN(maxValue) && isNaN(minValue)) {
@@ -290,11 +290,11 @@ SmoothieChart.prototype.render = function(canvas, time) {
 
   // Draw the axis values on the chart.
   if (!options.labels.disabled) {
-      canvasContext.fillStyle = options.labels.fillStyle;
-      var maxValueString = parseFloat(maxValue).toFixed(2);
-      var minValueString = parseFloat(minValue).toFixed(2);
-      canvasContext.fillText(maxValueString, dimensions.width - canvasContext.measureText(maxValueString).width - 2, 10);
-      canvasContext.fillText(minValueString, dimensions.width - canvasContext.measureText(minValueString).width - 2, dimensions.height - 2);
+    canvasContext.fillStyle = options.labels.fillStyle;
+    var maxValueString = parseFloat(maxValue).toFixed(2);
+    var minValueString = parseFloat(minValue).toFixed(2);
+    canvasContext.fillText(maxValueString, dimensions.width - canvasContext.measureText(maxValueString).width - 2, 10);
+    canvasContext.fillText(minValueString, dimensions.width - canvasContext.measureText(minValueString).width - 2, dimensions.height - 2);
   }
 
   canvasContext.restore(); // See .save() above.

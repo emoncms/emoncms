@@ -8,30 +8,30 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
 */
-  
+
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
-  
+
 // Check if settings.php file exists
 if(file_exists(dirname(__FILE__)."/settings.php"))
 {
     // Load settigs.php
     require_once('settings.php');
-    
+
     if (!isset($default_engine)) $default_engine = Engine::TIMESTORE;
-    
+
     // Set display errors
     if (isset($display_errors) && ($display_errors)) {
-        error_reporting(E_ALL);      
-        ini_set('display_errors', 'on');      
+        error_reporting(E_ALL);
+        ini_set('display_errors', 'on');
     }
-     
+
 }
 else
-{   
+{
     echo 'Copy and modify default.settings.php to settings.php<br>';
-    echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';    
-    die;    
+    echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';
+    die;
 }
