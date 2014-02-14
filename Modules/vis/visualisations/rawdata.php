@@ -1,6 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
+
     
 <!--
    All Emoncms code is released under the GNU Affero General Public License.
@@ -11,7 +9,9 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
 -->
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
 <?php
   global $path, $embed;
 ?>
@@ -31,8 +31,10 @@
 <?php } ?>
 
     <div id="graph_bound" style="width:100%; height:400px; position:relative; ">
-      <div id="graph"></div>
-      <div style="position:absolute; top:20px; left:40px; opacity:0.5;">
+			<div id="graph">
+
+			</div>
+			<div id="graph_buttons" style="position:absolute; top:20px; left:40px; opacity:0.5; display: none;">
 
         <input class="time" type="button" value="D" time="1"/>
         <input class="time" type="button" value="W" time="7"/>
@@ -62,6 +64,15 @@
 
   var embed = <?php echo $embed; ?>;
   
+			var plotColour = "#<?php echo $colour; ?>";
+			// Some browsers want the colour codes to be prepended with a "#". Therefore, we
+			// add one if it's not already there
+			if (plotColour.indexOf("#") == -1)
+			{
+				plotColour = "#" + plotColour;
+			}
+
+			var toolTipPrecision = 2;		// Show two decimal places
   var $graph_bound = $('#graph_bound');
   var $graph = $('#graph').width($graph_bound.width()).height($('#graph_bound').height());
 
@@ -70,6 +81,7 @@
   var timeWindow = (3600000*24.0*7);	//Initial time window
   var start = +new Date - timeWindow;	//Get start time
   var end = +new Date;				    //Get end time
+			var previousPoint = [0,0];		// Define previousPoint so we don't get errors at startup
 
   var graph_data = [];
   vis_feed_data();
@@ -87,8 +99,11 @@
         get_feed_data_async(feedid,start,end,1000, function(response){
             graph_data = response;
             var stats = power_stats(graph_data);
-            var out = "Average: "+stats['average'].toFixed(0)+units;
-            if (units=='W') out+= " | "+stats['kwh'].toFixed(2)+" kWh";
+								var out = "Average: "+stats['average'].toFixed(1)+units;
+								if (units=='W')
+								{
+										out+= " | "+stats['kwh'].toFixed(2)+" kWh";
+								}
             $("#stats").html(out);   
             plot();
         });
@@ -97,17 +112,102 @@
 
   function plot()
   {
-    var plot = $.plot($graph, [{data: graph_data, lines: { show: true, fill: plotfill }}], {
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-      selection: { mode: "xy" }
-    });
+				var plotData = [
+									{
+										data: graph_data,
+										color: plotColour,
+										lines:
+										{
+											show: true,
+											fill: plotfill
+										}
+									}
+								];
+
+				var plotOptions = {
+						grid:
+						{
+							show: true,
+							hoverable: true,
+							clickable: true
+						},
+						xaxis:
+						{
+							mode: "time",
+							timezone: "browser",
+							min: start,
+							max: end
+						},
+						selection:
+						{
+							mode: "x"
+						}
+					};
+				var plot = $.plot($graph, plotData, plotOptions);
   }
 
   //--------------------------------------------------------------------------------------
   // Graph zooming
   //--------------------------------------------------------------------------------------
-  $graph.bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
+			$graph.bind("plotselected",
+					function (event, ranges)
+					{
+						start = ranges.xaxis.from;
+						end = ranges.xaxis.to;
+						vis_feed_data();
+					}
+				);
+			$graph.bind("plothover",
+				function (event, pos, item)
+					{
+							if (item) {
+								if (previousPoint != item.datapoint)
+								{
+									previousPoint = item.datapoint;
+
+									$("#tooltip").remove();
+									var itemTime = item.datapoint[0];
+									var itemVal = item.datapoint[1];
+
+									// I'd like to eventually add colour hinting to the background of the tooltop.
+									// This is why showTooltip has the bgColour parameter.
+									showTooltip(item.pageX, item.pageY, itemVal.toFixed(toolTipPrecision) + " " + units, "#DDDDDD");
+								}
+							}
+							else
+							{
+								$("#tooltip").remove();
+								previousPoint = null;
+							}
+						})
+
+			function showTooltip(x, y, contents, bgColour)
+			{
+
+				var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
+				var elem = $('<div id="tooltip">' + contents + '</div>').css({
+					position: 'absolute',
+					display: 'none',
+					'font-weight':'bold',
+					border: '1px solid rgb(255, 221, 221)',
+					padding: '2px',
+					'background-color': bgColour,
+					opacity: '0.8'
+				}).appendTo("body").fadeIn(200);
+				//x = x - elem.width();
+				//x = x - elem.width();
+				elem.css({
+					top: y - elem.height() - offset,
+					left: x - elem.width() - offset,
+				});
+			};
+
+			// Fade in/out the control buttons on mouse-over the plot container
+			$("#graph_bound").mouseenter(function(){
+				$("#graph_buttons").stop().fadeIn();
+			}).mouseleave(function(){
+				$("#graph_buttons").stop().fadeOut();
+			});
   //----------------------------------------------------------------------------------------------
   // Operate buttons
   //----------------------------------------------------------------------------------------------

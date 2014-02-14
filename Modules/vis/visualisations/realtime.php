@@ -1,7 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
-<!----------------------------------------------------------------------------------------------------
+<!--
   
    All Emoncms code is released under the GNU Affero General Public License.
    See COPYRIGHT.txt and LICENSE.txt.
@@ -11,7 +9,9 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
 
--------------------------------------------------------------------------------------->
+-->
+<html>
+	<head>
 
  <?php
   global $path, $embed;
@@ -23,9 +23,9 @@
     </head>
     <body>
     
- <!---------------------------------------------------------------------------------------------------
+		 <!--
  // Time window buttons
- ---------------------------------------------------------------------------------------------------->
+		 -->
 <?php if (!$embed) { ?>
 <h2>Realtime data: <?php echo $feedidname; ?></h2>
 <?php } ?>

@@ -21,6 +21,8 @@
   $default_engine = Engine::TIMESTORE;
   
   
+  // Checks for limiting garbage data?
+  $max_node_id_limit = 32;
   
   $timestore_adminkey = "";
 
