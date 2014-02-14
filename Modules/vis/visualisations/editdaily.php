@@ -83,7 +83,7 @@
         var plot = $.plot($("#graph"), [plotdata], {
             grid: { show: true, clickable: true},
             xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-            selection: { mode: "xy" }
+            selection: { mode: "x" }
         });
 
     }

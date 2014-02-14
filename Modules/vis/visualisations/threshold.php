@@ -85,7 +85,7 @@
             },
             grid: { show: true, hoverable: true, clickable: true },
             xaxis: { mode: "time", timezone: "browser", min: start, max: end, minTickSize: [1, "day"], tickLength: 1 },
-            selection: { mode: "xy" },
+            selection: { mode: "x" },
             legend: { position: "nw"}
         });
     }

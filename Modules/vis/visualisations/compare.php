@@ -191,7 +191,7 @@
         {data: powerY_cal, lines: { show: true }}], {
             grid: { show: true, hoverable: true, clickable: true },
             xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-            selection: { mode: "xy" }
+            selection: { mode: "x" }
         });
 
         var plot = $.plot($("#diff"), [{color:2, data: diff, lines: { show: true }}], {

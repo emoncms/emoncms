@@ -57,7 +57,7 @@ function cylinder_fastupdate()
   function draw_cylinder(ctx,cyl_bot,cyl_top,width,height)
   {
 
-    console.log("Draw cylinder");
+    // console.log("Draw cylinder");
     if (!ctx) console.log("No CTX");
     if (!ctx) return;
 

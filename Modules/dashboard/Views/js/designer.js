@@ -168,11 +168,16 @@ var designer = {
     var options_name = widgets[widget]["optionsname"];
     var optionshint = widgets[widget]["optionshint"];
 
+    // Used for defining data to be pre-loaded into the relevant selector
+    var optionsdata = widgets[widget]["optionsdata"];
+
     // Build options table html
     var options_html = "<table>";
     for (z in box_options)
     {
+      // look into the designer DOM to extract the div parameters from the selected widget.
       var val = $("#"+designer.selected_box).attr(box_options[z]);
+
       if (val == undefined) val="";
 
       options_html += "<tr><td>"+options_name[z]+":</td>";
@@ -182,8 +187,10 @@ var designer = {
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in feedlist)
         {
-        var selected = ""; if (val == feedlist[i]['name'].replace(/\s/g, '-')) selected = "selected";
-        options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['name']+"</option>";
+          var selected = "";
+          if (val == feedlist[i]['name'].replace(/\s/g, '-'))
+            selected = "selected";
+          options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['name']+"</option>";
         }
       }
 
@@ -192,8 +199,10 @@ var designer = {
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in feedlist)
         {
-        var selected = ""; if (val == feedlist[i]['id']) selected = "selected";
-        options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+          var selected = "";
+          if (val == feedlist[i]['id'])
+            selected = "selected";
+          options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
         }
       }
 
@@ -202,8 +211,10 @@ var designer = {
         options_html += "<td><select id='"+box_options[z]+"' class='options' >";
         for (i in multigraphs)
         {
-        var selected = ""; if (val == multigraphs[i]['id']) selected = "selected";
-        options_html += "<option value='"+multigraphs[i]['id']+"' "+selected+" >"+multigraphs[i]['id']+"</option>";
+          var selected = "";
+          if (val == multigraphs[i]['id'])
+            selected = "selected";
+          options_html += "<option value='"+multigraphs[i]['id']+"' "+selected+" >"+multigraphs[i]['id']+"</option>";
         }
       }
 
@@ -213,6 +224,33 @@ var designer = {
         options_html += "<td><textarea class='options' id='"+box_options[z]+"' >"+val+"</textarea>"
       }
 
+      // Combobox for selecting options
+      else if (options_type && options_type[z] == "dropbox" && optionsdata[z])  // Check we have optionsdata before deciding to draw a combobox
+      {
+        options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+        for (i in optionsdata[z])
+        {
+          var selected = "";
+          if (val == optionsdata[z][i][0])
+            selected = "selected";
+          options_html += "<option "+selected+" value=\""+optionsdata[z][i][0]+"\">"+optionsdata[z][i][1]+"</option>";
+        }
+      }
+
+      // // Radio-buttons for selecting options
+      // else if (options_type && options_type[z] == "toggle" && optionsdata[z])  // Check we have optionsdata before deciding to draw a combobox
+      // {
+      //  options_html += "<td>";
+      //  for (i in optionsdata[z])
+      //  {
+      //      var selected = "";
+      //      if (val == optionsdata[z][i][0])
+      //          selected = "checked";
+
+      //      options_html += "<input type='radio' name='"+box_options[z]+"' value='0' style='vertical-align: baseline; padding: 5px; margin: 5px;' "+selected+">"+optionsdata[z][i];+"<br>"
+      //  }
+      // }
+
       else
       {
         options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ >"
@@ -221,6 +259,7 @@ var designer = {
       options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";
 
     }
+    var x = 1/0;
 
     options_html += "</table>";
 
