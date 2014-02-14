@@ -471,6 +471,7 @@ class Process
       if ($value < $last_val) $this->feed->update_data($feedid, $time_now, $feedtime, $value);
     }
     return $value;
+
   }
 
   // No longer used

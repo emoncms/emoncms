@@ -13,7 +13,8 @@
 
 function dial_widgetlist()
 {
-  var widgets = {
+	var widgets =
+	{
     "dial":
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
@@ -23,7 +24,7 @@ function dial_widgetlist()
       "optionsname":[_Tr("Feed"),_Tr("Max value"),_Tr("Scale"),_Tr("Units"),_Tr("Type")],
       "optionshint":[_Tr("Feed value"),_Tr("Max value to show"),_Tr("Scale to show"),_Tr("Units to show"),_Tr("Type to show")]            
     }
-  }
+	};
   return widgets;
 }
 
@@ -65,7 +66,9 @@ function dial_fastupdate()
     if (!ctx) return; 
     maxvalue = 1 * maxvalue || 3000;
     units = units || "";
-    var size = 0; if (width<height) size = width/2; else size = height/2;
+		var size = 0;
+		if (width<height) size = width/2;
+		else size = height/2;
     size = size - (size*0.058/2);
     x = width/2; y = height/2;
 
@@ -76,7 +79,7 @@ function dial_fastupdate()
     var offset = 0;
     var segment = ["#c0e392","#9dc965","#87c03f","#70ac21","#378d42","#046b34"];
 
-    var type = type || 0;
+		type = type || 0;
 
     if (type == 0)
     {
@@ -133,13 +136,13 @@ function dial_fastupdate()
     if (position>maxvalue) position = maxvalue;
     var a = 1.75 - ((position/maxvalue) * 1.5) + offset;
 
+	width = 0.785;
   var c=3*0.785;
-  var width = 0.785; 
   var pos = 0; 
   var inner = size * 0.48;
 
   // Segments
-  for (z in segment)
+	for (var z in segment)
   {
     ctx.fillStyle = segment[z];
     ctx.beginPath();
@@ -181,7 +184,18 @@ function dial_fastupdate()
   ctx.fillStyle = "#fff";
   ctx.textAlign    = "center";
   ctx.font = "bold "+(size*0.28)+"px arial";
-  if (position>10) position = position.toFixed(0); else position = position.toFixed(1);
+	if (position>100)
+	{
+		position = position.toFixed(0);
+	}
+	else if (position>10)
+	{
+		position = position.toFixed(1);
+	}
+	else
+	{
+		position = position.toFixed(2);
+	}
   ctx.fillText(position+units,x,y+(size*0.125));
 
   }

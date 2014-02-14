@@ -29,10 +29,10 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","fill","units"],
-      "optionstype":["feedid","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Units")],
-      "optionshint":[_Tr("Feed source"),_Tr("Fill value"),_Tr("Units to show")],       
+			"options":["feedid","fill","units","colour"],
+			"optionstype":["feedid","value","value","value"],
+			"optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Units"),_Tr("Colour")],
+			"optionshint":[_Tr("Feed source"),_Tr("Fill value"),_Tr("Units to show"),_Tr("Line colour in hex. Blank is use default.")],
       "html":""
     },
 
@@ -40,10 +40,10 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr("Feed")],
-      "optionshint":[_Tr("Feed source")],       
+			"options":["feedid","colour"],
+			"optionstype":["feedid","value"],
+			"optionsname":[_Tr("Feed"),_Tr("Colour")],
+			"optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
       "html":""
     },
     

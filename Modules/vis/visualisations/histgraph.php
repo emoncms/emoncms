@@ -1,5 +1,5 @@
 
-<!----------------------------------------------------------------------------------------------------
+<!--
   
    All Emoncms code is released under the GNU Affero General Public License.
    See COPYRIGHT.txt and LICENSE.txt.
@@ -19,7 +19,7 @@
  
     
 
--------------------------------------------------------------------------------------->
+-->
 
 <?php
   global $path, $embed;
@@ -49,6 +49,8 @@
    var path = "<?php echo $path; ?>";
    var apikey = "<?php echo $apikey; ?>";
    var valid = "<?php echo $valid; ?>";
+	// Eventually We can store the plot colors in the DB, and use a php command to stick it here
+	var plotColour = null;
 
    var start = <?php echo $start ?>;
    var end = <?php echo $end ?>;
@@ -84,7 +86,8 @@
         $.plot(placeholder,[                    
         {
           data: graph_data ,				//data
-          bars: { show: true, align: "center", barWidth: barwidth, fill: true }
+				bars: { show: true, align: "center", barWidth: barwidth, fill: true },
+				color: plotColour
         }], {
           xaxis: { mode: null }, grid: { show: true, hoverable: true }
         }); 

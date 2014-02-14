@@ -39,8 +39,9 @@
 
     $visualisations = array(
       'realtime' => array('options'=>array(array('feedid',1))),
-      'rawdata'=> array('options'=>array(array('feedid',1),array('fill',7,0),array('units',5,'W'))),
-      'bargraph'=> array('options'=>array(array('feedid',2))),
+			// Hex colour EDC240 is the default color for flot. since we want existing setups to not change, we set the default value to it manually now,
+			'rawdata'=> array('options'=>array(array('feedid',1),array('fill',7,0),array('units',5,'W'),array('colour',5,'EDC240'))),
+			'bargraph'=> array('options'=>array(array('feedid',2),array('colour',5,'EDC240'))),
       'timestoredaily'=> array('options'=>array(array('feedid',1),array('units',5,'kWh'))),
       'smoothie'=> array('options'=>array(array('feedid',1),array('ufac',6))),
       'histgraph'=> array('options'=>array(array('feedid',3),array('barwidth',7,50),array('start',7,0),array('end',7,0))),
@@ -121,10 +122,20 @@
                         }
 
                         // Boolean not used at the moment
-                        if ($type==4) if (get($key)==true || get($key)==false) $array[$key] = get($key); else $array[$key] = $default;
-                        if ($type==5) $array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
-                        if ($type==6) $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
-                        if ($type==7) $array[$key] = intval((get($key)?get($key):$default));
+							if ($type==4)
+								if (get($key)==true || get($key)==false)
+									$array[$key] = get($key); else $array[$key] = $default;
+							if ($type==5)
+								$array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
+							if ($type==6)
+								$array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
+							if ($type==7)
+								$array[$key] = intval((get($key)?get($key):$default));
+
+							# we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
+							# we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
+							if ($key == "colour")
+								$array[$key] = preg_replace('/[^\dA-Za-z]/','',$array[$key]);
                     }
                 }
 

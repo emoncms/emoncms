@@ -29,7 +29,7 @@
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
       <div id="graph"></div>
-      <div style="position:absolute; top:20px; right:20px; opacity:0.5;">
+	<div id='graph_buttons' style="position:absolute; top:20px; right:20px; opacity:0.5; display: none;">
 
         <input class="time" type="button" value="D" time="1"/>
         <input class="time" type="button" value="W" time="7"/>
@@ -43,7 +43,13 @@
 
       </div>
 
-        <h3 style="position:absolute; top:15px; left:50px;"><span id="stats"></span></h3>
+	<div id="stats_div" style='display:none'>
+		<h3 style="position:absolute; top:15px; left:50px;">
+			<div style='border:1px solid #ccc; padding-left: 5px; padding-right: 5px; background-color: rgb(255, 255, 255); opacity: 0.85;'>
+				<span id="stats"></span>
+			</div>
+		</h3>
+	</div>
     </div>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -55,7 +61,14 @@
   var embed = <?php echo $embed; ?>;
   var valid = "<?php echo $valid; ?>";
 
-  var valid = "<?php echo $valid; ?>";
+	var plotColour = "#<?php echo $colour; ?>";
+
+	// Some browsers want the colour codes to be prepended with a "#". Therefore, we
+	// add one if it's not already there
+	if (plotColour.indexOf("#") == -1)
+	{
+		plotColour = "#" + plotColour;
+	}
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
@@ -87,11 +100,40 @@
 
   function plot()
   {
-    var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}}], {
-      grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-      yaxis: {min: 0},
-      selection: { mode: "x" }
+		var plot = $.plot($("#graph"),
+			[
+				{
+					data: graph_data,
+					color: plotColour,
+					bars:
+					{
+						show: true,
+						align: "center",
+						barWidth: 3600*18*1000,
+						fill: true,
+					}
+				}
+			],
+			{
+				grid:
+				{
+					show: true,
+					hoverable: true,
+					clickable: true
+				},
+				xaxis:
+				{
+					mode: "time",
+					timezone: "browser",
+					min: start,
+					max: end
+				},
+				yaxis:
+				{
+					min: 0
+				},
+				selection:
+				{ mode: "x" }
     });
   }
 
@@ -104,9 +146,24 @@
     if (item)
     {
       var mdate = new Date(item.datapoint[0]);
-      $("#stats").html((item.datapoint[1]).toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+			if ((item.datapoint[1]) < 1)
+			{
+				$("#stats").html(((item.datapoint[1]) * 1000 ).toFixed(1)+"Wh | "+mdate.format("ddd, mmm dS, yyyy"));
+			}
+			else
+			{
+				$("#stats").html((item.datapoint[1]).toFixed(2)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
+			}
     }
   });
+	// Fade in/out the control buttons on mouse-over the plot container
+	$("#graph_bound").mouseenter(function(){
+		$("#graph_buttons").stop().fadeIn();
+		$("#stats_div").stop().fadeIn();
+	}).mouseleave(function(){
+		$("#graph_buttons").stop().fadeOut();
+		$("#stats_div").stop().fadeOut();
+	});
   //----------------------------------------------------------------------------------------------
   // Operate buttons
   //----------------------------------------------------------------------------------------------
