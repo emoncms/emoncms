@@ -21,7 +21,7 @@ class Histogram
      *
      * @param integer $feedid The feedid of the histogram table to be created
     */
-    public function create($feedid)
+    public function create($feedid,$options)
     {
         $feedname = "feed_".$feedid;
         $result = $this->mysqli->query(

@@ -9,8 +9,9 @@ class PHPTimestore
 
     }
 
-    public function create($feedid,$interval)
+    public function create($feedid,$options)
     {
+        $interval = (int) $options['interval'];
         if ($interval<5) $interval = 5;
         // Check to ensure we dont overwrite an existing feed
         if (!$meta = $this->get_meta($feedid)) {
@@ -72,6 +73,11 @@ class PHPTimestore
 
         }
         return $rc;
+    }
+    
+    public function update($feedid,$time,$value)
+    {
+      $this->post($feedid,$time,$value);
     }
 
     public function update_layer($meta,$layer,$point,$npoints,$value)

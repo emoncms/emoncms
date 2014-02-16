@@ -33,17 +33,23 @@ class Input
     public function check_node_id_valid($nodeid)
     {
         global $max_node_id_limit;
+        
+        // As highlighted by developer:fake-name PHP's doesnt have a function
+        // for checking if a string will cast to a valid integer.
         //
-        // Issues: is_numeric allows all sorts of crazy crap. Octal? Yep.
-        // e-notation (+0123.45e6)? Yep. Hex? Yep. PHP doesn't seem to have
-        // a good way to check if a string will cast to a valid *integer*
-        // also, !crazy shit! like (int) Array({stuff})resuling in numeric "1"
-        // is apparently a thing.
+        // is_numeric is the closest function but it allows input of:
+        // Octal, e-notation (+0123.45e6) & Hex. 
+        // 
+        // Casting with (int) will convert input such as Array({stuff}) to 1 
+        // whereas NAN would be a more appropriate result.  
         //
-        // Anyways, I'd still like to catch non-integer numbers at some point,
-        // but just checking against isNumeric will probably catch *most*
-        // of the potential issues
+        // Other languages such as Python will return an error if you try and 
+        // cast a variable in this way.
         //
+        // checking against isNumeric will probably catch *most*
+        // of the potential issues for now but it may be good look at catching
+        // non-integer numbers at some point
+        
         if (!is_numeric ($nodeid))
         {
             return false;
@@ -154,40 +160,31 @@ class Input
     }
 
     // USES: redis input
-    public function add_process($process_class,$userid, $inputid, $processid, $arg, $newfeedname,$newfeedinterval)
+    public function add_process($process_class,$userid,$inputid,$processid,$arg)
     {
         $userid = (int) $userid;
         $inputid = (int) $inputid;
         $processid = (int) $processid;                                    // get process type (ProcessArg::)
-        $arg = (float) $arg;                                              // This is: actual value (i.e x0.01), inputid or feedid
-        $newfeedname = preg_replace('/[^\w\s-.]/','',$newfeedname);       // filter out all except for alphanumeric white space and dash
-        $newfeedinterval = (int) $newfeedinterval;
-
+        
         $process = $process_class->get_process($processid);
         $processtype = $process[1];                                       // Array position 1 is the processtype: VALUE, INPUT, FEED
         $datatype = $process[4];                                          // Array position 4 is the datatype
-
+        
         switch ($processtype) {
-            case ProcessArg::VALUE:                                           // If arg type value
-                $arg = floatval($arg);
-                $id = $arg;
+            case ProcessArg::VALUE:                                       // If arg type value
                 if ($arg == '') return array('success'=>false, 'message'=>'Argument must be a valid number greater or less than 0.');
+                $arg = floatval($arg);                
                 break;
-            case ProcessArg::INPUTID:                 // If arg type input
+            case ProcessArg::INPUTID:                                     // If arg type input
+                $arg = (int) $arg;
                 if (!$this->exists($arg)) return array('success'=>false, 'message'=>'Input does not exist!');
-
                 break;
-            case ProcessArg::FEEDID:                  // If arg type feed
-                $name = ''; if ($arg!=-1) $name = $this->feed->get_field($arg,'name');  // First check if feed exists of given feed id and user.
-                $id = $this->feed->get_id($userid,$name);
-                if (($name == '') || ($id == '')) {
-                    $result = $this->feed->create($userid,$newfeedname, $datatype, $newfeedinterval);
-                    if ($result['success']==true) $arg = $result['feedid']; else return $result;
-                }
+            case ProcessArg::FEEDID:                                      // If arg type feed
+                $arg = (int) $arg;
+                if (!$this->feed->exists($arg)) return array('success'=>false, 'message'=>'Feed does not exist!');
                 break;
-            case ProcessArg::NONE:                                           // If arg type none
+            case ProcessArg::NONE:                                        // If arg type none
                 $arg = 0;
-                $id = $arg;
                 break;
         }
 
@@ -343,6 +340,7 @@ class Input
         {
             $array = explode(",", $process_list);
             // input process list is comma seperated
+            $index = 0;
             foreach ($array as $row)// For all input processes
             {
                 $row = explode(":", $row);
@@ -355,11 +353,19 @@ class Input
 
                 $processDescription = $process[0];
                 // gets process description
-                if ($process[1] == ProcessArg::INPUTID)
+                if ($process[1] == ProcessArg::INPUTID) {
                     $arg = $this->get_name($arg);
                 // if input: get input name
-                elseif ($process[1] == ProcessArg::FEEDID)
+                } elseif ($process[1] == ProcessArg::FEEDID){
                     $arg = $this->feed->get_field($arg,'name');
+                    
+                    // Delete process list if feed does not exist
+                    if (isset($arg['success']) && !$arg['success']) {
+                      $this->delete_process($id, $index+1);
+                      $arg = "Feed does not exist!";
+                    }
+                    
+                }
                 // if feed: get feed name
 
                 $list[] = array(
@@ -367,6 +373,8 @@ class Input
                     $arg
                 );
                 // Populate list array
+                
+                $index++;
             }
         }
         return $list;

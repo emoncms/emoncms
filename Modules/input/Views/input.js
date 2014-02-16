@@ -22,10 +22,10 @@ var input = {
 
   // Process
 
-  'add_process':function(inputid,processid,arg,newfeedname)
+  'add_process':function(inputid,processid,arg)
   {
     var result = {};
-    $.ajax({ url: path+"input/process/add.json", data: "inputid="+inputid+"&processid="+processid+"&arg="+arg+"&newfeedname="+newfeedname, async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"input/process/add.json", data: "inputid="+inputid+"&processid="+processid+"&arg="+arg, async: false, success: function(data){result = data;} });
     return result;
   },
 

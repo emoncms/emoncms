@@ -2,11 +2,11 @@
 var feed = {
 
   apikey: "",
-
-  'create':function(name, type, interval)
+  
+  'create':function(name, datatype, engine, options)
   {
     var result = {};
-    $.ajax({ url: path+"feed/create.json", data: "name="+name+"&type="+type+"&interval="+interval, dataType: 'json', async: false, success: function(data){result = data.feedid;} });
+    $.ajax({ url: path+"feed/create.json", data: "name="+name+"&datatype="+datatype+"&engine="+engine+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data){result = data;} });
     return result;
   },
   

@@ -13,11 +13,11 @@ class GraphiteTimeSeries
      *
      * @api
     */
-    public function __construct($host, $port)
+    public function __construct($options)
     {
-        $this->host = $host;
-        $this->port = $port;
-        if ($host && $port) $this->connect_write();
+        $this->host = $options['host'];
+        $this->port = $options['port'];
+        if ($this->host && $this->port) $this->connect_write();
         $this->root = "emoncms";
     }
 
@@ -156,7 +156,7 @@ class GraphiteTimeSeries
      *
      * @param integer $feedid The feedid of the timestore to be created
     */
-    public function create($feedid)
+    public function create($feedid,$options)
     {
         // Graphite will build this when the first data is inserted
         return true;
@@ -179,6 +179,11 @@ class GraphiteTimeSeries
             $result = fwrite($this->write_socket, $line);
         }
         fflush($this->write_socket);
+    }
+    
+    public function update($feedid,$time,$value)
+    {
+        $this->post($feedid,$time,$value);
     }
 
     /**

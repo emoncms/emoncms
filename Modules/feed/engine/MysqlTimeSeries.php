@@ -22,7 +22,7 @@ class MysqlTimeSeries
      *
      * @param integer $feedid The feedid of the histogram table to be created
     */
-    public function create($feedid)
+    public function create($feedid,$options)
     {
         $feedname = "feed_".trim($feedid)."";
 
@@ -34,7 +34,7 @@ class MysqlTimeSeries
         return true;
     }
 
-    public function insert($feedid,$time,$value)
+    public function post($feedid,$time,$value)
     {
         $feedname = "feed_".trim($feedid)."";
         $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");

@@ -17,11 +17,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-    global $mysqli, $redis, $session, $route, $timestore_adminkey;
+    global $mysqli, $redis, $session, $route, $feed_settings;
     $result = false;
 
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis,$timestore_adminkey);
+    $feed = new Feed($mysqli,$redis,$feed_settings);
 
     if ($route->format == 'html')
     {
@@ -31,7 +31,6 @@ function feed_controller()
 
     if ($route->format == 'json')
     {
-
         // Public actions available on public feeds.
         if ($route->action == "list")
         {
@@ -43,7 +42,7 @@ function feed_controller()
         } elseif ($route->action == "getid" && $session['read']) {
             $result = $feed->get_id($session['userid'],get('name'));
         } elseif ($route->action == "create" && $session['write']) {
-            $result = $feed->create($session['userid'],get('name'),get('type'),get('interval'));
+            $result = $feed->create($session['userid'],get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
         } else {

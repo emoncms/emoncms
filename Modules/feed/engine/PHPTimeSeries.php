@@ -19,7 +19,7 @@ class PHPTimeSeries
 
     }
 
-    public function create($feedid)
+    public function create($feedid,$options)
     {
         $fh = fopen($this->dir."feed_$feedid.MYD", 'a');
         fclose($fh);
@@ -101,6 +101,11 @@ class PHPTimeSeries
         }
 
 
+    }
+    
+    public function update($feedid,$time,$value)
+    {
+      $this->post($feedid,$time,$value);
     }
 
     public function delete($feedid)
