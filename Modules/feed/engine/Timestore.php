@@ -14,10 +14,10 @@ class Timestore
     private $timestoreApi;
     private $dir = "/var/lib/timestore/";
 
-    public function __construct($timestore_adminkey)
+    public function __construct($settings)
     {
         require "Modules/feed/engine/TimestoreApi.php";
-        $this->timestoreApi = new TimestoreAPI($timestore_adminkey);
+        $this->timestoreApi = new TimestoreAPI($settings['adminkey']);
     }
 
     public function create($feedid,$options)
