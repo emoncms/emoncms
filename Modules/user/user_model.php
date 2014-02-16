@@ -271,6 +271,62 @@ class User
             return array('success'=>false, 'message'=>_("Old password incorect"));
         }
     }
+    
+    public function passwordreset($username,$email)
+    {
+        $username_out = preg_replace('/[^\w\s-]/','',$username);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
+
+        $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$email'");
+
+        if ($result->num_rows==1)
+        {
+            $row = $result->fetch_array();
+
+            $userid = $row['id'];
+            if ($userid>0)
+            {
+                // Generate new random password
+                $newpass = hash('sha256',md5(uniqid(rand(), true)));
+                $newpass = substr($newpass, 0, 10);
+
+                // Hash and salt
+                $hash = hash('sha256', $newpass);
+                $string = md5(uniqid(rand(), true));
+                $salt = substr($string, 0, 3);
+                $hash = hash('sha256', $salt . $hash);
+                
+                // Save hash and salt
+                $this->mysqli->query("UPDATE users SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
+
+                //------------------------------------------------------------------------------
+                global $enable_password_reset;
+                if ($enable_password_reset==true)
+                {
+                    global $smtp_email_settings;
+                    
+                    require_once 'swift_required.php';
+
+                    $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], 26)
+                    ->setUsername($smtp_email_settings['username'])->setPassword($smtp_email_settings['password']);
+
+                    $mailer = Swift_Mailer::newInstance($transport);
+                    $message = Swift_Message::newInstance()
+                      ->setSubject('Emoncms password reset')
+                      ->setFrom($smtp_email_settings['from'])
+                      ->setTo(array($email))
+                      ->setBody("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>", 'text/html');
+                    $result = $mailer->send($message);
+                }
+                //------------------------------------------------------------------------------
+
+                // Sent email with $newpass to $email
+                return array('success'=>true, 'message'=>"Password recovery email sent!");
+            }
+        }
+
+        return array('success'=>false, 'message'=>"An error occured");
+    }
 
     public function change_username($userid, $username)
     {

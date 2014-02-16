@@ -24,7 +24,17 @@
             'host'=>0
         )
     );
+    
+    // (OPTIONAL) Used by password reset feature
+    $smtp_email_settings = array(
+      'host'=>"",
+      'username'=>"",
+      'password'=>"",
+      'from'=>array('an email address' => 'an email tag name')
+    );
 
+    $enable_password_reset = true;
+    
     // By setting the default engine to MYSQL, realtime feeds will be created as MYSQL feeds providing full backwards compatibility
 
     // PHPTIMESERIES is another feed engine option that might be of interest, faster than MYSQL but maintaining the data in the same

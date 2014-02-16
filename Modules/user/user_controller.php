@@ -39,7 +39,8 @@ function user_controller()
         if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
         if ($route->action == 'changeemail' && $session['write']) $result = $user->change_email($session['userid'],get('email'));
         if ($route->action == 'changepassword' && $session['write']) $result = $user->change_password($session['userid'],get('old'),get('new'));
-
+        
+        if ($route->action == 'passwordreset') $result = $user->passwordreset(get('username'),get('email'));
         // Apikey
         if ($route->action == 'newapikeyread' && $session['write']) $result = $user->new_apikey_read($session['userid']);
         if ($route->action == 'newapikeywrite' && $session['write']) $result = $user->new_apikey_write($session['userid']);
