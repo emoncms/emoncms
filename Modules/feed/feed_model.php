@@ -35,6 +35,14 @@ class Feed
         require "Modules/feed/engine/PHPTimeSeries.php";
         require "Modules/feed/engine/GraphiteTimeSeries.php";
         
+        // Backwards compatibility 
+        if (!isset($settings)) $settings= array();
+        if (!isset($settings['timestore'])) {
+            global $timestore_adminkey; 
+            $settings['timestore'] = array('adminkey'=>$timestore_adminkey);
+        }
+        if (!isset($settings['graphite'])) $settings['graphite'] = array('host'=>"", 'port'=>0);
+        
         // Load engine instances to engine array to make selection below easier
         $this->engine = array();
         $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
