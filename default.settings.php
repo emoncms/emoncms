@@ -33,7 +33,7 @@
       'from'=>array('an email address' => 'an email tag name')
     );
 
-    $enable_password_reset = true;
+    $enable_password_reset = false;
     
     // By setting the default engine to MYSQL, realtime feeds will be created as MYSQL feeds providing full backwards compatibility
 
