@@ -37,7 +37,8 @@ class Feed
         
         // Development engines
         require "Modules/feed/engine/PHPFina.php";
-        
+        require "Modules/feed/engine/PHPFiwa.php";     
+           
         // Backwards compatibility 
         if (!isset($settings)) $settings= array();
         if (!isset($settings['timestore'])) {
@@ -54,7 +55,8 @@ class Feed
         $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries();
         $this->engine[Engine::GRAPHITE] = new GraphiteTimeSeries($settings['graphite']);
         $this->engine[Engine::PHPFINA] = new PHPFina();
-        
+        $this->engine[Engine::PHPFIWA] = new PHPFiwa();
+                
         $this->histogram = new Histogram($mysqli);
     }
 
@@ -97,6 +99,8 @@ class Feed
             if ($engine==Engine::TIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPTIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
+            if ($engine==Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
+            
             $engineresult = false;
             if ($datatype==DataType::HISTOGRAM) {
                 $engineresult = $this->histogram->create($feedid,$options);

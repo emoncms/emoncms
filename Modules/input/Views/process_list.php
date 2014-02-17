@@ -64,6 +64,7 @@ global $path, $session, $default_engine;
     <option value=3 >GRAPHITE</option>
     <option value=4 >PHPTIMESTORE</option>
     <option value=5 >PHPFINA</option>
+    <option value=6 >PHPFIWA</option>
   </select>
 </div>
 
@@ -199,7 +200,7 @@ function update_process_arg_box()
         var selected_processid = $('select#type').val();
         if (processlist[selected_processid][4] == 1)
         {
-            if ($("#engine").val()==1 || $("#engine").val()==4 || $("#engine").val()==5) {
+            if ($("#engine").val()==1 || $("#engine").val()==4 || $("#engine").val()==5 || $("#engine").val()==6) {
                 $('#options').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=300>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
             }
         }
