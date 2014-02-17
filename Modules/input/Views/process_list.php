@@ -9,7 +9,7 @@
     http://openenergymonitor.org
 */
 
-global $path, $session, $default_engine;
+global $path, $session;
 
 ?>
 
@@ -59,10 +59,10 @@ global $path, $session, $default_engine;
   <span class="add-on">Feed engine: </span>
   <select id="engine">
     <option value=0 >MYSQL</option>
-    <option value=1 selected>TIMESTORE</option>
+    <option value=1 >TIMESTORE</option>
     <option value=2 >PHPTIMESERIES</option>
     <option value=3 >GRAPHITE</option>
-    <option value=4 >PHPTIMESTORE</option>
+    <option value=4 selected>PHPTIMESTORE</option>
     <option value=5 >PHPFINA</option>
     <option value=6 >PHPFIWA</option>
   </select>
@@ -70,7 +70,6 @@ global $path, $session, $default_engine;
 
 <script type="text/javascript">
 
-var default_engine = <?php echo $default_engine; ?>;
 var path = "<?php echo $path; ?>";
 var inputid = <?php echo $inputid; ?>;
 var feedlist = <?php echo json_encode($feedlist); ?>;
