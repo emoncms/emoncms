@@ -39,16 +39,7 @@ function input_controller()
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
         if ($route->action == 'node') $result =  view("Modules/input/Views/input_node.php", array());
-        if ($route->action == 'process')
-        {
-            $result = view("Modules/input/Views/process_list.php",
-            array(
-                'inputid'=> intval(get('inputid')),
-                'processlist' => $process->get_process_list(),
-                'inputlist' => $input->getlist($session['userid']),
-                'feedlist'=> $feed->get_user_feeds($session['userid'],0)
-            ));
-        }
+        if ($route->action == 'process') $result = view("Modules/input/Views/process_list.php",array('inputid'=> intval(get('inputid'))));
     }
 
     if ($route->format == 'json')
@@ -271,6 +262,7 @@ function input_controller()
         if ($route->action == "clean") $result = $input->clean($session['userid']);
         if ($route->action == "list") $result = $input->getlist($session['userid']);
         if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
+        if ($route->action == "getallprocesses") $result = $process->get_process_list();
 
         if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
@@ -281,11 +273,11 @@ function input_controller()
             if ($route->action == "process")
             {
                 if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'),get('engine'));
-                if ($route->subaction == "list") $result = $input->get_processlist_desc($process, get("inputid"));
+                if ($route->subaction == "list") $result = $input->get_processlist(get("inputid"));
                 if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
                 if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
                 if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
-            }
+            }           
         }
     }
 

@@ -45,8 +45,8 @@ input[type="text"] {
     table.fields = {
         //'id':{'type':"fixed"},
         'nodeid':{'title':'<?php echo _("Node:"); ?>','type':"fixed"},
-        'name':{'title':'<?php echo _("name"); ?>','type':"text"},
-        'description':{'title':'<?php echo _('Description'); ?>','type':"text"},
+        'name':{'title':'<?php echo _("Key"); ?>','type':"text"},
+        'description':{'title':'<?php echo _("Name"); ?>','type':"text"},
         'processList':{'title':'<?php echo _('Process list'); ?>','type':"processlist"},
         'time':{'title':'last updated', 'type':"updated"},
         'value':{'type':"value"},
