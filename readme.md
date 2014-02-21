@@ -122,6 +122,7 @@ When installing mysql and the blue dialog appears enter a password for root user
     $ sudo apt-get install php5 libapache2-mod-php5
     $ sudo apt-get install php5-mysql  
     $ sudo apt-get install php5-curl
+    $ sudo apt-get install php5-json
     
 ## 3) Enable mod rewrite
 
