@@ -75,9 +75,10 @@
   var plotdata = [];
 
   var feedlist = [];
-  feedlist[0] = {id: power, selected: 0, type: 0, plot: {data: null, lines: { show: true, fill: true } } };
-  feedlist[1] = {id: kwhd, selected: 1, type: 0, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
-  feedlist[2] = {id: temp, selected: 1, type: 1, plot: {data: null, points: { show: true, fill: true }, lines: { show: true, fill: false } } };
+  feedlist[0] = {id: power, selected: 0, type: 0, plot: {data: null, lines: { show: true, fill: true },yaxis:1} };
+  feedlist[1] = {id: kwhd, selected: 1, type: 0, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:1} };
+  //feedlist[2] = {id: temp, selected: 1, type: 1, plot: {data: null, lines: { show: true, fill: true }, yaxis:2}};
+  feedlist[2] = {id: temp, selected: 1, type: 1, plot: {data: null,  points: { show: true, fill: true }, yaxis:2}};
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
@@ -136,7 +137,8 @@
     var plot = $.plot($("#graph"), plotdata, {
       selection: { mode: "x" },
       grid: { show: true, clickable: true, hoverable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end }
+      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+      yaxes: [{position: "left"}, {position: "right", max:20, min:-20}]
     });
   }
 
