@@ -9,75 +9,115 @@
     http://openenergymonitor.org
 */
 
-global $path, $session, $default_engine;
+global $path, $session;
 
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/process_info.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-
 <br>
 <div style="float:right;"><a href="../api"><?php echo _("Input API Help") ?></a></div>
 
-<h2><?php echo _('Input configuration:   '); ?><span id="inputname"></span> (<?php echo $inputid; ?>)</h2>
+<div style="font-size:30px; padding-bottom:20px; padding-top:18px"><b><span id="inputname"></span></b> config</div>
 <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
-
-<div class="alert alert-info"><b>Feed intervals: </b>When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</div>
 
 <table class="table">
 
     <tr>
-        <th style='width:10%;'></th>
+        <th style='width:5%;'></th>
         <th style='width:5%;'><?php echo _('Order'); ?></th>
-        <th style='width:35%;'><?php echo _('Process'); ?></th>
-        <th style='width:40%;'><?php echo _('Arg'); ?></th>
+        <th><?php echo _('Process'); ?></th>
+        <th><?php echo _('Arg'); ?></th>
+        <th></th>
         <th><?php echo _('Actions'); ?></th>
     </tr>
 
     <tbody id="inputprocesslist"></tbody>
 
-    <tr>
-        <td><?php echo _("New"); ?></td>
-        <td></td>
-        <td>
-            <input type="hidden" name="inputid" value="<?php echo $inputid; ?>">
-            <!-- Populate list of input processes availabble -->
-            <select class="processSelect" name="type" id="type">
-
-            </select>
-        </td>
-        <!-- cointainer for new process arguments -->
-        <td><span id="newProcessArgField"></span><span id="options"></span></td>
-        <td><button id="submit_add" class="btn btn-primary"/><?php echo _('Add'); ?></button></td>
-    </tr>
-
 </table>
+
+<table class="table">
+<tr><th>Add process:</th><tr>
+<tr>
+    <td>
+        <div class="input-prepend input-append">
+            <select id="process-select"></select>
+
+            <span id="type-value">
+                <input type="text" id="value-input" style="width:125px" />
+            </span>
+
+            <span id="type-input">
+                <select id="input-select" style="width:140px;"></select>
+            </span>
+
+            <span id="type-feed">        
+                <select id="feed-select" style="width:140px;"></select>
+                
+                <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
+
+                <span class="add-on">Feed engine: </span>
+                <select id="feed-engine">
+
+                <optgroup label="Recommended">
+                <option value=6 selected>Fixed Interval With Averaging (PHPFIWA)</option>
+                <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
+                <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
+                </optgroup>
+
+                <optgroup label="Other">
+                <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
+                <option value=1 >TIMESTORE (Requires installation of timestore)</option>
+                <option value=3 >GRAPHITE (Requires installation of graphite)</option>
+                <option value=0 >MYSQL (Slow when there is a lot of data)</option>
+                </optgroup>
+
+                </select>
+
+
+                <select id="feed-interval" style="width:130px">
+                    <option value="">Select interval</option>
+                    <option value=5>5s</option>
+                    <option value=10>10s</option>
+                    <option value=15>15s</option>
+                    <option value=20>20s</option>
+                    <option value=25>25s</option>
+                    <option value=30>30s</option>
+                    <option value=60>60s</option>
+                    <option value=120>2 mins</option>
+                    <option value=300>5 mins</option>
+                    <option value=600>10 mins</option>
+                    <option value=3600>1 hour</option>
+                    <option value=21600>6 hours</option>
+                    <option value=86400>24 hours</option>
+                </select>
+                
+            </span>
+            <button id="process-add" class="btn btn-info"/><?php echo _('Add'); ?></button>
+        </div>
+    </td>
+</tr>
+<tr>
+  <td id="description"></td>
+</tr>
+</table>
+
 
 <hr/>
 
-<div class="input-prepend" id="engine-selector">
-  <span class="add-on">Feed engine: </span>
-  <select id="engine">
-    <option value=0 >MYSQL</option>
-    <option value=1 selected>TIMESTORE</option>
-    <option value=2 >PHPTIMESERIES</option>
-    <option value=3 >GRAPHITE</option>
-    <option value=4 >PHPTIMESTORE</option>
-    <option value=5 >PHPFINA</option>
-  </select>
-</div>
+
 
 <script type="text/javascript">
 
-var default_engine = <?php echo $default_engine; ?>;
 var path = "<?php echo $path; ?>";
 var inputid = <?php echo $inputid; ?>;
-var feedlist = <?php echo json_encode($feedlist); ?>;
-var inputlist = <?php echo json_encode($inputlist); ?>;
+var feedlist = feed.list_assoc();
+var inputlist = input.list_assoc();
 
 // DRAW PROCESS SELECTOR
+var processlist = input.getallprocesses();
 
-var processlist = <?php echo json_encode($processlist); ?>;
 var processgroups = [];
 var i = 0;
 for (z in processlist)
@@ -101,183 +141,199 @@ for (z in processgroups)
     }
     out += "</optgroup>";
 }
-$(".processSelect").html(out);
+$("#process-select").html(out);
 
 // SET INPUT NAME
+var inputname = "";
+if (inputlist[inputid].description!="") inputname = inputlist[inputid].description; else inputname = inputlist[inputid].name;
+$("#inputname").html("Node "+inputlist[inputid].nodeid+": "+inputname);
 
-for (i in inputlist)
-{
-    if (inputlist[i].id == inputid)
-    {
-        $("#inputname").html(inputlist[i].nodeid+":"+inputlist[i].name+" "+inputlist[i].description);
-        break;
-    }
-}
+// Inputlist
+var out = "";
+for (i in inputlist) out += "<option value="+inputlist[i].id+">Node "+inputlist[i].nodeid+":"+inputlist[i].name+" "+inputlist[i].description+"</option>";
+$("#input-select").html(out);
+
+// Feedlist
+var out = "<option value=-1>CREATE NEW:</option>";
+for (i in feedlist) out += "<option>"+feedlist[i].name+"</option>";
+$("#feed-select").html(out);
+
+
+$("#type-value").hide();
+$("#type-input").hide();
+$("#type-feed").hide();
+
+$("#type-feed").show();
+$("#description").html(process_info[1]);
 
 function update_list()
 {
     var inputprocesslist = input.processlist(inputid);
-
+    
     var i = 0;
     var out="";
-
-    for (z in inputprocesslist)
-    {
-        i++; // process id
-        out += '<tr>';
-
-        // Move process up or down
-        out += '<td>';
-        if (i > 1) {
-            out += '<a class="move-process" href="#" title="<?php echo _("Move up"); ?>" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
-        }
-
-        if (i < inputprocesslist.length) {
-            out += '<a class="move-process" href="#" title="<?php echo _("Move up"); ?>" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
-        }
-        out += '</td>';
-
-        // Process name and argument
-        out += "<td>"+i+"</td><td>"+inputprocesslist[z][0]+"</td><td>"+inputprocesslist[z][1]+"</td>";
-
-        // Delete process button (icon)
-        out += '<td><a href="#" class="delete-process" title="<?php echo _('Delete'); ?>" processid='+i+'><i class="icon-trash"></i></a></td>';
-
-        out += '</tr>';
-    }
-
+    
     if (inputprocesslist.length==0) {
         out += "<tr class='alert'><td></td><td></td><td><b><?php echo _('You have no processes defined'); ?></b></td><td></td><td></td></tr>";
-    }
+    } else {
+    
+        for (z in inputprocesslist)
+        {
+            i++; // process id
+            out += '<tr>';
 
+            // Move process up or down
+            out += '<td>';
+            if (i > 1) {
+                out += '<a class="move-process" href="#" title="<?php echo _("Move up"); ?>" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
+            }
+
+            if (i < inputprocesslist.length) {
+                out += '<a class="move-process" href="#" title="<?php echo _("Move up"); ?>" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
+            }
+            out += '</td>';
+
+            // Process name and argument
+            var processid = parseInt(inputprocesslist[z][0]);
+            var arg = "";
+            var lastvalue = "";
+            
+            if (processlist[processid][1]==0) {
+                arg = inputprocesslist[z][1];
+            }
+            
+            if (processlist[processid][1]==1) {
+                var inpid = inputprocesslist[z][1];
+                arg += "Node "+inputlist[inpid].nodeid+": ";
+                if (inputlist[inpid].description!="") arg += inputlist[inpid].description; else arg += inputlist[inpid].name;
+                lastvalue = "<span style='color:#888; font-size:12px'>(inputvalue:"+(inputlist[inpid].value*1).toFixed(2)+")</span>";
+            }
+            
+            if (processlist[processid][1]==2) {
+                var feedid = inputprocesslist[z][1];
+                
+                if (feedlist[feedid]!=undefined) {
+                    arg += "<a class='label label-info' href='"+path+"vis/auto?feedid="+feedid+"'>";
+                    if (feedlist[feedid].tag) arg += feedlist[feedid].tag+": ";
+                    arg += feedlist[feedid].name;
+                    arg += "</a>";
+                    lastvalue = "<span style='color:#888; font-size:12px'>(feedvalue:"+(feedlist[feedid].value*1).toFixed(2)+")</span>";
+                } else {
+                  // delete feed
+                }
+            }
+            
+            out += "<td>"+i+"</td><td>"+processlist[processid][0]+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
+     
+            // Delete process button (icon)
+            out += '<td><a href="#" class="delete-process" title="<?php echo _('Delete'); ?>" processid='+i+'><i class="icon-trash"></i></a></td>';
+
+            out += '</tr>';
+        }
+    }
     $('#inputprocesslist').html(out);
 }
 
-function generate_process_arg_box()
+$("#feed-engine").change(function(){
+  var engine = $(this).val();
+  $("#feed-interval").hide();
+  if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
+});
+
+$('#process-add').click(function() 
 {
-    var process_id = $('select[name="type"]').val();
-    if (process_id==1) $("#engine-selector").show(); else $("#engine-selector").hide();
+    var processid = $('#process-select').val();
+    var process = processlist[processid];
+    var arg = '';
     
-    var process = processlist[process_id];
-    if (process[4]==2) $("#engine").val(0);
-    if (process[4]==3) $("#engine").val(0);
+    // Type: value (scale, offset)
+    if (process[1]==0) arg = $("#value-input").val();
     
-    var out = "";
-    if (process[1]==0) // Process type is multiply input by value or apply an offset - the argument is a value
+    // Type: input (* / + - by input)
+    if (process[1]==1) arg = $("#input-select").val();
+    
+    // Type: feed
+    if (process[1]==2)
     {
-        out += "<input type='text' name='arg' class='processArgBox' id='arg' style='width:100px;'/ >";
-    }
-
-    if (process[1]==1) // Process type is multiply, divide by input or add another input - argument type is input
-    {
-        out +='<select class="processArgBox" name="arg" id="arg" onChange="update_process_arg_box()" style="width:140px;">'
-        for (i in inputlist) out += '<option value="'+inputlist[i].id+'">'+inputlist[i].nodeid+":"+inputlist[i].name+'</option>';
-        out +='</select>';
-    }
-
-    if (process[1]==2) // Argument type is a feed to log to, or output as a kwhd feed and so on.
-    {
-        out +='<select class="processArgBox" name="arg" id="arg" onChange="update_process_arg_box()" style="width:140px;">'
-        out +='<option value="-1"><?php echo _("CREATE NEW:"); ?></option>';
-        for (i in feedlist) out += '<option value="'+feedlist[i].id+'">'+feedlist[i].name+'</option>';
-        out +='</select>';
-    }
-
-    $('#newProcessArgField').html(out);
-
-    update_process_arg_box();
-}
-
-// Add or remove newfeedname text box (for new feed name) if Create New feed is selected
-function update_process_arg_box()
-{
-    if ($('.processArgBox').val() == -1) {
-
-        $('#options').html('<input type="text" name="newfeedname" class="processArgBox2" style="width:100px;" id="newfeedname"/ >');
-
-        // Only show interval selector for timestore based feeds: datatype = 1
-        var selected_processid = $('select#type').val();
-        if (processlist[selected_processid][4] == 1)
-        {
-            if ($("#engine").val()==1 || $("#engine").val()==4 || $("#engine").val()==5) {
-                $('#options').append('<select id="newfeedinterval"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=300>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>');
-            }
-        }
-    }
-    else {
-        $('#newfeedname').remove();
-        $('#newfeedinterval').remove();
-    }
-}
-
-function process_add() {
-
-    var arg = $('#arg').val();
-    var process_id = $('select[name="type"]').val();
-    var process = processlist[process_id];
-
-    var feedid = false;
-    
-    // If create feed    
-    if (process[1]==2 && arg==-1) {
-    
-        var newfeedname = $('#newfeedname').val();
-        var engine = $('#engine').val();
-        var options = {interval:$('#newfeedinterval').val()};
+      var feedid = $("#feed-select").val();
+      
+      if (feedid==-1) 
+      {
+        var feedname = $('#feed-name').val();
+        var options = {interval:$('#feed-interval').val()};
+        var engine = $('#feed-engine').val();
         var datatype = process[4];
-        console.log(datatype);
         
-        if (newfeedname == '') {
+        if (feedname == '') {
             alert('ERROR: Please enter a feed name');
             return false;
         }
         
-        var result = feed.create(newfeedname,datatype,engine,options);
+        var result = feed.create(feedname,datatype,engine,options);
         feedid = result.feedid;
         
         if (!result.success || feedid<1) {
-            alert('ERROR: Feed could not be created');
+            alert('ERROR: Feed could not be created, '+result.message);
             return false;
         }
         
         arg = feedid;
+      }
     }
     
-    var result = input.add_process(inputid,process_id,arg);
-    
-    if (result.success == false) {
-        alert(data.message);
-        return false;
+    if (arg!="") {
+        var result = input.add_process(inputid,processid,arg);
+        
+        if (result.success == false) {
+            alert(data.message);
+            return false;
+        }
+        update_list();
     }
-    
-    update_list();
-    
-    return true;
-}
-
-$("#engine").change(function(){
-    update_process_arg_box();
 });
 
-$('#submit_add').click(function() {
+$('#process-select').change(function() {
+    var processid = $(this).val();
+    $("#description").html("");
+    $("#type-value").hide();
+    $("#type-input").hide();
+    $("#type-feed").hide();
+    if (processlist[processid][1]==0) $("#type-value").show();
+    if (processlist[processid][1]==1) $("#type-input").show();
+    if (processlist[processid][1]==2) {
+      $("#type-feed").show();
+      
+      var prc = processlist[processid][2];
+      
+      if (prc=='log_to_feed') { 
+        $("#feed-engine option").hide(); 
+        $("#feed-engine option[value=6]").show();
+        // $("#feed-engine option[value=0]").show();
+        $("#feed-engine").val(6); 
+        $("#feed-interval").show();
+      }
+      
+      if (prc=='power_to_kwh' || prc=='power_to_kwhd') { 
+        $("#feed-engine option").hide(); 
+        $("#feed-engine option[value=5]").show();
+        // $("#feed-engine option[value=0]").show();
+        $("#feed-engine").val(5); 
+        $("#feed-interval").hide();
+      }
+    }
+    $("#description").html(process_info[processid]);
+});
 
-    // console.log($('select#type').val());
-    // console.log($('#arg').val());
-    // console.log($('#newfeedname').val());
-    // console.log($('#newfeedinterval').val());
-    // console.log($('#engine').val());
+$('#feed-select').change(function() {
+    var feedid = $("#feed-select").val();
     
-    if (!process_add()) return false;
-    generate_process_arg_box();
-    return false;
-});
-
-$('.processSelect').change(function() {
-    generate_process_arg_box();
-});
-
-$('.processArgBox').change(function() {
-    update_process_arg_box();
+    if (feedid!=-1) {
+      $("#feed-name").hide();
+      $("#feed-interval").hide();
+    } else {
+      $("#feed-name").show();
+      $("#feed-interval").show();   
+    }
 });
 
 $('.table').on('click', '.delete-process', function() {
@@ -292,7 +348,6 @@ $('.table').on('click', '.move-process', function() {
 
 $(document).ready(function() {
     update_list();
-    generate_process_arg_box();
 });
 
 </script>

@@ -100,6 +100,8 @@ class PHPFina
         
         $meta->npoints = $pos + 1;
         $this->set_meta($id,$meta);
+        
+        return $value;
     }
     
     /**
@@ -109,9 +111,51 @@ class PHPFina
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function update($feedid,$time,$value)
+    public function update($id,$timestamp,$value)
     {
-    
+        $id = (int) $id;
+        $timestamp = (int) $timestamp;
+        $value = (float) $value;
+
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($id)) return false;
+
+        // Calculate interval that this datapoint belongs too
+        $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
+
+        // If this is a new feed (npoints == 0) then set the start time to the current datapoint
+        if ($meta->npoints == 0) {
+            $meta->start_time = $timestamp;
+        }
+
+        if ($timestamp < $meta->start_time) {
+            return false; // in the past
+        }	
+
+        // Calculate position in base data file of datapoint
+        $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
+
+        $last_pos = $meta->npoints - 1;
+
+        $fh = fopen($this->dir.$meta->id.".dat", 'c+');
+        
+        // Write padding
+        $padding = ($pos - $last_pos)-1;
+        if ($padding>0) $this->write_padding($fh,$meta->npoints,$padding);
+        
+        // Write new datapoint
+	    fseek($fh,4*$pos);
+        if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
+        
+        // Close file
+        fclose($fh);
+        
+        if (($pos+1)>$meta->npoints) {
+          $meta->npoints = $pos + 1;
+          $this->set_meta($id,$meta);
+        }
+        
+        return $value;
     }
 
     /**

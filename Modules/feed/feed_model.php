@@ -23,10 +23,10 @@ class Feed
     private $histogram;
 
     public function __construct($mysqli,$redis,$settings)
-    {
+    {        
         $this->mysqli = $mysqli;
         $this->redis = $redis;
-
+        
         // Load different storage engines
         require "Modules/feed/engine/MysqlTimeSeries.php";
         require "Modules/feed/engine/Timestore.php";
@@ -34,27 +34,19 @@ class Feed
         require "Modules/feed/engine/Histogram.php";
         require "Modules/feed/engine/PHPTimeSeries.php";
         require "Modules/feed/engine/GraphiteTimeSeries.php";
-
+        
         // Development engines
         require "Modules/feed/engine/PHPFina.php";
-
-        // Backwards compatibility
-        if (!isset($settings))
-        {
-            $settings= array();
-        }
-
+        require "Modules/feed/engine/PHPFiwa.php";     
+           
+        // Backwards compatibility 
+        if (!isset($settings)) $settings= array();
         if (!isset($settings['timestore'])) {
-            global $timestore_adminkey;
+            global $timestore_adminkey; 
             $settings['timestore'] = array('adminkey'=>$timestore_adminkey);
         }
-
-
-        if (!isset($settings['graphite']))
-        {
-            $settings['graphite'] = array('host'=>"", 'port'=>0);
-        }
-
+        if (!isset($settings['graphite'])) $settings['graphite'] = array('host'=>"", 'port'=>0);
+        
         // Load engine instances to engine array to make selection below easier
         $this->engine = array();
         $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
@@ -63,7 +55,8 @@ class Feed
         $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries();
         $this->engine[Engine::GRAPHITE] = new GraphiteTimeSeries($settings['graphite']);
         $this->engine[Engine::PHPFINA] = new PHPFina();
-
+        $this->engine[Engine::PHPFIWA] = new PHPFiwa();
+                
         $this->histogram = new Histogram($mysqli);
     }
 
@@ -79,7 +72,7 @@ class Feed
         $name = preg_replace('/[^\w\s-]/','',$name);
         $datatype = (int) $datatype;
         $engine = (int) $engine;
-
+        
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
@@ -101,11 +94,13 @@ class Feed
                 'size'=>0,
                 'engine'=>$engine
             ));
-
+            
             $options = array();
             if ($engine==Engine::TIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPTIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
+            if ($engine==Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
+            
             $engineresult = false;
             if ($datatype==DataType::HISTOGRAM) {
                 $engineresult = $this->histogram->create($feedid,$options);
@@ -116,7 +111,7 @@ class Feed
             if ($engineresult == false)
             {
                 // Feed engine creation failed so we need to delete the meta entry for the feed
-
+                
                 $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
 
                 $userid = $this->redis->hget("feed:$feedid",'userid');
@@ -315,7 +310,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $engine = $this->redis->hget("feed:$feedid",'engine');
-
+        
         // Call to engine lastvalue method
         return $this->engine[$engine]->lastvalue($feedid);
     }
@@ -375,7 +370,7 @@ class Feed
         $value = floatval($value);
 
         $engine = $this->redis->hget("feed:$feedid",'engine');
-
+        
         // Call to engine post method
         $this->engine[$engine]->post($feedid,$feedtime,$value);
 
@@ -402,10 +397,10 @@ class Feed
         $value = floatval($value);
 
         $engine = $this->redis->hget("feed:$feedid",'engine');
-
+        
         // Call to engine update method
         $value = $this->engine[$engine]->update($feedid,$feedtime,$value);
-
+       
         // need to find a way to not update if value being updated is older than the last value
         // in the database, redis lastvalue is last update time rather than last datapoint time.
         // So maybe we need to store both in redis.
@@ -428,7 +423,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $engine = $this->redis->hget("feed:$feedid",'engine');
-
+        
         // Call to engine get_data method
         return $this->engine[$engine]->get_data($feedid,$start,$end,$dp);
     }
@@ -451,7 +446,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $engine = $this->redis->hget("feed:$feedid",'engine');
-
+        
         // Call to engine delete method
         $this->engine[$engine]->delete($feedid);
 
@@ -471,10 +466,10 @@ class Feed
             $size = 0;
             $feedid = $row['id'];
             $engine = $row['engine'];
-
+            
             // Call to engine get_feed_size method
             $size = $this->engine[$engine]->get_feed_size($feedid);
-
+            
             $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
             $this->redis->hset("feed:$feedid",'size',$size);
             $total += $size;

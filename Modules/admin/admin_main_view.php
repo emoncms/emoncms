@@ -1,7 +1,12 @@
-<?php global $path; ?>
+<?php global $path, $emoncms_version; ?>
 <h2>Admin</h2>
 
 <table class="table table-striped ">
+    <tr>
+        <td>Emoncms version: <?php echo $emoncms_version; ?></td>
+        <td></td>
+        </tr>
+    <tr>
     <tr>
         <td>
             <h3><?php echo _('Users'); ?></h3>

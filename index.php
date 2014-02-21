@@ -11,6 +11,8 @@
     http://openenergymonitor.org
 
     */
+    
+    $emoncms_version = "8.0 pre-release";
 
     $ltime = microtime(true);
 

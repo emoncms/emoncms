@@ -328,6 +328,7 @@ class Input
     //-----------------------------------------------------------------------------------------------
     // Gets the inputs process list and converts id's into descriptive text
     //-----------------------------------------------------------------------------------------------
+    /*
     // USES: redis input
     public function get_processlist_desc($process_class,$id)
     {
@@ -379,7 +380,8 @@ class Input
         }
         return $list;
     }
-
+    */
+    
     // USES: redis input & user
     public function delete($userid, $inputid)
     {

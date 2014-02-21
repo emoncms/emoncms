@@ -7,6 +7,17 @@ var input = {
     $.ajax({ url: path+"input/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
   },
+  
+  'list_assoc':function()
+  {
+    var result = {};
+    $.ajax({ url: path+"input/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    
+    var inputs = {};
+    for (z in result) inputs[result[z].id] = result[z];
+    
+    return inputs;
+  },
 
   'set':function(id, fields)
   {
@@ -33,6 +44,23 @@ var input = {
   {
     var result = {};
     $.ajax({ url: path+"input/process/list.json", data: "inputid="+inputid, async: false, dataType: 'json', success: function(data){result = data;} });
+    var processlist = [];
+    if (result!="")
+    {
+        var tmp = result.split(",");
+        for (n in tmp)
+        {
+            var process = tmp[n].split(":"); 
+            processlist.push(process);
+        }
+    }
+    return processlist;
+  },
+  
+  'getallprocesses':function(inputid)
+  {
+    var result = {};
+    $.ajax({ url: path+"input/getallprocesses.json", data: "inputid="+inputid, async: false, dataType: 'json', success: function(data){result = data;} });
     return result;
   },
 

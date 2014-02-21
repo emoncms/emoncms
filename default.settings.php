@@ -10,7 +10,7 @@
     $password = "";
     $server   = "localhost";
     $database = "";
-
+    
     $feed_settings = array(
 
         'creatable_engines'=>array('MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE'),
@@ -24,7 +24,7 @@
             'host'=>0
         )
     );
-
+    
     // (OPTIONAL) Used by password reset feature
     $smtp_email_settings = array(
       'host'=>"",
@@ -34,21 +34,9 @@
     );
 
     $enable_password_reset = false;
-
-    // By setting the default engine to MYSQL, realtime feeds will be created as MYSQL feeds providing full backwards compatibility
-
-    // PHPTIMESERIES is another feed engine option that might be of interest, faster than MYSQL but maintaining the data in the same
-    // form as mysql data is stored.
-
-    // TIMESTORE is the default engine and requires installation of timestore, timestore is the fastest engine and also has other advantages like in built averaging.
-
-    $default_engine = Engine::TIMESTORE;
-
-
+    
     // Checks for limiting garbage data?
     $max_node_id_limit = 32;
-
-    $timestore_adminkey = "";
 
     /*
 

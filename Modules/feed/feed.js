@@ -17,6 +17,17 @@ var feed = {
     return result;
   },
   
+  'list_assoc':function()
+  {
+    var result = {};
+    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    
+    var feeds = {};
+    for (z in result) feeds[result[z].id] = result[z];
+    
+    return feeds;
+  },
+  
   'list_by_id':function()
   {
     var feeds = {};
