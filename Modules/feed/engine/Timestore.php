@@ -13,11 +13,12 @@ class Timestore
 
     private $timestoreApi;
     private $dir = "/var/lib/timestore/";
-
+    
     public function __construct($settings)
     {
         require "Modules/feed/engine/TimestoreApi.php";
         $this->timestoreApi = new TimestoreAPI($settings['adminkey']);
+        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
     }
 
     public function create($feedid,$options)
@@ -52,7 +53,7 @@ class Timestore
       $this->post($feedid,$time,$value);
     }
 
-    public function get_data($feedid,$start,$end)
+    public function get_data($feedid,$start,$end,$outinterval)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
@@ -61,12 +62,13 @@ class Timestore
         if ($end == 0) $end = time();
 
         $meta = $this->get_meta($feedid);
-
+        
         $start = round($start/$meta['interval'])*$meta['interval'];
-        $end = round($end/$meta['interval'])*$meta['interval'];
-        $npoints = round(($end - $start) / $meta['interval']);
-
-        if ($npoints>1000) $npoints = 1000;
+        
+        if ($outinterval<1) $outinterval = 1;
+        $npoints = ceil(($end - $start) / $outinterval);
+        $end = $start + ($npoints * $outinterval);
+        if ($npoints<1) return false;
 
         $data = json_decode($this->timestoreApi->get_series($feedid,0,$npoints,$start,$end,null));
         return $data;

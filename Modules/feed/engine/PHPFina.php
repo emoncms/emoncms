@@ -12,9 +12,10 @@ class PHPFina
      *
      * @api
     */
-    public function __construct()
-    {
 
+    public function __construct($settings)
+    {
+        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
     }
 
     /**
@@ -166,15 +167,21 @@ class PHPFina
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $dp The number of data points to return (used by some engines)
     */
-    public function get_data($feedid,$start,$end,$dp)
+    public function get_data($feedid,$start,$end,$outinterval)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
         $end = intval($end/1000);
-        $dp = 1000;
 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($feedid)) return false;
+        
+        if ($outinterval<$meta->interval) $outinterval = $meta->interval;
+        $dp = ceil(($end - $start) / $outinterval);
+        $end = $start + ($dp * $outinterval);
+        
+        // $dpratio = $outinterval / $meta->interval;
+        if ($dp<1) return false;
 
         // The number of datapoints in the query range:
         $dp_in_range = ($end - $start) / $meta->interval;

@@ -22,6 +22,10 @@
         'graphite'=>array(
             'port'=>0,
             'host'=>0
+        ),
+        
+        'phpfiwa'=>array(
+          // 'datadir'=>"/home/username/phpfiwa"
         )
     );
     

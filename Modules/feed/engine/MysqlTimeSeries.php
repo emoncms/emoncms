@@ -55,18 +55,22 @@ class MysqlTimeSeries
         return $value;
     }
 
-    public function get_data($feedid,$start,$end,$dp)
+    public function get_data($feedid,$start,$end,$outinterval)
     {
         //echo $feedid;
-        $dp = intval($dp);
+        $outinterval = intval($outinterval);
         $feedid = intval($feedid);
-        $start = floatval($start);
-        $end = floatval($end);
+        $start = floatval($start/1000);
+        $end = floatval($end/1000);
+        
+        if ($outinterval<1) $outinterval = 1;
+        $dp = ceil(($end - $start) / $outinterval);
+        $end = $start + ($dp * $outinterval);
+        if ($dp<1) return false;
 
-        if ($end == 0) $end = time()*1000;
+        if ($end == 0) $end = time();
 
         $feedname = "feed_".trim($feedid)."";
-        $start = $start/1000; $end = $end/1000;
 
         $data = array();
         $range = $end - $start;
