@@ -42,32 +42,19 @@ function bar_widgetlist()
 	};
 
 
-	var typeDropBoxOptions = [        // Options for the type combobox. Each item is [typeID, "description"]
-					[0,    "Light <-> dark green, Zero at left"],
-					[1,    "Red <-> Green, Zero at center"],
-					[2,    "Green <-> Red, Zero at left"],
-					[3,    "Green <-> Red, Zero at center"],
-					[4,    "Red <-> Green, Zero at left"],
-					[5,    "Red <-> Green, Zero at center"],
-					[6,    "Green center <-> orange edges, Zero at center "],
-					[7,    "Light <-> Dark blue, Zero at left"],
-					[8,    "Light blue <-> Red, Zero at mid-left"],
-					[9,    "Red <-> Dark Red, Zero at left"],
-					[10,   "Black <-> White, Zero at left"]
-				];
-
 	var graduationDropBoxOptions = [
 					[1, "Yes"],
 					[0, "No"]
 				]
 
-	addOption(widgets["bar"], "feed",        "feed",          _Tr("Feed"),        _Tr("Feed value"),                                                            []);
-	addOption(widgets["bar"], "max",         "value",         _Tr("Max value"),   _Tr("Max value to show"),                                                     []);
-	addOption(widgets["bar"], "scale",       "value",         _Tr("Scale"),       _Tr("Value is multiplied by scale before display"),                           []);
-	addOption(widgets["bar"], "units",       "value",         _Tr("Units"),       _Tr("Units to show"),                                                         []);
-	addOption(widgets["bar"], "offset",      "value",         _Tr("Offset"),      _Tr("Static offset. Subtracted from value before computing needle position"), []);
-	addOption(widgets["bar"], "colour",      "colour_picker", _Tr("Colour"),      _Tr("Colour to draw bar in"),                                                 []);
-	addOption(widgets["bar"], "graduations", "dropbox",       _Tr("Graduations"), _Tr("Should the graduation limits be shown"),                                 graduationDropBoxOptions);
+	addOption(widgets["bar"], "feed",        "feed",          _Tr("Feed"),            _Tr("Feed value"),                                                            []);
+	addOption(widgets["bar"], "max",         "value",         _Tr("Max value"),       _Tr("Max value to show"),                                                     []);
+	addOption(widgets["bar"], "scale",       "value",         _Tr("Scale"),           _Tr("Value is multiplied by scale before display"),                           []);
+	addOption(widgets["bar"], "units",       "value",         _Tr("Units"),           _Tr("Units to show"),                                                         []);
+	addOption(widgets["bar"], "offset",      "value",         _Tr("Offset"),          _Tr("Static offset. Subtracted from value before computing needle position"), []);
+	addOption(widgets["bar"], "colour",      "colour_picker", _Tr("Colour"),          _Tr("Colour to draw bar in"),                                                 []);
+	addOption(widgets["bar"], "graduations", "dropbox",       _Tr("Graduations"),     _Tr("Should the graduation limits be shown"),                                 graduationDropBoxOptions);
+	addOption(widgets["bar"], "gradNumber",  "value",         _Tr("Num Graduations"), _Tr("How many graduation lines shown"),                                       []);
 
 
 
@@ -99,7 +86,8 @@ function bar_draw()
 								 $(this).attr("units"),
 								 $(this).attr("colour"),
 								 $(this).attr("offset"),
-								 $(this).attr("graduations"));
+								 $(this).attr("graduations"),
+								 $(this).attr("gradNumber"));
 		}
 	});
 }
@@ -114,18 +102,6 @@ function bar_fastupdate()
 	bar_draw();
 }
 
-function deg_to_radians(deg)
-{
-	return deg * (Math.PI / 180)
-}
-function polar_to_cart(mag, ang, xOff, yOff)
-{
-	ang = deg_to_radians(ang);
-	var x = mag * Math.cos(ang) + xOff;
-	var y = mag * Math.sin(ang) + yOff;
-	return [x, y];
-}
-
 
 function draw_bar(context,
 				x_pos,				// these x and y coords seem unused?
@@ -137,10 +113,13 @@ function draw_bar(context,
 				units_string,
 				display_colour,
 				static_offset,
-				graduationBool)
+				graduationBool,
+				graduationQuant)
 {
 	if (!context)
 		return;
+
+	context.clearRect(0,0,width+10,height+10); // Clear old drawing
 
 	// if (1 * max_value) == false: 3000. Else 1 * max_value
 	max_value = 1 * max_value || 3000;
@@ -152,6 +131,8 @@ function draw_bar(context,
 	display_value = display_value-static_offset
 
 	var scaled_value = (display_value/max_value);    // Produce a scaled 0-1 value corresponding to min-max
+	if (scaled_value < 0)
+		scaled_value = 0;
 
 	var size = 0;
 	if (width<height)
@@ -159,14 +140,19 @@ function draw_bar(context,
 	else
 		size = height/2;
 
-	size = size - (size*0.058/2);
+	size = size;
+
+	if (graduationBool == 1)
+	{
+		height = height - (size/2)
+		width = width - (size)
+	}
 
 	var half_width = width/2;
 	var half_height = height/2;
 
-	context.clearRect(0,0,width,height); // Clear old drawing
 
-	if (!display_value)
+	if (!display_value)			// Clamp value so we don't draw negative values.
 		display_value = 0;
 
 	context.lineWidth = 1;
@@ -184,74 +170,16 @@ function draw_bar(context,
 
 	context.fillStyle = display_colour;
 
-	border_space = 10;
+	var bar_border_space = 10;
+	var bar_top = ((height-bar_border_space) - (scaled_value * (height - (bar_border_space*2))));
 
-	var bar_top = height - (scaled_value * (height - (border_space)));
+	if (bar_top < bar_border_space)		// Clamp value so we don't overshoot the top of the bargraph.
+		bar_top = bar_border_space;
 
-	context.fillRect(border_space,
+	context.fillRect(bar_border_space,
 					bar_top,
-					width-(border_space*2),
-					(height-border_space) - bar_top );
-
-	// var a = 1.75 - ( * 1.5);
-
-	// width = 0.785;
-	// var c=3*0.785;
-	// var pos = 0;
-	// var inner = size * 0.48;
-
-	// pos -= width;
-	// context.lineWidth = (size*0.058).toFixed(0);
-	// pos += width;
-	// context.strokeStyle = "#fff";
-	// context.beginPath();
-	// context.arc(half_width,half_height,size,c,c+pos,false);
-	// context.lineTo(half_width,half_height);
-	// context.closePath();
-	// context.stroke();
-
-	// context.fillStyle = "#666867";
-	// context.beginPath();
-	// context.arc(half_width,half_height,inner,0,Math.PI*2,true);
-	// context.closePath();
-	// context.fill();
-
-	// context.lineWidth = (size*0.052).toFixed(0);
-	// //---------------------------------------------------------------
-	// context.beginPath();
-	// context.moveTo(half_width+Math.sin(Math.PI*a-0.2)*inner,half_height+Math.cos(Math.PI*a-0.2)*inner);
-	// context.lineTo(half_width+Math.sin(Math.PI*a)*size,half_height+Math.cos(Math.PI*a)*size);
-	// context.lineTo(half_width+Math.sin(Math.PI*a+0.2)*inner,half_height+Math.cos(Math.PI*a+0.2)*inner);
-	// context.arc(half_width,half_height,inner,1-(Math.PI*a-0.2),1-(Math.PI*a+5.4),true);
-	// context.closePath();
-	// context.fill();
-	// context.stroke();
-
-	//---------------------------------------------------------------
-
-
-
-	context.fillStyle = "#000";
-	context.textAlign    = "center";
-	context.font = "bold "+(size*0.32)+"px arial";
-	if (raw_value>100)
-	{
-		raw_value = raw_value.toFixed(0);
-	}
-	else if (raw_value>10)
-	{
-		raw_value = raw_value.toFixed(1);
-	}
-	else
-	{
-		raw_value = raw_value.toFixed(2);
-	}
-	context.fillText(raw_value+units_string, half_width, half_height+(size*0.125));
-
-
-	context.fillStyle = "#000";
-	var spreadAngle = 32;
-
+					width-(bar_border_space*2),
+					(height-bar_border_space) - bar_top );
 
 	if (graduationBool == 1)
 	{
@@ -272,7 +200,75 @@ function draw_bar(context,
 		// context.rotate(deg_to_radians(45));
 		// context.fillText(""+(static_offset+max_value)+units_string, 0, 0);
 		// context.restore();
+
+
+
+		if (graduationQuant > 0)
+		{
+
+			context.fillStyle = "#000";
+			context.textAlign    = "start";
+			context.font = "bold "+(size*0.25)+"px arial";
+
+			var step = (height-border_space*2)/(Number(graduationQuant)+1);
+			var curY;
+
+			context.fillText((static_offset+max_value)+units_string, width+(size*0.1), 10+size*0.15);
+			var divisions = Number(graduationQuant)+1;
+			for (var y = 0; y < graduationQuant; y++)
+			{
+				curY = Number(((y+1)*step).toFixed(0))+0.5;  // Bin down so we're drawing in the middle of the pixel, so the line is exactly 1 px wide
+				context.moveTo(border_space, curY);
+				context.lineTo(width-border_space, curY);
+
+				var unitOffset = Number(static_offset+((graduationQuant-y)*(max_value/divisions)))
+				if (unitOffset < 1000)
+					unitOffset = unitOffset.toFixed(1)
+				else
+					unitOffset = unitOffset.toFixed(0)
+				context.fillText(unitOffset+units_string, width+(size*0.1), curY+(size*0.1));
+			}
+			context.fillText(static_offset+units_string, width+(size*0.1), height-10);
+
+			context.strokeStyle = "#888";
+			context.stroke();
+		}
 	}
+
+
+	context.fillStyle = "#000";
+	context.textAlign    = "center";
+	context.font = "bold "+(size*0.55)+"px arial";
+	if (raw_value>100)
+	{
+		raw_value = raw_value.toFixed(0);
+	}
+	else if (raw_value>10)
+	{
+		raw_value = raw_value.toFixed(1);
+	}
+	else
+	{
+		raw_value = raw_value.toFixed(2);
+	}
+
+
+	if (graduationBool == 1)
+	{
+		if (raw_value > 1000)		// Add additional offset to make alignment work for HUGE numbers
+			half_width += (size*0.20)
+		context.fillText(raw_value+units_string, half_width+(size*0.25), height + (size*0.45));
+	}
+	else
+	{
+		context.fillText(raw_value+units_string, half_width, height/2 + (size*0.2));
+	}
+
+
+
+	context.fillStyle = "#000";
+	var spreadAngle = 32;
+
 
 }
 
