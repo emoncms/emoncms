@@ -28,6 +28,8 @@ class PHPFiwa
         if ($interval<5) $interval = 5;
         
         
+        
+        
         // Check to ensure we dont overwrite an existing feed
         if (!$meta = $this->get_meta($id))
         {
@@ -35,9 +37,40 @@ class PHPFiwa
             $meta = new stdClass();
             $meta->id = $id;
             $meta->start_time = 0;
-            $meta->nlayers = 4;
-            $meta->npoints = array(0,0,0,0);
-            $meta->interval = array(5,60,3600,86400);
+            
+            // Limitation's on feed interval's so that the next layer can always be produced from an 
+            // integer number of datapoints from the layer below
+            
+            // layer intervals are also designed for most useful data export, minute, hourly, daily mean
+            
+            $meta->nlayers = 0;
+            
+            if ($interval==5 || $interval==10 || $interval==15 || $interval==20 || $interval==30) {
+                $meta->nlayers = 4;
+                $meta->npoints = array(0,0,0,0);
+                $meta->interval = array($interval,60,600,3600);
+            }
+            
+            if ($interval==60 || $interval==120 || $interval==300) {
+                $meta->nlayers = 3;
+                $meta->npoints = array(0,0,0);
+                $meta->interval = array($interval,600,3600);
+            }
+            
+            if ($interval==600 || $interval==1200 || $interval==1800) {
+                $meta->nlayers = 2;
+                $meta->npoints = array(0,0);
+                $meta->interval = array($interval,3600);
+            }
+            
+            if ($interval==3600) {
+                $meta->nlayers = 1;
+                $meta->npoints = array(0);
+                $meta->interval = array($interval);
+            }
+            
+            // If interval is outside of the allowed layer intervals
+            if ($meta->nlayers==0) return false;
 
             // Save meta data
             $this->set_meta($id,$meta);
@@ -408,6 +441,8 @@ class PHPFiwa
     {
         $id = (int) $id;
         $feedname = "$id.meta";
+        
+        // print $this->dir.$feedname;
         
         if (!file_exists($this->dir.$feedname)) return false;
         

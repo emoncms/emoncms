@@ -16,7 +16,7 @@ function input_controller()
 {
     //return array('content'=>"ok");
 
-    global $mysqli, $redis, $user, $session, $route, $max_node_id_limit;
+    global $mysqli, $redis, $user, $session, $route, $max_node_id_limit, $feed_settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
@@ -25,7 +25,7 @@ function input_controller()
     $result = false;
 
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $timestore_adminkey);
+    $feed = new Feed($mysqli,$redis, $feed_settings);
 
     require "Modules/input/input_model.php"; // 295
     $input = new Input($mysqli,$redis, $feed);
