@@ -238,6 +238,29 @@ value (8000, 16000 should be fine).
 
 Follow the guide here step 4 onwards: [http://emoncms.org/site/docs/gettext](http://emoncms.org/site/docs/gettext)
 
+#### Configure PHP Timezone
+
+PHP 5.4.0 has removed the timezone guessing algorithm and now defaults the timezone to "UTC" on some distros (i.e. Ubuntu 13.10). To resolve this:
+
+Open php.ini
+
+sudo vi /etc/php5/apache2/php.ini
+
+and search for "date.timezone"
+
+[Date]
+; Defines the default timezone used by the date functions.
+; http://php.net/date.timezone
+;date.timezone =
+
+edit date.timezone to your appropriate timezone:
+date.timezone = "Europe/Amsterdam"
+PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
+
+Now save and close and restart your apache.
+
+sudo /etc/init.d/apache2 restart
+
 # Upgrading
 
 If your upgrading from emoncms version 5 up to 6 you will need to:
