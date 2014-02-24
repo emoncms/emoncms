@@ -244,22 +244,24 @@ PHP 5.4.0 has removed the timezone guessing algorithm and now defaults the timez
 
 Open php.ini
 
-sudo vi /etc/php5/apache2/php.ini
+    sudo vi /etc/php5/apache2/php.ini
 
 and search for "date.timezone"
 
-[Date]
-; Defines the default timezone used by the date functions.
-; http://php.net/date.timezone
-;date.timezone =
+    [Date]
+    ; Defines the default timezone used by the date functions.
+    ; http://php.net/date.timezone
+    ;date.timezone =
 
 edit date.timezone to your appropriate timezone:
-date.timezone = "Europe/Amsterdam"
+
+    date.timezone = "Europe/Amsterdam"
+    
 PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 
 Now save and close and restart your apache.
 
-sudo /etc/init.d/apache2 restart
+    sudo /etc/init.d/apache2 restart
 
 # Upgrading
 
