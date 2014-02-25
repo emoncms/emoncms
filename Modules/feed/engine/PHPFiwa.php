@@ -650,5 +650,4 @@ class PHPFiwa
         $meta->npoints[3] = $npoints3;
         return $meta;
     }
-
 }
