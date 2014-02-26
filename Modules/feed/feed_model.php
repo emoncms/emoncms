@@ -19,7 +19,7 @@ class Feed
 {
     private $mysqli;
     private $redis;
-    private $engine;
+    public $engine;
     private $histogram;
 
     public function __construct($mysqli,$redis,$settings)
