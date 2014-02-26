@@ -198,7 +198,11 @@ input[type=text][class=variable-name-edit] {
             out += value;
           }
           
-          if (variable.units!=undefined) out += " "+variable.units;
+          if (variable.units!=undefined) {
+          
+          if (variable.units=='u00b0C') variable.units = "°C";
+              out += " "+variable.units;
+          }
           
           var labelcolor = ""; if (variable.feedid) labelcolor = 'label-info';
           
