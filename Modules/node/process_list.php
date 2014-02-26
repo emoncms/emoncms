@@ -60,7 +60,7 @@ $variableid = $_GET['variable'];
                 
                 <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
 
-                <span class="add-on">Feed engine: </span>
+                <span class="add-on feed-engine-label">Feed engine: </span>
                 <select id="feed-engine">
 
                 <optgroup label="Recommended">
@@ -127,6 +127,7 @@ if (nodes[nodeid].decoder.variables[variableid].name!=undefined) {
     $("#variableid").html(variableid);
 }
 
+if (nodes[nodeid].decoder.variables[variableid].processlist==undefined) nodes[nodeid].decoder.variables[variableid].processlist = "";
 var variableprocesslist = decode_processlist(nodes[nodeid].decoder.variables[variableid].processlist);
 
 var feedlist = feed.list_assoc();
@@ -294,8 +295,8 @@ $('#process-add').click(function()
 
     }
     
-    if (arg!="") 
-    {
+    //if (arg!="") 
+    //{
         console.log(processid+" "+arg);
         variableprocesslist.push([processid,arg]);
         nodes[nodeid].decoder.variables[variableid].processlist = encode_processlist(variableprocesslist);
@@ -306,7 +307,7 @@ $('#process-add').click(function()
         //    return false;
         //}
         update_list();
-    }
+    //}
 });
 
 $('#process-select').change(function() {
@@ -350,9 +351,13 @@ $('#feed-select').change(function() {
     if (feedid!=-1) {
         $("#feed-name").hide();
         $("#feed-interval").hide();
+        $("#feed-engine").hide();
+        $(".feed-engine-label").hide();
     } else {
         $("#feed-name").show();
         $("#feed-interval").show();   
+        $("#feed-engine").show();
+        $(".feed-engine-label").show();
     }
 });
 
@@ -380,7 +385,7 @@ $('.table').on('click', '.move-process', function() {
 });
 
 $(document).ready(function() {
-    update_list();
+  update_list();  
 });
 
 // Process list functions

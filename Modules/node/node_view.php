@@ -181,8 +181,8 @@ input[type=text][class=variable-name-edit] {
           
           if (variable.type==2)
           {
-            var value = parseInt(bytes[pos]) + parseInt(bytes[pos+1])*256;
-            if (value>32768) value += -65536;  
+            var value = parseInt(bytes[pos]) + parseInt(bytes[pos+1])*Math.pow(2,1*8) + parseInt(bytes[pos+2])*Math.pow(2,2*8) + parseInt(bytes[pos+3])*Math.pow(2,3*8);
+            //if (value>32768) value += -65536;  
             pos += 4;
           }
           out += "<td>";

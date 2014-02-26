@@ -87,8 +87,9 @@ class Node
 
                 if ($variable->type==2)
                 {
-                    $value = (int) $bytes[$pos] + (int) $bytes[$pos+1]*256;
-                    if ($value>32768) $value += -65536;  
+                 
+                    $value = (int) $bytes[$pos] + (int) $bytes[$pos+1]*256 + (int) $bytes[$pos+2]*65536 + (int) $bytes[$pos+3]*16777216;
+                    //if ($value>32768) $value += -65536;  
                     $pos += 4;
                 }
 
