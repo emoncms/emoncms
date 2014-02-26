@@ -26,7 +26,7 @@ function node_controller()
     }
 
     if ($route->format == 'json') {
-        if ($route->action == 'set' && $session['write']) $result = $node->set($session['userid'],get('nodeid'),get('data'));
+        if ($route->action == 'set' && $session['write']) $result = $node->set($session['userid'],get('nodeid'),get('time'),get('data'));
         if ($route->action == 'setdecoder' && $session['write']) $result = $node->set_decoder($session['userid'],get('nodeid'),get('decoder'));
         if ($route->action == 'getall' && $session['write']) $result = $node->get_all($session['userid']);
     }

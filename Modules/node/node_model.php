@@ -16,12 +16,12 @@ class Node
         $this->process = $process;
     }
 
-    public function set($userid,$nodeid,$data)
+    public function set($userid,$nodeid,$time,$data)
     {
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
 
-        $time = time();
+        if (!$time) $time = time();
 
         $nodes = json_decode($this->redis->get("nodes:$userid"));
 

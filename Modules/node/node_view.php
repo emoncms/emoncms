@@ -100,7 +100,7 @@ input[type=text][class=variable-name-edit] {
       name: 'EmonTx V3 (Continuous sampling with Wh totals)',
       updateinterval: 10,
       variables: [
-        {name: 'Message Number', type: 1 },
+        {name: 'Message Number', type: 2 },
         {name: 'Power CT1', type: 1, units: 'W'}, 
         {name: 'Power CT2', type: 1, units: 'W'}, 
         {name: 'Power CT3', type: 1, units: 'W'}, 

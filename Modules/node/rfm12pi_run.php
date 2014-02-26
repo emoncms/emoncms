@@ -17,7 +17,7 @@
   $fp = fopen("importlock", "w");
   if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
 
-  $basedir = str_replace("/Modules/node","",dirname(__FILE__));
+  $basedir = str_replace("/Modules/raspberrypi","",dirname(__FILE__));
   chdir($basedir);
 
   // 1) Load settings and core scripts
@@ -247,8 +247,8 @@
             $time = time();
 
             unset($values[0]);
-            print "http://localhost/rework/node/set.json?apikey=913f557706d069745bfe8dac70040261&nodeid=".$nodeid."&data=".implode(",",$values)."\n";
-            print file_get_contents("http://localhost/rework/node/set.json?apikey=913f557706d069745bfe8dac70040261&nodeid=".$nodeid."&data=".implode(",",$values));
+            // print "http://localhost/rework/node/set.json?apikey=913f557706d069745bfe8dac70040261&time=".$time."&nodeid=".$nodeid."&data=".implode(",",$values)."\n";
+            print file_get_contents("http://localhost/rework/node/set.json?apikey=913f557706d069745bfe8dac70040261&time=".$time."&nodeid=".$nodeid."&data=".implode(",",$values));
           }
         }
       }
