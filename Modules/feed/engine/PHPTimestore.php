@@ -4,9 +4,9 @@ class PHPTimestore
 {
     private $dir = "/var/lib/timestore/";
 
-    public function __construct()
+    public function __construct($settings)
     {
-
+        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
     }
 
     public function create($feedid,$options)
@@ -170,7 +170,7 @@ class PHPTimestore
 
     // Alternate timestore version
 
-    public function get_data($feedid,$start,$end)
+    public function get_data($feedid,$start,$end,$outinterval)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
@@ -181,30 +181,11 @@ class PHPTimestore
         $meta = $this->get_meta($feedid);
 
         $start = round($start/$meta->interval)*$meta->interval;
-        $end = round($end/$meta->interval)*$meta->interval;
-        $npoints = round(($end - $start) / $meta->interval);
-
-        if ($npoints>1000) $npoints = 1000;
-
-        $data = $this->tsdb_get_series($meta,$start,$end,$npoints);
-        return $data;
-    }
-
-    public function get_average($feedid,$start,$end,$interval)
-    {
-        $feedid = intval($feedid);
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        $interval = intval($interval);
-
-        if ($end == 0) $end = time();
-
-        $meta = $this->get_meta($feedid);
-
-        $npoints = round(($end - $start) / $interval);
-        $end = $start+(($npoints-1)*$interval);
-
-        if ($npoints>1000) $npoints = 1000;
+        
+        if ($outinterval<1) $outinterval = 1;
+        $npoints = ceil(($end - $start) / $outinterval);
+        $end = $start + ($npoints * $outinterval);
+        if ($npoints<1) return false;
 
         $data = $this->tsdb_get_series($meta,$start,$end,$npoints);
         return $data;

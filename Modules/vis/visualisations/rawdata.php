@@ -203,6 +203,10 @@
             };
 
             // Fade in/out the control buttons on mouse-over the plot container
+            $("#graph_bound").click(function(){
+              $("#graph_buttons").css('opacity',0.5);
+            });
+            
             $("#graph_bound").mouseenter(function(){
                 $("#graph_buttons").stop().fadeIn();
             }).mouseleave(function(){

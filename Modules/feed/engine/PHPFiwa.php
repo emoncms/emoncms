@@ -12,9 +12,9 @@ class PHPFiwa
      *
      * @api
     */
-    public function __construct()
+    public function __construct($settings)
     {
-
+        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
     }
 
     /**
@@ -28,6 +28,8 @@ class PHPFiwa
         if ($interval<5) $interval = 5;
         
         
+        
+        
         // Check to ensure we dont overwrite an existing feed
         if (!$meta = $this->get_meta($id))
         {
@@ -35,9 +37,40 @@ class PHPFiwa
             $meta = new stdClass();
             $meta->id = $id;
             $meta->start_time = 0;
-            $meta->nlayers = 4;
-            $meta->npoints = array(0,0,0,0);
-            $meta->interval = array(5,60,3600,86400);
+            
+            // Limitation's on feed interval's so that the next layer can always be produced from an 
+            // integer number of datapoints from the layer below
+            
+            // layer intervals are also designed for most useful data export, minute, hourly, daily mean
+            
+            $meta->nlayers = 0;
+            
+            if ($interval==5 || $interval==10 || $interval==15 || $interval==20 || $interval==30) {
+                $meta->nlayers = 4;
+                $meta->npoints = array(0,0,0,0);
+                $meta->interval = array($interval,60,600,3600);
+            }
+            
+            if ($interval==60 || $interval==120 || $interval==300) {
+                $meta->nlayers = 3;
+                $meta->npoints = array(0,0,0);
+                $meta->interval = array($interval,600,3600);
+            }
+            
+            if ($interval==600 || $interval==1200 || $interval==1800) {
+                $meta->nlayers = 2;
+                $meta->npoints = array(0,0);
+                $meta->interval = array($interval,3600);
+            }
+            
+            if ($interval==3600) {
+                $meta->nlayers = 1;
+                $meta->npoints = array(0);
+                $meta->interval = array($interval);
+            }
+            
+            // If interval is outside of the allowed layer intervals
+            if ($meta->nlayers==0) return false;
 
             // Save meta data
             $this->set_meta($id,$meta);
@@ -92,7 +125,6 @@ class PHPFiwa
         
         if ($result!=false)
         {
-            error_log(json_encode($result));
             $this->set_meta($id,$result);
         }
     }
@@ -155,10 +187,7 @@ class PHPFiwa
                 $average = NAN;
             }
             
-            $meta = $this->update_layer($meta,$layer,$point_avl,$timestamp_avl,$average);
-            
-            error_log($point_avl." ".$first_point."->".$point_in_avl." ($point) $average");
-            
+            $meta = $this->update_layer($meta,$layer,$point_avl,$timestamp_avl,$average);  
         }
         
         return $meta;
@@ -209,7 +238,6 @@ class PHPFiwa
         if ($dpratio > ($meta->interval[3] / $meta->interval[0])) $layer = 3;
         
         $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
-        error_log($dp_in_range." ".$dp." ".($dp_in_range/$dp));
                 
         $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
 
@@ -255,32 +283,50 @@ class PHPFiwa
         return $data;
     }
 
-    public function get_data($feedid,$start,$end,$dp)
+    public function get_data($feedid,$start,$end,$outinterval)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
         $end = intval($end/1000);
-        $dp = 800;
+        $outinterval = (int) $outinterval;
         
         $layer = 0;
 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($feedid)) return false;
 
+        if ($outinterval<$meta->interval[0]) $outinterval = $meta->interval[0];
+        $dp = floor(($end - $start) / $outinterval);
+        if ($dp<1) return false;
+        
+        $end = $start + ($dp * $outinterval);
+        
+        $dpratio = $outinterval / $meta->interval[0];
+        
         // The number of datapoints in the query range:
-        $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
+        //$dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
         
         // Cant return more datapoints than exists in bottom layer
-        if ($dp>$dp_in_range) $dp = $dp_in_range;
+        //if ($dp>$dp_in_range) $dp = $dp_in_range;
         
         // Find out the closest layer to the range we have selected
-        $dpratio = $dp_in_range / $dp;
-        if ($dpratio > ($meta->interval[1] / $meta->interval[0])) $layer = 1;   
-        if ($dpratio > ($meta->interval[2] / $meta->interval[0])) $layer = 2;
-        if ($dpratio > ($meta->interval[3] / $meta->interval[0])) $layer = 3;
+        //$dpratio = $dp_in_range / $dp;
+        
+        //print $dpratio;
+        
+        if ($meta->nlayers>1) {
+          if ($dpratio >= ($meta->interval[1] / $meta->interval[0])) $layer = 1;
+        }   
+        
+        if ($meta->nlayers>2) {
+          if ($dpratio >= ($meta->interval[2] / $meta->interval[0])) $layer = 2;
+        }
+        
+        if ($meta->nlayers>3) {
+          if ($dpratio >= ($meta->interval[3] / $meta->interval[0])) $layer = 3;
+        }
         
         $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
-        error_log($dp_in_range." ".$dp." ".($dp_in_range/$dp));
                 
         $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
 
@@ -307,7 +353,7 @@ class PHPFiwa
         fseek($fh,$startpos*4);
         $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
         fclose($fh);
-        
+
         $count = count($layer_values)-1;
         
         $naverage = $skipsize;
@@ -318,21 +364,22 @@ class PHPFiwa
             $points_in_sum = 0;
             
             for ($n=0; $n<$naverage; $n++) {
-                if (!is_nan($layer_values[$i+$n])) {
-                    $point_sum += $layer_values[$i+$n];
+                $value = $layer_values[$i+$n];
+                if (!is_nan($value)) {
+                    $point_sum += $value;
                     $points_in_sum++;
                 }
             }
 
             // If there was a value in the block then add to data array
             if ($points_in_sum) {
-                $timestamp = $start_time_avl + $meta->interval[$layer] * ($startpos+$i-1);
+                $timestamp = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
                 $average = $point_sum / $points_in_sum;
                 $data[] = array($timestamp*1000,$average);
             }
         }
         
-        error_log(round((microtime(true)-$mstart)*1000)."ms");
+        //error_log("datapoints: ".($dp_in_range).":".$count." ".(microtime(true)-$mstart)." ".(memory_get_usage(true)/1024)."kb");
         
         return $data;
     }
@@ -395,6 +442,8 @@ class PHPFiwa
         $id = (int) $id;
         $feedname = "$id.meta";
         
+        // print $this->dir.$feedname;
+        
         if (!file_exists($this->dir.$feedname)) return false;
         
         $meta = new stdClass();
@@ -428,7 +477,7 @@ class PHPFiwa
         return $meta;
     }
     
-    private function set_meta($id,$meta)
+    public function set_meta($id,$meta)
     {
         $id = (int) $id;
         $feedname = "$id.meta";
@@ -480,5 +529,125 @@ class PHPFiwa
             $npadding -= $pointsperblock;
         } while ($npadding); 
     }
+    
+    public function recompile($meta)
+    {
+        // Recompiles all layers from base layer according to new meta layer interval specification
+        
+        // The code has been optimised for speed by transfering object or array values to single variables
+        // and using % rather than an aproach based on floor. Recompilation times improved from around 10s to 4.7s
+        // which mean the difference of days of calculation time on large systems with thousands of feeds.
+        
+        // It does however leave the implementation a bit unflexible as it needs to be fixed to the number of layers
+        
+        $layer = 0;
+        
+        $fh = fopen($this->dir.$meta->id."_$layer.dat", 'c+');
+        $fh1 = fopen($this->dir.$meta->id."_1.dat", 'c+');
+        $fh2 = fopen($this->dir.$meta->id."_2.dat", 'c+');    
+        $fh3 = fopen($this->dir.$meta->id."_3.dat", 'c+');
+                  
+        $pos = 0;
+        $sum1 = 0; $n1=0;
+        $sum2 = 0; $n2=0; 
+        $sum3 = 0; $n3=0; 
+                       
+        $timestamp = $meta->start_time;
+        $interval0 = $meta->interval[0];
+        $interval1 = $meta->interval[1];
+        $interval2 = $meta->interval[2];
+        $interval3 = $meta->interval[3];
+        
+        $ratio1 = $interval1 / $interval0;
+        $ratio2 = $interval2 / $interval0;
+        $ratio3 = $interval3 / $interval0;
+                        
+        $npoints1 = 0;
+        $npoints2 = 0;
+        $npoints3 = 0;
+                
+        $layer1_start_time = floor($timestamp / $interval1) * $interval1;
+        $layer2_start_time = floor($timestamp / $interval2) * $interval2;
+        $layer3_start_time = floor($timestamp / $interval3) * $interval3;
+        
+        $offset1 = ($timestamp/$layer1_start_time) / $interval0;
+        $offset2 = ($timestamp/$layer2_start_time) / $interval0;
+        $offset3 = ($timestamp/$layer3_start_time) / $interval0;
+        
+        //print $offset;
+        $mtime = microtime(true);
+        
+        while($d = fread($fh,3600))
+        {
+        
+            $count = strlen($d)/4;
+            $d = unpack("f*",$d);
+            
+            $buf1 = '';
+            $buf2 = '';
+            $buf3 = '';
+            
+            for ($i=1; $i<$count+1; $i++)
+            {
+              if (($pos + $offset1) % $ratio1 == 0)
+              {
+                if ($n1) {
+                    $buf1 .= pack("f",$sum1/$n1);
+                } else {
+                    $buf1 .= pack("f",NAN);
+                }
+                $npoints1++;
+                $sum1 = 0; $n1=0;
+                
+              }
+              
+              if (($pos + $offset2) % $ratio2 == 0)
+              {
+                if ($n2) {
+                    $buf2 .= pack("f",$sum2/$n2);
+                } else {
+                    $buf2 .= pack("f",NAN);
+                }
+                $npoints2++;
+                $sum2 = 0; $n2=0;
+              }
+              
+              if (($pos + $offset3) % $ratio3 == 0)
+              {
+                if ($n3) {
+                    $buf3 .= pack("f",$sum3/$n3);
+                } else {
+                    $buf3 .= pack("f",NAN);
+                }
+                $npoints3++;
+                $sum3 = 0; $n3=0;
+              }
+              
+              $val = $d[$i];
+              if (!is_nan($val)) { 
+                $sum1 += $val; $n1++;
+                $sum2 += $val; $n2++;
+                $sum3 += $val; $n3++;
+              }
 
+              $pos++;
+              $timestamp += $interval0;
+              
+            }
+            
+            if ($buf1!='') fwrite($fh1,$buf1);
+            if ($buf2!='') fwrite($fh2,$buf2);
+            if ($buf3!='') fwrite($fh3,$buf3);
+            
+        }
+        
+        fclose($fh);
+        
+        print (microtime(true) - $mtime)."\n";
+        
+        $meta->npoints[1] = $npoints1;
+        $meta->npoints[2] = $npoints2;
+        $meta->npoints[3] = $npoints3;
+        return $meta;
+    }
 }

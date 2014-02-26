@@ -14,9 +14,9 @@ class PHPTimeSeries
 
     private $dir = "/var/lib/phptimeseries/";
 
-    public function __construct()
+    public function __construct($settings)
     {
-
+        if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
     }
 
     public function create($feedid,$options)
@@ -118,11 +118,15 @@ class PHPTimeSeries
         return filesize($this->dir."feed_$feedid.MYD");
     }
 
-    public function get_data($feedid,$start,$end,$dp)
+    public function get_data($feedid,$start,$end,$outinterval)
     {
         $start = $start/1000; $end = $end/1000;
 
-        $dp = 1000;
+        if ($outinterval<1) $outinterval = 1;
+        $dp = ceil(($end - $start) / $outinterval);
+        $end = $start + ($dp * $outinterval);
+        if ($dp<1) return false;
+
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 

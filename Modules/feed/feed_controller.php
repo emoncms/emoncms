@@ -64,9 +64,8 @@ function feed_controller()
                     if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
                     if ($route->action == 'kwhatpowers') $result = $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
-
                     if ($route->action == 'data') $result = $feed->get_data($feedid,get('start'),get('end'),get('dp'));
-                    if ($route->action == 'timestoreaverage') $result = $feed->get_timestore_average($feedid,get('start'),get('end'),get('interval'));
+                    if ($route->action == 'average') $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
                 }
 
                 // write session required

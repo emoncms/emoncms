@@ -25,13 +25,13 @@ input[type=text][class=variable-name-edit] {
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <br><p style="font-size:150%" id="myModalLabel">Log <b>Node <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> to feed:</P>
+    <br><p style="font-size:150%" id="myModalLabel"><b>Node <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> config:</P>
   </div>
 
   <div class="modal-body">
-  <select id="feeds"></select>
-  <input id="new-feed-name" type="text" style="width:150px" />
-  <select id="newfeedinterval" style="width:100px"><option value="">Select interval</option><option value=5>5s</option><option value=10>10s</option><option value=15>15s</option><option value=20>20s</option><option value=25>25s</option><option value=30>30s</option><option value=60>60s</option><option value=120>2 mins</option><option value=300>5 mins</option><option value=600>10 mins</option><option value=3600>1 hour</option><option value=21600>6 hours</option><option value=86400>24 hours</option></select>
+  
+  <input id="processlist" type="text" />
+  
   </div>
 
   <div class="modal-footer">
@@ -100,7 +100,7 @@ input[type=text][class=variable-name-edit] {
       name: 'EmonTx V3 (Continuous sampling with Wh totals)',
       updateinterval: 10,
       variables: [
-        {name: 'Message Number', type: 1 },
+        {name: 'Message Number', type: 2 },
         {name: 'Power CT1', type: 1, units: 'W'}, 
         {name: 'Power CT2', type: 1, units: 'W'}, 
         {name: 'Power CT3', type: 1, units: 'W'}, 
@@ -181,8 +181,8 @@ input[type=text][class=variable-name-edit] {
           
           if (variable.type==2)
           {
-            var value = parseInt(bytes[pos]) + parseInt(bytes[pos+1])*256;
-            if (value>32768) value += -65536;  
+            var value = parseInt(bytes[pos]) + parseInt(bytes[pos+1])*Math.pow(2,1*8) + parseInt(bytes[pos+2])*Math.pow(2,2*8) + parseInt(bytes[pos+3])*Math.pow(2,3*8);
+            //if (value>32768) value += -65536;  
             pos += 4;
           }
           out += "<td>";
@@ -198,12 +198,16 @@ input[type=text][class=variable-name-edit] {
             out += value;
           }
           
-          if (variable.units!=undefined) out += " "+variable.units;
+          if (variable.units!=undefined) {
+          
+          if (variable.units=='u00b0C') variable.units = "°C";
+              out += " "+variable.units;
+          }
           
           var labelcolor = ""; if (variable.feedid) labelcolor = 'label-info';
           
           var updateinterval = nodes[z].decoder.updateinterval;
-          out += "</td><td><span class='label "+labelcolor+" record' >Log @ "+updateinterval+"s <i class='icon-play-circle icon-white'></i></span></td></tr>";
+          out += "</td><td><a href='config?node="+z+"&variable="+i+"'><span class='label "+labelcolor+" record' >Config <i class='icon-play-circle icon-white'></i></span></a></td></tr>";
          
         }
       }
@@ -290,26 +294,28 @@ input[type=text][class=variable-name-edit] {
     redraw();
   });
   
-
+  /*
   $("#nodes").on("click",'.record', function() 
   {
     // Fetch the nodeid and variableid from closest table row (tr)
     var nodeid = $(this).closest('tr').attr('node');
     var variableid = $(this).closest('tr').attr('variable');
+    
+    if (nodes[nodeid].decoder.variables[variableid].processlist!=undefined)
+    {
+      $("#processlist").val(nodes[nodeid].decoder.variables[variableid].processlist);
+    } else {
+      $("#processlist").val("");
+    }
 
     $("#myModal-nodeid").html(nodeid);
     $("#myModal-variablename").html(nodes[nodeid].decoder.variables[variableid].name);
-
-    $("#new-feed-name").show();
-    $("#newfeedinterval").show();
-    $("#new-feed-name").val("Node "+nodeid+" "+nodes[nodeid].decoder.variables[variableid].name);
-    $("#newfeedinterval").val(nodes[nodeid].decoder.updateinterval);
     
     $("#myModal").modal('show');
     $("#myModal").attr('node',nodeid);
     $("#myModal").attr('variable',variableid);
     
-  });
+  });*/
 
   $("#feeds").change(function(){
     var feedid = $(this).val();
@@ -329,26 +335,12 @@ input[type=text][class=variable-name-edit] {
   {
     var nodeid = $("#myModal").attr('node');
     var variableid = $("#myModal").attr('variable');
+    var processlist = $("#processlist").val();
     
-    var feeds_selector = $("#feeds").val();
-
-    var feed_id = false;
-    
-    if (feeds_selector == -1) {
-      var new_feed_name = $("#new-feed-name").val();
-      var new_feed_interval = $("#newfeedinterval").val();
-      
-      feed_id = feed.create(new_feed_name,1,new_feed_interval);
-      
-    } else {
-      feed_id = feeds_selector;
-    }
-    
-    nodes[nodeid].decoder.variables[variableid].feedid = feed_id;
+    nodes[nodeid].decoder.variables[variableid].processlist = processlist;
     
     node.setdecoder(nodeid,nodes[nodeid].decoder);
     
-    $(".record[node="+nodeid+"][variable="+variableid+"]").addClass('label-info')
     $("#myModal").modal('hide');
     
   });

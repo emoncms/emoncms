@@ -19,7 +19,7 @@ class Feed
 {
     private $mysqli;
     private $redis;
-    private $engine;
+    public $engine;
     private $histogram;
 
     public function __construct($mysqli,$redis,$settings)
@@ -46,16 +46,20 @@ class Feed
             $settings['timestore'] = array('adminkey'=>$timestore_adminkey);
         }
         if (!isset($settings['graphite'])) $settings['graphite'] = array('host'=>"", 'port'=>0);
-        
+        if (!isset($settings['phpfiwa'])) $settings['phpfiwa'] = array();
+        if (!isset($settings['phpfina'])) $settings['phpfina'] = array();
+        if (!isset($settings['phptimestore'])) $settings['phptimestore'] = array();
+        if (!isset($settings['phptimeseries'])) $settings['phptimeseries'] = array();
+              
         // Load engine instances to engine array to make selection below easier
         $this->engine = array();
         $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
         $this->engine[Engine::TIMESTORE] = new Timestore($settings['timestore']);
-        $this->engine[Engine::PHPTIMESTORE] = new PHPTimestore();
-        $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries();
+        $this->engine[Engine::PHPTIMESTORE] = new PHPTimestore($settings['phptimestore']);
+        $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries($settings['phptimeseries']);
         $this->engine[Engine::GRAPHITE] = new GraphiteTimeSeries($settings['graphite']);
-        $this->engine[Engine::PHPFINA] = new PHPFina();
-        $this->engine[Engine::PHPFIWA] = new PHPFiwa();
+        $this->engine[Engine::PHPFINA] = new PHPFina($settings['phpfina']);
+        $this->engine[Engine::PHPFIWA] = new PHPFiwa($settings['phpfiwa']);
                 
         $this->histogram = new Histogram($mysqli);
     }
@@ -425,10 +429,12 @@ class Feed
         $engine = $this->redis->hget("feed:$feedid",'engine');
         
         // Call to engine get_data method
-        return $this->engine[$engine]->get_data($feedid,$start,$end,$dp);
+        if ($dp>800) $dp = 800;
+        $outinterval = round(($end - $start) / $dp)/1000;
+        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
     }
 
-    public function get_timestore_average($feedid,$start,$end,$interval)
+    public function get_average($feedid,$start,$end,$outinterval)
     {
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
@@ -436,7 +442,7 @@ class Feed
         $engine = $this->redis->hget("feed:$feedid",'engine');
 
         // Call to engine get_average method
-        return $this->engine[$engine]->get_average($feedid,$start,$end,$interval);
+        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
     }
 
 
@@ -529,7 +535,7 @@ class Feed
         return $this->engine[Engine::PHPTIMESERIES]->export($feedid,$start);
     }
 
-    private function load_to_redis($userid)
+    public function load_to_redis($userid)
     {
         $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_object())
