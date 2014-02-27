@@ -303,7 +303,7 @@ body .modal {
           var updateinterval = nodes[z].decoder.updateinterval;
           
           var processliststr = ""; if (variable.processlist!=undefined) processliststr = processlist_ui.drawinline(variable.processlist);
-          out += "</td><td>"+processliststr+"</td><td><span class='label "+labelcolor+" record' >Config <i class='icon-wrench icon-white'></i></span></td></tr>";
+          out += "</td><td>"+processliststr+"</td><td><span class='label "+labelcolor+" record' style='cursor:pointer' >Config <i class='icon-wrench icon-white'></i></span></td></tr>";
          
         }
       }

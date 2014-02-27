@@ -104,9 +104,9 @@ var processlist_ui =
                 
                 if (this.processlist[processid][1]==1) {
                     var inpid = this.variableprocesslist[z][1];
-                    arg += "Node "+inputlist[inpid].nodeid+": ";
-                    if (inputlist[inpid].description!="") arg += inputlist[inpid].description; else arg += inputlist[inpid].name;
-                    lastvalue = "<span style='color:#888; font-size:12px'>(inputvalue:"+(inputlist[inpid].value*1).toFixed(2)+")</span>";
+                    arg += "Node "+this.inputlist[inpid].nodeid+": ";
+                    if (this.inputlist[inpid].description!="") arg += this.inputlist[inpid].description; else arg += this.inputlist[inpid].name;
+                    lastvalue = "<span style='color:#888; font-size:12px'>(inputvalue:"+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
                 }
                 
                 if (this.processlist[processid][1]==2) {
@@ -228,11 +228,19 @@ var processlist_ui =
                     $("#feed-interval").show();
                 }
 
-                if (prc=='power_to_kwh' || prc=='power_to_kwhd') { 
+                if (prc=='power_to_kwh') { 
                     $("#feed-engine option").hide(); 
                     $("#feed-engine option[value=5]").show();
                     // $("#feed-engine option[value=0]").show();
                     $("#feed-engine").val(5); 
+                    $("#feed-interval").show();
+                }
+                
+                if (prc=='power_to_kwhd') { 
+                    $("#feed-engine option").hide(); 
+                    $("#feed-engine option[value=0]").show();
+                    // $("#feed-engine option[value=0]").show();
+                    $("#feed-engine").val(0); 
                     $("#feed-interval").hide();
                 }
             }
