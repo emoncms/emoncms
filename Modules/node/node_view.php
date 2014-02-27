@@ -2,12 +2,28 @@
   global $path; 
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/node/node.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/node/processlist.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/process_info.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <style>
 
 input[type=text][class=variable-name-edit] {
   margin-bottom:0px;
+}
+
+body .modal {
+    /* new custom width */
+    width: 1080px;
+    /* must be half of the width, minus scrollbar on the left (30px) */
+    margin-left: -540px;
+    
+
+}
+
+.modal-body {
+    max-height: 800px;
 }
 
 </style>
@@ -25,12 +41,95 @@ input[type=text][class=variable-name-edit] {
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <br><p style="font-size:150%" id="myModalLabel"><b>Node <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> config:</P>
+    <br><h3 id="myModalLabel"><b>Node <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> config:</h3>
   </div>
 
   <div class="modal-body">
   
-  <input id="processlist" type="text" />
+    <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
+
+    <div id="processlist-ui">
+        <table class="table">
+
+            <tr>
+                <th style='width:5%;'></th>
+                <th style='width:5%;'><?php echo _('Order'); ?></th>
+                <th><?php echo _('Process'); ?></th>
+                <th><?php echo _('Arg'); ?></th>
+                <th></th>
+                <th><?php echo _('Actions'); ?></th>
+            </tr>
+
+            <tbody id="variableprocesslist"></tbody>
+
+        </table>
+
+        <table class="table">
+        <tr><th>Add process:</th><tr>
+        <tr>
+            <td>
+                <div class="input-prepend input-append">
+                    <select id="process-select"></select>
+
+                    <span id="type-value">
+                        <input type="text" id="value-input" style="width:125px" />
+                    </span>
+
+                    <span id="type-input">
+                        <select id="input-select" style="width:140px;"></select>
+                    </span>
+
+                    <span id="type-feed">        
+                        <select id="feed-select" style="width:140px;"></select>
+                        
+                        <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
+
+                        <span class="add-on feed-engine-label">Feed engine: </span>
+                        <select id="feed-engine">
+
+                        <optgroup label="Recommended">
+                        <option value=6 selected>Fixed Interval With Averaging (PHPFIWA)</option>
+                        <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
+                        <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
+                        </optgroup>
+
+                        <optgroup label="Other">
+                        <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
+                        <option value=1 >TIMESTORE (Requires installation of timestore)</option>
+                        <option value=3 >GRAPHITE (Requires installation of graphite)</option>
+                        <option value=0 >MYSQL (Slow when there is a lot of data)</option>
+                        </optgroup>
+
+                        </select>
+
+
+                        <select id="feed-interval" style="width:130px">
+                            <option value="">Select interval</option>
+                            <option value=5>5s</option>
+                            <option value=10>10s</option>
+                            <option value=15>15s</option>
+                            <option value=20>20s</option>
+                            <option value=30>30s</option>
+                            <option value=60>60s</option>
+                            <option value=120>2 mins</option>
+                            <option value=300>5 mins</option>
+                            <option value=600>10 mins</option>
+                            <option value=1200>20 mins</option>
+                            <option value=1800>30 mins</option>
+                            <option value=3600>1 hour</option>
+                        </select>
+                        
+                    </span>
+                    <button id="process-add" class="btn btn-info"/><?php echo _('Add'); ?></button>
+                </div>
+            </td>
+        </tr>
+        <tr>
+          <td id="description"></td>
+        </tr>
+        </table>
+    </div>
+
   
   </div>
 
@@ -131,11 +230,6 @@ input[type=text][class=variable-name-edit] {
  
  redraw();
  
- var feeds = feed.list();
- var out = "<option value=-1 >CREATE NEW FEED:</option>";
- for (z in feeds) out += "<option value="+feeds[z].id+">"+feeds[z].name+"</option>";
- $("#feeds").html(out);
- 
  var variable_edit_mode = false;
  
  var interval = setInterval(update,5000);
@@ -153,7 +247,7 @@ input[type=text][class=variable-name-edit] {
       var nodename = '(Click to select a decoder)';
       if (nodes[z].decoder!=undefined && nodes[z].decoder.name!=undefined) nodename = nodes[z].decoder.name;
         
-      out += "<tr style='background-color:#eee' node="+z+"><td><b>Node "+z+"</b></td><td><span class='select-decoder' node="+z+" mode='namedisplay'><b>"+nodename+"</b></span><span node="+z+" class='customdecoder'></span></td><td>"+list_format_updated(nodes[z].time)+"</td><td></td></tr>";
+      out += "<tr style='background-color:#eee' node="+z+"><td><b>Node "+z+"</b></td><td><span class='select-decoder' node="+z+" mode='namedisplay'><b>"+nodename+"</b></span><span node="+z+" class='customdecoder'></span></td><td>"+list_format_updated(nodes[z].time)+"</td><td></td><td></td></tr>";
      
       var bytes = nodes[z].data.split(',');
       var pos = 0;
@@ -207,7 +301,9 @@ input[type=text][class=variable-name-edit] {
           var labelcolor = ""; if (variable.feedid) labelcolor = 'label-info';
           
           var updateinterval = nodes[z].decoder.updateinterval;
-          out += "</td><td><a href='config?node="+z+"&variable="+i+"'><span class='label "+labelcolor+" record' >Config <i class='icon-play-circle icon-white'></i></span></a></td></tr>";
+          
+          var processliststr = ""; if (variable.processlist!=undefined) processliststr = processlist_ui.drawinline(variable.processlist);
+          out += "</td><td>"+processliststr+"</td><td><span class='label "+labelcolor+" record' >Config <i class='icon-wrench icon-white'></i></span></td></tr>";
          
         }
       }
@@ -294,28 +390,28 @@ input[type=text][class=variable-name-edit] {
     redraw();
   });
   
-  /*
+  
   $("#nodes").on("click",'.record', function() 
   {
     // Fetch the nodeid and variableid from closest table row (tr)
     var nodeid = $(this).closest('tr').attr('node');
     var variableid = $(this).closest('tr').attr('variable');
-    
-    if (nodes[nodeid].decoder.variables[variableid].processlist!=undefined)
-    {
-      $("#processlist").val(nodes[nodeid].decoder.variables[variableid].processlist);
-    } else {
-      $("#processlist").val("");
-    }
 
     $("#myModal-nodeid").html(nodeid);
     $("#myModal-variablename").html(nodes[nodeid].decoder.variables[variableid].name);
-    
+   
+    processlist_ui.nodeid = nodeid;
+    processlist_ui.variableid = variableid;
+
+    processlist_ui.init();
+    processlist_ui.draw();
+    processlist_ui.events();
+  
     $("#myModal").modal('show');
     $("#myModal").attr('node',nodeid);
     $("#myModal").attr('variable',variableid);
     
-  });*/
+  });
 
   $("#feeds").change(function(){
     var feedid = $(this).val();
@@ -455,5 +551,11 @@ input[type=text][class=variable-name-edit] {
 
     return "<span style='color:"+color+";'>"+updated+"</span>";
   }
+   
+  processlist_ui.nodes = nodes;
+  processlist_ui.feedlist = feed.list_assoc();
+  processlist_ui.inputlist = input.list_assoc();
+  processlist_ui.processlist = input.getallprocesses();
+
  
 </script>
