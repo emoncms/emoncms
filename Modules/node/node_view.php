@@ -247,7 +247,7 @@ body .modal {
       var nodename = '(Click to select a decoder)';
       if (nodes[z].decoder!=undefined && nodes[z].decoder.name!=undefined) nodename = nodes[z].decoder.name;
         
-      out += "<tr style='background-color:#eee' node="+z+"><td><b>Node "+z+"</b></td><td><span class='select-decoder' node="+z+" mode='namedisplay'><b>"+nodename+"</b></span><span node="+z+" class='customdecoder'></span></td><td>"+list_format_updated(nodes[z].time)+"</td><td></td><td></td></tr>";
+      out += "<tr style='background-color:#eee' node="+z+"><td><b>Node "+z+"</b></td><td><span class='select-decoder' node="+z+" mode='namedisplay'><b>"+nodename+"</b></span><span node="+z+" class='customdecoder'></span></td><td>"+list_format_updated(nodes[z].time)+"</td><td></td></tr>";
      
       var bytes = nodes[z].data.split(',');
       var pos = 0;
@@ -303,7 +303,7 @@ body .modal {
           var updateinterval = nodes[z].decoder.updateinterval;
           
           var processliststr = ""; if (variable.processlist!=undefined) processliststr = processlist_ui.drawinline(variable.processlist);
-          out += "</td><td>"+processliststr+"</td><td><span class='label "+labelcolor+" record' style='cursor:pointer' >Config <i class='icon-wrench icon-white'></i></span></td></tr>";
+          out += "</td><td style='text-align:right'>"+processliststr+"<span class='label "+labelcolor+" record' style='cursor:pointer' >Config <i class='icon-wrench icon-white'></i></span></td></tr>";
          
         }
       }
