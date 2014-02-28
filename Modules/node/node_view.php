@@ -393,6 +393,7 @@ body .modal {
   
   $("#nodes").on("click",'.record', function() 
   {
+    interval = clearInterval(interval);
     // Fetch the nodeid and variableid from closest table row (tr)
     var nodeid = $(this).closest('tr').attr('node');
     var variableid = $(this).closest('tr').attr('variable');
@@ -412,33 +413,11 @@ body .modal {
     $("#myModal").attr('variable',variableid);
     
   });
-
-  $("#feeds").change(function(){
-    var feedid = $(this).val();
-    
-    if (feedid == -1) {
-      $("#new-feed-name").show();
-      $("#newfeedinterval").show();
-    
-    } else {
-      $("#new-feed-name").hide();
-      $("#newfeedinterval").hide();
-    }
-  
-  });
   
   $("#record-ok").click(function() 
   {
-    var nodeid = $("#myModal").attr('node');
-    var variableid = $("#myModal").attr('variable');
-    var processlist = $("#processlist").val();
-    
-    nodes[nodeid].decoder.variables[variableid].processlist = processlist;
-    
-    node.setdecoder(nodeid,nodes[nodeid].decoder);
-    
     $("#myModal").modal('hide');
-    
+    interval = setInterval(update,5000);
   });
 
   

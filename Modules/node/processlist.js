@@ -354,7 +354,6 @@ var processlist_ui =
       if (!processliststr) return "";
       
       var processPairs = processliststr.split(",");
-      console.log(processPairs);
       var out = "";
 
       for (var z in processPairs)
