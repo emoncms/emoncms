@@ -76,12 +76,13 @@ function feed_controller()
                     if ($route->action == "insert") $result = $feed->insert_data($feedid,time(),get("time"),get("value"));
                     if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
                     if ($route->action == "delete") $result = $feed->delete($feedid);
-
+                    if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
+                    
                     if ($f['engine']==Engine::TIMESTORE)
                     {
                         if ($route->action == "export") $result = $feed->timestore_export($feedid,get('layer'),get('start'));
                         if ($route->action == "exportmeta") $result = $feed->timestore_export_meta($feedid);
-                        if ($route->action == "getmeta") $result = $feed->timestore_get_meta($feedid);
+                        
                         if ($route->action == "scalerange") $result = $feed->timestore_scale_range($feedid,get('start'),get('end'),get('value'));
                     } elseif ($f['engine']==Engine::MYSQL)	{
                         if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));

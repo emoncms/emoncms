@@ -95,5 +95,10 @@ class TemplateEngine
     {
     
     }
+    
+    public function get_meta($feedid)
+    {
+    
+    }
 
 }

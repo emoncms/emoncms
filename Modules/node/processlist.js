@@ -66,6 +66,8 @@ var processlist_ui =
 
         $("#type-feed").show();
         $("#description").html(process_info[1]);
+        
+        processlist_ui.showfeedoptions(1);
     },
 
     'draw':function()
@@ -165,9 +167,15 @@ var processlist_ui =
                 if (feedid==-1) 
                 {
                     var feedname = $('#feed-name').val();
-                    var options = {interval:$('#feed-interval').val()};
                     var engine = $('#feed-engine').val();
                     var datatype = process[4];
+                    
+                    var options = {};
+                    if (datatype==2) { 
+                        options = {interval:3600*24};
+                    } else {
+                        options = {interval:$('#feed-interval').val()};
+                    }
                     
                     if (feedname == '') {
                         alert('ERROR: Please enter a feed name');
@@ -217,32 +225,7 @@ var processlist_ui =
             if (processlist_ui.processlist[processid][1]==2) 
             {
                 $("#type-feed").show();
-
-                var prc = processlist_ui.processlist[processid][2];
-
-                if (prc=='log_to_feed') { 
-                    $("#feed-engine option").hide(); 
-                    $("#feed-engine option[value=6]").show();
-                    // $("#feed-engine option[value=0]").show();
-                    $("#feed-engine").val(6); 
-                    $("#feed-interval").show();
-                }
-
-                if (prc=='power_to_kwh') { 
-                    $("#feed-engine option").hide(); 
-                    $("#feed-engine option[value=5]").show();
-                    // $("#feed-engine option[value=0]").show();
-                    $("#feed-engine").val(5); 
-                    $("#feed-interval").show();
-                }
-                
-                if (prc=='power_to_kwhd') { 
-                    $("#feed-engine option").hide(); 
-                    $("#feed-engine option[value=0]").show();
-                    // $("#feed-engine option[value=0]").show();
-                    $("#feed-engine").val(0); 
-                    $("#feed-interval").hide();
-                }
+                processlist_ui.showfeedoptions(processid);
             }
             $("#description").html(process_info[processid]);
         });
@@ -286,6 +269,48 @@ var processlist_ui =
             processlist_ui.draw();
         });
 
+    },
+    
+    'showfeedoptions':function(processid)
+    {
+        var prc = processlist_ui.processlist[processid][2];
+        var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
+        var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+
+        if (prc!='histogram')
+        {
+            // Start by hiding all feed engine options
+            $("#feed-engine option").hide();
+
+            // Show only the feed engine options that are available
+            for (e in engines) $("#feed-engine option[value="+engines[e]+"]").show();
+
+            // Select the first feed engine in the engines array by default
+            $("#feed-engine").val(engines[0]);
+
+            // If there's only one feed engine to choose from then dont show feed engine selector
+            if (engines.length==1) {
+                $("#feed-engine, .feed-engine-label").hide(); 
+            } else {
+                $("#feed-engine, .feed-engine-label").show();
+            }
+
+            // If the datatype is daily then the interval is fixed to 3600s x 24h, no need to show interval selector
+            if (datatype==2) {
+                $("#feed-interval").hide();
+            } else {
+                $("#feed-interval").show();
+                $("#feed-interval").val(10);
+            } 
+        }
+        else
+        {
+            // Else feed engine is histogram
+            $("#feed-engine, .feed-engine-label").hide();
+            $("#feed-interval").hide();
+            $("#feed-engine").val(engines[0]);
+        }
+    
     },
 
     // Process list functions

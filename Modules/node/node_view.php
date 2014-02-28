@@ -87,18 +87,18 @@ body .modal {
                         <span class="add-on feed-engine-label">Feed engine: </span>
                         <select id="feed-engine">
 
-                        <optgroup label="Recommended">
-                        <option value=6 selected>Fixed Interval With Averaging (PHPFIWA)</option>
-                        <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
-                        <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
-                        </optgroup>
+                        <!--<optgroup label="Recommended">-->
+                        <option value=6 selected>Fixed Interval With Averaging</option>
+                        <option value=5 >Fixed Interval No Averaging</option>
+                        <option value=2 >Variable Interval No Averaging</option>
+                        <!--</optgroup>-->
 
-                        <optgroup label="Other">
+                        <!--<optgroup label="Other">
                         <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
                         <option value=1 >TIMESTORE (Requires installation of timestore)</option>
                         <option value=3 >GRAPHITE (Requires installation of graphite)</option>
                         <option value=0 >MYSQL (Slow when there is a lot of data)</option>
-                        </optgroup>
+                        </optgroup>-->
 
                         </select>
 

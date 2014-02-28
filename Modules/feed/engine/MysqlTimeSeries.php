@@ -230,5 +230,10 @@ class MysqlTimeSeries
         $tablesize = $row['Data_length']+$row['Index_length'];
         return $tablesize;
     }
+    
+    public function get_meta($feedid)
+    {
+    
+    }
 
 }

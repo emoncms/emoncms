@@ -28,6 +28,7 @@ class PHPFina
         $interval = (int) $options['interval'];
         if ($interval<5) $interval = 5;
         
+        if (!$this->checkpermissions()) return false;
         
         // Check to ensure we dont overwrite an existing feed
         if (!$meta = $this->get_meta($id))
@@ -46,6 +47,14 @@ class PHPFina
         $feedname = "$id.meta";
         if (file_exists($this->dir.$feedname)) return true;
         return false;
+    }
+    
+    private function checkpermissions()
+    {
+        $uid = fileowner( $this->dir );
+        $uinfo = posix_getpwuid( $uid ); 
+        
+        if ($uinfo['name']=="www-data") return true; else return false;
     }
 
 
