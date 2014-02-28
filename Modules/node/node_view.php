@@ -384,7 +384,7 @@ body .modal {
 
     processlist_ui.init();
     processlist_ui.draw();
-    processlist_ui.events();
+    
   
     $("#myModal").modal('show');
     $("#myModal").attr('node',nodeid);
@@ -514,6 +514,6 @@ body .modal {
   processlist_ui.feedlist = feed.list_assoc();
   processlist_ui.inputlist = input.list_assoc();
   processlist_ui.processlist = input.getallprocesses();
-
+  processlist_ui.events();
  
 </script>
