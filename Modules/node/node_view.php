@@ -40,7 +40,7 @@ body .modal {
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close modal-exit">×</button>
     <br><h3 id="myModalLabel"><b>Node <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> config:</h3>
   </div>
 
@@ -49,7 +49,7 @@ body .modal {
     <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
 
     <div id="processlist-ui">
-        <table class="table">
+        <table id="process-table" class="table">
 
             <tr>
                 <th style='width:5%;'></th>
@@ -64,7 +64,7 @@ body .modal {
 
         </table>
 
-        <table class="table">
+        <table id="process-table" class="table">
         <tr><th>Add process:</th><tr>
         <tr>
             <td>
@@ -134,29 +134,7 @@ body .modal {
   </div>
 
   <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button id="record-ok" class="btn btn-primary">Ok</button>
-  </div>
-</div>
-
-
-<div id="custom-node-modal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3>Create custom node</h3>
-  </div>
-
-  <div class="modal-body"> 
-  
-  <p>Node name: <input type="text" /></p>
-  <p>Default update rate <input type="text" /></p>
-  <p>Number of variables <input type="text" /></p>
-  
-  </div>
-
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Create</button>
+    <button class="btn btn-primary modal-exit">Ok</button>
   </div>
 </div>
 
@@ -414,9 +392,10 @@ body .modal {
     
   });
   
-  $("#record-ok").click(function() 
+  $(".modal-exit").click(function() 
   {
     $("#myModal").modal('hide');
+    update();
     interval = setInterval(update,5000);
   });
 

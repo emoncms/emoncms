@@ -141,14 +141,15 @@ var processlist_ui =
 
     'events':function()
     {
-        $("#processlist-ui #feed-engine").change(function(){
+        $("#processlist-ui").on('change',"#feed-engine",function(){
             var engine = $(this).val();
             $("#feed-interval").hide();
             if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
         });
 
-        $('#processlist-ui #process-add').click(function() 
+        $("#processlist-ui").on('click','#process-add',function() 
         {
+            console.log("Process_add");
             var processid = $('#process-select').val();
             var process = processlist_ui.processlist[processid];
             var arg = '';
@@ -212,7 +213,7 @@ var processlist_ui =
             //}
         });
 
-        $('#processlist-ui #process-select').change(function() {
+        $("#processlist-ui").on('change','#process-select',function() {
             var processid = $(this).val();
             
             $("#description").html("");
@@ -230,7 +231,7 @@ var processlist_ui =
             $("#description").html(process_info[processid]);
         });
 
-        $('#processlist-ui #feed-select').change(function() {
+        $("#processlist-ui").on('change','#feed-select',function() {
             var feedid = $("#feed-select").val();
             
             if (feedid!=-1) {
@@ -246,7 +247,7 @@ var processlist_ui =
             }
         });
 
-        $('#processlist-ui .table').on('click', '.delete-process', function() {
+        $('#process-table').on('click', '.delete-process', function() {
             processlist_ui.variableprocesslist.splice($(this).attr('processid'),1);
             processlist_ui.nodes[processlist_ui.nodeid].decoder.variables[processlist_ui.variableid].processlist = processlist_ui.encode(processlist_ui.variableprocesslist);
             node.setdecoder(processlist_ui.nodeid,processlist_ui.nodes[processlist_ui.nodeid].decoder);
@@ -254,7 +255,7 @@ var processlist_ui =
             processlist_ui.draw();
         });
 
-        $('#processlist-ui .table').on('click', '.move-process', function() {
+        $('#process-table').on('click', '.move-process', function() {
 
             var curpos = parseInt($(this).attr('processid'));
             var moveby = parseInt($(this).attr('moveby'));
