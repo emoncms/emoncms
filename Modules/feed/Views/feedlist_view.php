@@ -117,6 +117,7 @@ input[type="text"] {
     });
 
     $("#table").bind("onDelete", function(e,id,row){
+        clearInterval(updater);
         $('#myModal').modal('show');
         $('#myModal').attr('feedid',id);
         $('#myModal').attr('feedrow',row);
@@ -131,6 +132,7 @@ input[type="text"] {
         update();
 
         $('#myModal').modal('hide');
+        updater = setInterval(update, 5000);
     });
 
     $("#refreshfeedsize").click(function(){
