@@ -97,7 +97,7 @@ function draw_multigraph_feedlist_editor()
 
     out += "<tr>";
     out += "<td style='vertical-align:middle;border-color:transparent;'>Line Colour:</td>";
-    out += "<td colspan='3' style='vertical-align:middle;border-color:transparent;'>  <input listid='"+z+"' style='width:125px' id='lineColour' type='text' value='"+setColour+"'></td>";
+    out += "<td colspan='3' style='vertical-align:middle;border-color:transparent;'>  <input listid='"+z+"' style='width:125px' id='lineColour' type='color' value='#"+setColour+"'></td>";
 
     out += "</tr>";
     out

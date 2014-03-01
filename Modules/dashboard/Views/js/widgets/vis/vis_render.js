@@ -29,10 +29,10 @@ function vis_widgetlist()
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","fill","units","colour"],
-      "optionstype":["feedid","value","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Units"),_Tr("Colour")],
-      "optionshint":[_Tr("Feed source"),_Tr("Fill value"),_Tr("Units to show"),_Tr("Line colour in hex. Blank is use default.")],
+      "options":["feedid",               "fill",            "units",              "colour"],
+      "optionstype":["feedid",           "value",           "value",              "colour_picker"],
+      "optionsname":[_Tr("Feed"),        _Tr("Fill"),       _Tr("Units"),         _Tr("Colour")],
+      "optionshint":[_Tr("Feed source"), _Tr("Fill value"), _Tr("Units to show"), _Tr("Line colour. Use hex if colour not present.")],
       "html":""
     },
 
@@ -41,7 +41,7 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","colour"],
-      "optionstype":["feedid","value"],
+      "optionstype":["feedid","colour_picker"],
       "optionsname":[_Tr("Feed"),_Tr("Colour")],
       "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
       "html":""
