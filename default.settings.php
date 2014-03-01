@@ -10,6 +10,8 @@
     $password = "";
     $server   = "localhost";
     $database = "";
+
+    $redis_enabled = true;
     
     $feed_settings = array(
 

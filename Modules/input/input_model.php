@@ -86,9 +86,10 @@ class Input
 
         $id = $this->mysqli->insert_id;
 
-        $this->redis->sAdd("user:inputs:$userid", $id);
-        $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
-
+        if ($this->redis) {
+            $this->redis->sAdd("user:inputs:$userid", $id);
+            $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+        }
         return $id;
 
     }
@@ -107,10 +108,12 @@ class Input
         $time = (int) $time;
         $value = (float) $value;
 
-        // $time = date("Y-n-j H:i:s", $time);
-        // $this->mysqli->query("UPDATE input SET time='$time', value = '$value' WHERE id = '$id'");
-
-        $this->redis->hMset("input:lastvalue:$id", array('value' => $value, 'time' => $time));
+        if ($this->redis) {
+            $this->redis->hMset("input:lastvalue:$id", array('value' => $value, 'time' => $time));
+        } else {
+            $time = date("Y-n-j H:i:s", $time);
+            $this->mysqli->query("UPDATE input SET time='$time', value = '$value' WHERE id = '$id'");
+        }
     }
 
     // used in conjunction with controller before calling another method
@@ -127,7 +130,7 @@ class Input
     private function set_processlist($id, $processlist)
     {
         // CHECK REDIS
-        $this->redis->hset("input:$id",'processList',$processlist);
+        if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist);
         $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
 
     }
@@ -149,8 +152,8 @@ class Input
 
         // CHECK REDIS?
         // UPDATE REDIS
-        if (isset($fields->name)) $this->redis->hset("input:$id",'name',$fields->name);
-        if (isset($fields->description)) $this->redis->hset("input:$id",'description',$fields->description);
+        if (isset($fields->name) && $this->redis) $this->redis->hset("input:$id",'name',$fields->name);
+        if (isset($fields->description) && $this->redis) $this->redis->hset("input:$id",'description',$fields->description);
 
         if ($this->mysqli->affected_rows>0){
             return array('success'=>true, 'message'=>'Field updated');
@@ -181,7 +184,7 @@ class Input
                 break;
             case ProcessArg::FEEDID:                                      // If arg type feed
                 $arg = (int) $arg;
-                if (!$this->feed->exists($arg)) return array('success'=>false, 'message'=>'Feed does not exist!');
+                if (!$this->feed->exist($arg)) return array('success'=>false, 'message'=>'Feed does not exist!');
                 break;
             case ProcessArg::NONE:                                        // If arg type none
                 $arg = 0;
@@ -257,9 +260,18 @@ class Input
         $id = (int) $id;
         $this->set_processlist($id, "");
     }
+    
+    public function get_inputs($userid)
+    {
+        if ($this->redis) {
+            return $this->redis_get_inputs($userid);
+        } else {
+            return $this->mysql_get_inputs($userid);
+        }
+    }
 
     // USES: redis input & user
-    public function get_inputs($userid)
+    public function redis_get_inputs($userid)
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
@@ -277,12 +289,36 @@ class Input
 
         return $dbinputs;
     }
+    
+    public function mysql_get_inputs($userid)
+    {
+        $userid = (int) $userid;
+        $dbinputs = array();
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid'");
+        while ($row = (array)$result->fetch_object())
+        {
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
+            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
+        }
+        return $dbinputs;
+    }
 
     //-----------------------------------------------------------------------------------------------
     // This public function gets a users input list, its used to create the input/list page
     //-----------------------------------------------------------------------------------------------
     // USES: redis input & user & lastvalue
+    
     public function getlist($userid)
+    {
+        if ($this->redis) {
+            return $this->redis_getlist($userid);
+        } else {
+            return $this->mysql_getlist($userid);
+        }
+    }
+    
+    public function redis_getlist($userid)
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
@@ -299,14 +335,35 @@ class Input
         }
         return $inputs;
     }
+    
+    public function mysql_getlist($userid)
+    {
+        $userid = (int) $userid;
+        $inputs = array();
+        
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid'");
+        while ($row = (array)$result->fetch_object())
+        {
+            $row['time'] = strtotime($row['time']);
+            $inputs[] = $row;
+        }
+        return $inputs;
+    }
 
     // USES: redis input
     public function get_name($id)
     {
         // LOAD REDIS
         $id = (int) $id;
-        if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
-        return $this->redis->hget("input:$id",'name');
+
+        if ($this->redis) {
+            if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
+            return $this->redis->hget("input:$id",'name');
+        } else {
+            $result = $this->mysqli->query("SELECT name FROM input WHERE `id` = '$id'");
+            $row = $result->fetch_array();
+            return $row['name'];
+        }
     }
 
     // USES: redis input
@@ -314,14 +371,29 @@ class Input
     {
         // LOAD REDIS
         $id = (int) $id;
-        if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
-        return $this->redis->hget("input:$id",'processList');
+        
+        if ($this->redis) {
+            if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
+            return $this->redis->hget("input:$id",'processList');
+        } else {
+            $result = $this->mysqli->query("SELECT processList FROM input WHERE `id` = '$id'");
+            $row = $result->fetch_array();
+            if (!$row['processList']) $row['processList'] = "";
+            return $row['processList'];
+        }
     }
 
     public function get_last_value($id)
     {
         $id = (int) $id;
-        return $this->redis->hget("input:lastvalue:$id",'value');
+        
+        if ($this->redis) {
+            return $this->redis->hget("input:lastvalue:$id",'value');
+        } else {
+            $result = $this->mysqli->query("SELECT value FROM input WHERE `id` = '$id'");
+            $row = $result->fetch_array();
+            return $row['value'];
+        }
     }
 
 
@@ -390,8 +462,11 @@ class Input
         // Inputs are deleted permanentely straight away rather than a soft delete
         // as in feeds - as no actual feed data will be lost
         $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-        $this->redis->del("input:$inputid");
-        $this->redis->srem("user:inputs:$userid",$inputid);
+        
+        if ($this->redis) {
+            $this->redis->del("input:$inputid");
+            $this->redis->srem("user:inputs:$userid",$inputid);
+        }
     }
 
     public function clean($userid)
@@ -404,9 +479,11 @@ class Input
             if ($row['processList']==NULL || $row['processList']=='')
             {
                 $result = $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-                $this->redis->del("input:$inputid");
-                $this->redis->srem("user:inputs:$userid",$inputid);
-
+                
+                if ($this->redis) {
+                    $this->redis->del("input:$inputid");
+                    $this->redis->srem("user:inputs:$userid",$inputid);
+                }
                 $result .= "Deleted input: $inputid <br>";
             }
         }
@@ -428,7 +505,6 @@ class Input
             'description'=>$row->description,
             'processList'=>$row->processList
         ));
-
     }
 
     private function load_to_redis($userid)

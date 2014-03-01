@@ -23,22 +23,24 @@ class Node
 
         if (!$time) $time = time();
 
-        $nodes = json_decode($this->redis->get("nodes:$userid"));
-
-        if ($nodes==NULL) {
-
-          $result = $this->mysqli->query("SELECT `data` FROM node WHERE `userid`='$userid'");
-          if ($result->num_rows) {
-            $row = $result->fetch_object();
-            $nodes = json_decode($row->data);
-          } else {
-            $nodes = new stdClass();
-          }
+        if ($this->redis) {
+            $nodes = json_decode($this->redis->get("nodes:$userid"));
+            if ($nodes==NULL) $nodes = $this->get_mysql($userid);
+        } else {
+            $nodes = $this->get_mysql($userid);
         }
+        
+        if ($nodes==false) $nodes = new stdClass();
+        
         if (!isset($nodes->$nodeid)) $nodes->$nodeid = new stdClass();
         $nodes->$nodeid->data = $data;
         $nodes->$nodeid->time = $time;
-        $this->redis->set("nodes:$userid",json_encode($nodes));
+        
+        if ($this->redis) {
+            $this->redis->set("nodes:$userid",json_encode($nodes));
+        } else {
+            $this->set_mysql($userid,$nodes);
+        }
 
         $this->process($userid,$nodes,$nodeid,$data);
 
@@ -51,31 +53,30 @@ class Node
         $nodeid = (int) $nodeid;
         $decoder = json_decode($decoder);
 
+        if ($this->redis) {
+            $nodes = json_decode($this->redis->get("nodes:$userid"));
+        } else {
+            $nodes = $this->get_mysql($userid);
+        }
 
-        $nodes = json_decode($this->redis->get("nodes:$userid"));
-
-        if ($nodes!=NULL && isset($nodes->$nodeid)) {
+        if ($nodes!=NULL && isset($nodes->$nodeid)) 
+        {
             $nodes->$nodeid->decoder = $decoder;
-            
-            $json = json_encode($nodes);
-            $this->redis->set("nodes:$userid",$json);
-            
-            $result = $this->mysqli->query("SELECT `userid` FROM node WHERE `userid`='$userid'");
-            if ($result->num_rows) {
-              $this->mysqli->query("UPDATE node SET `data`='$json' WHERE `userid`='$userid'");
-            } else {
-              $this->mysqli->query("INSERT INTO node (`userid`,`data`) VALUES ('$userid','$json')");
-            }
+            if ($this->redis) $this->redis->set("nodes:$userid",json_encode($nodes));
+            $this->set_mysql($userid,$nodes);
         }
 
         return true;
-        }
+    }
 
-        public function get_all($userid)
-        {
+    public function get_all($userid)
+    {
         $userid = (int) $userid;
-
-        return json_decode($this->redis->get("nodes:$userid"));
+        if ($this->redis) {
+            return json_decode($this->redis->get("nodes:$userid"));
+        } else {
+            return $this->get_mysql($userid);
+        }
     }
 
     //----------------------------------------------------------------------------------------------
@@ -121,6 +122,28 @@ class Node
                 if (isset($variable->processlist) && $variable->processlist!='') $this->process->input($time,$value,$variable->processlist);
             }
         }
+    }
+    
+    public function set_mysql($userid,$data)
+    {
+        $json = json_encode($data);
+        $result = $this->mysqli->query("SELECT `userid` FROM node WHERE `userid`='$userid'");
+        if ($result->num_rows) {
+            $this->mysqli->query("UPDATE node SET `data`='$json' WHERE `userid`='$userid'");
+        } else {
+            $this->mysqli->query("INSERT INTO node (`userid`,`data`) VALUES ('$userid','$json')");
+        }
+    }
+    
+    public function get_mysql($userid)
+    {
+        $result = $this->mysqli->query("SELECT `data` FROM node WHERE `userid`='$userid'");
+        if ($row = $result->fetch_array()) {
+          return json_decode($row['data']);
+        } else {
+          return false;
+        }
+        
     }
 
 }

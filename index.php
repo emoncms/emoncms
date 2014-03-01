@@ -29,17 +29,16 @@
     // 2) Database
     $mysqli = @new mysqli($server,$username,$password,$database);
 
-    if (!class_exists('Redis')) {
-    echo "Can't connect to redis database, phpredis is not installed, see readme for redis installation"; die;
+    if (class_exists('Redis') && $redis_enabled) {
+        $redis = new Redis();
+        $connected = $redis->connect("127.0.0.1");
+        if (!$connected) {
+            echo "Can't connect to redis database, it may be that redis-server is not installed or started see readme for redis installation"; die;
+        }
+    } else {
+        $redis = false;
     }
-
-    $redis = new Redis();
-    $connected = $redis->connect("127.0.0.1");
-
-    if (!$connected) {
-        echo "Can't connect to redis database, it may be that redis-server is not installed or started see readme for redis installation"; die;
-    }
-
+    
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {

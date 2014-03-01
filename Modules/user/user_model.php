@@ -44,7 +44,7 @@ class User
         //----------------------------------------------------
         // Check for apikey login
         //----------------------------------------------------
-        if($this->redis->exists("writeapikey:$apikey_in"))
+        if($this->redis && $this->redis->exists("writeapikey:$apikey_in"))
         {
             $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
             $session['read'] = 1;
@@ -69,7 +69,7 @@ class User
                     $session['editmode'] = TRUE;
                     $session['lang'] = "en";
 
-                    $this->redis->set("writeapikey:$apikey_in",$row['id']);
+                    if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$row['id']);
                 }
             }
             else

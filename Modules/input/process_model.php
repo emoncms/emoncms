@@ -242,7 +242,8 @@ class Process
     public function kwh_to_kwhd($feedid, $time_now, $value)
     {
         global $redis;
-
+        if (!$redis) return $value; // return if redis is not available
+        
         $currentkwhd = $this->feed->get_timevalue($feedid);
 
         if ($redis->exists("process:kwhtokwhd:$feedid")) {
@@ -292,7 +293,8 @@ class Process
     public function ratechange($feedid, $time, $value)
     {
         global $redis;
-
+        if (!$redis) return $value; // return if redis is not available
+        
         if ($redis->exists("process:ratechange:$feedid")) {
             $lastvalue = $redis->hmget("process:ratechange:$feedid",array('time','value'));
             $ratechange = $value - $lastvalue['value'];
@@ -385,7 +387,7 @@ class Process
         {
             $result = $this->mysqli->query("INSERT INTO $feedname (time,data,data2) VALUES ('$time','0.0','$new_value')");
 
-            $this->feed->set_update_value_redis($feedid, $new_value, $time_now);
+            $this->feed->set_timevalue($feedid, $new_value, $time_now);
             $new_kwh = $kwh_inc;
         }
         else
@@ -397,7 +399,7 @@ class Process
         // update kwhd feed
         $this->mysqli->query("UPDATE $feedname SET data = '$new_kwh' WHERE time = '$time' AND data2 = '$new_value'");
 
-        $this->feed->set_update_value_redis($feedid, $new_value, $time_now);
+        $this->feed->set_timevalue($feedid, $new_value, $time_now);
         return $value;
     }
 
@@ -429,7 +431,8 @@ class Process
     public function kwh_to_power($feedid,$time,$value)
     {
         global $redis;
-
+        if (!$redis) return $value; // return if redis is not available
+        
         if ($redis->exists("process:kwhtopower:$feedid")) {
             $lastvalue = $redis->hmget("process:kwhtopower:$feedid",array('time','value'));
             $kwhinc = $value - $lastvalue['value'];
