@@ -122,7 +122,7 @@ class Feed
                 $this->redis->del("feed:$feedid");
                 $this->redis->srem("user:feeds:$userid",$feedid);
 
-                return array('success'=>false);
+                return array('success'=>false, 'message'=>"");
             }
 
             return array('success'=>true, 'feedid'=>$feedid, 'result'=>$engineresult);
@@ -483,6 +483,12 @@ class Feed
         return $total;
     }
 
+    public function get_meta($feedid) {
+        $feedid = (int) $feedid;
+        $engine = $this->redis->hget("feed:$feedid",'engine');
+        return $this->engine[$engine]->get_meta($feedid);
+    }
+    
     // MysqlTimeSeries specific functions that we need to make available to the controller
 
     public function mysqltimeseries_export($feedid,$start) {
@@ -505,10 +511,6 @@ class Feed
 
     public function timestore_export_meta($feedid) {
         return $this->engine[Engine::TIMESTORE]->export_meta($feedid);
-    }
-
-    public function timestore_get_meta($feedid) {
-        return $this->engine[Engine::TIMESTORE]->get_meta($feedid);
     }
 
     public function timestore_scale_range($feedid,$start,$end,$value) {

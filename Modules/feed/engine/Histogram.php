@@ -128,4 +128,8 @@ class Histogram
         return $out;
     }
 
+    public function get_meta($feedid)
+    {
+    
+    }
 }

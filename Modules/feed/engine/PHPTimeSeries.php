@@ -294,5 +294,10 @@ class PHPTimeSeries
         fclose($fh);
         exit;
     }
+    
+    public function get_meta($feedid)
+    {
+    
+    }
 
 }

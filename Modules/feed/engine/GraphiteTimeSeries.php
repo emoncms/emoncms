@@ -368,5 +368,10 @@ class GraphiteTimeSeries
         // Entirely dependent on the storage-schemas.conf file
         return 0;
     }
+    
+    public function get_meta($feedid)
+    {
+    
+    }
 
 }
