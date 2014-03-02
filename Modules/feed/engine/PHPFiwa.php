@@ -650,4 +650,110 @@ class PHPFiwa
         $meta->npoints[3] = $npoints3;
         return $meta;
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+        $feedid = intval($feedid);
+        $start = intval($start);
+        $end = intval($end);
+        $outinterval = (int) $outinterval;
+        
+        $layer = 0;
+
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($feedid)) return false;
+
+        if ($outinterval<$meta->interval[0]) $outinterval = $meta->interval[0];
+        $dp = floor(($end - $start) / $outinterval);
+        if ($dp<1) return false;
+        
+        $end = $start + ($dp * $outinterval);
+        
+        $dpratio = $outinterval / $meta->interval[0];
+        
+        if ($meta->nlayers>1) {
+          if ($dpratio >= ($meta->interval[1] / $meta->interval[0])) $layer = 1;
+        }   
+        
+        if ($meta->nlayers>2) {
+          if ($dpratio >= ($meta->interval[2] / $meta->interval[0])) $layer = 2;
+        }
+        
+        if ($meta->nlayers>3) {
+          if ($dpratio >= ($meta->interval[3] / $meta->interval[0])) $layer = 3;
+        }
+        
+        $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
+                
+        $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
+
+        // Divided by the number we need gives the number of datapoints to skip
+        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
+        // datapoints every 100 datapoints.
+        $skipsize = round($dp_in_range / $dp);
+        if ($skipsize<1) $skipsize = 1;
+
+        // Calculate the starting datapoint position in the timestore file
+        if ($start>$meta->start_time){
+            $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
+        } else {
+            $startpos = 0;
+        }
+
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+
+        $data = array();
+        $time = 0; $i = 0;
+     
+        // The datapoints are selected within a loop that runs until we reach a
+        // datapoint that is beyond the end of our query range
+        $mstart = microtime(true);
+        $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
+        fseek($fh,$startpos*4);
+        $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
+        fclose($fh);
+
+        $count = count($layer_values)-1;
+        
+        $naverage = $skipsize;
+        for ($i=1; $i<$count-$naverage; $i+=$naverage)
+        {
+            // Calculate the average value of each block
+            $point_sum = 0;
+            $points_in_sum = 0;
+            
+            for ($n=0; $n<$naverage; $n++) {
+                $value = $layer_values[$i+$n];
+                if (!is_nan($value)) {
+                    $point_sum += $value;
+                    $points_in_sum++;
+                }
+            }
+
+            // If there was a value in the block then add to data array
+            if ($points_in_sum) {
+                $timestamp = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
+                $average = $point_sum / $points_in_sum;
+                //$data[] = array($timestamp*1000,$average);
+                
+                fwrite($exportfh, $timestamp.",".number_format($average,2)."\n");
+            }
+        }
+        
+        fclose($exportfh);
+        exit;
+    }
 }

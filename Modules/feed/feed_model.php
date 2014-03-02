@@ -20,6 +20,7 @@ class Feed
     private $redis;
     public $engine;
     private $histogram;
+    private $csvdownloadlimit_mb;
 
     public function __construct($mysqli,$redis,$settings)
     {        
@@ -61,6 +62,8 @@ class Feed
         $this->engine[Engine::PHPFIWA] = new PHPFiwa($settings['phpfiwa']);
                 
         $this->histogram = new Histogram($mysqli);
+        
+        if (isset($settings['csvdownloadlimit_mb'])) $this->csvdownloadlimit_mb = $settings['csvdownloadlimit_mb']; else $this->csvdownloadlimit_mb = 10;
     }
 
     public function create($userid,$name,$datatype,$engine,$options_in)
@@ -461,6 +464,21 @@ class Feed
 
         // Call to engine get_average method
         return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
+    }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+        
+        // Download limit
+        $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
+        if ($downloadsize>($this->csvdownloadlimit_mb*1048576)) return false;
+
+        // Call to engine get_average method
+        return $this->engine[$engine]->csv_export($feedid,$start,$end,$outinterval);
     }
 
 

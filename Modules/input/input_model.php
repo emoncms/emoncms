@@ -79,8 +79,6 @@ class Input
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
 
-
-
         $name = preg_replace('/[^\w\s-.]/','',$name);
         $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
 

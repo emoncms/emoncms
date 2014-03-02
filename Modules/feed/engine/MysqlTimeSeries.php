@@ -235,5 +235,10 @@ class MysqlTimeSeries
     {
     
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+    
+    }
 
 }

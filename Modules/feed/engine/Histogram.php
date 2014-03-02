@@ -132,4 +132,9 @@ class Histogram
     {
     
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+    
+    }
 }

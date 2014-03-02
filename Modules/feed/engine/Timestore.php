@@ -261,6 +261,11 @@ class Timestore
         $size += filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
         return $size;
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+    
+    }
 
 
 }

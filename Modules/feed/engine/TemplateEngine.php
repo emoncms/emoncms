@@ -100,5 +100,10 @@ class TemplateEngine
     {
     
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+    
+    }
 
 }

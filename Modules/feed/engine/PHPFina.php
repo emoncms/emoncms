@@ -364,5 +364,10 @@ class PHPFina
             $npadding -= $pointsperblock;
         } while ($npadding); 
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+    
+    }
 
 }

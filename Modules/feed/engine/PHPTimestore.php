@@ -594,6 +594,11 @@ class PHPTimestore
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_4_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_5_.dat");
     }
+    
+    public function csv_export($feedid,$start,$end,$outinterval)
+    {
+    
+    }
 
 }
 
