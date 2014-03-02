@@ -653,9 +653,9 @@ class PHPFiwa
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-        $feedid = intval($feedid);
-        $start = intval($start);
-        $end = intval($end);
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
         $outinterval = (int) $outinterval;
         
         $layer = 0;

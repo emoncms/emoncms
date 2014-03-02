@@ -264,7 +264,35 @@ class Timestore
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-    
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $outinterval = (int) $outinterval;
+        
+        $data = $this->get_average($feedid,$start,$end,$interval);
+       
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+        
+        foreach($data as $line)
+        {
+            fwrite($exportfh, ($line[0]/1000).",".number_format($line[1],2)."\n");
+        }
+        
+        fclose($exportfh);
+        exit;
     }
 
 

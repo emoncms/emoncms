@@ -597,51 +597,181 @@ class PHPTimestore
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-    
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $outinterval = (int) $outinterval;
+        
+        $meta->decimation = array(20, 6, 6, 4, 7);
+
+        /* Sanity check */
+        if ($end < $start) return false;
+        if ($npoints == 0) return false;
+
+        /* Determine best layer to use for sourcing the result */
+        if ($npoints == 1) {
+            /* Special case - returns the value in between the start and end points */
+            $end = $start = ($start + $end) / 2;
+            $out_interval = 0;
+        } else {
+            $out_interval = floor(($end - $start) / ($npoints-1)); /* 1 less interval than points */
+            if (($end - $start) < ($npoints - 1)) {
+                /* Minimum interval for output points is 1 second */
+                $npoints = $end - $start + 1;
+                $out_interval = 1;
+            }
+        }
+
+        $layer_interval = $meta->interval;
+        for ($layer = 0; $layer < 5; $layer++) {
+            if ($meta->decimation[$layer] == 0) {
+                /* This is the last layer - we have to use it */
+                break;
+            }
+            if ($layer_interval * $meta->decimation[$layer] > $out_interval) {
+                /* Next layer is downsampled too much, so use this one */
+                break;
+            }
+            $layer_interval *= $meta->decimation[$layer];
+        }
+
+
+        if ($out_interval > $layer_interval) $naverage = floor($out_interval / $layer_interval);
+        else $naverage = 1;
+        // equivalent to: $naverage = ($out_interval > $layer_interval) ? $out_interval / $layer_interval : 1;
+
+        /* Generate output points by averaging all available input points between the start
+         * and end times for each output step.  Output timestamps are rounded down onto the
+         * input interval - there is no interpolation. */
+
+        // Alternative approach, all reads in one block at the start
+
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+        
+        $data = array();
+
+        // Open the timestore layer file for reading in data in range between start and end
+        $feedname = str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
+        $primaryfeedname = $this->dir.$feedname;
+        $fh = fopen($primaryfeedname, 'rb');
+
+        // Ensure start and end are within limits
+        if ($start<$meta->start) $start = $meta->start;
+        //if ($end>$meta->start+($meta->npoints*$meta->interval)) $end = $meta->start+($meta->npoints*$meta->interval);
+        if ($end<$start) return array();
+
+        // Calculate start point in file
+        $point = floor(($start - $meta->start) / $layer_interval);
+        // and range of datapoints to read
+        $range = ceil(($end - $start) / $layer_interval);
+        // seek to the position of the start point
+        fseek($fh, 4 * $point);
+        // Read in the full range of datapoints
+        $layer_values = unpack("f*",fread($fh, 4 * $range));
+        fclose($fh);
+
+        // Downsample to the desired number of datapoints - or as close as we can get within an integer multiple of the lower layer
+
+        $count = count($layer_values)-1;
+
+        //print "point: ".$point."<br>";
+        //print "range: ".$range."<br>";
+        $ts = $meta->start + $layer_interval * $point;
+        //print "time: ".date("Y-n-j H:i:s", $ts)."<br>";
+
+        //print "out_interval: ".$out_interval."<br>";
+        //print "layer_interval: ".$layer_interval."<br>";
+        //print "naverage: ".$naverage."<br>";
+        //print "count: ".$count."<br>";
+
+        //print "Layer values: <br>";
+
+        // Read in steps of tge averaged block size
+        for ($i=1; $i<$count-$naverage; $i+=$naverage)
+        {
+            // Calculate the average value of each block
+            $point_sum = 0;
+            $points_in_sum = 0;
+            for ($n=0; $n<$naverage; $n++)
+            {
+                if (!is_nan($layer_values[$i+$n]))
+                {
+                    $point_sum += $layer_values[$i+$n];
+                    $points_in_sum++;
+
+                    $ts = $meta->start + $layer_interval * ($point+$i+$n-1);
+                    //print date("Y-n-j H:i:s",$ts)." ".$layer_values[$i+$n]."<br>";
+                }
+            }
+
+                // If there was a value in the block then add to data array
+            if ($points_in_sum) {
+                $timestamp = $meta->start + $layer_interval * ($point+$i-1);
+                $average = $point_sum / $points_in_sum;
+                fwrite($exportfh, $timestamp.",".number_format($average,2)."\n");
+                //print "--".$average."<br>";
+            }
+
+        }
+        fclose($exportfh);
+        exit;
     }
 
 }
 
-            /*
+    /*
 
-            For reference
+    For reference
 
-            // Current Timestore approach to second part of tsdb_get_series above, many reads in small blocks
+    // Current Timestore approach to second part of tsdb_get_series above, many reads in small blocks
 
-            // while ($npoints--)
-            for ($i=0; $i<$npoints; $i++)
+    // while ($npoints--)
+    for ($i=0; $i<$npoints; $i++)
+    {
+        $start += $out_interval;
+            // Determine if this point is in-range of the input table
+            if ($start < $meta->start || $start >= $meta->start + $meta->npoints * $meta->interval) {
+                    // No - there is no data at this time point
+                    continue;
+            }
+
+            // There may be data for this point in the table.  Calculate the range of input points
+            // covered by the output period and read them for averaging
+            $point = floor(($start - $meta->start) / $layer_interval);
+
+            fseek($fh, 4 * $point);
+            $layer_values = unpack("f*",fread($fh, 4 * $naverage));
+
+            // Generate average ignoring any NAN points
+            $timestamp = $start;
+            $value = 0.0;
+            $actual_naverage = 0;
+
+            for ($n=0; $n<$naverage; $n++)
             {
-                $start += $out_interval;
-                    // Determine if this point is in-range of the input table
-                    if ($start < $meta->start || $start >= $meta->start + $meta->npoints * $meta->interval) {
-                            // No - there is no data at this time point
-                            continue;
-                    }
-
-                    // There may be data for this point in the table.  Calculate the range of input points
-                    // covered by the output period and read them for averaging
-                    $point = floor(($start - $meta->start) / $layer_interval);
-
-                    fseek($fh, 4 * $point);
-                    $layer_values = unpack("f*",fread($fh, 4 * $naverage));
-
-                    // Generate average ignoring any NAN points
-                    $timestamp = $start;
-                    $value = 0.0;
-                    $actual_naverage = 0;
-
-                    for ($n=0; $n<$naverage; $n++)
-                    {
-                            if (!is_nan($layer_values[$n+1])) {
-                                    $value += $layer_values[$n+1];
-                                    $actual_naverage++;
-                            }
-                    }
-
-                    if ($actual_naverage) {
-                            // A valid point was generated
-                            $value /= (double) $actual_naverage;
-                            $actual_npoints[] = array($timestamp*1000,$value);
+                    if (!is_nan($layer_values[$n+1])) {
+                            $value += $layer_values[$n+1];
+                            $actual_naverage++;
                     }
             }
-            */
+
+            if ($actual_naverage) {
+                    // A valid point was generated
+                    $value /= (double) $actual_naverage;
+                    $actual_npoints[] = array($timestamp*1000,$value);
+            }
+    }
+    */

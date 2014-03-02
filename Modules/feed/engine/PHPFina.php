@@ -181,7 +181,8 @@ class PHPFina
         $feedid = intval($feedid);
         $start = intval($start/1000);
         $end = intval($end/1000);
-
+        $outinterval= (int) $outinterval;
+        
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($feedid)) return false;
         
@@ -367,7 +368,81 @@ class PHPFina
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-    
+        $feedid = intval($feedid);
+        $start = intval($start);
+        $end = intval($end);
+        $outinterval= (int) $outinterval;
+
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($feedid)) return false;
+        
+        if ($outinterval<$meta->interval) $outinterval = $meta->interval;
+        $dp = ceil(($end - $start) / $outinterval);
+        $end = $start + ($dp * $outinterval);
+        
+        // $dpratio = $outinterval / $meta->interval;
+        if ($dp<1) return false;
+
+        // The number of datapoints in the query range:
+        $dp_in_range = ($end - $start) / $meta->interval;
+
+        // Divided by the number we need gives the number of datapoints to skip
+        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
+        // datapoints every 100 datapoints.
+        $skipsize = round($dp_in_range / $dp);
+        if ($skipsize<1) $skipsize = 1;
+
+        // Calculate the starting datapoint position in the timestore file
+        if ($start>$meta->start_time){
+            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
+        } else {
+            $startpos = 0;
+        }
+
+        $data = array();
+        $time = 0; $i = 0;
+        
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+
+
+        // The datapoints are selected within a loop that runs until we reach a
+        // datapoint that is beyond the end of our query range
+        $fh = fopen($this->dir.$meta->id.".dat", 'rb');
+        while($time<=$end)
+        {
+            // $position steps forward by skipsize every loop
+            $pos = ($startpos + ($i * $skipsize));
+
+            // Exit the loop if the position is beyond the end of the file
+            if ($pos > $meta->npoints-1) break;
+
+            // read from the file
+            fseek($fh,$pos*4);
+            $val = unpack("f",fread($fh,4));
+
+            // calculate the datapoint time
+            $time = $meta->start_time + $pos * $meta->interval;
+
+            // add to the data array if its not a nan value
+            if (!is_nan($val[1])) fwrite($exportfh, $time.",".number_format($val[1],2)."\n");
+
+            $i++;
+        }
+        fclose($exportfh);
+        exit;
     }
 
 }

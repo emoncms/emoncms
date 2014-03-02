@@ -302,7 +302,72 @@ class PHPTimeSeries
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-    
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $outinterval = (int) $outinterval;
+        
+        if ($outinterval<1) $outinterval = 1;
+        $dp = ceil(($end - $start) / $outinterval);
+        $end = $start + ($dp * $outinterval);
+        if ($dp<1) return false;
+
+        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir."feed_$feedid.MYD");
+
+        $pos = $this->binarysearch($fh,$start,$filesize);
+
+        $interval = ($end - $start) / $dp;
+
+        // Ensure that interval request is less than 1
+        // adjust number of datapoints to request if $interval = 1;
+        if ($interval<1) {
+            $interval = 1;
+            $dp = ($end - $start) / $interval;
+        }
+
+        $data = array();
+
+        $time = 0;
+        
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+
+        for ($i=0; $i<$dp; $i++)
+        {
+            $pos = $this->binarysearch($fh,$start+($i*$interval),$filesize);
+
+            fseek($fh,$pos);
+
+            // Read the datapoint at this position
+            $d = fread($fh,9);
+
+            // Itime = unsigned integer (I) assign to 'time'
+            // fvalue = float (f) assign to 'value'
+            $array = unpack("x/Itime/fvalue",$d);
+
+            $last_time = $time;
+            $time = $array['time'];
+
+            // $last_time = 0 only occur in the first run
+            if (($time!=$last_time && $time>$last_time) || $last_time==0) {
+                fwrite($exportfh, $time.",".number_format($array['value'],2)."\n");
+            }
+        }
+        fclose($exportfh);
+        exit;
     }
 
 }
