@@ -123,3 +123,23 @@ Install additional modules:
     git clone https://github.com/elyobelyob/mqtt.git
  
 See individual module readme's for further information on individual module installation.
+
+# Shared Linux Hosting
+
+Your shared hosting provider should already have a LAMP server installed. You may need to ask your hosting provider to enable mod_rewrite. It's unlikely that redis will be available (redis is used to improve performance through caching), but emoncms can be run without it.
+
+To install emoncms on a shared server
+
+1) download the (currently rework branch) zip file from:
+
+https://github.com/emoncms/emoncms/archive/rework.zip
+
+Unzip to your shared server's public_html folder, rename the folder to emoncms.
+
+2) Create a mysql database for your emoncms installation, note down its name, username and password.
+
+3) Create the data directories for the feed engines and change their ownership to www-data.
+
+
+
+
