@@ -1,5 +1,16 @@
 <?php
 
+/*
+     All Emoncms code is released under the GNU Affero General Public License.
+     See COPYRIGHT.txt and LICENSE.txt.
+
+     ---------------------------------------------------------------------
+     Emoncms - open source energy visualisation
+     Part of the OpenEnergyMonitor project:
+     http://openenergymonitor.org
+
+*/
+
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
@@ -18,9 +29,16 @@ class Node
 
     public function set($userid,$nodeid,$time,$data)
     {
+        // Input sanitisation
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
+        $time = (int) $time;
+        
+        $data = explode(",",$data);
+        for ($i=0; $i<count($data); $i++) $data[$i] = (int) $data[$i];
+        $data = implode(",",$data);
 
+        // Load the user's nodes object
         if (!$time) $time = time();
 
         if ($this->redis) {
@@ -29,10 +47,12 @@ class Node
         } else {
             $nodes = $this->get_mysql($userid);
         }
-        
+
+        // Either update or insert the node that's just been recieved        
         if ($nodes==false) $nodes = new stdClass();
         
         if (!isset($nodes->$nodeid)) $nodes->$nodeid = new stdClass();
+        
         $nodes->$nodeid->data = $data;
         $nodes->$nodeid->time = $time;
         
@@ -49,16 +69,38 @@ class Node
 
     public function set_decoder($userid,$nodeid,$decoder)
     {
+        // Input sanitisation 
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
-        $decoder = json_decode($decoder);
+        $decoder_in = json_decode($decoder);
+        if (!$decoder_in) return false;
+        
+        $decoder = new stdClass();
+        $decoder->name = preg_replace('/[^\w\s-:()]/','',$decoder_in->name);
+        $decoder->updateinterval = (int) $decoder_in->updateinterval;
+        
+        // Ensure each variable is defined with the allowed fields and correct types
+        foreach ($decoder_in->variables as $variable)
+        {
+          $var = new stdClass();
+          $var->name = preg_replace('/[^\w\s-:]/','',$variable->name);
+          $var->type = (int) $variable->type;
+          $var->scale = (float) $variable->scale;
+          $var->units = preg_replace('/[^\w\s-°]/','',$variable->units);
+          if (isset($variable->processlist)) {
+              $var->processlist = preg_replace('/[^\d-:,.]/','',$variable->processlist);
+          }
+          $decoder->variables[] = $var;
+        }
 
+        // Load full nodes defenition from redis or mysql
         if ($this->redis) {
             $nodes = json_decode($this->redis->get("nodes:$userid"));
         } else {
             $nodes = $this->get_mysql($userid);
         }
 
+        // Set the decoder part of the node defenition 
         if ($nodes!=NULL && isset($nodes->$nodeid)) 
         {
             $nodes->$nodeid->decoder = $decoder;
@@ -91,12 +133,15 @@ class Node
             foreach($nodes->$nodeid->decoder->variables as $variable)
             {
                 $value = null; 
+                
+                // Byte value
                 if ($variable->type==0)
                 {
                     $value = (int) $bytes[$pos];
                     $pos += 1;
                 }
 
+                // signed integer
                 if ($variable->type==1)
                 {
                     $value = (int) $bytes[$pos] + (int) $bytes[$pos+1]*256;
@@ -104,6 +149,7 @@ class Node
                     $pos += 2;
                 }
 
+                // unsigned long
                 if ($variable->type==2)
                 {
                  
@@ -115,9 +161,6 @@ class Node
                 if (isset($variable->scale)) $value *= $variable->scale;
 
                 $time = time();
-
-                //log_to_fiwa(1,node:10:1) 
-                //if (node:10:1 > 25.0) email("trystan.lea@gmail.com","Node 10 temperature is above 25C",10);
 
                 if (isset($variable->processlist) && $variable->processlist!='') $this->process->input($time,$value,$variable->processlist);
             }

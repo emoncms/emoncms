@@ -9,7 +9,6 @@
      Part of the OpenEnergyMonitor project:
      http://openenergymonitor.org
 
-     test commit
 */
 
 // no direct access
