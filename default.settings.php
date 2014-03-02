@@ -26,8 +26,17 @@
             'host'=>0
         ),
         
+        // The default data directory is /var/lib/phpfiwa,phpfina,phptimeseries on windows or shared hosting you will likely need to specify a different data directory.
+        // Make sure that emoncms has write permission's to the datadirectory folders
+        
         'phpfiwa'=>array(
-          // 'datadir'=>"/home/username/phpfiwa"
+            //'datadir'=>"/home/username/emoncmsdata/phpfiwa/"
+        ),
+        'phpfina'=>array(
+            //'datadir'=>"/home/username/emoncmsdata/phpfina/"
+        ),
+        'phptimeseries'=>array(
+            //'datadir'=>"/home/username/emoncmsdata/phptimeseries/"
         )
     );
     

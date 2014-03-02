@@ -82,6 +82,8 @@ function get($index)
 {
     $val = null;
     if (isset($_GET[$index])) $val = $_GET[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
 }
 
@@ -89,6 +91,8 @@ function post($index)
 {
     $val = null;
     if (isset($_POST[$index])) $val = $_POST[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
 }
 

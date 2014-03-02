@@ -79,6 +79,7 @@ class Node
         $decoder->name = preg_replace('/[^\w\s-:()]/','',$decoder_in->name);
         $decoder->updateinterval = (int) $decoder_in->updateinterval;
         
+        $decoder->variables = array();
         // Ensure each variable is defined with the allowed fields and correct types
         foreach ($decoder_in->variables as $variable)
         {
