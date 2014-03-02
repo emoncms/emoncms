@@ -237,7 +237,14 @@ var designer = {
                 }
             }
 
+            else if (options_type && options_type[z] == "colour_picker")
+            {
+                 options_html += "<td><input  type='color' class='options' id='"+box_options[z]+"'  value='#"+val+"'/ >"
+            }
+
+
             // // Radio-buttons for selecting options
+            // // It was a bit confusing to use, so it's disabled until I get a change to revisit and style it better (Fake-name)
             // else if (options_type && options_type[z] == "toggle" && optionsdata[z])  // Check we have optionsdata before deciding to draw a combobox
             // {
             //  options_html += "<td>";

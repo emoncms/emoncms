@@ -11,8 +11,8 @@
     http://openenergymonitor.org/emon/forum
  */
 
-// Convenience function for shoving things into the widget Object
-// I'm not sure about calling optionKey optionKey, but I don't want to just use options, and it's confusing enough as it is.
+// Convenience function for shoving things into the widget object
+// I'm not sure about calling optionKey "optionKey", but I don't want to just use "options" (because that's what this whole function returns), and it's confusing enough as it is.
 function addOption(widget, optionKey, optionType, optionName, optionHint, optionData)
 {
 
