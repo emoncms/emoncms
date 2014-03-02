@@ -1,3 +1,5 @@
+# Emoncms 8
+
 # Installation on Linux
 
 ## Install dependencies
@@ -130,16 +132,20 @@ Your shared hosting provider should already have a LAMP server installed. You ma
 
 To install emoncms on a shared server
 
-1) download the (currently rework branch) zip file from:
+1) Download the (currently rework branch) zip file from:
 
-https://github.com/emoncms/emoncms/archive/rework.zip
+[https://github.com/emoncms/emoncms/archive/rework.zip]([https://github.com/emoncms/emoncms/archive/rework.zip])
 
 Unzip to your shared server's public_html folder, rename the folder to emoncms.
 
 2) Create a mysql database for your emoncms installation, note down its name, username and password.
 
-3) Create the data directories for the feed engines and change their ownership to www-data.
+3) In your shared hosting /home/username folder create a folder called emoncmsdata to hold your emoncms feed data. (Note: NOT public_html as the data files should not be publicly accessible).
+Then create three folders withing your emoncmsdata folder called: phpfiwa, phpfina and phptimeseries
 
+4) In the emoncms app directory make a copy of default_settings.php and call it settings.php. Open settings.php and enter your mysql username, password and database. In the feed_settings section uncomment the datadir defenitions and set them to the location of each of the feed engine data folders on your system.
+
+5) Thats it, emoncms should now be ready to use! 
 
 
 
