@@ -107,6 +107,8 @@ cursor:pointer
             <td><br><button class="btn" id="export">Export</button></td><td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
         </tr>
         </table>
+        <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
+        <p>Averages are only returned for feed engines with built in averaging.</p>
         
         
         
