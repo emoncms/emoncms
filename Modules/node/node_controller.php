@@ -22,7 +22,7 @@ function node_controller()
 
     if ($route->format == 'html') {
         if ($route->action == "list" && $session['write']) $result = view("Modules/node/node_view.php",array());
-        if ($route->action == "config" && $session['write']) $result = view("Modules/node/process_list.php",array());
+        if ($route->action == "api" && $session['write']) $result = view("Modules/node/node_api.php",array());
     }
 
     if ($route->format == 'json') {
