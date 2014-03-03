@@ -33,8 +33,8 @@ class MyElectric
         $outdata = array();
         foreach ($data as $key=>$val)
         {
-           $key = preg_replace('/[^\w\s-]/','',$key);
-           $outdata[$key] = (int) $val;
+            $key = preg_replace('/[^\w\s-]/','',$key);
+            $outdata[$key] = (int) $val;
         }
         
         // Re-encode for storage in db text field
@@ -53,9 +53,9 @@ class MyElectric
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT `data` FROM myelectric WHERE `userid`='$userid'");
         if ($row = $result->fetch_array()) {
-          return json_decode($row['data']);
+            return json_decode($row['data']);
         } else {
-          return array("powerfeed"=>0, "kwhfeed"=>0);
+            return array("powerfeed"=>0, "kwhfeed"=>0);
         }
         
     }
