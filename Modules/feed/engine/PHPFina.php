@@ -206,7 +206,8 @@ class PHPFina
         if ($start>$meta->start_time){
             $startpos = ceil(($start - $meta->start_time) / $meta->interval);
         } else {
-            $startpos = 0;
+            $start = ceil($meta->start_time / $outinterval) * $outinterval;
+            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
         }
 
         $data = array();
@@ -396,7 +397,8 @@ class PHPFina
         if ($start>$meta->start_time){
             $startpos = ceil(($start - $meta->start_time) / $meta->interval);
         } else {
-            $startpos = 0;
+            $start = ceil($meta->start_time / $outinterval) * $outinterval;
+            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
         }
 
         $data = array();

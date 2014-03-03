@@ -13,14 +13,18 @@ var feed = {
   'list':function()
   {
     var result = {};
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
   },
   
   'list_assoc':function()
   {
     var result = {};
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {result = data;} });
     
     var feeds = {};
     for (z in result) feeds[result[z].id] = result[z];
@@ -31,7 +35,9 @@ var feed = {
   'list_by_id':function()
   {
     var feeds = {};
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {feeds = data;} });
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {feeds = data;} });
     
     var tmp = {};
     for (z in feeds)
