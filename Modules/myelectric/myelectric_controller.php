@@ -20,7 +20,7 @@
     if ($route->format == 'json')
     {
       if ($route->action == "set" && $session['write']) $myelectric->set_mysql($session['userid'],get('data'));
-      if ($route->action == "get" && $session['write']) $result = $myelectric->get_mysql($session['userid']);
+      if ($route->action == "get" && $session['read']) $result = $myelectric->get_mysql($session['userid']);
     }
 
     return array('content'=>$result);

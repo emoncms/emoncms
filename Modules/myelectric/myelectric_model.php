@@ -27,7 +27,19 @@ class MyElectric
     {
         $userid = (int) $userid;
         $data = json_decode($json);
-        $json = json_encode($data);
+        if (!$data) return false;
+        
+        // Input sanitisation
+        $outdata = array();
+        foreach ($data as $key=>$val)
+        {
+           $key = preg_replace('/[^\w\s-]/','',$key);
+           $outdata[$key] = (int) $val;
+        }
+        
+        // Re-encode for storage in db text field
+        $json = json_encode($outdata);
+        
         $result = $this->mysqli->query("SELECT `userid` FROM myelectric WHERE `userid`='$userid'");
         if ($result->num_rows) {
             $this->mysqli->query("UPDATE myelectric SET `data`='$json' WHERE `userid`='$userid'");
