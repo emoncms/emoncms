@@ -1,4 +1,4 @@
-emoncms (8.0) unstable; urgency=low
+emoncms (7.0) unstable; urgency=low
 
   * Initial debian packaged release of emoncms - previous versions not packaged but available through git.
 
