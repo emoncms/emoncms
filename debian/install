@@ -1,0 +1,7 @@
+*.md /var/www/emoncms/
+*.php /var/www/emoncms/
+*.txt /var/www/emoncms/
+Lib /var/www/emoncms/
+Modules /var/www/emoncms/
+Theme /var/www/emoncms/
+scripts /var/www/emoncms/
