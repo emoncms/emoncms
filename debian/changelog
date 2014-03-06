@@ -2,5 +2,5 @@ emoncms (8.0) unstable; urgency=low
 
   * Initial debian packaged release of emoncms - previous versions not packaged but available through git.
 
- -- Dave McCraw <dave@mccraw.co.uk>  Wed, 08 May 2013 10:05:13 +0100
+ -- Dave McCraw <dave@mccraw.co.uk>  Thu, 06 Mar 2014 01:45:45 +0000
 
