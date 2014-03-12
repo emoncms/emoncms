@@ -1,7 +1,4 @@
-*.md /var/www/emoncms/
-*.php /var/www/emoncms/
-*.txt /var/www/emoncms/
-Lib /var/www/emoncms/
-Modules /var/www/emoncms/
-Theme /var/www/emoncms/
-scripts /var/www/emoncms/
+www /usr/share/emoncms/
+*.md /usr/share/emoncms/
+*.txt /usr/share/emoncms/
+conf/apache2/emoncms /etc/apache2/sites-available/
