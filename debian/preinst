@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Make a copy of the settings file, just in case.
+cp /usr/share/emoncms/www/settings.php /usr/share/emoncms/www/settings.php.bak`date +%s`
+
+exit 0
+                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~                                                                                                                                                           
+~              
