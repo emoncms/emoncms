@@ -1,0 +1,31 @@
+#!/bin/sh
+
+CONFIGFILE=/etc/emoncms-debconf.conf
+ 
+# Exit on error
+set -e
+ 
+# Source debconf library.
+. /usr/share/debconf/confmodule
+
+# Load config if exists 
+if [ -e $CONFIGFILE ]; then
+    . $CONFIGFILE || true
+
+  # Store values from config file into
+  # debconf db.
+  db_set emoncms/mysqluser "$USERNAME"
+  db_set emoncms/mysqlpwd "$PASSWORD"
+  db_set emoncms/mysqldb "$DATABASE"
+  db_set emoncms/host "$HOST"
+fi
+
+
+# Ask questions
+db_input low emoncms/mysqluser || true
+db_input low emoncms/mysqlpwd || true
+db_input low emoncms/mysqldb || true
+db_input low emoncms/host || true
+ 
+# Show interface
+db_go || true

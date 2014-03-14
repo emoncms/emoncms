@@ -8,8 +8,9 @@ Standards-Version: 3.9.2
 Package: emoncms
 Architecture: any
 Depends: debconf | debconf-2.0, apache2 | lighttpd | httpd,
-  php5, php5-mysql, 
-  ${misc:Depends} 
-Suggests: mysql-server
+  php5, php5-mysql, php5-curl,
+  mysql-server, mysql-client, 
+  ${misc:Depends}
+Suggests: libapache2-mod-php5 
 Description: The core emoncms webapp.
 

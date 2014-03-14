@@ -1,0 +1,56 @@
+#!/bin/sh
+
+CONFIGFILE=/etc/emoncms-debconf.conf
+
+# Source debconf library.
+. /usr/share/debconf/confmodule
+ 
+# Generate config file, if it doesn’t exist.
+# An alternative is to copy in a template
+# file from elsewhere.
+if [ ! -e $CONFIGFILE ]; then
+  echo "# Config file for emoncms" > $CONFIGFILE
+  echo "USERNAME=" >> $CONFIGFILE
+  echo "PASSWORD=" >> $CONFIGFILE
+  echo "DATABASE=" >> $CONFIGFILE
+  echo "HOST=" >> $CONFIGFILE
+fi
+
+# Fetching configuration from debconf
+db_get emoncms/mysqluser
+USERNAME=$RET
+db_get emoncms/mysqlpwd
+PASSWORD=$RET
+db_get emoncms/mysqldb
+DATABASE=$RET
+db_get emoncms/host
+HOST=$RET
+
+
+cp -a -f $CONFIGFILE $CONFIGFILE.tmp
+
+sed -e "s/^ *USERNAME=.*/USERNAME=\"$USERNAME\"/" \
+    -e "s/^ *PASSWORD=.*/PASSWORD=\"$PASSWORD\"/" \
+    -e "s/^ *DATABASE=.*/DATABASE=\"$DATABASE\"/" \
+    -e "s/^ *HOST=.*/HOST=\"$HOST\"/" \
+  < $CONFIGFILE > $CONFIGFILE.tmp
+
+mv -f $CONFIGFILE.tmp $CONFIGFILE
+
+# Update the settings.php file with the configuration values under debconf control:
+sed -i "s/_DEBCONF_USERNAME_/$USERNAME/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_PASSWORD_/$PASSWORD/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_DB_/$DATABASE/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_HOST_/$HOST/g" /usr/share/emoncms/www/settings.php
+
+if [ -f /var/lib/timestore/adminkey.txt ]
+then
+  read -r TS_ADMIN_KEY < /var/lib/timestore/adminkey.txt
+  perl -pi -e "s{_DEBCONF_TS_ADMINKEY_}{$TS_ADMIN_KEY}" /usr/share/emoncms/www/settings.php
+fi
+
+# Finally, create the MySQL db (if it doesn't already exist).
+echo "Attempting to create '$DATABASE' mysql database (with the '$USERNAME' user)..."
+mysql -u$USERNAME -p$PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo 'Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
+
+exit 0

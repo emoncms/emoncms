@@ -1,0 +1,19 @@
+Template: emoncms/mysqluser
+Type: string
+Default: root
+Description: What MySQL user should emoncms use?
+
+Template: emoncms/mysqlpwd
+Type: string
+Default: raspberry
+Description: What MySQL password should emoncms use?
+
+Template: emoncms/mysqldb
+Type: string
+Default: emoncms
+Description: What MySQL database should emoncms use?
+
+Template: emoncms/host
+Type: string
+Default: localhost
+Description: What's the host name for this emoncms installation?
