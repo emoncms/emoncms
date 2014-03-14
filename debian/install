@@ -2,4 +2,3 @@ www /usr/share/emoncms/
 *.md /usr/share/emoncms/
 *.txt /usr/share/emoncms/
 conf/apache2/emoncms /etc/apache2/sites-available/
-conf/mysql/create-db.sql /etc/conf/emoncms/mysql/
