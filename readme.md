@@ -181,3 +181,24 @@ PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 Now save and close and restart your apache.
 
     sudo /etc/init.d/apache2 restart
+    
+# Developers
+Emoncms is developed and has had contributions from the following people.
+
+- Trystan Lea		https://github.com/trystanlea (principal maintainer)
+- Ildefonso Martínez	https://github.com/ildemartinez
+- Matthew Wire		https://github.com/mattwire
+- Baptiste Gaultier	https://github.com/bgaultier
+- Paul Allen		https://github.com/MarsFlyer
+- James Moore		https://github.com/foozmeat		
+- Lloyda		https://github.com/lloyda
+- JSidrach		https://github.com/JSidrach
+- Jramer		https://github.com/jramer
+- Drsdre		https://github.com/drsdre
+- Dexa187		https://github.com/dexa187
+- Carlos Alonso Gabizó
+- PlaneteDomo   https://github.com/PlaneteDomo
+- Paul Reed     https://github.com/Paul-Reed
+- thunderace    https://github.com/thunderace
+- pacaj2am      https://github.com/pacaj2am
+- Ynyr Edwards  https://github.com/ynyreds
