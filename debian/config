@@ -22,10 +22,10 @@ fi
 
 
 # Ask questions
-db_input low emoncms/mysqluser || true
-db_input low emoncms/mysqlpwd || true
-db_input low emoncms/mysqldb || true
-db_input low emoncms/host || true
+db_input critical emoncms/mysqluser || true
+db_input critical emoncms/mysqlpwd || true
+db_input critical emoncms/mysqldb || true
+db_input critical emoncms/host || true
  
 # Show interface
 db_go || true

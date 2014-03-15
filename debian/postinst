@@ -26,6 +26,8 @@ DATABASE=$RET
 db_get emoncms/host
 HOST=$RET
 
+echo "Setting up a new emoncms config as follows:"
+echo " - MySQL configuration: $USERNAME/$PASSWORD connecting to $DATABASE db on $HOST"
 
 cp -a -f $CONFIGFILE $CONFIGFILE.tmp
 
@@ -47,10 +49,16 @@ if [ -f /var/lib/timestore/adminkey.txt ]
 then
   read -r TS_ADMIN_KEY < /var/lib/timestore/adminkey.txt
   perl -pi -e "s{_DEBCONF_TS_ADMINKEY_}{$TS_ADMIN_KEY}" /usr/share/emoncms/www/settings.php
+  echo " - Copied timestore key from /var/lib/timestore/adminkey.txt into emoncms config"
 fi
 
 # Finally, create the MySQL db (if it doesn't already exist).
 echo "Attempting to create '$DATABASE' mysql database (with the '$USERNAME' user)..."
-mysql -u$USERNAME -p$PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo 'Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
+mysql -u$USERNAME -p$PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo ' - Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
+
+# Didn't exit 1? Then DB creation worked OK.
+echo " - '$DATABASE' either exists already or was created successfully."
+
+echo "To update emoncms configuration, run 'dpkg-reconfigure emoncms'"
 
 exit 0
