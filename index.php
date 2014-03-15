@@ -27,10 +27,8 @@ require 'locale.php';
 $path = get_application_path();
 
 // 2) Database
-$mysqli = @new mysqli($server, $username, $password, $database);
-
 $redis = false;
-if (class_exists('Redis') && $redis_enabled) 
+if (class_exists('Redis') && isset($redis_enabled) && $redis_enabled) 
 {
     $redis = new Redis();
     $connected = $redis->connect('127.0.0.1');
@@ -41,6 +39,7 @@ if (class_exists('Redis') && $redis_enabled)
     }
 }
 
+$mysqli = @new mysqli($server, $username, $password, $database);
 if ($mysqli->connect_error) 
 {
     echo 'Can\'t connect to database, please verify credentials/configuration in settings.php<br />';
@@ -50,8 +49,7 @@ if ($mysqli->connect_error)
     }
     exit;
 }
-
-if (!$mysqli->connect_error && $dbtest==true) 
+elseif ($dbtest == true) 
 {
     require 'Lib/dbschemasetup.php';
     if (!db_check($mysqli, $database)) 
@@ -67,19 +65,16 @@ $rememberme = new Rememberme($mysqli);
 require 'Modules/user/user_model.php';
 $user = new User($mysqli, $redis, $rememberme);
 
-$session = get('apikey') ? $user->apikey_session($_GET['apikey']) : $user->emon_session_start();
+$session = get('apikey') ? $user->apikey_session(get('apikey')) : $user->emon_session_start();
 
 // 4) Language
-if (!isset($session['lang'])) 
-{
-    $session['lang'] = '';
-}
+$session['lang'] = isset($session['lang']) ? $session['lang'] : '';
 set_emoncms_lang($session['lang']);
 
 // 5) Get route and load controller
 $route = new Route();
 
-$embed = (int)(bool)$embed;
+$embed = (int)(bool)get('embed');
 
 // If no route specified use defaults
 if (!$route->controller && !$route->action) 
