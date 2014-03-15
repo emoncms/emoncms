@@ -74,7 +74,7 @@ Exit mysql by:
 
     mysql> exit
     
-## Create data repositories for emoncms feed engine's
+### Create data repositories for emoncms feed engine's
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
@@ -121,6 +121,26 @@ Save (Ctrl-X), type Y and exit
     git clone https://github.com/elyobelyob/mqtt.git
  
 See individual module readme's for further information on individual module installation.
+
+### In an internet browser, load emoncms:
+
+[http://localhost/emoncms](http://localhost/emoncms)
+
+The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen. 
+
+Create an account by entering your email and password and clicking register to complete.
+
+#### Note: Browser Compatibility
+
+**Chrome Ubuntu 23.0.1271.97** - developed with, works great.
+
+**Chrome Windows 25.0.1364.172** - quick check revealed no browser specific bugs.
+
+**Firefox Ubuntu 15.0.1** - no critical browser specific bugs, but movement in the dashboard editor is much less smooth than chrome.
+
+**Internet explorer 9** - works well with compatibility mode turned off. F12 Development tools -> browser mode: IE9. Some widgets such as the hot water cylinder do load later than the dial.
+
+**IE 8, 7** - not recommended, widgets and dashboard editor <b>do not work</b> due to no html5 canvas fix implemented but visualisations do work as these have a fix applied.
 
 # Shared Linux Hosting
 
