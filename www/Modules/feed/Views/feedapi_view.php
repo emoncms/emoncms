@@ -1,4 +1,4 @@
-<?php 
+<?php
 
   /*
 
@@ -12,7 +12,7 @@
 
   */
 
-  global $user, $path, $session; 
+  global $user, $path, $session;
 
 ?>
 

@@ -1,7 +1,7 @@
     Emoncms - open source energy visualisation
     Part of the openenergymonitor.org project
 
-    Copyright (C) 2011,2012,2013 the OpenEnergyMonitor researchers (see individual contributions from github commits)
+    Copyright (C) 2011,2012,2013,2014 the OpenEnergyMonitor researchers (see individual contributions from github commits)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -21,4 +21,4 @@
     Trystan Lea
     trystan.lea@gmail.com
     http://openenergymonitor.org
-    
+

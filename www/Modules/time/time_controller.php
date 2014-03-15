@@ -9,11 +9,11 @@
     http://openenergymonitor.org
   */
 
-  // no direct access
-  defined('EMONCMS_EXEC') or die('Restricted access');
+// no direct access
+defined('EMONCMS_EXEC') or die('Restricted access');
 
-  function time_controller()
-  {
+function time_controller()
+{
     global $mysqli,$session, $route;
 
     $result = false;
@@ -22,20 +22,20 @@
 
     if ($route->action == 'local' && $session['read'])
     {
-      $userid = $session['userid'];
-      $result = $mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-      $row = $result->fetch_object();
+        $userid = $session['userid'];
+        $result = $mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+        $row = $result->fetch_object();
 
-      $time = (time() + ($row->timezone*3600));
-      $result = 't'.date('H,i,s',$time);
+        $time = (time() + ($row->timezone*3600));
+        $result = 't'.date('H,i,s',$time);
     }
 
     if ($route->action == 'server' && $session['read'])
     {
-      $result = 't'.date('H,i,s');
+        $result = 't'.date('H,i,s');
     }
 
     return array('content'=>$result);
-  }
+}
 
 ?>

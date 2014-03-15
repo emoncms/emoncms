@@ -2,25 +2,42 @@
 var feed = {
 
   apikey: "",
-
-  'create':function(name, type, interval)
+  
+  'create':function(name, datatype, engine, options)
   {
     var result = {};
-    $.ajax({ url: path+"feed/create.json", data: "name="+name+"&type="+type+"&interval="+interval, dataType: 'json', async: false, success: function(data){result = data.feedid;} });
+    $.ajax({ url: path+"feed/create.json", data: "name="+name+"&datatype="+datatype+"&engine="+engine+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data){result = data;} });
     return result;
   },
   
   'list':function()
   {
     var result = {};
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
+  },
+  
+  'list_assoc':function()
+  {
+    var result = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {result = data;} });
+    
+    var feeds = {};
+    for (z in result) feeds[result[z].id] = result[z];
+    
+    return feeds;
   },
   
   'list_by_id':function()
   {
     var feeds = {};
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: false, success: function(data) {feeds = data;} });
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {feeds = data;} });
     
     var tmp = {};
     for (z in feeds)
@@ -60,12 +77,12 @@ var feed = {
     return feedIn;
   },
   
-  'get_timestore_average':function(feedid,start,end,interval)
+  'get_average':function(feedid,start,end,interval)
   {
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
     $.ajax({                                      
-      url: path+'feed/timestoreaverage.json',                         
+      url: path+'feed/average.json',                         
       data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval,
       dataType: 'json',
       async: false,                      

@@ -30,9 +30,9 @@
 -->
 
 <?php
-  $path = "../../../";
-  $embed = intval($_GET["embed"]);
-  $apikey = $_GET["apikey"];
+    $path = "../../../";
+    $embed = intval($_GET["embed"]);
+    $apikey = $_GET["apikey"];
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
@@ -44,7 +44,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
- 
+
 <?php if (!$embed) { ?>
 <h2>Multigraph</h2>
 <?php } ?>
@@ -52,19 +52,19 @@
 <div id="multigraph"></div>
 
 <script id="source" language="javascript" type="text/javascript">
-  var embed = <?php echo $embed; ?>;
-  var path = "<?php echo $path; ?>";
-  var apikey = "<?php echo $apikey; ?>";
+    var embed = <?php echo $embed; ?>;
+    var path = "<?php echo $path; ?>";
+    var apikey = "<?php echo $apikey; ?>";
 
-  var multigraph = [];
-  multigraph[0] = {id:1, 'name':'power', datatype:1, left:true, right:false, fill:true};
-  multigraph[1] = {id:2, 'name':'kwhd', datatype:2, left:false, right:true, fill:true};
+    var multigraph = [];
+    multigraph[0] = {id:1, 'name':'power', datatype:1, left:true, right:false, fill:true};
+    multigraph[1] = {id:2, 'name':'kwhd', datatype:2, left:false, right:true, fill:true};
 
-  var timeWindow = (3600000*24.0*7);				//Initial time window
-  var start = ((new Date()).getTime())-timeWindow;		//Get start time
-  var end = (new Date()).getTime();				//Get end time
+    var timeWindow = (3600000*24.0*7);				//Initial time window
+    var start = ((new Date()).getTime())-timeWindow;		//Get start time
+    var end = (new Date()).getTime();				//Get end time
 
-  multigraph_init("#multigraph");
-  vis_feed_data();
+    multigraph_init("#multigraph");
+    vis_feed_data();
 </script>
 
