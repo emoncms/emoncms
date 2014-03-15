@@ -17,7 +17,7 @@ class Update
     {
         $operations = array();
         $result = $this->mysqli->query("SELECT userid,id,name,nodeid,time,processList FROM input");
-        while ($row = $result->fetch_object())
+        while ($result && $row = $result->fetch_object())
         {
 
             preg_match('/^node/', $row->name, $node_matches);
@@ -64,7 +64,7 @@ class Update
 
         $operations = array();
         $result = $this->mysqli->query("SELECT userid,id,processList,time,record FROM input");
-        while ($row = $result->fetch_object())
+        while ($result && $row = $result->fetch_object())
         {
             if ($row->processList)
             {
@@ -99,7 +99,7 @@ class Update
         $data = array();
         $data2 = array();
         $result = $this->mysqli->query("SELECT id,username FROM users");
-        while ($row = $result->fetch_object())
+        while ($result && $row = $result->fetch_object())
         {
             $id = $row->id;
             $username = $row->username;
@@ -132,7 +132,7 @@ class Update
 
         if ($row) {
             $result = $this->mysqli->query("SELECT id,timestore,engine FROM feeds");
-            while ($row = $result->fetch_object())
+            while ($result && $row = $result->fetch_object())
             {
                 $id = $row->id;
                 $timestore = $row->timestore;
