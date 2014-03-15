@@ -202,3 +202,5 @@ Emoncms is developed and has had contributions from the following people.
 - thunderace    https://github.com/thunderace
 - pacaj2am      https://github.com/pacaj2am
 - Ynyr Edwards  https://github.com/ynyreds
+- Jerome        https://github.com/Jerome-github
+- fake-name     https://github.com/fake-name
