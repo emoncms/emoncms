@@ -31,8 +31,8 @@ ENABLE_PASSWORD_RESET=$RET
 
 # Print some confirmation output to screen
 echo "Replacing existing emoncms config as follows:"
-echo " - MySQL configuration   : $DB_USER [$DB_PASSWORD] connecting to $DATABASE db on $DB_HOST"
-echo " - SMTP configuration    : $SMTP_USER [$SMTP_PASSWORD] connecting to $SMTP_HOST to send as $SMTP_EMAIL_NAME ($SMTP_EMAIL_ADDR)"
+echo " - MySQL configuration   : $DB_USER connecting to $DATABASE db on $DB_HOST"
+echo " - SMTP configuration    : $SMTP_USER connecting to $SMTP_HOST to send as $SMTP_EMAIL_NAME ($SMTP_EMAIL_ADDR)"
 echo " - Allow password resets : $ENABLE_PWD_RESET"
 
 # Write out debian config file.
@@ -70,8 +70,8 @@ then
 fi
 
 # Finally, create the MySQL db (if it doesn't already exist).
-# echo "Attempting to create '$DATABASE' mysql database (with the '$USERNAME' user)..."
-# mysql -u$USERNAME -p$PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo ' - Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
+echo "Attempting to create '$DATABASE' mysql database (with the '$DB_USER' user)..."
+mysql -u$DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo ' - Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
 
 # Didn't exit 1? Then DB creation worked OK.
 echo " - '$DATABASE' either exists already or was created successfully."
