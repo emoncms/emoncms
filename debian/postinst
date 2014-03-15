@@ -4,46 +4,63 @@ CONFIGFILE=/etc/emoncms-debconf.conf
 
 # Source debconf library.
 . /usr/share/debconf/confmodule
- 
-# Generate config file, if it doesn’t exist.
-# An alternative is to copy in a template
-# file from elsewhere.
-if [ ! -e $CONFIGFILE ]; then
-  echo "# Config file for emoncms" > $CONFIGFILE
-  echo "USERNAME=" >> $CONFIGFILE
-  echo "PASSWORD=" >> $CONFIGFILE
-  echo "DATABASE=" >> $CONFIGFILE
-  echo "HOST=" >> $CONFIGFILE
-fi
 
 # Fetching configuration from debconf
-db_get emoncms/mysqluser
-USERNAME=$RET
-db_get emoncms/mysqlpwd
-PASSWORD=$RET
-db_get emoncms/mysqldb
+db_get emoncms/mysql_user
+DB_USER=$RET
+db_get emoncms/mysql_password
+DB_PASSWORD=$RET
+db_get emoncms/mysql_host
+DB_HOST=$RET
+db_get emoncms/mysql_db
 DATABASE=$RET
-db_get emoncms/host
-HOST=$RET
 
-echo "Setting up a new emoncms config as follows:"
-echo " - MySQL configuration: $USERNAME/$PASSWORD connecting to $DATABASE db on $HOST"
+db_get emoncms/smtp_host
+SMTP_HOST=$RET
+db_get emoncms/smtp_user
+SMTP_USER=$RET
+db_get emoncms/smtp_password
+SMTP_PASSWORD=$RET
+db_get emoncms/smtp_email_addr
+SMTP_EMAIL_ADDR=$RET
+db_get emoncms/smtp_email_name
+SMTP_EMAIL_NAME=$RET
 
-cp -a -f $CONFIGFILE $CONFIGFILE.tmp
+db_get emoncms/enable_password_reset
+ENABLE_PASSWORD_RESET=$RET
 
-sed -e "s/^ *USERNAME=.*/USERNAME=\"$USERNAME\"/" \
-    -e "s/^ *PASSWORD=.*/PASSWORD=\"$PASSWORD\"/" \
-    -e "s/^ *DATABASE=.*/DATABASE=\"$DATABASE\"/" \
-    -e "s/^ *HOST=.*/HOST=\"$HOST\"/" \
-  < $CONFIGFILE > $CONFIGFILE.tmp
+# Print some confirmation output to screen
+echo "Replacing existing emoncms config as follows:"
+echo " - MySQL configuration   : $DB_USER [$DB_PASSWORD] connecting to $DATABASE db on $DB_HOST"
+echo " - SMTP configuration    : $SMTP_USER [$SMTP_PASSWORD] connecting to $SMTP_HOST to send as $SMTP_EMAIL_NAME ($SMTP_EMAIL_ADDR)"
+echo " - Allow password resets : $ENABLE_PWD_RESET"
 
-mv -f $CONFIGFILE.tmp $CONFIGFILE
+# Write out debian config file.
+echo "# Config file for emoncms" > $CONFIGFILE
+echo "DB_USER=\"$DB_USER\"" >> $CONFIGFILE
+echo "DB_PASSWORD=\"$DB_PASSWORD\"" >> $CONFIGFILE
+echo "DB_HOST=\"$DB_HOST\"" >> $CONFIGFILE
+echo "DATABASE=\"$DATABASE\"" >> $CONFIGFILE
 
-# Update the settings.php file with the configuration values under debconf control:
-sed -i "s/_DEBCONF_USERNAME_/$USERNAME/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_PASSWORD_/$PASSWORD/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_DB_/$DATABASE/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_HOST_/$HOST/g" /usr/share/emoncms/www/settings.php
+echo "SMTP_HOST=\"$SMTP_HOST\"" >> $CONFIGFILE
+echo "SMTP_USER=\"$SMTP_USER\"" >> $CONFIGFILE
+echo "SMTP_PASSWORD=\"$SMTP_PASSWORD\"" >> $CONFIGFILE
+echo "SMTP_EMAIL_ADDR=\"$SMTP_EMAIL_ADDR\"" >> $CONFIGFILE
+echo "SMTP_EMAIL_NAME=\"$SMTP_EMAIL_NAME\"" >> $CONFIGFILE
+  
+echo "ENABLE_PASSWORD_RESET=\"$ENABLE_PASSWORD_RESET\"" >> $CONFIGFILE
+
+# Update the settings.php file with the configuration values:
+sed -i "s/_DEBCONF_DB_USER_/$DB_USER/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_DB_PASSWORD_/$DB_PASSWORD/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_DATABASE_/$DATABASE/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_DB_HOST_/$DB_HOST/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_SMTP_HOST_/$SMTP_HOST/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_SMTP_USER_/$SMTP_USER/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_SMTP_PASSWORD_/$SMTP_PASSWORD/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_SMTP_EMAIL_ADDR_/$SMTP_EMAIL_ADDR/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_SMTP_EMAIL_NAME_/$SMTP_EMAIL_NAME/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DEBCONF_ENABLE_PASSWORD_RESET_/$ENABLE_PASSWORD_RESET/g" /usr/share/emoncms/www/settings.php
 
 if [ -f /var/lib/timestore/adminkey.txt ]
 then
@@ -53,8 +70,8 @@ then
 fi
 
 # Finally, create the MySQL db (if it doesn't already exist).
-echo "Attempting to create '$DATABASE' mysql database (with the '$USERNAME' user)..."
-mysql -u$USERNAME -p$PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo ' - Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
+# echo "Attempting to create '$DATABASE' mysql database (with the '$USERNAME' user)..."
+# mysql -u$USERNAME -p$PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo ' - Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
 
 # Didn't exit 1? Then DB creation worked OK.
 echo " - '$DATABASE' either exists already or was created successfully."

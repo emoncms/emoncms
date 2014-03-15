@@ -14,18 +14,34 @@ if [ -e $CONFIGFILE ]; then
 
   # Store values from config file into
   # debconf db.
-  db_set emoncms/mysqluser "$USERNAME"
-  db_set emoncms/mysqlpwd "$PASSWORD"
-  db_set emoncms/mysqldb "$DATABASE"
-  db_set emoncms/host "$HOST"
+  db_set emoncms/mysql_user "$DB_USER"
+  db_set emoncms/mysql_password "$DB_PASSWORD"
+  db_set emoncms/mysql_host "$DB_HOST"
+  db_set emoncms/mysql_db "$DATABASE"
+  
+  db_set emoncms/smtp_host "$SMTP_HOST"
+  db_set emoncms/smtp_password "$SMTP_PASSWORD"
+  db_set emoncms/smtp_user "$SMTP_USER"
+  db_set emoncms/smtp_email_addr "$SMTP_EMAIL_ADDR"
+  db_set emoncms/smtp_email_name "$SMTP_EMAIL_NAME"
+  
+  db_set emoncms/enable_password_reset "$ENABLE_PASSWORD_RESET"
 fi
 
 
 # Ask questions
-db_input critical emoncms/mysqluser || true
-db_input critical emoncms/mysqlpwd || true
-db_input critical emoncms/mysqldb || true
-db_input critical emoncms/host || true
+db_input critical emoncms/mysql_user || true
+db_input critical emoncms/mysql_password || true
+db_input critical emoncms/mysql_host || true
+db_input critical emoncms/mysql_db || true
+
+db_input critical emoncms/smtp_host || true
+db_input critical emoncms/smtp_user || true
+db_input critical emoncms/smtp_password || true
+db_input critical emoncms/smtp_email_addr || true
+db_input critical emoncms/smtp_email_name || true
+
+db_input critical emoncms/enable_password_reset || true
  
 # Show interface
 db_go || true
