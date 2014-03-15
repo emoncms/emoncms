@@ -1,18 +1,76 @@
 <?php
 
-/*
-TODO: Document this!
-Seriously.... functions named "u000x"? Really?
-*/
+/**
+ * Class contains a list of updates that are created as schema changes
+ *
+ * These updates are loaded and ran from the admin_controller() method
+ */
 class Update
 {
     private $mysqli;
 
+/**
+ * Map updates and descriptions
+ *
+ * Having these at the top of the class makes it much easier to see what is going on.
+ */
+    protected $_updateInfo = array(
+        'u0001' => array(
+            'title' => 'Changed input naming convention',
+            'description'=>'The input naming convention has been changed from the <b>node10_1</b> convention to <b>1</b> with the nodeid in the nodeid field. The following list, lists all the input names in your database that the script can update automatically:',
+        ),
+        'u0002' => array(
+            'title' => 'Inputs are only recorded if used',
+            'description'=>'To improve performance inputs are only recorded if used as part of / x + - by input processes.',
+        ),
+        'u0003' => array(
+            'title' => 'Username format change',
+            'description' => 'All . characters have been removed from usernames as the . character conflicts with the new routing implementation where emoncms thinks that the part after the . is the format the page should be in.',
+        ),
+        'u0004' => array(
+            'title' => 'Field name change',
+            'description' => 'Changed to more generic field name called engine rather than timestore specific',
+        ),
+    );
+
+/**
+ * Constructor
+ *
+ * @param Object $mysql the db object
+ */
     public function __construct($mysqli)
     {
             $this->mysqli = $mysqli;
     }
 
+/**
+ * Get a list of methods that can be run to update the system
+ *
+ * This is all methods in the format uXXXX where XXXX is a integer from 0000 -> 9999
+ * 
+ * @return array
+ */
+    public function methodsToRun() 
+    {
+        $return = array();
+        foreach (get_class_methods($this) as $method) 
+        {
+            if (preg_match('/^u[0-9]{4}$/', $method)) 
+            {
+                $return[] = $method;
+            }
+        }
+
+        return $return;
+    }
+
+/**
+ * Update 1
+ *
+ * @param boolean $apply true to apply the change, false to do a dry run and see what will change
+ *
+ * @return array
+ */
     function u0001($apply)
     {
         $operations = array();
@@ -49,13 +107,16 @@ class Update
             }
         }
 
-        return array(
-            'title'=>"Changed input naming convention",
-            'description'=>"The input naming convention has been changed from the <b>node10_1</b> convention to <b>1</b> with the nodeid in the nodeid field. The following list, lists all the input names in your database that the script can update automatically:",
-            'operations'=>$operations
-        );
+        return $this->_updateInfo[__FUNCTION__] + array('operations' => $operations);
     }
 
+/**
+ * Update 2
+ *
+ * @param boolean $apply true to apply the change, false to do a dry run and see what will change
+ *
+ * @return array
+ */
     function u0002($apply)
     {
         require "Modules/input/process_model.php";
@@ -86,13 +147,16 @@ class Update
             }
         }
 
-        return array(
-            'title'=>"Inputs are only recorded if used",
-            'description'=>"To improve performance inputs are only recorded if used as part of / x + - by input processes.",
-            'operations'=>$operations
-        );
+        return $this->_updateInfo[__FUNCTION__] + array('operations' => $operations);
     }
 
+/**
+ * Update 3
+ *
+ * @param boolean $apply true to apply the change, false to do a dry run and see what will change
+ *
+ * @return array
+ */
     function u0003($apply)
     {
         $operations = array();
@@ -117,13 +181,16 @@ class Update
             }
         }
 
-        return array(
-            'title'=>"Username format change",
-            'description'=>"All . characters have been removed from usernames as the . character conflicts with the new routing implementation where emoncms thinks that the part after the . is the format the page should be in.",
-            'operations'=>$operations
-        );
+        return $this->_updateInfo[__FUNCTION__] + array('operations' => $operations);
     }
 
+/**
+ * Update 4
+ *
+ * @param boolean $apply true to apply the change, false to do a dry run and see what will change
+ *
+ * @return array
+ */
     function u0004($apply)
     {
         $operations = array();
@@ -141,10 +208,6 @@ class Update
                 if ($timestore && $apply) $this->mysqli->query("UPDATE feeds SET `engine`='1' WHERE `id`='$id'");
             }
         }
-        return array(
-            'title'=>"Field name change",
-            'description'=>"Changed to more generic field name called engine rather than timestore specific",
-            'operations'=>$operations
-        );
+        return $this->_updateInfo[__FUNCTION__] + array('operations' => $operations);
     }
 }
