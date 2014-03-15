@@ -1,5 +1,6 @@
 <?php
 
+
 /*
 
     All Emoncms code is released under the GNU Affero General Public License.
@@ -14,6 +15,19 @@
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
+
+if (!defined('DS')) {
+    define('DS', '/');
+}
+
+/**
+ * debug method wrapper for print_r
+ *
+ * @return void
+ */
+function pr($var) {
+    echo sprintf('<pre>%s</pre>', print_r($var, true));
+}
 
 function get_application_path()
 {
