@@ -24,8 +24,6 @@ Add pecl modules to php5 config
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
 
-### Enable mod rewrite
-
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
     $ sudo a2enmod rewrite
@@ -57,7 +55,7 @@ Cd into www directory
 
 Download emoncms using git:
 
-    $ git clone -b rework https://github.com/emoncms/emoncms.git
+    $ git clone https://github.com/emoncms/emoncms.git
     
 Once installed you can pull in updates with:
 
@@ -110,13 +108,11 @@ Enter in your database settings.
 Save (Ctrl-X), type Y and exit
 
 ### Install add-on emoncms modules
-
-Install additional modules:
     
     cd /var/www/emoncms/Modules
     
-    git clone -b redismetadata https://github.com/emoncms/raspberrypi.git
-    git clone -b redismetadata https://github.com/emoncms/event.git
+    git clone https://github.com/emoncms/raspberrypi.git
+    git clone https://github.com/emoncms/event.git
     git clone https://github.com/emoncms/openbem.git
     git clone https://github.com/emoncms/energy.git
     git clone https://github.com/emoncms/notify.git
@@ -148,4 +144,40 @@ Then create three folders within your emoncmsdata folder called: phpfiwa, phpfin
 5) Thats it, emoncms should now be ready to use! 
 
 
+#### PHP Suhosin module configuration (Debian 6, not required in ubuntu)
 
+Dashboard editing needs to pass parameters through HTTP-GET mechanism and on Debian 6 the max
+allowable length of a single parameter is very small (512 byte). This is a problem for designing of dashboard
+and when you exceed this threshold all created dashboard are lost...
+
+To overcome this problem modify "suhosin.get.max_value_length" in /etc/php5/conf.d/suhosin.ini" to large
+value (8000, 16000 should be fine).
+
+#### Enable Multi lingual support using gettext
+
+Follow the guide here step 4 onwards: [http://emoncms.org/site/docs/gettext](http://emoncms.org/site/docs/gettext)
+
+#### Configure PHP Timezone
+
+PHP 5.4.0 has removed the timezone guessing algorithm and now defaults the timezone to "UTC" on some distros (i.e. Ubuntu 13.10). To resolve this:
+
+Open php.ini
+
+    sudo vi /etc/php5/apache2/php.ini
+
+and search for "date.timezone"
+
+    [Date]
+    ; Defines the default timezone used by the date functions.
+    ; http://php.net/date.timezone
+    ;date.timezone =
+
+edit date.timezone to your appropriate timezone:
+
+    date.timezone = "Europe/Amsterdam"
+    
+PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
+
+Now save and close and restart your apache.
+
+    sudo /etc/init.d/apache2 restart
