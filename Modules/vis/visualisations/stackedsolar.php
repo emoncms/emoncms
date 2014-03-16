@@ -12,6 +12,8 @@
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
@@ -39,8 +41,13 @@
     // API key
     var apikey = "<?php echo $apikey?>";
 
-    var dataA = get_feed_data(kwhdA,0,0,0);
-    var dataB = get_feed_data(kwhdB,0,0,0);
+    var timeWindow = (3600000*24.0*365*5);   //Initial time window
+    var start = +new Date - timeWindow;  //Get start time
+    var end = +new Date; 
+    
+    var dataA = feed.get_average(kwhdA,start,end,3600*24);
+    var dataB = feed.get_average(kwhdB,start,end,3600*24);
+
     var dataC = [];
 
     for (z in dataA)
