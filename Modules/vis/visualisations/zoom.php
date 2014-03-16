@@ -17,6 +17,8 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.js"></script>
@@ -67,6 +69,10 @@
     var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";
     var embed = <?php echo $embed; ?>;
+    
+    var timeWindow = (3600000*24.0*365*5);   //Initial time window
+    var start = +new Date - timeWindow;  //Get start time
+    var end = +new Date; 
 
     $('#placeholder').width($('#test').width()-60);
     $('#placeholder').height($('#test').height()-120);
@@ -90,7 +96,7 @@
 
     var bot_kwhd_text = "";
 
-    var kwh_data = get_feed_data(kwhd,0,0,0);
+    var kwh_data = feed.get_average(kwhd,start,end,3600*24);
 
     var total = 0, ndays=0;
     for (z in kwh_data) {

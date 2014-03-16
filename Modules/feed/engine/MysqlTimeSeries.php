@@ -62,13 +62,18 @@ class MysqlTimeSeries
         $feedid = intval($feedid);
         $start = floatval($start/1000);
         $end = floatval($end/1000);
-        
+                
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);
         $end = $start + ($dp * $outinterval);
         if ($dp<1) return false;
 
-        if ($end == 0) $end = time();
+        // Check if datatype is daily so that select over range is used rather than 
+        // skip select approach
+        $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
+        $row = $result->fetch_array();
+        $datatype = $row['datatype'];
+        if ($datatype==2) $dp = 0;
 
         $feedname = "feed_".trim($feedid)."";
 

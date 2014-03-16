@@ -146,7 +146,7 @@ $(function() {
         var offset = n / -60;
 
         var datastart = (Math.round((view.start/1000.0)/interval) * interval)+3600*offset;
-        data = feed.get_timestore_average(feedid,datastart*1000,view.end+(interval*1000),interval);
+        data = feed.get_average(feedid,datastart*1000,view.end+(interval*1000),interval);
 
         if (units=='kWh') {
             for (z in data)

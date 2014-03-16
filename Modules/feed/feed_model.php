@@ -445,8 +445,10 @@ class Feed
     public function get_data($feedid,$start,$end,$dp)
     {
         $feedid = (int) $feedid;
+        if ($end == 0) $end = time()*1000;
+                
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
+  
         $engine = $this->get_engine($feedid);
         
         // Call to engine get_data method
@@ -458,6 +460,8 @@ class Feed
     public function get_average($feedid,$start,$end,$outinterval)
     {
         $feedid = (int) $feedid;
+        if ($end == 0) $end = time()*1000;
+        
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $engine = $this->get_engine($feedid);
@@ -503,6 +507,7 @@ class Feed
 
     public function update_user_feeds_size($userid)
     {
+        $userid = (int) $userid;
         $total = 0;
         $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_array())
