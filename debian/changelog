@@ -1,3 +1,15 @@
+emoncms (8.0.1) UNRELEASED; urgency=low
+
+  * Bugfixes for visualisations
+
+ -- Dave McCraw <dave@mccraw.co.uk>  Mon, 17 Mar 2014 06:58:56 +0000
+
+emoncms (8.0-1) unstable; urgency=low
+
+  * Ensure feed filesystem is set up as part of installation procedure.
+
+ -- Dave McCraw <dave@mccraw.co.uk>  Sun, 16 Mar 2014 07:02:20 +0000
+
 emoncms (8.0) unstable; urgency=low
 
   * Release of emoncms version 8 

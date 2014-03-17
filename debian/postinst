@@ -69,7 +69,25 @@ then
   echo " - Copied timestore key from /var/lib/timestore/adminkey.txt into emoncms config"
 fi
 
-# Finally, create the MySQL db (if it doesn't already exist).
+# Create the required feed directories and set ownership
+echo "Verifying feed directories exist and have the correct ownership..."
+echo " - /var/lib/phpfiwa"
+mkdir -p /var/lib/phpfiwa
+chown www-data:root /var/lib/phpfiwa/
+
+echo " - /var/lib/phpfina"
+mkdir -p /var/lib/phpfina
+chown www-data:root /var/lib/phpfina/
+
+echo " - /var/lib/phptimeseries"
+mkdir -p /var/lib/phptimeseries
+chown www-data:root /var/lib/phptimeseries/
+
+echo " - /var/lib/timestore"
+mkdir -p /var/lib/timestore
+chown www-data:root /var/lib/timestore/
+
+# Create the MySQL db (if it doesn't already exist).
 echo "Attempting to create '$DATABASE' mysql database (with the '$DB_USER' user)..."
 mysql -u$DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" || { echo ' - Failed (check username and password are correct, using dpkg-reconfigure. Check grants allow table creation, etc...)' ; exit 1; }
 
