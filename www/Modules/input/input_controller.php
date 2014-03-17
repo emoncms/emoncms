@@ -57,7 +57,15 @@ function input_controller()
         if ($route->action == 'bulk')
         {
             $valid = true;
-            $data = json_decode(get('data'));
+            
+            if (!isset($_GET['data']) && isset($_POST['data']))
+            {
+                $data = json_decode(post('data'));
+            }
+            else 
+            {
+                $data = json_decode(get('data'));
+            }
 
             $userid = $session['userid'];
             $dbinputs = $input->get_inputs($userid);

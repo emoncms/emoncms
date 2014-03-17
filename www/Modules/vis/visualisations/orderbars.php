@@ -13,6 +13,8 @@
 ?>
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
+ <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+ 
  <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
  <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
@@ -40,6 +42,10 @@
     var feedname = "<?php echo $feedidname; ?>";
     var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";
+    
+    var timeWindow = (3600000*24.0*365*5);   //Initial time window
+    var start = +new Date - timeWindow;  //Get start time
+    var end = +new Date; 
 
     var graph_data = [];
     vis_feed_data();
@@ -52,7 +58,7 @@
 
     function vis_feed_data()
     {
-        graph_data = get_feed_data(feedid,0,0,0);
+        graph_data = feed.get_average(feedid,start,end,3600*24);
 
         for(x = 0; x < graph_data.length; x++) {
             for(y = 0; y < (graph_data.length-1); y++) {

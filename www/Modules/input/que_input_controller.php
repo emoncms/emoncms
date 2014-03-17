@@ -66,10 +66,20 @@ function input_controller()
         if ($route->action == 'bulk')
         {
             $valid = true;
-            $data = json_decode(get('data'));
+            
+            if (!isset($_GET['data']) && isset($_POST['data']))
+            {
+                $data = json_decode(post('data'));
+            }
+            else 
+            {
+                $data = json_decode(get('data'));
+            }
 
             $userid = $session['userid'];
 
+            $dropped = 0; $droppednegative = 0;
+            
             $len = count($data);
             if ($len>0)
             {
@@ -107,12 +117,26 @@ function input_controller()
                                         'data'=>$inputs
                                     );
 
-                                    $str = json_encode($array);
+                                    // Start of rate limiter
+                                    $lasttime = 0;
+                                    if ($redis->exists("limiter:$userid:$nodeid")) {
+                                        $lasttime = $redis->get("limiter:$userid:$nodeid");
+                                    }
+                                    
+                                    if (($time-$lasttime)>=1)
+                                    {
+                                        $redis->set("limiter:$userid:$nodeid",$time);
+                                        $str = json_encode($array);
 
-                                    if ($redis->llen('buffer')<10000) {
-                                        $redis->rpush('buffer',$str);
-                                    } else {
-                                        $valid = false; $error = "Too many connections, input queue is full";
+                                        if ($redis->llen('buffer')<10000) {
+                                            $redis->rpush('buffer',$str);
+                                        } else {
+                                            $valid = false; 
+                                            $error = "Too many connections, input queue is full";
+                                        }
+                                    } else { 
+                                        if (($time-$lasttime)<0) $droppednegative ++;
+                                        $dropped ++; 
                                     }
 
                                 } else { $valid = false; $error = "Format error, time index given is negative"; }
@@ -122,8 +146,18 @@ function input_controller()
                 } else { $valid = false; $error = "Format error, last item in bulk data does not contain any data"; }
             } else { $valid = false; $error = "Format error, json string supplied is not valid"; }
 
-            if ($valid) $result = 'ok';
-            else $result = "Error: $error\n";
+            if ($dropped) {
+                $valid = false; 
+                $error = "Request exceed's max node update rate of 1 per second: $dropped $droppednegative times";
+            }
+            
+            // $valid = true;
+            
+            if ($valid) {
+                $result = 'ok';
+            } else { 
+                $result = "Error: $error\n";
+            }
         }
 
         // input/post.json?node=10&json={power1:100,power2:200,power3:300}
