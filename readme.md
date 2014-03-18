@@ -1,3 +1,23 @@
+# Emoncms v8 (restructuring)
+
+In addition to numerous feature improvements, performance enhancements and bug fixes, this version of emoncms begins a transition away from serving the git repositories directly through Apache
+to a more conventional approach.
+
+We strongly encourage you to upgrade in order to take advantage of further improvements to the installation and modularisation of emoncms.
+
+Two base level directories now exist within the git repository: 
+
+    config/  - holds configuration files such as Apache config 
+    www/     - holds files which will actually be served by Apache
+
+    manual-install.sh - this script copies the contents of www/ into place, along with Apache configuration.
+
+Note that emoncms will be set up at http://localhost/emoncms-v8/ to prevent conflicts with any existing installation.
+
+If you would prefer to serve it as /emoncms/, just edit the config/apache2/emoncms file and update the first line.
+
+After running the manual-install.sh script you can remove the git repository from your machine - it is no longer directly used.
+
 # Emoncms v7 (redis)
 
 As part of recent work to improve the performance of emoncms because of high load's on emoncms.org redis was introduced to store feed and input meta data including last feed time and value fields which where causing significant write load on the server. This change benefits all installation types of emoncms whether emoncms.org or a raspberrypi as it siginficantly reduces the amount of disk writes. 
