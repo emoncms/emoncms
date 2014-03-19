@@ -15,19 +15,26 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-class Route
-{
+class Route {
+
     public $controller = '';
+
     public $action = '';
+
     public $subaction = '';
+
     public $format = "html";
 
-    public function __construct($q)
+    public function __construct($q = null) 
     {
+        if ($q === null) 
+        {
+            $q = get('q');
+        }
         $this->decode($q);
     }
 
-    public function decode($q)
+    public function decode($q) 
     {
         // filter out the applications relative root
 
@@ -48,7 +55,8 @@ class Route
         // Next up we will need to remove the '/emoncms' from the route path '/emoncms/user/view'
         // str_replace('/emoncms', '', '/emoncms/user/view') => '/user/view'
         // running at root path it will just perform nothing: str_replace('', '', '/emoncms/user/view') so it can be skipped
-        if ( !empty($relativeApplicationPath) ) {
+        if ( !empty($relativeApplicationPath) ) 
+        {
             $q = str_replace($relativeApplicationPath, '', $q);
         }
 
@@ -64,11 +72,22 @@ class Route
         // get format (part of last argument after . i.e view.json)
         $lastarg = sizeof($args) - 1;
         $lastarg_split = preg_split('/[.]/', $args[$lastarg]);
-        if (count($lastarg_split) > 1) { $this->format = $lastarg_split[1]; }
+        if (count($lastarg_split) > 1) 
+        {
+            $this->format = $lastarg_split[1];
+        }
         $args[$lastarg] = $lastarg_split[0];
 
-        if (count($args) > 0) { $this->controller = $args[0]; }
-        if (count($args) > 1) { $this->action = $args[1]; }
-        if (count($args) > 2) { $this->subaction = $args[2]; }
+        $argCount = count($args);
+        switch (true) {
+            case $argCount > 2:
+                $this->subaction = $args[2];
+
+            case $argCount > 1:
+                $this->action = $args[1];
+
+            case $argCount > 0:
+                $this->controller = $args[0];
+        }
     }
 }
