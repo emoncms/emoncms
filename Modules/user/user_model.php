@@ -12,24 +12,24 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-class User
+class User extends Model
 {
 
-    private $mysqli;
-    private $rememberme;
-    private $enable_rememberme = false;
-    private $redis;
+    protected $mysqli;
 
-    public function __construct($mysqli,$redis,$rememberme)
+    protected $rememberme;
+
+    protected $enable_rememberme = false;
+
+    protected $redis;
+
+    public function __construct($config = array())
     {
-        //copy the settings value, otherwise the enable_rememberme will always be false.
-        global $enable_rememberme;
-        $this->enable_rememberme = $enable_rememberme;
+        parent::__construct($config);
+        $this->enable_rememberme = Configure::read('Auth.enable_rememberme');
 
-        $this->mysqli = $mysqli;
-        $this->rememberme = $rememberme;
-
-        $this->redis = $redis;
+        $this->rememberme = $config['rememberme'];
+        $this->redis = $config['redis'];
     }
 
     //---------------------------------------------------------------------------------------
@@ -38,7 +38,7 @@ class User
 
     public function apikey_session($apikey_in)
     {
-        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
+        $apikey_in = preg_replace('/[^a-f0-9]/i', '', $apikey_in);
         $session = array();
 
         //----------------------------------------------------
@@ -46,54 +46,46 @@ class User
         //----------------------------------------------------
         if($this->redis && $this->redis->exists("writeapikey:$apikey_in"))
         {
-            $session['userid'] = $this->redis->get("writeapikey:$apikey_in");
+            return array(
+                'userid' => $this->redis->get("writeapikey:$apikey_in"),
+                'read' => 1,
+                'write' => 1,
+                'admin' => 0,
+                'editmode' => true,
+                'lang' => 'en',
+            );
+        }
+        $result = $this->row("SELECT id FROM `users` WHERE apikey_write='$apikey_in'");
+        if (!empty($result['id']))
+        {
+            $session['userid'] = $result['id'];
             $session['read'] = 1;
             $session['write'] = 1;
             $session['admin'] = 0;
-            $session['editmode'] = TRUE;
+            $session['editmode'] = true;
+            $session['lang'] = "en";
+
+            if ($this->redis) {
+                $this->redis->set("writeapikey:$apikey_in", $result['id']);
+            }
+            return $session;
+        }
+
+        $result = $this->row("SELECT id FROM `users` WHERE apikey_read='$apikey_in'");
+        if (!empty($result['id']))
+        {
+            //session_regenerate_id();
+            $session['userid'] = $result['id'];
+            $session['read'] = 1;
+            $session['write'] = 0;
+            $session['admin'] = 0;
+            $session['editmode'] = true;
             $session['lang'] = "en";
         }
-        else
-        {
-            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
-            if ($result->num_rows == 1)
-            {
-                $row = $result->fetch_array();
-                if ($row['id'] != 0)
-                {
-                    //session_regenerate_id();
-                    $session['userid'] = $row['id'];
-                    $session['read'] = 1;
-                    $session['write'] = 1;
-                    $session['admin'] = 0;
-                    $session['editmode'] = TRUE;
-                    $session['lang'] = "en";
-
-                    if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$row['id']);
-                }
-            }
-            else
-            {
-            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
-            if ($result->num_rows == 1)
-            {
-                $row = $result->fetch_array();
-                if ($row['id'] != 0)
-                {
-                    //session_regenerate_id();
-                    $session['userid'] = $row['id'];
-                    $session['read'] = 1;
-                    $session['write'] = 0;
-                    $session['admin'] = 0;
-                    $session['editmode'] = TRUE;
-                    $session['lang'] = "en";
-                }
-            }
-            }
-        }
+        
+        return $session;
 
         //----------------------------------------------------
-        return $session;
     }
 
     public function emon_session_start()
@@ -154,7 +146,9 @@ class User
         $username = $this->mysqli->real_escape_string($username);
         $password = $this->mysqli->real_escape_string($password);
 
-        if ($this->get_id($username) != 0) return array('success'=>false, 'message'=>_("Username already exists"));
+        if ($this->get_id($username) != 0) {
+            return array('success'=>false, 'message'=>_("Username already exists"));
+        }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
@@ -171,64 +165,87 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
+        if (!$this->query("INSERT INTO `users` ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
             return array('success'=>false, 'message'=>_("Error creating user"));
         }
 
         // Make the first user an admin
         $userid = $this->mysqli->insert_id;
-        if ($userid == 1) $this->mysqli->query("UPDATE users SET admin = 1 WHERE id = '1'");
+        if ($userid == 1) $this->query("UPDATE `users` SET admin = 1 WHERE id = '1'");
 
         return array('success'=>true, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
+    }
+
+/**
+ * Strip evereything from a field that is not a-z0-9
+ *
+ * @param string $word the thing to clean
+ *
+ * @return string
+ */
+    protected function _alphaNumeric($word) {
+        return preg_replace('/[^\w\s-]/', '', $word);
     }
 
     public function login($username, $password, $remembermecheck)
     {
         $remembermecheck = (int) $remembermecheck;
 
-        if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
-
-        // filter out all except for alphanumeric white space and dash
-        //if (!ctype_alnum($username))
-        $username_out = preg_replace('/[^\w\s-]/','',$username);
-
-        if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
-
-        $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
-
-        $result = $this->mysqli->query("SELECT id,password,admin,salt,language FROM users WHERE username = '$username'");
-
-        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
-
-        $userData = $result->fetch_object();
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
-
-        if ($hash != $userData->password)
-        {
-            return array('success'=>false, 'message'=>_("Incorrect password, if your sure its correct try clearing your browser cache"));
+        if (!$username || !$password) {
+            return array(
+                'success' => false, 
+                'message' => _("Username or password empty"),
+            );
         }
-        else
-        {
-            session_regenerate_id();
-            $_SESSION['userid'] = $userData->id;
-            $_SESSION['username'] = $username;
-            $_SESSION['read'] = 1;
-            $_SESSION['write'] = 1;
-            $_SESSION['admin'] = $userData->admin;
-            $_SESSION['lang'] = $userData->language;
-            $_SESSION['editmode'] = TRUE;
 
-            if ($this->enable_rememberme) {
-                if ($remembermecheck==true) {
-                    $this->rememberme->createCookie($userData->id);
-                } else {
-                    $this->rememberme->clearCookie();
-                }
+        if ($username != $this->_alphaNumeric($username)) {
+            return array(
+                'success' => false, 
+                'message' => _("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
+        }
+
+        $userData = $this->row("SELECT id,password,admin,salt,language FROM `users` WHERE username = :username", array(
+            'username' => $username,
+        ));
+
+        if (empty($userData)) {
+            return array(
+                'success'=>false, 
+                'message'=>_("Username does not exist"),
+            );
+        }
+
+        $hash = hash('sha256', $userData['salt'] . hash('sha256', $password));
+
+        if ($hash != $userData['password'])
+        {
+            return array(
+                'success' => false, 
+                'message' => _("Incorrect password, if your sure its correct try clearing your browser cache")
+            );
+        }
+
+        session_regenerate_id();
+        $_SESSION['userid'] = $userData['id'];
+        $_SESSION['username'] = $username;
+        $_SESSION['read'] = 1;
+        $_SESSION['write'] = 1;
+        $_SESSION['admin'] = $userData['admin'];
+        $_SESSION['lang'] = $userData['language'];
+        $_SESSION['editmode'] = true;
+
+        if ($this->enable_rememberme) {
+            if ($remembermecheck == true) {
+                $this->rememberme->createCookie($userData->id);
+            } else {
+                $this->rememberme->clearCookie();
             }
-
-            return array('success'=>true, 'message'=>_("Login successful"));
         }
+
+        return array(
+            'success' => true, 
+            'message' => _("Login successful")
+        );
     }
 
     public function logout()
@@ -252,7 +269,7 @@ class User
         if (strlen($new) < 4 || strlen($new) > 30) return array('success'=>false, 'message'=>_("Password length error"));
 
         // 1) check that old password is correct
-        $result = $this->mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
+        $result = $this->query("SELECT password, salt FROM `users` WHERE id = '$userid'");
         $row = $result->fetch_object();
         $hash = hash('sha256', $row->salt . hash('sha256', $old));
 
@@ -263,7 +280,7 @@ class User
             $string = md5(uniqid(rand(), true));
             $salt = substr($string, 0, 3);
             $hash = hash('sha256', $salt . $hash);
-            $this->mysqli->query("UPDATE users SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
+            $this->query("UPDATE `users` SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
             return array('success'=>true);
         }
         else
@@ -277,7 +294,7 @@ class User
         $username_out = preg_replace('/[^\w\s-]/','',$username);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
-        $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$email'");
+        $result = $this->query("SELECT * FROM `users` WHERE `username`='$username_out' AND `email`='$email'");
 
         if ($result->num_rows==1)
         {
@@ -297,7 +314,7 @@ class User
                 $hash = hash('sha256', $salt . $hash);
                 
                 // Save hash and salt
-                $this->mysqli->query("UPDATE users SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
+                $this->query("UPDATE `users` SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
 
                 //------------------------------------------------------------------------------
                 global $enable_password_reset;
@@ -328,37 +345,63 @@ class User
         return array('success'=>false, 'message'=>"An error occured");
     }
 
+    protected function _isCookieLogin() {
+        return isset($_SESSION['cookielogin']) && $_SESSION['cookielogin'] == true;
+    }
+
     public function change_username($userid, $username)
     {
-        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As your using a cookie based remember me login, please logout and log back in to change username"));
+        if ($this->_isCookieLogin()) 
+        {
+            return array(
+                'success'=>false, 
+                'message'=>_("As your using a cookie based remember me login, please logout and log back in to change username")
+            );
+        }
 
         $userid = intval($userid);
-        if (strlen($username) < 4 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
-
-        if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
-
-        $result = $this->mysqli->query("SELECT id FROM users WHERE username = '$username'");
-        $row = $result->fetch_array();
-        if (!$row[0])
+        if (strlen($username) < 4 || strlen($username) > 30) 
         {
-            $this->mysqli->query("UPDATE users SET username = '$username' WHERE id = '$userid'");
+            return array('success'=>false, 'message'=>_("Username length error"));
+        }
+
+        if (!ctype_alnum($username)) 
+        {
+            return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
+        }
+
+        if ($this->field('id', "SELECT id FROM `users` WHERE username = '$username'"))
+        {
+            $this->query("UPDATE `users` SET username = '$username' WHERE id = '$userid'");
             return array('success'=>true, 'message'=>_("Username updated"));
         }
-        else
-        {
-            return array('success'=>false, 'message'=>_("Username already exists"));
-        }
+        return array('success'=>false, 'message'=>_("Username already exists"));
     }
 
     public function change_email($userid, $email)
     {
-        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As your using a cookie based remember me login, please logout and log back in to change email"));
+        if ($this->_isCookieLogin()) 
+        {
+            return array(
+                'success' => false, 
+                'message' => _("As your using a cookie based remember me login, please logout and log back in to change email")
+            );
+        }
 
         $userid = intval($userid);
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
+        {
+            return array(
+                'success' => false,
+                'message' => _("Email address format error")
+            );
+        }
 
-        $this->mysqli->query("UPDATE users SET email = '$email' WHERE id = '$userid'");
-        return array('success'=>true, 'message'=>_("Email updated"));
+        $this->query("UPDATE `users` SET email = '$email' WHERE id = '$userid'");
+        return array(
+            'success' => true, 
+            'message' => _("Email updated")
+        );
     }
 
     //---------------------------------------------------------------------------------------
@@ -367,58 +410,41 @@ class User
 
     public function get_convert_status($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT `convert` FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return array('convert'=>(int)$row['convert']);
+        return $this->_getField($userid, 'convert');
     }
 
     public function get_username($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT username FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return $row['username'];
+        return $this->_getField($userid, 'username');
     }
 
     public function get_apikey_read($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT `apikey_read` FROM users WHERE `id`='$userid'");
-        $row = $result->fetch_object();
-        return $row->apikey_read;
+        return $this->_getField($userid, 'apikey_read');
     }
 
     public function get_apikey_write($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT `apikey_write` FROM users WHERE `id`='$userid'");
-        $row = $result->fetch_object();
-        return $row->apikey_write;
+        return $this->_getField($userid, 'apikey_write');
     }
 
     public function get_lang($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT lang FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return $row['lang'];
+        return $this->_getField($userid, 'lang');
     }
 
     public function get_timezone($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-        $row = $result->fetch_object();
-        return intval($row->timezone);
+        return $this->_getField($userid, 'timezone');
     }
 
     public function get_salt($userid)
     {
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT salt FROM users WHERE id = '$userid'");
-        $row = $result->fetch_object();
-        return $row->salt;
+        return $this->_getField($userid, 'salt');
+    }
+
+    protected function _getField($primaryKey, $field) {
+        return $this->field($field, sprintf('SELECT `%s` FROM `users` WHERE id = %d', $field, (int)$primaryKey));
     }
 
     //---------------------------------------------------------------------------------------
@@ -427,11 +453,11 @@ class User
 
     public function get_id($username)
     {
-        if (!ctype_alnum($username)) return false;
+        if (!ctype_alnum($username)) {
+            return false;
+        }
 
-        $result = $this->mysqli->query("SELECT id FROM users WHERE username = '$username';");
-        $row = $result->fetch_array();
-        return $row['id'];
+        return $this->field('id', "SELECT `id` FROM `users` WHERE username = '$username'");
     }
 
     //---------------------------------------------------------------------------------------
@@ -440,21 +466,23 @@ class User
 
     public function set_convert_status($userid)
     {
-        $userid = intval($userid);
-        $this->mysqli->query("UPDATE users SET `convert` = '1' WHERE id='$userid'");
-        return array('convert'=>1);
+        $this->_setField($userid, 'convert', 1);
+        return array('convert' => 1);
     }
 
     public function set_user_lang($userid, $lang)
     {
-        $this->mysqli->query("UPDATE users SET lang = '$lang' WHERE id='$userid'");
+        return $this->_setField($userid, 'lang', $lang);
     }
 
     public function set_timezone($userid,$timezone)
     {
+        return $this->_setField($userid, 'timezone', (int)$timezone);
+    }
+
+    protected function _setField($userid, $field, $value) {
         $userid = intval($userid);
-        $timezone = intval($timezone);
-        $this->mysqli->query("UPDATE users SET timezone = '$timezone' WHERE id='$userid'");
+        return $this->query(sprintf('UPDATE `users` SET `%s` = "%s" WHERE `id` = %d', $field, $value, (int)$userid));
     }
 
     //---------------------------------------------------------------------------------------
@@ -464,7 +492,7 @@ class User
     public function get($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio FROM users WHERE id=$userid");
+        $result = $this->query("SELECT `id`, `username`, `email`, `gravatar`, `name`, `location`, `timezone`, `language`, `bio` FROM `users` WHERE `id` = $userid");
         $data = $result->fetch_object();
         return $data;
     }
@@ -480,7 +508,7 @@ class User
         $language = preg_replace('/[^\w\s-.]/','',$data->language); $_SESSION['lang'] = $language;
         $bio = preg_replace('/[^\w\s-.]/','',$data->bio);
 
-        $result = $this->mysqli->query("UPDATE users SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");
+        $result = $this->query("UPDATE `users` SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");
     }
 
     // Generates a new random read apikey
@@ -488,7 +516,7 @@ class User
     {
         $userid = intval($userid);
         $apikey = md5(uniqid(mt_rand(), true));
-        $this->mysqli->query("UPDATE users SET apikey_read = '$apikey' WHERE id='$userid'");
+        $this->query("UPDATE `users` SET apikey_read = '$apikey' WHERE id='$userid'");
         return $apikey;
     }
 
@@ -497,7 +525,7 @@ class User
     {
         $userid = intval($userid);
         $apikey = md5(uniqid(mt_rand(), true));
-        $this->mysqli->query("UPDATE users SET apikey_write = '$apikey' WHERE id='$userid'");
+        $this->query("UPDATE `users` SET apikey_write = '$apikey' WHERE id='$userid'");
         return $apikey;
     }
 }

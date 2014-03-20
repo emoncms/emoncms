@@ -16,16 +16,26 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function user_controller()
 {
-    global $user, $path, $session, $route ,$allowusersregister;
+    global $user, $path, $session, $route;
 
     $result = false;
 
     // Load html,css,js pages to the client
     if ($route->format == 'html')
     {
-        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array());
-        if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
-        if ($route->action == 'logout' && $session['read']) {$user->logout(); header('Location: '.$path);}
+        if ($route->action == 'login' && !$session['read']) 
+        {
+            $result = view("Modules/user/login_block.php", array());
+        }
+
+        if ($route->action == 'view' && $session['write']) 
+        {
+            $result = view("Modules/user/profile/profile.php", array());
+        }
+        if ($route->action == 'logout' && $session['read']) 
+        {
+            $user->logout(); header('Location: ' . $path);
+        }
     }
 
     // JSON API
@@ -33,7 +43,7 @@ function user_controller()
     {
         // Core session
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
-        if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
+        if ($route->action == 'register' && Configure::read('Auth.allowusersregister')) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) $user->logout();
 
         if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
