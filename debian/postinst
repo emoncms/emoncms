@@ -1,5 +1,6 @@
 #!/bin/sh
 
+# Settings.php configuration:
 CONFIGFILE=/etc/emoncms-debconf.conf
 
 # Source debconf library.
@@ -97,6 +98,22 @@ mysql -u$DB_USER -p$DB_PASSWORD -e "CREATE DATABASE IF NOT EXISTS $DATABASE;" ||
 # Didn't exit 1? Then DB creation worked OK.
 echo " - '$DATABASE' either exists already or was created successfully."
 
+# Automatically update the version number in index.php to match the debian package number
+# with an install route indicator
+VERSION=$(zless /usr/share/doc/$DPKG_MAINTSCRIPT_PACKAGE/changelog* \
+     | dpkg-parsechangelog -l- | awk '/Version/ { print $2 }')
+
+echo "Attempting to substitute in version ($VERSION) to index.php..."
+
+# this is a teensy bit brittle, so we'll print a warning if it doesn't work
+sed -i "s/emoncms_version = .*/emoncms_version = '$VERSION (debian)';/g" /usr/share/emoncms/www/index.php
+if ! grep -q "$VERSION (debian)" /usr/share/emoncms/www/index.php ; then
+  echo " - WARNING: was not able to substitute version string into index.php - has something changed?"
+else
+  echo " - Added successfully."
+fi
+
+## All done!
 echo "To update emoncms configuration, run 'dpkg-reconfigure emoncms'"
 
 exit 0
