@@ -1,0 +1,59 @@
+Template: emoncms/mysql_user
+Type: string
+Default: root
+Description: MySQL username:
+ Enter the user which emoncms should use to connect to MySQL. Note that you need to set this user up before installing emoncms, and make sure the necessary grants are in place).
+
+Template: emoncms/mysql_password
+Type: password
+Default: raspberry
+Description: MySQL password:
+ Enter the password for the chosen MySQL user.
+
+Template: emoncms/mysql_db
+Type: string
+Default: emoncms
+Description: MySQL database:
+ Enter the database which you want emoncms to use. Note that this installer will create the database (if it doesn't already exist) while emoncms itself will create the necessary tables at a later point.
+
+Template: emoncms/mysql_host
+Type: string
+Default: localhost
+Description: MySQL host:
+ Enter the host on which MySQL is running.
+
+Template: emoncms/smtp_host
+Type: string
+Default: 
+Description: SMTP host for outgoing email:
+ Optionally, provide an SMTP host so that emoncms is able to dispatch outgoing mail (password resets, notifications and alerts, and so on).
+
+Template: emoncms/smtp_user
+Type: string
+Default:
+Description: SMTP username:
+ Optionally, enter the SMTP username for emoncms to use to connect to the SMTP host.
+
+Template: emoncms/smtp_password
+Type: password
+Default:
+Description: SMTP password:
+ Optionally, enter the SMTP password for the chosen user.
+
+Template: emoncms/smtp_email_addr
+Type: string
+Default: emoncms-noreply@localhost 
+Description: SMTP originating email address:
+ Optionally, enter the originating email address to use for emoncms outgoing mail
+
+Template: emoncms/smtp_email_name
+Type: string
+Default: emoncms (noreply)
+Description: SMTP originating email name/label: 
+  Optionally, enter the name to associate with the originating email address.
+
+Template: emoncms/enable_password_reset
+Type: boolean
+Default: true
+Description: Send password reset emails:
+  Choose whether or not emoncms will send password reset emails (when requested).

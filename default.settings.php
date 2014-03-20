@@ -6,10 +6,10 @@
 
     */
 
-    $username = "";
-    $password = "";
-    $server   = "localhost";
-    $database = "";
+    $username = "_DB_USER_";
+    $password = "_DB_PASSWORD_";
+    $server   = "_DB_HOST_";
+    $database = "_DATABASE_";
 
     $redis_enabled = true;
     
@@ -18,7 +18,7 @@
         'creatable_engines'=>array('MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE'),
 
         'timestore'=>array(
-            'adminkey'=>""
+            'adminkey'=>"_TS_ADMINKEY_"
         ),
 
         'graphite'=>array(
@@ -42,13 +42,13 @@
     
     // (OPTIONAL) Used by password reset feature
     $smtp_email_settings = array(
-      'host'=>"",
-      'username'=>"",
-      'password'=>"",
-      'from'=>array('an email address' => 'an email tag name')
+      'host'=>"_SMTP_HOST_",
+      'username'=>"_SMTP_USER_",
+      'password'=>"_SMTP_PASSWORD_",
+      'from'=>array('_SMTP_EMAIL_ADDR_' => '_SMTP_EMAIL_NAME_')
     );
 
-    $enable_password_reset = false;
+    $enable_password_reset = _ENABLE_PASSWORD_RESET_;
     
     // Checks for limiting garbage data?
     $max_node_id_limit = 32;
