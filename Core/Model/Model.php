@@ -34,24 +34,50 @@ class Model {
  *
  * @return string|null
  */
-	public function row($query) {
-		$res = $this->query($query);
+	public function row($query, array $values = array()) {
+		return (array)current($this->rows($query, $values));
 	}
 
-	public function query($sql, array $values = array()) {
+/**
+ * Fetch a row / array of data
+ *
+ * @param string $query the query to select the field
+ *
+ * @return string|null
+ */
+	public function rows($query, array $values = array()) 
+	{
+		$Statement = $this->query($query, $values);
+		if (!$Statement->rowCount()) 
+		{
+			return array();
+		}
+		$rows = $Statement->fetchAll(PDO::FETCH_ASSOC);
+		return $rows;
+	}
+
+	public function query($sql, array $values = array()) 
+	{
 		$time = microtime(true);
 
-		try {
-			if (!empty($values)) {
+		try 
+		{
+			if (!empty($values)) 
+			{
 				$Statement = $this->_mysqli()->prepare($sql);
-				foreach ($values as $k => $v) {
+				foreach ($values as $k => $v) 
+				{
 					$Statement->bindParam(':' . $k, $v);
 				}
 				$Statement->execute();
-			} else {
+			} 
+			else 
+			{
 				$Statement = $this->_mysqli()->query($sql);
 			}
-		} catch (PDOException $e) {
+		} 
+		catch (PDOException $e) 
+		{
 			$error = $e->getMessage();
 		}
 
@@ -62,19 +88,23 @@ class Model {
 			'error' => isset($error) ? $error : null,
 		);
 
-		if (isset($e) || !$Statement instanceof PDOStatement) {
+		if (isset($e) || !$Statement instanceof PDOStatement) 
+		{
 			return null;
 		}
 
 		return $Statement;
 	}
 
-	public function queryLog() {
+	public function queryLog() 
+	{
 		return $this->_queryLog;
 	}
 
-	protected function _mysqli() {
-		if (empty($this->_mysqli)) {
+	protected function _mysqli() 
+	{
+		if (empty($this->_mysqli)) 
+		{
 			$this->_mysqli = ConnectionManager::getDataSource($this->useDbConfig);
 		}
 		return $this->_mysqli;
@@ -109,18 +139,23 @@ class ConnectionManager {
  *
  * @return void
  */
-	protected static function _init() {
-		if (Configure::check('DB_CONFIG')) {
+	protected static function _init()
+	{
+		if (Configure::check('DB_CONFIG')) 
+		{
 			self::$config = Configure::read('DB_CONFIG');
 		}
 		self::$_init = true;
 	}
 
-	public static function getDataSource($db) {
-		if (!self::$_init) {
+	public static function getDataSource($db) 
+	{
+		if (!self::$_init) 
+		{
 			self::_init();
 		}
-		if (!empty(self::$_dataSources[$db])) {
+		if (!empty(self::$_dataSources[$db])) 
+		{
 			return self::$_dataSources[$db];
 		}
 
@@ -130,4 +165,5 @@ class ConnectionManager {
 
 		return self::$_dataSources[$db];
 	}
+
 }
