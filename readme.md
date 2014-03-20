@@ -19,7 +19,7 @@ You need to add the following line:
 
 You will need to update your system repositories:
 
-   sudo apt-get update
+    sudo apt-get update
 
 And then install emoncms (all dependencies will also be intalled at this point):
 
