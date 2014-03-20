@@ -491,10 +491,7 @@ class User extends Model
 
     public function get($userid)
     {
-        $userid = intval($userid);
-        $result = $this->query("SELECT `id`, `username`, `email`, `gravatar`, `name`, `location`, `timezone`, `language`, `bio` FROM `users` WHERE `id` = $userid");
-        $data = $result->fetch_object();
-        return $data;
+        return $this->row("SELECT `id`, `username`, `email`, `gravatar`, `name`, `location`, `timezone`, `language`, `bio` FROM `users` WHERE `id` = :userid", compact('userid'));
     }
 
     public function set($userid,$data)
