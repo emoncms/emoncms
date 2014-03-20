@@ -39,7 +39,7 @@ if (class_exists('Redis') && isset($redis_enabled) && $redis_enabled)
 }
 
 $mysqli = ConnectionManager::getDataSource(Configure::read('DB_CONFIG.database'));
-if ($dbtest == true) 
+if (Configure::read('DB_CONFIG.dbtest') == true) 
 {
     require 'Lib/dbschemasetup.php';
     if (!db_check($mysqli, Configure::read('DB_CONFIG.database'))) 
@@ -71,13 +71,13 @@ if (!$route->controller && !$route->action)
 {
     if (!$session['read']) 
     {
-        $route->controller = $default_controller;
-        $route->action = $default_action;
+        $route->controller = Configure::read('Auth.default_controller');
+        $route->action = Configure::read('Auth.default_action');
     } 
     else 
     {
-        $route->controller = $default_controller_auth;
-        $route->action = $default_action_auth;
+        $route->controller = Configure::read('Auth.default_controller_auth');
+        $route->action = Configure::read('Auth.default_action_auth');
     }
 }
 
@@ -94,7 +94,7 @@ $output = controller($route->controller);
 // If no controller of this name - then try username
 // need to actually test if there isnt a controller rather than if no content
 // is returned from the controller.
-if (!$output['content'] && $public_profile_enabled && $route->controller!='admin')
+if (!$output['content'] && Configure::read('Profile.public_profile_enabled') && $route->controller != 'admin')
 {
     $userid = $user->get_id($route->controller);
     if ($userid) 
@@ -104,8 +104,8 @@ if (!$output['content'] && $public_profile_enabled && $route->controller!='admin
         $session['username'] = $route->controller;
         $session['read'] = 1;
         $session['profile'] = 1;
-        $route->action = $public_profile_action;
-        $output = controller($public_profile_controller);
+        $route->action = Configure::read('Public.public_profile_action');
+        $output = controller(Configure::read('Public.public_profile_controller'));
     }
 }
 
@@ -129,4 +129,7 @@ if ($route->format == 'html')
 
 $ltime = microtime(true) - $ltime;
 
-pr($user->queryLog());
+// view what sql is going on 
+if ($route->format != 'json') {
+    pr($user->queryLog());
+}

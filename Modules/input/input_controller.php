@@ -16,7 +16,7 @@ function input_controller()
 {
     //return array('content'=>"ok");
 
-    global $mysqli, $redis, $user, $session, $route, $max_node_id_limit, $feed_settings;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
@@ -165,7 +165,7 @@ function input_controller()
                                 {
 
                                     $valid = false;
-                                    $error = "NodeID must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was out of range";
+                                    $error = "NodeID must be a positive integer between 0 and " . Configure::read('EmonCMS.max_node_id_limit') . ", nodeid given was out of range";
                                 }
                             }
 
@@ -210,20 +210,13 @@ function input_controller()
 
             $nodeid = get('node');
 
-            $error = " old".$max_node_id_limit;
-
-            if (!isset($max_node_id_limit))
-            {
-                $max_node_id_limit = 32;
-            }
-
-            $error .= " new".$max_node_id_limit;
+            $error = " old" . Configure::read('EmonCMS.max_node_id_limit');
 
             if (!$input->check_node_id_valid($nodeid))
             {
 
                 $valid = false;
-                $error = "NodeID must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was out of range";
+                $error = "NodeID must be a positive integer between 0 and " . Configure::read('EmonCMS.max_node_id_limit') . ", nodeid given was out of range";
             }
             if (!$valid)
             {
