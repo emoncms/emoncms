@@ -19,9 +19,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 /**
  * debug method wrapper for print_r
  *
+ * If debug is disabled nothing is output.
+ *
  * @return void
  */
 function pr($var) {
+    if (!Configure::read('debug')) {
+        return;
+    }
     echo sprintf('<pre>%s</pre>', print_r($var, true));
 }
 
