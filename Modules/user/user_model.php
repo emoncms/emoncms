@@ -508,21 +508,58 @@ class User extends Model
         $result = $this->query("UPDATE `users` SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");
     }
 
-    // Generates a new random read apikey
+/**
+ * Generates a new random read apikey for the specified user
+ *
+ * @param integer $userId the user being updated
+ *
+ * @return string
+ */
     public function new_apikey_read($userid)
     {
-        $userid = intval($userid);
-        $apikey = md5(uniqid(mt_rand(), true));
-        $this->query("UPDATE `users` SET apikey_read = '$apikey' WHERE id='$userid'");
-        return $apikey;
+        return $this->_setApiKey($userid, 'read');
     }
 
-    // Generates a new random write apikey
+/**
+ * Generates a new random write apikey for the specified user
+ *
+ * @param integer $userId the user being updated
+ *
+ * @return string
+ */
     public function new_apikey_write($userid)
     {
-        $userid = intval($userid);
-        $apikey = md5(uniqid(mt_rand(), true));
-        $this->query("UPDATE `users` SET apikey_write = '$apikey' WHERE id='$userid'");
-        return $apikey;
+        return $this->_setApiKey($userid, 'write');
+    }
+
+/**
+ * Update the specified api key and return the key
+ *
+ * @param integer $userId the user being updated
+ * @param string $type the type of key being updated (read / write)
+ * @param string $value the api key (null to have it auto generated)
+ *
+ * @return string
+ */
+    protected function _setApiKey($userId, $type, $value = null) {
+        if ($value === null) {
+            $value = $this->_apiKey($userId);
+        }
+
+        $this->query(sprintf('UPDATE `users` SET `apikey_%s` = :apikey WHERE id = :userid'), array(
+            'apikey' => $this->_apiKey(),
+            'userid' => (int)$userid,
+        ));
+
+        return $value;
+    }
+
+/**
+ * Generate a random api key
+ *
+ * @return string
+ */
+    protected function _apiKey() {
+        return md5(Configure::read('Security.salt') . uniqid(mt_rand(), true));
     }
 }
