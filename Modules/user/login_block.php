@@ -79,7 +79,7 @@ global $path;
 </div>
 
 <script>
-    $(document).read(function() {
+    $(document).ready(function() {
         var path = "<?php echo $path; ?>",
             register_open = false,
             passwordreset = "<?php echo Configure::read('EmonCMS.enable_password_reset'); ?>";

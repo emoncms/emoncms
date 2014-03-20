@@ -316,21 +316,20 @@ class User extends Model
                 // Save hash and salt
                 $this->query("UPDATE `users` SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
 
-                //------------------------------------------------------------------------------
-                global $enable_password_reset;
-                if ($enable_password_reset==true)
-                {
-                    global $smtp_email_settings;
-                    
+                if (Configure::read('EmonCMS.enable_password_reset'))
+                {                    
                     require_once 'swift_required.php';
 
-                    $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], 26)
-                    ->setUsername($smtp_email_settings['username'])->setPassword($smtp_email_settings['password']);
+                    $transport = Swift_SmtpTransport::newInstance()
+                        ->setHost(Configure::read('Smtp.host'))
+                        ->setPort(Configure::read('Smtp.port') ?: 26)
+                        ->setUsername(Configure::read('Smtp.username'))
+                        ->setPassword(Configure::read('Smtp.password'));
 
                     $mailer = Swift_Mailer::newInstance($transport);
                     $message = Swift_Message::newInstance()
                       ->setSubject('Emoncms password reset')
-                      ->setFrom($smtp_email_settings['from'])
+                      ->setFrom(Configure::read('Smtp.from'))
                       ->setTo(array($email))
                       ->setBody("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>", 'text/html');
                     $result = $mailer->send($message);

@@ -27,10 +27,10 @@ $path = get_application_path();
 
 // 2) Database
 $redis = false;
-if (class_exists('Redis') && isset($redis_enabled) && $redis_enabled) 
+if (class_exists('Redis') && Configure::read('Redis.enabled')) 
 {
     $redis = new Redis();
-    $connected = $redis->connect('127.0.0.1');
+    $connected = $redis->connect(Configure::read('Redis.host'));
     if (!$connected) 
     {
         echo 'Can\'t connect to redis database, it may be that redis-server is not installed or started see readme for redis installation';

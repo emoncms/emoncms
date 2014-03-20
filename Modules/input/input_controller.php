@@ -16,7 +16,7 @@ function input_controller()
 {
     //return array('content'=>"ok");
 
-    global $mysqli, $redis, $user, $session, $route, $feed_settings;
+    global $mysqli, $redis, $user, $session, $route;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
@@ -25,13 +25,13 @@ function input_controller()
     $result = false;
 
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $feed_settings);
+    $feed = new Feed($mysqli, $redis);
 
-    require "Modules/input/input_model.php"; // 295
-    $input = new Input($mysqli,$redis, $feed);
+    require "Modules/input/input_model.php";
+    $input = new Input($mysqli, $redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
-    $process = new Process($mysqli,$input,$feed);
+    require "Modules/input/process_model.php";
+    $process = new Process($mysqli, $input, $feed);
 
 
 
