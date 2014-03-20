@@ -16,10 +16,6 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-if (!defined('DS')) {
-    define('DS', '/');
-}
-
 /**
  * debug method wrapper for print_r
  *
@@ -53,9 +49,8 @@ function get_application_path()
 
 function db_check($mysqli,$database)
 {
-    $result = $mysqli->query("SELECT count(table_schema) from information_schema.tables WHERE table_schema = '$database'");
-    $row = $result->fetch_array();
-    if ($row['0']>0) return true; else return false;
+    $result = $mysqli->query("SELECT count(table_schema) as count from information_schema.tables WHERE table_schema = '$database'")->fetch(PDO::FETCH_ASSOC);
+    return $result['count'] > 0;
 }
 
 function controller($controller_name)
@@ -114,7 +109,9 @@ function post($index)
 function server($index)
 {
     $val = null;
-    if (isset($_SERVER[$index])) $val = $_SERVER[$index];
+    if (isset($_SERVER[$index])) {
+        $val = $_SERVER[$index];
+    }
     return $val;
 }
 

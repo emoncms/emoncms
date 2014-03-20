@@ -12,8 +12,6 @@ http://openenergymonitor.org
 
 */
 
-$emoncms_version = '8.0 pre-release';
-
 $ltime = microtime(true);
 
 define('EMONCMS_EXEC', 1);
@@ -23,6 +21,7 @@ require 'process_settings.php';
 require 'core.php';
 require 'route.php';
 require 'locale.php';
+require CORE . 'Model' . DS . 'Model.php';
 
 $path = get_application_path();
 
@@ -39,20 +38,11 @@ if (class_exists('Redis') && isset($redis_enabled) && $redis_enabled)
     }
 }
 
-$mysqli = @new mysqli($server, $username, $password, $database);
-if ($mysqli->connect_error) 
-{
-    echo 'Can\'t connect to database, please verify credentials/configuration in settings.php<br />';
-    if ($display_errors) 
-    {
-        echo sprintf('Error message: <b>%s</b>', $mysqli->connect_error);
-    }
-    exit;
-}
-elseif ($dbtest == true) 
+$mysqli = ConnectionManager::getDataSource(Configure::read('DB_CONFIG.database'));
+if ($dbtest == true) 
 {
     require 'Lib/dbschemasetup.php';
-    if (!db_check($mysqli, $database)) 
+    if (!db_check($mysqli, Configure::read('DB_CONFIG.database'))) 
     {
         db_schema_setup($mysqli, load_db_schema(), true);
     }
@@ -63,7 +53,7 @@ require 'Modules/user/rememberme_model.php';
 $rememberme = new Rememberme($mysqli);
 
 require 'Modules/user/user_model.php';
-$user = new User($mysqli, $redis, $rememberme);
+$user = new User(compact('redis', 'rememberme'));
 
 $session = get('apikey') ? $user->apikey_session(get('apikey')) : $user->emon_session_start();
 
@@ -91,10 +81,8 @@ if (!$route->controller && !$route->action)
     }
 }
 
-if ($route->controller == 'api') 
-{
-    $route->controller = 'input';
-}
+$route->controller = $route->controller == 'api' ? 'input' : $route->controller;
+
 if ($route->controller == 'input' && ($route->action == 'post' || $route->action == 'bulk')) 
 {
     $route->format = 'json';
@@ -121,7 +109,7 @@ if (!$output['content'] && $public_profile_enabled && $route->controller!='admin
     }
 }
 
-$mysqli->close();
+$mysqli = null;
 
 // 7) Output
 if ($route->format == 'json') 
@@ -140,3 +128,5 @@ if ($route->format == 'html')
 }
 
 $ltime = microtime(true) - $ltime;
+
+pr($user->queryLog());
