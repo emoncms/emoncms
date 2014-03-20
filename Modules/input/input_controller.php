@@ -44,15 +44,39 @@ function input_controller()
 
     if ($route->format == 'json')
     {
-        // input/post.json?node=10&csv=100,200,300
-        // input/post.json?node=10&json={power:100,solar:200}
-        // input/bulk.json?data=[[0,10,100,200],[5,10,100,200],[10,10,100,200]]
+        /*
+        
+        input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
 
-        // input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
-        // The first number of each node is the time offset, so for the first node it is 0 which means the packet
-        // for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 4 seconds.
-        // The second number is the node id, this is the unqiue identifer for the wireless node.
-        // All the numbers after the first two are data values. The first node here (node 16) has only once data value: 1137.
+        The first number of each node is the time offset (see below).
+
+        The second number is the node id, this is the unique identifer for the wireless node.
+
+        All the numbers after the first two are data values. The first node here (node 16) has only one data value: 1137.
+
+        Optional offset and time parameters allow the sender to set the time
+        reference for the packets.
+        If none is specified, it is assumed that the last packet just arrived.
+        The time for the other packets is then calculated accordingly.
+
+        offset=-10 means the time of each packet is relative to [now -10 s].
+        time=1387730127 means the time of each packet is relative to 1387730127
+        (number of seconds since 1970-01-01 00:00:00 UTC)
+
+        Examples:
+        
+        // legacy mode: 4 is 0, 2 is -2 and 0 is -4 seconds to now.
+          input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
+        // offset mode: -6 is -16 seconds to now.
+          input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
+        // time mode: -6 is 1387730121
+          input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=1387730127
+        // sentat (sent at) mode:
+          input/bulk.json?data=[[520,16,1137],[530,17,1437,3164],[535,19,1412,3077]]&offset=543
+
+        See pull request for full discussion:
+        https://github.com/emoncms/emoncms/pull/118
+        */
 
         if ($route->action == 'bulk')
         {
@@ -66,7 +90,7 @@ function input_controller()
             {
                 $data = json_decode(get('data'));
             }
-
+            
             $userid = $session['userid'];
             $dbinputs = $input->get_inputs($userid);
 
@@ -75,79 +99,84 @@ function input_controller()
             {
                 if (isset($data[$len-1][0]))
                 {
-                    $offset = (int) $data[$len-1][0];
-                    if ($offset>=0)
+                    // Sent at mode: input/bulk.json?data=[[45,16,1137],[50,17,1437,3164],[55,19,1412,3077]]&sentat=60
+                    if (isset($_GET['sentat'])) {
+                        $time_ref = time() - (int) $_GET['sentat'];
+                    }  elseif (isset($_POST['sentat'])) {
+                        $time_ref = time() - (int) $_POST['sentat'];
+                    } 
+                    // Offset mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
+                    elseif (isset($_GET['offset'])) {
+                        $time_ref = time() - (int) $_GET['offset'];
+                    } elseif (isset($_POST['offset'])) {
+                        $time_ref = time() - (int) $_POST['offset'];
+                    }
+                    // Time mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=1387729425
+                    elseif (isset($_GET['time'])) {
+                        $time_ref = (int) $_GET['time'];
+                    } elseif (isset($_POST['time'])) {
+                        $time_ref = (int) $_POST['time'];
+                    } 
+                    // Legacy mode: input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
+                    else {
+                        $time_ref = time() - (int) $data[$len-1][0];
+                    }
+
+                    foreach ($data as $item)
                     {
-                        $start_time = time() - $offset;
-
-                        foreach ($data as $item)
+                        if (count($item)>2)
                         {
-                            if (count($item)>2)
+                            // check for correct time format
+                            $itemtime = (int) $item[0];
+
+                            $time = $time_ref + (int) $itemtime;
+                            $nodeid = $item[1];
+
+                            $inputs = array();
+                            $name = 1;
+                            for ($i=2; $i<count($item); $i++)
                             {
-                                // check for correct time format
-                                $itemtime = (int) $item[0];
-                                if ($itemtime>=0)
+                                $value = (float) $item[$i];
+                                $inputs[$name] = $value;
+                                $name ++;
+                            }
+
+                            $tmp = array();
+                            foreach ($inputs as $name => $value)
+                            {
+                                if ($input->check_node_id_valid($nodeid))
                                 {
-                                    $time = $start_time + (int) $itemtime;
-                                    $nodeid = $item[1];
-
-                                    $inputs = array();
-                                    $name = 1;
-                                    for ($i=2; $i<count($item); $i++)
+                                    if (!isset($dbinputs[$nodeid][$name]))
                                     {
-                                        $value = (float) $item[$i];
-                                        $inputs[$name] = $value;
-                                        $name ++;
+                                        $inputid = $input->create_input($userid, $nodeid, $name);
+                                        $dbinputs[$nodeid][$name] = true;
+                                        $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
+                                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                                     }
-
-                                    $tmp = array();
-                                    foreach ($inputs as $name => $value)
+                                    else
                                     {
-                                        if ($input->check_node_id_valid($nodeid))
-                                        {
-                                            if (!isset($dbinputs[$nodeid][$name]))
-                                            {
-                                                $inputid = $input->create_input($userid, $nodeid, $name);
-                                                $dbinputs[$nodeid][$name] = true;
-                                                $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
-                                                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                                            }
-                                            else
-                                            {
-                                                $inputid = $dbinputs[$nodeid][$name]['id'];
-                                                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                                        $inputid = $dbinputs[$nodeid][$name]['id'];
+                                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
 
-                                                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
-                                            }
-                                        }
-                                        else
-                                        {
-
-                                            $valid = false;
-                                            $error = "NodeID must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was out of range";
-                                        }
+                                        if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
                                     }
-
-                                    foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
-
                                 }
                                 else
                                 {
+
                                     $valid = false;
-                                    $error = "Format error, time index given is negative";
+                                    $error = "NodeID must be a positive integer between 0 and ".$max_node_id_limit.", nodeid given was out of range";
                                 }
                             }
-                            else
-                            {
-                                $valid = false;
-                                $error = "Format error, bulk item needs at least 3 values";
-                            }
+
+                            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+
                         }
-                    }
-                    else
-                    {
-                        $valid = false;
-                        $error = "Format error, time index given is negative";
+                        else
+                        {
+                            $valid = false;
+                            $error = "Format error, bulk item needs at least 3 values";
+                        }
                     }
                 }
                 else
