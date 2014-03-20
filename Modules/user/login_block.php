@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $enable_password_reset;
+global $path;
 
 ?>
 
@@ -79,113 +79,109 @@ global $path, $enable_password_reset;
 </div>
 
 <script>
+    $(document).read(function() {
+        var path = "<?php echo $path; ?>",
+            register_open = false,
+            passwordreset = "<?php echo Configure::read('EmonCMS.enable_password_reset'); ?>";
 
-var path = "<?php echo $path; ?>";
-var register_open = false;
-var passwordreset = "<?php echo $enable_password_reset; ?>";
-
-if (!passwordreset) $("#passwordreset-link").hide();
-
-$("#passwordreset-link").click(function(){
-    $("#passwordreset-block").show();
-    $("#passwordreset-input").show();
-    $("#passwordreset-message").html("");
-});
-
-$("#passwordreset-submit").click(function(){
-    var username = $("#passwordreset-username").val();
-    var email = $("#passwordreset-email").val();
-    
-    if (email=="" || username=="") {
-        alert("Please enter username and email address");
-    } else {
-        var result = user.passwordreset(username,email);
-        if (result.success==true) {
-            $("#passwordreset-message").html("<div class='alert alert-success'>"+result.message+"</div>");
-            $("#passwordreset-input").hide();
-        } else {
-            $("#passwordreset-message").html("<div class='alert alert-error'>"+result.message+"</div>");
+        if (!passwordreset) {
+            $("#passwordreset-link").hide();
         }
-    }
-});
 
-$("#register-link").click(function(){
-    $(".login-item").hide();
-    $(".register-item").show();
-    $("#error").hide();
-    register_open = true;
-    return false;
-});
+        $("#passwordreset-link").click(function(){
+            $("#passwordreset-block").show();
+            $("#passwordreset-input").show();
+            $("#passwordreset-message").html("");
+        });
 
-$("#cancel-link").click(function(){
-    $(".login-item").show();
-    $(".register-item").hide();
-    $("#error").hide();
-    register_open = false;
-    return false;
-});
+        $("#passwordreset-submit").click(function(){
+            var username = $("#passwordreset-username").val();
+            var email = $("#passwordreset-email").val();
+            
+            if (email=="" || username=="") {
+                alert("Please enter username and email address");
+            } else {
+                var result = user.passwordreset(username,email);
+                if (result.success==true) {
+                    $("#passwordreset-message").html("<div class='alert alert-success'>"+result.message+"</div>");
+                    $("#passwordreset-input").hide();
+                } else {
+                    $("#passwordreset-message").html("<div class='alert alert-error'>"+result.message+"</div>");
+                }
+            }
+        });
 
-$("input").keypress(function(event) {
-    //login or register when pressing enter
-    if (event.which == 13) {
-        event.preventDefault();
-        if ( register_open ) {
-            register();
-        } else {
-            login();
-        }
-    }
-});
+        $("#register-link").click(function(){
+            $(".login-item").hide();
+            $(".register-item").show();
+            $("#error").hide();
+            register_open = true;
+            return false;
+        });
 
-function login(){
-    var username = $("input[name='username']").val();
-    var password = $("input[name='password']").val();
-    var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
+        $("#cancel-link").click(function(){
+            $(".login-item").show();
+            $(".register-item").hide();
+            $("#error").hide();
+            register_open = false;
+            return false;
+        });
 
-    var result = user.login(username,password,rememberme);
+        $("input").keypress(function(event) {
+            //login or register when pressing enter
+            if (event.which == 13) {
+                event.preventDefault();
+                if ( register_open ) {
+                    register();
+                } else {
+                    login();
+                }
+            }
+        });
 
-    if (result.success)
-    {
-        window.location.href = path+"user/view";
-    }
-    else
-    {
-        $("#error").html(result.message).show();
-    }
-}
+        $("#login").click(login);
+        $("#register").click(register);
+    });
 
-function register(){
-    var username = $("input[name='username']").val();
-    var password = $("input[name='password']").val();
-    var confirmpassword = $("input[name='confirm-password']").val();
-    var email = $("input[name='email']").val();
-
-    if (password != confirmpassword)
-    {
-        $("#error").html("Passwords do not match").show();
-    }
-    else
-    {
-        var result = user.register(username,password,email);
+    function login(){
+        var result = user.login(
+                $("input[name='username']").val(),
+                $("input[name='password']").val(),
+                $("#rememberme").is(":checked") ? 1 : 0
+            );
 
         if (result.success)
         {
-            var result = user.login(username,password);
-            if (result.success)
-            {
-                window.location.href = path+"user/view";
-            }
+            window.location.href = path + 'user/view';
+            return;
         }
-        else
+        $("#error").html(result.message).show();
+    }
+
+    function register(){
+        var username = $("input[name='username']").val(),
+            password = $("input[name='password']").val(),
+            confirmpassword = $("input[name='confirm-password']").val(),
+            email = $("input[name='email']").val();
+
+        if (password != confirmpassword)
+        {
+            $("#error").html("Passwords do not match").show();
+            return;
+        }
+        var result = user.register(username,password,email);
+
+        if (!result.success)
         {
             $("#error").html(result.message).show();
+            return;
+        }
+
+        var result = user.login(username,password);
+        if (result.success)
+        {
+            window.location.href = path + 'user/view';
         }
     }
-}
-
-$("#login").click(login);
-$("#register").click(register);
-
-
 </script>
 
