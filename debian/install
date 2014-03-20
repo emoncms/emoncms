@@ -1,4 +1,9 @@
-www /usr/share/emoncms/
+default.settings.php /usr/share/emoncms/settings.php
+*.php /usr/share/emoncms/
 *.md /usr/share/emoncms/
 *.txt /usr/share/emoncms/
+Lib /usr/share/emoncms/
+Modules /usr/share/emoncms/
+Theme /usr/share/emoncms/
+scripts /usr/share/emoncms/
 conf/apache2/emoncms /etc/apache2/sites-available/

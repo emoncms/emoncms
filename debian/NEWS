@@ -1,26 +1,6 @@
-emoncms (8.0.1) UNRELEASED; urgency=low
-
- This version contains bugfixes for visualisations which were broken
- by the upgrade to v8.0 
-
- -- Dave McCraw <dave@mccraw.co.uk>  Mon, 17 Mar 2014 07:01:01 +0000
-
-emoncms (8.0-1) unstable; urgency=low
-
-  This version contains incremental updates to the installation procedure:
-  in this case, ensuring the filesystem for the various types of feed exists
-  and has the correct ownership.
-
- -- Dave McCraw <dave@mccraw.co.uk>  Sun, 16 Mar 2014 07:09:08 +0000
-
 emoncms (8.0) unstable; urgency=low
 
-  This version is the first debian-packaged release of emoncms and corresponds to
-  the original v8.0 git merge of 'rework' branch as commit ID:
+  This version is the first debian-packaged release of emoncms and includes changes
+  up to 2c49f04a1872cc5bbc3e23b1b1b51ac7e4020bdf inclusive.
 
-  616a42d383a81c4d04dbb0daf9bbdb6893f31962
-
-  This version was made available for testing on the openenergymonitor forums. 
-
- -- Dave McCraw <dave@mccraw.co.uk>  Sun, 16 Mar 2014 07:09:08 +0000
-
+ -- Dave McCraw <dave@mccraw.co.uk>  Thu, 20 Mar 2014 18:55:08 +0000

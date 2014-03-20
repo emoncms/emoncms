@@ -11,10 +11,8 @@ Depends: debconf | debconf-2.0,
   apache2, libapache2-mod-php5, 
   php5, php5-mysql, php5-curl, php-pear, php5-dev, php5-mcrypt,
   mysql-server, mysql-client, 
-  redis-server,
   ufw, ntp,
-  git-core,
   ${misc:Depends}
-Suggests: libapache2-mod-php5 
+Suggests: redis-server 
 Description: The core emoncms webapp.
 
