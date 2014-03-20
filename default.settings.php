@@ -45,7 +45,7 @@
       'host'=>"_SMTP_HOST_",
       'username'=>"_SMTP_USER_",
       'password'=>"_SMTP_PASSWORD_",
-      'from'=>array('_SMTP_EMAIL_ADDR_' => '_DEBCONF_SMTP_EMAIL_NAME_')
+      'from'=>array('_SMTP_EMAIL_ADDR_' => '_SMTP_EMAIL_NAME_')
     );
 
     $enable_password_reset = _ENABLE_PASSWORD_RESET_;

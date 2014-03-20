@@ -42,11 +42,15 @@ Now restart Apache:
 
 ## Install PECL modules (serial, redis and swift mailer)
 
-These modules are optional but will enhance the functionality of emoncms: serial is required to use the rfm12pi module.
+These modules are optional but will enhance the functionality of emoncms: serial is required to use the rfm12pi module, while redis will greatly reduce disk I/O (especially useful if you're running from an SD card). Swift mailer provides email :)
 
 For instructions, see the general Linux installation steps below.
 
 ## Install add-on emoncms modules
+
+You don't need to install all (or indeed any) of the optional add-on modules. 
+
+If you do wish to do so, the easiest way is to clone them into the Modules directory. As Debian packages are uploaded to apt for each module, this advice will be updated.
 
     cd /usr/share/emoncms/www/Modules
 
@@ -174,6 +178,8 @@ Enter in your database settings.
     $password = "PASSWORD";
     $server   = "localhost";
     $database = "emoncms";
+
+You will also want to modify SMTP settings and the password reset flag further down in the settings file.
 
 Save (Ctrl-X), type Y and exit
 
