@@ -10,7 +10,7 @@
   http://openenergymonitor.org
   */
 
-  global $path,$emoncms_version;
+  global $path;
 ?>
 
 <html>
@@ -143,7 +143,7 @@
         <div id="footer">
             <?php echo _('Powered by '); ?>
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
-            <span style="color:#999"> | v<?php echo $emoncms_version; ?></span>
+            <span style="color:#999"> | v<?php echo Configure::read('EmonCMS.version'); ?></span>
         </div>
 
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
