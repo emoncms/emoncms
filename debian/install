@@ -1,9 +1,9 @@
-default.settings.php /usr/share/emoncms/settings.php
-*.php /usr/share/emoncms/
-*.md /usr/share/emoncms/
-*.txt /usr/share/emoncms/
-Lib /usr/share/emoncms/
-Modules /usr/share/emoncms/
-Theme /usr/share/emoncms/
-scripts /usr/share/emoncms/
+.htaccess /usr/share/emoncms/www/
+*.php /usr/share/emoncms/www/
+*.md /usr/share/emoncms/www/
+*.txt /usr/share/emoncms/www/
+Lib /usr/share/emoncms/www/
+Modules /usr/share/emoncms/www/
+Theme /usr/share/emoncms/www/
+scripts /usr/share/emoncms/www/
 conf/apache2/emoncms /etc/apache2/sites-available/

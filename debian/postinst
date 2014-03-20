@@ -50,6 +50,9 @@ echo "SMTP_EMAIL_NAME=\"$SMTP_EMAIL_NAME\"" >> $CONFIGFILE
   
 echo "ENABLE_PASSWORD_RESET=\"$ENABLE_PASSWORD_RESET\"" >> $CONFIGFILE
 
+# To support backwards compatibility with people cloning git into their docroot, we need to rename the settings file here.
+mv /usr/share/emoncms/www/default.settings.php /usr/share/emoncms/www/settings.php
+
 # Update the settings.php file with the configuration values:
 sed -i "s/_DEBCONF_DB_USER_/$DB_USER/g" /usr/share/emoncms/www/settings.php
 sed -i "s/_DEBCONF_DB_PASSWORD_/$DB_PASSWORD/g" /usr/share/emoncms/www/settings.php
