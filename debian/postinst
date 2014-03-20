@@ -54,21 +54,21 @@ echo "ENABLE_PASSWORD_RESET=\"$ENABLE_PASSWORD_RESET\"" >> $CONFIGFILE
 mv /usr/share/emoncms/www/default.settings.php /usr/share/emoncms/www/settings.php
 
 # Update the settings.php file with the configuration values:
-sed -i "s/_DEBCONF_DB_USER_/$DB_USER/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_DB_PASSWORD_/$DB_PASSWORD/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_DATABASE_/$DATABASE/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_DB_HOST_/$DB_HOST/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_SMTP_HOST_/$SMTP_HOST/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_SMTP_USER_/$SMTP_USER/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_SMTP_PASSWORD_/$SMTP_PASSWORD/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_SMTP_EMAIL_ADDR_/$SMTP_EMAIL_ADDR/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_SMTP_EMAIL_NAME_/$SMTP_EMAIL_NAME/g" /usr/share/emoncms/www/settings.php
-sed -i "s/_DEBCONF_ENABLE_PASSWORD_RESET_/$ENABLE_PASSWORD_RESET/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DB_USER_/$DB_USER/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DB_PASSWORD_/$DB_PASSWORD/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DATABASE_/$DATABASE/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_DB_HOST_/$DB_HOST/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_SMTP_HOST_/$SMTP_HOST/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_SMTP_USER_/$SMTP_USER/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_SMTP_PASSWORD_/$SMTP_PASSWORD/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_SMTP_EMAIL_ADDR_/$SMTP_EMAIL_ADDR/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_SMTP_EMAIL_NAME_/$SMTP_EMAIL_NAME/g" /usr/share/emoncms/www/settings.php
+sed -i "s/_ENABLE_PASSWORD_RESET_/$ENABLE_PASSWORD_RESET/g" /usr/share/emoncms/www/settings.php
 
 if [ -f /var/lib/timestore/adminkey.txt ]
 then
   read -r TS_ADMIN_KEY < /var/lib/timestore/adminkey.txt
-  perl -pi -e "s{_DEBCONF_TS_ADMINKEY_}{$TS_ADMIN_KEY}" /usr/share/emoncms/www/settings.php
+  perl -pi -e "s{_TS_ADMINKEY_}{$TS_ADMIN_KEY}" /usr/share/emoncms/www/settings.php
   echo " - Copied timestore key from /var/lib/timestore/adminkey.txt into emoncms config"
 fi
 

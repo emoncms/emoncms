@@ -6,10 +6,10 @@
 
     */
 
-    $username = "_DEBCONF_DB_USER_";
-    $password = "_DEBCONF_DB_PASSWORD_";
-    $server   = "_DEBCONF_DB_HOST_";
-    $database = "_DEBCONF_DATABASE_";
+    $username = "_DB_USER_";
+    $password = "_DB_PASSWORD_";
+    $server   = "_DB_HOST_";
+    $database = "_DATABASE_";
 
     $redis_enabled = true;
     
@@ -18,7 +18,7 @@
         'creatable_engines'=>array('MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE'),
 
         'timestore'=>array(
-            'adminkey'=>"_DEBCONF_TS_ADMINKEY_"
+            'adminkey'=>"_TS_ADMINKEY_"
         ),
 
         'graphite'=>array(
@@ -42,13 +42,13 @@
     
     // (OPTIONAL) Used by password reset feature
     $smtp_email_settings = array(
-      'host'=>"_DEBCONF_SMTP_HOST_",
-      'username'=>"_DEBCONF_SMTP_USER_",
-      'password'=>"_DEBCONF_SMTP_PASSWORD_",
-      'from'=>array('_DEBCONF_SMTP_EMAIL_ADDR_' => '_DEBCONF_SMTP_EMAIL_NAME_')
+      'host'=>"_SMTP_HOST_",
+      'username'=>"_SMTP_USER_",
+      'password'=>"_SMTP_PASSWORD_",
+      'from'=>array('_SMTP_EMAIL_ADDR_' => '_DEBCONF_SMTP_EMAIL_NAME_')
     );
 
-    $enable_password_reset = _DEBCONF_ENABLE_PASSWORD_RESET_;
+    $enable_password_reset = _ENABLE_PASSWORD_RESET_;
     
     // Checks for limiting garbage data?
     $max_node_id_limit = 32;
