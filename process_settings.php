@@ -12,10 +12,17 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-require_once('Lib/enum.php');
+if (!defined('DS')) {
+    define('DS', '/');
+}
 
-$settings = dirname(__FILE__) . '/settings.php';
-if (!file_exists($settings)) 
+define('ROOT', dirname(__FILE__) . DS);
+define('CORE', ROOT . 'Core' . DS);
+
+require_once CORE . 'Utility' . DS  . 'Configure.php';
+require_once CORE . 'Lib' . DS . 'Enum.php';
+
+if (!file_exists(ROOT .  'settings.php')) 
 {
     echo '<div style="width:600px; background-color:#eee; padding:20px; font-family:arial;">';
     echo '<h3>settings.php file error</h3>';
@@ -25,27 +32,27 @@ if (!file_exists($settings))
     exit;
 }
 
-require_once $settings;
+require_once ROOT .  'settings.php';
 
-if (isset($display_errors) && $display_errors) 
+if (Configure::read('debug'))
 {
     error_reporting(E_ALL);
     ini_set('display_errors', 'on');
 }
 
 $check = array(
-    'username',
-    'password',
-    'server',
-    'database',
-    'smtp_email_settings' => !$enable_password_reset || empty($smtp_email_settings),
-    'feed_settings',
+    'DB_CONFIG.username',
+    'DB_CONFIG.password',
+    'DB_CONFIG.server',
+    'DB_CONFIG.database',
+    // 'smtp_email_settings' => !$enable_password_reset || empty($smtp_email_settings),
+    // 'feed_settings',
 );
 
 $error_out = '';
 foreach ($check as $k => $v) 
 {
-    if ($v === false || (is_string($v) && empty($$v))) 
+    if ($v === false || (is_string($v) && !Configure::check($v))) 
     {
          $error_out .= sprintf('<p>missing setting: $%s</p>' . "\n", is_string($k) ? $k : $v);
     }
