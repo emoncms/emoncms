@@ -294,7 +294,8 @@ class Process
         
         if (!isset($last['value'])) $last['value'] = 0;
         $ontime = $last['value'];
-
+        $time_elapsed = 0;
+        
         if ($value > 0 && (($time_now-$last_time)<7200))
         {
             $time_elapsed = $time_now - $last_time;
