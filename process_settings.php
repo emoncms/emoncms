@@ -33,6 +33,7 @@ if (!file_exists(ROOT .  'settings.php'))
 }
 
 require_once ROOT .  'settings.php';
+Configure::write('EmonCMS.version', '8.0');
 
 if (Configure::read('debug'))
 {
