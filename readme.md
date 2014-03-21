@@ -40,11 +40,13 @@ Now restart Apache:
 
     sudo /etc/init.d/apache2 restart
 
-## Install PECL modules (serial, redis and swift mailer)
+## Install PECL modules (redis and swift mailer)
 
-These modules are optional but will enhance the functionality of emoncms: serial is required to use the rfm12pi module, while redis will greatly reduce disk I/O (especially useful if you're running from an SD card). Swift mailer provides email :)
+These modules are optional but will enhance the functionality of emoncms: redis will greatly reduce disk I/O (especially useful if you're running from an SD card). Swift mailer provides email :)
 
 For instructions, see the general Linux installation steps below.
+
+Note that it is not necessary to install the DIO (serial) library, as this is now provided by the `php5-dio` package in our apt-repository and will be included automatically if needed.
 
 ## Install add-on emoncms modules
 
