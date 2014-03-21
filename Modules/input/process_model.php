@@ -219,13 +219,23 @@ class Process
         if (!isset($last['value'])) $last['value'] = 0;
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
+        
+        $current_slot = ceil($time_now / 86400) * 86400;
+        $last_slot = ceil($last_time / 86400) * 86400;        
 
         if ($last_time && ((time()-$last_time)<7200))
         {
             // kWh calculation
             $time_elapsed = ($time_now - $last_time);
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
-            $new_kwh = $last_kwh + $kwh_inc;
+            
+            # Increment the last_kwh if we are working in the same slot
+            if($last_slot == $current_slot) {
+              $new_kwh = $last_kwh + $kwh_inc;
+            } else {
+              # We are working in a new slot (new day) so don't increment it with the data from yesterday
+              $new_kwh = $kwh_inc;
+            }
         } else {
             // in the event that redis is flushed the last time will
             // likely be > 7200s ago and so kwh inc is not calculated
