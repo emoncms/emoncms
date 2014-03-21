@@ -220,8 +220,10 @@ class Process
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
         
-        $current_slot = floor($time_now / 86400) * 86400;
-        $last_slot = floor($last_time / 86400) * 86400;         
+        //$current_slot = floor($time_now / 86400) * 86400;
+        //$last_slot = floor($last_time / 86400) * 86400;
+        $current_slot = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+        $last_slot = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));       
 
         if ($last_time && ((time()-$last_time)<7200)) {
             // kWh calculation
@@ -255,8 +257,10 @@ class Process
         $currentkwhd = $this->feed->get_timevalue($feedid);
         $last_time = strtotime($currentkwhd['time']);
         
-        $current_slot = floor($time_now / 86400) * 86400;
-        $last_slot = floor($last_time / 86400) * 86400;
+        //$current_slot = floor($time_now / 86400) * 86400;
+        //$last_slot = floor($last_time / 86400) * 86400;
+        $current_slot = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+        $last_slot = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
 
         if ($redis->exists("process:kwhtokwhd:$feedid")) {
             $lastkwhvalue = $redis->hmget("process:kwhtokwhd:$feedid",array('time','value'));
@@ -289,8 +293,10 @@ class Process
         $last = $this->feed->get_timevalue($feedid);
         $last_time = strtotime($last['time']);
         
-        $current_slot = floor($time_now / 86400) * 86400;
-        $last_slot = floor($last_time / 86400) * 86400;
+        //$current_slot = floor($time_now / 86400) * 86400;
+        //$last_slot = floor($last_time / 86400) * 86400;
+        $current_slot = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+        $last_slot = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
         
         if (!isset($last['value'])) $last['value'] = 0;
         $ontime = $last['value'];
@@ -337,8 +343,11 @@ class Process
     {
         $last = $this->feed->get_timevalue($feedid);
         $last_time = strtotime($last['time']);
-        $current_slot = floor($time_now / 86400) * 86400;
-        $last_slot = floor($last_time / 86400) * 86400;
+        
+        //$current_slot = floor($time_now / 86400) * 86400;
+        //$last_slot = floor($last_time / 86400) * 86400;
+        $current_slot = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
+        $last_slot = mktime(0, 0, 0, date("m",$last_time), date("d",$last_time), date("Y",$last_time));
                
         $new_kwh = $last['value'] + ($value / 1000.0);
         if ($last_slot != $current_slot) $new_kwh = ($value / 1000.0);
