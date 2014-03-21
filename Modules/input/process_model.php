@@ -336,10 +336,14 @@ class Process
     public function kwhinc_to_kwhd($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
+        $last_time = strtotime($last['time']);
+        $current_slot = floor($time_now / 86400) * 86400;
+        $last_slot = floor($last_time / 86400) * 86400;
+               
         $new_kwh = $last['value'] + ($value / 1000.0);
-
-        $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-        $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
+        if ($last_slot != $current_slot) $new_kwh = ($value / 1000.0);
+        
+        $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
         return $value;
     }
