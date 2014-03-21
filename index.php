@@ -10,6 +10,7 @@ Emoncms - open source energy visualisation
 Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 
+<<<<<<< HEAD
 */
 
 $ltime = microtime(true);

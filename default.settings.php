@@ -8,11 +8,10 @@ Configure::write('debug', 0);
  * Database Configuration
  */
 Configure::write('DB_CONFIG', array(
-    'username' => null,
-    'password' => null,
-    'server' => 'localhost',
-    'database' => null,
-    
+    'username' => '_DB_USER_',
+    'password' => '_DB_PASSWORD_',
+    'server' => '_DB_HOST_',
+    'database' => '_DATABASE_',
     
     'dbtest' => true, // Skip database setup test - set to false once database has been setup.
 ));
@@ -29,11 +28,11 @@ Configure::write('Redis', array(
  * SMTP configuration
  */
 Configure::write('Smtp', array(
-    'host' => '',
+    'host' => '_SMTP_HOST_',
     'port' => 26,
-    'username' => '',
-    'password' => '',
-    'from' => array('email' => 'name'),
+    'username' => '_SMTP_USER_',
+    'password' => '_SMTP_PASSWORD_',
+    'from' => array('_SMTP_EMAIL_ADDR_' => '_SMTP_EMAIL_NAME_'),
 ));
 
 /**
@@ -75,7 +74,7 @@ Configure::write('Security', array(
 Configure::write('Feed', array(
     'engines' => array('MYSQL', 'TIMESTORE', 'PHPTIMESERIES', 'GRAPHITE', 'PHPTIMESTORE'),
     'timestre' => array(
-        'adminkey' => ''
+        'adminkey' => '_TS_ADMINKEY_'
     ),
     'graphite' => array(
         'port' => 0,

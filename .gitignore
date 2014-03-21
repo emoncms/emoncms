@@ -1,4 +1,5 @@
 .project
+debian/emoncms*
 settings.php
 Modules/sync
 Modules/event

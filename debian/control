@@ -1,0 +1,18 @@
+Source: emoncms
+Section: non-free/web
+Priority: optional
+Maintainer: Dave McCraw <dave@mccraw.co.uk>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.2
+
+Package: emoncms
+Architecture: any
+Depends: debconf | debconf-2.0, 
+  apache2, libapache2-mod-php5, 
+  php5, php5-mysql, php5-curl, php-pear, php5-dev, php5-mcrypt,
+  mysql-server, mysql-client, 
+  ufw, ntp,
+  ${misc:Depends}
+Suggests: redis-server 
+Description: The core emoncms webapp.
+
