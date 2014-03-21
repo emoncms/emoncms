@@ -219,25 +219,33 @@ class Process
         if (!isset($last['value'])) $last['value'] = 0;
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
+        
+        $current_slot = floor($time_now / 86400) * 86400;
+        $last_slot = floor($last_time / 86400) * 86400;         
 
-        if ($last_time && ((time()-$last_time)<7200))
-        {
+        if ($last_time && ((time()-$last_time)<7200)) {
             // kWh calculation
             $time_elapsed = ($time_now - $last_time);
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
-            $new_kwh = $last_kwh + $kwh_inc;
         } else {
             // in the event that redis is flushed the last time will
             // likely be > 7200s ago and so kwh inc is not calculated
-            // rather than enter 0 we enter the last value
-            $new_kwh = $last_kwh;
+            // rather than enter 0 we dont increase it
+            $kwh_inc = 0;
         }
-
-        $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-        $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
+        
+        if($last_slot == $current_slot) {
+            $new_kwh = $last_kwh + $kwh_inc;
+        } else {
+            # We are working in a new slot (new day) so don't increment it with the data from yesterday
+            $new_kwh = $kwh_inc;
+        }
+        
+        $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
         return $value;
     }
+
 
     public function kwh_to_kwhd($feedid, $time_now, $value)
     {
