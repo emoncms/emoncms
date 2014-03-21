@@ -253,6 +253,10 @@ class Process
         if (!$redis) return $value; // return if redis is not available
         
         $currentkwhd = $this->feed->get_timevalue($feedid);
+        $last_time = strtotime($currentkwhd['time']);
+        
+        $current_slot = floor($time_now / 86400) * 86400 + 86400;
+        $last_slot = floor($last_time / 86400) * 86400 + 86400;
 
         if ($redis->exists("process:kwhtokwhd:$feedid")) {
             $lastkwhvalue = $redis->hmget("process:kwhtokwhd:$feedid",array('time','value'));
@@ -261,12 +265,16 @@ class Process
             // kwh values should always be increasing so ignore ones that are less
             // assume they are errors
             if ($kwhinc<0) { $kwhinc = 0; $value = $lastkwhvalue['value']; }
+            
+            if($last_slot == $current_slot) {
+                $new_kwh = $currentkwhd['value'] + $kwhinc;
+            } else {
+                $new_kwh = $kwhinc;
+            }
 
-            $new_kwh = $currentkwhd['value'] + $kwhinc;
-
-            $feedtime = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now));
-            $this->feed->update_data($feedid, $time_now, $feedtime, $new_kwh);
+            $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
         }
+        
         $redis->hMset("process:kwhtokwhd:$feedid", array('time' => $time_now, 'value' => $value));
 
         return $value;
