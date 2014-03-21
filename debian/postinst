@@ -113,6 +113,8 @@ else
   echo " - Added successfully."
 fi
 
+sed -i "s/#RewriteBase/RewriteBase/g" /usr/share/emoncms/www/.htaccess
+
 ## All done!
 echo "To update emoncms configuration, run 'dpkg-reconfigure emoncms'"
 
