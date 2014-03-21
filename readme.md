@@ -19,7 +19,7 @@ You need to add the following line:
 
 You will need to update your system repositories:
 
-   sudo apt-get update
+    sudo apt-get update
 
 And then install emoncms (all dependencies will also be intalled at this point):
 
@@ -40,30 +40,31 @@ Now restart Apache:
 
     sudo /etc/init.d/apache2 restart
 
-## Install PECL modules (serial, redis and swift mailer)
+## Install PECL modules (redis and swift mailer)
 
-These modules are optional but will enhance the functionality of emoncms: serial is required to use the rfm12pi module, while redis will greatly reduce disk I/O (especially useful if you're running from an SD card). Swift mailer provides email :)
+These modules are optional but will enhance the functionality of emoncms: redis will greatly reduce disk I/O (especially useful if you're running from an SD card). Swift mailer provides email :)
 
 For instructions, see the general Linux installation steps below.
 
+Note that it is not necessary to install the DIO (serial) library, as this is now provided by the `php5-dio` package in our apt-repository and will be included automatically if needed.
+
 ## Install add-on emoncms modules
 
-You don't need to install all (or indeed any) of the optional add-on modules. 
+You don't need to install all (or indeed any) of the optional add-on modules, but they may enhance the functionality or utility of your emoncms installation:
 
-If you do wish to do so, the easiest way is to clone them into the Modules directory. As Debian packages are uploaded to apt for each module, this advice will be updated.
+| Module  | Install from apt? |
+| ------------- | ------------- |
+| [Raspberry Pi](https://github.com/emoncms/raspberrypi) | `sudo apt-get install emoncms-module-rfm12pi` |
+| [Event](https://github.com/emoncms/event) | manual only |
+| [Notify](https://github.com/emoncms/notify) | manual only |
+| [Energy](https://github.com/emoncms/energy) | manual only |
+| [Report](https://github.com/emoncms/report) | manual only |
+| [Open BEM](https://github.com/emoncms/openbem) | manual only |
+| [Event](https://github.com/emoncms/event) | manual only |
+| [Packetgen](https://github.com/emoncms/packetgen) | manual only |
+| [MQTT](https://github.com/elyobelyob/mqtt) | manual only |
 
-    cd /usr/share/emoncms/www/Modules
-
-    git clone https://github.com/emoncms/raspberrypi.git
-    git clone https://github.com/emoncms/event.git
-    git clone https://github.com/emoncms/openbem.git
-    git clone https://github.com/emoncms/energy.git
-    git clone https://github.com/emoncms/notify.git
-    git clone https://github.com/emoncms/report.git
-    git clone https://github.com/emoncms/packetgen.git
-    git clone https://github.com/elyobelyob/mqtt.git
-
-See individual module readme's for further information on individual module installation.
+See the linked readme files for individual modules' installation instructions.
 
 ### In an internet browser, load emoncms:
 
