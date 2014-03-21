@@ -48,22 +48,21 @@ For instructions, see the general Linux installation steps below.
 
 ## Install add-on emoncms modules
 
-You don't need to install all (or indeed any) of the optional add-on modules. 
+You don't need to install all (or indeed any) of the optional add-on modules, but they may enhance the functionality or utility of your emoncms installation:
 
-If you do wish to do so, the easiest way is to clone them into the Modules directory. As Debian packages are uploaded to apt for each module, this advice will be updated.
+| Module  | Install from apt? |
+| ------------- | ------------- |
+| [Raspberry Pi](https://github.com/emoncms/raspberrypi) | `sudo apt-get install emoncms-module-rfm12pi` |
+| [Event](https://github.com/emoncms/event) | manual only |
+| [Notify](https://github.com/emoncms/notify) | manual only |
+| [Energy](https://github.com/emoncms/energy) | manual only |
+| [Report](https://github.com/emoncms/report) | manual only |
+| [Open BEM](https://github.com/emoncms/openbem) | manual only |
+| [Event](https://github.com/emoncms/event) | manual only |
+| [Packetgen](https://github.com/emoncms/packetgen) | manual only |
+| [MQTT](https://github.com/elyobelyob/mqtt) | manual only |
 
-    cd /usr/share/emoncms/www/Modules
-
-    git clone https://github.com/emoncms/raspberrypi.git
-    git clone https://github.com/emoncms/event.git
-    git clone https://github.com/emoncms/openbem.git
-    git clone https://github.com/emoncms/energy.git
-    git clone https://github.com/emoncms/notify.git
-    git clone https://github.com/emoncms/report.git
-    git clone https://github.com/emoncms/packetgen.git
-    git clone https://github.com/elyobelyob/mqtt.git
-
-See individual module readme's for further information on individual module installation.
+See the linked readme files for individual modules' installation instructions.
 
 ### In an internet browser, load emoncms:
 
