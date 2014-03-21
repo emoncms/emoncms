@@ -1,3 +1,9 @@
+emoncms (8.0.1) unstable; urgency=low
+
+  * Fixes the bug that meant daily feed types did not reset on a new day
+  
+ -- TrystanLea <trystanlea@openenergymonitor.org>  Fri, 21 Mar 2014 15:37:00 +0000
+ 
 emoncms (8.0-1) unstable; urgency=low
 
   * Upgraded the debian installer to automatically update the emoncms version
@@ -10,9 +16,3 @@ emoncms (8.0) unstable; urgency=low
   * Formal release of emoncms version 8 with Debian packaging.
 
  -- Dave McCraw <dave@mccraw.co.uk>  Thu, 20 Mar 2014 18:52:54 +0000
- 
-emoncms (8.0.1) unstable; urgency=low
-
-  * Fixes the bug that meant daily feed types did not reset on a new day
-  
- -- TrystanLea <trystanlea@openenergymonitor.org>  Fri, 21 Mar 2014 15:37:00 +0000
