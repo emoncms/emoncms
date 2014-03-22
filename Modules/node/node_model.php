@@ -85,9 +85,9 @@ class Node
         {
           $var = new stdClass();
           $var->name = preg_replace('/[^\w\s-:]/','',$variable->name);
-          $var->type = (int) $variable->type;
-          $var->scale = (float) $variable->scale;
-          $var->units = preg_replace('/[^\w\s-°]/','',$variable->units);
+          if (isset($variable->type)) $var->type = (int) $variable->type;
+          if (isset($variable->scale)) $var->scale = (float) $variable->scale;
+          if (isset($variable->units)) $var->units = preg_replace('/[^\w\s-°]/','',$variable->units);
           if (isset($variable->processlist)) {
               $var->processlist = preg_replace('/[^\d-:,.]/','',$variable->processlist);
           }
