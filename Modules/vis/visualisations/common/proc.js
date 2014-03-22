@@ -16,7 +16,6 @@ function power_stats(data)
             stats['average'] += 1*data[i][1];
             npoints++;
         }
-        stats['kwh'] = Math.abs(stats['kwh']);
         stats['average'] = stats['average'] / npoints;
     }
     else

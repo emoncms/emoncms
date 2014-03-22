@@ -11,7 +11,7 @@ var multigraph = {
   'set':function(id,feedlist)
   {
     var result = {};
-    $.ajax({ url: path+"vis/multigraph/set.json", data: "id="+id+"&feedlist="+JSON.stringify(feedlist), async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"vis/multigraph/set.json", data: "id="+id+"&feedlist="+encodeURIComponent(JSON.stringify(feedlist)), async: false, success: function(data){result = data;} });
     return result;
   },
 
