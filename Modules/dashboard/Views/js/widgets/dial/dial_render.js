@@ -275,7 +275,7 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
   if (rawValue>=100) rawValue = rawValue.toFixed(0);
   if (rawValue<10) rawValue = rawValue.toFixed(2);
   if (rawValue<=-10) rawValue = rawValue.toFixed(1);
-  if (rawValue<=-100) rawValue = rawValue.toFixed(1);
+  if (rawValue<=-100) rawValue = rawValue.toFixed(0);
     
   ctx.fillText(rawValue+units,x,y+(size*0.125));
 
