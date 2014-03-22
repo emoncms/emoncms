@@ -1,3 +1,12 @@
+emoncms (8.0.2) unstable; urgency=low
+
+  * Dial and list interface share same decimal point formatting
+  * Fixed bug in node model that was setting scale to zero
+  * Fixed abs bug in visualisation stats
+  * Fixed multiigraph save bug (needed encodeURIcomponent)
+  
+ -- TrystanLea <trystanlea@openenergymonitor.org>  Sat, 22 Mar 2014 19:57:00 +0000
+ 
 emoncms (8.0.1) unstable; urgency=low
 
   * Fixes the bug that meant daily feed types did not reset on a new day
