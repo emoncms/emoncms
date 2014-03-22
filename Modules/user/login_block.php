@@ -49,9 +49,9 @@ global $path;
             <div id="error" class="alert alert-error" style="display:none;"></div>
 
             <p class="login-item">
-                <?php if (Configure::read('Auth.enable_rememberme')) { ?><label class="checkbox"><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?></label><br /><?php } ?>
+                <?php if (Configure::read('EmonCMS.Auth.enable_rememberme')) { ?><label class="checkbox"><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?></label><br /><?php } ?>
                 <button id="login" class="btn btn-primary" tabindex="6" type="button"><?php echo _('Login'); ?></button>
-                <?php if (Configure::read('Auth.allowusersregister')) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"  href="#"><?php echo _('register'); ?></a><?php } ?>
+                <?php if (Configure::read('EmonCMS.Auth.allowusersregister')) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"  href="#"><?php echo _('register'); ?></a><?php } ?>
             </p>
 
             <p class="register-item" style="display:none">

@@ -22,6 +22,7 @@ require 'process_settings.php';
 require 'core.php';
 require 'route.php';
 require 'locale.php';
+require CORE . 'Model' . DS . 'ConnectionManager.php';
 require CORE . 'Model' . DS . 'Model.php';
 
 $path = get_application_path();
@@ -72,13 +73,13 @@ if (!$route->controller && !$route->action)
 {
     if (!$session['read']) 
     {
-        $route->controller = Configure::read('Auth.default_controller');
-        $route->action = Configure::read('Auth.default_action');
+        $route->controller = Configure::read('EmonCMS.Auth.default_controller');
+        $route->action = Configure::read('EmonCMS.Auth.default_action');
     } 
     else 
     {
-        $route->controller = Configure::read('Auth.default_controller_auth');
-        $route->action = Configure::read('Auth.default_action_auth');
+        $route->controller = Configure::read('EmonCMS.Auth.default_controller_auth');
+        $route->action = Configure::read('EmonCMS.Auth.default_action_auth');
     }
 }
 

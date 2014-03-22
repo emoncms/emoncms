@@ -14,6 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User extends Model
 {
+    public $useTable = 'users';
 
     protected $mysqli;
 
@@ -26,7 +27,7 @@ class User extends Model
     public function __construct($config = array())
     {
         parent::__construct($config);
-        $this->enable_rememberme = Configure::read('Auth.enable_rememberme');
+        $this->enable_rememberme = Configure::read('EmonCMS.Auth.enable_rememberme');
 
         $this->rememberme = $config['rememberme'];
         $this->redis = $config['redis'];
@@ -65,7 +66,8 @@ class User extends Model
             $session['editmode'] = true;
             $session['lang'] = "en";
 
-            if ($this->redis) {
+            if ($this->redis) 
+            {
                 $this->redis->set("writeapikey:$apikey_in", $result['id']);
             }
             return $session;
@@ -95,11 +97,13 @@ class User extends Model
         if ($this->enable_rememberme)
         {
             // if php session exists
-            if (!empty($_SESSION['userid'])) {
+            if (!empty($_SESSION['userid'])) 
+            {
                 // if rememberme emoncms cookie exists but is not valid then
                 // a valid cookie is a cookie who's userid, token and persistant token match a record in the db
-                if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
-                $this->logout();
+                if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) 
+                {
+                    $this->logout();
                 }
             }
             else
@@ -108,30 +112,37 @@ class User extends Model
                 $loginresult = $this->rememberme->login();
                 if ($loginresult)
                 {
-                // Remember me login
-                $_SESSION['userid'] = $loginresult;
-                $_SESSION['read'] = 1;
-                $_SESSION['write'] = 1;
-                // There is a chance that an attacker has stolen the login token, so we store
-                // the fact that the user was logged in via RememberMe (instead of login form)
-                $_SESSION['cookielogin'] = true;
+                    // Remember me login
+                    $_SESSION['userid'] = $loginresult;
+                    $_SESSION['read'] = 1;
+                    $_SESSION['write'] = 1;
+                    // There is a chance that an attacker has stolen the login token, so we store
+                    // the fact that the user was logged in via RememberMe (instead of login form)
+                    $_SESSION['cookielogin'] = true;
                 }
                 else
                 {
-                if($this->rememberme->loginTokenWasInvalid()) {
-                    // Stolen
-                }
+                    if($this->rememberme->loginTokenWasInvalid()) 
+                    {
+                        // Stolen
+                    }
                 }
             }
         }
 
-        if (isset($_SESSION['admin'])) $session['admin'] = $_SESSION['admin']; else $session['admin'] = 0;
-        if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;
-        if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
-        if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
-        if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
-        if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = '';
-        if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
+        $keys = array(
+            'admin' => 0, 
+            'read' => 0, 
+            'write' => 0, 
+            'userid' => 0, 
+            'lang' => '', 
+            'username' => '', 
+            'cookielogin' => 0,
+        );
+        foreach ($keys as $k => $v) 
+        {
+            $session[$k] = isset($_SESSION[$k]) ? $_SESSION[$k] : $v;
+        }
 
         return $session;
     }
@@ -139,41 +150,76 @@ class User extends Model
 
     public function register($username, $password, $email)
     {
-        // Input validation, sanitisation and error reporting
-        if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
-
-        if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
-        $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
-
-        if ($this->get_id($username) != 0) {
-            return array('success'=>false, 'message'=>_("Username already exists"));
+        if (!$username || !$password || !$email) 
+        {
+            return array('success' => false, 'message' => _("Missing username, password or email parameter"));
         }
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
-
-        if (strlen($username) < 4 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
-        if (strlen($password) < 4 || strlen($password) > 30) return array('success'=>false, 'message'=>_("Password length error"));
-
-        // If we got here the username, password and email should all be valid
-
-        $hash = hash('sha256', $password);
-        $string = md5(uniqid(mt_rand(), true));
-        $salt = substr($string, 0, 3);
-        $hash = hash('sha256', $salt . $hash);
-
-        $apikey_write = md5(uniqid(mt_rand(), true));
-        $apikey_read = md5(uniqid(mt_rand(), true));
-
-        if (!$this->query("INSERT INTO `users` ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
-            return array('success'=>false, 'message'=>_("Error creating user"));
+        if (!ctype_alnum($username)) 
+        {
+            return array('success' => false, 'message' => _("Username must only contain a-z and 0-9 characters"));
         }
 
-        // Make the first user an admin
-        $userid = $this->mysqli->insert_id;
-        if ($userid == 1) $this->query("UPDATE `users` SET admin = 1 WHERE id = '1'");
+        if ($this->get_id($username)) 
+        {
+            return array('success' => false, 'message' => _("Username already exists"));
+        }
 
-        return array('success'=>true, 'userid'=>$userid, 'apikey_read'=>$apikey_read, 'apikey_write'=>$apikey_write);
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
+        {
+            return array('success' => false, 'message' => _("Email address format error"));
+        }
+
+        if (strlen($username) < 4 || strlen($username) > 30) 
+        {
+            return array('success' => false, 'message' => _("Username length error"));
+        }
+        if (strlen($password) < 4 || strlen($password) > 30) 
+        {
+            return array('success' => false, 'message' => _("Password length error"));
+        }
+
+        $salt = $this->_salt();
+        $user = array(
+            'username' => $username,
+            'salt' => $salt,
+            'password' => hash('sha256', $salt . hash('sha256', $password)), 
+            'email' => $email, 
+            'apikey_read' => $this->_apiKey(),
+            'apikey_write' => $this->_apiKey(),
+            'admin' => 0,
+        );
+        $user = $this->save($user);
+
+        if (!$user) 
+        {
+            return array('success' => false, 'message' => _("Error creating user"));
+        }
+
+        if ($this->id === 1) 
+        {
+            $user = $this->save(array(
+                'id' => $this->id,
+                'admin' => 1,
+            ));
+        }
+
+        return array(
+            'success' => true, 
+            'userid' => $this->id, 
+            'apikey_read' => $user['apikey_read'], 
+            'apikey_write' => $user['apikey_write']
+        );
+    }
+
+/**
+ * Generate a salt
+ *
+ * @return string
+ */
+    protected function _salt() 
+    {
+        return substr(md5(uniqid(mt_rand(), true)), 0, 3);
     }
 
 /**
@@ -183,7 +229,8 @@ class User extends Model
  *
  * @return string
  */
-    protected function _alphaNumeric($word) {
+    protected function _alphaNumeric($word)
+    {
         return preg_replace('/[^\w\s-]/', '', $word);
     }
 
@@ -191,14 +238,16 @@ class User extends Model
     {
         $remembermecheck = (int) $remembermecheck;
 
-        if (!$username || !$password) {
+        if (!$username || !$password) 
+        {
             return array(
                 'success' => false, 
                 'message' => _("Username or password empty"),
             );
         }
 
-        if ($username != $this->_alphaNumeric($username)) {
+        if ($username != $this->_alphaNumeric($username)) 
+        {
             return array(
                 'success' => false, 
                 'message' => _("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
@@ -208,10 +257,11 @@ class User extends Model
             'username' => $username,
         ));
 
-        if (empty($userData)) {
+        if (empty($userData)) 
+        {
             return array(
-                'success'=>false, 
-                'message'=>_("Username does not exist"),
+                'success' => false, 
+                'message' => _("Username does not exist"),
             );
         }
 
@@ -234,10 +284,14 @@ class User extends Model
         $_SESSION['lang'] = $userData['language'];
         $_SESSION['editmode'] = true;
 
-        if ($this->enable_rememberme) {
-            if ($remembermecheck == true) {
+        if ($this->enable_rememberme) 
+        {
+            if ($remembermecheck == true) 
+            {
                 $this->rememberme->createCookie($userData->id);
-            } else {
+            } 
+            else 
+            {
                 $this->rememberme->clearCookie();
             }
         }
@@ -250,7 +304,11 @@ class User extends Model
 
     public function logout()
     {
-        if ($this->enable_rememberme) $this->rememberme->clearCookie(true);
+        if ($this->enable_rememberme) 
+        {
+            $this->rememberme->clearCookie(true);
+        }
+
         $_SESSION['userid'] = 0;
         $_SESSION['read'] = 0;
         $_SESSION['write'] = 0;
@@ -265,8 +323,14 @@ class User extends Model
         $old = $this->mysqli->real_escape_string($old);
         $new = $this->mysqli->real_escape_string($new);
 
-        if (strlen($old) < 4 || strlen($old) > 30) return array('success'=>false, 'message'=>_("Password length error"));
-        if (strlen($new) < 4 || strlen($new) > 30) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($old) < 4 || strlen($old) > 30) 
+        {
+            return array('success' => false, 'message' => _("Password length error"));
+        }
+        if (strlen($new) < 4 || strlen($new) > 30) 
+        {
+            return array('success' => false, 'message' => _("Password length error"));
+        }
 
         // 1) check that old password is correct
         $result = $this->query("SELECT password, salt FROM `users` WHERE id = '$userid'");
@@ -281,27 +345,27 @@ class User extends Model
             $salt = substr($string, 0, 3);
             $hash = hash('sha256', $salt . $hash);
             $this->query("UPDATE `users` SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
-            return array('success'=>true);
+            return array('success' => true);
         }
-        else
-        {
-            return array('success'=>false, 'message'=>_("Old password incorect"));
-        }
+        return array('success' => false, 'message' => _("Old password incorect"));
     }
     
     public function passwordreset($username,$email)
     {
         $username_out = preg_replace('/[^\w\s-]/','',$username);
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
+        {
+            return array('success' => false, 'message' => _("Email address format error"));
+        }
 
-        $result = $this->query("SELECT * FROM `users` WHERE `username`='$username_out' AND `email`='$email'");
+        $result = $this->query("SELECT * FROM `users` WHERE `username` = '$username_out' AND `email` = '$email'");
 
-        if ($result->num_rows==1)
+        if ($result->num_rows == 1)
         {
             $row = $result->fetch_array();
 
             $userid = $row['id'];
-            if ($userid>0)
+            if ($userid > 0)
             {
                 // Generate new random password
                 $newpass = hash('sha256',md5(uniqid(rand(), true)));
@@ -337,14 +401,15 @@ class User extends Model
                 //------------------------------------------------------------------------------
 
                 // Sent email with $newpass to $email
-                return array('success'=>true, 'message'=>"Password recovery email sent!");
+                return array('success' => true, 'message'=>"Password recovery email sent!");
             }
         }
 
-        return array('success'=>false, 'message'=>"An error occured");
+        return array('success' => false, 'message'=>"An error occured");
     }
 
-    protected function _isCookieLogin() {
+    protected function _isCookieLogin() 
+    {
         return isset($_SESSION['cookielogin']) && $_SESSION['cookielogin'] == true;
     }
 
@@ -353,28 +418,28 @@ class User extends Model
         if ($this->_isCookieLogin()) 
         {
             return array(
-                'success'=>false, 
-                'message'=>_("As your using a cookie based remember me login, please logout and log back in to change username")
+                'success' => false, 
+                'message' => _("As your using a cookie based remember me login, please logout and log back in to change username")
             );
         }
 
         $userid = intval($userid);
         if (strlen($username) < 4 || strlen($username) > 30) 
         {
-            return array('success'=>false, 'message'=>_("Username length error"));
+            return array('success' => false, 'message' => _("Username length error"));
         }
 
         if (!ctype_alnum($username)) 
         {
-            return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
+            return array('success' => false, 'message' => _("Username must only contain a-z and 0-9 characters"));
         }
 
         if ($this->field('id', "SELECT id FROM `users` WHERE username = '$username'"))
         {
             $this->query("UPDATE `users` SET username = '$username' WHERE id = '$userid'");
-            return array('success'=>true, 'message'=>_("Username updated"));
+            return array('success' => true, 'message' => _("Username updated"));
         }
-        return array('success'=>false, 'message'=>_("Username already exists"));
+        return array('success' => false, 'message' => _("Username already exists"));
     }
 
     public function change_email($userid, $email)
@@ -442,7 +507,8 @@ class User extends Model
         return $this->_getField($userid, 'salt');
     }
 
-    protected function _getField($primaryKey, $field) {
+    protected function _getField($primaryKey, $field) 
+    {
         return $this->field($field, sprintf('SELECT `%s` FROM `users` WHERE id = %d', $field, (int)$primaryKey));
     }
 
@@ -452,11 +518,12 @@ class User extends Model
 
     public function get_id($username)
     {
-        if (!ctype_alnum($username)) {
+        if (!ctype_alnum($username)) 
+        {
             return false;
         }
 
-        return $this->field('id', "SELECT `id` FROM `users` WHERE username = '$username'");
+        return $this->field('id', 'SELECT `id` FROM `users` WHERE `username` = :username', compact('username'));
     }
 
     //---------------------------------------------------------------------------------------
@@ -479,8 +546,8 @@ class User extends Model
         return $this->_setField($userid, 'timezone', (int)$timezone);
     }
 
-    protected function _setField($userid, $field, $value) {
-        $userid = intval($userid);
+    protected function _setField($userid, $field, $value) 
+    {
         return $this->query(sprintf('UPDATE `users` SET `%s` = "%s" WHERE `id` = %d', $field, $value, (int)$userid));
     }
 
@@ -540,8 +607,10 @@ class User extends Model
  *
  * @return string
  */
-    protected function _setApiKey($userId, $type, $value = null) {
-        if ($value === null) {
+    protected function _setApiKey($userId, $type, $value = null) 
+    {
+        if ($value === null) 
+        {
             $value = $this->_apiKey($userId);
         }
 
@@ -558,7 +627,8 @@ class User extends Model
  *
  * @return string
  */
-    protected function _apiKey() {
+    protected function _apiKey() 
+    {
         return md5(Configure::read('Security.salt') . uniqid(mt_rand(), true));
     }
 }

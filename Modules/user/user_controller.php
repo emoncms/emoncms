@@ -43,7 +43,7 @@ function user_controller()
     {
         // Core session
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
-        if ($route->action == 'register' && Configure::read('Auth.allowusersregister')) $result = $user->register(post('username'),post('password'),post('email'));
+        if ($route->action == 'register' && Configure::read('EmonCMS.Auth.allowusersregister')) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) $user->logout();
 
         if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
