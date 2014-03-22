@@ -278,6 +278,27 @@ PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 Now save and close and restart your apache.
 
     sudo /etc/init.d/apache2 restart
+
+# Unit Tests
+EmonCMS uses PhpUnit for unit testing. This can be installed a number of ways.
+
+Using pear:
+
+    sudo pear config-set auto_discover 1
+    sudo pear install pear.phpunit.de/PHPUnit
+
+For other ways see the [documentation](http://phpunit.de/manual/3.7/en/installation.html)
+
+To run the tests, once you have PhpUnit installed run:
+
+    phpunit test.php
+
+If you would like to generate a coverage report in HTML you can do
+
+    phpunit --coverage-html ./coverage test.php
+
+Then visit http://site.tld/coverage/index.html
+
     
 # Developers
 Emoncms is developed and has had contributions from the following people.
