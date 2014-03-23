@@ -15,8 +15,8 @@
 
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <style>
             html, body
@@ -83,7 +83,7 @@
         </style>
 
         <script>
-            var path = '<?php global $path; echo $path; ?>';
+            var path = '<?php echo $path; ?>';
         </script>
 
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.0.min.js"></script>
