@@ -271,14 +271,12 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
   ctx.textAlign    = "center";
   ctx.font = "bold "+(size*0.28)+"px arial";
   
-  rawValue = parseFloat(rawValue);
-  rawValue = rawValue * 1;
-  
-  if (rawValue>=10) rawValue = (rawValue).toFixed(1);
-  if (rawValue>=100) rawValue = (rawValue).toFixed(0);
-  if (rawValue<10) rawValue = (rawValue).toFixed(2);
-  if (rawValue<=-10) rawValue = (rawValue).toFixed(1);
-  if (rawValue<=-100) rawValue = (rawValue).toFixed(0);
+  if (isNaN(rawValue)) rawValue = 0;
+  if (rawValue>=10) rawValue = rawValue.toFixed(1);
+  if (rawValue>=100) rawValue = parseInt(rawValue);
+  if (rawValue<10) rawValue = rawValue.toFixed(2);
+  if (rawValue<=-10) rawValue = rawValue.toFixed(1);
+  if (rawValue<=-100) rawValue = parseInt(rawValue);
     
   ctx.fillText(rawValue+units,x,y+(size*0.125));
 
