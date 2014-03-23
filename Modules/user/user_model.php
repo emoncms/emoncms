@@ -24,7 +24,7 @@ class User extends Model
 
     protected $redis;
 
-    public function __construct($config = array())
+    public function __construct(array $config = array())
     {
         parent::__construct($config);
         $this->enable_rememberme = Configure::read('EmonCMS.Auth.enable_rememberme');
