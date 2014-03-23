@@ -48,7 +48,11 @@ class ConnectionManager {
 			return self::$_dataSources[$db];
 		}
 
-		self::$_dataSources[$db] = new PDO(sprintf('mysql:host=%s;dbname=%s', self::$config['server'], $db), self::$config['username'], self::$config['password']);
+		if (empty(self::$config[$db])) {
+			throw new Exception('Invalid connection selected');
+		}
+
+		self::$_dataSources[$db] = new PDO(sprintf('mysql:host=%s;dbname=%s', self::$config[$db]['server'], self::$config[$db]['database']), self::$config[$db]['username'], self::$config[$db]['password']);
 		self::$_dataSources[$db]->useDbConfig = $db;
 		self::$_dataSources[$db]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 

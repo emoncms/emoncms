@@ -5,13 +5,21 @@
 Configure::write('debug', 0);
 
 /**
- * Database Configuration
+ * Database Configurations
  */
 Configure::write('DB_CONFIG', array(
-    'username' => '_DB_USER_',
-    'password' => '_DB_PASSWORD_',
-    'server' => '_DB_HOST_',
-    'database' => '_DATABASE_',
+    'default' => array(
+        'username' => '_DB_USER_',
+        'password' => '_DB_PASSWORD_',
+        'server' => '_DB_HOST_',
+        'database' => '_DATABASE_',
+    ),
+    'test' => array(
+        'username' => 'test',
+        'password' => 'test',
+        'server' => 'localhost',
+        'database' => 'test',
+    ),
     
     'dbtest' => true, // Skip database setup test - set to false once database has been setup.
 ));

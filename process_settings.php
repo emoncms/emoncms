@@ -42,10 +42,10 @@ if (Configure::read('debug'))
 }
 
 $check = array(
-    'DB_CONFIG.username',
-    'DB_CONFIG.password',
-    'DB_CONFIG.server',
-    'DB_CONFIG.database',
+    'DB_CONFIG.default.username',
+    'DB_CONFIG.default.password',
+    'DB_CONFIG.default.server',
+    'DB_CONFIG.default.database',
     // 'smtp_email_settings' => !$enable_password_reset || empty($smtp_email_settings),
     // 'feed_settings',
 );
