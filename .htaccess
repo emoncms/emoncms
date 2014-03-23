@@ -15,7 +15,7 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine on
   # Set a base of emoncms to allow us to install outside the apache document root
-  # RewriteBase /emoncms
+  #RewriteBase /emoncms
  
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f

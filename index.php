@@ -10,7 +10,6 @@ Emoncms - open source energy visualisation
 Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 
-<<<<<<< HEAD
 */
 
 $ltime = microtime(true);
@@ -132,6 +131,7 @@ if ($route->format == 'html')
 $ltime = microtime(true) - $ltime;
 
 // view what sql is going on 
-if ($route->format != 'json') {
+if ($route->format != 'json') 
+{
     pr($user->queryLog());
 }
