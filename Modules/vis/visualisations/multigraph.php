@@ -75,7 +75,7 @@
     $("#multigraph").bind("plothover", function (event, pos, item)
     {
         $("#x").text(pos.x.toFixed(2));
-            $("#y").text(pos.y2.toFixed(2));
+            $("#y").text(pos.y.toFixed(2));
 
         if ($("#enableTooltip:checked").length > 0) {
             if (item) {
