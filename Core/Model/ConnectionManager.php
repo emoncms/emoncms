@@ -59,4 +59,32 @@ class ConnectionManager {
 		return self::$_dataSources[$db];
 	}
 
+/**
+ * Get a list of tables for the give 
+ */
+	public static function tables($db) 
+	{
+		$Statement = self::getDataSource($db)->prepare('SHOW TABLES;');
+		$Statement->execute();
+		return array_values(Hash::flatten($Statement->fetchAll(PDO::FETCH_ASSOC)));
+	}
+
+/**
+ * Drop a table
+ */
+	public static function drop($db, $table)
+	{
+		$Statement = self::getDataSource($db)->prepare(sprintf('DROP TABLE IF EXISTS `%s`;', $table));
+		return $Statement->execute();
+	}
+
+/**
+ * Truncate a table
+ */
+	public static function truncate($db, $table)
+	{
+		$Statement = self::getDataSource($db)->prepare(sprintf('TRUNCATE TABLE `%s`;', $table));
+		return $Statement->execute();
+	}
+
 }
