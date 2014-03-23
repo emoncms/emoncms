@@ -38,18 +38,18 @@ function get_application_path()
     $proto = "http";
 
     // Detect if we are running HTTPS or proxied HTTPS
-    if (server('HTTPS') == 'on') {
+    if (env('HTTPS') == 'on') {
         // Web server is running native HTTPS
         $proto = "https";
-    } elseif (server('HTTP_X_FORWARDED_PROTO') == "https") {
+    } elseif (env('HTTP_X_FORWARDED_PROTO') == "https") {
         // Web server is running behind a proxy which is running HTTPS
         $proto = "https";
     }
 
     if( isset( $_SERVER['HTTP_X_FORWARDED_SERVER'] ))
-        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_SERVER') . server('SCRIPT_NAME')) . "/";
+        $path = dirname("$proto://" . env('HTTP_X_FORWARDED_SERVER') . env('SCRIPT_NAME')) . "/";
     else
-        $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
+        $path = dirname("$proto://" . env('HTTP_HOST') . env('SCRIPT_NAME')) . "/";
 
     return $path;
 }
@@ -67,12 +67,11 @@ function controller($controller_name)
     if ($controller_name)
     {
         $controller = $controller_name."_controller";
-        $controllerScript = "Modules/".$controller_name."/".$controller.".php";
+        $controllerScript = "Modules/".$controller_name . DS . $controller.".php";
         if (is_file($controllerScript))
         {
-            // Load language files for module
-            $domain = "messages";
-            bindtextdomain($domain, "Modules/".$controller_name."/locale");
+            $domain = 'messages';
+            bindtextdomain($domain, 'Modules' . DS . $controller_name . DS . 'locale');
             bind_textdomain_codeset($domain, 'UTF-8');
 
 
@@ -108,10 +107,6 @@ function globalValue($type, $index)
 {
     switch ($type) 
     {
-
-        case 'server':
-            return isset($_SERVER[$index]) ? $_SERVER[$index] : null;
-
         case 'post':
             $return = isset($_POST[$index]) ? $_POST[$index] : null;
             break;
@@ -121,7 +116,7 @@ function globalValue($type, $index)
             break;
     }  
 
-    if (!empty($return) && get_magic_quotes_gpc() && !is_array($return)) 
+    if (get_magic_quotes_gpc() && !is_array($return)) 
     {
         return stripslashes($return);
     }
@@ -129,28 +124,16 @@ function globalValue($type, $index)
     return $return;
 }
 
-
-function server($index)
-{
-    $val = null;
-    if (isset($_SERVER[$index])) {
-        $val = $_SERVER[$index];
-    }
-    return $val;
-}
-
 function load_db_schema()
 {
     $schema = array();
-    $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++)
+    $dir = scandir('Modules');
+    for ($i = 2; $i < count($dir); $i++)
     {
-        if (filetype("Modules/".$dir[$i])=='dir')
+        $file = 'Modules' . DS . $dir[$i] . DS . $dir[$i] . '_schema.php';
+        if (is_file($file))
         {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_schema.php"))
-            {
-               require "Modules/".$dir[$i]."/".$dir[$i]."_schema.php";
-            }
+            require $file;
         }
     }
     return $schema;
@@ -158,29 +141,26 @@ function load_db_schema()
 
 function load_menu()
 {
-    $menu_left = array();
-    $menu_right = array();
-    $menu_dropdown = array();
+    $menu_left = $menu_right = $menu_dropdown = array();
 
-    $dir = scandir("Modules");
-    for ($i=2; $i<count($dir); $i++)
+    $dir = scandir('Modules');
+    for ($i = 2; $i < count($dir); $i++)
     {
-        if (filetype("Modules/".$dir[$i])=='dir')
+        $file = 'Modules' . DS . $dir[$i] . DS . $dir[$i] . '_menu.php';
+        if (is_file($file))
         {
-            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
-            {
-                require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
-            }
+            require $file;
         }
     }
 
-    usort($menu_left, "menu_sort");
-    return array('left'=>$menu_left, 'right'=>$menu_right, 'dropdown'=>$menu_dropdown);
-}
-
-// Menu sort by order
-function menu_sort($a,$b) {
-    return $a['order']>$b['order'];
+    usort($menu_left, function ($a, $b) {
+        return $a['order'] > $b['order'];
+    });
+    return array(
+        'left' => $menu_left,
+        'right' => $menu_right,
+        'dropdown' => $menu_dropdown,
+    );
 }
 
 if (!function_exists('env')) {
