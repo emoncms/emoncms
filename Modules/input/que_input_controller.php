@@ -24,13 +24,13 @@ function input_controller()
     global $feed, $timestore_adminkey;
     $result = false;
 
-    include "Modules/feed/feed_model.php";
+    require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $timestore_adminkey);
 
-    require "Modules/input/input_model.php"; // 295
+    require_once "Modules/input/input_model.php"; // 295
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
+    require_once "Modules/input/process_model.php"; // 886
     $process = new Process($mysqli,$input,$feed);
 
 

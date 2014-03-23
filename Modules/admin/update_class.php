@@ -137,7 +137,7 @@ class Update
  */
     function u0002($apply)
     {
-        require 'Modules/input/process_model.php';
+        require_once 'Modules/input/process_model.php';
         $process = new Process(null, null, null);
         $process_list = $process->get_process_list();
 
