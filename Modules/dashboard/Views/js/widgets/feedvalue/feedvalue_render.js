@@ -21,7 +21,7 @@ function feedvalue_widgetlist()
       "options":["feedname","units","decimals"],
       "optionstype":["feed","value","decimals"],
       "optionsname":[_Tr("Feed"),_Tr("Units"),_Tr("Decimals")],
-      "optionshint":[_Tr("Feed value"),_Tr("Units to show"),_Tr("Decimals to show (-1 for automatic)")]
+      "optionshint":[_Tr("Feed value"),_Tr("Units to show"),_Tr("Decimals to show (leave blank for automatic)")]
     }
   }
   return widgets;
@@ -46,7 +46,7 @@ function feedvalue_draw()
     if (feed==undefined) val = 0;
     if (units==undefined) units = '';
     if (val==undefined) val = 0;
-    if (decimals==undefined) decimals = -1;
+    if (decimals=='') decimals = -1;
     
     if (isNaN(val))  val = 0;
     
