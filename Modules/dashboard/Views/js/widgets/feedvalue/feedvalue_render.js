@@ -37,19 +37,19 @@ function feedvalue_widgetlist()
   };
 
   var decimalsDropBoxOptions = [        // Options for the type combobox. Each item is [typeID, "description"]
-         [-1,   "Automatic"],
-	 [0,    "0"],
-         [1,    "1"],
-         [2,    "2"],
-         [3,    "3"],
-         [4,    "4"],
-         [5,    "5"],
-         [6,    "6"]
-       ];
+		[-1,   "Automatic"],
+		[0,    "0"],
+		[1,    "1"],
+		[2,    "2"],
+		[3,    "3"],
+		[4,    "4"],
+		[5,    "5"],
+		[6,    "6"]
+	];
 
-  addOption(widgets["feedvalue"], "feedname",   "feed",    _Tr("Feed"),     _Tr("Feed value"),                                                            []);
-  addOption(widgets["feedvalue"], "units",      "value",   _Tr("Units"),    _Tr("Units to show"),                                                     []);
-  addOption(widgets["feedvalue"], "decimals",   "dropbox", _Tr("Decimals"), _Tr("Decimals to show"),                                                          decimalsDropBoxOptions);
+  addOption(widgets["feedvalue"], "feedname",   "feed",    _Tr("Feed"),     _Tr("Feed value"),		[]);
+  addOption(widgets["feedvalue"], "units",      "value",   _Tr("Units"),    _Tr("Units to show"),	[]);
+  addOption(widgets["feedvalue"], "decimals",   "dropbox", _Tr("Decimals"), _Tr("Decimals to show"),	decimalsDropBoxOptions);
 
   return widgets;
 }
