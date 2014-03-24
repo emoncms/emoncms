@@ -15,9 +15,9 @@ Configure::write('DB_CONFIG', array(
         'database' => '_DATABASE_',
     ),
     'test' => array(
-        'username' => 'test',
-        'password' => 'test',
-        'server' => 'localhost',
+        'username' => 'travis',
+        'password' => '',
+        'server' => '0.0.0.0',
         'database' => 'test',
     ),
     
