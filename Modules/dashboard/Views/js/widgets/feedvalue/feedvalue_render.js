@@ -38,7 +38,7 @@ function feedvalue_widgetlist()
 
   var decimalsDropBoxOptions = [        // Options for the type combobox. Each item is [typeID, "description"]
          [-1,   "Automatic"],
-	      [0,    "0"],
+	 [0,    "0"],
          [1,    "1"],
          [2,    "2"],
          [3,    "3"],
