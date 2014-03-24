@@ -53,7 +53,7 @@ class AllEmonTest extends PHPUnit_Framework_TestSuite {
 	    foreach($files as $file) {
 	    	foreach ($file as $k => $v) {
 	    		if (strstr($v, 'StringTest.php') || strstr($v, 'HashTest.php')) {
-	    			unset($file[$k]);
+	    			//unset($file[$k]);
 	    		}
 	    	}
 	    	if (empty($file)) {
