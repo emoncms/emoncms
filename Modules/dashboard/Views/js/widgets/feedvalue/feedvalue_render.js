@@ -50,7 +50,7 @@ function feedvalue_draw()
     
     if (isNaN(val))  val = 0;
     
-    if (decimals==-1)
+    if (decimals==<0)
     {
 
       if (val>=100)
