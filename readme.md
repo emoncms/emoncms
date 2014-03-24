@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/emoncms/emoncms.svg?branch=Develop)](https://travis-ci.org/emoncms/emoncms)
+
 # Emoncms 8
 
 # Installation on Raspian/Debian/Ubuntu

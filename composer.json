@@ -1,0 +1,27 @@
+{
+    "name": "emoncms/emoncms",
+    "description": "A powerful open-source web-app for processing, logging and visualising energy, temperature and other environmental data.",
+    "type": "library",
+    "keywords": ["energy", "monitoring", "arduino", "wireless"],
+    "homepage": "http://emoncms.org/",
+    "license": "GNU v3",
+    "authors": [
+        {
+            "name": "EmonCMS Community",
+            "homepage": "https://github.com/emoncms/emoncms/graphs/contributors"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/emoncms/emoncms/issues",
+        "forum": "http://stackoverflow.com/tags/emoncms",
+        "irc": "irc://irc.freenode.org/emoncms",
+        "source": "https://github.com/emoncms/emoncms"
+    },
+    "require": {
+        "php": ">=5.3",
+        "phpunit/phpunit": "4.1.*@dev"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    }
+}
