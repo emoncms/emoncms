@@ -1,3 +1,10 @@
+emoncms (8.0.3) unstable; urgency=low
+
+  * Dial decimal bug fix and feedvalue shared consistent decimal place formatting
+  * Realtime vis corrected time window
+  
+ -- TrystanLea <trystanlea@openenergymonitor.org>  Mon, 24 Mar 2014 09:37:00 +0000
+ 
 emoncms (8.0.2) unstable; urgency=low
 
   * Dial and list interface share same decimal point formatting
