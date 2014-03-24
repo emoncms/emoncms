@@ -11,19 +11,46 @@
     http://openenergymonitor.org/emon/forum
  */
 
+function addOption(widget, optionKey, optionType, optionName, optionHint, optionData)
+{
+  widget["options"    ].push(optionKey);
+  widget["optionstype"].push(optionType);
+  widget["optionsname"].push(optionName);
+  widget["optionshint"].push(optionHint);
+  widget["optionsdata"].push(optionData);
+}
+
 function feedvalue_widgetlist()
 {
-  var widgets = {
+  var widgets =
+  {
     "feedvalue":
     {
       "offsetx":-40,"offsety":-30,"width":80,"height":60,
       "menu":"Widgets",
-      "options":["feedname","units","decimals"],
-      "optionstype":["feed","value","decimals"],
-      "optionsname":[_Tr("Feed"),_Tr("Units"),_Tr("Decimals")],
-      "optionshint":[_Tr("Feed value"),_Tr("Units to show"),_Tr("Decimals to show (leave blank for automatic)")]
+      "options":    [],
+      "optionstype":[],
+      "optionsname":[],
+      "optionshint":[],
+      "optionsdata":[]
     }
-  }
+  };
+
+  var decimalsDropBoxOptions = [        // Options for the type combobox. Each item is [typeID, "description"]
+         [-1,   "Automatic"],
+	      [0,    "0"],
+         [1,    "1"],
+         [2,    "2"],
+         [3,    "3"],
+         [4,    "4"],
+         [5,    "5"],
+         [6,    "6"]
+       ];
+
+  addOption(widgets["feedvalue"], "feedname",   "feed",    _Tr("Feed"),     _Tr("Feed value"),                                                            []);
+  addOption(widgets["feedvalue"], "units",      "value",   _Tr("Units"),    _Tr("Units to show"),                                                     []);
+  addOption(widgets["feedvalue"], "decimals",   "dropbox", _Tr("Decimals"), _Tr("Decimals to show"),                                                          decimalsDropBoxOptions);
+
   return widgets;
 }
 
@@ -46,7 +73,7 @@ function feedvalue_draw()
     if (feed==undefined) val = 0;
     if (units==undefined) units = '';
     if (val==undefined) val = 0;
-    if (decimals=='') decimals = -1;
+    if (decimals==undefined) decimals = -1;
     
     if (isNaN(val))  val = 0;
     
