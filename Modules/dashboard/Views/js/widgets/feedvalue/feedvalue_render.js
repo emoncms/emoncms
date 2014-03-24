@@ -46,10 +46,18 @@ function feedvalue_draw()
     if (units==undefined) units = '';
     if (val==undefined) val = 0;
 
-    if (val < 100)
-      val = val.toFixed(1);
+    if (isNaN(val))  val = 0;
+
+    else if (val>=100)
+        val = (val*1).toFixed(0);
+    else if (val>=10)
+        val = (val*1).toFixed(1);
+    else if (val<=-100)
+        val = (val*1).toFixed(0);
+    else if (val<=-10)
+        val = (val*1).toFixed(1);
     else
-      val = val.toFixed(0);
+        val = (val*1).toFixed(2);
 
     $(this).html(val+units);
   });

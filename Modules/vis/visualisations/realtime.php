@@ -33,11 +33,11 @@
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
      <div id="graph"></div>
      <div style="position:absolute; top:20px; right:20px;  opacity:0.5;">
-       <button class="viewWindow" time="1.0">1 <?php echo _('hour') ?></button>
-       <button class="viewWindow" time="0.50">30 <?php echo _('min') ?></button>
-       <button class="viewWindow" time="0.25">15 <?php echo _('min') ?></button>
-       <button class="viewWindow" time="0.083">5 <?php echo _('min') ?></button>
-       <button class="viewWindow" time="0.01">1 <?php echo _('min') ?></button>
+       <button class="viewWindow" time="3600">1 <?php echo _('hour') ?></button>
+       <button class="viewWindow" time="1800">30 <?php echo _('min') ?></button>
+       <button class="viewWindow" time="900">15 <?php echo _('min') ?></button>
+       <button class="viewWindow" time="300">5 <?php echo _('min') ?></button>
+       <button class="viewWindow" time="60">1 <?php echo _('min') ?></button>
      </div>
     </div>
 
@@ -114,7 +114,7 @@
     // Operate buttons
     //----------------------------------------------------------------------------------------------
     $('.viewWindow').click(function () { 
-      timeWindow = (3600000* $(this).attr("time") ); 
+      timeWindow = (1000 * $(this).attr("time") ); 
       
       start = end-timeWindow;		//Get start time
       
