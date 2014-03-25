@@ -67,8 +67,13 @@ class Process
         $list[25] = array(_("Allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED,"Limits");           
         $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc");       
         $list[27] = array(_("Max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc",array(Engine::PHPFINA));                        
-        $list[28] = array(_("Min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPFINA));                        
-
+        $list[28] = array(_("Min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPFINA));  
+                              
+        $list[29] = array(_(" + feed"),ProcessArg::FEEDID,"add_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.2014
+        $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.
+        $list[31] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed");
+        $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed");
+        
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -163,13 +168,6 @@ class Process
     public function subtract_input($id, $time, $value)
     {
         return $value - $this->input->get_last_value($id);
-    }
-
-    public function add_feed($id, $time, $value)
-    {
-        $last = $this->feed->get_timevalue($feedid);
-        $value = $value + $last['value'];
-        return $value;
     }
 
     //---------------------------------------------------------------------------------------
@@ -516,6 +514,39 @@ class Process
         }
         return $value;
 
+    }
+    
+    public function add_feed($feedid, $time, $value)
+    {
+        $last = $this->feed->get_timevalue($feedid);
+        $value = $last['value'] + $value;
+        return $value;
+    }
+
+    public function sub_feed($feedid, $time, $value)
+    {
+        $last  = $this->feed->get_timevalue($feedid);
+        $myvar = $last['value'] *1;
+        return $value - $myvar;
+    }
+    
+    public function multiply_by_feed($feedid, $time, $value)
+    {
+        $last = $this->feed->get_timevalue($feedid);
+        $value = $last['value'] * $value;
+        return $value;
+    }
+
+   public function divide_by_feed($feedid, $time, $value)
+    {
+        $last  = $this->feed->get_timevalue($feedid);
+        $myvar = $last['value'] *1;
+        
+        if ($myvar!=0) {
+            return $value / $myvar;
+        } else {
+            return 0;
+        }
     }
 
     // No longer used
