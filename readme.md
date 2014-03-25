@@ -5,6 +5,10 @@
 Starting with version 8, it is possible to install emoncms using standard Debian package management. This installation path involves fewer
 manual steps and controls for most dependency management automatically, and is therefore the recommended option if your system is compatible.
 
+Note that the debian packaging itself is maintained as part of a separate repo: [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/)
+which tracks *tagged revisions* of the main [emoncms](https://github.com/emoncms/emoncms) repo only. Any commits which are not tagged as a formal revision 
+of emoncms will not be available through apt.
+
 ## Configuring apt.sources
 
 In order to access the OpenEnergyMonitor apt repository you need to add a line to your apt.sources configuration file, which is located at: 
