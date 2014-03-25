@@ -11,19 +11,46 @@
     http://openenergymonitor.org/emon/forum
  */
 
+function addOption(widget, optionKey, optionType, optionName, optionHint, optionData)
+{
+  widget["options"    ].push(optionKey);
+  widget["optionstype"].push(optionType);
+  widget["optionsname"].push(optionName);
+  widget["optionshint"].push(optionHint);
+  widget["optionsdata"].push(optionData);
+}
+
 function feedvalue_widgetlist()
 {
-  var widgets = {
+  var widgets =
+  {
     "feedvalue":
     {
       "offsetx":-40,"offsety":-30,"width":80,"height":60,
       "menu":"Widgets",
-      "options":["feedname","units"],
-      "optionstype":["feed","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Units")],
-      "optionshint":[_Tr("Feed value"),_Tr("Units to show")]
+      "options":    [],
+      "optionstype":[],
+      "optionsname":[],
+      "optionshint":[],
+      "optionsdata":[]
     }
-  }
+  };
+
+  var decimalsDropBoxOptions = [        // Options for the type combobox. Each item is [typeID, "description"]
+		[-1,   "Automatic"],
+		[0,    "0"],
+		[1,    "1"],
+		[2,    "2"],
+		[3,    "3"],
+		[4,    "4"],
+		[5,    "5"],
+		[6,    "6"]
+	];
+
+  addOption(widgets["feedvalue"], "feedname",   "feed",    _Tr("Feed"),     _Tr("Feed value"),		[]);
+  addOption(widgets["feedvalue"], "units",      "value",   _Tr("Units"),    _Tr("Units to show"),	[]);
+  addOption(widgets["feedvalue"], "decimals",   "dropbox", _Tr("Decimals"), _Tr("Decimals to show"),	decimalsDropBoxOptions);
+
   return widgets;
 }
 
@@ -41,23 +68,33 @@ function feedvalue_draw()
 
     var units = $(this).attr("units");
     var val = assoc[feed];
+    var decimals = $(this).attr("decimals");
 
     if (feed==undefined) val = 0;
     if (units==undefined) units = '';
     if (val==undefined) val = 0;
-
+    if (decimals==undefined) decimals = -1;
+    
     if (isNaN(val))  val = 0;
+    
+    if (decimals<0)
+    {
 
-    else if (val>=100)
-        val = (val*1).toFixed(0);
-    else if (val>=10)
-        val = (val*1).toFixed(1);
-    else if (val<=-100)
-        val = (val*1).toFixed(0);
-    else if (val<=-10)
-        val = (val*1).toFixed(1);
-    else
-        val = (val*1).toFixed(2);
+      if (val>=100)
+          val = (val*1).toFixed(0);
+      else if (val>=10)
+          val = (val*1).toFixed(1);
+      else if (val<=-100)
+          val = (val*1).toFixed(0);
+      else if (val<=-10)
+          val = (val*1).toFixed(1);
+      else
+          val = (val*1).toFixed(2);
+    }
+    else 
+    {
+      val = val.toFixed(decimals);
+    }
 
     $(this).html(val+units);
   });
