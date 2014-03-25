@@ -1,6 +1,6 @@
 <?php
 require_once 'Modules/admin/update_class.php';
-require_once 'Lib/dbschemasetup.php';
+require_once CORE . 'Model' . DS  . 'dbschemasetup.php';
 
 class EmonTestCase extends PHPUnit_Extensions_Database_TestCase 
 {

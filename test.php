@@ -1,26 +1,11 @@
 <?php
-$root = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+if (!class_exists('PHPUnit_Framework_TestSuite')) {
+	throw new Exception('PHPUnit is required for running unit tests - http://phpunit.de/');
+}
 
-$ltime = microtime(true);
-
-mb_internal_encoding('UTF-8');
-mb_http_output('UTF-8');
-mb_http_input('UTF-8');
-mb_language('uni');
-mb_regex_encoding('UTF-8');
-
-define('EMONCMS_EXEC', 1);
 define('EMON_TEST_ENV', 1);
 
-// 1) Load settings and core scripts
-require_once $root . 'process_settings.php';
-require_once $root . 'core.php';
-require_once $root . 'route.php';
-require_once $root . 'locale.php';
-
-require_once CORE . 'Model' . DS . 'ConnectionManager.php';
-require_once CORE . 'Model' . DS . 'Model.php';
-require_once CORE . 'TestSuite' . DS . 'EmonTestCase.php';
+require_once dirname(__FILE__) . DIRECTORY_SEPARATOR . 'bootstrap.php';
 
 /**
  * AllEmonTest
@@ -66,4 +51,5 @@ class AllEmonTest extends PHPUnit_Framework_TestSuite {
 
 		return $suite;
 	}
+
 }

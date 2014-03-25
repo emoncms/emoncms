@@ -12,17 +12,7 @@ http://openenergymonitor.org
 
 */
 
-$ltime = microtime(true);
-
-define('EMONCMS_EXEC', 1);
-
-// 1) Load settings and core scripts
-require 'process_settings.php';
-require 'core.php';
-require 'route.php';
-require 'locale.php';
-require CORE . 'Model' . DS . 'ConnectionManager.php';
-require CORE . 'Model' . DS . 'Model.php';
+require_once 'bootstrap.php';
 
 $path = get_application_path();
 
@@ -42,7 +32,7 @@ if (class_exists('Redis') && Configure::read('Redis.enabled'))
 $mysqli = ConnectionManager::getDataSource(Configure::read('DB_CONFIG.database'));
 if (Configure::read('DB_CONFIG.dbtest') == true) 
 {
-    require 'Lib/dbschemasetup.php';
+    require CORE . 'Model' . DS . 'dbschemasetup.php';
     if (!db_check($mysqli, Configure::read('DB_CONFIG.database'))) 
     {
         db_schema_setup($mysqli, load_db_schema(), true);

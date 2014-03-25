@@ -12,16 +12,6 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-if (!defined('DS')) {
-    define('DS', '/');
-}
-
-define('ROOT', dirname(__FILE__) . DS);
-define('CORE', ROOT . 'Core' . DS);
-
-require_once CORE . 'Utility' . DS  . 'Configure.php';
-require_once CORE . 'Lib' . DS . 'Enum.php';
-
 if (!file_exists(ROOT .  'settings.php')) 
 {
     echo '<div style="width:600px; background-color:#eee; padding:20px; font-family:arial;">';
@@ -33,7 +23,7 @@ if (!file_exists(ROOT .  'settings.php'))
 }
 
 require_once ROOT .  'settings.php';
-Configure::write('EmonCMS.version', '8.0');
+Configure::write('EmonCMS.version', trim(array_pop(file(CORE . 'VERSION.txt'))));
 
 if (Configure::read('debug'))
 {
