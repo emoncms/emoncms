@@ -45,7 +45,7 @@ function feed_controller()
             $result = $feed->create($session['userid'],get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
-        } elseif ($route->action == "auth" && $session['read']) {
+        } elseif ($route->action == "auth") {
             if (isset($_GET['user']) && isset($_GET['password'])) {
                 $result = $feed->auth($_GET['user'], $_GET['password']);
             }
