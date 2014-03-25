@@ -526,6 +526,35 @@ class Feed
         return $total;
     }
 
+    // Authorization API. If user and password are correct API KEY READ is the result
+   // This is useful for use emoncms from 3r applications
+
+    public function auth($username, $password) {
+    if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
+    $username_out = preg_replace('/[^\w\s-]/','',$username); 
+
+        if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
+
+        $username = $this->mysqli->real_escape_string($username);
+        $password = $this->mysqli->real_escape_string($password);
+
+        $result = $this->mysqli->query("SELECT id,password,admin,salt,language, apikey_read FROM users WHERE username = '$username'");
+
+        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
+     
+        $userData = $result->fetch_object();
+        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
+
+        if ($hash != $userData->password) 
+        {
+            return array('success'=>false, 'message'=>_("Incorrect password, if your sure its correct try clearing your browser cache"));
+        }
+        else
+        {
+            return array('success'=>true, 'apikey_read'=>_($userData->apikey_read));
+        }
+    }
+    
     public function get_meta($feedid) {
         $feedid = (int) $feedid;
         $engine = $this->get_engine($feedid);

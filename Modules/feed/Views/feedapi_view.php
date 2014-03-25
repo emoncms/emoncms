@@ -34,6 +34,7 @@
 
 <h3><?php echo _("JSON");?></h3>
 <p><?php echo _("To use the json api the request url needs to include .json");?></p>
+<p><a href="<?php echo $path; ?>feed/auth.json?user=USER&password=PASSWORD"><?php echo $path; ?>feed/auth.json?user=USER&password=PASSWORD</a> - <?php echo _("returns the API KEY for read by the given user and password");?></p>
 <p><a href="<?php echo $path; ?>feed/list.json?userid=0"><?php echo $path; ?>feed/list.json?userid=0</a> - <?php echo _("returns a list of public feeds made public by the given user.");?></p>
 <p><a href="<?php echo $path; ?>feed/value.json?id=0"><?php echo $path; ?>feed/value.json?id=0</a> - <?php echo _("returns the present value of a given feed");?></p>
 <p><a href="<?php echo $path; ?>feed/get.json?id=0&field="><?php echo $path; ?>feed/get.json?id=0&field=</a> - <?php echo _("returns the present value of a given feed");?></p>
