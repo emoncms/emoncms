@@ -14,16 +14,21 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 // Return all locale directory from all modules.
 // If one module has a language it will be detected
-function directoryLocaleScan($dir) {
-    if (isset($dir) && is_readable($dir)) {
+function directoryLocaleScan($dir) 
+{
+    if (isset($dir) && is_readable($dir)) 
+    {
         $dlist = Array();
         $dir = realpath($dir);
 
         $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
-
-        foreach($objects as $entry => $object){
+        foreach($objects as $entry => $object)
+        {
             $entry = str_replace($dir, '', $entry);
-            if (basename(dirname($entry))=='locale' && basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
+            if (basename(dirname($entry)) == 'locale' && basename($entry) != '.' && basename($entry) != '..') 
+            {
+                $dlist[] = basename($entry);
+            }
         }
 
         return array_unique($dlist);
@@ -39,21 +44,21 @@ function get_available_languages()
 function lang_http_accept()
 {
     $langs = array();
-
-    foreach (explode(',', server('HTTP_ACCEPT_LANGUAGE')) as $lang)
+    foreach (explode(',', env('HTTP_ACCEPT_LANGUAGE')) as $lang)
     {
         $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
         '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
         '(?P<quantifier>\d\.\d))?$/';
 
         $splits = array();
-
-        if (preg_match($pattern, $lang, $splits)) {
-            $a = $splits["primarytag"];
-            if (isset($splits["subtag"]) && $splits["subtag"]<> "") $a = $a."_".$splits["subtag"];
-            $langs[]=$a;
-        } else {
-            // No match
+        if (preg_match($pattern, $lang, $splits)) 
+        {
+            $a = $splits['primarytag'];
+            if (isset($splits['subtag']) && $splits['subtag'] <> '') 
+            {
+                $a = $a . "_" . $splits["subtag"];
+            }
+            $langs[] = $a;
         }
     }
     return $langs;
@@ -74,8 +79,14 @@ function set_lang($language)
 
     if (isset($language[0]))
     {
-        if ($language[0] == 'es') $language[0]='es_ES';
-        elseif ($language[0] == 'fr') $language[0]='fr_FR';
+        if ($language[0] == 'es') 
+        {
+            $language[0] = 'es_ES';
+        }
+        elseif ($language[0] == 'fr') 
+        {
+            $language[0]='fr_FR';
+        }
 
         set_lang_by_user($language[0]);
     }
@@ -83,16 +94,18 @@ function set_lang($language)
 
 function set_lang_by_user($lang)
 {
-    putenv("LC_ALL=$lang");
-    setlocale(LC_ALL,$lang);
+    putenv('LC_ALL=' . $lang);
+    setlocale(LC_ALL, $lang . '.utf8');
 }
 
 function set_emoncms_lang($lang)
 {
     // If no language defined use the language browser
-    if ($lang == '')
-        set_lang(lang_http_accept());
-    else
-        set_lang_by_user($lang);
+    if ($lang == '') 
+    {
+        return set_lang(lang_http_accept());
+    }
+
+    return set_lang_by_user($lang);
 }
 

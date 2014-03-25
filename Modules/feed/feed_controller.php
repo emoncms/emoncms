@@ -17,11 +17,11 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-    global $mysqli, $redis, $session, $route, $feed_settings;
+    global $mysqli, $redis, $session, $route;
     $result = false;
 
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis,$feed_settings);
+    $feed = new Feed($mysqli,$redis);
 
     if ($route->format == 'html')
     {

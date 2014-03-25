@@ -27,55 +27,23 @@ class Input
 
         $this->redis = $redis;
     }
-    // Check a nodeID against the current node-ID limits to see if it's valid
-    // True = Valid
-    // False = not valid
+    
+/**
+ * Check if the given node id is between 0 and EmonCMS.max_node_id_limit
+ *
+ * @param integer $nodeid the nodeid being validated
+ *
+ * @return boolean 
+ */
     public function check_node_id_valid($nodeid)
     {
-        global $max_node_id_limit;
-        
-        // As highlighted by developer:fake-name PHP's doesnt have a function
-        // for checking if a string will cast to a valid integer.
-        //
-        // is_numeric is the closest function but it allows input of:
-        // Octal, e-notation (+0123.45e6) & Hex. 
-        // 
-        // Casting with (int) will convert input such as Array({stuff}) to 1 
-        // whereas NAN would be a more appropriate result.  
-        //
-        // Other languages such as Python will return an error if you try and 
-        // cast a variable in this way.
-        //
-        // checking against isNumeric will probably catch *most*
-        // of the potential issues for now but it may be good look at catching
-        // non-integer numbers at some point
-        
-        if (!is_numeric ($nodeid))
-        {
-            return false;
-        }
-
-        $nodeid = (int) $nodeid;
-
-        if (!isset($max_node_id_limit))
-        {
-            $max_node_id_limit = 32;    // Default to 32 if not overridden
-        }
-
-        if ($nodeid<$max_node_id_limit)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return !preg_match('/[^0-9]/', $nodeid) && in_array((int)$nodeid, range(0, Configure::read('EmonCMS.max_node_id_limit')));
 
     }
+
     // USES: redis input & user
     public function create_input($userid, $nodeid, $name)
     {
-        global $max_node_id_limit;
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
 

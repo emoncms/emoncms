@@ -18,22 +18,22 @@
 
     chdir("/var/www/latest");
 
-    require "process_settings.php";
+    require_once "process_settings.php";
     $mysqli = new mysqli($server,$username,$password,$database);
 
     $redis = new Redis();
     $redis->connect("127.0.0.1");
 
-    require("Modules/user/user_model.php");
+    require_once("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
 
-    require "Modules/feed/feed_model.php";
+    require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$timestore_adminkey);
 
-    require "Modules/input/input_model.php";
+    require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis,$feed);
 
-    require "Modules/input/process_model.php";
+    require_once "Modules/input/process_model.php";
     $process = new Process($mysqli,$input,$feed);
 
     $rn = 0;

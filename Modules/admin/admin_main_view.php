@@ -1,9 +1,9 @@
-<?php global $path, $emoncms_version; ?>
+<?php global $path; ?>
 <h2>Admin</h2>
 
 <table class="table table-striped ">
     <tr>
-        <td>Emoncms version: <?php echo $emoncms_version; ?></td>
+        <td>Emoncms version: <?php echo Configure::read('EmonCMS.version'); ?></td>
         <td></td>
         </tr>
     <tr>

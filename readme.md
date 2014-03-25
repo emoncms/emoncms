@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/emoncms/emoncms.svg?branch=Develop)](https://travis-ci.org/emoncms/emoncms)
+
 # Emoncms 8
 
 # Installation on Raspian/Debian/Ubuntu
@@ -278,6 +280,41 @@ PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 Now save and close and restart your apache.
 
     sudo /etc/init.d/apache2 restart
+
+# Unit Tests
+EmonCMS uses PhpUnit for unit testing. This can be installed a number of ways.
+
+Using pear:
+
+    sudo pear config-set auto_discover 1
+    sudo pear install pear.phpunit.de/PHPUnit
+
+For other ways see the [documentation](http://phpunit.de/manual/3.7/en/installation.html)
+
+You will need to create a new database for running the tests with as the tests will drop / create tables and read / write data. It will destroy any data in the DB that is configured. Its best to create a new MySQL user (eg: test / test) for testting, which has permissions for only the test table. This will make sure your real data never gets affected by tests.
+
+To run the tests, once you have PhpUnit installed run:
+
+    phpunit test.php
+
+Currently that command will run all the tests in the application.
+
+If you would like to generate a coverage report in HTML you can do
+
+    phpunit --coverage-html ./coverage test.php
+
+Then visit http://site.tld/coverage/index.html
+
+## Testing Modueles
+
+Code for tests should go in <module-name>/Test/*/<file>Test.php (all test files end in Test.php). 
+
+See the core tests for examples, or PHPUnit site for more docs.
+
+## Fixture data
+
+To run tests you will need some fixture (or example) data that is tested agains.
+
     
 # Developers
 Emoncms is developed and has had contributions from the following people.

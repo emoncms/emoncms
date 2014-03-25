@@ -1,0 +1,3 @@
+<users id="1" username="bobsmith" email="bob@smith.com" password="hash" salt="abc" apikey_write="aaa" apikey_read="bbb" lastlogin="2014-01-01 00:00:00" admin="1" gravatar="bob@smith.com" name="Bob Smith" location="London, UK" timezone="Europe/London" language="en_UK" bio="some profile info" />
+
+<users id="2" username="samjones" email="sam@jones.com" password="hash" salt="cba" apikey_write="xxx" apikey_read="yyy" lastlogin="2014-02-01 00:00:00" admin="0" gravatar="sam@jones.com" name="Sam Jones" location="Texas, USA" timezone="US/Central" language="en_US" bio="other profile data" />

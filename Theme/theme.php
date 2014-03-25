@@ -10,13 +10,13 @@
   http://openenergymonitor.org
   */
 
-  global $path,$emoncms_version;
+  global $path;
 ?>
 
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
         <style>
             html, body
@@ -82,6 +82,10 @@
 
         </style>
 
+        <script>
+            var path = '<?php echo $path; ?>';
+        </script>
+
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.0.min.js"></script>
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
@@ -143,7 +147,7 @@
         <div id="footer">
             <?php echo _('Powered by '); ?>
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
-            <span style="color:#999"> | v<?php echo $emoncms_version; ?></span>
+            <span style="color:#999"> | v<?php echo Configure::read('EmonCMS.version'); ?></span>
         </div>
 
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>

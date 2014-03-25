@@ -1,5 +1,7 @@
 .project
+coverage/
 debian/emoncms*
+
 settings.php
 Modules/sync
 Modules/event

@@ -1,0 +1,28 @@
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+
+env:
+  - DB=mysql
+
+matrix:
+  include:
+    - php: 5.4
+      env:
+        - PHPCS=1
+
+before_script:
+  - phpunit --version
+  - phpenv rehash
+  - set +H
+  - cp default.settings.php settings.php
+  - wget https://phar.phpunit.de/phpunit.phar
+
+script:
+  - php phpunit.phar --stderr --colors test.php
+
+notifications:
+  email: false
