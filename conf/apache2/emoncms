@@ -1,8 +1,0 @@
-Alias /emoncms /usr/share/emoncms/www
-<Directory /usr/share/emoncms/www>
-  Options FollowSymLinks
-  AllowOverride All
-  DirectoryIndex index.php
-  Order allow,deny
-  Allow from all
-</Directory>
