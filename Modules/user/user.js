@@ -54,6 +54,20 @@ var user = {
     var result = {};
     $.ajax({ url: path+"user/set.json", data: "&data="+JSON.stringify(data) ,dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
+  },
+
+  'newapikeywrite':function()
+  {
+    var result = {};
+    $.ajax({ url: path+"user/newapikeywrite.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    return result;
+  },
+  
+  'newapikeyread':function()
+  {
+    var result = {};
+    $.ajax({ url: path+"user/newapikeyread.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    return result;
   }
 
 }
