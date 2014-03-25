@@ -46,12 +46,11 @@ function get_application_path()
         $proto = "https";
     }
 
-    if( isset( $_SERVER['HTTP_X_FORWARDED_SERVER'] ))
-        $path = dirname("$proto://" . env('HTTP_X_FORWARDED_SERVER') . env('SCRIPT_NAME')) . "/";
-    else
-        $path = dirname("$proto://" . env('HTTP_HOST') . env('SCRIPT_NAME')) . "/";
+    if(!empty(env('HTTP_X_FORWARDED_SERVER'))) {
+        return dirname("$proto://" . env('HTTP_X_FORWARDED_SERVER') . env('SCRIPT_NAME')) . "/";
+    }
 
-    return $path;
+    return dirname("$proto://" . env('HTTP_HOST') . env('SCRIPT_NAME')) . "/";
 }
 
 function db_check($mysqli,$database)

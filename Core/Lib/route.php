@@ -50,7 +50,7 @@ class Route {
         // for example this will perform the following:
         // Running at root: str_replace('/var/www', '', '/var/www') => ''
         // Running at subdirectory: str_replace('/var/www', '', '/var/www/emoncms') => '/emoncms'
-        $relativeApplicationPath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $absolutePath);
+        $relativeApplicationPath = str_replace(env('DOCUMENT_ROOT'), '', $absolutePath);
 
         // Next up we will need to remove the '/emoncms' from the route path '/emoncms/user/view'
         // str_replace('/emoncms', '', '/emoncms/user/view') => '/user/view'
