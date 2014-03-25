@@ -81,15 +81,15 @@ function feedvalue_draw()
     {
 
       if (val>=100)
-          val = (val*1).toFixed(0);
+          val = val.toFixed(0);
       else if (val>=10)
-          val = (val*1).toFixed(1);
+          val = val.toFixed(1);
       else if (val<=-100)
-          val = (val*1).toFixed(0);
+          val = val.toFixed(0);
       else if (val<=-10)
-          val = (val*1).toFixed(1);
+          val = val.toFixed(1);
       else
-          val = (val*1).toFixed(2);
+          val = val.toFixed(2);
     }
     else 
     {
