@@ -12,7 +12,7 @@
 
     */
     
-    $emoncms_version = "8.0.3";
+    $emoncms_version = "8.0.4";
 
     $ltime = microtime(true);
 
