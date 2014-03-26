@@ -58,8 +58,8 @@ You don't need to install all (or indeed any) of the optional add-on modules, bu
 
 | Module  | Install from apt? |
 | ------------- | ------------- |
-| [Raspberry Pi](https://github.com/emoncms/raspberrypi) | `sudo apt-get install emoncms-module-rfm12pi` |
-| [Event](https://github.com/emoncms/event) | manual only |
+| [Raspberry Pi](https://github.com/emoncms/raspberrypi) | `sudo apt-get install emoncms-module-rfm12pi` <br/> (from [pkg-emoncms-module-rfm12pi](https://github.com/Dave-McCraw/pkg-emoncms-module-rfm12pi) ) |
+| [Event](https://github.com/emoncms/event) | `sudo apt-get install emoncms-module-event` <br/> (from [pkg-emoncms-module-event](https://github.com/Dave-McCraw/pkg-emoncms-module-event) ) |
 | [Notify](https://github.com/emoncms/notify) | manual only |
 | [Energy](https://github.com/emoncms/energy) | manual only |
 | [Report](https://github.com/emoncms/report) | manual only |
