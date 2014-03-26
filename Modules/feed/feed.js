@@ -48,6 +48,23 @@ var feed = {
     
     return feeds;
   },
+  
+  'list_by_name':function()
+  {
+    var feeds = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: false, success: function(data) {feeds = data;} });
+    
+    var tmp = {};
+    for (z in feeds)
+    {
+      tmp[feeds[z]['name']] = parseFloat(feeds[z]['value']);
+    }
+    var feeds = tmp;
+    
+    return feeds;
+  },
 
   'set':function(id, fields)
   {
