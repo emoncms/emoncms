@@ -48,7 +48,7 @@ function admin_controller()
 
             // In future versions we could check against db version number as to what updates should be applied
             $updates[] = $update->u0001($applychanges);
-            $updates[] = $update->u0002($applychanges);
+            //$updates[] = $update->u0002($applychanges);
             $updates[] = $update->u0003($applychanges);
             $updates[] = $update->u0004($applychanges);
 
