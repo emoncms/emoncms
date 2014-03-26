@@ -230,6 +230,36 @@ class User
             return array('success'=>true, 'message'=>_("Login successful"));
         }
     }
+    
+    // Authorization API. returns user write and read apikey on correct username + password
+    // This is useful for using emoncms with 3rd party applications
+
+    public function get_apikeys_from_login($username, $password) 
+    {
+        if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
+        $username_out = preg_replace('/[^\w\s-]/','',$username);
+
+        if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
+
+        $username = $this->mysqli->real_escape_string($username);
+        $password = $this->mysqli->real_escape_string($password);
+
+        $result = $this->mysqli->query("SELECT id,password,admin,salt,language, apikey_write,apikey_read FROM users WHERE username = '$username'");
+
+        if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Incorrect authentication"));
+     
+        $userData = $result->fetch_object();
+        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
+
+        if ($hash != $userData->password)
+        {
+            return array('success'=>false, 'message'=>_("Incorrect authentication"));
+        }
+        else
+        {
+            return array('success'=>true, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
+        }
+    }
 
     public function logout()
     {

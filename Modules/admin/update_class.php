@@ -58,39 +58,7 @@ class Update
 
     function u0002($apply)
     {
-        require "Modules/input/process_model.php";
-        $process = new Process(null,null,null);
-        $process_list = $process->get_process_list();
-
-        $operations = array();
-        $result = $this->mysqli->query("SELECT userid,id,processList,time,record FROM input");
-        while ($row = $result->fetch_object())
-        {
-            if ($row->processList)
-            {
-                $pairs = explode(",",$row->processList);
-                foreach ($pairs as $pair)
-                {
-                    $inputprocess = explode(":", $pair);
-                    $processid = $inputprocess[0];
-                    $type = $process_list[$processid][1];
-
-                    if (isset($inputprocess[1]) && $type == 1) {  // type 1 = input
-                        $inputid = $inputprocess[1];
-                        $inputexists = $this->mysqli->query("SELECT record FROM input WHERE `id`='$inputid'");
-                        $inputrow = $inputexists->fetch_object();
-                        if (!$inputrow->record) $operations[] = "UPDATE input SET `record`='1' WHERE `id`='$inputid'";
-                        if (!$inputrow->record && $apply) $this->mysqli->query("UPDATE input SET `record`='1' WHERE `id`='$inputid'");
-                    }
-                }
-            }
-        }
-
-        return array(
-            'title'=>"Inputs are only recorded if used",
-            'description'=>"To improve performance inputs are only recorded if used as part of / x + - by input processes.",
-            'operations'=>$operations
-        );
+      // depreciated
     }
 
     function u0003($apply)
