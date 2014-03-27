@@ -433,7 +433,14 @@ class PHPFiwa
     public function get_feed_size($id)
     {
         if (!$meta = $this->get_meta($id)) return false;
-        return (filesize($this->dir.$meta->id.".meta") + filesize($this->dir.$meta->id.".dat"));
+        
+        $size = 0;
+        $size += filesize($this->dir.$meta->id.".meta");
+        $size += filesize($this->dir.$meta->id."_0.dat");
+        $size += filesize($this->dir.$meta->id."_1.dat");
+        $size += filesize($this->dir.$meta->id."_2.dat");
+        $size += filesize($this->dir.$meta->id."_3.dat");
+        return $size;
     }
     
 

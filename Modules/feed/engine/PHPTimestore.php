@@ -601,6 +601,17 @@ class PHPTimestore
         $start = (int) $start;
         $end = (int) $end;
         $outinterval = (int) $outinterval;
+
+        if ($end == 0) $end = time();
+
+        $meta = $this->get_meta($feedid);
+
+        $start = round($start/$meta->interval)*$meta->interval;
+        
+        if ($outinterval<1) $outinterval = 1;
+        $npoints = ceil(($end - $start) / $outinterval);
+        $end = $start + ($npoints * $outinterval);
+        if ($npoints<1) return false;
         
         $meta->decimation = array(20, 6, 6, 4, 7);
 
