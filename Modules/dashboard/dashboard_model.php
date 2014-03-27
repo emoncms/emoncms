@@ -125,7 +125,7 @@ class Dashboard
 
         if (isset($fields->public)) $array[] = "`public` = '".((bool)$fields->public)."'";
         if (isset($fields->published)) $array[] = "`published` = '".((bool)$fields->published)."'";
-        if (isset($fields->showdescription)) $array[] = "`public` = '".((bool)$fields->showdescription)."'";
+        if (isset($fields->showdescription)) $array[] = "`showdescription` = '".((bool)$fields->showdescription)."'";
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
 
