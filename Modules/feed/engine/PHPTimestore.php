@@ -26,6 +26,11 @@ class PHPTimestore
 
             // Save meta data
             $this->save_meta($feedid,$meta);
+            
+            for ($l=0; $l<6; $l++) {
+                $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$l."_.dat", 'c+');
+                fclose($fh);
+            }
         }
 
         if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) return true;
