@@ -16,7 +16,7 @@
     $fp = fopen("runlock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
 
-    chdir("/var/www/latest");
+    chdir("/var/www/emoncms");
 
     require "process_settings.php";
     $mysqli = new mysqli($server,$username,$password,$database);
@@ -27,13 +27,13 @@
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
 
-    require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis,$timestore_adminkey);
+    include "Modules/feed/feed_model.php";
+    $feed = new Feed($mysqli,$redis, $feed_settings);
 
-    require "Modules/input/input_model.php";
-    $input = new Input($mysqli,$redis,$feed);
+    require "Modules/input/input_model.php"; // 295
+    $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php";
+    require "Modules/input/process_model.php"; // 886
     $process = new Process($mysqli,$input,$feed);
 
     $rn = 0;
