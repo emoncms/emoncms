@@ -1,87 +1,20 @@
 # Emoncms 8
 
-# Installation on Raspian/Debian/Ubuntu
+## Installation on Raspian/Debian/Ubuntu
 
-Starting with version 8, it is possible to install emoncms using standard Debian package management. This installation path involves fewer
-manual steps and controls for most dependency management automatically, and is therefore the recommended option if your system is compatible.
+Starting with version 8, it is possible to install emoncms using standard Debian package management, and this is the recommended option if your system is compatible.
 
-Note that the debian packaging itself is maintained as part of a separate repo: [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/)
-which tracks *tagged revisions* of the main [emoncms](https://github.com/emoncms/emoncms) repo only. Any commits which are not tagged as a formal revision 
-of emoncms will not be available through apt.
+There are significant advantages, including fewer manual processes, built-in dependency management and ease of upgrade / configuration. 
 
-## Configuring apt.sources
+It's also the most stable way of maintaining an emoncms installation because only formally tagged versions of the master branch are included in the [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/) repository and uploaded to apt. 
 
-In order to access the OpenEnergyMonitor apt repository you need to add a line to your apt.sources configuration file, which is located at: 
+Do not use this approach if you want to run nightly builds!
 
-    /etc/apt/sources.list
+**Installation instructions are maintained in the [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/) readme**.
 
-You need to add the following line:
+## Installation on Linux
 
-    deb http://emon-repo.s3.amazonaws.com wheezy unstable
-
-## Install emoncms
-
-You will need to update your system repositories:
-
-    sudo apt-get update
-
-And then install emoncms (all dependencies will also be intalled at this point):
-
-    sudo apt-get install emoncms
-
-The Debian package manager will now ask you a series of questions to configure emoncms. These are used to generate a valid settings.php file
-for your installation.
-
-Once the process completes, you need to enable emoncms in Apache:
-
-    sudo a2ensite emoncms
-
-Now is also a good time to ensure that mod_rewrite is also running:
-
-    sudo a2enmod rewrite
-
-Now restart Apache:
-
-    sudo /etc/init.d/apache2 restart
-
-## Install PECL modules (redis and swift mailer)
-
-These modules are optional but will enhance the functionality of emoncms: redis will greatly reduce disk I/O (especially useful if you're running from an SD card). Swift mailer provides email :)
-
-For instructions, see the general Linux installation steps below.
-
-Note that it is not necessary to install the DIO (serial) library, as this is now provided by the `php5-dio` package in our apt-repository and will be included automatically if needed.
-
-## Install add-on emoncms modules
-
-You don't need to install all (or indeed any) of the optional add-on modules, but they may enhance the functionality or utility of your emoncms installation:
-
-| Module  | Install from apt? |
-| ------------- | ------------- |
-| [Raspberry Pi](https://github.com/emoncms/raspberrypi) | `sudo apt-get install emoncms-module-rfm12pi` <br/> (from [pkg-emoncms-module-rfm12pi](https://github.com/Dave-McCraw/pkg-emoncms-module-rfm12pi) ) |
-| [Event](https://github.com/emoncms/event) | `sudo apt-get install emoncms-module-event` <br/> (from [pkg-emoncms-module-event](https://github.com/Dave-McCraw/pkg-emoncms-module-event) ) |
-| [Notify](https://github.com/emoncms/notify) | manual only |
-| [Energy](https://github.com/emoncms/energy) | manual only |
-| [Report](https://github.com/emoncms/report) | manual only |
-| [Open BEM](https://github.com/emoncms/openbem) | manual only |
-| [Event](https://github.com/emoncms/event) | manual only |
-| [Packetgen](https://github.com/emoncms/packetgen) | manual only |
-| [MQTT](https://github.com/elyobelyob/mqtt) | manual only |
-
-See the linked readme files for individual modules' installation instructions.
-
-### In an internet browser, load emoncms:
-
-[http://localhost/emoncms](http://localhost/emoncms)
-
-The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen.
-
-Create an account by entering your email and password and clicking register to complete.
-
-
-# Installation on Linux
-
-## Install dependencies
+### Install dependencies
 
 You may need to start by updating the system repositories
 
