@@ -174,7 +174,10 @@ class Input
         switch ($processtype) {
             case ProcessArg::VALUE:                                       // If arg type value
                 if ($arg == '') return array('success'=>false, 'message'=>'Argument must be a valid number greater or less than 0.');
-                $arg = floatval($arg);                
+                
+                $arg = (float)$arg;
+                $arg = str_replace(',','.',$arg); // hack to fix locale issue that converts . to ,
+                    
                 break;
             case ProcessArg::INPUTID:                                     // If arg type input
                 $arg = (int) $arg;
