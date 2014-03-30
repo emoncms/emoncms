@@ -8,6 +8,7 @@ $apikey = get('apikey');
 <!-- feed.js is the feed api helper library, it gives us nice functions to use within our program that
 calls the feed API on the server via AJAX. -->
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/myelectric/graph.js"></script>
 
 <!-- defenition of the style/look of the elements on our page (CSS stylesheet) -->
 <style>
@@ -16,7 +17,7 @@ calls the feed API on the server via AJAX. -->
     font-weight:bold; 
     font-size:22px; 
     color:#aaa; 
-    padding-top:50px
+    padding-top:20px
   }
   
   .power-value {
@@ -43,21 +44,41 @@ calls the feed API on the server via AJAX. -->
     <div class="electric-title">My Electric config</div>
     <br><br>
     
-    <p><b style="color:#0699fa">Power feed:</b></p>
+    <p><b style="color:#0699fa">Power feed (Watts):</b></p>
     <select id="powerfeed" style="width:290px"></select>
     <br><br>
     
-    <p><b style="color:#0699fa">Wh feed:</b></p>
-    <select id="kwhfeed" style="width:290px"></select>
+    <p><b style="color:#0699fa">Bar graph feed:</b></p>
+    <select id="dailyfeed" style="width:290px"></select>
+    
+    <p><b style="color:#0699fa">Bar graph feed type:</b></p>
+    <select id="dailytype" style="width:290px">
+        <option value=0>Watt hours elapsed</option>
+        <option value=1>kWh elapsed</option>
+        <option value=2>kWh per day</option>
+        <option value=3>Power (Watts)</option>
+        
+    </select>
     <br><br>
     
     <button id="configsave" class="btn btn-primary">Save</button>
     
 </div>
 
+
+
 <div id="powerblock">
-    <div style="margin: 0px auto; max-width:320px;">
-        <div class="electric-title">POWER NOW:</div>
+<div style="height:20px; border-bottom:1px solid #333; padding:8px;">
+    <div style="float:right;">
+        <!--<span style="color:#fff; margin-right:10px" >Settings</span>-->
+        <i id="openconfig" class="icon-wrench icon-white" style="cursor:pointer"></i>
+    </div>
+</div>
+
+    <div style="width:100%;">
+        <div class="electric-title">POWER NOW:        
+
+        </div>
         <div class="power-value"><span id="power"></span>W</div>
         <div class="kwh-value">USE TODAY: <b><span id="kwhd"></span> kWh</b></div>
     </div>
@@ -68,48 +89,39 @@ calls the feed API on the server via AJAX. -->
 </div>
 
 <script>
+
+    var windowheight = $(window).height();
+    
     // The feed api library requires the emoncms path
     var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>"; 
 
     feed.apikey = apikey;
+    
+    var daily = [];
 
     // Set the background color to dark grey - looks nice on a mobile.
     $("body").css('background-color','#222');
-
-    // Page and canvas widths
-    var bound = {};
-    bound.width = $("#bound").width();
-    bound.height = $("#bound").height();
-
-    $("#myCanvas").attr('width',bound.width);
-    $("#myCanvas").attr('height',bound.height);
-
-    $(window).resize(function(){
-        bound.width = $("#bound").width();
-        bound.height = $("#bound").height();
-
-        $("#myCanvas").attr('width',bound.width);
-        $("#myCanvas").attr('height',bound.height); 
-        draw();
+    
+    $(window).ready(function(){
+        $("#footer").css('background-color','#181818');
+        $("#footer").css('color','#999');
     });
     
-    // Canvas for simple bar chart
-    var c=document.getElementById("myCanvas");
-    var ctx=c.getContext("2d");
+    var refresh = true;
+    // Page and canvas widths
+    var bound = {};
+    update_graph_size();
 
-    var timeWindow = (3600000*24*7);	//Initial time window
-    var start = +new Date - timeWindow;	//Get start time
-    var end = +new Date;				    //Get end time
+    $(window).resize(function(){
 
-    var d = new Date()
-    var n = d.getTimezoneOffset();
-    var offset = n / -60;
+        update_graph_size();
+        graph.draw("myCanvas",[daily]);
+        
+        refresh = true;
+    });
 
-    var interval = 3600*24;
-    var datastart = (Math.round((start/1000.0)/interval) * interval); //+3600*offset;
-
-    var totalwh = [];
+    var daily_data = [];
 
     // used for updating every 5 
     var updateinst = false;
@@ -118,127 +130,163 @@ calls the feed API on the server via AJAX. -->
     var config = {};
     $.ajax({ url: path+"myelectric/get.json?apikey="+apikey, dataType: 'json', async: false, success: function(data) {config = data;} });
 
-    if (!config) config = {powerfeed:0, kwhfeed:0};
+    if (!config) config = {powerfeed:0, dailyfeed:0, dailytype:0};
+    if (config.powerfeed==undefined) config.powerfeed = 0;
     var powerfeed = parseInt(config.powerfeed); 
-    var kwhfeed = parseInt(config.kwhfeed); 
-
+    if (config.dailyfeed==undefined) config.dailyfeed = 0;
+    var dailyfeed = parseInt(config.dailyfeed);
+    if (config.dailytype==undefined) config.dailytype = 0;
+    var dailytype = parseInt(config.dailytype);
+;
     // If no config then show config interface
-    if (powerfeed==0 || kwhfeed==0) 
+    if (powerfeed==0 || dailyfeed==0) 
     {
         // Populate config feed list selectors
         var feeds = feed.list();
         var out = ""; for (z in feeds) out +="<option value="+feeds[z].id+">"+feeds[z].name+"</option>";
         $("#powerfeed").html(out);
-        $("#kwhfeed").html(out);
+        $("#dailyfeed").html(out);
 
         $("#config").show();
         $("#powerblock").hide();
     } else {
-        totalwh = feed.get_average(kwhfeed,datastart*1000,end+(interval*1000),interval);
         update();
         updateinst = setInterval(update,5000);
+    }
+    
+    function update_graph_size()
+    {
+        bound.width = $("#bound").width();
+        bound.height = $("#bound").height();
+
+        $("#myCanvas").attr('width',bound.width);
+        $("#myCanvas").attr('height',bound.height);
+        
+        graph.width = bound.width;
+        graph.height = bound.height;
     }
 
     function update()
     {
+        if (refresh) {
+        
+            var ndays = Math.floor(graph.width / 40);
+            var timeWindow = (3600000*24*ndays);	//Initial time window
+            var start = +new Date - timeWindow;	//Get start time
+            var end = +new Date;				    //Get end time
+
+            var d = new Date()
+            var n = d.getTimezoneOffset();
+            var offset = n / -60;
+
+            var interval = 3600*24;
+            var datastart = (Math.round((start/1000.0)/interval) * interval); //+3600*offset;
+        
+            daily_data = feed.get_average(dailyfeed,datastart*1000,end+(interval*1000),interval);
+        
+        }
+        refresh = false; 
+    
         // Get latest feed values from the server (this returns the equivalent of what you see on the feed/list page)
         feeds = feed.list_by_id();
 
         // Make a copy of the last 7 days of kwh totals data so that we can calculate today's amount with out always adding a new entry
-        var totalwhcopy = eval(JSON.stringify(totalwh));
-
-        // Add today
-        if (totalwh.length>0) {
-            var lastday = totalwh[totalwh.length-1][0];
-            totalwhcopy.push([lastday+24*3600*1000,feeds[kwhfeed]]);
-        }
-
-        daily = [];
-
-        for (var z=1; z<totalwhcopy.length; z++)
-        {
-            daily.push([totalwhcopy[z][0],totalwhcopy[z][1] - totalwhcopy[z-1][1]]);
-        }
-
-        // Update the elements on the page with the latest power and energy values.
-        $("#power").html(feeds[powerfeed]);
-        if (daily.length>0) $("#kwhd").html((daily[daily.length-1][1]/1000.0).toFixed(1));
-
-        draw();
-    }
-
-
-    function draw()
-    {
-        ctx.clearRect(0,0,bound.width,bound.height);
-        ctx.strokeStyle = "#0699fa";
-        ctx.fillStyle = "#0699fa";
-
-        // Bar chart axes
-        ctx.moveTo(0,0);
-        ctx.lineTo(0,bound.height);
-        ctx.lineTo(bound.width,bound.height);
-        ctx.stroke();
-
-        // Bar chart y-axis label
-        ctx.textAlign    = "left";
-        ctx.font = "16px arial";
-        ctx.fillText('kWh',10,15);
+        var daily_data_copy = eval(JSON.stringify(daily_data));
         
-        // Bar widths and height scale
-        var scale = 0.5;
-        var barwidth = (bound.width - 20 - 7*10)/7;
-        if (barwidth>50 ) barwidth = 50;
-
-        // Draw each individual bar
-        for (var x=0; x<daily.length; x++)
+        daily = [];
+        
+        if (dailytype==0)
         {
-            ctx.fillStyle = "#0699fa";
-            ctx.fillRect(10+x*(barwidth+10),(bound.height-(daily[x][1]*0.024)*scale)-10,barwidth,(daily[x][1]*0.024)*scale);
+            var lastday = daily_data_copy[daily_data_copy.length-1][0];
+            daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
 
-            // Text is too small if less than 2kWh
-            if (daily[x][1]>2000) {
-                ctx.textAlign    = "center";
-                ctx.fillStyle = "#ccccff";
-                ctx.fillText((daily[x][1]/1000).toFixed(0),10+x*(barwidth+10)+(barwidth/2),(bound.height-(daily[x][1]*0.024)*scale)+10);
+            for (var z=1; z<daily_data_copy.length; z++)
+            {
+                var kwh = (daily_data_copy[z][1] - daily_data_copy[z-1][1]) * 0.001;
+                daily.push([daily_data_copy[z][0],kwh]);
             }
+            
+            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
         }
+        else if (dailytype==1)
+        {
+            var lastday = daily_data_copy[daily_data_copy.length-1][0];
+            daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
+            
+            for (var z=1; z<daily_data_copy.length; z++)
+            {
+                var kwh = (daily_data_copy[z][1] - daily_data_copy[z-1][1]);
+                daily.push([daily_data_copy[z][0],kwh]);
+            }
+            
+            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+        }
+        else if (dailytype==2)
+        {
+            daily = daily_data_copy;
+            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+        }
+        else if (dailytype==3)
+        {
+            for (var z=1; z<daily_data_copy.length; z++)
+            {
+                var kwh = daily_data_copy[z][1]*0.024;
+                daily.push([daily_data_copy[z][0],kwh]);
+            }
+            $("#kwhd").html("---");
+        }
+        
+        newheight = windowheight-320;
+        if (newheight>350) newheight = 350;
+        
+        $("#bound").height(newheight);
+        bound.height = newheight;
+        $("#myCanvas").attr('height',bound.height);
+        graph.height = bound.height;
+        
+        graph.draw("myCanvas",[daily]);
+        
+        $("#power").html(feeds[powerfeed]);
     }
 
-    $("#powerblock").click(function(){
+    $("#openconfig").click(function(){
     
         // Load feed list, populate feed selectors and select the selected feed
         var feeds = feed.list();
         var out = ""; for (z in feeds) out +="<option value="+feeds[z].id+">"+feeds[z].name+"</option>";
         $("#powerfeed").html(out);
         $("#powerfeed").val(powerfeed);
-        $("#kwhfeed").html(out);
-        $("#kwhfeed").val(kwhfeed);
-
+        $("#dailyfeed").html(out);
+        $("#dailyfeed").val(dailyfeed);
+        $("#dailytype").val(dailytype);
+        
         // Switch to the config interface
         $("#config").show();
         $("#powerblock").hide();
+        
+        if (updateinst) clearInterval(updateinst);
     });
 
     $("#configsave").click(function(){
     
         powerfeed = $("#powerfeed").val();
-        kwhfeed = $("#kwhfeed").val();
-        totalwh = feed.get_average(kwhfeed,datastart*1000,end+(interval*1000),interval);
-        update();
+        dailyfeed = $("#dailyfeed").val();
+        dailytype = $("#dailytype").val();
 
         // Restart interface update
-        if (updateinst) clearInterval(updateinst);
         updateinst = setInterval(update,5000);
 
+        refresh = true; 
+        update();
+        
         // Switch to main view 
         $("#config").hide();
         $("#powerblock").show();
 
         // Save config to db
-        var config = {powerfeed: powerfeed, kwhfeed: kwhfeed};
-        var result = {};
+        var config = {powerfeed: powerfeed, dailyfeed: dailyfeed, dailytype: dailytype};
         $.ajax({ url: path+"myelectric/set.json", data: "data="+JSON.stringify(config), async: false, success: function(data){} });
     });
-  
+    
+    
 </script>
