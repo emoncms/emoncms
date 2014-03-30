@@ -94,5 +94,4 @@
     $dbtest = TRUE;
 
     // Log4PHP configuration
-    $log4php_includePath = '/usr/share/php/log4php/Logger.php';
     $log4php_configPath = '/etc/emoncms/emoncms_log4j.xml';
