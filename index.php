@@ -26,6 +26,8 @@
 
     $path = get_application_path();
 
+    require "Modules/log/EmonLogger.php";
+
     // 2) Database
     $mysqli = @new mysqli($server,$username,$password,$database);
 
