@@ -15,7 +15,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 // It's important to suppress warnings here, so that adding logging is backwards compatible to old installs.
 @define("LOG4PHP_INSTALLED", include_once( $log4php_includePath ));
 if (LOG4PHP_INSTALLED)
-    Logger::configure( $log4php_configPath );
+    @Logger::configure( $log4php_configPath );
 
 class EmonLogger
 {
