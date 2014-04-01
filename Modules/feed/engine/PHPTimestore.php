@@ -266,7 +266,7 @@ class PHPTimestore
 
         // Downsample to the desired number of datapoints - or as close as we can get within an integer multiple of the lower layer
 
-        $count = count($layer_values)-1;
+        $count = count($layer_values);
 
         //print "point: ".$point."<br>";
         //print "range: ".$range."<br>";
@@ -281,7 +281,7 @@ class PHPTimestore
         //print "Layer values: <br>";
 
         // Read in steps of tge averaged block size
-        for ($i=1; $i<$count-$naverage; $i+=$naverage)
+        for ($i=1; $i<=($count-$naverage+1); $i+=$naverage)
         {
             // Calculate the average value of each block
             $point_sum = 0;
