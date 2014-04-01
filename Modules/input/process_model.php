@@ -17,12 +17,14 @@ class Process
     private $mysqli;
     private $input;
     private $feed;
+    private $log;
 
     public function __construct($mysqli,$input,$feed)
     {
             $this->mysqli = $mysqli;
             $this->input = $input;
             $this->feed = $feed;
+            $this->log = new EmonLogger(__FILE__);
     }
 
     public function get_process_list()
@@ -81,6 +83,8 @@ class Process
 
     public function input($time, $value, $processList)
     {
+        $this->log->info("input() received time=$time, value=$value");
+           
         $process_list = $this->get_process_list();
         $pairs = explode(",",$processList);
         foreach ($pairs as $pair)
@@ -89,9 +93,11 @@ class Process
             $processid = (int) $inputprocess[0];                                    // Process id
 
             $arg = 0;
-            if (isset($inputprocess[1])) $arg = $inputprocess[1];               // Can be value or feed id
+            if (isset($inputprocess[1]))
+                $arg = $inputprocess[1];               // Can be value or feed id
 
             $process_public = $process_list[$processid][2];             // get process public function name
+
             $value = $this->$process_public($arg,$time,$value);           // execute process public function
         }
     }
