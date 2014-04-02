@@ -206,7 +206,7 @@ calls the feed API on the server via AJAX. -->
                 daily.push([daily_data_copy[z][0],kwh]);
             }
             
-            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
         }
         else if (dailytype==1)
         {
@@ -219,12 +219,12 @@ calls the feed API on the server via AJAX. -->
                 daily.push([daily_data_copy[z][0],kwh]);
             }
             
-            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
         }
         else if (dailytype==2)
         {
             daily = daily_data_copy;
-            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
         }
         else if (dailytype==3)
         {
