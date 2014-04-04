@@ -25,4 +25,3 @@
 <?php
     // Widget renderer
     echo "<script type='text/javascript' src='".$path."Modules/dashboard/Views/js/widgets/vis/vis_render.js'></script>";
-?>

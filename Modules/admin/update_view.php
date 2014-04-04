@@ -51,5 +51,4 @@
     <b><?php echo _('Database is up to date '); ?></b> - <?php echo _('Nothing to do'); ?>
 </div>
 
-<?php } ?>
-
+<?php }

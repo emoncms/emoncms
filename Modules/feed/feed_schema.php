@@ -12,5 +12,3 @@ $schema['feeds'] = array(
     'size' => array('type' => 'int(11)'),
     'engine' => array('type' => 'int(11)', 'Null'=>'NO', 'default'=>0)
 );
-
-?>
