@@ -168,5 +168,3 @@
 
     return array('content'=>$result);
   }
-
-?>
