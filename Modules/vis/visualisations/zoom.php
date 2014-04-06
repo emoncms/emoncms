@@ -108,7 +108,7 @@
     years = get_years(kwh_data);
     //set_annual_view();
 
-    months = get_months_year(kwh_data,2012);
+    months = get_months_year(kwh_data,new Date().getFullYear());
     //set_monthly_view();
 
     days = get_last_30days(kwh_data);
