@@ -75,6 +75,7 @@ class Process
         $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.
         $list[31] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed");
         $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed");
+        $list[33] = array(_("Reset to ZERO"),ProcessArg::NONE,"reset2zero",0,DataType::UNDEFINED,"Misc");
         
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
@@ -134,6 +135,12 @@ class Process
         if ($value>0) $value = 0;
         return $value;
     }
+
+    public function reset2zero($arg, $time, $value)
+     {
+         $value = 0;
+         return $value;
+     }
 
     public function signed2unsigned($arg, $time, $value)
     {
