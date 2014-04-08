@@ -290,4 +290,3 @@ function getcontent($server, $port, $file)
      // return $cont;
    }
 }
-?>
