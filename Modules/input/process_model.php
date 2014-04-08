@@ -42,7 +42,7 @@ class Process
         $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPFINA));                 
         $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPFINA));      
         $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPFINA));       // need to remove
-        $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::UNDEFINED,"Deleted");               // need to remove
+        $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
         $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    
         $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
         $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
@@ -172,6 +172,25 @@ class Process
             return null; // should this be null for a divide by zero?
         }
     }
+    
+	public function update_feed_data($id, $time, $value)
+	{
+		$time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
+
+		$feedname = "feed_".trim($id)."";
+		$result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
+		$row = $result->fetch_array();
+
+		if (!$row)
+		{
+			$this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
+		}
+		else
+		{
+			$this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
+		}
+		return $value;
+	} 
 
     public function add_input($id, $time, $value)
     {
@@ -563,8 +582,7 @@ class Process
     }
 
     // No longer used
-    public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing
-    public function update_feed_data($id, $time, $value)  { return $value; }
+    public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing    
     public function phaseshift($id, $time, $value) { return $value; }
     public function kwh_to_kwhd_old($feedid, $time_now, $value) { return $value; }
     public function power_acc_to_kwhd($feedid,$time_now,$value) { return $value; } // Process can now be achieved with allow positive process before power to kwhd
@@ -576,4 +594,3 @@ class Process
     public function heat_flux($feedid,$time_now,$value) { return $value; } // Removed to be reintroduced as a post-processing based visualisation calculated on the fly.
 
 }
-
