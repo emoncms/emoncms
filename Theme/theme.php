@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!doctype html>
 <?php
   /*
   All Emoncms code is released under the GNU Affero General Public License.
@@ -12,79 +12,12 @@
 
   global $path,$emoncms_version;
 ?>
-
+    
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-        <style>
-            html, body
-            {
-                height: 100%;
-            }
-
-            #wrap {
-                min-height: 100%;
-                height: auto !important;
-                height: 100%;
-                /* Negative indent footer by it's height */
-                margin: 0 auto -40px;
-            }
-
-            #push,
-            #footer {
-                height: 30px;
-            }
-
-            #footer {
-                background-color: #f5f5f5;
-
-                text-align: center;
-                font-size: 13px;
-                font-weight: bold;
-
-                padding-top:10px;
-            }
-
-            #footer a {
-                color: #77b4d9;
-                text-decoration: none;
-            }
-
-            #submenu {
-                width:100%;
-                background-color:#ddd;
-                height:27px;
-            }
-
-            #topspacer {padding-top: 42px;}
-
-            @media (min-width: 768px) and (max-width: 979px) {
-                #topspacer {margin-top:-20px; padding-top: 0px; }
-            }
-
-            /* Lastly, apply responsive CSS fixes as necessary */
-            @media (max-width: 767px) {
-                #submenu,
-                #footer {
-                    margin-left: -20px;
-                    margin-right: -20px;
-                    padding-left: 20px;
-                    padding-right: 20px;
-                }
-                #topspacer
-                {
-                    margin-top:-20px;
-                     padding-top: 0px;
-                }
-            }
-
-        </style>
-
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.0.min.js"></script>
-        <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Emoncms</title>
 
         <!-- Thanks to Baptiste Gaultier for the emoncms dial icon http://bit.ly/zXgScz -->
         <link rel="shortcut icon" href="<?php echo $path; ?>Theme/favicon.png" />
@@ -93,7 +26,11 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/logo_normal.png">
-        <title>Emoncms</title>
+        <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
+        <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+        <link href="<?php echo $path; ?>Theme/emon.css" rel="stylesheet">
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.0.min.js"></script>
     </head>
 
     <body>
@@ -143,7 +80,7 @@
         <div id="footer">
             <?php echo _('Powered by '); ?>
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
-            <span style="color:#999"> | v<?php echo $emoncms_version; ?></span>
+            <span> | v<?php echo $emoncms_version; ?></span>
         </div>
 
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>

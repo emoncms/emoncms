@@ -93,7 +93,7 @@ global $path, $session;
                 </select>
                 
             </span>
-            <button id="process-add" class="btn btn-info"/><?php echo _('Add'); ?></button>
+            <button id="process-add" class="btn btn-info"><?php echo _('Add'); ?></button>
         </div>
     </td>
 </tr>

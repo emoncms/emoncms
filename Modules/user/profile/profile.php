@@ -32,65 +32,63 @@ function languagecodetotext()
 <div class="row">
 
     <div class="span4">
-     <h3><?php echo _('My account'); ?></h3>
+        <h3><?php echo _('My account'); ?></h3>
 
-    <div id="account" style="width:230px;">
-        <p>
-            <span class="muted"><?php echo _('Username'); ?></span>
-            <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
-            <div id="edit-username-form" class="input-append" style="display:none">
-                <input class="span2" id="appendedInputButton" type="text" style="width:150px">
-                <button class="btn" type="button"><?php echo _('Save'); ?></button>
+        <div id="account">
+            <div>
+                <span class="muted"><?php echo _('Username'); ?></span>
+                <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
+                <div id="edit-username-form" class="input-append" style="display:none">
+                    <input class="span2" type="text" style="width:150px">
+                    <button class="btn" type="button"><?php echo _('Save'); ?></button>
+                </div>
+                <div id="change-username-error" class="alert alert-error" style="display:none; width:170px"></div>
             </div>
-            <div id="change-username-error" class="alert alert-error" style="display:none; width:170px"></div>
-        </p>
-        <p>
-            <span class="muted"><?php echo _('Email'); ?></span>
-            <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
-            <div id="edit-email-form" class="input-append" style="display:none">
-                <input class="span2" id="appendedInputButton" type="text" style="width:150px">
-                <button class="btn" type="button"><?php echo _('Save'); ?></button>
+            <div>
+                <span class="muted"><?php echo _('Email'); ?></span>
+                <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
+                <div id="edit-email-form" class="input-append" style="display:none">
+                    <input class="span2" type="text" style="width:150px">
+                    <button class="btn" type="button"><?php echo _('Save'); ?></button>
+                </div>
+                <div id="change-email-error" class="alert alert-error" style="display:none; width:170px"></div>
             </div>
-            <div id="change-email-error" class="alert alert-error" style="display:none; width:170px"></div>
-        </p>
-        
-        <p>
-            <a id="changedetails"><?php echo _('Change Password'); ?></a>
-        </p>
-        
-        <br>
-        <p>
-            <span class="muted"><?php echo _('Write API Key'); ?> </span>
-            <!--<a id="newapikeywrite" >new</a>-->
-            <span class="writeapikey"></span>
-        </p>
-        <p>
-            <span class="muted"><?php echo _('Read API Key'); ?> </span>
-            <!--<a id="newapikeyread" >new</a>-->
-            <span class="readapikey"></span>
-        </p>
-        
 
-    </div>
+            <div>
+                <a id="changedetails"><?php echo _('Change Password'); ?></a>
+            </div>  
 
-    <div id="change-password-form" style="display:none">
-        <p>
-            <span class="muted"><?php echo _('Current password'); ?></span>
-            <br><input id="oldpassword" type="password" />
-        </p>
-        <p>
-            <span class="muted"><?php echo _('New password'); ?></span>
-            <br><input id="newpassword" type="password" />
-        </p>
-        <p>
-            <span class="muted"><?php echo _('Repeat new password'); ?></span>
-            <br><input id="repeatnewpassword" type="password" />
-        </p>
-        <div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
-        <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
-        <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
-    </div>
+            <br>
+            <div>
+                <span class="muted"><?php echo _('Write API Key'); ?></span>
+                <!--<a id="newapikeywrite" >new</a>-->
+                <span class="writeapikey"></span>
+            </div>
+            <div>
+                <span class="muted"><?php echo _('Read API Key'); ?></span>
+                <!--<a id="newapikeyread" >new</a>-->
+                <span class="readapikey"></span>
+            </div>
 
+        </div>
+
+        <div id="change-password-form" style="display:none">
+            <div>
+                <span class="muted"><?php echo _('Current password'); ?></span>
+                <br><input id="oldpassword" type="password" />
+            </div>
+            <div>
+                <span class="muted"><?php echo _('New password'); ?></span>
+                <br><input id="newpassword" type="password" />
+            </div>
+            <div>
+                <span class="muted"><?php echo _('Repeat new password'); ?></span>
+                <br><input id="repeatnewpassword" type="password" />
+            </div>
+            <div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
+            <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
+            <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
+        </div>
     </div>
 
     <div class="span8">

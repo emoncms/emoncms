@@ -21,10 +21,6 @@
     if (!$session['write']) $menu_right[] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
 ?>
 
-<style>
-    #mainnav li:first-child a { padding-left: 0px; }
-</style>
-
 <ul class="nav">
     <?php
 
@@ -32,10 +28,10 @@
     {
         if (isset($item['session'])) {
             if (isset($session[$item['session']]) && $session[$item['session']]==1) {
-                echo "<li><a href=".$path.$item['path']." >".$item['name']."</a></li>";
+                echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
             }
         } else {
-            echo "<li><a href=".$path.$item['path']." >".$item['name']."</a></li>";
+            echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
         }
     }
 
