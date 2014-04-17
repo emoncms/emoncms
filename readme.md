@@ -39,7 +39,7 @@ Add pecl modules to php5 config
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
     $ sudo a2enmod rewrite
-    $ sudo nano /etc/apache2/sites-enabled/000-default
+    $ sudo nano /etc/apache2/sites-enabled/000-default.conf
 
 Change (line 7 and line 11), "AllowOverride None" to "AllowOverride All".
 That is the sections <Directory /> and <Directory /var/www/>.
