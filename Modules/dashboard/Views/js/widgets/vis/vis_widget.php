@@ -14,14 +14,9 @@
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);
     $multigraphs = $multigraph->getlist($session['userid']);
-
-
 ?>
 
 <script>
     var multigraphs = <?php echo json_encode($multigraphs); ?>;
 </script>
-
-<?php
-    // Widget renderer
-    echo "<script type='text/javascript' src='".$path."Modules/dashboard/Views/js/widgets/vis/vis_render.js'></script>";
+<script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgets/vis/vis_render.js"></script>

@@ -7,27 +7,6 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/process_info.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
-<style>
-
-input[type=text][class=variable-name-edit] {
-  margin-bottom:0px;
-}
-
-body .modal {
-    /* new custom width */
-    width: 1080px;
-    /* must be half of the width, minus scrollbar on the left (30px) */
-    margin-left: -540px;
-    
-
-}
-
-.modal-body {
-    max-height: 800px;
-}
-
-</style>
-
 <br>
 <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Node API Help'); ?></a></div></div>
 <h2>Nodes</h2>
@@ -121,7 +100,7 @@ body .modal {
                         </select>
                         
                     </span>
-                    <button id="process-add" class="btn btn-info"/><?php echo _('Add'); ?></button>
+                    <button id="process-add" class="btn btn-info"><?php echo _('Add'); ?></button>
                 </div>
             </td>
         </tr>

@@ -5,8 +5,6 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-
-<link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
 <style>
@@ -65,14 +63,14 @@ cursor:pointer
             <td>
                 <p><b>Start date & time</b></p>
                 <div id="datetimepicker1" class="input-append date">
-                    <input id="export-start" data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+                    <input id="export-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
                     <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                 </div>
             </td>
             <td>
                 <p><b>End date & time</b></p>
                 <div id="datetimepicker2" class="input-append date">
-                    <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text"></input>
+                    <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
                     <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                 </div>
             </td>
@@ -109,11 +107,6 @@ cursor:pointer
         </table>
         <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
         <p>Averages are only returned for feed engines with built in averaging.</p>
-        
-        
-        
-        
-
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
@@ -121,7 +114,6 @@ cursor:pointer
 </div>
 
 <script>
-
 
     var path = "<?php echo $path; ?>";
 
@@ -220,7 +212,6 @@ cursor:pointer
     
     // Feed Export feature
     
-    
     $("#table").on("click",".icon-circle-arrow-down", function(){
         var row = $(this).attr('row');
         $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
@@ -233,7 +224,6 @@ cursor:pointer
         
         $('#ExportModal').modal('show');
     });
-    
 
     $('#datetimepicker1').datetimepicker({
         language: 'en-EN'
@@ -294,8 +284,5 @@ cursor:pointer
         
         return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
     }
-
-    
-    
 
 </script>
