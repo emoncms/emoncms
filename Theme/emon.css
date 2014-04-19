@@ -48,6 +48,10 @@ div#account {
     width:230px;
 }
 
+.account-item {
+    margin-bottom:10px;
+}
+
 input[type=text][class=variable-name-edit] {
     margin-bottom:0px;
 }

@@ -35,7 +35,7 @@ function languagecodetotext()
         <h3><?php echo _('My account'); ?></h3>
 
         <div id="account">
-            <div>
+            <div class="account-item">
                 <span class="muted"><?php echo _('Username'); ?></span>
                 <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
                 <div id="edit-username-form" class="input-append" style="display:none">
@@ -44,7 +44,7 @@ function languagecodetotext()
                 </div>
                 <div id="change-username-error" class="alert alert-error" style="display:none; width:170px"></div>
             </div>
-            <div>
+            <div class="account-item">
                 <span class="muted"><?php echo _('Email'); ?></span>
                 <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
                 <div id="edit-email-form" class="input-append" style="display:none">
@@ -54,34 +54,22 @@ function languagecodetotext()
                 <div id="change-email-error" class="alert alert-error" style="display:none; width:170px"></div>
             </div>
 
-            <div>
+            <div class="account-item">
                 <a id="changedetails"><?php echo _('Change Password'); ?></a>
             </div>  
-
-            <br>
-            <div>
-                <span class="muted"><?php echo _('Write API Key'); ?></span>
-                <!--<a id="newapikeywrite" >new</a>-->
-                <span class="writeapikey"></span>
-            </div>
-            <div>
-                <span class="muted"><?php echo _('Read API Key'); ?></span>
-                <!--<a id="newapikeyread" >new</a>-->
-                <span class="readapikey"></span>
-            </div>
 
         </div>
 
         <div id="change-password-form" style="display:none">
-            <div>
+            <div class="account-item">
                 <span class="muted"><?php echo _('Current password'); ?></span>
                 <br><input id="oldpassword" type="password" />
             </div>
-            <div>
+            <div class="account-item">
                 <span class="muted"><?php echo _('New password'); ?></span>
                 <br><input id="newpassword" type="password" />
             </div>
-            <div>
+            <div class="account-item">
                 <span class="muted"><?php echo _('Repeat new password'); ?></span>
                 <br><input id="repeatnewpassword" type="password" />
             </div>
@@ -89,6 +77,21 @@ function languagecodetotext()
             <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
             <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
         </div>
+        
+        <br>
+        <div id="account">
+        <div class="account-item">
+            <span class="muted"><?php echo _('Write API Key'); ?></span>
+            <!--<a id="newapikeywrite" >new</a>-->
+            <span class="writeapikey"></span>
+        </div>
+        <div class="account-item">
+            <span class="muted"><?php echo _('Read API Key'); ?></span>
+            <!--<a id="newapikeyread" >new</a>-->
+            <span class="readapikey"></span>
+        </div>
+        </div>
+        
     </div>
 
     <div class="span8">
