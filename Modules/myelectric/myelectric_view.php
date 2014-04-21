@@ -181,20 +181,20 @@ calls the feed API on the server via AJAX. -->
 
             var interval = 3600*24;
             var datastart = (Math.round((start/1000.0)/interval) * interval); //+3600*offset;
-        
+
             daily_data = feed.get_average(dailyfeed,datastart*1000,end+(interval*1000),interval);
-        
+
         }
         refresh = false; 
-    
+
         // Get latest feed values from the server (this returns the equivalent of what you see on the feed/list page)
         feeds = feed.list_by_id();
 
         // Make a copy of the last 7 days of kwh totals data so that we can calculate today's amount with out always adding a new entry
         var daily_data_copy = eval(JSON.stringify(daily_data));
-        
+
         daily = [];
-        
+
         if (dailytype==0)
         {
             var lastday = daily_data_copy[daily_data_copy.length-1][0];
@@ -206,7 +206,7 @@ calls the feed API on the server via AJAX. -->
                 daily.push([daily_data_copy[z][0],kwh]);
             }
             
-            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
         }
         else if (dailytype==1)
         {
@@ -219,12 +219,12 @@ calls the feed API on the server via AJAX. -->
                 daily.push([daily_data_copy[z][0],kwh]);
             }
             
-            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
         }
         else if (dailytype==2)
         {
             daily = daily_data_copy;
-            $("#kwhd").html((daily[daily.length-1][1]).toFixed(1));
+            $("#kwhd").html((daily[0][1]*1).toFixed(1));
         }
         else if (dailytype==3)
         {

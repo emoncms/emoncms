@@ -10,5 +10,3 @@ $schema['input'] = array(
     'time' => array('type' => 'datetime'),
     'value' => array('type' => 'float')
 );
-
-?>

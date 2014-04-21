@@ -360,10 +360,10 @@ class PHPFiwa
         $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
         fclose($fh);
 
-        $count = count($layer_values)-1;
+        $count = count($layer_values);
         
         $naverage = $skipsize;
-        for ($i=1; $i<$count-$naverage; $i+=$naverage)
+        for ($i=1; $i<=($count-$naverage+1); $i+=$naverage)
         {
             // Calculate the average value of each block
             $point_sum = 0;

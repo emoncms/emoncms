@@ -64,4 +64,4 @@ global $path, $session, $useckeditor;
     <a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _('List view'); ?>"></i></a>
     </div>
 
-<?php } ?>
+<?php } 
