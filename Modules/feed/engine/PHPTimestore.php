@@ -192,7 +192,7 @@ class PHPTimestore
 
         if ($end == 0) $end = time();
 
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         $start = round($start/$meta->interval)*$meta->interval;
         
@@ -332,8 +332,7 @@ class PHPTimestore
         $dp = 1000;
 
         // Load the timestore meta data
-        $meta = $this->get_meta($feedid);
-        if (!$meta) return false;
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         // The number of datapoints in the query range:
         $dp_in_range = ($end - $start) / $meta->interval;
@@ -416,7 +415,8 @@ class PHPTimestore
     public function lastvalue($feedid)
     {
         $feedid = (int) $feedid;
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
+        
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
 
         $primaryfeedname = $this->dir.$feedname;
@@ -455,9 +455,19 @@ class PHPTimestore
         $feedid = (int) $feedid;
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
 
-        if (!file_exists($this->dir.$feedname)) return false;
-
+        if (!file_exists($this->dir.$feedname)) {
+            $this->log->warn("PHPTIMESTORE feed:$feedid metadata does not exist");
+            return false;
+        }
         $meta = new stdClass();
+        
+        $size = filesize($this->dir.$feedname);
+        
+        if (!($size==36 || $size == 272)) {
+            $this->log->warn("PHPTIMESTORE feed:$feedid metadata filesize error, size = $size");
+            return false;
+        } 
+        
         $metafile = fopen($this->dir.$feedname, 'rb');
 
         fseek($metafile,8);
@@ -467,22 +477,78 @@ class PHPTimestore
         $tmp = unpack("I",fread($metafile,4));
         $meta->nmetrics = $tmp[1];
         $tmp = unpack("I",fread($metafile,4));
-        $meta->npoints = $tmp[1];
+        $legacy_npoints = $tmp[1];
         $tmp = unpack("I",fread($metafile,8));
         $meta->start = $tmp[1];
         $tmp = unpack("I",fread($metafile,4));
         $meta->interval = $tmp[1];
         fclose($metafile);
         
+        // Sanity checks
+        
+        if ($meta->feedid != $feedid)
+        {
+            $this->log->warn("PHPTIMESTORE feed:$feedid meta data mismatch, meta feedid: ".$meta->feedid);
+            return false;
+        }
+        
+        if ($meta->nmetrics!=1) {
+            $this->log->warn("PHPTIMESTORE feed:$feedid nmetrics is not 1");
+            return false;
+        }
+        
+        if ($meta->interval<5 || $meta->interval>(24*3600))
+        {
+            $this->log->warn("PHPTIMESTORE feed:$feedid interval is out of range, interval is: ".$meta->interval);
+            return false;
+        }
+        
+        if ($meta->start <= 0) {
+          error_log("PHPTIMESTORE feed:$feedid start time must be greater than zero");
+          return false;
+        }
+        
+        // Double verification of npoints
+        
+        $filesize = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat")
+        $filesize_npoints = $filesize / 4.0;
+        
+        if ($filesize_npoints!=(int)$filesize_npoints) {
+            // filesize result is corrupt
+            $this->log->warn("PHPTIMESTORE php filesize() is not integer multiple of 4 bytes id=$feedid");
+            return false;
+        }
+        
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
+        
         if (!file_exists($this->dir.$feedname)) {
-            $meta->npoints = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat") / 4.0;
+            // 1) Transitioning to new system that saves npoints in a seperate file
+            if ($legacy_npoints!=$filesize_npoints)
+            {
+                $this->log->warn("PHPTIMESTORE legacy npoints does not match filesize npoints id=$feedid");
+                return false;
+            } else {
+                $meta->npoints = $filesize_npoints;
+            }
+
         } else {
             $metafile = fopen($this->dir.$feedname, 'rb');
             $tmp = unpack("I",fread($metafile,4)); 
-            $meta->npoints = $tmp[1];
+            $npoints = $tmp[1];
             fclose($metafile);
+            $meta->npoints = $npoints;
         }
+        
+        if ($npoints!=$filesize_npoints)
+        {
+            // filesize npoints and npoints from the .npoints meta file should be the same
+            // if there is a discrepancy then this suggests corrupt data.
+            $this->log->warn("PHPTIMESTORE meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) feedid=$feedid");
+            return false;
+            
+            // $meta->npoints = $filesize_npoints;
+        }
+
 
         return $meta;
     }
@@ -491,7 +557,6 @@ class PHPTimestore
     {
         $feedid = (int) $feedid;
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
-
 
         $metafile = fopen($this->dir.$feedname, 'wb');
 
@@ -545,7 +610,7 @@ class PHPTimestore
         $layer = (int) $layer;
         $start = (int) $start;
 
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
 
@@ -641,7 +706,7 @@ class PHPTimestore
 
         if ($end == 0) $end = time();
 
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         $start = round($start/$meta->interval)*$meta->interval;
         
