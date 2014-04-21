@@ -34,8 +34,6 @@ class Node
         $nodeid = (int) $nodeid;
         $time = (int) $time;
         
-        $data = explode(",",$data);
-        for ($i=0; $i<count($data); $i++) $data[$i] = (int) $data[$i];
         $data = implode(",",$data);
 
         // Load the user's nodes object

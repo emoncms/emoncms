@@ -43,4 +43,9 @@ class EmonLogger
         if ($this->loggerConfigured)
             $this->concreteLogger->info($message);
     }
+    
+    public function warn ($message){
+        if ($this->loggerConfigured)
+            $this->concreteLogger->warn($message);
+    }
 }

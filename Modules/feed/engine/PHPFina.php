@@ -6,7 +6,8 @@
 class PHPFina
 {
     private $dir = "/var/lib/phpfina/";
-
+    private $log;
+    
     /**
      * Constructor.
      *
@@ -16,6 +17,8 @@ class PHPFina
     public function __construct($settings)
     {
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        
+        $this->log = new EmonLogger(__FILE__);
     }
 
     /**
@@ -40,8 +43,9 @@ class PHPFina
             $meta->interval = $interval;
             $meta->start_time = 0;
 
+        
             // Save meta data
-            $this->set_meta($id,$meta);
+            $this->create_meta($id,$meta);
             
             $fh = fopen($this->dir.$meta->id.".dat", 'c+');
             fclose($fh);
@@ -50,8 +54,12 @@ class PHPFina
 
 
         $feedname = "$id.meta";
-        if (file_exists($this->dir.$feedname)) return true;
-        return false;
+        if (file_exists($this->dir.$feedname)) {
+            return true;
+        } else {
+            $this->log->warn("PHPFINA failed to create feed id=$id");
+            return false;
+        }
     }
     
     //private function checkpermissions()
@@ -72,12 +80,26 @@ class PHPFina
     */
     public function post($id,$timestamp,$value)
     {
+        $this->log->info("PHPFINA post id=$id timestamp=$timestamp value=$value");
+        
         $id = (int) $id;
         $timestamp = (int) $timestamp;
         $value = (float) $value;
-
+        
+        $now = time();
+        $start = $now-(3600*24*365*5); // 5 years in past
+        $end = $now+(3600*48);         // 48 hours in future
+        
+        if ($timestamp<$start || $timestamp>$end) {
+            $this->log->warn("PHPFINA timestamp out of range");
+            return false;
+        }
+        
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta = $this->get_meta($id)) {
+            $this->log->warn("PHPFINA failed to fetch meta id=$id");
+            return false;
+        }
 
         // Calculate interval that this datapoint belongs too
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
@@ -88,6 +110,7 @@ class PHPFina
         }
 
         if ($timestamp < $meta->start_time) {
+            $this->log->warn("PHPFINA timestamp older than feed start time id=$id");
             return false; // in the past
         }	
 
@@ -104,7 +127,16 @@ class PHPFina
         
         // Write padding
         $padding = ($pos - $last_pos)-1;
-        if ($padding>0) $this->write_padding($fh,$meta->npoints,$padding);
+        
+        if ($padding>0) {
+            if ($this->write_padding($fh,$meta->npoints,$padding)===false)
+            {
+                // Npadding returned false = max block size was exeeded
+                
+                $this->log->warn("PHPFINA padding max block size exeeded id=$id");
+                return false;
+            }
+        }
         
         // Write new datapoint
 	    fseek($fh,4*$pos);
@@ -114,7 +146,7 @@ class PHPFina
         fclose($fh);
         
         $meta->npoints = $pos + 1;
-        $this->set_meta($id,$meta);
+        $this->set_npoints($id,$meta);
         
         return $value;
     }
@@ -167,7 +199,7 @@ class PHPFina
         
         if (($pos+1)>$meta->npoints) {
           $meta->npoints = $pos + 1;
-          $this->set_meta($id,$meta);
+          $this->set_npoints($id,$meta);
         }
         
         return $value;
@@ -299,7 +331,10 @@ class PHPFina
         $id = (int) $id;
         $feedname = "$id.meta";
         
-        if (!file_exists($this->dir.$feedname)) return false;
+        if (!file_exists($this->dir.$feedname)) {
+            $this->log->warn("PHPFINA meta file does not exist id=$id");
+            return false;
+        }
         
         $meta = new stdClass();
         $metafile = fopen($this->dir.$feedname, 'rb');
@@ -307,8 +342,9 @@ class PHPFina
         $tmp = unpack("I",fread($metafile,4)); 
         $meta->id = $tmp[1];
         
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->npoints = $tmp[1];
+        // Legacy npoints
+        $tmp = unpack("I",fread($metafile,4));
+        $legacy_npoints = $tmp[1];
         
         $tmp = unpack("I",fread($metafile,4)); 
         $meta->interval = $tmp[1];
@@ -318,19 +354,72 @@ class PHPFina
         
         fclose($metafile);
         
+        // Double verification of npoints
+        $filesize = filesize($this->dir.$meta->id.".dat");
+        $filesize_npoints = $filesize / 4.0;
+        
+        if ($filesize_npoints!=(int)$filesize_npoints) {
+            // filesize result is corrupt
+            
+            $this->log->warn("PHPFINA php filesize() is not integer multiple of 4 bytes id=$id");
+            return false;
+        }
+        
+        if (!file_exists($this->dir."$id.npoints")) {
+            // 1) Transitioning to new system that saves npoints in a seperate file
+            if ($legacy_npoints!=$filesize_npoints)
+            {
+                // discrepancy between legacy npoints and filesize npoints, they should be the same at this point
+                $this->log->warn("PHPFINA legacy npoints does not match filesize npoints id=$id");
+                return false;
+            } else {
+                $meta->npoints = $filesize_npoints;
+            }
+            
+        } else {
+            $metafile = fopen($this->dir."$id.npoints", 'rb');
+            $tmp = unpack("I",fread($metafile,4));
+            $npoints = $tmp[1];
+            fclose($metafile);
+            $meta->npoints = $npoints;
+        }
+        
+        if ($npoints!=$filesize_npoints)
+        {
+            // filesize npoints and npoints from the .npoints meta file should be the same
+            // if there is a discrepancy then this suggests corrupt data.
+            $this->log->warn("PHPFINA meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) id=$id");
+            return false;
+            
+            // $meta->npoints = $filesize_npoints;
+        }
+  
         return $meta;
     }
     
-    private function set_meta($id,$meta)
+    private function create_meta($id,$meta)
     {
         $id = (int) $id;
+        
         $feedname = "$id.meta";
-    
         $metafile = fopen($this->dir.$feedname, 'wb');
         fwrite($metafile,pack("I",$meta->id));
-        fwrite($metafile,pack("I",$meta->npoints));
+        // Legacy npoints, npoints moved to seperate file
+        fwrite($metafile,pack("I",0)); 
         fwrite($metafile,pack("I",$meta->interval));
         fwrite($metafile,pack("I",$meta->start_time)); 
+        fclose($metafile);
+        
+        $this->set_npoints($id,$meta);
+    }
+    
+    private function set_npoints($id,$meta)
+    {
+        $id = (int) $id;
+        
+        $feedname = "$id.npoints";    
+        $metafile = fopen($this->dir.$feedname, 'wb');
+        fwrite($metafile,pack("I",$meta->npoints));
         fclose($metafile);
     }
     
@@ -339,7 +428,7 @@ class PHPFina
         $tsdb_max_padding_block = 1024 * 1024;
         
         // Padding amount too large
-        if ($npadding>$tsdb_max_padding_block*2) { 
+        if ($npadding>$tsdb_max_padding_block*2) {
             return false;
         }
 
