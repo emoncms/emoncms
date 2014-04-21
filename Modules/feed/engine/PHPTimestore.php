@@ -31,7 +31,12 @@ class PHPTimestore
             
             for ($l=0; $l<6; $l++) {
                 $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$l."_.dat", 'c+');
-                fclose($fh);
+                if (!$fh) {
+                    $this->log->warn("PHPTIMESTORE could not create data file for layer $l feedid=$feedid");
+                    return false;
+                } else {
+                    fclose($fh);
+                }
             }
         }
 
@@ -103,6 +108,18 @@ class PHPTimestore
         $tsdb_max_padding_block = 1024 * 1024;
 
         $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat", 'c+');
+        
+        if (!$fh)
+        {
+            $this->log->warn("PHPTIMESTORE could not open data file for layer $layer feedid=$feedid");
+            return false;
+        }
+        
+        if (!flock($fh, LOCK_EX)) {
+            $this->log->warn("PHPTIMESTORE data file for layer=$layer feedid=$feedid is locked by another process");
+            fclose($metafile);
+            return false;
+        }
 
         if ($point > $npoints) {
             $npadding = ($point - $npoints);
@@ -510,7 +527,7 @@ class PHPTimestore
         
         // Double verification of npoints
         
-        $filesize = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat")
+        $filesize = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
         $filesize_npoints = $filesize / 4.0;
         
         if ($filesize_npoints!=(int)$filesize_npoints) {
@@ -559,6 +576,18 @@ class PHPTimestore
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
 
         $metafile = fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile)
+        {
+            $this->log->warn("PHPTIMESTORE could not open metafile feedid=$feedid");
+            return false;
+        }
+        
+        if (!flock($metafile, LOCK_EX)) {
+            $this->log->warn("PHPTIMESTORE ".$this->dir.$feedname." is locked by another process");
+            fclose($metafile);
+            return false;
+        }
 
         fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("I",0));
@@ -577,7 +606,7 @@ class PHPTimestore
 
         fclose($metafile);
         
-        $this->set_npoints($feedid,$meta);
+        if (!$this->set_npoints($feedid,$meta)) return false;
         
         return $meta;
     }
@@ -587,6 +616,19 @@ class PHPTimestore
         $feedid = (int) $feedid;
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
         $metafile = fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile)
+        {
+            $this->log->warn("PHPTIMESTORE could not open npoints metafile feedid=$feedid");
+            return false;
+        }
+        
+        if (!flock($metafile, LOCK_EX)) {
+            $this->log->warn("PHPTIMESTORE ".$this->dir.$feedname." is locked by another process");
+            fclose($metafile);
+            return false;
+        }
+        
         fwrite($metafile,pack("I",$meta->npoints));
         fclose($metafile);
         return $meta;
