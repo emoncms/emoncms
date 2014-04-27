@@ -32,7 +32,7 @@ class PHPTimestore
             for ($l=0; $l<6; $l++) {
                 $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$l."_.dat", 'c+');
                 if (!$fh) {
-                    $this->log->warn("PHPTIMESTORE could not create data file for layer $l feedid=$feedid");
+                    $this->log->warn("PHPTimestore:create could not create data file for layer $l feedid=$feedid");
                     return false;
                 } else {
                     fclose($fh);
@@ -43,37 +43,41 @@ class PHPTimestore
         if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) {
             return true;
         } else {
-            $this->log->warn("PHPTIMESTORE meta file does not exist id=$feedid");
+            $this->log->warn("PHPTimestore:create meta file does not exist id=$feedid");
             return false;
         }
     }
 
     public function post($feedid, $timestamp, $value)
     {
-        //$this->log->warn("PHPTIMESTORE post id=$feedid");
+        //$this->log->warn("PHPTimestore post id=$feedid");
         $now = time();
         $start = $now-(3600*24*365*5); // 5 years in past
         $end = $now+(3600*48);         // 48 hours in future
         $rc = 0;
 
         if ($timestamp<$start || $timestamp>$end) {
-            $this->log->warn("PHPTIMESTORE timestamp out of range");
+            $this->log->warn("PHPTimestore:post timestamp out of range");
             return false;
         }
 
         $value = (float) $value;
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($feedid)) return false;
-
+        if (!$meta = $this->get_meta($feedid)) {
+            $this->log->warn("PHPTimestore:post failed to fetch meta id=$feedid");
+            return false;
+        }
+        
         /* For a new file this point represents the start of the database */
         $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
         if ($meta->npoints == 0) {
             $meta->start = $timestamp;
+            $this->create_meta($feedid,$meta);
         }
 
         /* Sanity checks */
         if ($timestamp < $meta->start) {
-            $this->log->warn("PHPTIMESTORE timestamp older than start time feedid=$feedid");
+            $this->log->warn("PHPTimestore:post timestamp older than start time feedid=$feedid");
             return false; // in the past
         }
 
@@ -111,13 +115,13 @@ class PHPTimestore
         
         if (!$fh)
         {
-            $this->log->warn("PHPTIMESTORE could not open data file for layer $layer feedid=$feedid");
+            $this->log->warn("PHPTimestore:update_layer could not open data file for layer $layer feedid=$feedid");
             return false;
         }
         
         if (!flock($fh, LOCK_EX)) {
-            $this->log->warn("PHPTIMESTORE data file for layer=$layer feedid=$feedid is locked by another process");
-            fclose($metafile);
+            $this->log->warn("PHPTimestore:update_layer data file for layer=$layer feedid=$feedid is locked by another process");
+            fclose($fh);
             return false;
         }
 
@@ -125,7 +129,7 @@ class PHPTimestore
             $npadding = ($point - $npoints);
 
             if ($npadding>2500000) {
-                $this->log->warn("PHPTIMESTORE npadding=$npadding > 2500000! exit feedid=$feedid");
+                $this->log->warn("PHPTimestore:update_layer npadding=$npadding > 2500000! exit feedid=$feedid");
                 return false;
             }
             // Maximum points per block
@@ -442,12 +446,15 @@ class PHPTimestore
         {
             $fh = fopen($primaryfeedname, 'rb');
             $size = filesize($primaryfeedname);
-
-            fseek($fh,$size-4);
-            $d = fread($fh,4);
-            fclose($fh);
-
-            $val = unpack("f",$d);
+            
+            if ($size>=4) {
+                fseek($fh,$size-4);
+                $d = fread($fh,4);
+                fclose($fh);
+                $val = unpack("f",$d);
+            } else {
+                $val = 0;
+            }
             $time = date("Y-n-j H:i:s", $meta->start + $meta->interval * $meta->npoints);
             return array('time'=>$time, 'value'=>$val[1]);
         }
@@ -473,7 +480,7 @@ class PHPTimestore
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
 
         if (!file_exists($this->dir.$feedname)) {
-            $this->log->warn("PHPTIMESTORE feed:$feedid metadata does not exist");
+            //$this->log->warn("PHPTimestore:get_meta feed:$feedid metadata does not exist");
             return false;
         }
         $meta = new stdClass();
@@ -481,7 +488,7 @@ class PHPTimestore
         $size = filesize($this->dir.$feedname);
         
         if (!($size==36 || $size == 272)) {
-            $this->log->warn("PHPTIMESTORE feed:$feedid metadata filesize error, size = $size");
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid metadata filesize error, size = $size");
             return false;
         } 
         
@@ -505,24 +512,19 @@ class PHPTimestore
         
         if ($meta->feedid != $feedid)
         {
-            $this->log->warn("PHPTIMESTORE feed:$feedid meta data mismatch, meta feedid: ".$meta->feedid);
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid meta data mismatch, meta feedid: ".$meta->feedid);
             return false;
         }
         
         if ($meta->nmetrics!=1) {
-            $this->log->warn("PHPTIMESTORE feed:$feedid nmetrics is not 1");
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid nmetrics is not 1");
             return false;
         }
         
         if ($meta->interval<5 || $meta->interval>(24*3600))
         {
-            $this->log->warn("PHPTIMESTORE feed:$feedid interval is out of range, interval is: ".$meta->interval);
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid interval is out of range, interval is: ".$meta->interval);
             return false;
-        }
-        
-        if ($meta->start <= 0) {
-          error_log("PHPTIMESTORE feed:$feedid start time must be greater than zero");
-          return false;
         }
         
         // Double verification of npoints
@@ -532,7 +534,7 @@ class PHPTimestore
         
         if ($filesize_npoints!=(int)$filesize_npoints) {
             // filesize result is corrupt
-            $this->log->warn("PHPTIMESTORE php filesize() is not integer multiple of 4 bytes id=$feedid");
+            $this->log->warn("PHPTimestore:get_meta php filesize() is not integer multiple of 4 bytes id=$feedid");
             return false;
         }
         
@@ -542,7 +544,7 @@ class PHPTimestore
             // 1) Transitioning to new system that saves npoints in a seperate file
             if ($legacy_npoints!=$filesize_npoints)
             {
-                $this->log->warn("PHPTIMESTORE legacy npoints does not match filesize npoints id=$feedid");
+                $this->log->warn("PHPTimestore:get_meta legacy npoints does not match filesize npoints id=$feedid");
                 return false;
             } else {
                 $meta->npoints = $filesize_npoints;
@@ -560,10 +562,15 @@ class PHPTimestore
         {
             // filesize npoints and npoints from the .npoints meta file should be the same
             // if there is a discrepancy then this suggests corrupt data.
-            $this->log->warn("PHPTIMESTORE meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) feedid=$feedid");
+            $this->log->warn("PHPTimestore:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) feedid=$feedid");
             return false;
             
             // $meta->npoints = $filesize_npoints;
+        }
+        
+        if ($meta->start <= 0 && $npoints>=1) {
+          error_log("PHPTimestore:get_meta feed:$feedid start time must be greater than zero");
+          return false;
         }
 
 
@@ -577,14 +584,13 @@ class PHPTimestore
 
         $metafile = fopen($this->dir.$feedname, 'wb');
         
-        if (!$metafile)
-        {
-            $this->log->warn("PHPTIMESTORE could not open metafile feedid=$feedid");
+        if (!$metafile) {
+            $this->log->warn("PHPTimestore:create_meta could not open metafile feedid=$feedid");
             return false;
         }
         
         if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPTIMESTORE ".$this->dir.$feedname." is locked by another process");
+            $this->log->warn("PHPTimestore:create_meta ".$this->dir.$feedname." is locked by another process");
             fclose($metafile);
             return false;
         }
@@ -617,14 +623,13 @@ class PHPTimestore
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
         $metafile = fopen($this->dir.$feedname, 'wb');
         
-        if (!$metafile)
-        {
-            $this->log->warn("PHPTIMESTORE could not open npoints metafile feedid=$feedid");
+        if (!$metafile) {
+            $this->log->warn("PHPTimestore:set_npoints could not open npoints metafile feedid=$feedid");
             return false;
         }
         
         if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPTIMESTORE ".$this->dir.$feedname." is locked by another process");
+            $this->log->warn("PHPTimestore:set_npoints ".$this->dir.$feedname." is locked by another process");
             fclose($metafile);
             return false;
         }

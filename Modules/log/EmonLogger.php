@@ -46,6 +46,6 @@ class EmonLogger
     
     public function warn ($message){
         if ($this->loggerConfigured)
-            $this->concreteLogger->warn($message);
+            $this->concreteLogger->warn(date("Y-n-j H:i:s", time()).", ".$message);
     }
 }

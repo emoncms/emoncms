@@ -21,11 +21,13 @@ class Feed
     public $engine;
     private $histogram;
     private $csvdownloadlimit_mb;
+    private $log;
 
     public function __construct($mysqli,$redis,$settings)
     {        
         $this->mysqli = $mysqli;
         $this->redis = $redis;
+        $this->log = new EmonLogger(__FILE__);
         
         // Load different storage engines
         require "Modules/feed/engine/MysqlTimeSeries.php";
@@ -112,6 +114,7 @@ class Feed
 
             if ($engineresult == false)
             {
+                $this->log->warn("Feed model: failed to create feed model feedid=$feedid");
                 // Feed engine creation failed so we need to delete the meta entry for the feed
                 
                 $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
@@ -479,7 +482,10 @@ class Feed
         
         // Download limit
         $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
-        if ($downloadsize>($this->csvdownloadlimit_mb*1048576)) return false;
+        if ($downloadsize>($this->csvdownloadlimit_mb*1048576)) {
+            $this->log->warn("Feed model: csv download limit exeeded downloadsize=$downloadsize feedid=$feedid");
+            return false;
+        }
 
         // Call to engine get_average method
         return $this->engine[$engine]->csv_export($feedid,$start,$end,$outinterval);
@@ -627,7 +633,10 @@ class Feed
         $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine FROM feeds WHERE `id` = '$id'");
         $row = $result->fetch_object();
 
-        if (!$row) return false;
+        if (!$row) {
+            $this->log->warn("Feed model: Requested feed does not exist feedid=$id");
+            return false;
+        }
 
         $this->redis->hMSet("feed:$row->id",array(
             'id'=>$row->id,

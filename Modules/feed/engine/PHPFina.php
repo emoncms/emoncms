@@ -48,11 +48,14 @@ class PHPFina
             $this->create_meta($id,$meta);
             
             $fh = fopen($this->dir.$meta->id.".dat", 'c+');
+            
+            if (!$fh) {
+                $this->log->warn("PHPFina could not create data file id=$id");
+                return false;
+            }
             fclose($fh);
         }
         
-
-
         $feedname = "$id.meta";
         if (file_exists($this->dir.$feedname)) {
             return true;
@@ -107,6 +110,7 @@ class PHPFina
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
         if ($meta->npoints == 0) {
             $meta->start_time = $timestamp;
+            $this->create_meta($id,$meta);
         }
 
         if ($timestamp < $meta->start_time) {
@@ -124,6 +128,10 @@ class PHPFina
         }
 
         $fh = fopen($this->dir.$meta->id.".dat", 'c+');
+        if (!$fh) {
+            $this->log->warn("PHPFINA could not open data file id=$id");
+            return false;
+        }
         
         // Write padding
         $padding = ($pos - $last_pos)-1;
@@ -136,6 +144,9 @@ class PHPFina
                 $this->log->warn("PHPFINA padding max block size exeeded id=$id");
                 return false;
             }
+        } else {
+            //$this->log->warn("PHPFINA padding less than 0 id=$id");
+            //return false;
         }
         
         // Write new datapoint
@@ -160,49 +171,7 @@ class PHPFina
     */
     public function update($id,$timestamp,$value)
     {
-        $id = (int) $id;
-        $timestamp = (int) $timestamp;
-        $value = (float) $value;
-
-        // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
-
-        // Calculate interval that this datapoint belongs too
-        $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
-
-        // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->npoints == 0) {
-            $meta->start_time = $timestamp;
-        }
-
-        if ($timestamp < $meta->start_time) {
-            return false; // in the past
-        }	
-
-        // Calculate position in base data file of datapoint
-        $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
-
-        $last_pos = $meta->npoints - 1;
-
-        $fh = fopen($this->dir.$meta->id.".dat", 'c+');
-        
-        // Write padding
-        $padding = ($pos - $last_pos)-1;
-        if ($padding>0) $this->write_padding($fh,$meta->npoints,$padding);
-        
-        // Write new datapoint
-	    fseek($fh,4*$pos);
-        if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
-        
-        // Close file
-        fclose($fh);
-        
-        if (($pos+1)>$meta->npoints) {
-          $meta->npoints = $pos + 1;
-          $this->set_npoints($id,$meta);
-        }
-        
-        return $value;
+        return $this->post($id,$timestamp,$value);
     }
 
     /**
@@ -403,6 +372,18 @@ class PHPFina
         
         $feedname = "$id.meta";
         $metafile = fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile) {
+            $this->log->warn("PHPFINA could not open meta data file id=".$meta->id);
+            return false;
+        }
+        
+        if (!flock($metafile, LOCK_EX)) {
+            $this->log->warn("PHPFINA meta file id=".$meta->id." is locked by another process");
+            fclose($metafile);
+            return false;
+        }
+        
         fwrite($metafile,pack("I",$meta->id));
         // Legacy npoints, npoints moved to seperate file
         fwrite($metafile,pack("I",0)); 
@@ -419,6 +400,18 @@ class PHPFina
         
         $feedname = "$id.npoints";    
         $metafile = fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile) {
+            $this->log->warn("PHPFINA could not open meta data file id=".$meta->id);
+            return false;
+        }
+        
+        if (!flock($metafile, LOCK_EX)) {
+            $this->log->warn("PHPFINA meta file id=".$meta->id." is locked by another process");
+            fclose($metafile);
+            return false;
+        }
+        
         fwrite($metafile,pack("I",$meta->npoints));
         fclose($metafile);
     }
