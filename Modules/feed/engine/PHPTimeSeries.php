@@ -25,7 +25,7 @@ class PHPTimeSeries
     {
         $fh = fopen($this->dir."feed_$feedid.MYD", 'a');
         if (!$fh) {
-            $this->log->warn("PHPTIMESERIES could not create data file feedid=$feedid");
+            $this->log->warn("PHPTimeSeries:create could not create data file feedid=$feedid");
         }
         fclose($fh);
 
@@ -44,7 +44,7 @@ class PHPTimeSeries
         // Get last value
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         if (!$fh) {
-            $this->log->warn("PHPTIMESERIES could not open data file feedid=$feedid");
+            $this->log->warn("PHPTimeSeries:post could not open data file feedid=$feedid");
             return false;
         }
         
@@ -53,7 +53,7 @@ class PHPTimeSeries
         $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
         if ($csize!=$filesize) {
         
-            $this->log->warn("PHPTIMESERIES filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
+            $this->log->warn("PHPTimeSeries:post filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
             // correct corrupt data
             fclose($fh);
 
@@ -118,12 +118,12 @@ class PHPTimeSeries
         $fh = fopen($filename,$mode);
 
         if (!$fh) {
-            $this->log->warn("PHPTIMESERIES could not open $filename");
+            $this->log->warn("PHPTimeSeries:fopendata could not open $filename");
             return false;
         }
         
         if (!flock($fh, LOCK_EX)) {
-            $this->log->warn("PHPTIMESERIES $filename locked by another process");
+            $this->log->warn("PHPTimeSeries:fopendata $filename locked by another process");
             fclose($fh);
             return false;
         }

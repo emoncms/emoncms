@@ -50,7 +50,7 @@ class PHPFina
             $fh = fopen($this->dir.$meta->id.".dat", 'c+');
             
             if (!$fh) {
-                $this->log->warn("PHPFina could not create data file id=$id");
+                $this->log->warn("PHPFina:create could not create data file id=$id");
                 return false;
             }
             fclose($fh);
@@ -60,7 +60,7 @@ class PHPFina
         if (file_exists($this->dir.$feedname)) {
             return true;
         } else {
-            $this->log->warn("PHPFINA failed to create feed id=$id");
+            $this->log->warn("PHPFina:create failed to create feed id=$id");
             return false;
         }
     }
@@ -83,7 +83,7 @@ class PHPFina
     */
     public function post($id,$timestamp,$value)
     {
-        $this->log->info("PHPFINA post id=$id timestamp=$timestamp value=$value");
+        $this->log->info("PHPFina:post post id=$id timestamp=$timestamp value=$value");
         
         $id = (int) $id;
         $timestamp = (int) $timestamp;
@@ -94,13 +94,13 @@ class PHPFina
         $end = $now+(3600*48);         // 48 hours in future
         
         if ($timestamp<$start || $timestamp>$end) {
-            $this->log->warn("PHPFINA timestamp out of range");
+            $this->log->warn("PHPFina:post timestamp out of range");
             return false;
         }
         
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) {
-            $this->log->warn("PHPFINA failed to fetch meta id=$id");
+            $this->log->warn("PHPFina:post failed to fetch meta id=$id");
             return false;
         }
 
@@ -114,7 +114,7 @@ class PHPFina
         }
 
         if ($timestamp < $meta->start_time) {
-            $this->log->warn("PHPFINA timestamp older than feed start time id=$id");
+            $this->log->warn("PHPFina:post timestamp older than feed start time id=$id");
             return false; // in the past
         }	
 
@@ -129,7 +129,7 @@ class PHPFina
 
         $fh = fopen($this->dir.$meta->id.".dat", 'c+');
         if (!$fh) {
-            $this->log->warn("PHPFINA could not open data file id=$id");
+            $this->log->warn("PHPFina:post could not open data file id=$id");
             return false;
         }
         
@@ -141,7 +141,7 @@ class PHPFina
             {
                 // Npadding returned false = max block size was exeeded
                 
-                $this->log->warn("PHPFINA padding max block size exeeded id=$id");
+                $this->log->warn("PHPFina:post padding max block size exeeded id=$id");
                 return false;
             }
         } else {
@@ -301,7 +301,7 @@ class PHPFina
         $feedname = "$id.meta";
         
         if (!file_exists($this->dir.$feedname)) {
-            $this->log->warn("PHPFINA meta file does not exist id=$id");
+            $this->log->warn("PHPFina:get_meta meta file does not exist id=$id");
             return false;
         }
         
@@ -330,7 +330,7 @@ class PHPFina
         if ($filesize_npoints!=(int)$filesize_npoints) {
             // filesize result is corrupt
             
-            $this->log->warn("PHPFINA php filesize() is not integer multiple of 4 bytes id=$id");
+            $this->log->warn("PHPFina:get_meta php filesize() is not integer multiple of 4 bytes id=$id");
             return false;
         }
         
@@ -339,7 +339,7 @@ class PHPFina
             if ($legacy_npoints!=$filesize_npoints)
             {
                 // discrepancy between legacy npoints and filesize npoints, they should be the same at this point
-                $this->log->warn("PHPFINA legacy npoints does not match filesize npoints id=$id");
+                $this->log->warn("PHPFina:get_meta legacy npoints does not match filesize npoints id=$id");
                 return false;
             } else {
                 $meta->npoints = $filesize_npoints;
@@ -357,7 +357,7 @@ class PHPFina
         {
             // filesize npoints and npoints from the .npoints meta file should be the same
             // if there is a discrepancy then this suggests corrupt data.
-            $this->log->warn("PHPFINA meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) id=$id");
+            $this->log->warn("PHPFina:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) id=$id");
             return false;
             
             // $meta->npoints = $filesize_npoints;
@@ -374,12 +374,12 @@ class PHPFina
         $metafile = fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
-            $this->log->warn("PHPFINA could not open meta data file id=".$meta->id);
+            $this->log->warn("PHPFina:create_meta could not open meta data file id=".$meta->id);
             return false;
         }
         
         if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPFINA meta file id=".$meta->id." is locked by another process");
+            $this->log->warn("PHPFina:create_meta meta file id=".$meta->id." is locked by another process");
             fclose($metafile);
             return false;
         }
@@ -402,12 +402,12 @@ class PHPFina
         $metafile = fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
-            $this->log->warn("PHPFINA could not open meta data file id=".$meta->id);
+            $this->log->warn("PHPFina:set_npoints could not open meta data file id=".$meta->id);
             return false;
         }
         
         if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPFINA meta file id=".$meta->id." is locked by another process");
+            $this->log->warn("PHPFina:set_npoints meta file id=".$meta->id." is locked by another process");
             fclose($metafile);
             return false;
         }
