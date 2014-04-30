@@ -123,9 +123,9 @@ class PHPFina
 
         $last_pos = $meta->npoints - 1;
 
-        if ($pos<=$last_pos) {
-            return false; // updating of datapoints to be made available via update function
-        }
+        // if ($pos<=$last_pos) {
+        // return false;
+        // }
 
         $fh = fopen($this->dir.$meta->id.".dat", 'c+');
         if (!$fh) {
