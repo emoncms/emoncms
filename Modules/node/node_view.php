@@ -1,5 +1,9 @@
 <?php 
-  global $path; 
+  global $path, $feed_settings; 
+  
+  $enable_mysql_all = 0;
+  if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
+
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/node/node.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/node/processlist.js"></script>
@@ -67,18 +71,18 @@
                         <span class="add-on feed-engine-label">Feed engine: </span>
                         <select id="feed-engine">
 
-                        <!--<optgroup label="Recommended">-->
+                        <optgroup label="Recommended">
                         <option value=6 selected>Fixed Interval With Averaging</option>
                         <option value=5 >Fixed Interval No Averaging</option>
                         <option value=2 >Variable Interval No Averaging</option>
-                        <!--</optgroup>-->
+                        </optgroup>
 
-                        <!--<optgroup label="Other">
+                        <optgroup label="Other">
                         <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
                         <option value=1 >TIMESTORE (Requires installation of timestore)</option>
                         <option value=3 >GRAPHITE (Requires installation of graphite)</option>
                         <option value=0 >MYSQL (Slow when there is a lot of data)</option>
-                        </optgroup>-->
+                        </optgroup>
 
                         </select>
 
@@ -121,6 +125,8 @@
 <script>
 
   var path = "<?php echo $path; ?>";
+  
+  processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
   
   var nodes = node.getall();
   

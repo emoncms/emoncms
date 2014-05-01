@@ -400,6 +400,7 @@ class Feed
         $engine = $this->get_engine($feedid);
         
         // Call to engine post method
+        clearstatcache();
         $this->engine[$engine]->post($feedid,$feedtime,$value);
 
         $this->set_timevalue($feedid, $value, $updatetime);
@@ -427,6 +428,7 @@ class Feed
         $engine = $this->get_engine($feedid);
         
         // Call to engine update method
+        clearstatcache();
         $value = $this->engine[$engine]->update($feedid,$feedtime,$value);
        
         // need to find a way to not update if value being updated is older than the last value

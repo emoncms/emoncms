@@ -11,6 +11,9 @@
 
 global $path, $session;
 
+$enable_mysql_all = 0;
+if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
+
 $nodeid = $_GET['node'];
 $variableid = $_GET['variable'];
 
@@ -116,6 +119,8 @@ $variableid = $_GET['variable'];
 <script type="text/javascript">
 
 var path = "<?php echo $path; ?>";
+
+processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
 
 processlist_ui.nodeid = <?php echo $nodeid; ?>;
 processlist_ui.variableid = <?php echo $variableid; ?>;

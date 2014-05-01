@@ -9,7 +9,10 @@
     http://openenergymonitor.org
 */
 
-global $path, $session;
+global $path, $session, $feed_settings;
+
+$enable_mysql_all = 0;
+if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
 
 ?>
 
@@ -111,6 +114,8 @@ global $path, $session;
 <script type="text/javascript">
 
 var path = "<?php echo $path; ?>";
+
+processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
 
 processlist_ui.inputid = <?php echo $inputid; ?>;
 

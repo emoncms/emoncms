@@ -106,7 +106,7 @@ class PHPFina
 
         // Calculate interval that this datapoint belongs too
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
-
+        
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
         if ($meta->npoints == 0) {
             $meta->start_time = $timestamp;
