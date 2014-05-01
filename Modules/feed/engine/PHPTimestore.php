@@ -26,6 +26,11 @@ class PHPTimestore
 
             // Save meta data
             $this->save_meta($feedid,$meta);
+            
+            for ($l=0; $l<6; $l++) {
+                $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$l."_.dat", 'c+');
+                fclose($fh);
+            }
         }
 
         if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) return true;
@@ -261,7 +266,7 @@ class PHPTimestore
 
         // Downsample to the desired number of datapoints - or as close as we can get within an integer multiple of the lower layer
 
-        $count = count($layer_values)-1;
+        $count = count($layer_values);
 
         //print "point: ".$point."<br>";
         //print "range: ".$range."<br>";
@@ -276,7 +281,7 @@ class PHPTimestore
         //print "Layer values: <br>";
 
         // Read in steps of tge averaged block size
-        for ($i=1; $i<$count-$naverage; $i+=$naverage)
+        for ($i=1; $i<=($count-$naverage+1); $i+=$naverage)
         {
             // Calculate the average value of each block
             $point_sum = 0;
@@ -601,6 +606,17 @@ class PHPTimestore
         $start = (int) $start;
         $end = (int) $end;
         $outinterval = (int) $outinterval;
+
+        if ($end == 0) $end = time();
+
+        $meta = $this->get_meta($feedid);
+
+        $start = round($start/$meta->interval)*$meta->interval;
+        
+        if ($outinterval<1) $outinterval = 1;
+        $npoints = ceil(($end - $start) / $outinterval);
+        $end = $start + ($npoints * $outinterval);
+        if ($npoints<1) return false;
         
         $meta->decimation = array(20, 6, 6, 4, 7);
 

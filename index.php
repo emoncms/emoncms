@@ -12,7 +12,7 @@
 
     */
     
-    $emoncms_version = "8.0.4";
+    $emoncms_version = "8.1.2";
 
     $ltime = microtime(true);
 
@@ -25,6 +25,8 @@
     require "locale.php";
 
     $path = get_application_path();
+
+    require "Modules/log/EmonLogger.php";
 
     // 2) Database
     $mysqli = @new mysqli($server,$username,$password,$database);

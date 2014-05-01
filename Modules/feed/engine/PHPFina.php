@@ -42,7 +42,12 @@ class PHPFina
 
             // Save meta data
             $this->set_meta($id,$meta);
+            
+            $fh = fopen($this->dir.$meta->id.".dat", 'c+');
+            fclose($fh);
         }
+        
+
 
         $feedname = "$id.meta";
         if (file_exists($this->dir.$feedname)) return true;

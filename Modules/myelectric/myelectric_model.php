@@ -27,7 +27,7 @@ class MyElectric
     {
         $userid = (int) $userid;
         $data = json_decode($json);
-        if (!$data) return false;
+        if (!$data) return array('success'=>false);
         
         // Input sanitisation
         $outdata = array();
@@ -43,9 +43,14 @@ class MyElectric
         $result = $this->mysqli->query("SELECT `userid` FROM myelectric WHERE `userid`='$userid'");
         if ($result->num_rows) {
             $this->mysqli->query("UPDATE myelectric SET `data`='$json' WHERE `userid`='$userid'");
+            return true;
+            
         } else {
             $this->mysqli->query("INSERT INTO myelectric (`userid`,`data`) VALUES ('$userid','$json')");
+            return true;
         }
+        
+        return array('success'=>false);
     }
     
     public function get_mysql($userid)
@@ -55,7 +60,7 @@ class MyElectric
         if ($row = $result->fetch_array()) {
             return json_decode($row['data']);
         } else {
-            return array("powerfeed"=>0, "kwhfeed"=>0);
+            return false;
         }
         
     }

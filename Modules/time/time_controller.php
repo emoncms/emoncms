@@ -37,5 +37,3 @@ function time_controller()
 
     return array('content'=>$result);
 }
-
-?>

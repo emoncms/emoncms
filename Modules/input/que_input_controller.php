@@ -16,16 +16,16 @@ function input_controller()
 {
     //return array('content'=>"ok");
 
-    global $mysqli, $redis, $user, $session, $route;
+    global $mysqli, $redis, $user, $session, $route, $max_node_id_limit, $feed_settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
 
-    global $feed, $timestore_adminkey;
+    global $feed;
     $result = false;
 
     include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $timestore_adminkey);
+    $feed = new Feed($mysqli,$redis, $feed_settings);
 
     require "Modules/input/input_model.php"; // 295
     $input = new Input($mysqli,$redis, $feed);
@@ -39,16 +39,7 @@ function input_controller()
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
         if ($route->action == 'node') $result =  view("Modules/input/Views/input_node.php", array());
-        if ($route->action == 'process')
-        {
-            $result = view("Modules/input/Views/process_list.php",
-            array(
-                    'inputid'=> intval(get('inputid')),
-                    'processlist' => $process->get_process_list(),
-                    'inputlist' => $input->getlist($session['userid']),
-                    'feedlist'=> $feed->get_user_feeds($session['userid'],0)
-            ));
-        }
+        if ($route->action == 'process') $result = view("Modules/input/Views/process_list.php",array('inputid'=> intval(get('inputid'))));
     }
 
     if ($route->format == 'json')
@@ -271,7 +262,8 @@ function input_controller()
         if ($route->action == "clean") $result = $input->clean($session['userid']);
         if ($route->action == "list") $result = $input->getlist($session['userid']);
         if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
-
+        if ($route->action == "getallprocesses") $result = $process->get_process_list();
+        
         if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
             if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
@@ -280,16 +272,14 @@ function input_controller()
 
             if ($route->action == "process")
             {
-                if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'));
-                if ($route->subaction == "list") $result = $input->get_processlist_desc($process, get("inputid"));
+                if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'),get('engine'));
+                if ($route->subaction == "list") $result = $input->get_processlist(get("inputid"));
                 if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
                 if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
                 if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
-            }
+            }           
         }
     }
 
     return array('content'=>$result);
 }
-
-?>

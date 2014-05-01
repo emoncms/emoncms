@@ -19,7 +19,7 @@ function myelectric_controller()
 
     if ($route->format == 'json')
     {
-        if ($route->action == "set" && $session['write']) $myelectric->set_mysql($session['userid'],get('data'));
+        if ($route->action == "set" && $session['write']) $result = $myelectric->set_mysql($session['userid'],get('data'));
         if ($route->action == "get" && $session['read']) $result = $myelectric->get_mysql($session['userid']);
     }
 

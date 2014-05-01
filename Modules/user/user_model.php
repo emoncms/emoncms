@@ -19,6 +19,7 @@ class User
     private $rememberme;
     private $enable_rememberme = false;
     private $redis;
+    private $log;
 
     public function __construct($mysqli,$redis,$rememberme)
     {
@@ -30,6 +31,7 @@ class User
         $this->rememberme = $rememberme;
 
         $this->redis = $redis;
+        $this->log = new EmonLogger(__FILE__);
     }
 
     //---------------------------------------------------------------------------------------
@@ -334,8 +336,18 @@ class User
                 if ($enable_password_reset==true)
                 {
                     global $smtp_email_settings;
-                    
-                    require_once 'swift_required.php';
+
+                    // include SwiftMailer. One is the path from a PEAR install,
+                    // the other from libphp-swiftmailer.
+                    $have_swift = @include_once ("Swift/swift_required.php"); 
+                    if (!$have_swift) {
+                       $have_swift = @include_once ("swift_required.php");
+                    }
+
+                    if (!$have_swift){
+                        $this->log->info("Could not include SwiftMailer from either possible path!");
+                        return array('success'=>false, 'message'=>"Could not find SwiftMailer - cannot proceed");
+                    }
 
                     $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], 26)
                     ->setUsername($smtp_email_settings['username'])->setPassword($smtp_email_settings['password']);
@@ -347,6 +359,7 @@ class User
                       ->setTo(array($email))
                       ->setBody("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>", 'text/html');
                     $result = $mailer->send($message);
+                    $this->log->info("Sent ".$result." email(s)");
                 }
                 //------------------------------------------------------------------------------
 

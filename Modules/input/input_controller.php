@@ -208,7 +208,7 @@ function input_controller()
         {
             $valid = true; $error = "";
 
-            $nodeid = get('node');
+            $nodeid = (int) get('node');
 
             $error = " old".$max_node_id_limit;
 
@@ -320,5 +320,3 @@ function input_controller()
 
     return array('content'=>$result);
 }
-
-?>

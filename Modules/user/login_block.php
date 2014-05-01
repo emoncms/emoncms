@@ -51,11 +51,11 @@ global $path, $allowusersregister, $enable_rememberme, $enable_password_reset;
             <p class="login-item">
                 <?php if ($enable_rememberme) { ?><label class="checkbox"><input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?></label><br /><?php } ?>
                 <button id="login" class="btn btn-primary" tabindex="6" type="button"><?php echo _('Login'); ?></button>
-                <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp' ?><a id="register-link"  href="#"><?php echo _('register'); ?></a><?php } ?>
+                <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp;' ?><a id="register-link"  href="#"><?php echo _('register'); ?></a><?php } ?>
             </p>
 
             <p class="register-item" style="display:none">
-                <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> <?php echo '&nbsp;'._('or').'&nbsp' ?>
+                <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button> <?php echo '&nbsp;'._('or').'&nbsp;' ?>
                 <a id="cancel-link" href="#"><?php echo _('cancel'); ?></a>
             </p>
 

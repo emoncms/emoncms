@@ -4,11 +4,6 @@
 
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-<style>
-input[type="text"] {
-     width: 88%;
-}
-</style>
 
 <h2>Users</h2>
 
@@ -35,8 +30,8 @@ input[type="text"] {
 
     table.fields = {
         'id':{'title':"<?php echo _('Id'); ?>", 'type':"textlink", 'link':"setuser?id="},
-        'username':{'title':"<?php echo _('Name'); ?>", 'type':"fixed"},
-        'email':{'title':"<?php echo _('Tag'); ?>", 'type':"fixed"}
+        'username':{'title':"<?php echo _('Username'); ?>", 'type':"fixed"},
+        'email':{'title':"<?php echo _('Email'); ?>", 'type':"fixed"}
     }
 
     table.data = admin.userlist();
