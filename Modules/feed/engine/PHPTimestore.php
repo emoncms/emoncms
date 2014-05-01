@@ -50,7 +50,8 @@ class PHPTimestore
 
     public function post($feedid, $timestamp, $value)
     {
-        //$this->log->warn("PHPTimestore post id=$feedid");
+        $this->log->info("PHPTimestore:post id=$feedid timestamp=$timestamp value=$value");
+        
         $now = time();
         $start = $now-(3600*24*365*5); // 5 years in past
         $end = $now+(3600*48);         // 48 hours in future

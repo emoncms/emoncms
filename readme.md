@@ -223,7 +223,7 @@ Now save and close and restart your apache.
     sudo pear channel-discover pear.apache.org/log4php
     sudo pear install log4php/Apache_log4php
     
-    ensure that log file has write permissions for www-data, pi and root.
+ensure that log file has write permissions for www-data, pi and root.
     
     sudo chmod 660 emoncms.log 
 
