@@ -103,7 +103,7 @@ class PHPFina
             $this->log->warn("PHPFina:post failed to fetch meta id=$id");
             return false;
         }
-
+        
         // Calculate interval that this datapoint belongs too
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
         
@@ -156,7 +156,8 @@ class PHPFina
         // Close file
         fclose($fh);
         
-        $meta->npoints = $pos + 1;
+        if (($pos+1)>$meta->npoints) $meta->npoints = $pos + 1;
+        
         $this->set_npoints($id,$meta);
         
         return $value;
@@ -359,7 +360,12 @@ class PHPFina
             // if there is a discrepancy then this suggests corrupt data.
             $this->log->warn("PHPFina:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) id=$id");
             return false;
-            $meta->npoints = $filesize_npoints;
+            
+            // Note: npoints should not diverge, if it does and only by a 1 or 2 dp then
+            // it is possible to manually correct the feed by removing the 'return false;' 
+            // line above and uncommenting this line (you may want to backup your feed beforehand): 
+            
+            // $meta->npoints = $filesize_npoints;
         }
   
         return $meta;
