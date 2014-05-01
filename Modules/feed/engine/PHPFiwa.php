@@ -99,6 +99,8 @@ class PHPFiwa
     */
     public function post($id,$timestamp,$value)
     {   
+        $this->log->info("PHPFiwa:post id=$id timestamp=$timestamp value=$value");
+
         $id = (int) $id;
         $timestamp = (int) $timestamp;
         $value = (float) $value;

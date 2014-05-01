@@ -344,7 +344,7 @@ class PHPFina
             } else {
                 $meta->npoints = $filesize_npoints;
             }
-            
+
         } else {
             $metafile = fopen($this->dir."$id.npoints", 'rb');
             $tmp = unpack("I",fread($metafile,4));
@@ -352,15 +352,14 @@ class PHPFina
             fclose($metafile);
             $meta->npoints = $npoints;
         }
-        
+
         if ($npoints!=$filesize_npoints)
         {
             // filesize npoints and npoints from the .npoints meta file should be the same
             // if there is a discrepancy then this suggests corrupt data.
             $this->log->warn("PHPFina:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) id=$id");
             return false;
-            
-            // $meta->npoints = $filesize_npoints;
+            $meta->npoints = $filesize_npoints;
         }
   
         return $meta;

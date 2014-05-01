@@ -5,7 +5,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function node_controller()
 {
-    global $mysqli, $redis, $session, $route, $feed_settings;
+    global $mysqli, $redis, $session, $route, $feed_settings, $user;
     $result = false;
 
     include "Modules/feed/feed_model.php";
@@ -16,6 +16,7 @@ function node_controller()
 
     require "Modules/input/process_model.php"; // 886
     $process = new Process($mysqli,$input,$feed);
+    $process->set_timezone_offset($user->get_timezone($session['userid']));
 
     include "Modules/node/node_model.php";
     $node = new Node($mysqli,$redis,$process);
