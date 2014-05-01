@@ -224,7 +224,7 @@ calls the feed API on the server via AJAX. -->
         else if (dailytype==2)
         {
             daily = daily_data_copy;
-            $("#kwhd").html((daily[0][1]*1).toFixed(1));
+            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
         }
         else if (dailytype==3)
         {
