@@ -15,8 +15,8 @@
     
     $feed_settings = array(
 
-        'creatable_engines'=>array('MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE'),
-
+        'enable_mysql_all'=>true,
+        
         'timestore'=>array(
             'adminkey'=>"_TS_ADMINKEY_"
         ),

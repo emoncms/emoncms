@@ -3,10 +3,12 @@
 class PHPTimestore
 {
     private $dir = "/var/lib/timestore/";
-
+    private $log;
+    
     public function __construct($settings)
     {
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        $this->log = new EmonLogger(__FILE__);
     }
 
     public function create($feedid,$options)
@@ -25,58 +27,75 @@ class PHPTimestore
             $meta->interval = $interval;
 
             // Save meta data
-            $this->save_meta($feedid,$meta);
+            $this->create_meta($feedid,$meta);
             
             for ($l=0; $l<6; $l++) {
                 $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$l."_.dat", 'c+');
-                fclose($fh);
+                if (!$fh) {
+                    $this->log->warn("PHPTimestore:create could not create data file for layer $l feedid=$feedid");
+                    return false;
+                } else {
+                    fclose($fh);
+                }
             }
         }
 
-        if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) return true;
-        return false;
+        if (file_exists($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb")) {
+            return true;
+        } else {
+            $this->log->warn("PHPTimestore:create meta file does not exist id=$feedid");
+            return false;
+        }
     }
 
     public function post($feedid, $timestamp, $value)
     {
+        $this->log->info("PHPTimestore:post id=$feedid timestamp=$timestamp value=$value");
+        
         $now = time();
         $start = $now-(3600*24*365*5); // 5 years in past
         $end = $now+(3600*48);         // 48 hours in future
         $rc = 0;
 
-        if ($timestamp>$start && $timestamp<$end)
-        {
-
-            $value = (float) $value;
-            // If meta data file does not exist then exit
-            if (!$meta = $this->get_meta($feedid)) return false;
-
-            /* For a new file this point represents the start of the database */
-            $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
-            if ($meta->npoints == 0) {
-                $meta->start = $timestamp;
-            }
-
-            /* Sanity checks */
-            if ($timestamp < $meta->start) {
-                return false; // in the past
-            }
-
-            /* Determine position of point in the top-level */
-            $point = floor(($timestamp - $meta->start) / $meta->interval);
-
-            /* Update layers */
-            $rc = $this->update_layer($meta,0,$point,$meta->npoints,$value);
-            if ($rc == 0) {
-                /* Update metadata with new number of top-level points */
-                if ($point >= $meta->npoints)
-                {
-                    $meta->npoints = $point + 1;
-                    $this->save_meta($feedid,$meta);
-                }
-            }
-
+        if ($timestamp<$start || $timestamp>$end) {
+            $this->log->warn("PHPTimestore:post timestamp out of range");
+            return false;
         }
+
+        $value = (float) $value;
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($feedid)) {
+            $this->log->warn("PHPTimestore:post failed to fetch meta id=$feedid");
+            return false;
+        }
+        
+        /* For a new file this point represents the start of the database */
+        $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
+        if ($meta->npoints == 0) {
+            $meta->start = $timestamp;
+            $this->create_meta($feedid,$meta);
+        }
+
+        /* Sanity checks */
+        if ($timestamp < $meta->start) {
+            $this->log->warn("PHPTimestore:post timestamp older than start time feedid=$feedid");
+            return false; // in the past
+        }
+
+        /* Determine position of point in the top-level */
+        $point = floor(($timestamp - $meta->start) / $meta->interval);
+
+        /* Update layers */
+        $rc = $this->update_layer($meta,0,$point,$meta->npoints,$value);
+        if ($rc == 0) {
+            /* Update metadata with new number of top-level points */
+            if ($point >= $meta->npoints)
+            {
+                $meta->npoints = $point + 1;
+                $this->set_npoints($feedid,$meta);
+            }
+        }
+
         return $rc;
     }
     
@@ -94,12 +113,24 @@ class PHPTimestore
         $tsdb_max_padding_block = 1024 * 1024;
 
         $fh = fopen($this->dir.str_pad($meta->feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat", 'c+');
+        
+        if (!$fh)
+        {
+            $this->log->warn("PHPTimestore:update_layer could not open data file for layer $layer feedid=$feedid");
+            return false;
+        }
+        
+        if (!flock($fh, LOCK_EX)) {
+            $this->log->warn("PHPTimestore:update_layer data file for layer=$layer feedid=$feedid is locked by another process");
+            fclose($fh);
+            return false;
+        }
 
         if ($point > $npoints) {
             $npadding = ($point - $npoints);
 
             if ($npadding>2500000) {
-                echo "ERROR 2!!!";
+                $this->log->warn("PHPTimestore:update_layer npadding=$npadding > 2500000! exit feedid=$feedid");
                 return false;
             }
             // Maximum points per block
@@ -110,9 +141,9 @@ class PHPTimestore
 
             // Fill padding buffer
             $buf = '';
-                    for ($n = 0; $n < $pointsperblock; $n++) {
+            for ($n = 0; $n < $pointsperblock; $n++) {
                 $buf .= pack("f",NAN);
-                    }
+            }
 
 
             fseek($fh,4*$npoints);
@@ -183,7 +214,7 @@ class PHPTimestore
 
         if ($end == 0) $end = time();
 
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         $start = round($start/$meta->interval)*$meta->interval;
         
@@ -234,6 +265,7 @@ class PHPTimestore
 
         if ($out_interval > $layer_interval) $naverage = floor($out_interval / $layer_interval);
         else $naverage = 1;
+        
         // equivalent to: $naverage = ($out_interval > $layer_interval) ? $out_interval / $layer_interval : 1;
 
         /* Generate output points by averaging all available input points between the start
@@ -263,7 +295,6 @@ class PHPTimestore
         // Read in the full range of datapoints
         $layer_values = unpack("f*",fread($fh, 4 * $range));
         fclose($fh);
-
         // Downsample to the desired number of datapoints - or as close as we can get within an integer multiple of the lower layer
 
         $count = count($layer_values);
@@ -323,8 +354,7 @@ class PHPTimestore
         $dp = 1000;
 
         // Load the timestore meta data
-        $meta = $this->get_meta($feedid);
-        if (!$meta) return false;
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         // The number of datapoints in the query range:
         $dp_in_range = ($end - $start) / $meta->interval;
@@ -407,7 +437,8 @@ class PHPTimestore
     public function lastvalue($feedid)
     {
         $feedid = (int) $feedid;
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
+        
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat";
 
         $primaryfeedname = $this->dir.$feedname;
@@ -416,12 +447,15 @@ class PHPTimestore
         {
             $fh = fopen($primaryfeedname, 'rb');
             $size = filesize($primaryfeedname);
-
-            fseek($fh,$size-4);
-            $d = fread($fh,4);
-            fclose($fh);
-
-            $val = unpack("f",$d);
+            
+            if ($size>=4) {
+                fseek($fh,$size-4);
+                $d = fread($fh,4);
+                fclose($fh);
+                $val = unpack("f",$d);
+            } else {
+                $val = 0;
+            }
             $time = date("Y-n-j H:i:s", $meta->start + $meta->interval * $meta->npoints);
             return array('time'=>$time, 'value'=>$val[1]);
         }
@@ -446,9 +480,19 @@ class PHPTimestore
         $feedid = (int) $feedid;
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
 
-        if (!file_exists($this->dir.$feedname)) return false;
-
+        if (!file_exists($this->dir.$feedname)) {
+            //$this->log->warn("PHPTimestore:get_meta feed:$feedid metadata does not exist");
+            return false;
+        }
         $meta = new stdClass();
+        
+        $size = filesize($this->dir.$feedname);
+        
+        if (!($size==36 || $size == 272)) {
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid metadata filesize error, size = $size");
+            return false;
+        } 
+        
         $metafile = fopen($this->dir.$feedname, 'rb');
 
         fseek($metafile,8);
@@ -458,29 +502,105 @@ class PHPTimestore
         $tmp = unpack("I",fread($metafile,4));
         $meta->nmetrics = $tmp[1];
         $tmp = unpack("I",fread($metafile,4));
-        $meta->npoints = $tmp[1];
+        $legacy_npoints = $tmp[1];
         $tmp = unpack("I",fread($metafile,8));
         $meta->start = $tmp[1];
         $tmp = unpack("I",fread($metafile,4));
         $meta->interval = $tmp[1];
         fclose($metafile);
+        
+        // Sanity checks
+        
+        if ($meta->feedid != $feedid)
+        {
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid meta data mismatch, meta feedid: ".$meta->feedid);
+            return false;
+        }
+        
+        if ($meta->nmetrics!=1) {
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid nmetrics is not 1");
+            return false;
+        }
+        
+        if ($meta->interval<5 || $meta->interval>(24*3600))
+        {
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid interval is out of range, interval is: ".$meta->interval);
+            return false;
+        }
+        
+        // Double verification of npoints
+        
+        $filesize = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
+        $filesize_npoints = $filesize / 4.0;
+        
+        if ($filesize_npoints!=(int)$filesize_npoints) {
+            // filesize result is corrupt
+            $this->log->warn("PHPTimestore:get_meta php filesize() is not integer multiple of 4 bytes id=$feedid");
+            return false;
+        }
+        
+        $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
+        
+        if (!file_exists($this->dir.$feedname)) {
+            // 1) Transitioning to new system that saves npoints in a seperate file
+            if ($legacy_npoints!=$filesize_npoints)
+            {
+                $this->log->warn("PHPTimestore:get_meta legacy npoints does not match filesize npoints id=$feedid");
+                return false;
+            } else {
+                $meta->npoints = $filesize_npoints;
+            }
+
+        } else {
+            $metafile = fopen($this->dir.$feedname, 'rb');
+            $tmp = unpack("I",fread($metafile,4)); 
+            $npoints = $tmp[1];
+            fclose($metafile);
+            $meta->npoints = $npoints;
+        }
+        
+        if ($npoints!=$filesize_npoints)
+        {
+            // filesize npoints and npoints from the .npoints meta file should be the same
+            // if there is a discrepancy then this suggests corrupt data.
+            $this->log->warn("PHPTimestore:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) feedid=$feedid");
+            return false;
+            
+            // $meta->npoints = $filesize_npoints;
+        }
+        
+        if ($meta->start <= 0 && $npoints>=1) {
+          error_log("PHPTimestore:get_meta feed:$feedid start time must be greater than zero");
+          return false;
+        }
+
 
         return $meta;
     }
 
-    public function save_meta($feedid,$meta)
+    public function create_meta($feedid,$meta)
     {
         $feedid = (int) $feedid;
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb";
 
-
         $metafile = fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile) {
+            $this->log->warn("PHPTimestore:create_meta could not open metafile feedid=$feedid");
+            return false;
+        }
+        
+        if (!flock($metafile, LOCK_EX)) {
+            $this->log->warn("PHPTimestore:create_meta ".$this->dir.$feedname." is locked by another process");
+            fclose($metafile);
+            return false;
+        }
 
         fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("h*",strrev(str_pad($feedid, 16, '0', STR_PAD_LEFT))));
         fwrite($metafile,pack("I",$meta->nmetrics));
-        fwrite($metafile,pack("I",$meta->npoints));
+        fwrite($metafile,pack("I",0));                  // Legacy
         fwrite($metafile,pack("I",$meta->start));
         fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("I",$meta->interval));
@@ -491,6 +611,31 @@ class PHPTimestore
         //$flags = array(); for($i=0; $i<32; $i++) $flags[]=0;
         //foreach ($flags as $d) fwrite($metafile,pack("I",$d));
 
+        fclose($metafile);
+        
+        if (!$this->set_npoints($feedid,$meta)) return false;
+        
+        return $meta;
+    }
+    
+    public function set_npoints($feedid,$meta)
+    {
+        $feedid = (int) $feedid;
+        $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
+        $metafile = fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile) {
+            $this->log->warn("PHPTimestore:set_npoints could not open npoints metafile feedid=$feedid");
+            return false;
+        }
+        
+        if (!flock($metafile, LOCK_EX)) {
+            $this->log->warn("PHPTimestore:set_npoints ".$this->dir.$feedname." is locked by another process");
+            fclose($metafile);
+            return false;
+        }
+        
+        fwrite($metafile,pack("I",$meta->npoints));
         fclose($metafile);
         return $meta;
     }
@@ -513,7 +658,7 @@ class PHPTimestore
         $layer = (int) $layer;
         $start = (int) $start;
 
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT)."_".$layer."_.dat";
 
@@ -609,7 +754,7 @@ class PHPTimestore
 
         if ($end == 0) $end = time();
 
-        $meta = $this->get_meta($feedid);
+        if (!$meta = $this->get_meta($feedid)) return false;
 
         $start = round($start/$meta->interval)*$meta->interval;
         

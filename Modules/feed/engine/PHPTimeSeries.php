@@ -13,15 +13,20 @@ class PHPTimeSeries
     private $timestoreApi;
 
     private $dir = "/var/lib/phptimeseries/";
+    private $log;
 
     public function __construct($settings)
     {
         if (isset($settings['datadir'])) $this->dir = $settings['datadir'];
+        $this->log = new EmonLogger(__FILE__);
     }
 
     public function create($feedid,$options)
     {
         $fh = fopen($this->dir."feed_$feedid.MYD", 'a');
+        if (!$fh) {
+            $this->log->warn("PHPTimeSeries:create could not create data file feedid=$feedid");
+        }
         fclose($fh);
 
         if (file_exists($this->dir."feed_$feedid.MYD")) return true;
@@ -38,19 +43,26 @@ class PHPTimeSeries
     {
         // Get last value
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        if (!$fh) {
+            $this->log->warn("PHPTimeSeries:post could not open data file feedid=$feedid");
+            return false;
+        }
+        
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 
         $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
         if ($csize!=$filesize) {
+        
+            $this->log->warn("PHPTimeSeries:post filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
             // correct corrupt data
             fclose($fh);
 
             // extend file by required number of bytes
-            $fh = fopen($this->dir."feed_$feedid.MYD", 'wb');
+            if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'wb')) return false;
             fseek($fh,$csize);
             fwrite($fh, pack("CIf",249,$time,$value));
-            fclose($fh);
 
+            fclose($fh);
             return $value;
         }
 
@@ -67,7 +79,8 @@ class PHPTimeSeries
             {
                 // append
                 fclose($fh);
-                $fh = fopen($this->dir."feed_$feedid.MYD", 'a');
+                if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
+            
                 fwrite($fh, pack("CIf",249,$time,$value));
                 fclose($fh);
             }
@@ -82,8 +95,7 @@ class PHPTimeSeries
                 if ($pos!=-1)
                 {
                     fclose($fh);
-
-                    $fh = fopen($this->dir."feed_$feedid.MYD", 'c+');
+                    if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'c+')) return false;
                     fseek($fh,$pos);
                     fwrite($fh, pack("CIf",249,$time,$value));
                     fclose($fh);
@@ -95,12 +107,28 @@ class PHPTimeSeries
             // If theres no data in the file then we just append a first datapoint
             // append
             fclose($fh);
-            $fh = fopen($this->dir."feed_$feedid.MYD", 'a');
+            if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
             fwrite($fh, pack("CIf",249,$time,$value));
             fclose($fh);
         }
+    }
+    
+    private function fopendata($filename,$mode)
+    {
+        $fh = fopen($filename,$mode);
 
-
+        if (!$fh) {
+            $this->log->warn("PHPTimeSeries:fopendata could not open $filename");
+            return false;
+        }
+        
+        if (!flock($fh, LOCK_EX)) {
+            $this->log->warn("PHPTimeSeries:fopendata $filename locked by another process");
+            fclose($fh);
+            return false;
+        }
+        
+        return $fh;
     }
     
     public function update($feedid,$time,$value)

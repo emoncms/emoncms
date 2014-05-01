@@ -60,10 +60,19 @@
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,$rememberme);
 
-    if (get('apikey'))
-    $session = $user->apikey_session($_GET['apikey']);
+    if (isset($_GET['apikey']))
+    {
+        $session = $user->apikey_session($_GET['apikey']);
+    } 
+    elseif (isset($_POST['apikey']))
+    {
+        $session = $user->apikey_session($_POST['apikey']);
+
+    }
     else
-    $session = $user->emon_session_start();
+    {
+        $session = $user->emon_session_start();
+    }
 
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';

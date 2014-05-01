@@ -96,6 +96,16 @@ function post($index)
     return $val;
 }
 
+function prop($index)
+{
+    $val = null;
+    if (isset($_GET[$index])) $val = $_GET[$index];
+    if (isset($_POST[$index])) $val = $_POST[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    return $val;
+}
+
 
 function server($index)
 {

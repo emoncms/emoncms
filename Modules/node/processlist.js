@@ -9,6 +9,8 @@ var processlist_ui =
     processlist: [],
     feedlist:[],
     inputlist:[],
+    
+    enable_mysql_all: false,
 
 
     'init':function()
@@ -277,6 +279,16 @@ var processlist_ui =
         var prc = processlist_ui.processlist[processid][2];
         var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
         var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+        
+        //processlist_ui.enable_mysql_all = true;
+        
+        if (processlist_ui.enable_mysql_all) {
+            var mysql_found = false;
+            for (e in engines) {
+                if (engines[e]==0) mysql_found = true;
+            }
+            if (!mysql_found) engines.push(0);
+        }
 
         if (prc!='histogram')
         {
