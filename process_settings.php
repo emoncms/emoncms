@@ -17,13 +17,13 @@ require_once('Lib/enum.php');
 // Check if settings.php file exists
 if(file_exists(dirname(__FILE__)."/settings.php"))
 {
-    // Load settigs.php
+    // Load settings.php
     require_once('settings.php');
 
     $error_out = "";
     
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
-    if (!isset($password) || $password=="") $error_out .= '<p>missing setting: $password</p>';
+    if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';
     if (!isset($database) || $database=="") $error_out .= '<p>missing setting: $database</p>';
     if ($enable_password_reset && !isset($smtp_email_settings)) $error_out .= '<p>missing setting: $smtp_email_settings</p>';
