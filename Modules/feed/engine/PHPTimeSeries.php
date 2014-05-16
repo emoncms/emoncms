@@ -41,6 +41,8 @@ class PHPTimeSeries
     // - update if datapoint is older than last datapoint value
     public function post($feedid,$time,$value)
     {
+        $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
+        
         // Get last value
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         if (!$fh) {

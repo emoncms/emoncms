@@ -19,16 +19,19 @@ class Node
     private $mysqli;
     private $redis;
     private $process;
+    private $log;
 
     public function __construct($mysqli,$redis,$process)
     {
         $this->mysqli = $mysqli;
         $this->redis = $redis;
         $this->process = $process;
+        $this->log = new EmonLogger(__FILE__);
     }
 
     public function set($userid,$nodeid,$time,$data)
     {
+        $this->log->info("Node:set userid=$userid nodeid=$nodeid time=$time data=".implode(",",$data));
         // Input sanitisation
         $userid = (int) $userid;
         $nodeid = (int) $nodeid;
@@ -60,7 +63,7 @@ class Node
             $this->set_mysql($userid,$nodes);
         }
 
-        $this->process($userid,$nodes,$nodeid,$data);
+        $this->process($userid,$nodes,$nodeid,$time,$data);
 
         return true;
     }
@@ -122,7 +125,7 @@ class Node
 
     //----------------------------------------------------------------------------------------------
 
-    public function process($userid,$nodes,$nodeid,$data)
+    public function process($userid,$nodes,$nodeid,$time,$data)
     {    
         $bytes = explode(',',$data);
         $pos = 0;
@@ -158,8 +161,6 @@ class Node
                 }
 
                 if (isset($variable->scale)) $value *= $variable->scale;
-
-                $time = time();
 
                 if (isset($variable->processlist) && $variable->processlist!='') $this->process->input($time,$value,$variable->processlist);
             }
