@@ -128,6 +128,7 @@
     // 7) Output
     if ($route->format == 'json')
     {
+    header('Content-Type: application/json');
     if ($route->controller=='time') {
         print $output['content'];
     } elseif ($route->controller=='input' && $route->action=='post') {
