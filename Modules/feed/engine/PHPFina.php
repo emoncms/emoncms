@@ -354,11 +354,11 @@ class PHPFina
             $meta->npoints = $npoints;
         }
 
-        if ($npoints!=$filesize_npoints)
+        if ($meta->npoints!=$filesize_npoints)
         {
             // filesize npoints and npoints from the .npoints meta file should be the same
             // if there is a discrepancy then this suggests corrupt data.
-            $this->log->warn("PHPFina:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) id=$id");
+            $this->log->warn("PHPFina:get_meta meta file npoints (".$meta->npoints.") does not match filesize npoints ($filesize_npoints) id=$id");
             return false;
             
             // Note: npoints should not diverge, if it does and only by a 1 or 2 dp then
