@@ -113,6 +113,8 @@ class PHPTimeSeries
             fwrite($fh, pack("CIf",249,$time,$value));
             fclose($fh);
         }
+        
+        return $value;
     }
     
     private function fopendata($filename,$mode)
@@ -135,7 +137,7 @@ class PHPTimeSeries
     
     public function update($feedid,$time,$value)
     {
-      $this->post($feedid,$time,$value);
+      return $this->post($feedid,$time,$value);
     }
 
     public function delete($feedid)
