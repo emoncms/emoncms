@@ -97,10 +97,10 @@ def on_readline(line):
 
 
 # Start MQTT (Mosquitto)
-mqttc = mosquitto.Mosquitto()
+mqttc = mosquitto.Mosquitto('jeelistener')
 mqttc.on_message = on_message
 mqttc.on_connect = on_connect
-mqttc.connect(settings['Mosquitto']['broker'], settings['Mosquitto']['port'], 60, True)
+mqttc.connect(settings['Mosquitto']['broker'], int(settings['Mosquitto']['port']), 60, True)
 
 # Rather than use serial.readLine we capture the line's manually
 # the readLine method waits for \n character which blocks the main loop
