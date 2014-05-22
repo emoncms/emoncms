@@ -99,4 +99,4 @@
     $dbtest = TRUE;
 
     // Log4PHP configuration
-    $log4php_configPath = '/etc/emoncms/emoncms_log4j.xml';
+    $log4php_configPath = '/var/www/emoncms/logconfig.xml';
