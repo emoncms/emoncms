@@ -16,7 +16,7 @@ from tendo import singleton
 me = singleton.SingleInstance() # will sys.exit(-1) if other instance is running
 
 # Load configuration file
-settings = ConfigObj("jeelistener.conf", file_error=True)
+settings = ConfigObj("/var/www/emoncms/run/jeelistener.conf", file_error=True)
 
 # Connect to serial port
 ser = serial.Serial(settings['Serial']['port'], settings['Serial']['baud'])
