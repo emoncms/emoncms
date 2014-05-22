@@ -33,6 +33,7 @@ def on_message(mosq, obj, msg):
     txstr = ','.join(map(str, d))+",s"
     # sent the command over the serial port
     ser.write(txstr)
+    print txstr
     
 def on_readline(line):
 
@@ -41,6 +42,7 @@ def on_readline(line):
 
     # Information message
     if ((received[0] == '>') or (received[0] == '->')):
+	print "MSG: "+line
         
         sid = received[1][-1:]  # setting id
         val = received[1][:-1]  # setting value
@@ -94,7 +96,7 @@ def on_readline(line):
             # Publish recieved node on MQTT noderx topic 
             # Node processing is then attached to this topic in another process.
             mqttc.publish('noderx',jsonstr)
-
+	    print "DATA: "+jsonstr
 
 # Start MQTT (Mosquitto)
 mqttc = mosquitto.Mosquitto('jeelistener')
