@@ -287,6 +287,7 @@ class PHPFina
         if (!$meta = $this->get_meta($id)) return false;
         unlink($this->dir.$meta->id.".meta");
         unlink($this->dir.$meta->id.".dat");
+	unlink($this->dir.$meta->id.".npoints");
     }
     
     public function get_feed_size($id)

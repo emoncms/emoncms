@@ -737,6 +737,7 @@ class PHPTimestore
     public function delete($feedid)
     {
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb");
+	unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");
