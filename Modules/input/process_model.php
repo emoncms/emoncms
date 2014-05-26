@@ -91,6 +91,8 @@ class Process
         $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed");
         $list[33] = array(_("Reset to ZERO"),ProcessArg::NONE,"reset2zero",0,DataType::UNDEFINED,"Misc");
         
+        $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main");
+        
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -593,6 +595,34 @@ class Process
         } else {
             return 0;
         }
+    }
+    
+    public function wh_accumulator($feedid, $time, $value)
+    {
+        $max_power = 10000;
+            
+        global $redis;
+        if (!$redis) return $value; // return if redis is not available
+
+        if ($redis->exists("process:whaccumulator:$feedid")) {
+            $last_input = $redis->hmget("process:whaccumulator:$feedid",array('time','value'));
+    
+            $last_feed  = $this->feed->get_timevalue($feedid);
+            $totalwh = $last_feed['value'];
+            
+            $time_diff = $time - $last_feed['time'];
+            $val_diff = $value - $last_input['value'];
+            
+            $power = ($val_diff * 3600) / $time_diff;
+            
+            if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
+            
+            $this->feed->insert_data($feedid, $time, $time, $totalwh);
+            
+        }
+        $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
+
+        return $totalwh;
     }
 
     // No longer used
