@@ -468,7 +468,7 @@ class PHPFiwa
     {
         if (!$meta = $this->get_meta($id)) return false;
         unlink($this->dir.$meta->id.".meta");
-        
+        unlink($this->dir.$meta->id.".npoints");
         for ($i=0; $i<$meta->nlayers; $i++)
         {
           unlink($this->dir.$meta->id."_$i.dat");

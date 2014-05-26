@@ -117,7 +117,15 @@ class Node
     {
         $userid = (int) $userid;
         if ($this->redis) {
-            return json_decode($this->redis->get("nodes:$userid"));
+            $nodes = $this->redis->get("nodes:$userid");
+            if ($nodes) {
+                return json_decode($nodes);
+            } else {
+                $nodes = $this->get_mysql($userid);
+                $this->redis->set("nodes:$userid",json_encode($nodes));
+                return $nodes;
+            }
+            
         } else {
             return $this->get_mysql($userid);
         }
