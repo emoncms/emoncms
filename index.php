@@ -12,8 +12,8 @@
 
     */
     
-    $emoncms_version = "8.2.4";
-
+    $emoncms_version = "8.2.5";
+    
     $ltime = microtime(true);
 
     define('EMONCMS_EXEC', 1);
