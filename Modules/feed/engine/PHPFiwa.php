@@ -126,7 +126,7 @@ class PHPFiwa
         $timestamp = floor($timestamp / $meta->interval[$layer]) * $meta->interval[$layer];
 
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->npoints[0] == 0) {
+        if ($meta->npoints[0] == 0 && $meta->start_time==0) {
             $meta->start_time = $timestamp;
             $this->create_meta($id,$meta);
         }
@@ -556,8 +556,18 @@ class PHPFiwa
         }
         
         if ($meta->start_time <= 0 && $meta->npoints[0]>1) {
-          $this->log->warn("PHPFiwa:get_meta feed:$id start time must be greater than zero");
-          //return false;
+            $this->log->warn("PHPFiwa:get_meta feed:$id start time must be greater than zero");
+            //return false;
+        }
+        
+        if ($meta->start_time>0 && $meta->npoints[0]==0) {
+            $this->log->warn("PHPFiwa:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
+            
+            // Uncomment to auto correct (autocorrect disabled for now)
+            // $meta->npoints[0] = floor(filesize($this->dir.$meta->id."_0.dat") / 4.0);
+            
+            // Remove to autocorrect
+            //return false;
         }
         
         return $meta;
@@ -595,6 +605,7 @@ class PHPFiwa
     public function set_npoints($id,$meta)
     {
         $id = (int) $id;
+        
         $metafile = fopen($this->dir."$id.npoints", 'wb');
         
         if (!$metafile) {

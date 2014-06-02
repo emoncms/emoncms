@@ -108,7 +108,7 @@ class PHPFina
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
         
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->npoints == 0) {
+        if ($meta->npoints == 0 && $meta->start_time==0) {
             $meta->start_time = $timestamp;
             $this->create_meta($id,$meta);
         }
@@ -366,7 +366,18 @@ class PHPFina
             // it is possible to manually correct the feed by removing the 'return false;' 
             // line above and uncommenting this line (you may want to backup your feed beforehand): 
             
+            // Uncomment to auto correct (autocorrect disabled for now)
             // $meta->npoints = $filesize_npoints;
+        }
+        
+        if ($meta->start_time>0 && $meta->npoints==0) {
+            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
+            
+            // Uncomment to auto correct (autocorrect disabled for now)
+            // $meta->npoints = $filesize_npoints;
+            
+            // Remove to autocorrect
+            return false;
         }
   
         return $meta;

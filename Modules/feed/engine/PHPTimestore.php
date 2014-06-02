@@ -71,7 +71,7 @@ class PHPTimestore
         
         /* For a new file this point represents the start of the database */
         $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
-        if ($meta->npoints == 0) {
+        if ($meta->npoints == 0 && $meta->start==0) {
             $meta->start = $timestamp;
             $this->create_meta($feedid,$meta);
         }
@@ -574,6 +574,16 @@ class PHPTimestore
           return false;
         }
 
+
+        if ($meta->start>0 && $npoints==0) {
+            $this->log->warn("PHPTimestore:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
+            
+            // Uncomment to auto correct (autocorrect disabled for now)
+            // $meta->npoints = $filesize_npoints;
+            
+            // Remove to autocorrect
+            return false;
+        }
 
         return $meta;
     }
