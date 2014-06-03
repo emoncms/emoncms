@@ -7,6 +7,8 @@ function node_controller()
 {
     global $mysqli, $redis, $session, $route, $feed_settings, $user;
     $result = false;
+    
+    if (!isset($session['read'])) return array('content'=>$result);
 
     include "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$feed_settings);
