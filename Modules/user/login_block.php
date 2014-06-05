@@ -121,7 +121,7 @@ $(document).ready(function() {
         register_open = true;
         return false;
     });
-
+.js
     $("#cancel-link").click(function(){
         $(".login-item").show();
         $(".register-item").hide();
@@ -148,8 +148,6 @@ $(document).ready(function() {
         var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
 
         var result = user.login(username,password,rememberme);
-
-        console.log(result);
 
         if (result.success)
         {
