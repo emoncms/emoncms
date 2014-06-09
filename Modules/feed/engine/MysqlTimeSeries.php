@@ -104,7 +104,7 @@ class MysqlTimeSeries
                 $td = intval($range / $dp);
                 $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
                     " FROM $feedname WHERE time BETWEEN $start AND $end".
-                    " ORDER BY time ASC GROUP BY 1";
+                    " GROUP BY 1 ORDER BY time ASC";
             } else {
                 $td = 1;
                 $sql = "SELECT time, data FROM $feedname".
@@ -300,7 +300,7 @@ class MysqlTimeSeries
                 $td = intval($range / $dp);
                 $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
                     " FROM $feedname WHERE time BETWEEN $start AND $end".
-                    " ORDER BY time ASC GROUP BY 1";
+                    " GROUP BY 1 ORDER BY time ASC";
             } else {
                 $td = 1;
                 $sql = "SELECT time, data FROM $feedname".
