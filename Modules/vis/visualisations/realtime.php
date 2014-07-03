@@ -99,6 +99,7 @@
       }
             
       if (data[1][0]<(start-20)) data.splice(0, 1);
+	  data.sort();
     }
   
     function plot()
