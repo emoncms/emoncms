@@ -465,11 +465,11 @@ class PHPFiwa
         $start = (int) $start;
         $layer = (int) $layer;
         
-        $feedname = $this->dir.$id."_$layer.dat";
+        $feedname = $id."_$layer.dat";
                 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) {
-            $this->log->warn("PHPFina:post failed to fetch meta id=$id");
+            $this->log->warn("PHPFiwa:post failed to fetch meta id=$id");
             return false;
         }
         
