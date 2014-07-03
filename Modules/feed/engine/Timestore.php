@@ -139,11 +139,11 @@ class Timestore
         return true;
     }
 
-    public function export($feedid,$layer,$start)
+    public function export($feedid,$start,$layer)
     {
         $feedid = (int) $feedid;
-        $layer = (int) $layer;
         $start = (int) $start;
+        $layer = (int) $layer;
 
         $meta = $this->get_meta($feedid);
 
@@ -163,11 +163,8 @@ class Timestore
         // Write to output stream
         $fh = @fopen( 'php://output', 'w' );
 
-        $primaryfeedname = $this->dir.$feedname;
-        $primary = fopen($primaryfeedname, 'rb');
-        $primarysize = filesize($primaryfeedname);
-
-        //$localsize = intval((($start - $meta['start']) / $meta['interval']) * 4);
+        $primary = fopen($this->dir.$feedname, 'rb');
+        $primarysize = filesize($this->dir.$feedname);
 
         $localsize = $start;
         $localsize = intval($localsize / 4) * 4;
