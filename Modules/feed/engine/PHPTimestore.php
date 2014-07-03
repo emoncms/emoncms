@@ -71,7 +71,7 @@ class PHPTimestore
         
         /* For a new file this point represents the start of the database */
         $timestamp = floor(($timestamp / $meta->interval)) * $meta->interval; /* round down */
-        if ($meta->npoints == 0) {
+        if ($meta->npoints == 0 && $meta->start==0) {
             $meta->start = $timestamp;
             $this->create_meta($feedid,$meta);
         }
@@ -575,6 +575,16 @@ class PHPTimestore
         }
 
 
+        if ($meta->start>0 && $npoints==0) {
+            $this->log->warn("PHPTimestore:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
+            
+            // Uncomment to auto correct (autocorrect disabled for now)
+            // $meta->npoints = $filesize_npoints;
+            
+            // Remove to autocorrect
+            return false;
+        }
+
         return $meta;
     }
 
@@ -737,6 +747,7 @@ class PHPTimestore
     public function delete($feedid)
     {
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb");
+	unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");

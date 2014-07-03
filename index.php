@@ -12,8 +12,8 @@
 
     */
     
-    $emoncms_version = "8.2.3";
-
+    $emoncms_version = "8.2.8";
+    
     $ltime = microtime(true);
 
     define('EMONCMS_EXEC', 1);
@@ -50,8 +50,8 @@
     }
 
     if (!$mysqli->connect_error && $dbtest==true) {
-    require "Lib/dbschemasetup.php";
-    if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
+        require "Lib/dbschemasetup.php";
+        if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
     }
 
     // 3) User sessions
@@ -86,17 +86,17 @@
     // If no route specified use defaults
     if (!$route->controller && !$route->action)
     {
-    // Non authenticated defaults
-    if (!$session['read'])
-    {
-        $route->controller = $default_controller;
-        $route->action = $default_action;
-    }
-    else // Authenticated defaults
-    {
-        $route->controller = $default_controller_auth;
-        $route->action = $default_action_auth;
-    }
+        // Non authenticated defaults
+        if (!$session['read'])
+        {
+            $route->controller = $default_controller;
+            $route->action = $default_action;
+        }
+        else // Authenticated defaults
+        {
+            $route->controller = $default_controller_auth;
+            $route->action = $default_action_auth;
+        }
     }
 
     if ($route->controller == 'api') $route->controller = 'input';
@@ -111,16 +111,16 @@
     // is returned from the controller.
     if (!$output['content'] && $public_profile_enabled && $route->controller!='admin')
     {
-    $userid = $user->get_id($route->controller);
-    if ($userid) {
-        $route->subaction = $route->action;
-        $session['userid'] = $userid;
-        $session['username'] = $route->controller;
-        $session['read'] = 1;
-        $session['profile'] = 1;
-        $route->action = $public_profile_action;
-        $output = controller($public_profile_controller);
-    }
+        $userid = $user->get_id($route->controller);
+        if ($userid) {
+            $route->subaction = $route->action;
+            $session['userid'] = $userid;
+            $session['username'] = $route->controller;
+            $session['read'] = 1;
+            $session['profile'] = 1;
+            $route->action = $public_profile_action;
+            $output = controller($public_profile_controller);
+        }
     }
 
     // $mysqli->close();
@@ -128,23 +128,23 @@
     // 7) Output
     if ($route->format == 'json')
     {
-    header('Content-Type: application/json');
-    if ($route->controller=='time') {
-        print $output['content'];
-    } elseif ($route->controller=='input' && $route->action=='post') {
-        print $output['content'];
-    } elseif ($route->controller=='input' && $route->action=='bulk') {
-        print $output['content'];
-    } else {
-        print json_encode($output['content']);
-    }
+        header('Content-Type: application/json');
+        if ($route->controller=='time') {
+            print $output['content'];
+        } elseif ($route->controller=='input' && $route->action=='post') {
+            print $output['content'];
+        } elseif ($route->controller=='input' && $route->action=='bulk') {
+            print $output['content'];
+        } else {
+            print json_encode($output['content']);
+        }
     }
     if ($route->format == 'html')
     {
-    $menu = load_menu();
-    $output['mainmenu'] = view("Theme/menu_view.php", array());
-    if ($embed == 0) print view("Theme/theme.php", $output);
-    if ($embed == 1) print view("Theme/embed.php", $output);
+        $menu = load_menu();
+        $output['mainmenu'] = view("Theme/menu_view.php", array());
+        if ($embed == 0) print view("Theme/theme.php", $output);
+        if ($embed == 1) print view("Theme/embed.php", $output);
     }
 
     $ltime = microtime(true) - $ltime;

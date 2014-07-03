@@ -587,6 +587,14 @@ class Feed
     public function phptimeseries_export($feedid,$start) {
         return $this->engine[Engine::PHPTIMESERIES]->export($feedid,$start);
     }
+    
+    public function phpfiwa_export($feedid,$start,$layer) {
+        return $this->engine[Engine::PHPFIWA]->export($feedid,$start,$layer);
+    }
+    
+    public function phpfina_export($feedid,$start) {
+        return $this->engine[Engine::PHPFINA]->export($feedid,$start);
+    }
 
 
 

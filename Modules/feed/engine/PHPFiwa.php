@@ -126,7 +126,7 @@ class PHPFiwa
         $timestamp = floor($timestamp / $meta->interval[$layer]) * $meta->interval[$layer];
 
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->npoints[0] == 0) {
+        if ($meta->npoints[0] == 0 && $meta->start_time==0) {
             $meta->start_time = $timestamp;
             $this->create_meta($id,$meta);
         }
@@ -459,16 +459,67 @@ class PHPFiwa
         }
     }
     
-    public function export($feedid,$start)
+    public function export($id,$start,$layer)
     {
-    
+        $id = (int) $id;
+        $start = (int) $start;
+        $layer = (int) $layer;
+        
+        $feedname = $this->dir.$id."_$layer.dat";
+                
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($id)) {
+            $this->log->warn("PHPFina:post failed to fetch meta id=$id");
+            return false;
+        }
+        
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        header("Content-Disposition: attachment; filename={$feedname}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $fh = @fopen( 'php://output', 'w' );
+        
+        $primary = fopen($this->dir.$feedname, 'rb');
+        $primarysize = filesize($this->dir.$feedname);
+        
+        $localsize = $start;
+        $localsize = intval($localsize / 4) * 4;
+        if ($localsize<0) $localsize = 0;
+
+        // Get the first point which will be updated rather than appended
+        if ($localsize>=4) $localsize = $localsize - 4;
+        
+        fseek($primary,$localsize);
+        $left_to_read = $primarysize - $localsize;
+        if ($left_to_read>0){
+            do
+            {
+                if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+                $left_to_read -= $readsize;
+
+                $data = fread($primary,$readsize);
+                fwrite($fh,$data);
+            }
+            while ($left_to_read>0);
+        }
+        fclose($primary);
+        fclose($fh);
+        exit;
     }
     
     public function delete($id)
     {
         if (!$meta = $this->get_meta($id)) return false;
         unlink($this->dir.$meta->id.".meta");
-        
+        unlink($this->dir.$meta->id.".npoints");
         for ($i=0; $i<$meta->nlayers; $i++)
         {
           unlink($this->dir.$meta->id."_$i.dat");
@@ -556,8 +607,18 @@ class PHPFiwa
         }
         
         if ($meta->start_time <= 0 && $meta->npoints[0]>1) {
-          $this->log->warn("PHPFiwa:get_meta feed:$id start time must be greater than zero");
-          //return false;
+            $this->log->warn("PHPFiwa:get_meta feed:$id start time must be greater than zero");
+            //return false;
+        }
+        
+        if ($meta->start_time>0 && $meta->npoints[0]==0) {
+            $this->log->warn("PHPFiwa:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
+            
+            // Uncomment to auto correct (autocorrect disabled for now)
+            // $meta->npoints[0] = floor(filesize($this->dir.$meta->id."_0.dat") / 4.0);
+            
+            // Remove to autocorrect
+            //return false;
         }
         
         return $meta;
@@ -595,6 +656,7 @@ class PHPFiwa
     public function set_npoints($id,$meta)
     {
         $id = (int) $id;
+        
         $metafile = fopen($this->dir."$id.npoints", 'wb');
         
         if (!$metafile) {

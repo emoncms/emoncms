@@ -108,7 +108,7 @@ class PHPFina
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
         
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-        if ($meta->npoints == 0) {
+        if ($meta->npoints == 0 && $meta->start_time==0) {
             $meta->start_time = $timestamp;
             $this->create_meta($id,$meta);
         }
@@ -277,9 +277,60 @@ class PHPFina
         }
     }
     
-    public function export($feedid,$start)
+    public function export($id,$start)
     {
-    
+        $id = (int) $id;
+        $start = (int) $start;
+        
+        $feedname = $this->dir.$id.".dat";
+        
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($id)) {
+            $this->log->warn("PHPFina:post failed to fetch meta id=$id");
+            return false;
+        }
+        
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        header("Content-Disposition: attachment; filename={$feedname}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $fh = @fopen( 'php://output', 'w' );
+        
+        $primary = fopen($this->dir.$feedname, 'rb');
+        $primarysize = filesize($this->dir.$feedname);
+        
+        $localsize = $start;
+        $localsize = intval($localsize / 4) * 4;
+        if ($localsize<0) $localsize = 0;
+
+        // Get the first point which will be updated rather than appended
+        if ($localsize>=4) $localsize = $localsize - 4;
+        
+        fseek($primary,$localsize);
+        $left_to_read = $primarysize - $localsize;
+        if ($left_to_read>0){
+            do
+            {
+                if ($left_to_read>8192) $readsize = 8192; else $readsize = $left_to_read;
+                $left_to_read -= $readsize;
+
+                $data = fread($primary,$readsize);
+                fwrite($fh,$data);
+            }
+            while ($left_to_read>0);
+        }
+        fclose($primary);
+        fclose($fh);
+        exit;
+
     }
     
     public function delete($id)
@@ -287,6 +338,7 @@ class PHPFina
         if (!$meta = $this->get_meta($id)) return false;
         unlink($this->dir.$meta->id.".meta");
         unlink($this->dir.$meta->id.".dat");
+	unlink($this->dir.$meta->id.".npoints");
     }
     
     public function get_feed_size($id)
@@ -365,7 +417,18 @@ class PHPFina
             // it is possible to manually correct the feed by removing the 'return false;' 
             // line above and uncommenting this line (you may want to backup your feed beforehand): 
             
+            // Uncomment to auto correct (autocorrect disabled for now)
             // $meta->npoints = $filesize_npoints;
+        }
+        
+        if ($meta->start_time>0 && $meta->npoints==0) {
+            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
+            
+            // Uncomment to auto correct (autocorrect disabled for now)
+            // $meta->npoints = $filesize_npoints;
+            
+            // Remove to autocorrect
+            return false;
         }
   
         return $meta;

@@ -183,7 +183,7 @@ calls the feed API on the server via AJAX. -->
             var datastart = (Math.round((start/1000.0)/interval) * interval); //+3600*offset;
 
             daily_data = feed.get_average(dailyfeed,datastart*1000,end+(interval*1000),interval);
-
+            if (daily_data.success != undefined) daily_data = [];
         }
         refresh = false; 
 
@@ -194,48 +194,49 @@ calls the feed API on the server via AJAX. -->
         var daily_data_copy = eval(JSON.stringify(daily_data));
 
         daily = [];
+        if (daily_data_copy.length>0)
+        {
+            if (dailytype==0)
+            {
+                var lastday = daily_data_copy[daily_data_copy.length-1][0];
+                daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
 
-        if (dailytype==0)
-        {
-            var lastday = daily_data_copy[daily_data_copy.length-1][0];
-            daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
-
-            for (var z=1; z<daily_data_copy.length; z++)
-            {
-                var kwh = (daily_data_copy[z][1] - daily_data_copy[z-1][1]) * 0.001;
-                daily.push([daily_data_copy[z][0],kwh]);
+                for (var z=1; z<daily_data_copy.length; z++)
+                {
+                    var kwh = (daily_data_copy[z][1] - daily_data_copy[z-1][1]) * 0.001;
+                    daily.push([daily_data_copy[z][0],kwh]);
+                }
+                
+                $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
             }
-            
-            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
-        }
-        else if (dailytype==1)
-        {
-            var lastday = daily_data_copy[daily_data_copy.length-1][0];
-            daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
-            
-            for (var z=1; z<daily_data_copy.length; z++)
+            else if (dailytype==1)
             {
-                var kwh = (daily_data_copy[z][1] - daily_data_copy[z-1][1]);
-                daily.push([daily_data_copy[z][0],kwh]);
+                var lastday = daily_data_copy[daily_data_copy.length-1][0];
+                daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
+                
+                for (var z=1; z<daily_data_copy.length; z++)
+                {
+                    var kwh = (daily_data_copy[z][1] - daily_data_copy[z-1][1]);
+                    daily.push([daily_data_copy[z][0],kwh]);
+                }
+                
+                $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
             }
-            
-            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
-        }
-        else if (dailytype==2)
-        {
-            daily = daily_data_copy;
-            $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
-        }
-        else if (dailytype==3)
-        {
-            for (var z=1; z<daily_data_copy.length; z++)
+            else if (dailytype==2)
             {
-                var kwh = daily_data_copy[z][1]*0.024;
-                daily.push([daily_data_copy[z][0],kwh]);
+                daily = daily_data_copy;
+                $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
             }
-            $("#kwhd").html("---");
+            else if (dailytype==3)
+            {
+                for (var z=1; z<daily_data_copy.length; z++)
+                {
+                    var kwh = daily_data_copy[z][1]*0.024;
+                    daily.push([daily_data_copy[z][0],kwh]);
+                }
+                $("#kwhd").html("---");
+            }
         }
-        
         newheight = windowheight-320;
         if (newheight>350) newheight = 350;
         
