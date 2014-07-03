@@ -2,7 +2,7 @@
     "browser": true,
     "esnext": true,
     "globals": {
-        "$": false,
+        "$": false
     },
     "globalstrict": true,
     "quotmark": "double",
