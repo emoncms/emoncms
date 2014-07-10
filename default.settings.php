@@ -6,37 +6,21 @@
 
     */
 
-    $username = "_DB_USER_";
-    $password = "_DB_PASSWORD_";
-    $server   = "_DB_HOST_";
-    $database = "_DATABASE_";
+    $username = "root";
+    $password = "raspberry";
+    $server   = "localhost";
+    $database = "emoncms";
 
     $redis_enabled = true;
     
     $feed_settings = array(
-
-        'enable_mysql_all'=>true,
         
-        'timestore'=>array(
-            'adminkey'=>"_TS_ADMINKEY_"
-        ),
-
-        'graphite'=>array(
-            'port'=>0,
-            'host'=>0
-        ),
-        
-        // The default data directory is /var/lib/phpfiwa,phpfina,phptimeseries on windows or shared hosting you will likely need to specify a different data directory.
-        // Make sure that emoncms has write permission's to the datadirectory folders
-        
-        'phpfiwa'=>array(
-            //'datadir'=>'/home/username/emoncmsdata/phpfiwa/'
-        ),
         'phpfina'=>array(
-            //'datadir'=>'/home/username/emoncmsdata/phpfina/'
+            'datadir'=>'/home/pi/data/phpfina/'
         ),
+        
         'phptimeseries'=>array(
-            //'datadir'=>'/home/username/emoncmsdata/phptimeseries/'
+            'datadir'=>'/home/pi/data/phptimeseries/'
         )
     );
     
@@ -48,12 +32,7 @@
       'from'=>array('_SMTP_EMAIL_ADDR_' => '_SMTP_EMAIL_NAME_')
     );
 
-    // To enable / disable password reset set to either true / false
-    // default value of " _ENABLE_PASSWORD_RESET_ " required for .deb only
-    // uncomment 1 of the 2 following lines & comment out the 3rd line.
-    // $enable_password_reset = true;
-    // $enable_password_reset = false;
-    $enable_password_reset = _ENABLE_PASSWORD_RESET_;
+    $enable_password_reset = false;
     
     // Checks for limiting garbage data?
     $max_node_id_limit = 32;
