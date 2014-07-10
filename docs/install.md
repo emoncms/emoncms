@@ -1,8 +1,14 @@
-## How to setup a raspberrypi running emonhub + emoncms
+## How to setup a raspberrypi running emonhub + the bufferedwrite development branch of emoncms
 
-This guide details how to setup a raspberry pi basestation that can be used to either forward data to a remote server or record data locally or both.
+This guide details how to setup a raspberry pi basestation that can be used to either forward data to a remote server or record data locally or both. 
+
+It uses the bufferedwrite branch of emoncms which is part of the investigation and development work into a version of emoncms that has a reduced disk write load with the view of enabling the use of SD cards for long term logging. Its early days yes whether this approach will succeed, however monitoring of disk activity shows that the write load on a busy system can be several hundred times less with this modified version of emoncms.
+
+The build uses the latest version of emonhub to provide a flexible input stage and ability to forward data to other remote servers. EmonHub is also used to decode the byte data recieved from the rfm12pi adapter board. The result of which is passed to the input interface in emoncms.
 
 ![System diagram](files/emonpi_sys_diag.png)
+
+### Raspbian
 
 Download the official raspberrpi raspbian image and write to the SD card.
 
@@ -50,7 +56,7 @@ Steps for creating 3rd partition for data using fdisk and mkfs:
     On reboot, login and run:
     sudo mkfs.ext2 -b 1024 /dev/mmcblk0p3
     
-**Note:** We create here an ext2 filesystem with a blocksize of 1024 bytes instead of the default 4096 bytes. A lower block size results in significant write load reduction when using an application like emoncms that only makes small but frequent and across many files updates to disk. Ext2 is choosen because it supports multiple linux user ownership options which are needed for the mysql data folder. Ext2 is non-journaling which reduces the write load a little although it may make data recovery harder vs Ext4, The data disk size is small however and the downtime from running fsck is perhaps less critical.
+**Note:** *We create here an ext2 filesystem with a blocksize of 1024 bytes instead of the default 4096 bytes. A lower block size results in significant write load reduction when using an application like emoncms that only makes small but frequent and across many files updates to disk. Ext2 is choosen because it supports multiple linux user ownership options which are needed for the mysql data folder. Ext2 is non-journaling which reduces the write load a little although it may make data recovery harder vs Ext4, The data disk size is small however and the downtime from running fsck is perhaps less critical.*
     
 Now that your loged in to your pi, the first step is to edit the _inittab_ and _boot cmdline config_ file to allow the python gateway which we will install next to use the serial port, type:
 
@@ -78,9 +84,8 @@ with:
 Create a directory that will be a mount point for the rw data partition
 
     mkdir /home/pi/data
-
     
-## Read only mode
+### Read only mode
 
 Configure Raspbian to run in read-only mode for increased stability (optional but recommended)
 
@@ -135,13 +140,13 @@ and add the following to the blank file that opens
 save and exit using ctrl-x -> y -> enter and then to make this executable run
 
     sudo chmod +x  /usr/bin/rpi-ro
-
+        
 Lastly reboot for changes to take effect
 
     sudo shutdown -r now
     
 Login again, change data partition permissions:
-    
+
     sudo chmod -R a+w data
     sudo chown -R pi data
     sudo chgrp -R pi data
@@ -159,23 +164,20 @@ There are a few extra things in here such as mosquitto (MQTT) which is not curre
 
     sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt git-core redis-server build-essential ufw ntp python-serial python-configobj mosquitto mosquitto-clients python-pip python-dev screen iostat minicom
 
-Install python pip dependencies
-
-    sudo pip install tendo      (not used atm)
-    sudo pip install mosquitto  (not used atm)
-    sudo pip install redis      (not used atm)
-    sudo pip install web.py     (not used atm)
-
 Install pecl dependencies (redis and swift mailer)
 
-    sudo pear channel-discover pear.swiftmailer.org
-    sudo pecl install redis swift/swift
+    sudo pear channel-discover
+    sudo pecl install redis
     
 Add pecl modules to php5 config
 
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
-    
+
+### Configure dependencies
+
+**Redis**
+
 Configure redis to run without logging or data persistance.
 
     sudo nano /etc/redis/redis.conf
@@ -191,6 +193,8 @@ comment out all redis saving
     # save 60 10000
     
     sudo /etc/init.d/redis-server start
+    
+**Apache2**
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
@@ -201,36 +205,41 @@ Change (line 7 and line 11), "AllowOverride None" to "AllowOverride All".
 That is the sections <Directory /> and <Directory /var/www/>.
 [Ctrl + X ] then [Y] then [Enter] to Save and exit.
 
-Restart the lamp server:
-
-    $ sudo /etc/init.d/apache2 restart
-
 Change apache2 log directory:
+
     sudo nano /etc/apache2/envvars    
     export APACHE_LOG_DIR=/var/log$SUFFIX (remove the apache2 bit)
+    
+Comment the access log to other-vhosts (add #)
 
-Mysql:
+    sudo nano /etc/apache2/conf.d/other-vhosts-access-log
+
+**Mysql**
+
     mkdir /home/pi/data/mysql
     sudo cp -rp /var/lib/mysql/. /home/pi/data/mysql
     
     sudo nano /etc/mysql/my.cnf
     change line datadir to /home/pi/data/mysql
     
-PHP5 Sessions:
+**PHP5 Sessions**
+
     sudo nano /etc/php5/apache2/php.ini
     
 Find line:
-; session.save_path = "/var/lib/php5"
+
+    ; session.save_path = "/var/lib/php5"
 
 change to:
-session.save_path = "/tmp"
+    
+    session.save_path = "/tmp"
 
 
 ### Security
 
 [http://blog.al4.co.nz/2011/05/setting-up-a-secure-ubuntu-lamp-server/](http://blog.al4.co.nz/2011/05/setting-up-a-secure-ubuntu-lamp-server/)
 
-#### Install ufw
+**Install ufw**
 
 ufw: uncomplicated firewall, is a great little firewall program that you can use to control your server access rules. The default set below are fairly standard for a web server but are quite permissive. You may want to only allow connection on a certain ip if you will always be accessing your pi from a fixed ip.
 
@@ -242,7 +251,7 @@ UFW Documentation
     sudo ufw allow 22/tcp
     sudo ufw enable
 
-#### Change root password
+**Change root password**
 
 Set root password
 
@@ -251,13 +260,13 @@ Set root password
 The default root password used in the ready to go image is **raspberry**. 
 Change this to a hard to guess password to make your root account secure.
 
-#### Secure MySQL
+**Secure MySQL**
 
 Run mysql_secure_installation see [mysql docs](http://dev.mysql.com/doc/refman/5.0/en/mysql-secure-installation.html)
 
     mysql_secure_installation
 
-#### Secure SSH
+**Secure SSH**
 
 Disable root login:
 
@@ -265,12 +274,7 @@ Disable root login:
 
 Set **PermitRootLogin** to **no**
 
-### Apache access logs
 
-Comment the access log to other-vhosts (add #)
-
-    sudo nano /etc/apache2/conf.d/other-vhosts-access-log
-    
 ### Reboot the pi
 
     sudo reboot
