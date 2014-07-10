@@ -47,17 +47,6 @@ function vis_widgetlist()
       "html":""
     },
 
-    "timestoredaily":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","units"],
-      "optionstype":["feedid","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Units")],
-      "optionshint":[_Tr("Feed source"),_Tr("Units to show")],
-      "html":""
-    },
-
     "zoom":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
@@ -77,39 +66,6 @@ function vis_widgetlist()
       "optionstype":["feedid","feedid"],
       "optionsname":[_Tr("Power"),_Tr("kwhd")],
       "optionshint":[_Tr("Power to show"),_Tr("kwhd source")],
-      "html":""
-    },
-
-    "histgraph":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr("Feed")],
-      "optionshint":[_Tr("Feed source")],
-      "html":""
-    },
-
-    "threshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","thresholdA","thresholdB"],
-      "optionstype":["feedid","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B")],
-      "optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used")],
-      "html":""
-    },
-
-    "orderthreshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","power","thresholdA","thresholdB"],
-      "optionstype":["feedid","feedid","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Power"),_Tr("Threshold A"),_Tr("Threshold B")],
-      "optionshint":[_Tr("Feed source"),_Tr("Power"),_Tr("Threshold A used"),_Tr("Threshold B used")],
       "html":""
     },
 
