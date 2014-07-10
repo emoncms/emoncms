@@ -23,4 +23,5 @@ Modules/mqtt
 Modules/packetgen
 Modules/openbem
 Modules/scheduler
+Modules/node
 emoncms.log
