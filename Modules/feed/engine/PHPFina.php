@@ -351,6 +351,7 @@ class PHPFina
         $bytesize = 0;
         
         if (file_exists($this->dir.$filename.".dat"))
+            clearstatcache($this->dir.$filename.".dat");
             $bytesize += filesize($this->dir.$filename.".dat");
             
         if (isset($this->buffers[$filename]))
