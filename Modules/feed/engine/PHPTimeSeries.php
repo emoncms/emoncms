@@ -39,6 +39,12 @@ class PHPTimeSeries
     // - append if file is empty
     // - append if datapoint is in the future
     // - update if datapoint is older than last datapoint value
+    
+    public function prepare($feedid,$time,$value)
+    {
+    
+    }
+    
     public function post($feedid,$time,$value)
     {
         $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
@@ -115,6 +121,11 @@ class PHPTimeSeries
         }
         
         return $value;
+    }
+    
+    public function save()
+    {
+    
     }
     
     private function fopendata($filename,$mode)

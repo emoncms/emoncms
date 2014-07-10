@@ -19,7 +19,6 @@ class Feed
     private $mysqli;
     private $redis;
     public $engine;
-    private $histogram;
     private $csvdownloadlimit_mb;
     private $log;
 
@@ -29,43 +28,18 @@ class Feed
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
         
-        // Load different storage engines
-        require "Modules/feed/engine/MysqlTimeSeries.php";
-        require "Modules/feed/engine/Timestore.php";
-        require "Modules/feed/engine/PHPTimestore.php";
-        require "Modules/feed/engine/Histogram.php";
         require "Modules/feed/engine/PHPTimeSeries.php";
-        require "Modules/feed/engine/GraphiteTimeSeries.php";
-        
-        // Development engines
         require "Modules/feed/engine/PHPFina.php";
-        require "Modules/feed/engine/PHPFiwa.php";     
-           
-        // Backwards compatibility 
-        if (!isset($settings)) $settings= array();
-        if (!isset($settings['timestore'])) {
-            global $timestore_adminkey; 
-            $settings['timestore'] = array('adminkey'=>$timestore_adminkey);
-        }
-        if (!isset($settings['graphite'])) $settings['graphite'] = array('host'=>"", 'port'=>0);
-        if (!isset($settings['phpfiwa'])) $settings['phpfiwa'] = array();
-        if (!isset($settings['phpfina'])) $settings['phpfina'] = array();
-        if (!isset($settings['phptimestore'])) $settings['phptimestore'] = array();
-        if (!isset($settings['phptimeseries'])) $settings['phptimeseries'] = array();
-              
-        // Load engine instances to engine array to make selection below easier
+
         $this->engine = array();
-        $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
-        $this->engine[Engine::TIMESTORE] = new Timestore($settings['timestore']);
-        $this->engine[Engine::PHPTIMESTORE] = new PHPTimestore($settings['phptimestore']);
         $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries($settings['phptimeseries']);
-        $this->engine[Engine::GRAPHITE] = new GraphiteTimeSeries($settings['graphite']);
         $this->engine[Engine::PHPFINA] = new PHPFina($settings['phpfina']);
-        $this->engine[Engine::PHPFIWA] = new PHPFiwa($settings['phpfiwa']);
-                
-        $this->histogram = new Histogram($mysqli);
         
-        if (isset($settings['csvdownloadlimit_mb'])) $this->csvdownloadlimit_mb = $settings['csvdownloadlimit_mb']; else $this->csvdownloadlimit_mb = 10;
+        if (isset($settings['csvdownloadlimit_mb'])) {
+            $this->csvdownloadlimit_mb = $settings['csvdownloadlimit_mb']; 
+        } else {
+            $this->csvdownloadlimit_mb = 10;
+        }
     }
 
     public function create($userid,$name,$datatype,$engine,$options_in)
@@ -100,17 +74,9 @@ class Feed
             }
             
             $options = array();
-            if ($engine==Engine::TIMESTORE) $options['interval'] = (int) $options_in->interval;
-            if ($engine==Engine::PHPTIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
-            if ($engine==Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
             
-            $engineresult = false;
-            if ($datatype==DataType::HISTOGRAM) {
-                $engineresult = $this->histogram->create($feedid,$options);
-            } else {
-                $engineresult = $this->engine[$engine]->create($feedid,$options);
-            }
+            $engineresult = $this->engine[$engine]->create($feedid,$options);
 
             if ($engineresult == false)
             {
@@ -393,58 +359,21 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         if ($feedtime == null) $feedtime = time();
-        $updatetime = intval($updatetime);
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
+        $updatetime = (int) $updatetime;
+        $feedtime = (int) $feedtime;
+        $value = (float) $value;
 
-        $engine = $this->get_engine($feedid);
+        // $engine = $this->get_engine($feedid);
+        // $this->engine[$engine]->post($feedid,$feedtime,$value);
+        $this->redis->rpush('feedbuffer',"$feedid,$feedtime,$value");
         
-        // Call to engine post method
-        clearstatcache();
-        $this->engine[$engine]->post($feedid,$feedtime,$value);
-
         $this->set_timevalue($feedid, $value, $updatetime);
-
-        //Check feed event if event module is installed
-        if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-            require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-            $event = new Event($this->mysqli,$this->redis);
-            $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
-        }
 
         return $value;
     }
 
-    public function update_data($feedid,$updatetime,$feedtime,$value)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        if ($feedtime == null) $feedtime = time();
-        $updatetime = intval($updatetime);
-        $feedtime = intval($feedtime);
-        $value = floatval($value);
-
-        $engine = $this->get_engine($feedid);
-        
-        // Call to engine update method
-        clearstatcache();
-        $value = $this->engine[$engine]->update($feedid,$feedtime,$value);
-       
-        // need to find a way to not update if value being updated is older than the last value
-        // in the database, redis lastvalue is last update time rather than last datapoint time.
-        // So maybe we need to store both in redis.
-
-        $this->set_timevalue($feedid, $value, $updatetime);
-
-        //Check feed event if event module is installed
-        if (is_dir(realpath(dirname(__FILE__)).'/../event/')) {
-            require_once(realpath(dirname(__FILE__)).'/../event/event_model.php');
-            $event = new Event($this->mysqli,$this->redis);
-            $event->check_feed_event($feedid,$updatetime,$feedtime,$value);
-        }
-
-        return $value;
+    public function update_data($feedid,$updatetime,$feedtime,$value) {
+        return $this->insert_data($feedid,$updatetime,$feedtime,$value);
     }
 
     public function get_data($feedid,$start,$end,$dp)
@@ -539,64 +468,14 @@ class Feed
         $engine = $this->get_engine($feedid);
         return $this->engine[$engine]->get_meta($feedid);
     }
-    
-    // MysqlTimeSeries specific functions that we need to make available to the controller
-
-    public function mysqltimeseries_export($feedid,$start) {
-        return $this->engine[Engine::MYSQL]->export($feedid,$start);
-    }
-
-    public function mysqltimeseries_delete_data_point($feedid,$time) {
-        return $this->engine[Engine::MYSQL]->delete_data_point($feedid,$time);
-    }
-
-    public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
-        return $this->engine[Engine::MYSQL]->delete_data_range($feedid,$start,$end);
-    }
-
-    // Timestore specific functions that we need to make available to the controller
-
-    public function timestore_export($feedid,$start,$layer) {
-        return $this->engine[Engine::TIMESTORE]->export($feedid,$start,$layer);
-    }
-
-    public function timestore_export_meta($feedid) {
-        return $this->engine[Engine::TIMESTORE]->export_meta($feedid);
-    }
-
-    public function timestore_scale_range($feedid,$start,$end,$value) {
-        return $this->engine[Engine::TIMESTORE]->scale_range($feedid,$start,$end,$value);
-    }
-
-    // Histogram specific functions that we need to make available to the controller
-
-    public function histogram_get_power_vs_kwh($feedid,$start,$end) {
-        return $this->histogram->get_power_vs_kwh($feedid,$start,$end);
-    }
-
-    public function histogram_get_kwhd_atpower($feedid, $min, $max) {
-        return $this->histogram->get_kwhd_atpower($feedid, $min, $max);
-    }
-
-    public function histogram_get_kwhd_atpowers($feedid, $points) {
-        return $this->histogram->get_kwhd_atpowers($feedid, $points);
-    }
-
-    // PHPTimeSeries specific functions that we need to make available to the controller
 
     public function phptimeseries_export($feedid,$start) {
         return $this->engine[Engine::PHPTIMESERIES]->export($feedid,$start);
     }
     
-    public function phpfiwa_export($feedid,$start,$layer) {
-        return $this->engine[Engine::PHPFIWA]->export($feedid,$start,$layer);
-    }
-    
     public function phpfina_export($feedid,$start) {
         return $this->engine[Engine::PHPFINA]->export($feedid,$start);
     }
-
-
 
     public function set_timevalue($feedid, $value, $time)
     {

@@ -11,9 +11,6 @@
 
 global $path, $session, $feed_settings;
 
-$enable_mysql_all = 0;
-if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
-
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/processlist.js"></script>
@@ -64,18 +61,8 @@ if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_al
                     <span class="add-on feed-engine-label">Feed engine: </span>
                     <select id="feed-engine">
 
-                    <optgroup label="Recommended">
-                    <option value=6 selected>Fixed Interval With Averaging (PHPFIWA)</option>
                     <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
                     <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
-                    </optgroup>
-
-                    <optgroup label="Other">
-                    <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
-                    <option value=1 >TIMESTORE (Requires installation of timestore)</option>
-                    <option value=3 >GRAPHITE (Requires installation of graphite)</option>
-                    <option value=0 >MYSQL (Slow when there is a lot of data)</option>
-                    </optgroup>
 
                     </select>
 
@@ -114,8 +101,6 @@ if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_al
 <script type="text/javascript">
 
 var path = "<?php echo $path; ?>";
-
-processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
 
 processlist_ui.inputid = <?php echo $inputid; ?>;
 

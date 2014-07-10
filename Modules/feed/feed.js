@@ -106,34 +106,6 @@ var feed = {
       success: function(data_in) { feedIn = data_in; } 
     });
     return feedIn;
-  },
-
-  'get_kwhatpowers':function(feedid,points)
-  {
-    var feedIn = [];
-    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
-    $.ajax({                                      
-      url: path+'feed/kwhatpowers.json',                         
-      data: apikeystr+"&id="+feedid+"&points="+JSON.stringify(points),
-      dataType: 'json',
-      async: false,                      
-      success: function(data_in) { feedIn = data_in; } 
-    });
-    return feedIn;
-  },
-
-  'histogram':function(feedid,start,end)
-  {
-    var feedIn = [];
-    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
-    $.ajax({                                      
-      url: path+'feed/histogram.json',                         
-      data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&res=1",
-      dataType: 'json',
-      async: false,                      
-      success: function(data_in) { feedIn = data_in; } 
-    });
-    return feedIn;
   }
 
 }

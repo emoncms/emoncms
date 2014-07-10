@@ -6,7 +6,7 @@
 
     define('EMONCMS_EXEC', 1);
 
-    $fp = fopen("noderunlock", "w");
+    $fp = fopen("/home/pi/data/noderunlock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
     
     chdir("/var/www/emoncms");

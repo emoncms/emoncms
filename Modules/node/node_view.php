@@ -1,8 +1,5 @@
 <?php 
   global $path, $feed_settings; 
-  
-  $enable_mysql_all = 0;
-  if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
 
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/node/node.js"></script>
@@ -72,18 +69,8 @@
                         <select id="feed-engine">
 
                         <optgroup label="Recommended">
-                        <option value=7 selected>Redis Time Series</option>
-                        <option value=8 >Redis FINA</option>
-                        <option value=6 >Fixed Interval With Averaging</option>
                         <option value=5 >Fixed Interval No Averaging</option>
                         <option value=2 >Variable Interval No Averaging</option>
-                        </optgroup>
-
-                        <optgroup label="Other">
-                        <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
-                        <option value=1 >TIMESTORE (Requires installation of timestore)</option>
-                        <option value=3 >GRAPHITE (Requires installation of graphite)</option>
-                        <option value=0 >MYSQL (Slow when there is a lot of data)</option>
                         </optgroup>
 
                         </select>
@@ -127,8 +114,6 @@
 <script>
 
   var path = "<?php echo $path; ?>";
-  
-  processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
   
   var nodes = node.getall();
   
@@ -202,8 +187,9 @@
  
  var variable_edit_mode = false;
  
- var interval = setInterval(update,5000);
- 
+ //var interval = setInterval(update,5000);
+var interval = false;
+
  function update()
  {
    nodes = node.getall();
@@ -307,7 +293,7 @@
 
     console.log("Nodeid: "+nodeid+" Variable: "+variableid);
     
-    interval = clearInterval(interval);
+   // interval = clearInterval(interval);
     
     var currentname = nodes[nodeid].decoder.variables[variableid].name;
     var currentscale = nodes[nodeid].decoder.variables[variableid].scale;
@@ -355,7 +341,7 @@
     // Save the decoder
     node.setdecoder(nodeid,nodes[nodeid].decoder);
     
-    interval = setInterval(update,5000);
+    //interval = setInterval(update,5000);
     // redraw, apply new decoder
     redraw();
   });
@@ -388,13 +374,13 @@
   {
     $("#myModal").modal('hide');
     update();
-    interval = setInterval(update,5000);
+    //interval = setInterval(update,5000);
   });
 
   
   $("#nodes").on("click",'.select-decoder', function() 
   {
-    interval = clearInterval(interval);
+    //interval = clearInterval(interval);
     var nodeid = $(this).attr('node');
     var mode = $(this).attr('mode');
     
