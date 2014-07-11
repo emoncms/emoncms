@@ -150,29 +150,34 @@ cursor:pointer
     update();
 
     function update()
-    {
-        table.data = feed.list();
-
-        for (z in table.data)
-        {
-            if (table.data[z].size<1024*100) {
-                table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
-            } else if (table.data[z].size<1024*1024) {
-                table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
-            } else if (table.data[z].size>=1024*1024) {
-                table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
+    {   
+        var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+        
+        $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: true, success: function(data) {
+        
+            table.data = data;
+        
+            for (z in table.data)
+            {
+                if (table.data[z].size<1024*100) {
+                    table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
+                } else if (table.data[z].size<1024*1024) {
+                    table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
+                } else if (table.data[z].size>=1024*1024) {
+                    table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
+                }
             }
-        }
-        table.draw();
-        if (table.data.length != 0) {
-            $("#nofeeds").hide();
-            $("#apihelphead").show();
-            $("#localheading").show();
-        } else {
-            $("#nofeeds").show();
-            $("#localheading").hide();
-            $("#apihelphead").hide();
-        }
+            table.draw();
+            if (table.data.length != 0) {
+                $("#nofeeds").hide();
+                $("#apihelphead").show();
+                $("#localheading").show();
+            } else {
+                $("#nofeeds").show();
+                $("#localheading").hide();
+                $("#apihelphead").hide();
+            }
+        } });
     }
 
     var updater = setInterval(update, 5000);
