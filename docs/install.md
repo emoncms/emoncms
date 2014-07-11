@@ -173,6 +173,9 @@ Install pecl dependencies (redis and swift mailer)
     sudo pear channel-discover
     sudo pecl install redis
     
+    sudo pear channel-discover pear.apache.org/log4php
+    sudo pear install log4php/Apache_log4php
+    
 Add pecl modules to php5 config
 
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
