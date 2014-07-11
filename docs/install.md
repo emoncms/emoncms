@@ -206,6 +206,9 @@ Emoncms uses a front controller to route requests, modrewrite needs to be config
     $ sudo nano /etc/apache2/sites-enabled/000-default
 
 Change (line 7 and line 11), "AllowOverride None" to "AllowOverride All".
+
+Comment out line # CustomLog ${APACHE_LOG_DIR}/access.log combined
+
 That is the sections <Directory /> and <Directory /var/www/>.
 [Ctrl + X ] then [Y] then [Enter] to Save and exit.
 
@@ -363,7 +366,8 @@ Move the writer script to home folder
     
     nano /home/pi/emonhub/conf/emonhub.conf
     
-    remove dispatchers that you dont need, add local emoncms apikey, set radio settings
+    set log level to WARNING
+    remove dispatchers that you dont need (i.e emoncms.org), remove socket, add local emoncms apikey, set radio settings
     
     rpi-ro
     
