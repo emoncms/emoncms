@@ -283,7 +283,7 @@ class PHPFina
         $id = (int) $id;
         $start = (int) $start;
         
-        $feedname = $this->dir.$id.".dat";
+        $feedname = $id.".dat";
         
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) {
