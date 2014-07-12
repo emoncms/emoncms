@@ -257,13 +257,14 @@ class PHPFina
         
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($id)) return false;
+        $meta->npoints = $this->get_npoints($id);
         
         if ($meta->npoints>0)
         {
             $fh = fopen($this->dir.$id.".dat", 'rb');
             $size = $meta->npoints*4;
             fseek($fh,$size-4);
-            $d = fread($fh,4);
+             $d = fread($fh,4);
             fclose($fh);
 
             $val = unpack("f",$d);
