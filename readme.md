@@ -1,4 +1,4 @@
-## How to setup a raspberrypi running emonhub + the bufferedwrite development branch of emoncms
+## How to setup a raspberrypi running emonhub + this 'bufferedwrite' development branch of emoncms
 
 This guide details how to setup a raspberry pi basestation that can be used to either forward data to a remote server or record data locally or both. 
 
