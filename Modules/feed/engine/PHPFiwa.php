@@ -147,11 +147,6 @@ class PHPFiwa
         }
         
         $result = $this->update_layer($meta,$layer,$point,$timestamp,$value);
-        
-        if ($result!=false)
-        {
-            $this->set_npoints($id,$result);
-        }
     }
     
     private function update_layer($meta,$layer,$point,$timestamp,$value)
@@ -519,7 +514,6 @@ class PHPFiwa
     {
         if (!$meta = $this->get_meta($id)) return false;
         unlink($this->dir.$meta->id.".meta");
-        unlink($this->dir.$meta->id.".npoints");
         for ($i=0; $i<$meta->nlayers; $i++)
         {
           unlink($this->dir.$meta->id."_$i.dat");
@@ -588,37 +582,21 @@ class PHPFiwa
         }
         
         fclose($metafile);
-        
-        if (!file_exists($this->dir."$id.npoints")) {
-            $meta->npoints = array();
-            for ($i=0; $i<$meta->nlayers; $i++)
-            {
-              $meta->npoints[$i] = filesize($this->dir.$meta->id."_$i.dat") / 4.0;
-            }
-        } else {
-            $metafile = fopen($this->dir."$id.npoints", 'rb');
-            $meta->npoints = array();
-            for ($i=0; $i<$meta->nlayers; $i++)
-            {
-              $tmp = unpack("I",fread($metafile,4)); 
-              $meta->npoints[$i] = $tmp[1];
-            }
-            fclose($metafile);
+   
+        $meta->npoints = array();
+        for ($i=0; $i<$meta->nlayers; $i++)
+        {
+          clearstatcache($this->dir.$meta->id."_$i.dat");
+          $meta->npoints[$i] = floor(filesize($this->dir.$meta->id."_$i.dat") / 4.0);
         }
+        
         
         if ($meta->start_time <= 0 && $meta->npoints[0]>1) {
             $this->log->warn("PHPFiwa:get_meta feed:$id start time must be greater than zero");
-            //return false;
         }
         
         if ($meta->start_time>0 && $meta->npoints[0]==0) {
-            $this->log->warn("PHPFiwa:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
-            
-            // Uncomment to auto correct (autocorrect disabled for now)
-            // $meta->npoints[0] = floor(filesize($this->dir.$meta->id."_0.dat") / 4.0);
-            
-            // Remove to autocorrect
-            //return false;
+            $this->log->warn("PHPFiwa:get_meta start_time already defined but npoints is 0");
         }
         
         return $meta;
@@ -648,29 +626,6 @@ class PHPFiwa
         foreach ($meta->npoints as $n) fwrite($metafile,pack("I",0));       // Legacy
         foreach ($meta->interval as $d) fwrite($metafile,pack("I",$d));
         
-        fclose($metafile);
-        
-        $this->set_npoints($id,$meta);
-    }
-        
-    public function set_npoints($id,$meta)
-    {
-        $id = (int) $id;
-        
-        $metafile = fopen($this->dir."$id.npoints", 'wb');
-        
-        if (!$metafile) {
-            $this->log->warn("PHPFiwa:set_npoints could not open npoints meta data file id=".$meta->id);
-            return false;
-        }
-        
-        if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPFiwa:set_npoints npoints meta file id=".$meta->id." is locked by another process");
-            fclose($metafile);
-            return false;
-        }
-        
-        foreach ($meta->npoints as $n) fwrite($metafile,pack("I",$n));
         fclose($metafile);
     }
     
