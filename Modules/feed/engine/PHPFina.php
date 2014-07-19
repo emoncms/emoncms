@@ -31,22 +31,20 @@ class PHPFina
         $interval = (int) $options['interval'];
         if ($interval<5) $interval = 5;
         
-        //if (!$this->checkpermissions()) return false;
-        
         // Check to ensure we dont overwrite an existing feed
         if (!$meta = $this->get_meta($id))
         {
             // Set initial feed meta data
             $meta = new stdClass();
-            $meta->npoints = 0;
             $meta->interval = $interval;
             $meta->start_time = 0;
-
-        
+            
+            $meta->npoints = 0;
+            
             // Save meta data
             $this->create_meta($id,$meta);
             
-            $fh = fopen($this->dir.$id.".dat", 'c+');
+            $fh = @fopen($this->dir.$id.".dat", 'c+');
             
             if (!$fh) {
                 $this->log->warn("PHPFina:create could not create data file id=$id");
@@ -63,15 +61,6 @@ class PHPFina
             return false;
         }
     }
-    
-    //private function checkpermissions()
-    //{
-    //    $uid = fileowner( $this->dir );
-    //    $uinfo = posix_getpwuid( $uid ); 
-    //    
-    //    if ($uinfo['name']=="www-data") return true; else return false;
-    //}
-
 
     /**
      * Adds a data point to the feed
