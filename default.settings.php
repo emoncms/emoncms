@@ -8,8 +8,8 @@
 
     $username = "_DB_USER_";
     $password = "_DB_PASSWORD_";
-    $server   = "_DB_HOST_";
-    $database = "_DATABASE_";
+    $server   = "localhost";
+    $database = "emoncms";
 
     $redis_enabled = true;
     
@@ -37,6 +37,9 @@
         ),
         'phptimeseries'=>array(
             'datadir'=>'/var/lib/phptimeseries/'
+        ),
+        'phptimestore'=>array(
+            'datadir'=>'/var/lib/phptimestore/'
         )
     );
     
@@ -53,7 +56,7 @@
     // uncomment 1 of the 2 following lines & comment out the 3rd line.
     // $enable_password_reset = true;
     // $enable_password_reset = false;
-    $enable_password_reset = _ENABLE_PASSWORD_RESET_;
+    $enable_password_reset = false;
     
     // Checks for limiting garbage data?
     $max_node_id_limit = 32;

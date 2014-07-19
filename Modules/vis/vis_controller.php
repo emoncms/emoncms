@@ -15,12 +15,12 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $timestore_adminkey;
+    global $mysqli, $redis, $session, $route, $user, $settings;
 
     $result = false;
 
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $timestore_adminkey);
+    $feed = new Feed($mysqli,$redis, $settings);
 
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);

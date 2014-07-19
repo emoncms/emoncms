@@ -87,15 +87,7 @@ class PHPTimestore
 
         /* Update layers */
         $rc = $this->update_layer($meta,0,$point,$meta->npoints,$value);
-        if ($rc == 0) {
-            /* Update metadata with new number of top-level points */
-            if ($point >= $meta->npoints)
-            {
-                $meta->npoints = $point + 1;
-                $this->set_npoints($feedid,$meta);
-            }
-        }
-
+      
         return $rc;
     }
     
@@ -530,56 +522,18 @@ class PHPTimestore
         
         // Double verification of npoints
         
+        clearstatcache($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
         $filesize = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
-        $filesize_npoints = $filesize / 4.0;
+        $meta->npoints = floor($filesize / 4.0);
         
-        if ($filesize_npoints!=(int)$filesize_npoints) {
-            // filesize result is corrupt
-            $this->log->warn("PHPTimestore:get_meta php filesize() is not integer multiple of 4 bytes id=$feedid");
-            return false;
-        }
-        
-        $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
-        
-        if (!file_exists($this->dir.$feedname)) {
-            // 1) Transitioning to new system that saves npoints in a seperate file
-            if ($legacy_npoints!=$filesize_npoints)
-            {
-                $this->log->warn("PHPTimestore:get_meta legacy npoints does not match filesize npoints id=$feedid");
-                return false;
-            } else {
-                $meta->npoints = $filesize_npoints;
-            }
-
-        } else {
-            $metafile = fopen($this->dir.$feedname, 'rb');
-            $tmp = unpack("I",fread($metafile,4)); 
-            $npoints = $tmp[1];
-            fclose($metafile);
-            $meta->npoints = $npoints;
-        }
-        
-        if ($npoints!=$filesize_npoints)
-        {
-            // filesize npoints and npoints from the .npoints meta file should be the same
-            // if there is a discrepancy then this suggests corrupt data.
-            $this->log->warn("PHPTimestore:get_meta meta file npoints ($npoints) does not match filesize npoints ($filesize_npoints) feedid=$feedid");
-            return false;
-            
-            // $meta->npoints = $filesize_npoints;
-        }
-        
-        if ($meta->start <= 0 && $npoints>=1) {
+        if ($meta->start <= 0 && $meta->npoints=1) {
           error_log("PHPTimestore:get_meta feed:$feedid start time must be greater than zero");
           return false;
         }
 
 
-        if ($meta->start>0 && $npoints==0) {
-            $this->log->warn("PHPTimestore:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
-            
-            // Uncomment to auto correct (autocorrect disabled for now)
-            // $meta->npoints = $filesize_npoints;
+        if ($meta->start>0 && $meta->npoints==0) {
+            $this->log->warn("PHPTimestore:get_meta start_time already defined but npoints is 0, something is wrong with the data file?.");
             
             // Remove to autocorrect
             return false;
@@ -623,33 +577,9 @@ class PHPTimestore
 
         fclose($metafile);
         
-        if (!$this->set_npoints($feedid,$meta)) return false;
-        
         return $meta;
     }
     
-    public function set_npoints($feedid,$meta)
-    {
-        $feedid = (int) $feedid;
-        $feedname = str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints";
-        $metafile = fopen($this->dir.$feedname, 'wb');
-        
-        if (!$metafile) {
-            $this->log->warn("PHPTimestore:set_npoints could not open npoints metafile feedid=$feedid");
-            return false;
-        }
-        
-        if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPTimestore:set_npoints ".$this->dir.$feedname." is locked by another process");
-            fclose($metafile);
-            return false;
-        }
-        
-        fwrite($metafile,pack("I",$meta->npoints));
-        fclose($metafile);
-        return $meta;
-    }
-
     public function get_feed_size($feedid)
     {
         $size = 272;
@@ -747,7 +677,6 @@ class PHPTimestore
     public function delete($feedid)
     {
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".tsdb");
-	unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT).".npoints");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_1_.dat");
         unlink($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_2_.dat");

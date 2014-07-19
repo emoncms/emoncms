@@ -12,7 +12,7 @@
 
 <h3><?php echo _('Available HTML URLs'); ?></h3>
 <table class="table">
-    <tr><td><?php echo _('The input list view'); ?></td><td><a href="<?php echo $path; ?>input/node"><?php echo $path; ?>input/node</a></td></tr>
+    <tr><td><?php echo _('The input list view'); ?></td><td><a href="<?php echo $path; ?>input/view"><?php echo $path; ?>input/node</a></td></tr>
     <tr><td><?php echo _('This page'); ?></td><td><a href="<?php echo $path; ?>input/api"><?php echo $path; ?>input/api</a></td></tr>
     <tr><td><?php echo _('Input processing configuration page'); ?></td><td><a href="<?php echo $path; ?>input/process?inputid=1"><?php echo $path; ?>input/process?inputid=1</a></td></tr>
 </table>

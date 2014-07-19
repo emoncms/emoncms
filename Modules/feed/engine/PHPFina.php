@@ -24,30 +24,27 @@ class PHPFina
     /**
      * Create feed
      *
-     * @param integer $feedid The id of the feed to be created
+     * @param integer $id The id of the feed to be created
     */
     public function create($id,$options)
     {
         $interval = (int) $options['interval'];
         if ($interval<5) $interval = 5;
         
-        //if (!$this->checkpermissions()) return false;
-        
         // Check to ensure we dont overwrite an existing feed
         if (!$meta = $this->get_meta($id))
         {
             // Set initial feed meta data
             $meta = new stdClass();
-            $meta->id = $id;
-            $meta->npoints = 0;
             $meta->interval = $interval;
             $meta->start_time = 0;
-
-        
+            
+            $meta->npoints = 0;
+            
             // Save meta data
             $this->create_meta($id,$meta);
             
-            $fh = fopen($this->dir.$meta->id.".dat", 'c+');
+            $fh = @fopen($this->dir.$id.".dat", 'c+');
             
             if (!$fh) {
                 $this->log->warn("PHPFina:create could not create data file id=$id");
@@ -64,20 +61,11 @@ class PHPFina
             return false;
         }
     }
-    
-    //private function checkpermissions()
-    //{
-    //    $uid = fileowner( $this->dir );
-    //    $uinfo = posix_getpwuid( $uid ); 
-    //    
-    //    if ($uinfo['name']=="www-data") return true; else return false;
-    //}
-
 
     /**
      * Adds a data point to the feed
      *
-     * @param integer $feedid The id of the feed to add to
+     * @param integer $id The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
@@ -127,7 +115,7 @@ class PHPFina
         // return false;
         // }
 
-        $fh = fopen($this->dir.$meta->id.".dat", 'c+');
+        $fh = fopen($this->dir.$id.".dat", 'c+');
         if (!$fh) {
             $this->log->warn("PHPFina:post could not open data file id=$id");
             return false;
@@ -156,17 +144,13 @@ class PHPFina
         // Close file
         fclose($fh);
         
-        if (($pos+1)>$meta->npoints) $meta->npoints = $pos + 1;
-        
-        $this->set_npoints($id,$meta);
-        
         return $value;
     }
     
     /**
      * Updates a data point in the feed
      *
-     * @param integer $feedid The id of the feed to add to
+     * @param integer $id The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
@@ -178,20 +162,20 @@ class PHPFina
     /**
      * Return the data for the given timerange
      *
-     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $id The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $dp The number of data points to return (used by some engines)
     */
-    public function get_data($feedid,$start,$end,$outinterval)
+    public function get_data($id,$start,$end,$outinterval)
     {
-        $feedid = intval($feedid);
+        $id = intval($id);
         $start = intval($start/1000);
         $end = intval($end/1000);
         $outinterval= (int) $outinterval;
         
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($feedid)) return false;
+        if (!$meta = $this->get_meta($id)) return false;
         
         if ($outinterval<$meta->interval) $outinterval = $meta->interval;
         $dp = ceil(($end - $start) / $outinterval);
@@ -222,7 +206,7 @@ class PHPFina
 
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$meta->id.".dat", 'rb');
+        $fh = fopen($this->dir.$id.".dat", 'rb');
         while($time<=$end)
         {
             // $position steps forward by skipsize every loop
@@ -249,7 +233,7 @@ class PHPFina
     /**
      * Get the last value from a feed
      *
-     * @param integer $feedid The id of the feed
+     * @param integer $id The id of the feed
     */
     public function lastvalue($id)
     {
@@ -260,7 +244,7 @@ class PHPFina
         
         if ($meta->npoints>0)
         {
-            $fh = fopen($this->dir.$meta->id.".dat", 'rb');
+            $fh = fopen($this->dir.$id.".dat", 'rb');
             $size = $meta->npoints*4;
             fseek($fh,$size-4);
             $d = fread($fh,4);
@@ -336,15 +320,14 @@ class PHPFina
     public function delete($id)
     {
         if (!$meta = $this->get_meta($id)) return false;
-        unlink($this->dir.$meta->id.".meta");
-        unlink($this->dir.$meta->id.".dat");
-	unlink($this->dir.$meta->id.".npoints");
+        unlink($this->dir.$id.".meta");
+        unlink($this->dir.$id.".dat");
     }
     
     public function get_feed_size($id)
     {
         if (!$meta = $this->get_meta($id)) return false;
-        return (filesize($this->dir.$meta->id.".meta") + filesize($this->dir.$meta->id.".dat"));
+        return (filesize($this->dir.$id.".meta") + filesize($this->dir.$id.".dat"));
     }
     
 
@@ -361,12 +344,7 @@ class PHPFina
         $meta = new stdClass();
         $metafile = fopen($this->dir.$feedname, 'rb');
 
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->id = $tmp[1];
-        
-        // Legacy npoints
-        $tmp = unpack("I",fread($metafile,4));
-        $legacy_npoints = $tmp[1];
+        fseek($metafile,8);
         
         $tmp = unpack("I",fread($metafile,4)); 
         $meta->interval = $tmp[1];
@@ -376,58 +354,12 @@ class PHPFina
         
         fclose($metafile);
         
-        // Double verification of npoints
-        $filesize = filesize($this->dir.$meta->id.".dat");
-        $filesize_npoints = $filesize / 4.0;
-        
-        if ($filesize_npoints!=(int)$filesize_npoints) {
-            // filesize result is corrupt
-            
-            $this->log->warn("PHPFina:get_meta php filesize() is not integer multiple of 4 bytes id=$id");
-            return false;
-        }
-        
-        if (!file_exists($this->dir."$id.npoints")) {
-            // 1) Transitioning to new system that saves npoints in a seperate file
-            if ($legacy_npoints!=$filesize_npoints)
-            {
-                // discrepancy between legacy npoints and filesize npoints, they should be the same at this point
-                $this->log->warn("PHPFina:get_meta legacy npoints does not match filesize npoints id=$id");
-                return false;
-            } else {
-                $meta->npoints = $filesize_npoints;
-            }
-
-        } else {
-            $metafile = fopen($this->dir."$id.npoints", 'rb');
-            $tmp = unpack("I",fread($metafile,4));
-            $npoints = $tmp[1];
-            fclose($metafile);
-            $meta->npoints = $npoints;
-        }
-
-        if ($meta->npoints!=$filesize_npoints)
-        {
-            // filesize npoints and npoints from the .npoints meta file should be the same
-            // if there is a discrepancy then this suggests corrupt data.
-            $this->log->warn("PHPFina:get_meta meta file npoints (".$meta->npoints.") does not match filesize npoints ($filesize_npoints) id=$id");
-            return false;
-            
-            // Note: npoints should not diverge, if it does and only by a 1 or 2 dp then
-            // it is possible to manually correct the feed by removing the 'return false;' 
-            // line above and uncommenting this line (you may want to backup your feed beforehand): 
-            
-            // Uncomment to auto correct (autocorrect disabled for now)
-            // $meta->npoints = $filesize_npoints;
-        }
+        clearstatcache($this->dir.$id.".dat");
+        $filesize = filesize($this->dir.$id.".dat");
+        $meta->npoints = floor($filesize / 4.0);
         
         if ($meta->start_time>0 && $meta->npoints==0) {
-            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0, npoints metadata is corrupt.");
-            
-            // Uncomment to auto correct (autocorrect disabled for now)
-            // $meta->npoints = $filesize_npoints;
-            
-            // Remove to autocorrect
+            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
             return false;
         }
   
@@ -442,45 +374,20 @@ class PHPFina
         $metafile = fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
-            $this->log->warn("PHPFina:create_meta could not open meta data file id=".$meta->id);
+            $this->log->warn("PHPFina:create_meta could not open meta data file id=".$id);
             return false;
         }
         
         if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPFina:create_meta meta file id=".$meta->id." is locked by another process");
+            $this->log->warn("PHPFina:create_meta meta file id=".$id." is locked by another process");
             fclose($metafile);
             return false;
         }
         
-        fwrite($metafile,pack("I",$meta->id));
-        // Legacy npoints, npoints moved to seperate file
+        fwrite($metafile,pack("I",0));
         fwrite($metafile,pack("I",0)); 
         fwrite($metafile,pack("I",$meta->interval));
         fwrite($metafile,pack("I",$meta->start_time)); 
-        fclose($metafile);
-        
-        $this->set_npoints($id,$meta);
-    }
-    
-    private function set_npoints($id,$meta)
-    {
-        $id = (int) $id;
-        
-        $feedname = "$id.npoints";    
-        $metafile = fopen($this->dir.$feedname, 'wb');
-        
-        if (!$metafile) {
-            $this->log->warn("PHPFina:set_npoints could not open meta data file id=".$meta->id);
-            return false;
-        }
-        
-        if (!flock($metafile, LOCK_EX)) {
-            $this->log->warn("PHPFina:set_npoints meta file id=".$meta->id." is locked by another process");
-            fclose($metafile);
-            return false;
-        }
-        
-        fwrite($metafile,pack("I",$meta->npoints));
         fclose($metafile);
     }
     
@@ -522,15 +429,15 @@ class PHPFina
         } while ($npadding); 
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($id,$start,$end,$outinterval)
     {
-        $feedid = intval($feedid);
+        $id = intval($id);
         $start = intval($start);
         $end = intval($end);
         $outinterval= (int) $outinterval;
 
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($feedid)) return false;
+        if (!$meta = $this->get_meta($id)) return false;
         
         if ($outinterval<$meta->interval) $outinterval = $meta->interval;
         $dp = ceil(($end - $start) / $outinterval);
@@ -565,7 +472,7 @@ class PHPFina
         // Tell the browser to handle output as a csv file to be downloaded
         header('Content-Description: File Transfer');
         header("Content-type: application/octet-stream");
-        $filename = $feedid.".csv";
+        $filename = $id.".csv";
         header("Content-Disposition: attachment; filename={$filename}");
 
         header("Expires: 0");
@@ -577,7 +484,7 @@ class PHPFina
 
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$meta->id.".dat", 'rb');
+        $fh = fopen($this->dir.$id.".dat", 'rb');
         while($time<=$end)
         {
             // $position steps forward by skipsize every loop
