@@ -11,66 +11,12 @@ var processlist_ui =
     
     enable_mysql_all: false,
 
-
-    'init':function()
-    {
-        // DRAW PROCESS SELECTOR
-
-        var processgroups = [];
-        var i = 0;
-        for (z in this.processlist)
-        {
-            i++;
-            var group = this.processlist[z][5];
-            if (group!="Deleted") {
-                if (!processgroups[group]) processgroups[group] = []
-                this.processlist[z]['id'] = i;
-                processgroups[group].push(this.processlist[z]);
-            }
-        }
-
-        var out = "";
-        for (z in processgroups)
-        {
-            out += "<optgroup label='"+z+"'>";
-            for (p in processgroups[z])
-            {
-                out += "<option value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+"</option>";
-            }
-            out += "</optgroup>";
-        }
-        $("#process-select").html(out);
-
-        // Inputlist
-        var out = "";
-        for (i in processlist_ui.inputlist) {
-          var input = processlist_ui.inputlist[i];
-          out += "<option value="+input.id+">Node "+input.nodeid+":"+input.name+" "+input.description+"</option>";
-        }
-        $("#input-select").html(out);
-
-        // Feedlist
-        var out = "<option value=-1>CREATE NEW:</option>";
-        for (i in processlist_ui.feedlist) {
-          var feed = processlist_ui.feedlist[i];
-          out += "<option value="+feed.id+">"+feed.name+"</option>";
-        }
-        $("#feed-select").html(out);
-        
-        $("#type-value").hide();
-        $("#type-input").hide();
-        $("#type-feed").hide();
-
-        $("#type-feed").show();
-        $("#description").html(process_info[1]);
-        
-        processlist_ui.showfeedoptions(1);
-    },
-
     'draw':function()
     {
         var i = 0;
         var out="";
+        
+        console.log(this.variableprocesslist);
         
         if (this.variableprocesslist.length==0) {
             out += "<tr class='alert'><td></td><td></td><td><b>You have no processes defined</b></td><td></td><td></td><td></td></tr>";
@@ -110,7 +56,6 @@ var processlist_ui =
                 
                 if (this.processlist[processid][1]==2) {
                     var feedid = this.variableprocesslist[z][1];
-                    
                     if (processlist_ui.feedlist[feedid]!=undefined) {
                         arg += "<a class='label label-info' href='"+path+"vis/auto?feedid="+feedid+"'>";
                         if (processlist_ui.feedlist[feedid].tag) arg += processlist_ui.feedlist[feedid].tag+": ";
@@ -164,6 +109,7 @@ var processlist_ui =
                 if (feedid==-1) 
                 {
                     var feedname = $('#feed-name').val();
+                    var feedtag = $('#feed-tag').val();
                     var engine = $('#feed-engine').val();
                     var datatype = process[4];
                     
@@ -187,7 +133,17 @@ var processlist_ui =
                         return false;
                     }
                     
-                    processlist_ui.feedlist = feed.list_assoc();
+                    processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':''};
+                    
+                    // Feedlist
+                    var out = "<option value=-1>CREATE NEW:</option>";
+                    for (i in processlist_ui.feedlist) {
+                      out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
+                    }
+                    $("#feed-select").html(out);
+                    
+                    $.ajax({ url: path+"feed/set.json", data: "id="+feedid+"&fields="+JSON.stringify({'tag':feedtag}), async: true, success: function(data){} });
+                    
                 }
                 arg = feedid;
 
@@ -197,7 +153,8 @@ var processlist_ui =
             //if (arg!="") 
             //{
                 console.log(processid+" "+arg);
-                processlist_ui.variableprocesslist.push([processid,arg]);
+                processlist_ui.variableprocesslist.push([processid,""+arg]);
+                processlist_ui.draw();
                 
                 input.add_process(processlist_ui.inputid,processid,arg);
                 //processlist_ui.nodes[processlist_ui.nodeid].decoder.variables[processlist_ui.variableid].processlist = processlist_ui.encode(processlist_ui.variableprocesslist);
@@ -207,7 +164,7 @@ var processlist_ui =
                 //    alert(data.message);
                 //    return false;
                 //}
-                processlist_ui.draw();
+                
             //}
         });
 
@@ -251,9 +208,8 @@ var processlist_ui =
             //node.setdecoder(processlist_ui.nodeid,processlist_ui.nodes[processlist_ui.nodeid].decoder);
             
             var processid = $(this).attr('processid')*1;
-            input.delete_process(processlist_ui.inputid,processid+1);
-            
             processlist_ui.draw();
+            input.delete_process(processlist_ui.inputid,processid+1);
         });
 
         $('#processlist-ui .table').on('click', '.move-process', function() {
@@ -266,12 +222,13 @@ var processlist_ui =
             if (newpos>=0 && newpos<processlist_ui.variableprocesslist.length)
             { 
                 processlist_ui.variableprocesslist = processlist_ui.array_move(processlist_ui.variableprocesslist,curpos,newpos);
+                processlist_ui.draw();
                 input.move_process(processlist_ui.inputid,processid+1,moveby);
             }
 
             //processlist_ui.nodes[processlist_ui.nodeid].decoder.variables[processlist_ui.variableid].processlist = processlist_ui.encode(processlist_ui.variableprocesslist);
             //node.setdecoder(processlist_ui.nodeid,processlist_ui.nodes[processlist_ui.nodeid].decoder);
-            processlist_ui.draw();
+            
         });
 
     },

@@ -180,7 +180,7 @@ var customtablefields = {
     {
         'draw': function(row,field)
         {
-            return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' ></i>";
+            return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
         }
     }
 }
