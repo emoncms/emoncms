@@ -357,9 +357,12 @@ Enter in your database settings.
 
 Save (Ctrl-X), type Y and exit
 
-Move the writer script to home folder
+Move the writer script to home folder and service script to /etc/init.d/
 
     mv /var/www/emoncms/run/feedwriter.php /home/pi
+    sudo cp /var/www/emoncms/run/feedwriter /etc/init.d/
+    sudo chmod 755 /etc/init.d/feedwriter
+    sudo update-rc.d feedwriter defaults
     
 ### Script to install emonHub from git for development
 
@@ -379,19 +382,22 @@ View last 10 logfile entries
 
     tail /var/log/emonhub.log
     
-Manually restart emonhub
-
-    sudo service emonhub restart
-
 Place OS Parition of SD card back in read only mode:
 
     rpi-ro
     
-    screen
-    sudo php feedwriter.php
-    ctrl a+d to exit
+Manually restart emonhub
+
+    sudo service emonhub restart
+    sudo service feedwriter start
     
-    Monitor disk load with sysstat:
+
+
+    
+
+    
+Monitor disk load with sysstat:
     
     sudo iostat 60 (will give you 1 minuite disk load average, note kb_wrtn/s value)
     
+kb_wrtn/s should be around 0.5-1.5 kb_wrtn/s
