@@ -364,7 +364,7 @@ Move the writer script to home folder and service script to /etc/init.d/
     sudo chmod 755 /etc/init.d/feedwriter
     sudo update-rc.d feedwriter defaults
     
-### Script to install emonHub from git for development
+### Install Emonhub
 
 Copied from: [https://github.com/emonhub/dev-emonhub](https://github.com/emonhub/dev-emonhub)
 
@@ -377,24 +377,28 @@ This script is not intended to fully install emonHub, It clones into "emonhub" f
 Edit configurations
 
     nano /etc/emonhub/emonhub.conf
-
-View last 10 logfile entries
-
-    tail /var/log/emonhub.log
     
 Place OS Parition of SD card back in read only mode:
 
     rpi-ro
     
-Manually restart emonhub
+Manually restart emonhub:
 
     sudo service emonhub restart
+    
+Manually start feedwriter:
+
     sudo service feedwriter start
     
+----------------------------------------------
 
-
+### Debugging and monitoring
     
+To view logfile entries:
 
+    tail -f /var/log/emonhub.log
+    tail -f /var/log/feedwriter.log
+    tail -f /var/log/emoncms.log
     
 Monitor disk load with sysstat:
     
