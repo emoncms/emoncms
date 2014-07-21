@@ -14,3 +14,5 @@ The writer process writes the feed data to disk step periodically. The writing s
 
 ## [RaspberryPI SD Card installation guide](docs/install.md)
 
+## [Ready to go image setup](docs/setup.md)
+
