@@ -361,22 +361,31 @@ Move the writer script to home folder
 
     mv /var/www/emoncms/run/feedwriter.php /home/pi
     
-## Install emonhub
+### Script to install emonHub from git for development
 
-    cd /home/pi
+Copied from: [https://github.com/emonhub/dev-emonhub](https://github.com/emonhub/dev-emonhub)
+
+Use this commandline to install a "development" version of emonHub
+
+    git clone https://github.com/emonhub/dev-emonhub.git && dev-emonhub/install.sh
     
-    git clone https://github.com/emonhub/emonhub.git
+This script is not intended to fully install emonHub, It clones into "emonhub" folder in home directory and symlinks the files to where they are supposed to be.
+
+Edit configurations
+
+    nano /etc/emonhub/emonhub.conf
+
+View last 10 logfile entries
+
+    tail /var/log/emonhub.log
     
-    nano /home/pi/emonhub/conf/emonhub.conf
-    
-    set log level to WARNING
-    remove dispatchers that you dont need (i.e emoncms.org), remove socket, add local emoncms apikey, set radio settings
-    
+Manually restart emonhub
+
+    sudo service emonhub restart
+
+Place OS Parition of SD card back in read only mode:
+
     rpi-ro
-    
-    screen
-    sudo python src/emonhub.py --config-file conf/emonhub.conf
-    ctrl a+d to exit
     
     screen
     sudo php feedwriter.php
