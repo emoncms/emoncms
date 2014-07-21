@@ -13,6 +13,8 @@
     require "Modules/log/EmonLogger.php";
     require "process_settings.php";
     
+    // Sleep here seemed to be needed to allow redis time to start at startup
+    sleep(10);
     $redis = new Redis();
     $connected = $redis->connect("127.0.0.1");
     
