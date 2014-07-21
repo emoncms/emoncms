@@ -386,9 +386,9 @@ Manually restart emonhub:
 
     sudo service emonhub restart
     
-Manually start feedwriter:
+Manually start feedwriter (add 'log' to end to enable logging)
 
-    sudo service feedwriter start
+    sudo service feedwriter start log
     
 ----------------------------------------------
 
