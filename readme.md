@@ -12,9 +12,9 @@ The build uses the latest version of [EmonHub](https://github.com/emonhub/) to p
 
 The writer process writes the feed data to disk step periodically. The writing step involves first reading all the items out of the redis queue placing the individual feed datapoints into individual buffers which are again in memory. Then at the end of this process each block of data accumulated for each feed is written to the disk in a single write operation (per feed)
 
-## [Download ready-to-go image: emonSD-21-7-14.img.zip](http://files.openenergymonitor.org/emonSD-21-7-14.img.zip)
+### [Download ready-to-go image: emonSD-21-7-14.img.zip](http://files.openenergymonitor.org/emonSD-21-7-14.img.zip)
 
-## [RaspberryPI SD Card installation guide](docs/install.md)
+### [Full installation guide](docs/install.md)
 
-## [Ready to go image setup](docs/setup.md)
+### [Using the Ready to go image](docs/setup.md)
 
