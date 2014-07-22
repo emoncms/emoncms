@@ -9,7 +9,7 @@ Emonhub has a powerfull node decoder built into it that allows for the decoding 
 
 [https://github.com/emonhub/emonhub/issues/64](https://github.com/emonhub/emonhub/issues/64)
 
-In the meantime if you wish to carry out the node decoding within a remote emoncms installation a couple of small modifications to emonhub can be made to achieve this:
+In the meantime if you wish to carry out the node decoding within a remote emoncms installation rather than use the standard local emonhub based node decoding a couple of small modifications to emonhub can be made to achieve this:
 
 In emonhub.conf under listeners -> runtime_settings add the line
 
