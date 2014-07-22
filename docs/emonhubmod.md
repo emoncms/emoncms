@@ -80,7 +80,7 @@ In class EmonHubJeeListener, method run, add just below: now = time.time() [~lin
         self._log.debug(self.name + " broadcasting control packet " + packet + "s")
         self._ser.write(packet+"s")
         
-Set your emoncms location (it can be locahost or a remote server) and apikey in the URL string.
+Set your emoncms location (it can be localhost or a remote server) and apikey in the URL string.
 
 Save and exit.
         
