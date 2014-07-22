@@ -18,3 +18,5 @@ The writer process writes the feed data to disk step periodically. The writing s
 
 ### [Using the Ready to go image](docs/setup.md)
 
+### [Optional modifications to emonhub for connection to emoncms node module and emoncms packetgen module](docs/emonhubmod.md)
+
