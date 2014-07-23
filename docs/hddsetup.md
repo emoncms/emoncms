@@ -6,7 +6,7 @@ The emonSD-21-7-14.img.zip image can be used with a harddrive or an SD Card.
 
 ### Change /boot/cmdline.txt on the boot partition of the SD card
 
-Paul from the OpenEnergyMonitor forums has written an alternative guide for setting up the Pi with file system on a hard drive which should be easier for those running Windows, see forum post:
+Paul ([pb66](http://openenergymonitor.org/emon/user/4440)) from the OpenEnergyMonitor forums has written an alternative guide for setting up the Pi with file system on a hard drive which should be easier for those running Windows, see forum post:
 
 [http://openenergymonitor.org/emon/node/5092] (http://openenergymonitor.org/emon/node/5092)
 
