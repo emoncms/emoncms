@@ -1,6 +1,6 @@
 ## HDD Setup
 
-The emonSD-21-7-14.img.zip image can be used with a harddrive or an SD Card. Start by writing the emonSD-21-7-14.img on to both your harddrive and an SD Card.
+The emonSD-21-7-14.img.zip image can be used with a harddrive or an SD Card. Start by writing the emonSD-21-7-14.img on to both your harddrive and an SD Card. The SD card is needed for initial boot up, after it boots it will use the harddrive.
 
 ### Change /boot/cmdline.txt on the boot partition of the SD card
 
@@ -46,3 +46,5 @@ to:
     /dev/sda2       /               ext4    defaults,rw,noatime,errors=remount-ro 0    1
 
 That's all that is needed to get the data partition of the raspberrypi running of a harddrive rather than the SD card. You can now insert the SD card in the raspberrypi and connect up the harddrive, power up and use the raspberrypi in the same way as you would use the pi if it was running off an SD card.
+
+The data partition on the harddrive will still be around 900Mb, you may wish to extend the partition, there are plenty of good guides available on the internet for this search for extending an ext2 filesystem.
