@@ -25,7 +25,13 @@ Create the phpfiwa data directory:
 
     sudo mkdir /home/pi/data/phpfiwa
     sudo chown www-data:root /home/pi/data/phpfiwa
+    
+Reapply www-data ownership:
 
+    sudo chown -R www-data:root /home/pi/data/phpfina
+    sudo chown -R www-data:root /home/pi/data/phptimeseries
+    sudo chown -R www-data:root /home/pi/data/phpfiwa
+    
 Repeat the same for phptimestore or timestore if you wish to use these engines.
 
 Add a settings.php entry for phpfiwa, in feed_settings add:
