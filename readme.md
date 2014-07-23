@@ -15,5 +15,6 @@ The writer process writes the feed data to disk step periodically. The writing s
 - [Download ready-to-go image: emonSD-21-7-14.img.zip](http://files.openenergymonitor.org/emonSD-21-7-14.img.zip)
 - [Full installation guide](docs/install.md)
 - [Using the Ready to go image](docs/setup.md)
-- [Optional modifications to emonhub for connection to emoncms node module and emoncms packetgen module](docs/emonhubmod.md)
+- [Optional: modifications to emonhub for connection to emoncms node module and emoncms packetgen module](docs/emonhubmod.md)
+- [Optional: Using a harddrive instead of an SD Card](docs/hddsetup.md)
 
