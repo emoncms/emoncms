@@ -30,10 +30,8 @@ Unmount any mounted SD card partitions
     umount /dev/sdb2
     
 Write the raspbian image to the SD card (Make sure of=/dev/sdb is the correct location)
-    
-    sudo dd bs=4M if=2014-01-07-wheezy-raspbian.img of=/dev/sdb
-    
-**Open the SD Card in GParted and format the unallocated 899 MiB disk space as a FAT16 Drive** 
+
+    sudo dd bs=4M if=2014-06-20-wheezy-raspbian.img of=/dev/sdb
 
 Insert the SD card into the raspberrypi and power the pi up.
 
