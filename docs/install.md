@@ -391,11 +391,58 @@ Manually start feedwriter (add 'log' to end to enable logging)
 
 echo "<?php header('Location: ../emoncms'); ?>" > /var/www/index.php
 
+### Create scripts to disable and enable local emoncms
+
+#### Disable local emoncms
+
+    sudo nano /usr/bin/localemoncms-disable
+    
+Copy and paste:
+        
+    #!/bin/sh
+    sudo update-rc.d apache2 remove
+    sudo update-rc.d mysql remove
+    sudo update-rc.d feedwriter remove
+    sudo update-rc.d redis-server remove
+    
+    sudo service feedwriter stop
+    sudo service apache2 stop
+    sudo service mysql stop
+    sudo service redis stop
+    
+Make excutable:
+    
+    sudo chmod +x  /usr/bin/localemoncms-disable
+    
+#### Enable local emoncms
+        
+    sudo nano /usr/bin/localemoncms-enable
+    
+Copy and paste:
+
+    #!/bin/sh
+    
+    sudo update-rc.d apache2 defaults
+    sudo update-rc.d mysql defaults
+    sudo update-rc.d redis-server defaults
+    sudo update-rc.d feedwriter defaults
+    
+    sudo service apache2 start
+    sudo service mysql start
+    sudo service redis start
+    sudo service feedwriter start
+    
+Make excutable:
+
+    sudo chmod +x  /usr/bin/localemoncms-enable
+
 ### SD Card defaults
 
 Create an emoncms user called raspberry and password raspberry.
 
 Set emoncms settings.php $dbtest to false and $allowusersregister to false.
+
+Default is local emoncms disabled
 
 ----------------------------------------------
 
