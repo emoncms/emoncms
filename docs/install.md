@@ -166,11 +166,10 @@ Update the rasbian repositories with:
 Install all dependencies:
 There are a few extra things in here such as mosquitto (MQTT) which is not currently used but may be soon.
 
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt git-core redis-server build-essential ufw ntp python-serial python-configobj mosquitto mosquitto-clients python-pip python-dev screen iostat minicom
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt git-core redis-server build-essential ufw ntp python-serial python-configobj mosquitto mosquitto-clients python-pip python-dev screen sysstat minicom
 
 Install pecl dependencies (redis and swift mailer)
 
-    sudo pear channel-discover
     sudo pecl install redis
     
     sudo pear channel-discover pear.apache.org/log4php
@@ -210,7 +209,7 @@ Emoncms uses a front controller to route requests, modrewrite needs to be config
 
 Change (line 7 and line 11), "AllowOverride None" to "AllowOverride All".
 
-Comment out line # CustomLog ${APACHE_LOG_DIR}/access.log combined
+    Comment out line # CustomLog ${APACHE_LOG_DIR}/access.log combined
 
 That is the sections <Directory /> and <Directory /var/www/>.
 [Ctrl + X ] then [Y] then [Enter] to Save and exit.
@@ -390,6 +389,16 @@ Manually start feedwriter (add 'log' to end to enable logging)
 
     sudo service feedwriter start log
     
+### Add index.php redirect in web root
+
+echo "<?php header('Location: ../emoncms'); ?>" > /var/www/index.php
+
+### SD Card defaults
+
+Create an emoncms user called raspberry and password raspberry.
+
+Set emoncms settings.php $dbtest to false and $allowusersregister to false.
+
 ----------------------------------------------
 
 ### Debugging and monitoring
