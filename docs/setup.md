@@ -11,17 +11,29 @@ Login to the raspberrypi with SSH (Putty is a useful tool to do this on windows)
 
 The password is: raspberry
 
-### Logging to the local installation of emoncms
+### Enabling and logging to the local installation of emoncms
 
-In your internet browser window, enter the ip address of the raspberrypi. This should bring up the emoncms login page. There are no accounts created yet so you will need to start by registering an account. The emoncms installation is ready to use and can be used much in the same way as an account on emoncms.org.
+The local installation of emoncms is disabled as default. To enable it first put the os partition into write mode with
+
+    rpi-rw
+    
+Enable the local emoncms with:
+    
+    localemoncms-enable
+    
+Note: to disable again: localemoncms-disable
+
+In your internet browser window, enter the ip address of the raspberrypi. This should bring up the emoncms login page. 
+
+Login with the default admin account name **raspberry** and password **raspberry**.
+
+Its recommended that you change the default admin account name, password and email once you login.
+
+The emoncms installation is ready to use and can be used much in the same way as an account on emoncms.org.
 
 Also installed on the SD card is emonhub. Emonhub can be used to receive serial data from an attached rfm12pi adapter board and forward that data to the local emoncms install or/and forward the data to a remote emoncms account.
 
 To configure emonhub to post to the local installation of emoncms note down the write apikey that is displayed on the account page.
-
-In the ssh window, set the raspberrypi os into write mode with:
-
-    rpi-rw
 
 Open the emonhub config file for editing:
     
@@ -45,26 +57,24 @@ Change the default raspberrypi ssh password
 
     passwd
     
+Change the admin raspberrypi password
+
+    sudo passwd
+    
 Enter current password and then the new password of your choice.
-
-Turn off ability to create further accounts in emoncms:
-
-    nano /var/www/emoncms/settings.php
-    
-At the bottom set:
-
-    $allowusersregister = false;
-
-and to speed emoncms up a bit set:
-
-    $dbtest = false;
-    
-Change the logging level on emonhub to WARNING instead of DEBUG
-
-    nano /etc/emonhub/emonhub.conf
-
-Near the top of the file, change loglevel to:
-
-    loglevel = WARNING
     
 Always remember to put the OS partiion back into read-only mode. This will extend the lifespan of your SD Card.
+
+### Monitoring and Debugging
+
+To view logfile entries:
+
+    tail -f /var/log/emonhub.log
+    tail -f /var/log/feedwriter.log
+    tail -f /var/log/emoncms.log
+
+Monitor disk load with sysstat:
+
+    sudo iostat 60 (will give you 1 minuite disk load average, note kb_wrtn/s value)
+
+kb_wrtn/s should be around 0.5-1.5 kb_wrtn/s
