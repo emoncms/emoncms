@@ -81,10 +81,10 @@ class PHPTimeSeries
         {
             // Auto-correction if something happens to the datafile, it gets partitally written to
             // this will correct the file size to always be an integer number of 4 bytes.
-            clearstatcache($this->dir.$name.".dat");
-            if (@filesize($this->dir.$name.".dat")%9 != 0) {
-                $npoints = floor(filesize($this->dir.$name.".dat")/9.0);
-                $fh = fopen($this->dir.$name.".dat","c");
+            clearstatcache($this->dir.$name);
+            if (@filesize($this->dir.$name)%9 != 0) {
+                $npoints = floor(filesize($this->dir.$name)/9.0);
+                $fh = fopen($this->dir.$name,"c");
                 fseek($fh,$npoints*9.0);
                 fwrite($fh,$data);
                 fclose($fh);
@@ -92,7 +92,7 @@ class PHPTimeSeries
             }
             else
             {
-                $fh = fopen($this->dir.$name.".dat","ab");
+                $fh = fopen($this->dir.$name,"ab");
                 fwrite($fh,$data);
                 fclose($fh);
             }
