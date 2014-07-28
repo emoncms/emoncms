@@ -14,6 +14,7 @@
     $redis_enabled = true;
     
     $feed_settings = array(
+        'max_npoints_returned'=>800,
         
         'phpfina'=>array(
             'datadir'=>'/home/pi/data/phpfina/'

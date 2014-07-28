@@ -80,7 +80,7 @@ class Input
         $nodeid = (int) $nodeid;
 
         $name = preg_replace('/[^\w\s-.]/','',$name);
-        $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
+        $this->mysqli->query("INSERT INTO input (userid,name,nodeid,description,processList) VALUES ('$userid','$name','$nodeid','','')");
 
         $id = $this->mysqli->insert_id;
 

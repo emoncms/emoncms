@@ -7,7 +7,6 @@
     var plotlist = [];
     for (z in multigraph_feedlist)
     {
-    console.log("Feeding multigraph data");
     if (multigraph_feedlist[z]['datatype']==1)
     {
       plotlist[z] = {
@@ -110,7 +109,17 @@
       if (plotlist[i].selected) {
         if (!plotlist[i].plot.data)
         {
-          plotlist[i].plot.data = get_feed_data(plotlist[i].id, start, end, 400);
+          
+          var npoints = 400;
+          interval = Math.round(((view.end - view.start)/npoints)/1000);
+
+          $.ajax({                                      
+              url: path+'feed/average.json',                         
+              data: "id="+plotlist[i].id+"&start="+view.start+"&end="+view.end+"&interval="+interval,
+              dataType: 'json',
+              async: false,                      
+              success: function(data_in) { plotlist[i].plot.data = data_in; } 
+          });
         }
 
         if ( plotlist[i].plot.data)
@@ -134,8 +143,8 @@
   {
     $.plot($("#graph"), plotdata, {
       grid: { show: true, hoverable: true, clickable: true },
-      xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-    selection: { mode: "x" },
+      xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
+      selection: { mode: "x" },
       legend: { position: "nw"}
     });
   }
@@ -145,11 +154,18 @@ function multigraph_init(element)
   // Get start and end time of multigraph view
   // end time and timewindow is stored in the first multigraph_feedlist item.
   // start time is calculated from end - timewindow
+  
+  var timeWindow = (3600000*24.0*7);
+  view.start = +new Date - timeWindow;
+  view.end = +new Date;
+  
   if (multigraph_feedlist[0]!=undefined)
   {
-    end = multigraph_feedlist[0].end;
-    if (end==0) end = (new Date()).getTime();
-    if (multigraph_feedlist[0].timeWindow) start = end - multigraph_feedlist[0].timeWindow;
+    view.end = multigraph_feedlist[0].end;
+    if (view.end==0) view.end = (new Date()).getTime();
+    if (multigraph_feedlist[0].timeWindow) {
+        view.start = view.end - multigraph_feedlist[0].timeWindow;
+    }
   }
 
   var out =
@@ -203,17 +219,18 @@ function multigraph_init(element)
   //--------------------------------------------------------------------------------------
   $("#graph").bind("plotselected", function (event, ranges)
   {
-     start = ranges.xaxis.from; end = ranges.xaxis.to;
+     view.start = ranges.xaxis.from; 
+     view.end = ranges.xaxis.to;
      timeWindowChanged = 1; vis_feed_data();
   });
 
   //----------------------------------------------------------------------------------------------
   // Operate buttons
   //----------------------------------------------------------------------------------------------
-  $("#zoomout").click(function () {inst_zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
-  $('#right').click(function () {inst_panright(); vis_feed_data();});
-  $('#left').click(function () {inst_panleft(); vis_feed_data();});
-  $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+  $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
+  $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
+  $('#right').click(function () {view.panright(); vis_feed_data();});
+  $('#left').click(function () {view.panleft(); vis_feed_data();});
+  $('.time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
   //-----------------------------------------------------------------------------------------------
 }

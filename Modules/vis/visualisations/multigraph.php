@@ -18,11 +18,8 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
 <?php if (!$embed) { ?>
 <h2>Multigraph</h2>
@@ -38,6 +35,8 @@
     var embed = <?php echo $embed; ?>;
     var apikey = "<?php echo $apikey; ?>";
     var multigraph_feedlist = {};
+    
+    if (mid==0) $("body").css('background-color','#eee');
 
     $.ajax({ url: path+"vis/multigraph/get.json", data: "&id="+mid, dataType: 'json', async: true,
         success: function(data)
@@ -45,31 +44,14 @@
                 multigraph_feedlist = data;
 
                 var timeWindow = (3600000*24.0*7);              //Initial time window
-                var start = ((new Date()).getTime())-timeWindow;        //Get start time
-                var end = (new Date()).getTime();               //Get end time
+                view.start = ((new Date()).getTime())-timeWindow;        //Get start time
+                view.end = (new Date()).getTime();               //Get end time
 
                 multigraph_init("#multigraph");
                 vis_feed_data();
         }
     });
 
-    function showTooltip(x, y, contents, bgColour) {
-        var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
-        var elem = $('<div id="tooltip">' + contents + '</div>').css({
-            position: 'absolute',
-            display: 'none',
-            'font-weight':'bold',
-            border: '1px solid rgb(255, 221, 221)',
-            padding: '2px',
-            'background-color': bgColour,
-            opacity: '0.8'
-        }).appendTo("body").fadeIn(200);
-            //x = x - elem.width();
-        elem.css({
-            top: y - elem.height() - offset,
-            left: x - elem.width() - offset,
-        });
-    }
 
     var previousPoint = null;
     $("#multigraph").bind("plothover", function (event, pos, item)
@@ -106,7 +88,7 @@
 
                     // I'd like to eventually add colour hinting to the background of the tooltop.
                     // This is why showTooltip has the bgColour parameter.
-                    showTooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y, "#DDDDDD");
+                    tooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y, "#DDDDDD");
                 }
             } else {
                 $("#tooltip").remove();

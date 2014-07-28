@@ -14,6 +14,9 @@ class PHPTimeSeries
 
     private $dir = "/var/lib/phptimeseries/";
     private $log;
+    
+    private $buffers = array();
+    private $lastvalue_cache = array();
 
     public function __construct($settings)
     {
@@ -32,100 +35,61 @@ class PHPTimeSeries
         if (file_exists($this->dir."feed_$feedid.MYD")) return true;
         return false;
     }
-
-    // POST OR UPDATE
-    //
-    // - fix if filesize is incorrect (not a multiple of 9)
-    // - append if file is empty
-    // - append if datapoint is in the future
-    // - update if datapoint is older than last datapoint value
-    
-    public function prepare($feedid,$time,$value)
+  
+    public function prepare($feedid,$timestamp,$value)
     {
-    
-    }
-    
-    public function post($feedid,$time,$value)
-    {
-        $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
+        $feedid = (int) $feedid;
+        $timestamp = (int) $timestamp;
+        $value = (float) $value;
         
-        // Get last value
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        if (!$fh) {
-            $this->log->warn("PHPTimeSeries:post could not open data file feedid=$feedid");
-            return false;
-        }
+        $filename = "feed_$feedid.MYD";
+        $npoints = $this->get_npoints($feedid);
         
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
-
-        $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
-        if ($csize!=$filesize) {
-        
-            $this->log->warn("PHPTimeSeries:post filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
-            // correct corrupt data
-            fclose($fh);
-
-            // extend file by required number of bytes
-            if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'wb')) return false;
-            fseek($fh,$csize);
-            fwrite($fh, pack("CIf",249,$time,$value));
-
-            fclose($fh);
-            return $value;
-        }
-
         // If there is data then read last value
-        if ($filesize>=9) {
-
-            // read the last value appended to the file
-            fseek($fh,$filesize-9);
-            $d = fread($fh,9);
-            $array = unpack("x/Itime/fvalue",$d);
-
-            // check if new datapoint is in the future: append if so
-            if ($time>$array['time'])
-            {
-                // append
-                fclose($fh);
-                if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
-            
-                fwrite($fh, pack("CIf",249,$time,$value));
+        if ($npoints>=1) {
+        
+            if (isset($this->lastvalue_cache[$filename])) {
+                $last = $this->lastvalue_cache[$filename];
+            } else {
+                $fh = fopen($this->dir.$filename, 'rb');
+                fseek($fh,(($npoints-1) * 9.0));
+                $last = unpack("x/Itime/fvalue",fread($fh,9));
                 fclose($fh);
             }
-            else
-            {
-                // if its not in the future then to update the feed
-                // the datapoint needs to exist with the given time
-                // - search for the datapoint
-                // - if it exits update
-                $pos = $this->binarysearch_exact($fh,$time,$filesize);
-
-                if ($pos!=-1)
-                {
-                    fclose($fh);
-                    if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'c+')) return false;
-                    fseek($fh,$pos);
-                    fwrite($fh, pack("CIf",249,$time,$value));
-                    fclose($fh);
-                }
-            }
+        
+            if ($timestamp<=$last['time']) {
+                return false;
+            } 
         }
-        else
-        {
-            // If theres no data in the file then we just append a first datapoint
-            // append
-            fclose($fh);
-            if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
-            fwrite($fh, pack("CIf",249,$time,$value));
-            fclose($fh);
+
+        if (!isset($this->buffers[$filename])) {
+            $this->buffers[$filename] = "";
         }
         
+        $this->buffers[$filename] .= pack("CIf",249,$timestamp,$value);
+        $this->lastvalue_cache[$filename] = array('time'=>$timestamp,'value'=>$value);
         return $value;
     }
     
+    // Save data in data buffers to disk
+    // Writing data in larger blocks saves reduces disk write load as 
+    // filesystems have a minimum IO size which are usually 512 bytes or more.
     public function save()
     {
-    
+        $byteswritten = 0;
+        foreach ($this->buffers as $name=>$data)
+        {
+            $fh = fopen($this->dir.$name,"ab");
+            fwrite($fh,$data);
+            fclose($fh);
+            
+            $byteswritten += strlen($data);
+        }
+        
+        // Reset buffers
+        $this->buffers = array();
+        
+        return $byteswritten;
     }
     
     private function fopendata($filename,$mode)
@@ -160,6 +124,21 @@ class PHPTimeSeries
     {
         return filesize($this->dir."feed_$feedid.MYD");
     }
+    
+    public function get_npoints($feedid)
+    {
+        $bytesize = 0;
+        $filename = "feed_$feedid.MYD";
+        
+        if (file_exists($this->dir.$filename))
+            clearstatcache($this->dir.$filename);
+            $bytesize += filesize($this->dir.$filename);
+            
+        if (isset($this->buffers[$filename]))
+            $bytesize += strlen($this->buffers[$filename]);
+            
+        return floor($bytesize / 9.0);
+    } 
 
     public function get_data($feedid,$start,$end,$outinterval)
     {
@@ -212,7 +191,7 @@ class PHPTimeSeries
 
         return $data;
     }
-
+    
     public function lastvalue($feedid)
     {
         if (!file_exists($this->dir."feed_$feedid.MYD"))  return false;
@@ -226,12 +205,16 @@ class PHPTimeSeries
             $d = fread($fh,9);
             $array = unpack("x/Itime/fvalue",$d);
             $array['time'] = date("Y-n-j H:i:s", $array['time']);
+            fclose($fh);
             return $array;
         }
         else
         {
+            fclose($fh);
             return false;
         }
+        
+        fclose($fh);
     }
 
     private function binarysearch($fh,$time,$filesize)

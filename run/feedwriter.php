@@ -6,10 +6,10 @@
 
     define('EMONCMS_EXEC', 1);
 
-    $fp = fopen("/home/pi/data/feedrunlock", "w");
+    $fp = fopen("/home/trystan/Desktop/data/feedrunlock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
     
-    chdir("/var/www/emoncms");
+    chdir("/var/www/bufferedwrite");
     require "Modules/log/EmonLogger.php";
     require "process_settings.php";
     
@@ -45,5 +45,5 @@
         print $engine[Engine::PHPTIMESERIES]->save()."\n";
         print $engine[Engine::PHPFINA]->save()."\n";
         print "\n";
-        sleep(60);
+        sleep(10);
     }

@@ -28,88 +28,23 @@ function vis_widgetlist()
     "rawdata":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid",               "fill",            "units",              "colour"],
-      "optionstype":["feedid",           "value",           "value",              "colour_picker"],
-      "optionsname":[_Tr("Feed"),        _Tr("Fill"),       _Tr("Units"),         _Tr("Colour")],
-      "optionshint":[_Tr("Feed source"), _Tr("Fill value"), _Tr("Units to show"), _Tr("Line colour. Use hex if colour not present.")],
+      "menu":"Visualisations",  
+      "options":["feedid","colour","units","dp","scale","fill"],
+      "optionstype":["feedid","colour_picker","value","value","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value")],
+      
       "html":""
     },
-
+    
     "bargraph":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour"],
-      "optionstype":["feedid","colour_picker"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
-      "html":""
-    },
-
-    "zoom":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["power","kwhd","currency","currency_after_val","pricekwh"],
-      "optionstype":["feedid","feedid","value","value","value"],
-      "optionsname":[_Tr("Power"),_Tr("kwhd"),_Tr("Currency"),_Tr("Currency position"),_Tr("Kwh price")],
-      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"),_Tr("Currency to show"),_Tr("0 = before value, 1 = after value"),_Tr("Set kwh price")],
-      "html":""
-    },
-
-    "simplezoom":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["power","kwhd"],
-      "optionstype":["feedid","feedid"],
-      "optionsname":[_Tr("Power"),_Tr("kwhd")],
-      "optionshint":[_Tr("Power to show"),_Tr("kwhd source")],
-      "html":""
-    },
-
-    "orderbars":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr("Feed")],
-      "optionshint":[_Tr("Feed source")],
-      "html":""
-    },
-
-    "stacked":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["bottom","top"],
-      "optionstype":["feedid","feedid"],
-      "optionsname":[_Tr("Bottom"),_Tr("Top")],
-      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value")],
-      "html":""
-    },
-
-    "stackedsolar":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["solar","consumption"],
-      "optionstype":["feedid","feedid"],
-      "optionsname":[_Tr("Solar"),_Tr("Consumption")],
-      "optionshint":[_Tr("Solar feed value"),_Tr("Consumption feed value")],
-      "html":""
-    },
-
-    "smoothie":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","ufac"],
-      "optionstype":["feedid","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Ufac")],
-      "optionshint":[_Tr("Feed source"),_Tr("Ufac value")],
+      "options":["feedid","colour","interval","units","dp","scale","delta"],
+      "optionstype":["feedid","colour_picker","value","value","value","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show diff (Wh feeds)")],
       "html":""
     },
 

@@ -1,227 +1,210 @@
-
-
-<!--
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
+<?php
+    /*
+    All Emoncms code is released under the GNU Affero General Public License.
+    See COPYRIGHT.txt and LICENSE.txt.
 
     ---------------------------------------------------------------------
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
--->
-<?php
-  global $path, $embed;
+    */
+
+    global $path, $embed;
 ?>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-    <head>
 
-        <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-        <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
-        <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-        <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
-    </head>
-    <body>
-        <?php if (!$embed) { ?>
-        <h2>Raw data: <?php echo $feedidname; ?></h2>
-        <?php } ?>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.js"></script>
 
-        <div id="graph_bound" style="width:100%; height:400px; position:relative; ">
-            <div id="graph"></div>
+<div id="vis-title"></div>
 
-            <div id="graph_buttons" style="position:absolute; top:20px; left:40px; opacity:0.5; display: none;">
+<div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
+    <div id="placeholder" style="position:absolute; top:0px;"></div>
+    <div id="graph_buttons" style="position:absolute; top:18px; left:32px; opacity:0.5;">
 
-                <input class="time" type="button" value="D" time="1"/>
-                <input class="time" type="button" value="W" time="7"/>
-                <input class="time" type="button" value="M" time="30"/>
-                <input class="time" type="button" value="Y" time="365"/> |
-
-                <input id="zoomin" type="button" value="+"/>
-                <input id="zoomout" type="button" value="-"/>
-                <input id="left" type="button" value="<"/>
-                <input id="right" type="button" value=">"/>
-
-            </div>
-
-            <h3 style="position:absolute; top:0px; left:410px;"><span id="stats"></span></h3>
+        <div class='btn-group'>
+            <button class='btn time' type='button' time='1'>D</button>
+            <button class='btn time' type='button' time='7'>W</button>
+            <button class='btn time' type='button' time='30'>M</button>
+            <button class='btn time' type='button' time='365'>Y</button>
         </div>
 
-        <script id="source" language="javascript" type="text/javascript">
+        <div class='btn-group'>
+            <button id='zoomin' class='btn' >+</button>
+            <button id='zoomout' class='btn' >-</button>
+            <button id='left' class='btn' ><</button>
+            <button id='right' class='btn' >></button>
+        </div>
 
-            var feedid = "<?php echo $feedid; ?>";
-            var feedname = "<?php echo $feedidname; ?>";
-            var path = "<?php echo $path; ?>";
-            var apikey = "<?php echo $apikey; ?>";
-            var valid = "<?php echo $valid; ?>";
+    </div>
 
-            var plotfill = <?php echo $fill; ?> == 1;
-            var units = "<?php echo $units; ?>";
+    <h3 style="position:absolute; top:0px; right:25px;"><span id="stats"></span></h3>
+</div>
 
-            var embed = <?php echo $embed; ?>;
+<script id="source" language="javascript" type="text/javascript">
 
-            var plotColour = "#<?php echo $colour; ?>";
-            // Some browsers want the colour codes to be prepended with a "#". Therefore, we
-            // add one if it's not already there
-            if (plotColour.indexOf("#") == -1)
+console.log(urlParams);
+
+var feedname = "<?php echo $feedidname; ?>";
+var path = "<?php echo $path; ?>";
+var apikey = "<?php echo $apikey; ?>";
+var embed = <?php echo $embed; ?>;
+var valid = "<?php echo $valid; ?>";
+
+var feedid = urlParams.feedid;
+var interval = urlParams.interval;
+    if (interval==undefined || interval=='') interval = 3600*24;
+var plotColour = urlParams.colour;
+    if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+var units = urlParams.units;
+    if (units==undefined || units=='') units = "";
+var dp = urlParams.dp;
+    if (dp==undefined || dp=='') dp = 1;
+var scale = urlParams.scale;
+    if (scale==undefined || scale=='') scale = 1;
+var fill = +urlParams.fill;
+    if (fill==undefined || fill=='') fill = 0;
+if (fill>0) fill = true;
+// Some browsers want the colour codes to be prepended with a "#". Therefore, we
+// add one if it's not already there
+if (plotColour.indexOf("#") == -1) {
+    plotColour = "#" + plotColour;
+}
+
+var top_offset = 0;
+var placeholder_bound = $('#placeholder_bound');
+var placeholder = $('#placeholder');
+
+var width = placeholder_bound.width();
+var height = width * 0.5;
+
+placeholder.width(width);
+placeholder_bound.height(height);
+placeholder.height(height-top_offset);
+
+if (embed) placeholder.height($(window).height()-top_offset);
+
+var timeWindow = (3600000*24.0*7);
+view.start = +new Date - timeWindow;
+view.end = +new Date;
+
+var data = [];
+
+$(function() {
+
+    if (embed==false) $("#vis-title").html("<br><h2>Bar graph: "+feedname+"<h2>");
+    draw();
+    
+    $("#zoomout").click(function () {view.zoomout(); draw();});
+    $("#zoomin").click(function () {view.zoomin(); draw();});
+    $('#right').click(function () {view.panright(); draw();});
+    $('#left').click(function () {view.panleft(); draw();});
+    $('.time').click(function () {view.timewindow($(this).attr("time")); draw();});
+    
+    placeholder.bind("plotselected", function (event, ranges)
+    {
+        view.start = ranges.xaxis.from;
+        view.end = ranges.xaxis.to;
+        draw();
+    });
+
+    placeholder.bind("plothover", function (event, pos, item)
+    {
+        if (item) {
+            //var datestr = (new Date(item.datapoint[0])).format("ddd, mmm dS, yyyy");
+            //$("#stats").html(datestr);
+            if (previousPoint != item.datapoint)
             {
-                plotColour = "#" + plotColour;
+                previousPoint = item.datapoint;
+
+                $("#tooltip").remove();
+                var itemTime = item.datapoint[0];
+                var itemVal = item.datapoint[1];
+
+                // I'd like to eventually add colour hinting to the background of the tooltop.
+                // This is why showTooltip has the bgColour parameter.
+                tooltip(item.pageX, item.pageY, itemVal.toFixed(dp) + " " + units, "#DDDDDD");
             }
+        }
+        else
+        {
+            $("#tooltip").remove();
+            previousPoint = null;
+        }
+    });
 
-            var toolTipPrecision = 2;		// Show two decimal places
-
-            var $graph_bound = $('#graph_bound');
-            var $graph = $('#graph').width($graph_bound.width()).height($('#graph_bound').height());
-
-            if (embed) $graph.height($(window).height());
-
-            var timeWindow = (3600000*24.0*7);   //Initial time window
-            var start = +new Date - timeWindow;  //Get start time
-            var end = +new Date;                 //Get end time
-                    var previousPoint = [0,0];   // Define previousPoint so we don't get errors at startup
-
-            var graph_data = [];
-            vis_feed_data();
-
-            $(window).resize(function(){
-                $graph.width($graph_bound.width());
-                if (embed) $graph.height($(window).height());
-                plot();
-            });
-
-
-            function vis_feed_data()
-            {
-                if (valid) {
-                    get_feed_data_async(feedid,start,end,1000, function(response){
-                        graph_data = response;
-                        var stats = power_stats(graph_data);
-                        var out = "Average: "+stats['average'].toFixed(1)+units;
-                        if (units=='W')
-                        {
-                                out+= " | "+stats['kwh'].toFixed(2)+" kWh";
-                        }
-                        $("#stats").html(out);
-                        plot();
-                    });
-                }
+    function draw()
+    {
+        data = [];
+        
+        var npoints = 800;
+        interval = Math.round(((view.end - view.start)/npoints)/1000);
+        
+        $.ajax({                                      
+            url: path+'feed/average.json',                         
+            data: "id="+feedid+"&start="+view.start+"&end="+view.end+"&interval="+interval,
+            dataType: 'json',
+            async: false,                      
+            success: function(data_in) { data = data_in; } 
+        });
+        
+        var out = [];
+        
+        if (scale!=1) {
+            for (var z=0; z<data.length; z++) {
+                var val = data[z][1] * scale;
+                out.push([data[z][0],val]);
             }
+            data = out;
+        } 
+       
+        stats.calc(data);
 
-            function plot()
-            {
-                        var plotData = [
-                                            {
-                                                data: graph_data,
-                                                color: plotColour,
-                                                lines:
-                                                {
-                                                    show: true,
-                                                    fill: plotfill
-                                                }
-                                            }
-                                        ];
+        plot();
+    }
+    
+    function plot()
+    {
+        var options = {
+            lines: { fill: fill },
+            xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
+            //yaxis: { min: 0 },
+            grid: {hoverable: true, clickable: true},
+            selection: { mode: "x" }
+        }
 
-                        var plotOptions = {
-                                grid:
-                                {
-                                    show: true,
-                                    hoverable: true,
-                                    clickable: true
-                                },
-                                xaxis:
-                                {
-                                    mode: "time",
-                                    timezone: "browser",
-                                    min: start,
-                                    max: end
-                                },
-                                selection:
-                                {
-                                    mode: "x"
-                                }
-                            };
-                        var plot = $.plot($graph, plotData, plotOptions);
-            }
+        $.plot(placeholder, [{data:data,color: plotColour}], options);
+    }
 
-            //--------------------------------------------------------------------------------------
-            // Graph zooming
-            //--------------------------------------------------------------------------------------
-            $graph.bind("plotselected",
-                    function (event, ranges)
-                    {
-                        start = ranges.xaxis.from;
-                        end = ranges.xaxis.to;
-                        vis_feed_data();
-                    }
-                );
-            $graph.bind("plothover",
-                function (event, pos, item)
-                    {
-                            if (item) {
-                                if (previousPoint != item.datapoint)
-                                {
-                                    previousPoint = item.datapoint;
-
-                                    $("#tooltip").remove();
-                                    var itemTime = item.datapoint[0];
-                                    var itemVal = item.datapoint[1];
-
-                                    // I'd like to eventually add colour hinting to the background of the tooltop.
-                                    // This is why showTooltip has the bgColour parameter.
-                                    showTooltip(item.pageX, item.pageY, itemVal.toFixed(toolTipPrecision) + " " + units, "#DDDDDD");
-                                }
-                            }
-                            else
-                            {
-                                $("#tooltip").remove();
-                                previousPoint = null;
-                            }
-                        })
-
-            function showTooltip(x, y, contents, bgColour)
-            {
-
-                var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
-                var elem = $('<div id="tooltip">' + contents + '</div>').css({
-                    position: 'absolute',
-                    display: 'none',
-                    'font-weight':'bold',
-                    border: '1px solid rgb(255, 221, 221)',
-                    padding: '2px',
-                    'background-color': bgColour,
-                    opacity: '0.8'
-                }).appendTo("body").fadeIn(200);
-                //x = x - elem.width();
-                //x = x - elem.width();
-                elem.css({
-                    top: y - elem.height() - offset,
-                    left: x - elem.width() - offset,
-                });
-            };
-
-            // Fade in/out the control buttons on mouse-over the plot container
-            $("#graph_bound").click(function(){
-              $("#graph_buttons").css('opacity',0.5);
-            });
+    placeholder.click(function(){
+      $("#graph_buttons").css('opacity',0.5);
+    });
             
-            $("#graph_bound").mouseenter(function(){
-                $("#graph_buttons").stop().fadeIn();
-            }).mouseleave(function(){
-                $("#graph_buttons").stop().fadeOut();
-            });
-            //----------------------------------------------------------------------------------------------
-            // Operate buttons
-            //----------------------------------------------------------------------------------------------
-            $("#zoomout").click(function () {inst_zoomout(); vis_feed_data();});
-            $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
-            $('#right').click(function () {inst_panright(); vis_feed_data();});
-            $('#left').click(function () {inst_panleft(); vis_feed_data();});
-            $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
-            //-----------------------------------------------------------------------------------------------
-        </script>
+    // Fade in/out the control buttons on mouse-over the plot container
+    placeholder_bound.mouseenter(function(){
+        $("#graph_buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    }).mouseleave(function(){
+        $("#graph_buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $(window).resize(function(){
+        var width = placeholder_bound.width();
+        var height = width * 0.5;
 
-    </body>
-</html>
+        placeholder.width(width);
+        placeholder_bound.height(height);
+        placeholder.height(height-top_offset);
+
+        if (embed) placeholder.height($(window).height()-top_offset);
+        plot();
+    });
+    
+});
+</script>
+

@@ -239,7 +239,30 @@ class PHPFina
             $time = $meta->start_time + $pos * $meta->interval;
 
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) $data[] = array($time*1000,$val[1]);
+            if (!is_nan($val[1])) {
+                $data[] = array($time*1000,$val[1]);
+            } else {
+                // Find non nan nearest within ten
+                for ($x=1; $x<20; $x++)
+                {
+                    // +1, +2, +3..
+                    fseek($fh,($pos+$x)*4);
+                    $val = unpack("f",fread($fh,4));
+                    if (!is_nan($val[1])) {
+                        $data[] = array($time*1000,$val[1]);
+                        break;
+                    }
+
+                    // -1, -2, -3..
+                    fseek($fh,($pos-$x)*4);
+                    $val = unpack("f",fread($fh,4));
+                    if (!is_nan($val[1])) {
+                        $data[] = array($time*1000,$val[1]);
+                        break;
+                    }
+                }
+                
+            }
 
             $i++;
         }

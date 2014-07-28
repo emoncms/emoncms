@@ -19,8 +19,10 @@ class Feed
     private $mysqli;
     private $redis;
     public $engine;
-    private $csvdownloadlimit_mb;
+    private $csvdownloadlimit_mb = 10;
     private $log;
+    
+    private $max_npoints_returned = 800;
 
     public function __construct($mysqli,$redis,$settings)
     {        
@@ -37,8 +39,10 @@ class Feed
         
         if (isset($settings['csvdownloadlimit_mb'])) {
             $this->csvdownloadlimit_mb = $settings['csvdownloadlimit_mb']; 
-        } else {
-            $this->csvdownloadlimit_mb = 10;
+        }
+        
+        if (isset($settings['max_npoints_returned'])) {
+            $this->max_npoints_returned = $settings['max_npoints_returned'];
         }
     }
 
@@ -386,8 +390,10 @@ class Feed
         $engine = $this->get_engine($feedid);
         
         // Call to engine get_data method
-        if ($dp>800) $dp = 800;
-        $outinterval = round(($end - $start) / $dp)/1000;
+        $range = ($end - $start) * 0.001;
+        if ($dp>$this->max_npoints_returned) $dp = $this->max_npoints_returned;
+        if ($dp<1) $dp = 1;
+        $outinterval = round($range / $dp);
         return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
     }
 
@@ -401,6 +407,9 @@ class Feed
         $engine = $this->get_engine($feedid);
 
         // Call to engine get_average method
+        $range = ($end - $start) * 0.001;
+        $npoints = ($range / $outinterval);
+        if ($npoints>$this->max_npoints_returned) $outinterval = round($range / $this->max_npoints_returned);
         return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
     }
     
