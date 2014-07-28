@@ -356,7 +356,6 @@ Save (Ctrl-X), type Y and exit
 
 Move the writer script to home folder and service script to /etc/init.d/
 
-    mv /var/www/emoncms/run/feedwriter.php /home/pi
     sudo cp /var/www/emoncms/run/feedwriter /etc/init.d/
     sudo chmod 755 /etc/init.d/feedwriter
     sudo update-rc.d feedwriter defaults
