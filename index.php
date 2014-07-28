@@ -11,9 +11,9 @@
     http://openenergymonitor.org
 
     */
-    
-    $emoncms_version = "8.2.8";
-    
+
+    $emoncms_version = "master:8.2.8, bufferedwrite:0.0.1";
+
     $ltime = microtime(true);
 
     define('EMONCMS_EXEC', 1);
