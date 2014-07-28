@@ -49,7 +49,7 @@ class Feed
     public function create($userid,$name,$datatype,$engine,$options_in)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\w\s-]/','',$name);
+        $name = preg_replace('/[^\w\s-:]/','',$name);
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         
@@ -329,8 +329,8 @@ class Feed
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-]/','',$fields->name)."'";
-        if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-]/','',$fields->tag)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-:]/','',$fields->name)."'";
+        if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-:]/','',$fields->tag)."'";
         if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
 
         // Convert to a comma seperated string for the mysql query
@@ -407,6 +407,7 @@ class Feed
         $engine = $this->get_engine($feedid);
 
         // Call to engine get_average method
+        if ($outinterval<1) $outinterval = 1;
         $range = ($end - $start) * 0.001;
         $npoints = ($range / $outinterval);
         if ($npoints>$this->max_npoints_returned) $outinterval = round($range / $this->max_npoints_returned);

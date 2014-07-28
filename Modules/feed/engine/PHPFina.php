@@ -149,9 +149,23 @@ class PHPFina
         $byteswritten = 0;
         foreach ($this->buffers as $name=>$data)
         {
-            $fh = fopen($this->dir.$name.".dat","ab");
-            fwrite($fh,$data);
-            fclose($fh);
+            // Auto-correction if something happens to the datafile, it gets partitally written to
+            // this will correct the file size to always be an integer number of 4 bytes.
+            clearstatcache($this->dir.$name.".dat");
+            if (@filesize($this->dir.$name.".dat")%4 != 0) {
+                $npoints = floor(filesize($this->dir.$name.".dat")/4.0);
+                $fh = fopen($this->dir.$name.".dat","c");
+                fseek($fh,$npoints*4.0);
+                fwrite($fh,$data);
+                fclose($fh);
+                print "PHPFINA: FIXED DATAFILE WITH INCORRECT LENGHT\n";
+            }
+            else
+            {
+                $fh = fopen($this->dir.$name.".dat","ab");
+                fwrite($fh,$data);
+                fclose($fh);
+            }
             
             $byteswritten += strlen($data);
         }
@@ -242,6 +256,7 @@ class PHPFina
             if (!is_nan($val[1])) {
                 $data[] = array($time*1000,$val[1]);
             } else {
+                /*
                 // Find non nan nearest within ten
                 for ($x=1; $x<20; $x++)
                 {
@@ -260,7 +275,7 @@ class PHPFina
                         $data[] = array($time*1000,$val[1]);
                         break;
                     }
-                }
+                }*/
                 
             }
 

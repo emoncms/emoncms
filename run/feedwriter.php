@@ -45,5 +45,5 @@
         print $engine[Engine::PHPTIMESERIES]->save()."\n";
         print $engine[Engine::PHPFINA]->save()."\n";
         print "\n";
-        sleep(10);
+        sleep(60);
     }
