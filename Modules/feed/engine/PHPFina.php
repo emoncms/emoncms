@@ -329,6 +329,8 @@ class PHPFina
             return false;
         }
         
+        $meta->npoints = $this->get_npoints($id);
+        
         // There is no need for the browser to cache the output
         header("Cache-Control: no-cache, no-store, must-revalidate");
 
@@ -455,6 +457,8 @@ class PHPFina
 
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($feedid)) return false;
+        
+        $meta->npoints = $this->get_npoints($feedid);
         
         if ($outinterval<$meta->interval) $outinterval = $meta->interval;
         $dp = ceil(($end - $start) / $outinterval);
