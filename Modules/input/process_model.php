@@ -321,6 +321,7 @@ class Process
     public function wh_accumulator($feedid, $time, $value)
     {
         $max_power = 25000;
+        $totalwh = $value;
             
         global $redis;
         if (!$redis) return $value; // return if redis is not available
