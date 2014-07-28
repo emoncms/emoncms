@@ -271,7 +271,7 @@ function load_all()
             var group = processlist_ui.processlist[z][5];
             if (group!="Deleted") {
                 if (!processgroups[group]) processgroups[group] = []
-                processlist_ui.processlist[z]['id'] = i;
+                processlist_ui.processlist[z]['id'] = z;
                 processgroups[group].push(processlist_ui.processlist[z]);
             }
         }

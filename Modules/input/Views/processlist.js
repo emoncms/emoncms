@@ -160,8 +160,6 @@ var processlist_ui =
 
         });
         
-
-
         $('#processlist-ui #process-select').change(function() {
             var processid = $(this).val();
             

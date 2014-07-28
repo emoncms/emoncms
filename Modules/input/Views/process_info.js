@@ -8,19 +8,23 @@ var process_info = {
 
     '4':"Convert a power value in Watts to a cumulative and ever rising kWh timeseries plot",
 
-    '5':"Convert a power value in Watts to a feed that contains an entry for the total energy used each day (kWh/d)",
-
     '6':"This multiplies the current selected input with another input as selected from the dropdown menu. The result is passed back for further processing by the next processor in the input processing list.",
     
     '12':"This divides the current selected input with another input as selected from the dropdown menu. The result is passed back for further processing by the next processor in the input processing list.",
     
     '11':"This adds the selected input from the dropdown menu to the current input. The result is passed back for further processing by the next processor in the input processing list.",
     
-    '22':"This subtracts the selected input from the dropdown menu from the current input. The result is passed back for further processing by the next processor in the input processing list.",   
+    '22':"This subtracts the selected input from the dropdown menu from the current input. The result is passed back for further processing by the next processor in the input processing list.", 
+    
+    '14':"Output feed accumulates by input value",  
+
+    '15':"Output feed is the difference between the current value and the last",
     
     '7':"Counts the amount of time that an input is high in each day and logs the result to a feed. Created for counting the number of hours a solar hot water pump is on each day",
     
-    '34':"To be used in conjunction with an emontx sending total watt hours elapsed to emoncms. This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW.<br><b>Requires redis installed to work</b>"
+    '34':"To be used in conjunction with an emontx sending total watt hours elapsed to emoncms. This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW.<br><b>Requires redis installed to work</b>",
+    
+    '21':"Convert accumulating kWh to instantaneous power"
 }
 
 
