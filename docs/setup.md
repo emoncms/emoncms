@@ -20,7 +20,11 @@ The local installation of emoncms is disabled as default. To enable it first put
 Enable the local emoncms with:
     
     localemoncms-enable
+
+and, due to error in script (to be fixed in next release):
     
+    sudo service redis-server start
+
 Note: to disable again: localemoncms-disable
 
 In your internet browser window, enter the ip address of the raspberrypi. This should bring up the emoncms login page. 
