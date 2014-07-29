@@ -407,7 +407,7 @@ Copy and paste:
     sudo service feedwriter stop
     sudo service apache2 stop
     sudo service mysql stop
-    sudo service redis stop
+    sudo service redis-server stop
     
 Make excutable:
     
@@ -428,7 +428,7 @@ Copy and paste:
     
     sudo service apache2 start
     sudo service mysql start
-    sudo service redis start
+    sudo service redis-server start
     sudo service feedwriter start
     
 Make excutable:
