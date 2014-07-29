@@ -73,7 +73,7 @@ Always remember to put the OS partiion back into read-only mode. This will exten
 
 To view logfile entries:
 
-    tail -f /var/log/emonhub.log
+    tail -f /var/log/emonhub/emonhub.log
     tail -f /var/log/feedwriter.log
     tail -f /var/log/emoncms.log
 
