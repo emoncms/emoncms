@@ -18,12 +18,12 @@ The local installation of emoncms is disabled as default. To enable it first put
     rpi-rw
     
 Enable the local emoncms with:
+
+    sudo service redis-server start
+    
+and then:
     
     localemoncms-enable
-
-and, due to error in script (to be fixed in next release):
-    
-    sudo service redis-server start
 
 Note: to disable again: localemoncms-disable
 
