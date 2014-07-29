@@ -1,4 +1,4 @@
-### How to setup a raspberrypi running emonhub + emoncms (low write emonSD version)
+### How to setup a raspberrypi running emonhub + emoncms (low write version)
 
 This guide details how to setup a raspberry pi basestation that can be used to either forward data to a remote server or record data locally or both. 
 
