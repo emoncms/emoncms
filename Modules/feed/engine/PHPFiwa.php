@@ -546,16 +546,11 @@ class PHPFiwa
         }
         
         $meta = new stdClass();
+        $meta->id = $id;
+        
         $metafile = fopen($this->dir.$feedname, 'rb');
 
-        $tmp = unpack("I",fread($metafile,4)); 
-        $meta->id = $tmp[1];
-        
-        if ($meta->id != $id) {
-            $this->log->warn("PHPFiwa:get_meta feed:$id meta data mismatch, meta id: ".$meta->id);
-            return false;
-        }
-        
+        $tmp = unpack("I",fread($metafile,4));
         $tmp = unpack("I",fread($metafile,4)); 
         $meta->start_time = $tmp[1];
         
