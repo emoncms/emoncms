@@ -58,10 +58,28 @@ var stats = {
     stats.max = 0;
     for (z in data)
     {
+      if (i==0) {
+        stats.max = data[z][1];
+        stats.min = data[z][1];
+      }
+    
+      if (data[z][1]>stats.max) stats.max = data[z][1];
+      if (data[z][1]<stats.min) stats.min = data[z][1];
       sum +=data[z][1];
       i++;
     }
+    
     stats.mean = sum / i;
+
+    sum = 0, i=0;
+    for (z in data)
+    {
+      sum += (data[z][1] - stats.mean) * (data[z][1] - stats.mean);
+      i++;
+    }
+    
+    stats.stdev = Math.sqrt(sum / i);
+    
   }
 
 }

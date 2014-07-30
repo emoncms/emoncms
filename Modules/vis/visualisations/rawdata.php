@@ -45,6 +45,16 @@
     <h3 style="position:absolute; top:0px; right:25px;"><span id="stats"></span></h3>
 </div>
 
+<div id="info" style="padding:20px; margin:25px; background-color:rgb(245,245,245); font-style:italic; display:none">
+
+    <p><b>Mean:</b> <span id="stats-mean"></span></p>
+    <p><b>Min:</b> <span id="stats-min"></span></p>
+    <p><b>Max:</b> <span id="stats-max"></span></p>
+    <p><b>Standard deviation:</b> <span id="stats-stdev"></span></p>
+    <p><b>Datapoints in view:</b> <span id="stats-npoints"></span></p>
+
+</div>
+
 <script id="source" language="javascript" type="text/javascript">
 
 console.log(urlParams);
@@ -96,7 +106,10 @@ var data = [];
 
 $(function() {
 
-    if (embed==false) $("#vis-title").html("<br><h2>Bar graph: "+feedname+"<h2>");
+    if (embed==false) {
+        $("#vis-title").html("<br><h2>Bar graph: "+feedname+"<h2>");
+        $("#info").show();
+    }
     draw();
     
     $("#zoomout").click(function () {view.zoomout(); draw();});
@@ -163,7 +176,12 @@ $(function() {
         } 
        
         stats.calc(data);
-
+        
+        $("#stats-mean").html(stats.mean.toFixed(dp)+units);
+        $("#stats-min").html(stats.min.toFixed(dp)+units);
+        $("#stats-max").html(stats.max.toFixed(dp)+units);
+        $("#stats-stdev").html(stats.stdev.toFixed(dp)+units);
+        $("#stats-npoints").html(data.length);
         plot();
     }
     
