@@ -72,9 +72,7 @@
                         <select id="feed-engine">
 
                         <optgroup label="Recommended">
-                        <option value=7 selected>Redis Time Series</option>
-                        <option value=8 >Redis FINA</option>
-                        <option value=6 >Fixed Interval With Averaging</option>
+                        <option value=6 selected>Fixed Interval With Averaging</option>
                         <option value=5 >Fixed Interval No Averaging</option>
                         <option value=2 >Variable Interval No Averaging</option>
                         </optgroup>
@@ -144,8 +142,7 @@
       updateinterval: 60,
       variables: [
         {name: 'Temperature', type: 1, scale: 0.01, units: '°C' },
-        {name: 'Battery Voltage', type: 1, scale:0.001, units: 'V'},
-        {name: 'RSSI', type: 0 }
+        {name: 'Battery Voltage', type: 1, scale:0.001, units: 'V'}
       ]
     },
     
@@ -158,8 +155,7 @@
         {name: 'Power 3', type: 1, units: 'W'}, 
         {name: 'Power 4', type: 1, units: 'W'},
         {name: 'Vrms', type: 1, scale: 0.01, units: 'V'}, 
-        {name: 'temp', type: 1, scale: 0.1, units: '°C'},
-        {name: 'RSSI', type: 0 }
+        {name: 'temp', type: 1, scale: 0.1, units: '°C'}
       ]
     },
 
@@ -175,8 +171,7 @@
         {name: 'Wh CT1', type: 2, units: 'Wh'}, 
         {name: 'Wh CT2', type: 2, units: 'Wh'}, 
         {name: 'Wh CT3', type: 2, units: 'Wh'}, 
-        {name: 'Wh CT4', type: 2, units: 'Wh'},
-        {name: 'RSSI', type: 0 }
+        {name: 'Wh CT4', type: 2, units: 'Wh'}
       ]
     },
     
@@ -188,7 +183,6 @@
         {name: 'External temperature', type: 1, scale: 0.1, units: '°C'}, 
         {name: 'Humidity', type: 1, scale: 0.1, units: '%'}, 
         {name: 'Battery Voltage', type: 1, scale: 0.1, units: 'V'},
-        {name: 'RSSI', type: 0 }
       ]
     },
     
