@@ -73,11 +73,9 @@ input[type="text"] {
 
                         <span class="add-on feed-engine-label">Feed engine: </span>
                         <select id="feed-engine">
-                        
-                        <option value=6 >Fixed Interval With Averaging (PHPFIWA)</option>
-                        <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
-                        <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
-
+                            <option value=6 >Fixed Interval With Averaging (PHPFIWA)</option>
+                            <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
+                            <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
                         </select>
 
 
@@ -272,7 +270,7 @@ function load_all()
             var group = processlist_ui.processlist[z][5];
             if (group!="Deleted") {
                 if (!processgroups[group]) processgroups[group] = []
-                processlist_ui.processlist[z]['id'] = i;
+                processlist_ui.processlist[z]['id'] = z;
                 processgroups[group].push(processlist_ui.processlist[z]);
             }
         }

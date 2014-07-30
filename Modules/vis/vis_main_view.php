@@ -15,14 +15,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 global $path;
 ?>
-    <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_edit.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_edit.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
 <h2><?php echo _("Visualisations"); ?></h2>
 
@@ -100,8 +99,7 @@ global $path;
 
     // 1) ON CLICK OF VISUALISATION OPTION:
 
-    $("#visselect").change(function(){
-
+    $("#visselect").change(function() {
         // Custom multigraph visualisation items
         if ($(this).val()=="multigraph")
         {
@@ -125,15 +123,18 @@ global $path;
         // If the feed is not public then we include the read apikey in the embed code box.
 
         var publicfeed = 1;
+        var options = [];
         $(".options").each(function() {
-            if ($(this).val())
-            {
-                visurl += "&"+$(this).attr("id")+"="+$(this).val();
+            if ($(this).val()) {
+                options.push($(this).attr("id")+"="+$(this).val());
                 if ($(this).attr("otype")=='feed') publicfeed = $('option:selected', this).attr('public');
             }
         });
-
-        $("#visiframe").html('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
+        
+        visurl += "?"+options.join("&");
+        var width = $("#vis_bound").width();
+        var height = width * 0.58;
+        $("#visiframe").html('<iframe style="width:'+width+'px; height:'+height+'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
 
         if (publicfeed == 1) $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>'); else $("#embedcode").val('<?php echo addslashes(_("Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public."));?>\n\n<?php echo _("To embed privately:");?>\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
 
@@ -153,10 +154,15 @@ global $path;
         else
         {
             visurl += path+"vis/"+vistype;
+            var options = [];
             $(".options").each(function() {
-                if ($(this).val()) visurl += "&"+$(this).attr("id")+"="+$(this).val();
+                if ($(this).val())
+                {
+                    options.push($(this).attr("id")+"="+$(this).val());
+                }
             });
         }
+        if (options) visurl += "?"+options.join("&");
         $(window.location).attr('href',visurl);
     });
 

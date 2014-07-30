@@ -15,12 +15,12 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $settings;
+    global $mysqli, $redis, $session, $route, $user, $feed_settings;
 
     $result = false;
 
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $settings);
+    $feed = new Feed($mysqli,$redis, $feed_settings);
 
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);
@@ -40,8 +40,8 @@
     $visualisations = array(
         'realtime' => array('options'=>array(array('feedid',1))),
         // Hex colour EDC240 is the default color for flot. since we want existing setups to not change, we set the default value to it manually now,
-        'rawdata'=> array('options'=>array(array('feedid',1),array('fill',7,0),array('units',5,'W'),array('colour',5,'EDC240'))),
-        'bargraph'=> array('options'=>array(array('feedid',2),array('colour',5,'EDC240'))),
+        'rawdata'=> array('options'=>array(array('feedid',1),array('fill',7,0),array('colour',5,'EDC240'),array('units',5,'W'),array('dp',7,'1'),array('scale',6,'1'))),
+        'bargraph'=> array('options'=>array(array('feedid',1),array('colour',5,'EDC240'),array('interval',7,'86400'),array('units',5,''),array('dp',7,'1'),array('scale',6,'1'),array('delta',7,'0'))),
         'timestoredaily'=> array('options'=>array(array('feedid',1),array('units',5,'kWh'))),
         'smoothie'=> array('options'=>array(array('feedid',1),array('ufac',6))),
         'histgraph'=> array('options'=>array(array('feedid',3),array('barwidth',7,50),array('start',7,0),array('end',7,0))),
