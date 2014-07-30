@@ -50,6 +50,7 @@ class PHPTimeSeries
             return false;
         }
         
+        clearstatcache($this->dir."feed_$feedid.MYD");
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 
         $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
