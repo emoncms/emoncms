@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgets/SSSingleDisplay/SSSingleDisplay_render.js"></script>

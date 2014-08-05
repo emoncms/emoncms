@@ -266,6 +266,10 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
   ctx.stroke();
 
   //---------------------------------------------------------------
+
+  ctx.fillStyle = "#fff";
+  ctx.textAlign    = "center";
+  ctx.font = "bold "+(size*0.28)+"px arial";
   
     if (isNaN(val))  val = 0;
 
@@ -280,14 +284,7 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
     else
         val = val.toFixed(2);
     
-  var dialtext = val+units;
-  var textsize = (size / (dialtext.length+2)) * 6;
-  
-  ctx.fillStyle = "#fff";
-  ctx.textAlign    = "center";
-  ctx.font = "bold "+(textsize*0.26)+"px arial";
-  
-  ctx.fillText(val+units,x,y+(textsize*0.125));
+  ctx.fillText(val+units,x,y+(size*0.125));
 
 
   ctx.fillStyle = "#000";

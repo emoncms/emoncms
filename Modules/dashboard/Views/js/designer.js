@@ -21,6 +21,13 @@
  selector from options potentially specified in the widget lists.
 
 */
+var framelist=			["BLACK_METAL","METAL","SHINY_METAL","BRASS","STEEL","CHROME","GOLD","ANTHRACITE","TILTED_GRAY","TILTED_BLACK","GLOSSY_METAL"];
+var backgroundcolour=	["DARK_GRAY","SATIN_GRAY","LIGHT_GRAY","WHITE","BLACK","BEIGE","BROWN","RED","GREEN","BLUE","ANTHRACITE","MUD","PUNCHED_SHEET","CARBON","STAINLESS","BRUSHED_METAL","BRUSHED_STAINLESS","TURNED"];
+var pointercolour=		["RED","GREEN","BLUE","ORANGE","YELLOW","CYAN","MAGENTA","WHITE","GRAY","BLACK","RAITH","GREEN_LCD","JUG_GREEN"];
+var LcdColor=			["BEIGE","BLUE","ORANGE","RED","YELLOW","WHITE","GRAY","BLACK","GREEN","BLUE2","BLUE_BLACK","BLUE_DARKBLUE","BLUE_GRAY","STANDARD","STANDARD_GREEN","BLUE_BLUE","RED_DARKRED","DARKBLUE","LILA","BLACKRED","DARKGREEN" ];
+var LedColor=			["RED","GREEN","BLUE","ORANGE","YELLOW","CYAN","MAGENTA"];
+var LinearTypeArray =	["Linear","LinearBargraph","LinearThermoStat"];
+var RadialTypeArray =	["Radial","RadialBargraph","RadialVertical"];
 
 var selected_edges = {none : 0, left : 1, right : 2, top : 3, bottom : 4, center : 5};
 
@@ -179,10 +186,109 @@ var designer = {
             var val = $("#"+designer.selected_box).attr(box_options[z]);
 
             if (val == undefined) val="";
-
+			
             options_html += "<tr><td>"+options_name[z]+":</td>";
+		
+			if (options_type && options_type[z] == "radialtype"){
+				options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+					for (i in RadialTypeArray)
+						{
+							var selected = ""; if (val == RadialTypeArray[i]) {selected = "selected";}
+							options_html += "<option value='"+ RadialTypeArray[i] + "'"+selected+" >"+RadialTypeArray[i]+"</option>";
+						}
+					
+			}
+			else if (options_type && options_type[z] == "type"){
+				options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+				for (var i=1;i<5;i++)
+				{
+					var selected = ""; if (val == "TYPE"+i) {selected = "selected";}
+					options_html += "<option value='"+"TYPE"+ i + "'"+selected+" >"+"TYPE"+i+"</option>";
+				}
+			}
+			//Frame Colour Selector
+			else if (options_type && options_type[z] == "framedesign") {
+				options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+				for (i in framelist)
+					{
+						var selected = ""; if (val == framelist[i]) {selected = "selected";}
+						options_html += "<option value='"+ framelist[i] + "'"+selected+" >"+framelist[i]+"</option>";
+					}
+			}
+			//Background Colour Selector Box Menu
+			else if (options_type && options_type[z] == "backgroundcolour"){
+				options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+				for (i in backgroundcolour)
+					{
+						var selected = ""; if (val == backgroundcolour[i]) {selected = "selected";}
+						options_html += "<option value='"+ backgroundcolour[i] + "'"+selected+" >"+backgroundcolour[i]+"</option>";
+						
+					}
+			}		
+				//Pointer / Value Colour Selector Box Menu
+				else if (options_type && options_type[z] == "pointercolour") 
+					{
+					options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+					for (i in pointercolour)
+					{
+						var selected = ""; if (val == pointercolour[i]) {selected = "selected";}
+						options_html += "<option value='"+ pointercolour[i] + "'"+selected+" >"+pointercolour[i]+"</option>";
+						
+					}
+				}				
+				//LED Colour Selector Box Menu
+				else if (options_type && options_type[z] == "LedColor") 
+				{
+					options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+					for (i in LedColor)
+					{
+						var selected = ""; if (val == LedColor[i]) {selected = "selected";}
+						options_html += "<option value='"+ LedColor[i] + "'"+selected+" >"+LedColor[i]+"</option>";
+					}
+				}
+				//Foreground Type Selector Box Menu
+				else if (options_type && options_type[z] == "ForegroundType") 
+				{
+					options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+					for (var i=1;i<6;i++)
+					{
+						var selected = ""; if (val == "TYPE"+i) {selected = "selected";}
+						options_html += "<option value='"+"TYPE"+ i + "'"+selected+" >"+"TYPE"+i+"</option>";
+					}
+				}
+				
+				else if (options_type && options_type[z] == "PointerType") 
+				{
+					options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+					for (var i=1;i<11;i++)
+					{
+						var selected = ""; if (val == "TYPE"+i) {selected = "selected";}
+						options_html += "<option value='"+"TYPE"+ i + "'"+selected+" >"+"TYPE"+i+"</option>";
+					}
+				}
+				
+				else if (options_type && options_type[z] == "LcdColor") 
+				{
+					options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+					for (i in LcdColor)
+					{
+						var selected = ""; if (val == LcdColor[i]) {selected = "selected";}
+						options_html += "<option value='"+ LcdColor[i] + "'"+selected+" >"+LcdColor[i]+"</option>";
+					}
+				}
 
-            if (options_type && options_type[z] == "feed")
+				else if (options_type && options_type[z] == "LinearType") 
+				{
+				  options_html += "<td><select id='"+box_options[z]+"' class='options' >";
+				  for (i in LinearTypeArray)
+				  {
+					var selected = ""; if (val == LinearTypeArray[i]) selected = "selected";
+					options_html += "<option value='"+LinearTypeArray[i]+"' "+selected+" >"+LinearTypeArray[i]+"</option>";
+				  }        
+				}
+		
+		
+            else if (options_type && options_type[z] == "feed")
             {
                 options_html += "<td><select id='"+box_options[z]+"' class='options' >";
                 for (i in feedlist)

@@ -28,23 +28,22 @@ function vis_widgetlist()
     "rawdata":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",  
-      "options":["feedid","colour","units","dp","scale","fill"],
-      "optionstype":["feedid","colour_picker","value","value","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value")],
-      
+      "menu":"Visualisations",
+      "options":["feedid",               "fill",            "units",              "colour"],
+      "optionstype":["feedid",           "value",           "value",              "colour_picker"],
+      "optionsname":[_Tr("Feed"),        _Tr("Fill"),       _Tr("Units"),         _Tr("Colour")],
+      "optionshint":[_Tr("Feed source"), _Tr("Fill value"), _Tr("Units to show"), _Tr("Line colour. Use hex if colour not present.")],
       "html":""
     },
-    
+
     "bargraph":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour","interval","units","dp","scale","delta"],
-      "optionstype":["feedid","colour_picker","value","value","value","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show diff (Wh feeds)")],
+      "options":["feedid","colour"],
+      "optionstype":["feedid","colour_picker"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
       "html":""
     },
 

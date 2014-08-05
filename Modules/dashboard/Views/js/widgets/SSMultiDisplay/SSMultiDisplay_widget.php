@@ -1,0 +1,1 @@
+<script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgets/SSMultiDisplay/SSMultiDisplay_render.js"></script>
