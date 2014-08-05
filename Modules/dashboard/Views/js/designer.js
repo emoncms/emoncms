@@ -170,8 +170,6 @@ var designer = {
 
     'draw_options': function(widget)
     {
-		var tablefix=0;
-	
         var box_options = widgets[widget]["options"];
         var options_type = widgets[widget]["optionstype"];
         var options_name = widgets[widget]["optionsname"];
@@ -182,6 +180,10 @@ var designer = {
 
         // Build options table html
         var options_html = "<table>";
+		
+		//Variable to split into 2 columns
+		var splitter = 0;
+		
         for (z in box_options)
         {
             // look into the designer DOM to extract the div parameters from the selected widget.
@@ -189,10 +191,9 @@ var designer = {
 
             if (val == undefined) val="";
 			
-			if (tablefix==0){
-				options_html += "<tr><td>"+options_name[z]+":</td>";tablefix=1;
-			}
-			else {options_html += "<td>"+options_name[z]+":</td>";tablefix=0}
+			//Added XaroRSA, splits in 2 columns 
+            if (splitter==0){options_html += "<tr><td>"+options_name[z]+":</td>";splitter=1;}
+			else {options_html += "<td>"+options_name[z]+":</td>";splitter=0;}
 		
 			if (options_type && options_type[z] == "radialtype"){
 				options_html += "<td><select id='"+box_options[z]+"' class='options' >";
@@ -373,9 +374,9 @@ var designer = {
             {
                 options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ >"
             }
-			if (tablefix==0){options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";tablefix=0;}
-			else {options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td>";tablefix=1;}
-            
+			
+			if (splitter == 1){options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td>";}
+            else {options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";}
 
         }
         var x = 1/0;
