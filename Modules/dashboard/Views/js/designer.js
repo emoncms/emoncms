@@ -170,6 +170,8 @@ var designer = {
 
     'draw_options': function(widget)
     {
+		var tablefix=0;
+	
         var box_options = widgets[widget]["options"];
         var options_type = widgets[widget]["optionstype"];
         var options_name = widgets[widget]["optionsname"];
@@ -187,7 +189,10 @@ var designer = {
 
             if (val == undefined) val="";
 			
-            options_html += "<tr><td>"+options_name[z]+":</td>";
+			if (tablefix==0){
+				options_html += "<tr><td>"+options_name[z]+":</td>";tablefix=1;
+			}
+			else {options_html += "<td>"+options_name[z]+":</td>";tablefix=0}
 		
 			if (options_type && options_type[z] == "radialtype"){
 				options_html += "<td><select id='"+box_options[z]+"' class='options' >";
@@ -368,8 +373,9 @@ var designer = {
             {
                 options_html += "<td><input class='options' id='"+box_options[z]+"' type='text' value='"+val+"'/ >"
             }
-
-            options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";
+			if (tablefix==0){options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td></tr>";tablefix=0;}
+			else {options_html += "</td><td><small><p class='muted'>"+optionshint[z]+"</p></small></td>";tablefix=1;}
+            
 
         }
         var x = 1/0;
