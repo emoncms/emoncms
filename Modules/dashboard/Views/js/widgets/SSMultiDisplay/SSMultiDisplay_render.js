@@ -8,7 +8,7 @@
       "options"	   :["feed","altfeed","unitString","headerString", "detailString", "LcdColor","LcdDecimals"],
       "optionstype":["feed","feed","value","value","value","LcdColor","value"],
       "optionsname":[_Tr("Feed"),_Tr("Alternative Feed"),_Tr("UnitString"),_Tr("Header"),_Tr("Detail"), _Tr("LcdColor"), _Tr("LcdDecimals")],
-      "optionshint":[] 
+      "optionshint":[_Tr("Feed"),_Tr(""),_Tr(""),_Tr(""),_Tr(""),_Tr(""),_Tr(""),]
     }
   }
   return widgets;
