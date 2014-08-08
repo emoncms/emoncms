@@ -40,8 +40,7 @@ function dashboard_controller()
         {
             $result = view("Modules/dashboard/Views/dashboard_list.php",array());
 
-            $menu = $dashboard->build_menu($session['userid'],"view");
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('menu'=>$menu, 'type'=>"view"));
+            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('type'=>"view"));
         }
 
         if ($route->action == "view" && $session['read'])
@@ -56,8 +55,7 @@ function dashboard_controller()
               $result = view("Modules/dashboard/Views/dashboard_list.php",array());
             }
 
-            $menu = $dashboard->build_menu($session['userid'],"view");
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"view"));
+            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'type'=>"view"));
         }
 
         if ($route->action == "edit" && $session['write'])
@@ -68,8 +66,7 @@ function dashboard_controller()
             $result = view("Modules/dashboard/Views/dashboard_edit_view.php",array('dashboard'=>$dash));
             $result .= view("Modules/dashboard/Views/dashboard_config.php", array('dashboard'=>$dash));
 
-            $menu = $dashboard->build_menu($session['userid'],"edit");
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"edit"));
+            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'type'=>"edit"));
         }
     }
 

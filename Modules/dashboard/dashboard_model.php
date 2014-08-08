@@ -169,44 +169,5 @@ class Dashboard
         return $result->fetch_array();
     }
 
-    public function build_menu($userid,$location)
-    {
-        global $path, $session;
-        $userid = (int) $userid;
-
-        $public = 0; $published = 0;
-
-        if (isset($session['profile']) && $session['profile']==1) {
-            $dashpath = $session['username'];
-            $public = !$session['write'];
-            $published = 1;
-        } else {
-            $dashpath = 'dashboard/'.$location;
-        }
-
-        $dashboards = $this->get_list($userid, $public, $published);
-        $topmenu="";
-        foreach ($dashboards as $dashboard)
-        {
-            // Check show description
-            if ($dashboard['showdescription']) {
-                    $desc = ' title="'.$dashboard['description'].'"';
-            } else {
-                    $desc = '';
-            }
-
-                // Set URL using alias or id
-            if ($dashboard['alias']) {
-                $aliasurl = "/".$dashboard['alias'];
-            } else {
-                $aliasurl = '&id='.$dashboard['id'];
-            }
-
-                // Build the menu item
-            $topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';
-        }
-        return $topmenu;
-    }
-
 }
 
