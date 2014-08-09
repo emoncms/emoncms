@@ -54,8 +54,6 @@ function dashboard_controller()
             } else {
               $result = view("Modules/dashboard/Views/dashboard_list.php",array());
             }
-
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'type'=>"view"));
         }
 
         if ($route->action == "edit" && $session['write'])
