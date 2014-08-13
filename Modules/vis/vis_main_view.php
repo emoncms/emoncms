@@ -23,6 +23,8 @@ global $path;
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/jquery.flot.hiddengraphs.js"></script>
+
 <h2><?php echo _("Visualisations"); ?></h2>
 
 <div id="vispage">

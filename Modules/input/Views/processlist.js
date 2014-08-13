@@ -150,16 +150,24 @@ var processlist_ui =
 
             }
             
-            processlist_ui.variableprocesslist.push([processid,""+arg]);
-            processlist_ui.draw();
-            
-            input.add_process(processlist_ui.inputid,processid,arg);
-            
-            update_main_list(processlist_ui.inputid, processlist_ui.variableprocesslist);
-            
-
+            //if (arg!="") 
+            //{
+                console.log(processid+" "+arg);
+                processlist_ui.variableprocesslist.push([processid,""+arg]);
+                processlist_ui.draw();
+                
+                input.add_process(processlist_ui.inputid,processid,arg);
+                //processlist_ui.nodes[processlist_ui.nodeid].decoder.variables[processlist_ui.variableid].processlist = processlist_ui.encode(processlist_ui.variableprocesslist);
+                //node.setdecoder(processlist_ui.nodeid,processlist_ui.nodes[processlist_ui.nodeid].decoder);
+                
+                //if (result.success == false) {
+                //    alert(data.message);
+                //    return false;
+                //}
+                
+            //}
         });
-        
+
         $('#processlist-ui #process-select').change(function() {
             var processid = $(this).val();
             
@@ -196,12 +204,12 @@ var processlist_ui =
 
         $('#processlist-ui .table').on('click', '.delete-process', function() {
             processlist_ui.variableprocesslist.splice($(this).attr('processid'),1);
+            //processlist_ui.nodes[processlist_ui.nodeid].decoder.variables[processlist_ui.variableid].processlist = processlist_ui.encode(processlist_ui.variableprocesslist);
+            //node.setdecoder(processlist_ui.nodeid,processlist_ui.nodes[processlist_ui.nodeid].decoder);
             
             var processid = $(this).attr('processid')*1;
             processlist_ui.draw();
             input.delete_process(processlist_ui.inputid,processid+1);
-            
-            update_main_list(processlist_ui.inputid, processlist_ui.variableprocesslist);
         });
 
         $('#processlist-ui .table').on('click', '.move-process', function() {
@@ -218,27 +226,10 @@ var processlist_ui =
                 input.move_process(processlist_ui.inputid,processid+1,moveby);
             }
 
-            update_main_list(processlist_ui.inputid, processlist_ui.variableprocesslist);
+            //processlist_ui.nodes[processlist_ui.nodeid].decoder.variables[processlist_ui.variableid].processlist = processlist_ui.encode(processlist_ui.variableprocesslist);
+            //node.setdecoder(processlist_ui.nodeid,processlist_ui.nodes[processlist_ui.nodeid].decoder);
             
         });
-        
-        function update_main_list(inputid, processlist)
-        {
-            var process_str = "";
-            for (z in processlist)
-            {
-                process_str += processlist[z].join(':') + ",";
-            }
-            process_str = process_str.slice(0, -1);
-            
-            // Update input table immedietly
-            for (z in table.data) {
-                if (table.data[z].id == inputid) {
-                    table.data[z].processList = process_str;
-                }
-            }
-            table.draw();
-        }
 
     },
     

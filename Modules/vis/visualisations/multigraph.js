@@ -145,7 +145,9 @@
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
-      legend: { position: "nw"}
+      legend: { position: "nw",
+	  hideable: true
+	  }
     });
   }
 

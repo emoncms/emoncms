@@ -477,7 +477,6 @@ class PHPTimestore
             return false;
         }
         $meta = new stdClass();
-        $meta->feedid = $feedid;
         
         $size = filesize($this->dir.$feedname);
         
@@ -491,23 +490,29 @@ class PHPTimestore
         fseek($metafile,8);
         $d = fread($metafile,8);
         $tmp = unpack("h*",$d);
-        //$meta->feedid = (int) strrev($tmp[1]);
+        $meta->feedid = (int) strrev($tmp[1]);
         $tmp = unpack("I",fread($metafile,4));
         $meta->nmetrics = $tmp[1];
         $tmp = unpack("I",fread($metafile,4));
-        // $legacy_npoints = $tmp[1];
+        $legacy_npoints = $tmp[1];
         $tmp = unpack("I",fread($metafile,8));
         $meta->start = $tmp[1];
         $tmp = unpack("I",fread($metafile,4));
         $meta->interval = $tmp[1];
         fclose($metafile);
         
+        // Sanity checks
+        
+        if ($meta->feedid != $feedid)
+        {
+            $this->log->warn("PHPTimestore:get_meta feed:$feedid meta data mismatch, meta feedid: ".$meta->feedid);
+            return false;
+        }
+        
         if ($meta->nmetrics!=1) {
             $this->log->warn("PHPTimestore:get_meta feed:$feedid nmetrics is not 1");
             return false;
         }
-        
-        
         
         if ($meta->interval<5 || $meta->interval>(24*3600))
         {
@@ -521,10 +526,11 @@ class PHPTimestore
         $filesize = filesize($this->dir.str_pad($feedid, 16, '0', STR_PAD_LEFT)."_0_.dat");
         $meta->npoints = floor($filesize / 4.0);
         
-        if ($meta->start <= 0 && $meta->npoints==1) {
-          $this->log->warn("PHPTimestore:get_meta feed:$feedid start time must be greater than zero");
+        if ($meta->start <= 0 && $meta->npoints=1) {
+          error_log("PHPTimestore:get_meta feed:$feedid start time must be greater than zero");
           return false;
         }
+
 
         if ($meta->start>0 && $meta->npoints==0) {
             $this->log->warn("PHPTimestore:get_meta start_time already defined but npoints is 0, something is wrong with the data file?.");

@@ -21,6 +21,8 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/jquery.flot.hiddengraphs.js"></script>
+
 <?php if (!$embed) { ?>
 <h2>Multigraph</h2>
 <?php } ?>

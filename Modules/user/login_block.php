@@ -167,7 +167,7 @@ $(document).ready(function() {
 
         if (result.success)
         {
-            window.location.href = path+"user/view";
+            window.location.href = path+"dashboard/view";
         }
         else
         {
