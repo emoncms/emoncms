@@ -1,4 +1,12 @@
-## Pre-build SD Card setup
+## Using the SD card
+
+[Home Energy Monitor system setup example](https://github.com/openenergymonitor/documentation/blob/master/Applications/HomeEnergyMonitor/HomeEnergyMonitor.md)
+
+### 1) Posting to Emoncms.org
+
+If you just want to post data to emoncms.org you can configure the RaspberryPI by inserting the SD Card in your computer and editing the emonhub.conf file on the boot partition.
+
+### 2) Recording data locally and/or posting to emoncms.org
 
 Insert SD card and power up. It usually takes a minute to boot up the ACT light on the PI should be actively flickering for the first minute.
 
@@ -10,8 +18,6 @@ Login to the raspberrypi with SSH (Putty is a useful tool to do this on windows)
     pi@192.168.1.70's password:
 
 The password is: raspberry
-
-### Enabling and logging to the local installation of emoncms
 
 The local installation of emoncms is disabled as default. To enable it first put the os partition into write mode with
 
