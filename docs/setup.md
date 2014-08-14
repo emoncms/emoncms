@@ -17,11 +17,7 @@ The local installation of emoncms is disabled as default. To enable it first put
 
     rpi-rw
     
-Enable the local emoncms with:
-
-    sudo service redis-server start
-    
-and then:
+and then run:
     
     localemoncms-enable
 
@@ -41,7 +37,7 @@ To configure emonhub to post to the local installation of emoncms note down the 
 
 Open the emonhub config file for editing:
     
-    nano /etc/emonhub/emonhub.conf
+    nano /boot/emonhub.conf
 
 In the Dispatchers section enter the write apikey of your local emoncms account and in the Listeners section set the group and frequency of your rfm12pi adapter board and rf network.
 
