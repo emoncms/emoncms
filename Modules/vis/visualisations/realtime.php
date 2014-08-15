@@ -64,7 +64,7 @@
 
     $.ajax({                                      
       url: path+'feed/data.json',                         
-      data: "&apikey="+apikey+"&id="+feedid+"&start="+(start-20)+"&end="+(end+20)+"&dp="+1000,
+      data: "id="+feedid+"&start="+(start-20)+"&end="+(end+20)+"&dp="+1000,
       dataType: 'json',
       async: false,                      
       success: function(data_in) { data = data_in; } 
@@ -90,7 +90,13 @@
     function getdp()
     {
      var result = {};
-      $.ajax({ url: path+"feed/timevalue.json", data: "id="+feedid, dataType: 'json', async: false, success: function(datain) {result = datain;} });
+      $.ajax({
+	   url: path+'feed/timevalue.json',
+	   data: "id="+feedid,
+	   dataType: 'json',
+	   async: false,
+	   success: function(datain) {result = datain;}
+	  });
 
       var timestamp = new Date;
       
@@ -121,7 +127,7 @@
       
       $.ajax({                                      
         url: path+'feed/data.json',                         
-        data: "&apikey="+apikey+"&id="+feedid+"&start="+(start-20)+"&end="+(end+20)+"&dp="+1000,
+        data: "id="+feedid+"&start="+(start-20)+"&end="+(end+20)+"&dp="+1000,
         dataType: 'json',
         async: false,                      
         success: function(data_in) { data = data_in; } 
