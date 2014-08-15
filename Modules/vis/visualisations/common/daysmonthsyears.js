@@ -39,8 +39,7 @@ function get_months(data)
   gdata.days =[];
 
   var sum=0, s=0, i=0;
-  var lmonth=0,month=0,year;
-  var tmp = []
+  var lmonth=0,month=0,year=0;
   var d = new Date();
 
   for (var z in data)
@@ -54,7 +53,7 @@ function get_months(data)
    if (month!=lmonth && z!=0)
     {
       var tmp = [];
-      tmp[0] = Date.UTC(year,month+1,1);
+      tmp[0] = Date.UTC(year,month-1,1); //month+1 replaced by month-1 => correction of a visualization bug impacting stacked, stackedsolar, zoom & dailyhistogram modules 
       tmp[1] = sum; ///daysInMonth(month-1, year);
 
       gdata.data[i] = tmp;
@@ -93,7 +92,6 @@ function get_years(data)
 
   var sum=0, s=0, i=0;
   var lyear=0,year=0;
-  var tmp = []
   var d = new Date();
 
   for (var z in data)
@@ -107,7 +105,7 @@ function get_years(data)
     if (year!=lyear && z!=0)		// We sum all days until we find a new year
     {
       var tmp = [];
-      tmp[0] = Date.UTC(year+1,6,1);
+      tmp[0] = Date.UTC(year-1,6,1); //year+1 replaced by year-1 => correction of a visualization bug impacting zoom & dailyhistogram modules 
       tmp[1] = sum;
 
       gdata.data[i] = tmp;
