@@ -1,7 +1,67 @@
-## Using the SD card
+# Using the SD card
 
+## 1) Download the ready-to-go SD card image:
 
-### 1) Posting to Emoncms.org
+**Download Latest - emonSD-13-08-14.img.zip (975Mb)**
+
+[UK Mirror 1](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
+
+This image will unzip to fit on a 4GB SD card (min)
+This image has been tested to work on the new model B+
+
+ 
+*Please get in contact if you can help with hosting bandwidth or seeding a torrent for these image downloads. Any help is much appreciated.*
+
+### 1a) Alternatively build it yourself:
+
+[https://github.com/emoncms/emoncms/blob/bufferedwrite/docs/install.md](https://github.com/emoncms/emoncms/blob/bufferedwrite/docs/install.md)
+
+## 2) Write the image to an SD card
+
+### Linux
+
+Start by inserting your SD card, your distribution should mount it automatically so the first step is to unmount the SD card and make a note of the SD card device name, to view mounted disks and partitions run:
+
+    $ df -h
+
+You should see something like this:
+
+    Filesystem            Size  Used Avail Use% Mounted on
+    /dev/sda6             120G   90G   24G  79% /
+    none                  490M  700K  490M   1% /dev
+    none                  497M  1.7M  495M   1% /dev/shm
+    none                  497M  260K  497M   1% /var/run
+    none                  497M     0  497M   0% /var/lock
+    /dev/sdb1             3.7G  4.0K  3.7G   1% /media/sandisk
+
+Unmount the SD card, change sdb to match your SD card drive:
+
+    $ umount /dev/sdb1 
+
+If the card has more than one partition unmount that also: 
+
+    $ umount /dev/sdb2
+
+Locate the directory of your downloaded emoncms image in terminal and write it to an SD card using linux tool *dd*:
+
+**Warning: take care with running the following command that your pointing at the right drive! If you point at your computer drive you could lose your data!**
+
+    $ sudo dd bs=4M if=emonSD-13-08-14.img of=/dev/sdb
+
+### Windows 
+
+The main raspberry pi sd card setup guide recommends Win32DiskImager, see steps for windows here: 
+[http://elinux.org/RPi_Easy_SD_Card_Setup](http://elinux.org/RPi_Easy_SD_Card_Setup)
+Select the image as downloaded above.
+
+### Mac OSX 
+
+See steps for Mac OSX as documented on the main raspberry pi sd card setup guide:
+[http://elinux.org/RPi_Easy_SD_Card_Setup](http://elinux.org/RPi_Easy_SD_Card_Setup)
+Select the image as downloaded above.
+<br><br>
+
+## 3) Posting to Emoncms.org
 
 If you just want to post data to emoncms.org you can configure the RaspberryPi by inserting the SD Card in your computer and editing the emonhub.conf file on the boot partition.
 
@@ -92,7 +152,14 @@ loglevel = WARNING
 
 ```
 
-### 2) Recording data locally and/or posting to emoncms.org
+Insert the SD card into the Pi, connect the RFM12Pi taking care to line up pin 1 on the GPIO header and power up the Pi. 
+
+That's it, if you have sensor nodes sending data, inputs should start appearing in the inputs section your emoncms account in a few seconds.
+
+Return to the OpenEnergyMonitor Guide to setup your sensor nodes and map the inputs to create feeds and build your dashboard in emoncms: http://openenergymonitor.org/emon/guide
+
+
+## 3a) Recording data locally and/or posting to emoncms.org
 
 Insert SD card and power up. It usually takes a minute to boot up the ACT light on the Pi should be actively flickering for the first minute.
 
@@ -144,7 +211,7 @@ That's it, if you have sensor nodes sending data, inputs should start appearing 
 Return to the OpenEnergyMonitor Guide to setup your sensor nodes and map the inputs to create feeds and build your dashboard in emoncms: http://openenergymonitor.org/emon/guide
 
 
-### Things to do (Optional but recomended) 
+## 4.) Things to do (Optional but recommended) 
 
     $ rpi-rw
 
@@ -167,6 +234,10 @@ To view logfile entries:
     $ tail -f /var/log/emonhub/emonhub.log
     $ tail -f /var/log/feedwriter.log
     $ tail -f /var/log/emoncms.log
+    
+To stop / start the emonHub service 
+
+	$ sudo service emonhub start/stop/status
 
 Monitor disk load with sysstat:
 
