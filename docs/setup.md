@@ -5,8 +5,92 @@
 
 If you just want to post data to emoncms.org you can configure the RaspberryPi by inserting the SD Card in your computer and editing the emonhub.conf file on the boot partition.
 
-In the 'Dispatchers' section of emonhub.conf enter the write apikey from your emoncms.org account and in the Listeners section set the group and frequency to match your RFM12Pi adapter board and sensor node network.
+In the 'Reporters' section of emonhub.conf enter the write apikey from your emoncms.org and account and emoncms.org in the URL as shown below. 
 
+In the 'Interfaces' section set the group and frequency to match your RFM12Pi adapter board and sensor node network.
+
+No need to chage the 'Nodes' section. 
+
+Example emonhub.conf for posting to emoncms.org: 
+
+```python
+
+pi@raspberrypi ~ $ cat /boot/emonhub.conf
+# SPECIMEN emonHub configuration file
+# Note that when installed from apt, a new config file is written 
+# by the debian/postinst script, so changing this file will do 
+# nothing in and of itself.
+
+# Each Interfacer and each Reporter has
+# - a [[name]]: a unique string
+# - a type: the name of the class it instantiates
+# - a set of init_settings (depends on the type)
+# - a set of runtimesettings (depends on the type)
+# Both init_settings and runtimesettings sections must be defined,
+# even if empty. Init settings are used at initialization,
+# and runtime settings are refreshed on a regular basis.
+
+# All lines beginning with a '#' are comments and can be safely removed.
+
+#######################################################################
+#######################    emonHub  settings    #######################
+#######################################################################
+[hub]
+
+# loglevel must be one of DEBUG, INFO, WARNING, ERROR, and CRITICAL
+# see here : http://docs.python.org/2/library/logging.html
+loglevel = WARNING
+
+
+#######################################################################
+#######################        Reporters        #######################
+#######################################################################
+[reporters]
+
+# This reporter sends data to emonCMS
+[[emonCMS]]
+    Type = EmonHubEmoncmsReporter
+    [[[init_settings]]]
+    [[[runtimesettings]]]
+        url = http://emoncms.org
+        apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+
+#######################################################################
+#######################       Interfacers       #######################
+#######################################################################
+[interfacers]
+
+# This interfacer manages the RFM2Pi module
+[[RFM2Pi]]
+    Type = EmonHubJeeInterfacer
+    [[[init_settings]]]
+        com_port = /dev/ttyAMA0
+
+#un-comment for use with RFM69CW RFM12Pi        
+        # com_baud = 57600 
+
+# set to match RFM12Pi and sensor node network     
+    [[[runtimesettings]]] 
+        group = 210
+        frequency = 433
+        baseid = 15
+
+
+#######################################################################
+#######################          Nodes          #######################
+#######################################################################
+[nodes]
+
+# List of nodes by node ID
+# 'datacode' is default for node and 'datacodes' are per value data codes.
+# if both are present 'datacode' is ignored in favour of 'datacodes'
+[[99]]
+	datacode = h
+	datacodes = l, h, h, h,
+
+```
 
 ### 2) Recording data locally and/or posting to emoncms.org
 
