@@ -2,9 +2,9 @@
 
 This guide details how to setup a raspberry pi basestation that can be used to either forward data to a remote server or record data locally or both. 
 
-- [Download ready-to-go image: emonSD-13-08-14.img.zip](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
+- [Download ready-to-go 4GB SD card image: emonSD-13-08-14.img.zip](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
 
-- [Using the Ready to go image](docs/setup.md)
+- [Setting up and using the ready-to-go SD card image](docs/setup.md)
 
 ---------------------------------------------------------------------------------
 
