@@ -1,33 +1,35 @@
 ## Using the SD card
 
-[Home Energy Monitor system setup example](https://github.com/openenergymonitor/documentation/blob/master/Applications/HomeEnergyMonitor/HomeEnergyMonitor.md)
 
 ### 1) Posting to Emoncms.org
 
-If you just want to post data to emoncms.org you can configure the RaspberryPI by inserting the SD Card in your computer and editing the emonhub.conf file on the boot partition.
+If you just want to post data to emoncms.org you can configure the RaspberryPi by inserting the SD Card in your computer and editing the emonhub.conf file on the boot partition.
+
+In the 'Dispatchers' section of emonhub.conf enter the write apikey from your emoncms.org account and in the Listeners section set the group and frequency to match your RFM12Pi adapter board and sensor node network.
+
 
 ### 2) Recording data locally and/or posting to emoncms.org
 
-Insert SD card and power up. It usually takes a minute to boot up the ACT light on the PI should be actively flickering for the first minute.
+Insert SD card and power up. It usually takes a minute to boot up the ACT light on the Pi should be actively flickering for the first minute.
 
-Find the raspberrypi's IP address on your network, this can usually be found in your router status page. Alternatively there's a useful app called fing that can be used to scan for devices on a network.
+Find the raspberrypi's IP address on your network, this can usually be found in your router status page. Alternatively there's a useful Android/iPhone app called Fing that can be used to scan for devices on a network.
 
 Login to the raspberrypi with SSH (Putty is a useful tool to do this on windows).
 
-    user@user:~$ ssh pi@192.168.1.70
-    pi@192.168.1.70's password:
+    $ user@user:~$ ssh pi@192.168.1.XX
+    $ pi@192.168.1.70's password:
 
-The password is: raspberry
+The defaut password is password: 'raspberry'
 
 The local installation of emoncms is disabled as default. To enable it first put the os partition into write mode with
 
-    rpi-rw
+    $ rpi-rw
     
 and then run:
     
-    localemoncms-enable
+    $ localemoncms-enable
 
-Note: to disable again: localemoncms-disable
+Note: to disable again: $ localemoncms-disable
 
 In your internet browser window, enter the ip address of the raspberrypi. This should bring up the emoncms login page. 
 
@@ -43,29 +45,32 @@ To configure emonhub to post to the local installation of emoncms note down the 
 
 Open the emonhub config file for editing:
     
-    nano /boot/emonhub.conf
+   $ nano /boot/emonhub.conf
 
 In the Dispatchers section enter the write apikey of your local emoncms account and in the Listeners section set the group and frequency of your rfm12pi adapter board and rf network.
 
-Save and exit.
+Save and exit nano text editor using [Ctrl + X] then [Y] and [Enter]
 
 Set the raspberrypi os back into read-only mode.
 
-    rpi-ro
+    $ rpi-ro
 
-That's all that is needed, data should now appear on the inputs page of the local emoncms account.
+That's it, if you have sensor nodes sending data, inputs should start appearing in the inputs section your emoncms account in a few seconds.
 
-### Things to do
+Return to the OpenEnergyMonitor Guide to setup your sensor nodes and map the inputs to create feeds and build your dashboard in emoncms: http://openenergymonitor.org/emon/guide
 
-    rpi-rw
+
+### Things to do (Optional but recomended) 
+
+    $ rpi-rw
 
 Change the default raspberrypi ssh password
 
-    passwd
+   $ passwd
     
 Change the admin raspberrypi password
 
-    sudo passwd
+   $ sudo passwd
     
 Enter current password and then the new password of your choice.
     
@@ -75,12 +80,12 @@ Always remember to put the OS partiion back into read-only mode. This will exten
 
 To view logfile entries:
 
-    tail -f /var/log/emonhub/emonhub.log
-    tail -f /var/log/feedwriter.log
-    tail -f /var/log/emoncms.log
+    $ tail -f /var/log/emonhub/emonhub.log
+    $ tail -f /var/log/feedwriter.log
+    $ tail -f /var/log/emoncms.log
 
 Monitor disk load with sysstat:
 
-    sudo iostat 60 (will give you 1 minuite disk load average, note kb_wrtn/s value)
+    $ sudo iostat 60 (will give you 1 minuite disk load average, note kb_wrtn/s value)
 
 kb_wrtn/s should be around 0.5-1.5 kb_wrtn/s
