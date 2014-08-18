@@ -3,10 +3,16 @@
 This guide details how to setup a raspberry pi basestation that can be used to either forward data to a remote server or record data locally or both. 
 
 - [Download ready-to-go image: emonSD-13-08-14.img.zip](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
+
 - [Using the Ready to go image](docs/setup.md)
+
+ 
 - [Full Image build guide](docs/install.md)
-- [Optional: modifications to emonhub for connection to emoncms node module and emoncms packetgen module](docs/emonhubmod.md)
+
+- [Optional: modifications to emonhub for connection to emoncms node module and emoncms packetgen module](docs/emonhubmod.md)]
+
 - [Optional: Using a harddrive instead of an SD Card](docs/hddsetup.md)
+
 - [Optional: Switch to full emoncms (master branch)](docs/switchtofull.md)
 
 ### Technical detail
