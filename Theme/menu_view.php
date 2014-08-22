@@ -17,10 +17,10 @@
     $menu_right = $menu['right'];
     $menu_dropdown = $menu['dropdown'];
 
-    require "Modules/dashboard/Views/build_menu.php";
-    $dashboardmenu = new Dashboardmenu($mysqli);
+    require_once "Modules/dashboard/dashboard_model.php";
+    $dashboardmenu = new Dashboard($mysqli);
 
-    $dashmenu = $dashboardmenu->build_menu($session['userid'],"view");    
+    $dashmenu = $dashboardmenu->build_menu($session['userid'],"view");  
 
     if ($session['write']) $menu_right[] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
     if (!$session['write']) $menu_right[] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
