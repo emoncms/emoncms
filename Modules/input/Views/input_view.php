@@ -200,7 +200,7 @@ input[type="text"] {
         processlist_ui.inputid = i.id;
         
         var processlist = [];
-        if (i.processList!="")
+        if (i.processList!=null && i.processList!="")
         {
             var tmp = i.processList.split(",");
             for (n in tmp)
