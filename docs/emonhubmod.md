@@ -11,11 +11,11 @@ Emonhub has a powerfull node decoder built into it that allows for the decoding 
 
 In the meantime if you wish to carry out the node decoding within a remote emoncms installation rather than use the standard local emonhub based node decoding a couple of small modifications to emonhub can be made to achieve this:
 
-In emonhub.conf under listeners -> runtime_settings add the line
+In emonhub.conf under Interfaces -> runtime_settings add the line
 
     defaultdatacode = b
 
-In src/emonhub_dispatcher.py change [line 233](https://github.com/emonhub/emonhub/blob/development/src/emonhub_dispatcher.py#L233)
+In src/emonhub_reporter.py change [line 233](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L233)
 
     post_url = self._settings['url']+'/input/bulk'+'.json?apikey='
 
@@ -23,7 +23,7 @@ to
 
     post_url = self._settings['url']+'/node/multiple'+'.json?apikey='
     
-and change [line 247](https://github.com/emonhub/emonhub/blob/development/src/emonhub_dispatcher.py#L247)
+and change [line 247](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L247)
 
     if reply == 'ok':
     
@@ -61,17 +61,17 @@ We can modify emonhub to poll the packetgen module periodically and send the pac
 
     cd /home/pi/emonhub/src
     
-    nano emonhub_listener.py
+    nano emonhub_interfacer.py
     
 Add just below import select [~line 16](https://github.com/emonhub/emonhub/blob/development/src/emonhub_listener.py#L16) the line:
 
     import urllib2
     
-Add just below self._interval_timestamp = 0 [~line 48](https://github.com/emonhub/emonhub/blob/development/src/emonhub_listener.py#L48) the line:
+Add just below self._interval_timestamp = 0 [~line 48](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.py#L48) the line:
 
     self._control_timestamp = 0
     
-In class EmonHubJeeListener, method run, add just below: now = time.time() [~line 458](https://github.com/emonhub/emonhub/blob/development/src/emonhub_listener.py#L458)
+In class EmonHubJeeListener, method run, add just below: now = time.time() [~line 458](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.pyy#L458)
 
     if now - self._control_timestamp > 5:
         self._control_timestamp = now
