@@ -15,7 +15,7 @@ In emonhub.conf under Interfaces -> runtime_settings add the line
 
     defaultdatacode = b
 
-In src/emonhub_reporter.py change [line 233](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L233)
+In src/emonhub_reporter.py change [line 275](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L275)
 
     post_url = self._settings['url']+'/input/bulk'+'.json?apikey='
 
@@ -23,7 +23,7 @@ to
 
     post_url = self._settings['url']+'/node/multiple'+'.json?apikey='
     
-and change [line 247](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L247)
+and change [line 289](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L289)
 
     if reply == 'ok':
     
@@ -67,11 +67,11 @@ Add just below import select [~line 16](https://github.com/emonhub/emonhub/blob/
 
     import urllib2
     
-Add just below self._interval_timestamp = 0 [~line 48](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.py#L48) the line:
+Add just below self._interval_timestamp = 0 [~line 50](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.py#L50) the line:
 
     self._control_timestamp = 0
     
-In class EmonHubJeeListener, method run, add just below: now = time.time() [~line 458](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.pyy#L458)
+In class EmonHubJeeListener, method run, add just below: now = time.time() [~line 483](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.pyy#L483)
 
     if now - self._control_timestamp > 5:
         self._control_timestamp = now
@@ -82,8 +82,12 @@ In class EmonHubJeeListener, method run, add just below: now = time.time() [~lin
         
 Set your emoncms location (it can be localhost or a remote server) and apikey in the URL string.
 
-Save and exit.
+Save and exit [Ctrl + X] then [Enter]
         
-Restart emonhub
+Restart emonhub to finish:
 
     sudo service emonhub restart
+    
+Check that there are no errors in the log:
+
+    tail -f /var/log/emonhub.conf
