@@ -37,7 +37,7 @@ Restart emonhub to finish:
     
 Check that there are no errors in the log:
 
-    tail -f /var/log/emonhub.conf
+    tail -f /var/log/emonhub/emonhub.conf
     
 If the emoncms node module is not present in your emoncms installation (if your using the bufferedwrite branch) then the node module can be installed from git by running in your emoncms/Modules folder:
 
@@ -90,4 +90,4 @@ Restart emonhub to finish:
     
 Check that there are no errors in the log:
 
-    tail -f /var/log/emonhub.conf
+    tail -f /var/log/emonhub/emonhub.conf
