@@ -136,6 +136,7 @@ loglevel = WARNING
         group = 210
         frequency = 433
         baseid = 15
+        #interval=300 #un-comment to post time to emonGLCD every 5 min
 
 
 #######################################################################
