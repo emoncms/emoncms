@@ -6,8 +6,14 @@
 
 [UK Mirror 1](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
 
-This image will unzip to fit on a 4GB SD card (min)
-This image has been tested to work on the new model B+
+[Europe Mirror 1](http://pizzacapri-vissenbjerg.dk/oem/emonSD-13-08-14.img.zip)
+
+[Europe Mirror 2](http://peppes-pizza.dk/oem/emonSD-13-08-14.img.zip)
+
+[Europe Mirror 3](http://xn--pizzalg-v1a.dk/oem/emonSD-13-08-14.img.zip)
+
+
+Many thanks to [Bo Herrmannsen (boelle)](http://openenergymonitor.org/emon/user/3149) for Europe mirror hosting, please DM to report broken link. 
 
  
 *Please get in contact if you can help with hosting bandwidth or seeding a torrent for these image downloads. Any help is much appreciated.*
