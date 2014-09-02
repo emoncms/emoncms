@@ -11,8 +11,8 @@ var multigraph_id = 0;
 var multigraph_feedlist = [];
 
 var timeWindow = (3600000*24.0*7);				            // Initial time window
-var start = ((new Date()).getTime())-timeWindow;		  // Get start time
-var end = (new Date()).getTime();				              // Get end time
+view.start = ((new Date()).getTime())-timeWindow;		  // Get start time
+view.end = (new Date()).getTime();				              // Get end time
 
 // This is used with multigraph.js to tell it to call a save request in multigraph_edit.js
 // when the multigraph time window is changed.
@@ -256,13 +256,14 @@ function load_events()
 
   $(baseElement).on("click","#save-multigraph-button",function(event){
     // Save multigraph view start and end time to feedlist array
-    multigraph_feedlist[0].timeWindow = end - start;
+    multigraph_feedlist[0].timeWindow = view.end - view.start;
 
     if (movingtime == 0)
       multigraph_feedlist[0].end = 0;
     else
-      multigraph_feedlist[0].end = end;
+      multigraph_feedlist[0].end = view.end;
 
+    console.log(multigraph_feedlist[0].timeWindow);
     console.log(movingtime);
     console.log(multigraph_feedlist[0].end);
 
