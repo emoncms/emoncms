@@ -11,9 +11,9 @@ Emonhub has a powerfull node decoder built into it that allows for the decoding 
 
 In the meantime if you wish to carry out the node decoding within a remote emoncms installation rather than use the standard local emonhub based node decoding a couple of small modifications to emonhub can be made to achieve this:
 
-In emonhub.conf under Interfaces -> runtime_settings add the line
+In emonhub.conf under interfacers -> runtimesettings add the line
 
-    defaultdatacode = b
+    datacode = b
 
 In src/emonhub_reporter.py change [line 275](https://github.com/emonhub/emonhub/blob/development/src/emonhub_reporter.py#L275)
 
@@ -37,7 +37,7 @@ Restart emonhub to finish:
     
 Check that there are no errors in the log:
 
-    tail -f /var/log/emonhub/emonhub.conf
+    tail -f /var/log/emonhub/emonhub.log
     
 If the emoncms node module is not present in your emoncms installation (if your using the bufferedwrite branch) then the node module can be installed from git by running in your emoncms/Modules folder:
 
@@ -63,7 +63,7 @@ We can modify emonhub to poll the packetgen module periodically and send the pac
     
     nano emonhub_interfacer.py
     
-Add just below import select [~line 16](https://github.com/emonhub/emonhub/blob/development/src/emonhub_listener.py#L16) the line:
+Add just below import select [~line 16](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.py#L16) the line:
 
     import urllib2
     
@@ -90,4 +90,4 @@ Restart emonhub to finish:
     
 Check that there are no errors in the log:
 
-    tail -f /var/log/emonhub/emonhub.conf
+    tail -f /var/log/emonhub/emonhub.log
