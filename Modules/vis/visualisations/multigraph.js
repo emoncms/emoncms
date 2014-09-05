@@ -250,25 +250,3 @@ function multigraph_init(element)
 		});
 	});
   //-----------------------------------------------------------------------------------------------
-  //setInterval(function () {inst_refresh(); vis_feed_data();},10000); 
-}
-  //Added XaroRSA from http://openenergymonitor.org/emon/node/1980
-  /*
-  function inst_increment()
-  {
-    var laststart = view.start; var lastend = view.end;
-    view.end = (new Date()).getTime() - 30000;    //sets the updated end time to 30 secs behind the current time,
-    var timeWindow = (view.end-view.start);
-    var shiftsize = timeWindow * 0.01;
-    view.start += shiftsize;
-    view.end += shiftsize;
-    timeWindowChanged = 1;
-  }
-
-  function inst_refresh()
-  {
-    inst_increment();
-	var timewindow = (view.end-view.start);
-    timeWindowChanged = 0;
-  }
-  */
