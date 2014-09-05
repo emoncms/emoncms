@@ -141,11 +141,13 @@
 
   function plot()
   {
-    $.plot($("#graph"), plotdata, {
+      $.plot($("#graph"), plotdata, {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
-      legend: { position: "nw"}
+      legend: { position: "nw",
+	  hideable: false
+	  }
     });
   }
 
@@ -190,6 +192,9 @@ function multigraph_init(element)
         "<button id='zoomout' class='btn' >-</button>"+
         "<button id='left' class='btn' ><</button>"+
         "<button id='right' class='btn' >></button></div>"+
+		
+		"<div class='btn-group'>"+
+        "<button id='save' class='btn' >Save</button></div>"+
 
       "</div>"+
     "</div>"
@@ -232,5 +237,38 @@ function multigraph_init(element)
   $('#right').click(function () {view.panright(); vis_feed_data();});
   $('#left').click(function () {view.panleft(); vis_feed_data();});
   $('.time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
+  
+  $('#save').click(function () {
+		$("#graph_buttons").hide();
+		var nodeToTransform = $("#graph");
+		$("#graph").css( "backgroundColor", "white" );
+		html2canvas(nodeToTransform ,
+		{
+			onrendered: function(canvas) {
+				Canvas2Image.saveAsPNG(canvas)
+		   }
+		});
+	});
   //-----------------------------------------------------------------------------------------------
+  //setInterval(function () {inst_refresh(); vis_feed_data();},10000); 
 }
+  //Added XaroRSA from http://openenergymonitor.org/emon/node/1980
+  /*
+  function inst_increment()
+  {
+    var laststart = view.start; var lastend = view.end;
+    view.end = (new Date()).getTime() - 30000;    //sets the updated end time to 30 secs behind the current time,
+    var timeWindow = (view.end-view.start);
+    var shiftsize = timeWindow * 0.01;
+    view.start += shiftsize;
+    view.end += shiftsize;
+    timeWindowChanged = 1;
+  }
+
+  function inst_refresh()
+  {
+    inst_increment();
+	var timewindow = (view.end-view.start);
+    timeWindowChanged = 0;
+  }
+  */
