@@ -73,7 +73,7 @@
 
     var feedlist = [];
     feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
-    feedlist[1] = {id: kwhd, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+    feedlist[1] = {id: kwhd, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
     $(window).resize(function(){
         $('#graph').width($('#graph_bound').width());
@@ -100,7 +100,38 @@
         for(var i in feedlist) {
             if (timeWindowChanged) feedlist[i].plot.data = null;
             if (feedlist[i].selected) {
-                if (!feedlist[i].plot.data) feedlist[i].plot.data = get_feed_data(feedlist[i].id,start,end,500);
+                
+                if (!feedlist[i].plot.data) {
+                    //feedlist[i].plot.data = get_feed_data(feedlist[i].id,start,end,500);
+                    
+                    if (feedlist[i].interval!=undefined && feedlist[i].interval>0)
+                    {
+                        interval = feedlist[i].interval;
+                        intervalms = interval * 1000;
+                        
+                        var d = new Date()
+                        var n = d.getTimezoneOffset();
+                        var offset = n / -60;
+
+                        var datastart = Math.floor(start / intervalms) * intervalms;
+                        var dataend = Math.ceil(end / intervalms) * intervalms;
+                        datastart -= offset * 3600000;
+                        dataend -= offset * 3600000;
+                    } else {
+                        datastart = start;
+                        dataend = end;
+                        interval = Math.round(((end-start)/500)*0.001);
+                    }
+                    
+                    $.ajax({                                      
+                        url: path+'feed/average.json',                         
+                        data: "id="+feedlist[i].id+"&start="+datastart+"&end="+dataend+"&interval="+interval,
+                        dataType: 'json',
+                        async: false,                      
+                        success: function(data_in) { feedlist[i].plot.data = data_in; } 
+                    });
+                }
+                
                 if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
             }
         }

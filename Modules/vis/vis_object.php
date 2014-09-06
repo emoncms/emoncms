@@ -82,7 +82,7 @@
         
         'simplezoom'=> array('options'=>array(
             array('power',1),
-            array('kwhd',2)
+            array('kwhd',0)
         )),
         
         'orderbars'=> array('options'=>array(
