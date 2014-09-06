@@ -146,7 +146,7 @@
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
       legend: { position: "nw",
-	  hideable: false
+	  hideable: true
 	  }
     });
   }
