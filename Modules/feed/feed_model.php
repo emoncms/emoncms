@@ -23,7 +23,8 @@ class Feed
     private $csvdownloadlimit_mb = 10;
     private $log;
     
-    private $max_npoints_returned = 800;
+    // 5 years of daily data
+    private $max_npoints_returned = 1825;
 
     public function __construct($mysqli,$redis,$settings)
     {        
