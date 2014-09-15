@@ -84,6 +84,9 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         
+        // Histogram engine requires MYSQL
+        if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
+        
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
