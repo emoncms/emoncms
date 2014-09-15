@@ -17,18 +17,37 @@ var table = {
     'deletedata':true,
 
     'sortfield':null,
+    'sortorder':null,
     'sortable':true,
+    
     'groupprefix':"",
      
     'draw':function()
     {
-        if (table.data && table.sortable) {
+        /*if (table.data && table.sortable) {
           table.data.sort(function(a,b) {
             if(a[table.sortfield]<b[table.sortfield]) return -1;
             if(a[table.sortfield]>b[table.sortfield]) return 1;
             return 0;
           });
         }
+        */
+        
+        if (table.data && table.sortable && table.sortfield) {
+            table.data.sort(function(a,b) {
+                var x = a[table.sortfield].toUpperCase().replace(" ", "");
+                var y = b[table.sortfield].toUpperCase().replace(" ", "");
+                if (table.sortorder==1){
+                    if(x>y) return 1;
+                    return 0;
+                } else {
+                    if(x>y) return -1;
+                    if(x<y) return 1;
+                    return 0;
+                }
+            });
+        }
+        
 
         var group_num = 0;
         var groups = {};
@@ -98,7 +117,13 @@ var table = {
 
     'sort':function(field,dir)
     {
+        if (table.sortfield == field) {
+            table.sortorder = -table.sortorder;
+        } else {
+            table.sortorder = 1;
+        }
         table.sortfield = field;
+        // table.sortorder = dir;
         table.draw();
     },
 
