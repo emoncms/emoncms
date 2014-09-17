@@ -39,6 +39,7 @@ var table = {
                 var y = b[table.sortfield].toUpperCase().replace(" ", "");
                 if (table.sortorder==1){
                     if(x>y) return 1;
+                    if(x<y) return -1;
                     return 0;
                 } else {
                     if(x>y) return -1;
