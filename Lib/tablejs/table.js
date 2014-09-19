@@ -33,15 +33,35 @@ var table = {
         }
         */
         
-        if (table.data && table.sortable && table.sortfield) {
+        if (table.data && table.sortable && table.sortfield) 
+        {
             table.data.sort(function(a,b) {
-                var x = a[table.sortfield].toUpperCase().replace(" ", "");
-                var y = b[table.sortfield].toUpperCase().replace(" ", "");
-                if (table.sortorder==1){
-                    if(x>y) return 1;
-                    if(x<y) return -1;
-                    return 0;
+                var x=a[table.sortfield];
+                var y=b[table.sortfield];
+                if (x===null)x=Number.POSITIVE_INFINITY;
+                if (y===null)y=Number.POSITIVE_INFINITY;
+                if ((x==true) || (x== false)) x==false? x=0:x=1;
+                if ((y==true) || (y== false)) y==false? y=0:y=1;
+                if ($.isNumeric(x) && $.isNumeric(y)){
+                    var numa=parseFloat(x);
+                    var numb=parseFloat(y);
+                    
+                    if (table.sortorder==1){
+                        return numa-numb;
+                    } else {
+                        return numb-numa;
+                    }
+
                 } else {
+                     if (typeof x == 'string') x=x.toUpperCase().replace(" ", "");
+                     if (typeof y == 'string') y=y.toUpperCase().replace(" ", "");
+                }
+
+                if (table.sortorder==1){
+                    if(x<y) return -1;
+                    if(x>y) return 1;
+                    return 0;
+                } else{
                     if(x>y) return -1;
                     if(x<y) return 1;
                     return 0;
