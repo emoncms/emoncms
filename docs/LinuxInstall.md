@@ -27,10 +27,15 @@ Add pecl modules to php5 config
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
     $ sudo a2enmod rewrite
+    
+For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This may be on lines 7 and 11 of `/etc/apache2/sites-available/000-default`. Modern versions of Ubuntu store these in the main config file: `/etc/apache2/apache2.conf`.
+    
     $ sudo nano /etc/apache2/sites-available/000-default
+    
+or
 
-Change (line 7 and line 11), "AllowOverride None" to "AllowOverride All".
-That is the sections <Directory /> and <Directory /var/www/>.
+    $ sudo nano /etc/apache2/apache2.conf
+
 [Ctrl + X ] then [Y] then [Enter] to Save and exit.
 
 Restart the lamp server:
@@ -70,6 +75,12 @@ Enter the mysql password that you set above.
 Then enter the sql to create a database:
 
     mysql> CREATE DATABASE emoncms;
+    
+Then add a user for emoncms and give it permissions on the new database (think of a nice long password):
+
+    mysql> CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'YOUR_SECURE_PASSWORD_HERE';
+    mysql> GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
+    mysql> flush privileges;
 
 Exit mysql by:
 
@@ -99,10 +110,10 @@ Open settings.php in an editor:
 
     $ nano settings.php
 
-Enter in your database settings.
+Update your database settings to use your new secure password:
 
     $username = "USERNAME";
-    $password = "PASSWORD";
+    $password = "YOUR_SECURE_PASSWORD_HERE";
     $server   = "localhost";
     $database = "emoncms";
     
