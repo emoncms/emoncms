@@ -24,8 +24,11 @@ Emoncms is an open-source web application for processing, logging and visualisin
 **Development plan overview: [Github: Emoncms development overview](https://github.com/emoncms/emoncms/issues/244)**
 
 #### Design
-- [Emoncms architecture](architecture)
-- [Input processing](developinputproc)
+
+Documentation hosted on openenergymonitor documentation github: 
+
+- [Emoncms architecture](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/architecture.md)
+- [Input processing](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/developinputproc.md)
 - [Emoncms time series database development history](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/history.md)
 - [Variable interval time series](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/variableinterval.md)
 - [Fixed interval time series](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/fixedinterval.md)
