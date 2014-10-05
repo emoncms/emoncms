@@ -10,15 +10,14 @@ A powerful open-source web-app for processing, logging and visualising energy, t
 * [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md)
-    
-## Install Logger
 
-    sudo pear channel-discover pear.apache.org/log4php
-    sudo pear install log4php/Apache_log4php
-    
-ensure that log file has write permissions for www-data, pi and root.
-    
-    sudo chmod 660 emoncms.log 
+## Upgrade
+
+* [Upgrading emoncms](docs/Upgrading.md)
+
+## Backing up emoncms data
+
+* [Backup](docs/Backup.md)
 
 # More information
 

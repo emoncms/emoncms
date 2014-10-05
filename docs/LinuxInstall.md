@@ -182,3 +182,12 @@ PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 Now save and close and restart your apache.
 
     sudo /etc/init.d/apache2 restart
+    
+## Install Logger
+
+    sudo pear channel-discover pear.apache.org/log4php
+    sudo pear install log4php/Apache_log4php
+    
+ensure that log file has write permissions for www-data, pi and root.
+    
+    sudo chmod 660 emoncms.log 

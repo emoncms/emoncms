@@ -4,7 +4,7 @@
 
 **(Optional) To view your data on the backup computer install emoncms on your backup computer following the guide here:**
 
-[http://emoncms.org/site/docs/installlinux](http://emoncms.org/site/docs/installlinux)
+[http://emoncms.org/site/docs/installlinux](docs/LinuxInstall.md)
 
 Create an account and note down your mysql credentials.
 
