@@ -1,10 +1,10 @@
 ## Backing up a raspberrypi or emoncms.org account
 
-### Backing up your emoncms.org account (or other remote server account)
+### Backing up an emoncms.org account (or other remote server account)
 
-**(Optional) To view your data on the backup computer install emoncms on your backup computer**
+**(Optional) To view data on the backup computer a local emoncms installation is required**
 
-Create an account and note down your mysql credentials.
+Create an account on the backup emoncms installation and note down the mysql credentials.
 
 1) Download the usefulscripts repository: [https://github.com/emoncms/usefulscripts](https://github.com/emoncms/usefulscripts)
 
