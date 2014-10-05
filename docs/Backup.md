@@ -2,12 +2,9 @@
 
 ### Backing up your emoncms.org account (or other remote server account)
 
-**(Optional) To view your data on the backup computer install emoncms on your backup computer following the guide here:**
-
-[http://emoncms.org/site/docs/installlinux](docs/LinuxInstall.md)
+**(Optional) To view your data on the backup computer install emoncms on your backup computer**
 
 Create an account and note down your mysql credentials.
-
 
 1) Download the usefulscripts repository: [https://github.com/emoncms/usefulscripts](https://github.com/emoncms/usefulscripts)
 
