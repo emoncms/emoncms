@@ -1,6 +1,6 @@
 # Emoncms 8
 
-A powerful open-source web-app for processing, logging and visualising energy, temperature and other environmental data. Emoncms is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
+Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data. Emoncms is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
