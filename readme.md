@@ -2,21 +2,12 @@
 
 A powerful open-source web-app for processing, logging and visualising energy, temperature and other environmental data.
 
-## Installation on Raspian/Debian/Ubuntu
-
-Starting with version 8, it is possible to install emoncms using standard Debian package management, and this is the recommended option if your system is compatible.
-
-There are significant advantages, including fewer manual processes, built-in dependency management and ease of upgrade / configuration. 
-
-It's also the most stable way of maintaining an emoncms installation because only formally tagged versions of the master branch are included in the [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/) repository and uploaded to apt. 
-
-Do not use this approach if you want to run nightly builds!
-
-**Installation instructions are maintained in the [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/) readme**.
+![Emoncms](docs/files/emoncms_graphic.png)
 
 ## Install
 
-* [Ubuntu / Debian Linux](docs/LinuxInstall.md)
+* [Debian Package](docs/DebianInstall.md)
+* [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md)
     
