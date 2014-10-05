@@ -19,7 +19,7 @@ A powerful open-source web-app for processing, logging and visualising energy, t
 
 * [Backup](docs/Backup.md)
 
-# More information
+## More information
 
 - Official site - http://emoncms.org
 - Forums - http://openenergymonitor.org/emon/forum
@@ -27,7 +27,7 @@ A powerful open-source web-app for processing, logging and visualising energy, t
 ## IRC
 You can also join us on our IRC channel #emon on irc.freenode.net.
     
-# Developers
+## Developers
 Emoncms is developed and has had contributions from the following people.
 
 - Trystan Lea           https://github.com/trystanlea (principal maintainer)
