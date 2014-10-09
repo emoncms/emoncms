@@ -69,7 +69,7 @@ Add just below import select [~line 16](https://github.com/emonhub/emonhub/blob/
     
 Add just below self._interval_timestamp = 0 [~line 50](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.py#L50) the line:
 
-    self._control_timestamp = 0
+    self._control_timestamp = time.time() + 30
     
 In class EmonHubJeeListener, method run, add just below: now = time.time() [~line 483](https://github.com/emonhub/emonhub/blob/development/src/emonhub_interfacer.pyy#L483)
 
