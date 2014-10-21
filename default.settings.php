@@ -15,7 +15,7 @@
 
     // Enable this to try out the experimental MQTT Features:
     // - updated to feeds are published to topic: emoncms/feed/feedid    
-    $mqtt_enabled = true;
+    $mqtt_enabled = false;
     
     $feed_settings = array(
 
