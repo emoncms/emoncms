@@ -44,7 +44,7 @@
 <p><a href="<?php echo $path; ?>feed/getid.json?name="><?php echo $path; ?>feed/getid.json?name=</a> - <?php echo _("returns id of a feed given by name");?></p>
 <p><a href="<?php echo $path; ?>feed/list.json"><?php echo $path; ?>feed/list.json</a></p>
 
-<p><a href="<?php echo $path; ?>feed/create.json?name=&type="><?php echo $path; ?>feed/create.json?name=&type=</a></p>
+<p><a href='<?php echo $path; ?>feed/create.json?name=Power&datatype=1&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?name=Power&datatype=1&engine=5&options={"interval":10}</a></p>
 
 <p><a href="<?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}"><?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}</a></p>
 <p><a href="<?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0</a></p>

@@ -307,7 +307,7 @@ class PHPTimeSeries
         // Write to output stream
         $fh = @fopen( 'php://output', 'w' );
 
-        $primaryfeedname = "/var/lib/phptimeseries/$feedname";
+        $primaryfeedname = $this->dir.$feedname;
         $primary = fopen($primaryfeedname, 'rb');
         $primarysize = filesize($primaryfeedname);
 

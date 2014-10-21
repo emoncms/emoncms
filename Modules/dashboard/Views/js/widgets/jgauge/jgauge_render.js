@@ -99,27 +99,27 @@ function draw_jgauge(ctx,x,y,width,height,value,max,units)
   ctx.font = "8pt Arial";
   ctx.fillStyle = "rgb(34,198,252)";
   ctx.fillText(0, 28*(size/100), 70*(size/100)); // first tick
-  ctx.fillText(Math.floor(max/6)*1, 20*(size/100), 52*(size/100)); // second tick
-  ctx.fillText(Math.floor(max/6)*2, 25*(size/100), 33*(size/100)); // third tick
-  ctx.fillText(Math.floor(max/6)*3, 45*(size/100), 22*(size/100)); // 4th tick
-  ctx.fillText(Math.floor(max/6)*4, 65*(size/100), 33*(size/100)); // 5th tick
+  ctx.fillText(Math.round(max/6)*1, 20*(size/100), 52*(size/100)); // second tick
+  ctx.fillText(Math.round(max/6)*2, 25*(size/100), 33*(size/100)); // third tick
+  ctx.fillText(Math.round(max/6)*3, 45*(size/100), 22*(size/100)); // 4th tick
+  ctx.fillText(Math.round(max/6)*4, 65*(size/100), 33*(size/100)); // 5th tick
   ctx.fillStyle = "rgb(245,144,0)";
-  ctx.fillText(Math.floor(max/6)*5, 75*(size/100), 52*(size/100)); // 6th tick
+  ctx.fillText(Math.round(max/6)*5, 75*(size/100), 52*(size/100)); // 6th tick
   ctx.fillStyle = "rgb(255,0,0)";
-  ctx.fillText(Math.floor(max), 65*(size/100), 70*(size/100)); // 7th tick
+  ctx.fillText(Math.round(max), 65*(size/100), 70*(size/100)); // 7th tick
 
   // main label
   ctx.font = "15pt Calibri,Geneva,Arial";
     ctx.strokeStyle = "rgb(255,255,255)";
     ctx.fillStyle = "rgb(255,255,255)";
   if (value<10) {
-    ctx.fillText(Math.floor(value)+units, 43*(size/100), 85*(size/100));
+    ctx.fillText(Math.round(value)+units, 43*(size/100), 85*(size/100));
   }
   else if ((value<100) && (value>10)) {
-    ctx.fillText(Math.floor(value)+units, 40*(size/100), 85*(size/100));
+    ctx.fillText(Math.round(value)+units, 40*(size/100), 85*(size/100));
   }
   else {
-    ctx.fillText(Math.floor(value)+units, 37*(size/100), 85*(size/100));
+    ctx.fillText(Math.round(value)+units, 37*(size/100), 85*(size/100));
   }
 
   // Save the current drawing state

@@ -73,10 +73,8 @@ input[type="text"] {
 
                         <span class="add-on feed-engine-label">Feed engine: </span>
                         <select id="feed-engine">
-
                         <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
                         <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
-
                         </select>
 
 
@@ -201,7 +199,8 @@ input[type="text"] {
         processlist_ui.inputid = i.id;
         
         var processlist = [];
-        if (i.processList!="")
+
+        if (i.processList!=null && i.processList!="")
         {
             var tmp = i.processList.split(",");
             for (n in tmp)

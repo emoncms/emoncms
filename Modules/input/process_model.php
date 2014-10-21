@@ -322,7 +322,7 @@ class Process
     {
         $max_power = 25000;
         $totalwh = $value;
-            
+        
         global $redis;
         if (!$redis) return $value; // return if redis is not available
 

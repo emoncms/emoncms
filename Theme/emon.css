@@ -18,6 +18,11 @@ http://openenergymonitor.org
     /* Negative indent footer by it's height */
     margin: 0 auto -40px;
 }
+
+#login-form input[type="text"], #login-form input[type="password"] {
+    width: 94%;
+}
+
 #push, #footer {
     height: 30px;
 }

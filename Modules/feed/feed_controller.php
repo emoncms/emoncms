@@ -66,7 +66,7 @@ function feed_controller()
                 }
 
                 // write session required
-                if ($session['write'] && $session['userid']>0 && $f['userid']==$session['userid'])
+                if (isset($session['write']) && $session['write'] && $session['userid']>0 && $f['userid']==$session['userid'])
                 {
                     // Storage engine agnostic
                     if ($route->action == 'set') $result = $feed->set_feed_fields($feedid,get('fields'));

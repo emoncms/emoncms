@@ -23,6 +23,7 @@ class Feed
     private $log;
     
     private $max_npoints_returned = 800;
+    private $mqtt = false;
 
     public function __construct($mysqli,$redis,$settings)
     {        
@@ -44,6 +45,17 @@ class Feed
         if (isset($settings['max_npoints_returned'])) {
             $this->max_npoints_returned = $settings['max_npoints_returned'];
         }
+        
+        // Load MQTT if enabled
+        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        global $mqtt_enabled;
+        if (isset($mqtt_enabled) && $mqtt_enabled == true)
+        {
+            error_reporting(E_ALL ^ (E_NOTICE | E_WARNING));
+            require('SAM/php_sam.php');
+            $this->mqtt = new SAMConnection();
+            $this->mqtt->connect(SAM_MQTT, array(SAM_HOST => '127.0.0.1', SAM_PORT => 1883));
+        }
     }
 
     public function create($userid,$name,$datatype,$engine,$options_in)
@@ -52,6 +64,9 @@ class Feed
         $name = preg_replace('/[^\w\s-:]/','',$name);
         $datatype = (int) $datatype;
         $engine = (int) $engine;
+        
+        // Histogram engine requires MYSQL
+        if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
         
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
@@ -370,7 +385,7 @@ class Feed
         // $engine = $this->get_engine($feedid);
         // $this->engine[$engine]->post($feedid,$feedtime,$value);
         $this->redis->rpush('feedbuffer',"$feedid,$feedtime,$value");
-        
+
         $this->set_timevalue($feedid, $value, $updatetime);
 
         return $value;
@@ -395,6 +410,7 @@ class Feed
         if ($dp<1) $dp = 1;
         $outinterval = round($range / $dp);
         return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
+
     }
 
     public function get_average($feedid,$start,$end,$outinterval)
@@ -494,6 +510,12 @@ class Feed
             $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
         } else {
             $this->mysqli->query("UPDATE feeds SET `time` = '$updatetime', `value` = '$value' WHERE `id`= '$feedid'");
+        }
+        
+        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        if ($this->mqtt) {
+            $msg = new SAMMessage($value);
+            $this->mqtt->send("topic://emoncms/feed/$feedid", $msg);
         }
     }
     
