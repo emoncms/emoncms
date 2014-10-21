@@ -64,6 +64,7 @@
         if ($msgUp && $msgUp->body) 
         {    
             $m = json_decode($msgUp->body);
+            print $msgUp->body;
 
             $time = $m->time;
             $nodeid = $m->node;
