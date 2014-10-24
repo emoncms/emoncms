@@ -8,6 +8,7 @@
   $conn->connect(SAM_MQTT, array(SAM_HOST => '127.0.0.1', SAM_PORT => 1883));
   
   $m = array(
+    'apikey'=>"d8e9fa2ccc5c2a9c24bc75cd8596404e",
     'time'=>time(),
     'node'=>10,
     'csv'=>array(200,300,400)
