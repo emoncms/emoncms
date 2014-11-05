@@ -641,7 +641,7 @@ class Process
     public function publish_to_mqtt($topic, $time, $value)
     {
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        if ($this->mqtt->connect()) {
+        if ($this->mqtt && $this->mqtt->connect()) {
             $this->mqtt->publish($topic,$value,0);
             $this->mqtt->close();
         }
