@@ -1,7 +1,7 @@
 <?php
 
     $mqttsettings = array(
-        'userid' => 12,
+        'userid' => 1,
         'basetopic' => "emoncms",
         'basetopic_sub' => "input"
     );
