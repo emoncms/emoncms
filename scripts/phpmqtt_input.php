@@ -42,6 +42,9 @@
     $redis = new Redis();
     $redis->connect("127.0.0.1");
     
+    require("Lib/phpMQTT.php");
+    $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms input subscriber");
+    
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
     
@@ -54,9 +57,6 @@
     require "Modules/input/process_model.php"; // 886
     $process = new Process($mysqli,$input,$feed);
   
-    require("Lib/phpMQTT.php");
-    $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms input subscriber");
-    
     if(!$mqtt->connect()){
 	    exit(1);
     }

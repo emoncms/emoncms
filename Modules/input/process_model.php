@@ -31,11 +31,12 @@ class Process
             
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled;
-        if (isset($mqtt_enabled) && $mqtt_enabled == true)
+        global $mqtt_enabled, $mqtt;
+        if (isset($mqtt_enabled) && $mqtt_enabled == true & $mqtt == false)
         {
             require("Lib/phpMQTT.php");
-            $this->mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms Publisher");
+            $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms Publisher");
+            $this->mqtt = $mqtt;
         }
     }
     
