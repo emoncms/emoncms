@@ -501,7 +501,7 @@ class PHPFina
             $time = $meta->start_time + $pos * $meta->interval;
 
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $time.",".number_format($val[1],2)."\n");
+            if (!is_nan($val[1])) fwrite($exportfh, $time.",".number_format($val[1],2,'.','')."\n");
 
             $i++;
         }

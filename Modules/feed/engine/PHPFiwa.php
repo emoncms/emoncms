@@ -881,7 +881,7 @@ class PHPFiwa
                 $average = $point_sum / $points_in_sum;
                 //$data[] = array($timestamp*1000,$average);
                 
-                fwrite($exportfh, $timestamp.",".number_format($average,2)."\n");
+                fwrite($exportfh, $timestamp.",".number_format($average,2,'.','')."\n");
             }
         }
         

@@ -396,7 +396,7 @@ class PHPTimeSeries
 
             // $last_time = 0 only occur in the first run
             if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $time.",".number_format($array['value'],2)."\n");
+                fwrite($exportfh, $time.",".number_format($array['value'],2,'.','')."\n");
             }
         }
         fclose($exportfh);

@@ -816,7 +816,7 @@ class PHPTimestore
             if ($points_in_sum) {
                 $timestamp = $meta->start + $layer_interval * ($point+$i-1);
                 $average = $point_sum / $points_in_sum;
-                fwrite($exportfh, $timestamp.",".number_format($average,2)."\n");
+                fwrite($exportfh, $timestamp.",".number_format($average,2,'.','')."\n");
                 //print "--".$average."<br>";
             }
 
