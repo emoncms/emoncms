@@ -21,7 +21,7 @@ var list = {
         for (field in list.fields) {
             tr = $("<tr />").attr("field", field);
             tr.append('  <td type="name" class="muted" style="width:150px;">'+list.fields[field].title+'</td>');
-            tr.append('  <td type="value">'+(list.fieldtypes[list.fields[field].type].draw(list.data[field])||'N/A')+'</td>');
+            tr.append('  <td type="value">'+(list.fieldtypes[list.fields[field].type].draw(list.data[field],field)||'N/A')+'</td>');
             tr.append('  <td type="edit" action="edit"><i class="icon-pencil" style="display:none"></i></td>');
             table.append(tr);
         }
@@ -40,7 +40,7 @@ var list = {
             if (action=='save')
             {
               list.data[field] = list.fieldtypes[list.fields[field].type].save(field);
-              $(list.element+" tr[field="+field+"] td[type=value]").html(list.fieldtypes[list.fields[field].type].draw(list.data[field]));
+              $(list.element+" tr[field="+field+"] td[type=value]").html(list.fieldtypes[list.fields[field].type].draw(list.data[field], field));
               $(this).html("<i class='icon-pencil' style='display:none'></i>").attr('action','edit');
               $(list.element).trigger("onSave",[]);
             }
@@ -68,14 +68,20 @@ var list = {
 
         'select':
         {
-          'draw':function(value) { return value },
+          'draw':function(value,field) 
+          {
+            for (i in list.fields[field].options)
+            {
+              if (list.fields[field].options[i] == value) return list.fields[field].label[i];
+            } 
+          },
           'edit':function(field,value) 
           {
             var options = '';
             for (i in list.fields[field].options)
             {
               var selected = ""; if (list.fields[field].options[i] == value) selected = 'selected';
-              options += "<option value="+list.fields[field].options[i]+" "+selected+">"+list.fields[field].options[i]+"</option>";
+              options += "<option value="+list.fields[field].options[i]+" "+selected+">"+list.fields[field].label[i]+"</option>";
             }
             return "<select>"+options+"</select>";
           },
