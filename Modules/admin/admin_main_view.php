@@ -3,7 +3,7 @@
 
 <table class="table table-striped ">
     <tr>
-        <td colspan="2">Emoncms version: <?php echo $emoncms_version; ?></td>
+        <td colspan="2">Emoncms <?php echo _('version'); ?>: <?php echo $emoncms_version; ?></td>
     </tr>
     <tr>
         <td>
@@ -24,7 +24,7 @@
         </td>
     </tr>
     <tr>
-        <td>LOG4PHP INSTALLED: <?php if(LOG4PHP_INSTALLED) echo " yes"; else echo " no"; ?></td>
+        <td>LOG4PHP <?php echo _('INSTALLED'); ?>: <?php if(LOG4PHP_INSTALLED) echo _('yes'); else echo _('no'); ?></td>
         <td></td>
         </tr>
     <tr>

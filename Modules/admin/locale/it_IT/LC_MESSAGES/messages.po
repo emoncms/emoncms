@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Emoncms 8.3.6 - Admin\n"
-"POT-Creation-Date: 2014-11-22 00:42+0100\n"
-"PO-Revision-Date: 2014-11-22 00:47+0100\n"
+"POT-Creation-Date: 2014-11-24 23:46+0100\n"
+"PO-Revision-Date: 2014-11-24 23:46+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -17,7 +17,7 @@ msgstr ""
 
 #: ../../../admin_db_view.php:1
 msgid "Database setup, update and status check"
-msgstr ""
+msgstr "Configurazione del database, aggiornamento e controllo"
 
 #: ../../../admin_db_view.php:2
 msgid ""
@@ -25,16 +25,21 @@ msgid ""
 "checks the database requirements of each module installed and enter any new "
 "table or fields if required."
 msgstr ""
+"Questa pagina visualizza l'output del processo di configurazione e di "
+"aggiornamento del database, verifica i requisiti di database di ciascun "
+"modulo installato e se necessario crea nuove tabelle o campi."
 
 #: ../../../admin_db_view.php:3
 msgid ""
 "If all the item statuses below show ok that means your database is setup "
 "correctly."
 msgstr ""
+"Se tutte le voci stato in basso mostrano ok significa che il database è "
+"configurato correttamente."
 
 #: ../../../admin_db_view.php:7
 msgid "Schema item"
-msgstr ""
+msgstr "Schema oggetto"
 
 #: ../../../admin_db_view.php:7
 msgid "Name"
@@ -43,6 +48,10 @@ msgstr "Nome"
 #: ../../../admin_db_view.php:7
 msgid "Status"
 msgstr "Stato"
+
+#: ../../../admin_main_view.php:6
+msgid "version"
+msgstr "versione"
 
 #: ../../../admin_main_view.php:10 ../../../admin_main_view.php:14
 msgid "Users"
@@ -61,12 +70,24 @@ msgid ""
 "Run this after updating emoncms, after installing a new module or to check "
 "emoncms database status."
 msgstr ""
-"Lancia dopo aver aggiornato Emonms, dopo aver installato un nuovo modulo "
+"Avvia dopo aver aggiornato Emoncms, dopo aver installato un nuovo modulo "
 "oppure per controllare lo stato del database."
 
 #: ../../../admin_main_view.php:23
 msgid "Update & check"
 msgstr "Aggiorna & Controlla"
+
+#: ../../../admin_main_view.php:27
+msgid "INSTALLED"
+msgstr "INSTALLATO"
+
+#: ../../../admin_main_view.php:27
+msgid "yes"
+msgstr "si"
+
+#: ../../../admin_main_view.php:27
+msgid "no"
+msgstr "no"
 
 #: ../../../admin_menu.php:7
 msgid "Admin"
