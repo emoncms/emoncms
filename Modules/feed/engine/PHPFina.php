@@ -431,10 +431,6 @@ class PHPFina
     
     public function csv_export($id,$start,$end,$outinterval)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
-
         $id = intval($id);
         $start = intval($start);
         $end = intval($end);
@@ -505,7 +501,7 @@ class PHPFina
             $time = $meta->start_time + $pos * $meta->interval;
 
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $time.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+            if (!is_nan($val[1])) fwrite($exportfh, $time.",".number_format($val[1],2,'.','')."\n");
 
             $i++;
         }

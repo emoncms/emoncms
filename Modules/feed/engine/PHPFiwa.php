@@ -785,10 +785,6 @@ class PHPFiwa
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
-
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
@@ -885,7 +881,7 @@ class PHPFiwa
                 $average = $point_sum / $points_in_sum;
                 //$data[] = array($timestamp*1000,$average);
                 
-                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($average,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                fwrite($exportfh, $timestamp.",".number_format($average,2,'.','')."\n");
             }
         }
         

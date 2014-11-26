@@ -107,17 +107,3 @@
 
     // Log4PHP configuration
     $log4php_configPath = 'logconfig.xml';
-
-    // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
-    // The thousands separator is not used (specified as "nothing")
-    // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
-    // Adjust as appropriate for your location
-
-    // number of decimal places
-    $csv_decimal_places = 2;
-
-    // decimal place separator
-    $csv_decimal_place_separator = ".";
-
-    // field separator
-    $csv_field_separator = ",";

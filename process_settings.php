@@ -31,18 +31,12 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings)) $error_out .= "<p>missing setting: feed_settings</p>";
     
     if (!isset($redis_enabled)) $redis_enabled = true;
-
-    if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
-    if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';
-    if (!isset($csv_field_separator) || $csv_field_separator=="") $csv_field_separator = ',';
-
-    if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
-
+    
     if ($error_out!="") {
       echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
       echo "<h3>settings.php file error</h3>";
       echo $error_out;
-      echo "<p>To fix, check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
+      echo "<p>To fix check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
       echo "</div>";
       die;
     }
