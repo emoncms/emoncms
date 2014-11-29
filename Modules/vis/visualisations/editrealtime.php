@@ -25,8 +25,8 @@
 
 
 <?php if (!$embed) { ?>
-<h2>Datapoint editor: <?php echo $feedidname; ?></h2>
-<p>Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint.</p>
+<h2><?php echo _("Datapoint editor:"); ?> <?php echo $feedidname; ?></h2>
+<p><?php echo _("Click on a datapoint to select, then in the edit box below the graph enter in the new value. You can also add another datapoint by changing the time to a point in time that does not yet have a datapoint."); ?></p>
 <?php } ?>
 
 <div id="graph_bound" style="height:350px; width:100%; position:relative; ">
@@ -49,14 +49,14 @@
 </div>
 
 <div style="width:100% height:50px; background-color:#ddd; padding:10px; margin:10px;">
-    Edit feed_<?php echo $feedid; ?> @ time: <input type="text" id="time" style="width:150px;" value="" /> new value:
+    <?php echo _("Edit feed_"); ?><?php echo $feedid; ?> <?php echo _("@ time:"); ?> <input type="text" id="time" style="width:150px;" value="" /> <?php echo _("new value:"); ?>
     <input type="text" id="newvalue" style="width:150px;" value="" />
     <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
     <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
 </div>
 
 <div style="width:100% height:50px; background-color:#ddd; padding:10px; margin:10px;">
-    Multiply data in window by: <input type="text" id="multiplyvalue" style="width:150px;" value="" />
+    <?php echo _("Multiply data in window by:"); ?> <input type="text" id="multiplyvalue" style="width:150px;" value="" />
     <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
 </div>
 

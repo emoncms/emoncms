@@ -24,12 +24,12 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Threshold Order</h2>
+<h2><?php echo _("Threshold Order"); ?></h2>
 <?php } ?>
 
 <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
     <div id="graph"></div>
-        <h3 style="position:absolute; top:10px; right:12px; text-align:right;"><span id="stats"></span> <input id="back" type="button" value="Reload" /></h3>
+        <h3 style="position:absolute; top:10px; right:12px; text-align:right;"><span id="stats"></span> <input id="back" type="button" value="<?php echo _("Reload"); ?>" /></h3>
 </div>
 
 <script id="source" language="javascript" type="text/javascript">

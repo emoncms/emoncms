@@ -25,24 +25,24 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Feed calibration and comparison tool</h2>
-<p>Use this tool to compare two feeds: PowerX and PowerY. Designed for calibration and comparison of different emontx versions (to see if feeds match up in parallel tests). Enter feed ids for comparison below. If there is a difference between feed values adjust the calibration to see if the difference can be removed.</p>
+<h2><?php echo _("Feed calibration and comparison tool"); ?></h2>
+<p><?php echo _("Use this tool to compare two feeds: PowerX and PowerY. Designed for calibration and comparison of different emontx versions (to see if feeds match up in parallel tests). Enter feed ids for comparison below. If there is a difference between feed values adjust the calibration to see if the difference can be removed."); ?></p>
 
 <div class="input-prepend">
-    <span class="add-on">PowerX Feed ID</span>
+    <span class="add-on"><?php echo _("PowerX Feed ID"); ?></span>
     <input id="powerx" type="text"  style="width:100px">
 </div><br>
 
 <div class="input-prepend input-append">
-    <span class="add-on">PowerY Feed ID</span>
+    <span class="add-on"><?php echo _("PowerY Feed ID"); ?></span>
     <input id="powery" type="text"  style="width:100px">
-    <button id="load" class="btn btn-info">Load</button>
+    <button id="load" class="btn btn-info"><?php echo _("Load"); ?></button>
 </div><br>
 
 <div class="input-prepend input-append">
-    <span class="add-on">PowerY Calibration</span>
+    <span class="add-on"><?php echo _("PowerY Calibration"); ?></span>
     <input id="calibration" type="text"  style="width:100px" value="1.0">
-    <button id="update" class="btn btn-info">Update</button>
+    <button id="update" class="btn btn-info"><?php echo _("Update"); ?></button>
 </div>
 
 <?php } ?>
@@ -66,11 +66,11 @@
     <h3 style="position:absolute; top:0px; left:410px;"><span id="stats"></span></h3>
 </div>
 
-<h3>Difference between feeds (powerY calibration applied - powerX)</h3>
+<h3><?php echo _("Difference between feeds (powerY calibration applied - powerX)"); ?></h3>
 <div id="diff" style="width:100%; height:400px; "></div>
 
-<h3>PowerX vs PowerY</h3>
-<p>Relationship should be linear if measurements are the same</p>
+<h3><?php echo _("PowerX vs PowerY"); ?></h3>
+<p><?php echo _("Relationship should be linear if measurements are the same"); ?></p>
 <div id="line" style="width:100%; height:400px; "></div>
 
 <script id="source" language="javascript" type="text/javascript">

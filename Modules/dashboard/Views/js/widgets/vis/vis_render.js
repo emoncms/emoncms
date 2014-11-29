@@ -44,7 +44,7 @@ function vis_widgetlist()
       "options":["feedid","colour","interval","units","dp","scale","delta"],
       "optionstype":["feedid","colour_picker","value","value","value","value","value"],
       "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\" )")],
       "html":""
     },
 

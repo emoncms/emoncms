@@ -127,7 +127,7 @@ var data = [];
 
 $(function() {
 
-    if (embed==false) $("#vis-title").html("<br><h2>Bar graph: "+feedname+"<h2>");
+    if (embed==false) $("#vis-title").html("<br><h2><?php echo _("Bar graph:") ?> "+feedname+"<h2>");
     draw();
     
     $("#zoomout").click(function () {view.zoomout(); draw();});

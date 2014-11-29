@@ -22,7 +22,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Threshold</h2>
+<h2><?php echo _("Threshold"); ?></h2>
 <?php } ?>
 
     <div id="graph_bound" style="height:400px; width:100%; position:relative; ">

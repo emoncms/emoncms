@@ -34,7 +34,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/feed/feed.js"></script>
 <?php if (!$embed) { ?>
-<h2>Histogram: <?php echo $feedidname; ?></h2>
+<h2><?php echo _("Histogram:"); ?> <?php echo $feedidname; ?></h2>
 <?php } ?>
 
 <div id="graph_bound" style="height:400px; width:100%; position:relative; ">

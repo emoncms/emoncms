@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Emoncms 8.3.6 - Dashboard\n"
 "POT-Creation-Date: 2014-11-25 08:53+0100\n"
-"PO-Revision-Date: 2014-11-26 00:19+0100\n"
+"PO-Revision-Date: 2014-11-29 16:05+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -112,7 +112,7 @@ msgstr ""
 
 #: ../../../Views/dashboard_list.php:29
 msgid "WARNING deleting a dashboard is permanent"
-msgstr "AVVERTENZA l'eliminazione di un dashboard è permanente"
+msgstr "ATTENZIONE l'eliminazione di un dashboard è permanente"
 
 #: ../../../Views/dashboard_list.php:32
 msgid "Are you sure you want to delete this dashboard?"
@@ -144,7 +144,7 @@ msgstr "Dashboard:"
 
 #: ../../../Views/dashboard_menu.php:54
 msgid "Draw Editor"
-msgstr ""
+msgstr "Editor Visuale"
 
 #: ../../../Views/dashboard_menu.php:58
 msgid "View mode"
@@ -210,7 +210,7 @@ msgstr "Numero tacche"
 
 #: ../../../dashboard_langjs.php:92 ../../../dashboard_langjs.php:117
 msgid "Offset"
-msgstr ""
+msgstr "Offset"
 
 #: ../../../dashboard_langjs.php:93 ../../../dashboard_langjs.php:118
 msgid "Scale"
@@ -310,7 +310,7 @@ msgstr "Basso"
 
 #: ../../../dashboard_langjs.php:151
 msgid "Consumption"
-msgstr ""
+msgstr "Consumi"
 
 #: ../../../dashboard_langjs.php:152
 msgid "Consumption feed value"

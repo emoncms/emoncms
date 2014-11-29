@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Emoncms 8.3.6 - User\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-11-23 11:11+0100\n"
-"PO-Revision-Date: 2014-11-23 11:23+0100\n"
+"PO-Revision-Date: 2014-11-24 23:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -38,11 +38,11 @@ msgstr "Ricordami"
 
 #: ../../../login_block.php:57
 msgid "Login"
-msgstr "Login"
+msgstr "Accedi"
 
 #: ../../../login_block.php:58 ../../../login_block.php:62
 msgid "or"
-msgstr ""
+msgstr "o"
 
 #: ../../../login_block.php:58
 msgid "register"
@@ -179,7 +179,7 @@ msgstr "Esci"
 
 #: ../../../user_model.php:153
 msgid "Missing username, password or email parameter"
-msgstr ""
+msgstr "Manca il nome utente, la password o l'indirizzo email"
 
 #: ../../../user_model.php:155 ../../../user_model.php:381
 msgid "Username must only contain a-z and 0-9 characters"
@@ -191,18 +191,17 @@ msgstr "Nome utente già esistente"
 
 #: ../../../user_model.php:161 ../../../user_model.php:310
 #: ../../../user_model.php:401
-#, fuzzy
 msgid "Email address format error"
-msgstr "Nessun indirizzo email presente"
+msgstr "Indirizzo email non corretto"
 
 #: ../../../user_model.php:163 ../../../user_model.php:379
 msgid "Username length error"
-msgstr ""
+msgstr "Errore lunghezza Nome Utente"
 
 #: ../../../user_model.php:164 ../../../user_model.php:283
 #: ../../../user_model.php:284
 msgid "Password length error"
-msgstr ""
+msgstr "Errore lunghezza Password"
 
 #: ../../../user_model.php:177
 msgid "Error creating user"
@@ -219,6 +218,10 @@ msgid ""
 "z 0-9 dash underscore characters to login and feel free to change your "
 "username on the profile page."
 msgstr ""
+"Il Nome Utente deve contenere solo i caratteri a-z e 0-9 . e _ se è stato "
+"creato un account prima di questa regola, all'accesso, inserire il nome "
+"utente senza i caratteri non validi, poi sentitevi liberi di modificare il "
+"nome utente nella pagina del profilo."
 
 #: ../../../user_model.php:204
 msgid "Username does not exist"
@@ -228,18 +231,20 @@ msgstr "Il Nome Utente non esiste"
 msgid ""
 "Incorrect password, if your sure its correct try clearing your browser cache"
 msgstr ""
+"Password non valida, se siete sicuri che sia corretta provare a cancellare "
+"la cache del browser"
 
 #: ../../../user_model.php:232
 msgid "Login successful"
-msgstr ""
+msgstr "Accesso completato"
 
 #: ../../../user_model.php:244
 msgid "Username must only contain a-z 0-9 dash and underscore"
-msgstr ""
+msgstr "Il Nome Utente deve contenere solo i caratteri a-z e 0-9 . e _"
 
 #: ../../../user_model.php:251 ../../../user_model.php:258
 msgid "Incorrect authentication"
-msgstr ""
+msgstr "Autenticazione fallita"
 
 #: ../../../user_model.php:303
 msgid "Old password incorect"
@@ -250,6 +255,8 @@ msgid ""
 "As your using a cookie based remember me login, please logout and log back "
 "in to change username"
 msgstr ""
+"Se stai utilizzando la funzione Ricordami, disconnettersi e riconnettersi "
+"per cambiare il nome utente"
 
 #: ../../../user_model.php:388
 msgid "Username updated"
@@ -260,6 +267,8 @@ msgid ""
 "As your using a cookie based remember me login, please logout and log back "
 "in to change email"
 msgstr ""
+"Se stai utilizzando la funzione Ricordami, disconnettersi e riconnettersi "
+"per cambiare l'indirizzo email"
 
 #: ../../../user_model.php:404
 msgid "Email updated"

@@ -108,7 +108,7 @@ var data = [];
 
 $(function() {
 
-    if (embed==false) $("#vis-title").html("<br>Timestore Daily: "+feedname+"<br><br>");
+    if (embed==false) $("#vis-title").html("<br><?php echo _("Timestore Daily:"); ?> "+feedname+"<br><br>");
     draw();
 
     $("#zoomout").click(function () {view.zoomout(); draw();});
