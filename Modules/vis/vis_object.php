@@ -13,12 +13,12 @@
 
     $visualisations = array(
     
-        'realtime' => array('options'=>array(
+        'realtime' => array('label'=>_("RealTime"), 'options'=>array(
             array('feedid',_("feedid"),1))
         ),
         
         // Hex colour EDC240 is the default color for flot. since we want existing setups to not change, we set the default value to it manually now,
-        'rawdata'=> array('options'=>array(
+        'rawdata'=> array('label'=>_("RawData"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('fill',_("fill"),7,0),
             array('colour',_("colour"),5,'EDC240'),
@@ -27,7 +27,7 @@
             array('scale',_("scale"),6,'1'))
         ),
         
-        'bargraph'=> array('options'=>array(
+        'bargraph'=> array('label'=>_("BarGraph"), 'options'=>array(
             array('feedid',_("feedid"),0),
             array('colour',_("colour"),5,'EDC240'),
             array('interval',_("interval"),7,'86400'),
@@ -37,17 +37,17 @@
             array('delta',_("delta"),7,'0'))
         ),
         
-        'timestoredaily'=> array('options'=>array(
+        'timestoredaily'=> array('label'=>_("TimestoreDaily"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('units',_("units"),5,'kWh'))
         ),
         
-        'smoothie'=> array('options'=>array(
+        'smoothie'=> array('label'=>_("Smoothie"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('ufac',_("ufac"),6))
         ),
         
-        'histgraph'=> array('options'=>array(
+        'histgraph'=> array('label'=>_("Histgraph"), 'options'=>array(
             array('feedid',_("feedid"),3),
             array('barwidth',_("barwidth"),7,50),
             array('start',_("start"),7,0),
@@ -55,7 +55,7 @@
         ),
         
         //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
-        'zoom'=> array('options'=>array(
+        'zoom'=> array('label'=>_("Zoom"), 'options'=>array(
             array('power',_("power"),1),
             array('kwhd',_("kwhd"),2),
             array('currency',_("currency"),5,'&pound;'),
@@ -64,49 +64,49 @@
         ),
         
         //'comparison'=> array('options'=>array(array('feedid',3))),
-        'stacked'=> array('options'=>array(
+        'stacked'=> array('label'=>_("Stacked"), 'options'=>array(
             array('bottom',_("bottom"),2),
             array('top',_("top"),2))
         ),
         
-        'stackedsolar'=> array('options'=>array(
+        'stackedsolar'=> array('label'=>_("StackedSolar"), 'options'=>array(
             array('solar',_("solar"),2),
             array('consumption',_("consumption"),2))
         ),
         
-        'threshold'=> array('options'=>array(
+        'threshold'=> array('label'=>_("Threshold"), 'options'=>array(
             array('feedid',_("feedid"),3),
             array('thresholdA',_("thresholdA"),6,500),
             array('thresholdB',_("thresholdB"),6,2500))
         ),
         
-        'simplezoom'=> array('options'=>array(
+        'simplezoom'=> array('label'=>_("SimpleZoom"), 'options'=>array(
             array('power',_("power"),1),
             array('kwhd',_("kwhd"),0)
         )),
         
-        'orderbars'=> array('options'=>array(
+        'orderbars'=> array('label'=>_("OrderBars"), 'options'=>array(
             array('feedid',_("feedid"),2)
         )),
         
-        'orderthreshold'=> array('options'=>array(
+        'orderthreshold'=> array('label'=>_("OrderThreshold"), 'options'=>array(
             array('feedid',_("feedid"),3),
             array('power',_("power"),1),
             array('thresholdA',_("thresholdA"),6,500),
             array('thresholdB',_("thresholdB"),6,2500)
         )),
         
-        'editrealtime'=> array('options'=>array(
+        'editrealtime'=> array('label'=>_("EditRealtime"), 'options'=>array(
             array('feedid',_("feedid"),1)
         )),
         
-        'editdaily'=> array('options'=>array(
+        'editdaily'=> array('label'=>_("EditDaily"), 'options'=>array(
             array('feedid',_("feedid"),2)
         )),
         
-        'multigraph' => array ('action'=>'multigraph', 'options'=>array(array('mid',7)) ),
+        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(array('mid',_("mid"),7)) ),
         
-        'compare' => array ('action'=>'compare', 'options'=>array(
+        'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
             array('powerx',_("powerx"),1),
             array('powery',_("powery"),1)
         ))

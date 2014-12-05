@@ -84,13 +84,15 @@ global $path;
     //var apikey = "<?php echo $apikey; ?>";
     var apikey = "";
 
-    var out = '<select id="visselect" style="width:120px; margin:0px;">';
+    var out = '<select id="visselect" style="width:180px; margin:0px;">';
     for (z in widgets)
     {
         // If widget action specified: use action otherwise override with widget key
         var action = z;
+        var label = z;
         if (widgets[z]['action']!=undefined) action = widgets[z]['action'];
-        out += "<option value='"+action+"' >"+z+"</option>";
+        if (widgets[z]['label']!=undefined) label = widgets[z]['label'];
+        out += "<option value='"+action+"' >"+label+"</option>";
     }
     out += '</select>';
     $("#select").html(out);

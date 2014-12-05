@@ -22,7 +22,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Multigraph</h2>
+<h2><?php echo _("Multigraph:"); ?> <div id="multigraph_name"></div></h2>
 <?php } ?>
 
 
@@ -50,6 +50,13 @@
                 multigraph_init("#multigraph");
                 vis_feed_data();
         }
+    });
+    
+    $.ajax({ url: path+"vis/multigraph/getname.json", data: "id="+mid, dataType: 'json', async: true, 
+      success: function(data)
+      {
+        $("#multigraph_name").replaceWith(data);
+      } 
     });
 
 

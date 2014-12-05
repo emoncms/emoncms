@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Emoncms 8.3.6 - Vis\n"
-"POT-Creation-Date: 2014-11-29 16:25+0100\n"
-"PO-Revision-Date: 2014-11-29 16:36+0100\n"
+"POT-Creation-Date: 2014-12-02 01:22+0100\n"
+"PO-Revision-Date: 2014-12-05 00:50+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -19,13 +19,17 @@ msgstr ""
 msgid "Restricted access"
 msgstr "Accesso non consentito"
 
+#: ../../../vis_controller.php:116
+msgid "Authentication not valid"
+msgstr ""
+
 #: ../../../vis_main_view.php:26
 msgid "Visualisations"
 msgstr "Visualizzazione"
 
 #: ../../../vis_main_view.php:33
 msgid "Select visualisation:"
-msgstr "Scegli Visualizzazione:"
+msgstr "Scegli:"
 
 #: ../../../vis_main_view.php:43
 msgid "Set options:"
@@ -55,19 +59,23 @@ msgstr "A tutto schermo"
 msgid "Embed in your website:"
 msgstr "Incorpora nel tuo sito web:"
 
-#: ../../../vis_main_view.php:139
+#: ../../../vis_main_view.php:141
 msgid ""
 "Some of the feeds selected are not public, to embed a visualisation publicly "
 "first make the feeds that you want to use public."
 msgstr "Alcuni feed non sono pubblici, per incorporare "
 
-#: ../../../vis_main_view.php:139
+#: ../../../vis_main_view.php:141
 msgid "To embed privately:"
 msgstr "Per incorporare privatamente:"
 
 #: ../../../vis_menu.php:7
 msgid "Vis"
 msgstr "Vis"
+
+#: ../../../vis_object.php:16
+msgid "RealTime"
+msgstr "Dati in tempo reale"
 
 #: ../../../vis_object.php:17 ../../../vis_object.php:22
 #: ../../../vis_object.php:31 ../../../vis_object.php:41
@@ -78,6 +86,10 @@ msgstr "Vis"
 msgid "feedid"
 msgstr "Feed ID"
 
+#: ../../../vis_object.php:21
+msgid "RawData"
+msgstr "Grafico dati grezzi"
+
 #: ../../../vis_object.php:23
 msgid "fill"
 msgstr "Riempimento"
@@ -86,30 +98,46 @@ msgstr "Riempimento"
 msgid "colour"
 msgstr "Colore"
 
-#: ../../../vis_object.php:25 ../../../vis_object.php:26
-#: ../../../vis_object.php:34 ../../../vis_object.php:42
+#: ../../../vis_object.php:25 ../../../vis_object.php:34
+#: ../../../vis_object.php:42
 msgid "units"
 msgstr "Unità"
+
+#: ../../../vis_object.php:26 ../../../vis_object.php:35
+msgid "dp"
+msgstr "Decimali"
 
 #: ../../../vis_object.php:27 ../../../vis_object.php:36
 msgid "scale"
 msgstr "Scala"
 
+#: ../../../vis_object.php:30
+msgid "BarGraph"
+msgstr "Grafico a barre"
+
 #: ../../../vis_object.php:33
 msgid "interval"
 msgstr "Intervallo"
-
-#: ../../../vis_object.php:35
-msgid "dp"
-msgstr "Decimali"
 
 #: ../../../vis_object.php:37
 msgid "delta"
 msgstr "Delta"
 
+#: ../../../vis_object.php:40
+msgid "TimestoreDaily"
+msgstr ""
+
+#: ../../../vis_object.php:45 ../../../visualisations/smoothie.php:22
+msgid "Smoothie"
+msgstr ""
+
 #: ../../../vis_object.php:47
 msgid "ufac"
 msgstr ""
+
+#: ../../../vis_object.php:50
+msgid "Histgraph"
+msgstr "Istogramma:"
 
 #: ../../../vis_object.php:52
 msgid "barwidth"
@@ -122,6 +150,10 @@ msgstr "Inizio"
 #: ../../../vis_object.php:54
 msgid "end"
 msgstr "Fine"
+
+#: ../../../vis_object.php:58
+msgid "Zoom"
+msgstr ""
 
 #: ../../../vis_object.php:59 ../../../vis_object.php:84
 #: ../../../vis_object.php:94
@@ -144,6 +176,11 @@ msgstr "Valuta dopo valore"
 msgid "pricekwh"
 msgstr "Prezzo al kWh"
 
+#: ../../../vis_object.php:67 ../../../visualisations/stacked.php:25
+#: ../../../visualisations/stackedsolar.php:26
+msgid "Stacked"
+msgstr ""
+
 #: ../../../vis_object.php:68
 msgid "bottom"
 msgstr "Basso"
@@ -151,6 +188,10 @@ msgstr "Basso"
 #: ../../../vis_object.php:69
 msgid "top"
 msgstr "Alto"
+
+#: ../../../vis_object.php:72
+msgid "StackedSolar"
+msgstr ""
 
 #: ../../../vis_object.php:73
 msgid "solar"
@@ -160,6 +201,10 @@ msgstr ""
 msgid "consumption"
 msgstr "Consumi"
 
+#: ../../../vis_object.php:77 ../../../visualisations/threshold.php:25
+msgid "Threshold"
+msgstr "Soglia"
+
 #: ../../../vis_object.php:79 ../../../vis_object.php:95
 msgid "thresholdA"
 msgstr "Soglia A"
@@ -167,6 +212,38 @@ msgstr "Soglia A"
 #: ../../../vis_object.php:80 ../../../vis_object.php:96
 msgid "thresholdB"
 msgstr "Soglia B"
+
+#: ../../../vis_object.php:83
+msgid "SimpleZoom"
+msgstr ""
+
+#: ../../../vis_object.php:88
+msgid "OrderBars"
+msgstr ""
+
+#: ../../../vis_object.php:92
+msgid "OrderThreshold"
+msgstr ""
+
+#: ../../../vis_object.php:99
+msgid "EditRealtime"
+msgstr "Modifica Dati in tempo reale"
+
+#: ../../../vis_object.php:103
+msgid "EditDaily"
+msgstr ""
+
+#: ../../../vis_object.php:107
+msgid "MultiGraph"
+msgstr ""
+
+#: ../../../vis_object.php:107
+msgid "mid"
+msgstr "m Id"
+
+#: ../../../vis_object.php:109
+msgid "Compare"
+msgstr ""
 
 #: ../../../vis_object.php:110
 msgid "powerx"
@@ -237,6 +314,8 @@ msgid ""
 "in the new value. You can also add another datapoint by changing the time to "
 "a point in time that does not yet have a datapoint."
 msgstr ""
+"Clicca su un punto per selezionarlo, poi inserisci il nuovo valore nel box "
+"sotto il grafico. Puoi anche aggiungere un nuovo punto cambiando l'orario."
 
 #: ../../../visualisations/editdaily.php:51
 #: ../../../visualisations/editrealtime.php:52
@@ -349,19 +428,6 @@ msgstr "min"
 msgid "Simpler kWh/d zoomer"
 msgstr ""
 
-#: ../../../visualisations/smoothie.php:22
-msgid "Smoothie"
-msgstr ""
-
-#: ../../../visualisations/stacked.php:25
-#: ../../../visualisations/stackedsolar.php:26
-msgid "Stacked"
-msgstr ""
-
-#: ../../../visualisations/threshold.php:25
-msgid "Threshold"
-msgstr "Soglia"
-
 #: ../../../visualisations/timestoredaily.php:111
 msgid "Timestore Daily:"
 msgstr ""
@@ -392,11 +458,11 @@ msgstr "Media:"
 
 #: ../../../visualisations/zoom.php:106
 msgid "a week"
-msgstr "a settimana"
+msgstr "settimanali"
 
 #: ../../../visualisations/zoom.php:106
 msgid "a year"
-msgstr "per anno"
+msgstr "annuali"
 
 #: ../../../visualisations/zoom.php:106
 msgid "Unit price:"

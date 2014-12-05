@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Emoncms 8.3.6 - Dashboard\n"
-"POT-Creation-Date: 2014-11-25 08:53+0100\n"
-"PO-Revision-Date: 2014-11-29 16:05+0100\n"
+"POT-Creation-Date: 2014-12-05 00:35+0100\n"
+"PO-Revision-Date: 2014-12-05 00:35+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: it_IT\n"
@@ -162,88 +162,88 @@ msgstr "Nuova"
 msgid "List view"
 msgstr "Lista"
 
-#: ../../../dashboard_langjs.php:80
+#: ../../../dashboard_langjs.php:91
 msgid "Changed, press to save"
-msgstr "Cambiata, clicca per salvare"
+msgstr "Modificata, clicca per salvare"
 
-#: ../../../dashboard_langjs.php:83 ../../../dashboard_langjs.php:150
+#: ../../../dashboard_langjs.php:94 ../../../dashboard_langjs.php:161
 msgid "Colour"
 msgstr "Colore"
 
-#: ../../../dashboard_langjs.php:84
+#: ../../../dashboard_langjs.php:95
 msgid "Colour to draw bar in"
 msgstr "Colore di riempimento della barra"
 
-#: ../../../dashboard_langjs.php:85 ../../../dashboard_langjs.php:101
-#: ../../../dashboard_langjs.php:108 ../../../dashboard_langjs.php:112
-#: ../../../dashboard_langjs.php:130 ../../../dashboard_langjs.php:136
-#: ../../../dashboard_langjs.php:143 ../../../dashboard_langjs.php:159
+#: ../../../dashboard_langjs.php:96 ../../../dashboard_langjs.php:112
+#: ../../../dashboard_langjs.php:119 ../../../dashboard_langjs.php:123
+#: ../../../dashboard_langjs.php:141 ../../../dashboard_langjs.php:147
+#: ../../../dashboard_langjs.php:154 ../../../dashboard_langjs.php:170
 msgid "Feed"
 msgstr "Feed"
 
-#: ../../../dashboard_langjs.php:86 ../../../dashboard_langjs.php:113
-#: ../../../dashboard_langjs.php:131 ../../../dashboard_langjs.php:144
+#: ../../../dashboard_langjs.php:97 ../../../dashboard_langjs.php:124
+#: ../../../dashboard_langjs.php:142 ../../../dashboard_langjs.php:155
 msgid "Feed value"
 msgstr "Valore del feed"
 
-#: ../../../dashboard_langjs.php:87 ../../../dashboard_langjs.php:114
+#: ../../../dashboard_langjs.php:98 ../../../dashboard_langjs.php:125
 msgid "Graduations"
 msgstr "Tacche scala"
 
-#: ../../../dashboard_langjs.php:88
+#: ../../../dashboard_langjs.php:99
 msgid "How many graduation lines to draw (only relevant if graduations are on)"
 msgstr "Quante tacche mostrare (rilevante solo se Tacche scala e impostato)"
 
-#: ../../../dashboard_langjs.php:89 ../../../dashboard_langjs.php:115
-#: ../../../dashboard_langjs.php:137
+#: ../../../dashboard_langjs.php:100 ../../../dashboard_langjs.php:126
+#: ../../../dashboard_langjs.php:148
 msgid "Max value"
 msgstr "Valore massimo"
 
-#: ../../../dashboard_langjs.php:90 ../../../dashboard_langjs.php:116
-#: ../../../dashboard_langjs.php:138
+#: ../../../dashboard_langjs.php:101 ../../../dashboard_langjs.php:127
+#: ../../../dashboard_langjs.php:149
 msgid "Max value to show"
 msgstr "Valore massimo da mostrare"
 
-#: ../../../dashboard_langjs.php:91
+#: ../../../dashboard_langjs.php:102
 msgid "Num Graduations"
 msgstr "Numero tacche"
 
-#: ../../../dashboard_langjs.php:92 ../../../dashboard_langjs.php:117
+#: ../../../dashboard_langjs.php:103 ../../../dashboard_langjs.php:128
 msgid "Offset"
 msgstr "Offset"
 
-#: ../../../dashboard_langjs.php:93 ../../../dashboard_langjs.php:118
+#: ../../../dashboard_langjs.php:104 ../../../dashboard_langjs.php:129
 msgid "Scale"
 msgstr "Scala"
 
-#: ../../../dashboard_langjs.php:94
+#: ../../../dashboard_langjs.php:105
 msgid "Should the graduations be shown"
 msgstr "Se devo mostrare i valori della scala"
 
-#: ../../../dashboard_langjs.php:95
+#: ../../../dashboard_langjs.php:106
 msgid ""
 "Static offset. Subtracted from value before computing position (default 0)"
 msgstr ""
 "Offset statico. Sottratto dal valore prima di calcolare la posizione "
 "(Predefinito 0)"
 
-#: ../../../dashboard_langjs.php:96 ../../../dashboard_langjs.php:123
-#: ../../../dashboard_langjs.php:132 ../../../dashboard_langjs.php:139
-#: ../../../dashboard_langjs.php:187
+#: ../../../dashboard_langjs.php:107 ../../../dashboard_langjs.php:134
+#: ../../../dashboard_langjs.php:143 ../../../dashboard_langjs.php:150
+#: ../../../dashboard_langjs.php:198
 msgid "Units"
 msgstr "Unità"
 
-#: ../../../dashboard_langjs.php:97
+#: ../../../dashboard_langjs.php:108
 msgid "Unit type to show after value. Ex: <br>\"{Reading}{unit-string}\""
 msgstr ""
 "Tipo di unità da mostrare dopo il valore. Es: <br>\"{Reading}{unit-string}\""
 
-#: ../../../dashboard_langjs.php:98
+#: ../../../dashboard_langjs.php:109
 msgid "Value is multiplied by scale before display. Defaults to 1"
 msgstr ""
 "Il valore è moltiplicato per scala prima di essere mostrato. Predefinito 1"
 
-#: ../../../dashboard_langjs.php:102
+#: ../../../dashboard_langjs.php:113
 msgid ""
 "Feed to set, control with caution, make sure device being controlled can "
 "operate safely in event of emoncms failure."
@@ -251,112 +251,112 @@ msgstr ""
 "Feed da impostare, fai attenzione, assicurati che il dispositivo controllato "
 "sia in grado di operare correttamente anche in caso di guasto di emoncms."
 
-#: ../../../dashboard_langjs.php:103
+#: ../../../dashboard_langjs.php:114
 msgid "Starting value"
 msgstr "Valore iniziale"
 
-#: ../../../dashboard_langjs.php:104
+#: ../../../dashboard_langjs.php:115
 msgid "Value"
 msgstr "Valore"
 
-#: ../../../dashboard_langjs.php:107 ../../../dashboard_langjs.php:149
+#: ../../../dashboard_langjs.php:118 ../../../dashboard_langjs.php:160
 msgid "Bottom feed value"
 msgstr "Feed del valore in basso"
 
-#: ../../../dashboard_langjs.php:109 ../../../dashboard_langjs.php:184
+#: ../../../dashboard_langjs.php:120 ../../../dashboard_langjs.php:195
 msgid "Top feed value"
 msgstr "Feed del valore in alto"
 
-#: ../../../dashboard_langjs.php:119
+#: ../../../dashboard_langjs.php:130
 msgid "Should the graduation limits be shown"
 msgstr "Se devo mostrare i valori limiti della scala"
 
-#: ../../../dashboard_langjs.php:120
+#: ../../../dashboard_langjs.php:131
 msgid "Static offset. Subtracted from value before computing needle position"
 msgstr "Offset statico. Sottratto dal valore prima di calcolare la posizione"
 
-#: ../../../dashboard_langjs.php:121
+#: ../../../dashboard_langjs.php:132
 msgid "Type"
 msgstr "Tipo"
 
-#: ../../../dashboard_langjs.php:122
+#: ../../../dashboard_langjs.php:133
 msgid "Type to show"
 msgstr "Tipo da mostrare"
 
-#: ../../../dashboard_langjs.php:124 ../../../dashboard_langjs.php:133
-#: ../../../dashboard_langjs.php:140 ../../../dashboard_langjs.php:189
+#: ../../../dashboard_langjs.php:135 ../../../dashboard_langjs.php:144
+#: ../../../dashboard_langjs.php:151 ../../../dashboard_langjs.php:200
 msgid "Units to show"
 msgstr "Unità da mostrare"
 
-#: ../../../dashboard_langjs.php:125
+#: ../../../dashboard_langjs.php:136
 msgid "Value is multiplied by scale before display"
 msgstr "Il valore è moltiplicato per scala prima di essere mostrato"
 
-#: ../../../dashboard_langjs.php:128
+#: ../../../dashboard_langjs.php:139
 msgid "Decimals"
 msgstr "Decimali"
 
-#: ../../../dashboard_langjs.php:129
+#: ../../../dashboard_langjs.php:140
 msgid "Decimals to show"
 msgstr "Decimali da mostrare"
 
-#: ../../../dashboard_langjs.php:147
+#: ../../../dashboard_langjs.php:158
 msgid "0 = before value, 1 = after value"
 msgstr "0 = prima del valore, 1 = dopo il valore"
 
-#: ../../../dashboard_langjs.php:148
+#: ../../../dashboard_langjs.php:159
 msgid "Bottom"
 msgstr "Basso"
 
-#: ../../../dashboard_langjs.php:151
+#: ../../../dashboard_langjs.php:162
 msgid "Consumption"
 msgstr "Consumi"
 
-#: ../../../dashboard_langjs.php:152
+#: ../../../dashboard_langjs.php:163
 msgid "Consumption feed value"
 msgstr ""
 
-#: ../../../dashboard_langjs.php:153
+#: ../../../dashboard_langjs.php:164
 msgid "Currency"
 msgstr "Valuta"
 
-#: ../../../dashboard_langjs.php:154
+#: ../../../dashboard_langjs.php:165
 msgid "Currency position"
 msgstr "Posizione Valuta"
 
-#: ../../../dashboard_langjs.php:155
+#: ../../../dashboard_langjs.php:166
 msgid "Currency to show"
 msgstr "Valuta da mostrare"
 
-#: ../../../dashboard_langjs.php:156
+#: ../../../dashboard_langjs.php:167
 msgid "Decimal points"
 msgstr "Cifre dopo la virgola"
 
-#: ../../../dashboard_langjs.php:157
+#: ../../../dashboard_langjs.php:168
 msgid "delta"
 msgstr "Delta"
 
-#: ../../../dashboard_langjs.php:158
+#: ../../../dashboard_langjs.php:169
 msgid "dp"
 msgstr "Decimali"
 
-#: ../../../dashboard_langjs.php:160
+#: ../../../dashboard_langjs.php:171
 msgid "Feed source"
 msgstr "Sorgente Feed"
 
-#: ../../../dashboard_langjs.php:161
+#: ../../../dashboard_langjs.php:172
 msgid "Fill"
 msgstr "Riempimento"
 
-#: ../../../dashboard_langjs.php:162
+#: ../../../dashboard_langjs.php:173
 msgid "Fill value"
 msgstr "Valore del riempimento"
 
-#: ../../../dashboard_langjs.php:163
+#: ../../../dashboard_langjs.php:174
 msgid "interval"
 msgstr "Intervallo"
 
-#: ../../../dashboard_langjs.php:164
+#: ../../../dashboard_langjs.php:175
 msgid ""
 "Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for "
 "year"
@@ -364,94 +364,94 @@ msgstr ""
 "Intervallo (secondi)- puoi impostare \"d\" per i giorni, \"m\" er i mesi, o "
 "\"y\" per anni"
 
-#: ../../../dashboard_langjs.php:165
+#: ../../../dashboard_langjs.php:176
 msgid "kwhd"
 msgstr "kwhd"
 
-#: ../../../dashboard_langjs.php:166
+#: ../../../dashboard_langjs.php:177
 msgid "kwhd source"
 msgstr "Sorgente kwhd"
 
-#: ../../../dashboard_langjs.php:167
+#: ../../../dashboard_langjs.php:178
 msgid "Kwh price"
 msgstr "Prezzo Kwh"
 
-#: ../../../dashboard_langjs.php:168
+#: ../../../dashboard_langjs.php:179
 msgid "Line colour in hex. Blank is use default."
 msgstr "Colore della linea in esadecimale. Predefinito Nero"
 
-#: ../../../dashboard_langjs.php:169
+#: ../../../dashboard_langjs.php:180
 msgid "Mid"
-msgstr ""
+msgstr "Multigraph ID"
 
-#: ../../../dashboard_langjs.php:170
+#: ../../../dashboard_langjs.php:181
 msgid "Mid value"
-msgstr ""
+msgstr "Il Multigraph da selezionare"
 
-#: ../../../dashboard_langjs.php:171
+#: ../../../dashboard_langjs.php:182
 msgid "Power"
 msgstr "Potenza"
 
-#: ../../../dashboard_langjs.php:172
+#: ../../../dashboard_langjs.php:183
 msgid "Power to show"
 msgstr "Potenza da mostrare"
 
-#: ../../../dashboard_langjs.php:173
+#: ../../../dashboard_langjs.php:184
 msgid "scale"
 msgstr "Scala"
 
-#: ../../../dashboard_langjs.php:174
+#: ../../../dashboard_langjs.php:185
 msgid "Scale by"
 msgstr "Scala di"
 
-#: ../../../dashboard_langjs.php:175
+#: ../../../dashboard_langjs.php:186
 msgid "Set kwh price"
 msgstr "Imposta il prezzo per kwh"
 
-#: ../../../dashboard_langjs.php:176
+#: ../../../dashboard_langjs.php:187
 msgid "Solar"
 msgstr ""
 
-#: ../../../dashboard_langjs.php:177
+#: ../../../dashboard_langjs.php:188
 msgid "Solar feed value"
 msgstr ""
 
-#: ../../../dashboard_langjs.php:178
+#: ../../../dashboard_langjs.php:189
 msgid ""
 "St to \"1\" to show diff between each bar. It displays an ever-increasing Wh "
 "feed as a daily\\/montly\\/yeayly kWh feed (set interval to \"d\", or \"m\", "
 "or \"y\" )"
 msgstr ""
 
-#: ../../../dashboard_langjs.php:179
+#: ../../../dashboard_langjs.php:190
 msgid "Threshold A"
 msgstr "Soglia A"
 
-#: ../../../dashboard_langjs.php:180
+#: ../../../dashboard_langjs.php:191
 msgid "Threshold A used"
 msgstr "Soglia A utilizzata"
 
-#: ../../../dashboard_langjs.php:181
+#: ../../../dashboard_langjs.php:192
 msgid "Threshold B"
 msgstr "Soglia B"
 
-#: ../../../dashboard_langjs.php:182
+#: ../../../dashboard_langjs.php:193
 msgid "Threshold B used"
 msgstr "Soglia B utilizzata"
 
-#: ../../../dashboard_langjs.php:183
+#: ../../../dashboard_langjs.php:194
 msgid "Top"
 msgstr "Alto"
 
-#: ../../../dashboard_langjs.php:185
+#: ../../../dashboard_langjs.php:196
 msgid "Ufac"
 msgstr ""
 
-#: ../../../dashboard_langjs.php:186
+#: ../../../dashboard_langjs.php:197
 msgid "Ufac value"
 msgstr ""
 
-#: ../../../dashboard_langjs.php:188
+#: ../../../dashboard_langjs.php:199
 msgid "units"
 msgstr "Unità"
 
