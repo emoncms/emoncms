@@ -1,7 +1,7 @@
 <?php
 
     $mqttsettings = array(
-        'userid' => 14,
+        'userid' => 1,
         'basetopic' => "rx"
     );
 
