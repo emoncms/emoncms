@@ -1,18 +1,35 @@
 <?php
 
-  error_reporting(E_ALL ^ (E_NOTICE | E_WARNING)); 
+    chdir("/var/www/emoncms");
+    require("Lib/phpMQTT.php");
+
+    $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms input pub example");
+
+    if ($mqtt->connect()) {
+    
+        $mqtt->publish("emoncms/input/5","100,200,300",0);
+        sleep(1);
+        
+        $mqtt->publish("emoncms/input/10/power",350.3,0);
+        sleep(1);
+        
+        $mqtt->publish("emoncms/input/house/power",2500,0);
+        sleep(1);
+        
+        $mqtt->publish("emoncms/input/house/temperature",18.2,0);
+        sleep(1);
+        
+        $m = array(
+            'apikey'=>"d8e9fa2ccc5c2a9c24bc75cd8596404e",
+            'time'=>time(),
+            'node'=>1,
+            'csv'=>array(200,300,400)
+        );
   
-  require('SAM/php_sam.php');
-  
-  $conn = new SAMConnection();
-  $conn->connect(SAM_MQTT, array(SAM_HOST => '127.0.0.1', SAM_PORT => 1883));
-  
-  $m = array(
-    'time'=>time(),
-    'node'=>10,
-    'csv'=>array(200,300,400)
-  );
-  
-  $msg = new SAMMessage(json_encode($m));
-  $conn->send('topic://emoncms/input', $msg);
+        $mqtt->publish("emoncms/input",json_encode($m),0);
+        sleep(1);
+        
+        
+        $mqtt->close();
+    }
 
