@@ -67,6 +67,10 @@ var processlist_ui =
                     }
                 }
                 
+                if (this.processlist[processid][1]==4) {
+                    arg = this.variableprocesslist[z][1];
+                }
+                
                 out += "<td>"+(i+1)+"</td><td>"+this.processlist[processid][0]+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
          
                 // Delete process button (icon)
@@ -97,6 +101,7 @@ var processlist_ui =
             
             // Type: value (scale, offset)
             if (process[1]==0) arg = $("#value-input").val();
+            if (process[1]==4) arg = $("#value-input").val();
             
             // Type: input (* / + - by input)
             if (process[1]==1) arg = $("#input-select").val();
@@ -175,6 +180,7 @@ var processlist_ui =
                 $("#type-feed").show();
                 processlist_ui.showfeedoptions(processid);
             }
+            if (processlist_ui.processlist[processid][1]==4) $("#type-value").show();
             $("#description").html(process_info[processid]);
         });
 

@@ -18,6 +18,7 @@ class Process
     private $input;
     private $feed;
     private $log;
+    private $mqtt = false;
     
     private $timezoneoffset = 0;
 
@@ -27,6 +28,16 @@ class Process
             $this->input = $input;
             $this->feed = $feed;
             $this->log = new EmonLogger(__FILE__);
+            
+        // Load MQTT if enabled
+        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        global $mqtt_enabled, $mqtt;
+        if (isset($mqtt_enabled) && $mqtt_enabled == true & $mqtt == false)
+        {
+            require("Lib/phpMQTT.php");
+            $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms Publisher");
+            $this->mqtt = $mqtt;
+        }
     }
     
     public function set_timezone_offset($timezoneoffset)
@@ -75,6 +86,8 @@ class Process
         $list['30'] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.2014
         $list['31'] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed");
         $list['32'] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed");
+
+        $list['35'] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");  
 
         return $list;
     }
@@ -345,5 +358,16 @@ class Process
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
 
         return $totalwh;
+    }
+    
+    public function publish_to_mqtt($topic, $time, $value)
+    {
+        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        if ($this->mqtt && $this->mqtt->connect()) {
+            $this->mqtt->publish($topic,$value,0);
+            $this->mqtt->close();
+        }
+        
+        return $value;
     }
 }
