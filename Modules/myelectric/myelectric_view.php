@@ -224,7 +224,10 @@ calls the feed API on the server via AJAX. -->
             }
             else if (dailytype==2)
             {
+                var lastday = daily_data_copy[daily_data_copy.length-1][0];
+                daily_data_copy.push([lastday+24*3600*1000,feeds[dailyfeed]]);
                 daily = daily_data_copy;
+                
                 $("#kwhd").html((daily[daily.length-1][1]*1).toFixed(1));
             }
             else if (dailytype==3)

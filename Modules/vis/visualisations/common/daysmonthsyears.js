@@ -54,7 +54,7 @@ function get_months(data)
    if (month!=lmonth && z!=0)
     {
       var tmp = [];
-      tmp[0] = Date.UTC(year,month+1,1);
+      tmp[0] = Date.UTC(year,month-1,1);
       tmp[1] = sum; ///daysInMonth(month-1, year);
 
       gdata.data[i] = tmp;
