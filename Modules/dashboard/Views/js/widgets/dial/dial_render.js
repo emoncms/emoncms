@@ -53,7 +53,8 @@ function dial_widgetlist()
           [7,    "Light <-> Dark blue, Zero at left"],
           [8,    "Light blue <-> Red, Zero at mid-left"],
           [9,    "Red <-> Dark Red, Zero at left"],
-          [10,   "Black <-> White, Zero at left"]
+          [10,   "Black <-> White, Zero at left"],
+          [11,   "Blue <-> Red, Zero at upper-left"]
         ];
 
   var graduationDropBoxOptions = [
@@ -94,7 +95,8 @@ function dial_draw()
                  0,
                  0,
                  $(this).width(),
-                 $(this).height(),val*scale,
+                 $(this).height(),
+                 val*scale,
                  $(this).attr("max"),
                  $(this).attr("units"),
                  $(this).attr("type"),
@@ -157,8 +159,15 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
 
   type = type || 0;
 
-  if (type == 0)
+  // Depending on type the start value is calculated.
+  // The maximum value is defined via settings and is defined as the value to reach needle's end limit.
+  // Depending on dial's type start limit is either 0 or a negative value.
+  // Note: Should consider a type which enables defiable min value in futur extension.  
+  
+  if (type == 0) // Standard dial from 0 to maxvalue if offset is not set.
   {
+    // TODO: seperate between needle position at maximum/minimum and the value displayed.
+    // TODO: Do we need to limit the value being displayed? Only needle position should be limited.
     if (position<0)
       position = 0;
   }
@@ -216,12 +225,25 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
       position = 0;
     segment = ["#202020","#4D4D4D","#7D7D7D","#EEF0F3","#F7F7F7", "#FFFFFF"];
   }
-
+  else if (type == 11)  //temperature dial blue-red, first 2 segments blue should mean below freezing C
+  {
+    angleOffset = -0.5;
+    segment = ["#0d97f3","#a7cbe2","#ffbebe","#ff8383","#ff6464","#ff3d3d"];
+  }
+  
   if (position>maxvalue)
     position = maxvalue;
 
-  var a = 1.75 - ((position/maxvalue) * 1.5) + angleOffset;
-
+  // needle values and their corresponding direction
+  // South West (limit start) a = 1.75
+  // West: .. ............... a = 1.5
+  // North West: ............ a = 1.25
+  // North: ................. a = 1
+  // North East: ............ a = 0.75
+  // East: .................. a = 0.5
+  // South East (limit stop)  a = 0.25
+  var needle = 1.75 - ((position/maxvalue) * (1.5+angleOffset)) + angleOffset;
+  
   width = 0.785;
   var c=3*0.785;
   var pos = 0;
@@ -257,10 +279,10 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
   ctx.lineWidth = (size*0.052).toFixed(0);
   //---------------------------------------------------------------
   ctx.beginPath();
-  ctx.moveTo(x+Math.sin(Math.PI*a-0.2)*inner,y+Math.cos(Math.PI*a-0.2)*inner);
-  ctx.lineTo(x+Math.sin(Math.PI*a)*size,y+Math.cos(Math.PI*a)*size);
-  ctx.lineTo(x+Math.sin(Math.PI*a+0.2)*inner,y+Math.cos(Math.PI*a+0.2)*inner);
-  ctx.arc(x,y,inner,1-(Math.PI*a-0.2),1-(Math.PI*a+5.4),true);
+  ctx.moveTo(x+Math.sin(Math.PI*needle-0.2)*inner,y+Math.cos(Math.PI*needle-0.2)*inner);
+  ctx.lineTo(x+Math.sin(Math.PI*needle)*size,y+Math.cos(Math.PI*needle)*size);
+  ctx.lineTo(x+Math.sin(Math.PI*needle+0.2)*inner,y+Math.cos(Math.PI*needle+0.2)*inner);
+  ctx.arc(x,y,inner,1-(Math.PI*needle-0.2),1-(Math.PI*needle+5.4),true);
   ctx.closePath();
   ctx.fill();
   ctx.stroke();
@@ -305,16 +327,29 @@ function draw_gauge(ctx,x,y,width,height,position,maxvalue,units,type, offset, g
     ctx.save()
     ctx.translate(posStrt[0], posStrt[1]);
     ctx.rotate(deg_to_radians(-45));
-    ctx.fillText(""+offset+units, 0, 0);        // Since we've translated the entire context, the coords we want to draw at are now at [0,0]
+   
+    // graduation text - start limit
+    ctx.fillText(""+round1decimal( (2*angleOffset/3*1.5*maxvalue)+offset )+units, 0, 0);        // Since we've translated the entire context, the coords we want to draw at are now at [0,0]  
     ctx.restore();
-
+    
     ctx.save(); // each ctx.save is only good for one restore, apparently.
     ctx.translate(posStop[0], posStop[1]);
     ctx.rotate(deg_to_radians(45));
-    ctx.fillText(""+(offset+maxvalue)+units, 0, 0);
+    
+    // graduation text - end limit
+    ctx.fillText(""+round1decimal(offset+maxvalue)+units, 0, 0);  
     ctx.restore();
+  }
+  
+    
+  function round1decimal(x) {
+    Ergebnis = Math.round(x * 10) / 10 ;
+    return Ergebnis;
+  }
+  
+  function round2decimal(x) {
+    Ergebnis = Math.round(x * 100) / 100 ;
+    return Ergebnis;
   }
 
 }
-
-
