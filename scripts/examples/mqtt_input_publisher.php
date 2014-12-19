@@ -1,6 +1,5 @@
 <?php
 
-    chdir("/var/www/emoncms");
     require("Lib/phpMQTT.php");
 
     $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms input pub example");

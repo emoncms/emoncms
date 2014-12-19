@@ -107,7 +107,7 @@ function get_years(data)
     if (year!=lyear && z!=0)		// We sum all days until we find a new year
     {
       var tmp = [];
-      tmp[0] = Date.UTC(year+1,6,1);
+      tmp[0] = Date.UTC(year-1,6,1);
       tmp[1] = sum;
 
       gdata.data[i] = tmp;
