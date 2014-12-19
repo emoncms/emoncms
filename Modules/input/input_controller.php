@@ -135,8 +135,11 @@ function input_controller()
                             $name = 1;
                             for ($i=2; $i<count($item); $i++)
                             {
-                                $value = (float) $item[$i];
-                                $inputs[$name] = $value;
+                                if (strlen($item[$i]))
+				                {
+                                    $value = (float) $item[$i];
+                                    $inputs[$name] = $value;
+                                }
                                 $name ++;
                             }
 
@@ -207,7 +210,7 @@ function input_controller()
         {
             $valid = true; $error = "";
 
-            $nodeid = (int) get('node');
+            $nodeid = preg_replace('/[^\w\s-.]/','',get('node'));
 
             $error = " old".$max_node_id_limit;
 
@@ -228,8 +231,6 @@ function input_controller()
             {
                 return array('content'=>"$error");
             }
-
-            $nodeid = (int) $nodeid;
 
             if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
 

@@ -12,7 +12,7 @@
 
     */
     
-    $emoncms_version = "8.3.6";
+    $emoncms_version = "8.4.0";
     
     $ltime = microtime(true);
 
@@ -40,6 +40,8 @@
     } else {
         $redis = false;
     }
+    
+    $mqtt = false;
     
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
