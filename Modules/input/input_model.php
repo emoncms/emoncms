@@ -50,6 +50,7 @@ class Input
         // of the potential issues for now but it may be good look at catching
         // non-integer numbers at some point
         
+        /*
         if (!is_numeric ($nodeid))
         {
             return false;
@@ -70,6 +71,8 @@ class Input
         {
             return false;
         }
+        */
+        return true;
 
     }
     // USES: redis input & user
@@ -77,8 +80,7 @@ class Input
     {
         global $max_node_id_limit;
         $userid = (int) $userid;
-        $nodeid = (int) $nodeid;
-
+        $nodeid = preg_replace('/[^\w\s-.]/','',$nodeid);
         $name = preg_replace('/[^\w\s-.]/','',$name);
         $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
 
@@ -190,6 +192,10 @@ class Input
             case ProcessArg::NONE:                                        // If arg type none
                 $arg = 0;
                 break;
+            case ProcessArg::TEXT:                                       // If arg type TEXT
+                $arg = $arg;
+                break;
+
         }
 
         $list = $this->get_processlist($inputid);

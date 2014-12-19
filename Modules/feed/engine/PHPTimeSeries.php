@@ -335,6 +335,10 @@ class PHPTimeSeries
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {
+        global $csv_decimal_places;
+        global $csv_decimal_place_separator;
+        global $csv_field_separator;
+
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
@@ -396,7 +400,7 @@ class PHPTimeSeries
 
             // $last_time = 0 only occur in the first run
             if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $time.",".number_format($array['value'],2)."\n");
+                fwrite($exportfh, $time.$csv_field_separator.number_format($array['value'],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
             }
         }
         fclose($exportfh);
