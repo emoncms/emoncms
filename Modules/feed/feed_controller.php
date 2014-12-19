@@ -50,10 +50,11 @@ function feed_controller()
         } elseif ($route->action == "fetch" && $session['read']) {
             $feedids = (array) get('ids');
             for ($i=0; $i<count($feeds); $i++)
-                    $feedid = (int) $feedids[i]
+                    $feedid = (int) $feedids[i];
                     if ($feed->exist($feedid)) // if the feed exists
                     { $result[i] = $feed->get_value($feedid);
                     } else { $result[i] = "";
+                    }
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
