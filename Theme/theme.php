@@ -38,7 +38,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                  <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <img src="<?php echo $path; ?>Theme/favicon.png" style="width:28px;"/>
                     </button>
                     <div class="nav-collapse collapse">

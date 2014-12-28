@@ -13,8 +13,8 @@
 
 <br>
 <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Node API Help'); ?></a></div></div>
-<h2>Nodes</h2>
-<p>This is an alternative entry point to 'inputs' designed around providing flexible decoding of RF12b struct based data packets</p>
+<h2><?php echo _('Nodes'); ?></h2>
+<p><?php echo _('This is an alternative entry point to inputs designed around providing flexible decoding of RF12b struct based data packets'); ?></p>
 <br>
 
 <table class="table">
@@ -280,8 +280,8 @@
       
     }
     
-    if (out=="") out = "<div class='alert alert-info' style='padding:40px; text-align:center'><h3>No nodes detected yet</h3><p>To use this module send a byte value csv string and the node id to: "+path+"/node/set.json?nodeid=10&data=20,20,20,20</p></div>";
-    
+    if (out=="") out = "<div class='alert alert-info' style='padding:40px; text-align:center'><h3><?php echo _('No nodes detected yet'); ?></h3><p><?php echo _('To use this module send a byte value csv string and the node id to: '); ?><a href='./set.json?nodeid=10&data=20,20,20,20'>"+path+"node/set.json?nodeid=10&data=20,20,20,20</a></p></div>";
+
     $("#nodes").html(out);
   }
 
