@@ -80,8 +80,8 @@ class Input
     {
         global $max_node_id_limit;
         $userid = (int) $userid;
-        $nodeid = preg_replace('/[^\w\s-.]/','',$nodeid);
-        $name = preg_replace('/[^\w\s-.]/','',$name);
+        $nodeid = (int) $nodeid;
+        $name = $this->mysqli->real_escape_string($name);
         $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
 
         $id = $this->mysqli->insert_id;
@@ -144,8 +144,8 @@ class Input
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-.]/','',$fields->name)."'";
+        if (isset($fields->description)) $array[] = "`description` = '".$this->mysqli->real_escape_string($fields->description)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".$this->mysqli->real_escape_string($fields->name)."'";
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
         $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE `id` = '$id'");
