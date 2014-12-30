@@ -183,9 +183,9 @@ function input_controller()
             // $valid = true;
             
             if ($valid) {
-                $result = 'ok';
+                $result = array('success'=>true, 'result'=>true);
             } else { 
-                $result = "Error: $error\n";
+                $result = array('success'=>false, 'message'=>$error);
             }
         }
 

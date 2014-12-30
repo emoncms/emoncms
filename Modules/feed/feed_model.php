@@ -80,7 +80,7 @@ class Feed
     public function create($userid,$name,$datatype,$engine,$options_in)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\w\s-:]/','',$name);
+        $name = $this->mysqli->real_escape_string($name);
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         
@@ -171,7 +171,7 @@ class Feed
     public function get_id($userid,$name)
     {
         $userid = intval($userid);
-        $name = preg_replace('/[^\w\s-:]/','',$name);
+        $name = $this->mysqli->real_escape_string($name);
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
@@ -371,8 +371,8 @@ class Feed
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-:]/','',$fields->name)."'";
-        if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-:]/','',$fields->tag)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".$this->mysqli->real_escape_string($fields->name)."'";
+        if (isset($fields->tag)) $array[] = "`tag` = '".$this->mysqli->real_escape_string($fields->tag)."'";
         if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
 
         // Convert to a comma seperated string for the mysql query
