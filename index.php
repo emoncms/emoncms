@@ -131,14 +131,13 @@
     if ($route->format == 'json')
     {
         header('Content-Type: application/json');
-        if ($route->controller=='time') {
-            print $output['content'];
-        } elseif ($route->controller=='input' && $route->action=='post') {
-            print $output['content'];
-        } elseif ($route->controller=='input' && $route->action=='bulk') {
-            print $output['content'];
-        } else {
+        if (is_array($output['content']))
+        {
             print json_encode($output['content']);
+        }
+        else
+        {
+            print $output['content'];
         }
     }
     if ($route->format == 'html')
