@@ -34,7 +34,8 @@ function button_events()
     var feedname = $(this).attr("feed");
     var feedid = feedids[feedname];
 
-    var invalue = $(this).attr("value");
+    //var invalue = $(this).attr("value");
+    var invalue = assoc[feedname]
     if (invalue == 0) outval = 1;
     if (invalue == 1) outval = 0;
 
@@ -57,6 +58,7 @@ function button_draw()
   $('.button').each(function(index)
   {
     var feed = $(this).attr("feed");
+    //var val = $(this).attr("value");
     var val = assoc[feed];
     var id = "can-"+$(this).attr("id");
     draw_button(widgetcanvas[id], val);
