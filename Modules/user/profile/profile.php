@@ -83,12 +83,12 @@ function languagecodetotext()
         <div class="account-item">
             <span class="muted"><?php echo _('Write API Key'); ?></span>
             <!--<a id="newapikeywrite" >new</a>-->
-            <span class="writeapikey"></span>
+            <input id="writeapikey" type="text" style="width:255px" readonly="readonly" />
         </div>
         <div class="account-item">
             <span class="muted"><?php echo _('Read API Key'); ?></span>
             <!--<a id="newapikeyread" >new</a>-->
-            <span class="readapikey"></span>
+            <input id="readapikey" type="text" style="width:255px" readonly="readonly" />
         </div>
         </div>
         
@@ -108,8 +108,8 @@ function languagecodetotext()
 
     list.data = user.get();
 
-    $(".writeapikey").html(list.data.apikey_write);
-    $(".readapikey").html(list.data.apikey_read);
+    $("#writeapikey").val(list.data.apikey_write);
+    $("#readapikey").val(list.data.apikey_read);
     
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});

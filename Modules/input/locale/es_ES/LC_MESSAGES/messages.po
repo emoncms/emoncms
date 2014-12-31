@@ -2,9 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-01 00:45+0100\n"
-"PO-Revision-Date: 2013-05-01 00:53+0100\n"
-"Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
+"POT-Creation-Date: 2014-12-25 14:12+0100\n"
+"PO-Revision-Date: 2014-12-25 14:13+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
+"com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -13,93 +14,8 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
-
-#: ../../../process_model.php:39
-msgid "Log to feed"
-msgstr "Enviar a una fuente"
-
-#: ../../../process_model.php:60
-msgid "Power to kWh"
-msgstr "Power to kWh"
-
-#: ../../../process_model.php:67
-msgid "Power to kWh/d"
-msgstr "Power to kWh/d"
-
-#: ../../../process_model.php:74
-msgid "x input"
-msgstr "entrada x"
-
-#: ../../../process_model.php:81
-msgid "input on-time"
-msgstr "input on-time"
-
-#: ../../../process_model.php:88
-msgid "kWhinc to kWh/d"
-msgstr "kWhinc to kWh/d"
-
-#: ../../../process_model.php:95
-#, fuzzy
-msgid "kWh to kWh/d (OLD)"
-msgstr "kWh to kWh/d"
-
-#: ../../../process_model.php:102
-msgid "update feed @time"
-msgstr "Actualizar fuente @tiempo"
-
-#: ../../../process_model.php:109
-msgid "+ input"
-msgstr "+ input"
-
-#: ../../../process_model.php:116
-msgid "/ input"
-msgstr "/ input"
-
-#: ../../../process_model.php:123
-msgid "phaseshift"
-msgstr "phaseshift"
-
-#: ../../../process_model.php:130
-msgid "accumulator"
-msgstr "acumulador"
-
-#: ../../../process_model.php:137
-msgid "rate of change"
-msgstr "ratio de cambio"
-
-#: ../../../process_model.php:144
-msgid "histogram"
-msgstr "histograma"
-
-#: ../../../process_model.php:151
-msgid "average"
-msgstr "media"
-
-#: ../../../process_model.php:159
-msgid "heat flux"
-msgstr "flujo de calor"
-
-#: ../../../process_model.php:167
-msgid "power gained to kWh/d"
-msgstr "potencia obtenida a kWh/d"
-
-#: ../../../process_model.php:175
-msgid "pulse difference"
-msgstr ""
-
-#: ../../../process_model.php:183
-msgid "KWh to Power"
-msgstr ""
-
-#: ../../../process_model.php:190
-msgid "- input"
-msgstr "- entrada"
-
-#: ../../../process_model.php:197
-msgid "kWh to kWh/d"
-msgstr "kWh to kWh/d"
 
 #: ../../../Views/input_api.php:3
 msgid "Input API"
@@ -149,9 +65,8 @@ msgid "To use the json api the request url needs to include <b>.json</b>"
 msgstr ""
 
 #: ../../../Views/input_api.php:23
-#, fuzzy
 msgid "Post data"
-msgstr "Datos de histograma"
+msgstr ""
 
 #: ../../../Views/input_api.php:25
 msgid "JSON format:"
@@ -187,19 +102,15 @@ msgid ""
 msgstr ""
 
 #: ../../../Views/input_api.php:37
-#, fuzzy
 msgid "Bulk data"
-msgstr "Datos diarios"
+msgstr ""
 
 #: ../../../Views/input_api.php:39
 msgid "You can provide data using bulk mode"
 msgstr "Puedes proporcionar los datos usando un modo masivo"
 
 #: ../../../Views/input_api.php:42
-msgid ""
-"The first number of each node is the time offset, so for the first node it "
-"is 0 which means the packet for the first node arrived at 0 seconds. The "
-"second node arrived at 2 seconds and 3rd 10 seconds."
+msgid "The first number of each node is the time offset (see below)."
 msgstr ""
 
 #: ../../../Views/input_api.php:43
@@ -210,91 +121,86 @@ msgstr ""
 
 #: ../../../Views/input_api.php:44
 msgid ""
-"All the numbers after the first two are data values. The first node here "
-"(node 10) has three data values: 250,100 and 20."
+"All the numbers after the first two are data values. The second node here "
+"(node 17) has two data values: 1437 and 3164."
+msgstr ""
+
+#: ../../../Views/input_api.php:45
+msgid ""
+"Optional offset and time parameters allow the sender to set the time "
+"reference for the packets. If none is specified, it is assumed that the last "
+"packet just arrived. The time for the other packets is then calculated "
+"accordingly."
 msgstr ""
 
 #: ../../../Views/input_api.php:48
+msgid ""
+"Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to now):"
+msgstr ""
+
+#: ../../../Views/input_api.php:49
+msgid "Time offset format (-6 is -16 seconds to now):"
+msgstr ""
+
+#: ../../../Views/input_api.php:50
+msgid "Sentat format: (useful for sending as positive increasing time index)"
+msgstr ""
+
+#: ../../../Views/input_api.php:51
+msgid ""
+"Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 "
+"UTC))"
+msgstr ""
+
+#: ../../../Views/input_api.php:55
 #, fuzzy
 msgid "Input actions"
 msgstr "Acciones de procesos de entrada"
 
-#: ../../../Views/input_api.php:50
+#: ../../../Views/input_api.php:57
 msgid "List of inputs"
 msgstr "Lista de entradas"
 
-#: ../../../Views/input_api.php:51
+#: ../../../Views/input_api.php:58
 #, fuzzy
 msgid "Delete an input"
 msgstr "¿Borrar entrada?"
 
-#: ../../../Views/input_api.php:54
+#: ../../../Views/input_api.php:61
 msgid "Input process actions"
 msgstr "Acciones de procesos de entrada"
 
-#: ../../../Views/input_api.php:56
+#: ../../../Views/input_api.php:63
 #, fuzzy
 msgid "Add an input process"
 msgstr "Borrar proceso de entrada:"
 
-#: ../../../Views/input_api.php:57
+#: ../../../Views/input_api.php:64
 #, fuzzy
 msgid "List input process list"
 msgstr "Listado de la lista de procesos de entrada:"
 
-#: ../../../Views/input_api.php:58
+#: ../../../Views/input_api.php:65
 msgid "Delete input process"
 msgstr "Borrar proceso de entrada"
 
-#: ../../../Views/input_api.php:59
+#: ../../../Views/input_api.php:66
 msgid "Move input process"
 msgstr "Mover proceso de entrada"
 
-#: ../../../Views/input_api.php:60
-#, fuzzy
+#: ../../../Views/input_api.php:67
 msgid "Reset input process list"
-msgstr "¿Inicializar la lista de procesos?"
+msgstr "Inicializar la lista de procesos"
 
-#: ../../../Views/input_node.php:23
+#: ../../../Views/input_view.php:28
 msgid "Input API Help"
 msgstr "Ver ayuda para el uso de la API"
 
-#: ../../../Views/input_node.php:26
+#: ../../../Views/input_view.php:31
 msgid "Inputs"
 msgstr "Entradas"
 
-#: ../../../Views/input_node.php:30
-msgid "No inputs created"
-msgstr "No existen entradas"
-
-#: ../../../Views/input_node.php:31
-msgid ""
-"Inputs is the main entry point for your monitoring device. Configure your "
-"device to post values here, you may want to follow the <a href=\"api\">Input "
-"API helper</a> as a guide for generating your request."
-msgstr ""
-
-#: ../../../Views/input_node.php:47
-msgid "Node:"
-msgstr "Nodo"
-
-#: ../../../Views/input_node.php:48
-msgid "name"
-msgstr "Nombre"
-
-#: ../../../Views/input_node.php:49
-msgid "Description"
-msgstr "Descripción"
-
-#: ../../../Views/input_node.php:50
-msgid "Process list"
-msgstr "Lista de procesos"
-
-#: ../../../Views/process_list.php:18
-msgid "Input configuration:   "
-msgstr "Configuración de la entrada:"
-
-#: ../../../Views/process_list.php:19
+#: ../../../Views/input_view.php:36
 msgid ""
 "Input processes are executed sequentially with the result being passed back "
 "for further processing by the next processor in the input processing list."
@@ -303,53 +209,265 @@ msgstr ""
 "es pasado para ser procesador por el siguiente proceso de la lista de "
 "procesos de entrada."
 
-#: ../../../Views/process_list.php:25
-msgid "New"
-msgstr "Nuevo"
-
-#: ../../../Views/process_list.php:38
-msgid "add"
-msgstr "añadir"
-
-#: ../../../Views/process_list.php:46
-msgid "Reset process list?"
-msgstr "¿Inicializar la lista de procesos?"
-
-#: ../../../Views/process_list.php:52
-msgid "Are you sure you want to delete input: "
-msgstr "¿Estás seguro de que quieres borrar la entrada:"
-
-#: ../../../Views/process_list.php:56
-msgid "Delete input?"
-msgstr "¿Borrar entrada?"
-
-#: ../../../Views/process_list.php:99
+#: ../../../Views/input_view.php:42
 msgid "Order"
 msgstr "Ordenar"
 
-#: ../../../Views/process_list.php:99
+#: ../../../Views/input_view.php:43
 msgid "Process"
 msgstr "Procesar"
 
-#: ../../../Views/process_list.php:99
+#: ../../../Views/input_view.php:44
 msgid "Arg"
 msgstr "Argumento"
 
-#: ../../../Views/process_list.php:99
+#: ../../../Views/input_view.php:46
 msgid "Actions"
 msgstr "Acciones"
 
-#: ../../../Views/process_list.php:108 ../../../Views/process_list.php:112
-msgid "Move up"
-msgstr "Mover arriba"
+#: ../../../Views/input_view.php:99
+msgid "Add"
+msgstr ""
 
-#: ../../../Views/process_list.php:117
-msgid "Delete"
-msgstr "Borrar"
+#: ../../../Views/input_view.php:113
+msgid "No inputs created"
+msgstr "No existen entradas"
 
-#: ../../../Views/process_list.php:122
-msgid "You have no processes defined"
-msgstr "No existen procesos definidos"
+#: ../../../Views/input_view.php:114
+msgid ""
+"Inputs is the main entry point for your monitoring device. Configure your "
+"device to post values here, you may want to follow the <a href=\"api\">Input "
+"API helper</a> as a guide for generating your request."
+msgstr ""
+
+#: ../../../Views/input_view.php:133
+msgid "Node:"
+msgstr "Nodo"
+
+#: ../../../Views/input_view.php:134
+msgid "Key"
+msgstr "Clave"
+
+#: ../../../Views/input_view.php:135
+msgid "Name"
+msgstr "Nombre"
+
+#: ../../../Views/input_view.php:136
+msgid "Process list"
+msgstr "Lista de procesos"
+
+#: ../../../Views/input_view.php:137
+msgid "Last updated"
+msgstr "Última actualización"
+
+#: ../../../Views/input_view.php:138
+msgid "Value"
+msgstr "Valor"
+
+#: ../../../input_menu.php:7
+msgid "Input"
+msgstr ""
+
+#: ../../../process_model.php:61
+msgid "Log to feed"
+msgstr "Enviar a una fuente"
+
+#: ../../../process_model.php:62
+msgid "x"
+msgstr ""
+
+#: ../../../process_model.php:63
+msgid "+"
+msgstr ""
+
+#: ../../../process_model.php:64
+msgid "Power to kWh"
+msgstr "Power to kWh"
+
+#: ../../../process_model.php:65
+msgid "Power to kWh/d"
+msgstr "Power to kWh/d"
+
+#: ../../../process_model.php:66
+msgid "x input"
+msgstr "entrada x"
+
+#: ../../../process_model.php:67
+msgid "Input on-time"
+msgstr ""
+
+#: ../../../process_model.php:68
+msgid "Wh increments to kWh/d"
+msgstr ""
+
+#: ../../../process_model.php:69
+#, fuzzy
+msgid "kWh to kWh/d (OLD)"
+msgstr "kWh to kWh/d"
+
+#: ../../../process_model.php:70
+msgid "update feed @time"
+msgstr "Actualizar fuente @tiempo"
+
+#: ../../../process_model.php:71
+msgid "+ input"
+msgstr "+ input"
+
+#: ../../../process_model.php:72
+msgid "/ input"
+msgstr "/ input"
+
+#: ../../../process_model.php:73
+msgid "Phaseshift"
+msgstr ""
+
+#: ../../../process_model.php:74
+msgid "Accumulator"
+msgstr ""
+
+#: ../../../process_model.php:75
+msgid "Rate of change"
+msgstr ""
+
+#: ../../../process_model.php:76
+msgid "Histogram"
+msgstr "Histograma"
+
+#: ../../../process_model.php:77
+msgid "Daily Average"
+msgstr ""
+
+#: ../../../process_model.php:80
+msgid "Heat flux"
+msgstr ""
+
+#: ../../../process_model.php:83
+msgid "Power gained to kWh/d"
+msgstr ""
+
+#: ../../../process_model.php:86
+msgid "Total pulse count to pulse increment"
+msgstr ""
+
+#: ../../../process_model.php:89
+msgid "kWh to Power"
+msgstr ""
+
+#: ../../../process_model.php:91
+msgid "- input"
+msgstr "- entrada"
+
+#: ../../../process_model.php:92
+msgid "kWh to kWh/d"
+msgstr "kWh to kWh/d"
+
+#: ../../../process_model.php:93
+msgid "Allow positive"
+msgstr ""
+
+#: ../../../process_model.php:94
+msgid "Allow negative"
+msgstr ""
+
+#: ../../../process_model.php:95
+msgid "Signed to unsigned"
+msgstr ""
+
+#: ../../../process_model.php:96
+msgid "Max value"
+msgstr ""
+
+#: ../../../process_model.php:97
+msgid "Min value"
+msgstr ""
+
+#: ../../../process_model.php:99
+msgid " + feed"
+msgstr ""
+
+#: ../../../process_model.php:100
+msgid " - feed"
+msgstr ""
+
+#: ../../../process_model.php:101
+msgid " * feed"
+msgstr ""
+
+#: ../../../process_model.php:102
+msgid " / feed"
+msgstr ""
+
+#: ../../../process_model.php:103
+msgid "Reset to ZERO"
+msgstr ""
+
+#: ../../../process_model.php:105
+msgid "Wh Accumulator"
+msgstr ""
+
+#: ../../../process_model.php:108
+msgid "Publish to MQTT"
+msgstr ""
+
+#~ msgid "input on-time"
+#~ msgstr "input on-time"
+
+#~ msgid "kWhinc to kWh/d"
+#~ msgstr "kWhinc to kWh/d"
+
+#~ msgid "phaseshift"
+#~ msgstr "phaseshift"
+
+#~ msgid "accumulator"
+#~ msgstr "acumulador"
+
+#~ msgid "rate of change"
+#~ msgstr "ratio de cambio"
+
+#~ msgid "histogram"
+#~ msgstr "histograma"
+
+#~ msgid "average"
+#~ msgstr "media"
+
+#~ msgid "heat flux"
+#~ msgstr "flujo de calor"
+
+#~ msgid "power gained to kWh/d"
+#~ msgstr "potencia obtenida a kWh/d"
+
+#~ msgid "name"
+#~ msgstr "Nombre"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Input configuration:   "
+#~ msgstr "Configuración de la entrada:"
+
+#~ msgid "New"
+#~ msgstr "Nuevo"
+
+#~ msgid "add"
+#~ msgstr "añadir"
+
+#~ msgid "Reset process list?"
+#~ msgstr "¿Inicializar la lista de procesos?"
+
+#~ msgid "Are you sure you want to delete input: "
+#~ msgstr "¿Estás seguro de que quieres borrar la entrada:"
+
+#~ msgid "Delete input?"
+#~ msgstr "¿Borrar entrada?"
+
+#~ msgid "Move up"
+#~ msgstr "Mover arriba"
+
+#~ msgid "Delete"
+#~ msgstr "Borrar"
+
+#~ msgid "You have no processes defined"
+#~ msgstr "No existen procesos definidos"
 
 #~ msgid "Node identification"
 #~ msgstr "Identificación del nodo"
@@ -366,14 +484,8 @@ msgstr "No existen procesos definidos"
 #~ msgid "Id"
 #~ msgstr "Id"
 
-#~ msgid "Name"
-#~ msgstr "Nombre"
-
 #~ msgid "Updated"
 #~ msgstr "Actualizado"
-
-#~ msgid "Value"
-#~ msgstr "Valor"
 
 #~ msgid "Autoconfigure inputs"
 #~ msgstr "Configura entradas automaticamente"
@@ -888,9 +1000,6 @@ msgstr "No existen procesos definidos"
 
 #~ msgid "Raw data"
 #~ msgstr "Datos brutos"
-
-#~ msgid "Histogram"
-#~ msgstr "Histograma"
 
 #~ msgid "Feed type"
 #~ msgstr "Tipo de fuente"

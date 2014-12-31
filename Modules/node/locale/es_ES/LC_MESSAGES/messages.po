@@ -1,0 +1,103 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms\n"
+"POT-Creation-Date: 2014-12-25 13:30+0100\n"
+"PO-Revision-Date: 2014-12-25 13:30+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
+"com>\n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.1\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-SearchPath-0: ..\\..\\..\n"
+
+#: ..\..\../node_api.php:3
+msgid "Node API"
+msgstr "API para la gestión de nodos"
+
+#: ..\..\../node_api.php:4
+msgid "Apikey authentication"
+msgstr ""
+
+#: ..\..\../node_api.php:5
+msgid ""
+"If you want to call any of the following actions when your not logged in, "
+"add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr ""
+
+#: ..\..\../node_api.php:6
+msgid "Read only:"
+msgstr "Solo lectura:"
+
+#: ..\..\../node_api.php:9
+msgid "Read & Write:"
+msgstr "Lectura y escritura"
+
+#: ..\..\../node_api.php:13
+msgid "Posting data"
+msgstr "Enviando información"
+
+#: ..\..\../node_api.php:17
+msgid "With write apikey:"
+msgstr "Con la apikey de escritura:"
+
+#: ..\..\../node_menu.php:7
+msgid "Node"
+msgstr "Nodos"
+
+#: ..\..\../node_view.php:15
+msgid "Node API Help"
+msgstr "Ayuda de la API de gestión de nodos"
+
+#: ..\..\../node_view.php:16
+msgid "Nodes"
+msgstr "Nodos"
+
+#: ..\..\../node_view.php:17
+msgid ""
+"This is an alternative entry point to inputs designed around providing "
+"flexible decoding of RF12b struct based data packets"
+msgstr ""
+"Este es un punto de entrada alternativo designado para proporcionar una "
+"decodificación flexible de paquetes de datos basados en RF12b"
+
+#: ..\..\../node_view.php:33 ..\..\../process_list.php:31
+msgid ""
+"Input processes are executed sequentially with the result being passed back "
+"for further processing by the next processor in the input processing list."
+msgstr ""
+
+#: ..\..\../node_view.php:40 ..\..\../process_list.php:38
+msgid "Order"
+msgstr ""
+
+#: ..\..\../node_view.php:41 ..\..\../process_list.php:39
+msgid "Process"
+msgstr ""
+
+#: ..\..\../node_view.php:42 ..\..\../process_list.php:40
+msgid "Arg"
+msgstr ""
+
+#: ..\..\../node_view.php:44 ..\..\../process_list.php:42
+msgid "Actions"
+msgstr ""
+
+#: ..\..\../node_view.php:107 ..\..\../process_list.php:105
+msgid "Add"
+msgstr ""
+
+#: ..\..\../node_view.php:283
+msgid "No nodes detected yet"
+msgstr "No se han detectado nodos"
+
+#: ..\..\../node_view.php:283
+msgid "To use this module send a byte value csv string and the node id to: "
+msgstr ""
+"Para usar este módulo envía una lista separada por comas de valores y el "
+"identificador de nodo usando una url similar a esta: "

@@ -2,9 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-01 00:35+0100\n"
-"PO-Revision-Date: 2013-05-01 00:36+0100\n"
-"Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
+"POT-Creation-Date: 2014-12-22 23:49+0100\n"
+"PO-Revision-Date: 2014-12-22 23:50+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
+"com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -13,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../admin_db_view.php:1
@@ -50,19 +51,31 @@ msgstr "Nombre"
 msgid "Status"
 msgstr "Estado"
 
-#: ../../../admin_main_view.php:7
+#: ../../../admin_main_view.php:10 ../../../admin_main_view.php:14
+msgid "Users"
+msgstr "Usuarios"
+
+#: ../../../admin_main_view.php:11
+msgid "Administer user accounts"
+msgstr "Administrar cuentas de usuarios"
+
+#: ../../../admin_main_view.php:19 ../../../update_view.php:29
 msgid "Update database"
 msgstr "Actualizar base de datos"
 
-#: ../../../admin_main_view.php:8
+#: ../../../admin_main_view.php:20
 msgid ""
 "Run this after updating emoncms, after installing a new module or to check "
 "emoncms database status."
 msgstr ""
 
-#: ../../../admin_main_view.php:12
+#: ../../../admin_main_view.php:23
 msgid "Update & check"
 msgstr "Comprobar y actualizar"
+
+#: ../../../admin_menu.php:7
+msgid "Admin"
+msgstr "Administrar"
 
 #: ../../../update_view.php:37
 msgid "Apply changes"
@@ -70,11 +83,27 @@ msgstr "Guardar cambios"
 
 #: ../../../update_view.php:44
 msgid "Check for further updates"
-msgstr ""
+msgstr "Buscar actualizaciones"
 
 #: ../../../update_view.php:51
 msgid "Database is up to date "
 msgstr "La base de datos está actualizada"
+
+#: ../../../update_view.php:51
+msgid "Nothing to do"
+msgstr ""
+
+#: ../../../userlist_view.php:32
+msgid "Id"
+msgstr "Id"
+
+#: ../../../userlist_view.php:33
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: ../../../userlist_view.php:34
+msgid "Email"
+msgstr "Email"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -395,9 +424,6 @@ msgstr "La base de datos está actualizada"
 #~ msgid "API"
 #~ msgstr "API"
 
-#~ msgid "Admin"
-#~ msgstr "Administrar"
-
 #~ msgid "Account"
 #~ msgstr "Cuenta"
 
@@ -503,14 +529,8 @@ msgstr "La base de datos está actualizada"
 #~ msgid "Total feed data disk space use: "
 #~ msgstr "Total de espacio de disco usado por la fuente de datos:"
 
-#~ msgid "Users"
-#~ msgstr "Usuarios"
-
 #~ msgid "registered users"
 #~ msgstr "usuarios registrados"
-
-#~ msgid "Username"
-#~ msgstr "Nombre de usuario"
 
 #~ msgid "Up hits"
 #~ msgstr "Up hits"
@@ -586,9 +606,6 @@ msgstr "La base de datos está actualizada"
 
 #~ msgid "Thumb view"
 #~ msgstr "Formato iconos"
-
-#~ msgid "Id"
-#~ msgstr "Id"
 
 #~ msgid "Dashboard"
 #~ msgstr "Panel"
