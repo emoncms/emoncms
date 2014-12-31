@@ -373,7 +373,8 @@ class Feed
         // Repeat this line changing the field name to add fields that can be updated:
         if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-:]/','',$fields->name)."'";
         if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-:]/','',$fields->tag)."'";
-        if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
+        if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'"; 
+	   if (isset($fields->value)) $array[] = "`value` = '".preg_replace('/[^\w\s-:]/','',$fields->value)."'";  
 
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
@@ -383,6 +384,8 @@ class Feed
         if ($this->redis && isset($fields->name)) $this->redis->hset("feed:$id",'name',$fields->name);
         if ($this->redis && isset($fields->tag)) $this->redis->hset("feed:$id",'tag',$fields->tag);
         if ($this->redis && isset($fields->public)) $this->redis->hset("feed:$id",'public',$fields->public);
+        if ($this->redis && isset($fields->value)) $this->redis->hset("feed:$id",'value',$fields->value);
+
 
         if ($this->mysqli->affected_rows>0){
             return array('success'=>true, 'message'=>'Field updated');
