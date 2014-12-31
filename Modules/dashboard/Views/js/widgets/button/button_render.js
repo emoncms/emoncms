@@ -43,7 +43,7 @@ function button_events()
     $(this).attr("value",outval);
 
     var id = "can-"+$(this).attr("id");
-    draw_button(widgetcanvas[id], outval);
+    draw_button(widgetcanvas[id], 5);
     assoc[feedname] = outval;
   });
 }
