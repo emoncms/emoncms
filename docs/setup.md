@@ -4,6 +4,8 @@
 
 **Download Latest - emonSD-13-08-14.img.zip (975Mb)**
 
+[Torrent Magnet](magnet:?xt=urn:btih:0c1cdb236e6e0ec7845ba4644d701a6e778948e6&dn=emonSD-13-08-14.img.zip&tr=http%3A%2F%2Finferno.demonoid.com%3A3389%2Fannounce&tr=http%3A%2F%2Ftracker.bt-chat.com%2Fannounce&tr=http%3A%2F%2Ftracker.zerotracker.com%3A2710%2Fannounce&tr=http%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80%2Fannounce) 
+
 [UK Mirror 1](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
 
 [Europe Mirror 1](http://pizzacapri-vissenbjerg.dk/oem/emonSD-13-08-14.img.zip)
