@@ -17,18 +17,24 @@ class Process
     private $mysqli;
     private $input;
     private $feed;
+    private $scheduler;
     private $log;
     private $mqtt = false;
+    
+    private $initialvalue;  // To save the input value at beginning of the processes
     
     private $timezoneoffset = 0;
 
     public function __construct($mysqli,$input,$feed)
     {
-            $this->mysqli = $mysqli;
-            $this->input = $input;
-            $this->feed = $feed;
-            $this->log = new EmonLogger(__FILE__);
-            
+        $this->mysqli = $mysqli;
+        $this->input = $input;
+        $this->feed = $feed;
+        $this->log = new EmonLogger(__FILE__);
+     
+        include "Modules/scheduler/scheduler_model.php";
+        $this->scheduler = new Scheduler($mysqli);
+         
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
         global $mqtt_enabled, $mqtt;
@@ -58,20 +64,20 @@ class Process
 
         // description | Arg type | function | No. of datafields if creating feed | Datatype | Engine
 
-        $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));                  
+        $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));
         $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED,"Calibration");                           
         $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED,"Calibration");                          
-        $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power",array(Engine::PHPFINA,Engine::PHPTIMESERIES));               
-        $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));               
+        $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power",array(Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));               
+        $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));               
         $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED,"Input");                   
-        $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES));                 
-        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));      
+        $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));                 
+        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));      
         $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));       // need to remove
-        $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
+        $list[10] = array(_("Upsert feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
         $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    
         $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
         $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
-        $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES));                 
+        $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));                 
         $list[15] = array(_("Rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));               
         $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL));                   
         $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted",array(Engine::PHPTIMESERIES));               // need to remove
@@ -104,8 +110,11 @@ class Process
         
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
-        
         $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
+        
+        $list[36] = array(_("If in schedule"),ProcessArg::SCHEDULEID,"if_schedule_true",1,DataType::UNDEFINED,"Conditional");
+        $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
+
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -114,7 +123,8 @@ class Process
     public function input($time, $value, $processList)
     {
         $this->log->info("input() received time=$time, value=$value");
-           
+        $this->initialvalue = $value;
+        
         $process_list = $this->get_process_list();
         $pairs = explode(",",$processList);
         foreach ($pairs as $pair)
@@ -171,6 +181,11 @@ class Process
          return $value;
      }
 
+    public function reset2original($arg, $time, $value)
+     {
+         return $this->initialvalue;
+     }   
+
     public function signed2unsigned($arg, $time, $value)
     {
         if($value < 0) $value = $value + 65536;
@@ -202,24 +217,24 @@ class Process
         }
     }
     
-	public function update_feed_data($id, $time, $value)
-	{
-		$time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
+    public function update_feed_data($id, $time, $value)
+    {
+        $time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
 
-		$feedname = "feed_".trim($id)."";
-		$result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
-		$row = $result->fetch_array();
+        $feedname = "feed_".trim($id)."";
+        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
+        $row = $result->fetch_array();
 
-		if (!$row)
-		{
-			$this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
-		}
-		else
-		{
-			$this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
-		}
-		return $value;
-	} 
+        if (!$row)
+        {
+            $this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
+        }
+        else
+        {
+            $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
+        }
+        return $value;
+    } 
 
     public function add_input($id, $time, $value)
     {
@@ -648,6 +663,12 @@ class Process
         }
         
         return $value;
+    }
+    
+    public function if_schedule_true($scheduleid, $time, $value) {
+        $expression = $this->scheduler->get_expression($scheduleid)["expression"];
+        $result = $this->scheduler->match($expression, $time);
+        return ($result ? $value : 0);
     }
 
     // No longer used

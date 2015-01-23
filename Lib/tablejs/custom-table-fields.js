@@ -14,8 +14,8 @@ var customtablefields = {
     {
         'draw': function(row,field)
         {
-            if (table.data[row][field] == true) return "<i class='"+table.fields[field].trueicon+"' type='input' ></i>";
-            if (table.data[row][field] == false) return "<i class='"+table.fields[field].falseicon+"' type='input' ></i>";
+            if (table.data[row][field] == true) return "<i class='"+table.fields[field].trueicon+"' type='input' style='cursor:pointer'></i>";
+            if (table.data[row][field] == false) return "<i class='"+table.fields[field].falseicon+"' type='input' style='cursor:pointer'></i>";
         },
 
         'event': function()
@@ -24,14 +24,16 @@ var customtablefields = {
             $(table.element).on('click', 'i[type=input]', function() {
                 var row = $(this).parent().attr('row');
                 var field = $(this).parent().attr('field');
-                table.data[row][field] = !table.data[row][field];
+                if (!table.data[row]['#READ_ONLY#']) {
+                    table.data[row][field] = !table.data[row][field];
 
-                var fields = {};
-                fields[field] = table.data[row][field];
+                    var fields = {};
+                    fields[field] = table.data[row][field];
 
-                $(table.element).trigger("onSave",[table.data[row]['id'],fields]);
-
-                if (table.data[row][field]) $(this).attr('class', table.fields[field].trueicon); else $(this).attr('class', table.fields[field].falseicon);
+                    $(table.element).trigger("onSave",[table.data[row]['id'],fields]);
+                    if (table.data[row][field]) $(this).attr('class', table.fields[field].trueicon); else $(this).attr('class', table.fields[field].falseicon);
+                    table.draw();
+                }
             });
         }
     },
@@ -133,6 +135,14 @@ var customtablefields = {
                 key = '/ feed'; type = 4; break;
               case 33:
                 key = '= 0'; type = 3; break;
+              case 34:
+                key = 'whacc'; type = 2; break;
+              case 35:
+                key = 'MQTT'; type = 5; break;
+              case 36:
+                key = 'schedule'; type = 6; break;
+              case 37:
+                key = 'reset'; type = 3; break;
             }  
 
             value = keyvalue[1];
@@ -154,6 +164,12 @@ var customtablefields = {
                 break;
               case 4:
                 type = 'feed: '; color = 'warning';
+                break;
+              case 5:
+                type = 'topic: '; color = 'info';
+                break;
+              case 6:
+                type = 'schedule: '; color = 'warning';
                 break;
             }
 
