@@ -17,11 +17,13 @@ class Process
     private $mysqli;
     private $input;
     private $feed;
-    private $scheduler;
+    private $schedule;
     private $log;
     private $mqtt = false;
     
-    private $initialvalue;  // To save the input value at beginning of the processes
+    private $proc_initialvalue;  // save the input value at beginning of the processes list execution
+    private $proc_skip_next;     // skip execution of next process in process list
+    private $proc_goto;          // goto step in process list
     
     private $timezoneoffset = 0;
 
@@ -32,8 +34,8 @@ class Process
         $this->feed = $feed;
         $this->log = new EmonLogger(__FILE__);
      
-        include "Modules/scheduler/scheduler_model.php";
-        $this->scheduler = new Scheduler($mysqli);
+        include "Modules/schedule/schedule_model.php";
+        $this->schedule = new Schedule($mysqli);
          
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
@@ -111,10 +113,30 @@ class Process
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
         $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
-        
-        $list[36] = array(_("If in schedule"),ProcessArg::SCHEDULEID,"if_schedule_true",1,DataType::UNDEFINED,"Conditional");
-        $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
 
+        $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc"); 
+        $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
+        
+        $list[38] = array(_("If !schedule, ZERO"),ProcessArg::SCHEDULEID,"if_not_schedule_zero",0,DataType::UNDEFINED,"Schedule");
+        $list[39] = array(_("If !schedule, NULL"),ProcessArg::SCHEDULEID,"if_not_schedule_null",0,DataType::UNDEFINED,"Schedule");
+        $list[40] = array(_("If schedule, ZERO"),ProcessArg::SCHEDULEID,"if_schedule_zero",0,DataType::UNDEFINED,"Schedule");
+        $list[41] = array(_("If schedule, NULL"),ProcessArg::SCHEDULEID,"if_schedule_null",0,DataType::UNDEFINED,"Schedule");
+        
+        $list[42] = array(_("If ZERO, skip next"),ProcessArg::NONE,"if_zero_skip",0,DataType::UNDEFINED,"Conditional");
+        $list[43] = array(_("If !ZERO, skip next"),ProcessArg::NONE,"if_not_zero_skip",0,DataType::UNDEFINED,"Conditional");
+        $list[44] = array(_("If NULL, skip next"),ProcessArg::NONE,"if_null_skip",0,DataType::UNDEFINED,"Conditional");
+        $list[45] = array(_("If !NULL, skip next"),ProcessArg::NONE,"if_not_null_skip",0,DataType::UNDEFINED,"Conditional");
+        
+        $list[46] = array(_("If >, skip next"),ProcessArg::VALUE,"if_gt_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[47] = array(_("If >=, skip next"),ProcessArg::VALUE,"if_gt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[48] = array(_("If <, skip next"),ProcessArg::VALUE,"if_lt_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[49] = array(_("If <=, skip next"),ProcessArg::VALUE,"if_lt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[50] = array(_("If =, skip next"),ProcessArg::VALUE,"if_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[51] = array(_("If !=, skip next"),ProcessArg::VALUE,"if_not_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        
+        // A bit or warning: if user goto's in loop, the php will lock until the server defined timesout with an error
+        $list[52] = array(_("GOTO"),ProcessArg::VALUE,"goto_process",0,DataType::UNDEFINED,"Misc");
+        
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -123,22 +145,28 @@ class Process
     public function input($time, $value, $processList)
     {
         $this->log->info("input() received time=$time, value=$value");
-        $this->initialvalue = $value;
-        
+
+        $this->proc_initialvalue = $value; // save the input value at beginning of the processes list execution
+        $this->proc_skip_next = false;     // skip execution of next process in process list
+    
         $process_list = $this->get_process_list();
         $pairs = explode(",",$processList);
-        foreach ($pairs as $pair)
-        {
-            $inputprocess = explode(":", $pair);                                // Divide into process id and arg
-            $processid = (int) $inputprocess[0];                                    // Process id
-
+        $total = count($pairs);
+        for($this->proc_goto = 0 ; $this->proc_goto < $total ; $this->proc_goto++) {
+            $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process id and arg
+            $processid = (int) $inputprocess[0];                     // Process id
+            
             $arg = 0;
             if (isset($inputprocess[1]))
                 $arg = $inputprocess[1];               // Can be value or feed id
 
-            $process_public = $process_list[$processid][2];             // get process public function name
+            $process_public = $process_list[$processid][2];          // get process public function name
 
-            $value = $this->$process_public($arg,$time,$value);           // execute process public function
+            $value = $this->$process_public($arg,$time,$value);      // execute process public function
+            
+            if ($this->proc_skip_next) {
+                $this->proc_skip_next = false; $this->proc_goto++;
+            }
         }
     }
 
@@ -176,15 +204,20 @@ class Process
     }
 
     public function reset2zero($arg, $time, $value)
-     {
+    {
          $value = 0;
          return $value;
-     }
+    }
 
     public function reset2original($arg, $time, $value)
-     {
-         return $this->initialvalue;
-     }   
+    {
+         return $this->proc_initialvalue;
+    }
+
+    public function reset2null($arg, $time, $value)
+    {
+         return null;
+    }
 
     public function signed2unsigned($arg, $time, $value)
     {
@@ -665,11 +698,87 @@ class Process
         return $value;
     }
     
-    public function if_schedule_true($scheduleid, $time, $value) {
-        $expression = $this->scheduler->get_expression($scheduleid)["expression"];
-        $result = $this->scheduler->match($expression, $time);
+    // Schedule
+    public function if_not_schedule_zero($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
         return ($result ? $value : 0);
     }
+    public function if_not_schedule_null($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? $value : null);
+    }
+    public function if_schedule_zero($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? 0 : $value);
+    }
+    public function if_schedule_null($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? null : $value);
+    }
+    
+    // Conditional process list flow
+    public function if_zero_skip($noarg, $time, $value) {
+        if ($value == 0)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_not_zero_skip($noarg, $time, $value) {
+        if ($value != 0)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_null_skip($noarg, $time, $value) {
+        if ($value === NULL)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_not_null_skip($noarg, $time, $value) {
+        if (!($value === NULL))
+            $this->proc_skip_next = true;
+        return $value;
+    }
+
+    public function if_gt_skip($arg, $time, $value) {
+        if ($value > $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_gt_equal_skip($arg, $time, $value) {
+        if ($value >= $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_lt_skip($arg, $time, $value) {
+        if ($value < $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_lt_equal_skip($arg, $time, $value) {
+        if ($value <= $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    
+    public function if_equal_skip($arg, $time, $value) {
+        if ($value == $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_not_equal_skip($arg, $time, $value) {
+        if ($value != $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    
+    public function goto_process($proc_no, $time, $value){
+        $this->proc_goto = $proc_no - 2;
+        return $value;
+    }
+
 
     // No longer used
     public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing    

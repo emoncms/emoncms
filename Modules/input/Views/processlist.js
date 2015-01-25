@@ -8,7 +8,7 @@ var processlist_ui =
     processlist: [],
     feedlist:[],
     inputlist:[],
-    schedulerlist:[],
+    schedulelist:[],
     
     enable_mysql_all: false,
 
@@ -33,11 +33,11 @@ var processlist_ui =
                 // Move process up or down
                 out += '<td>';
                 if (i > 0) {
-                    out += '<a class="move-process" href="#" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
+                    out += '<a class="move-process" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
                 }
 
                 if (i < this.variableprocesslist.length-1) {
-                    out += '<a class="move-process" href="#" title="Move up" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
+                    out += '<a class="move-process" title="Move up" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
                 }
                 out += '</td>';
 
@@ -57,12 +57,17 @@ var processlist_ui =
                     
                     case 1: //INPUTID
                         var inpid = this.variableprocesslist[z][1];
-                        arg += "<span class='label label-info' title='Input "+inpid+"'>";
-                        arg += "<i class='icon-signal icon-white'></i> ";
-                        arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
-                        if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
-                        arg += "</span>";
-                        lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.inputlist[inpid].value+")</span>";
+                        if (this.inputlist[inpid]!=undefined) {
+                            arg += "<span class='label label-info' title='Input "+inpid+"'>";
+                            arg += "<i class='icon-signal icon-white'></i> ";
+                            arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
+                            if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
+                            arg += "</span>";
+                            lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.inputlist[inpid].value+")</span>";
+                        } else {
+                            arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
+                            // does not exist or was deleted
+                        }
                         break;
                         
                     case 2: //FEEDID
@@ -75,8 +80,8 @@ var processlist_ui =
                             arg += "</a>";
                             lastvalue = "<span style='color:#888; font-size:12px'>(feed last value:"+this.feedlist[feedid].value+")</span>";
                         } else {
-                            arg += "<span class='label label-important' href='#'>Feedid "+feedid+" does not exists or was deleted</span>"
-                          // feed does not exist or was deleted
+                            arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
+                          // does not exist or was deleted
                         }
                         break;
 
@@ -89,18 +94,23 @@ var processlist_ui =
 
                     case 5: // SCHEDULEID
                         var schid = this.variableprocesslist[z][1];
-                        arg += "<span class='label label-info' title='Schedule "+schid+"' >";
-                        arg += "<i class='icon-time icon-white'></i> ";
-                        arg += this.schedulerlist[schid].name;
-                        arg += "</span>";
-                        //lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.schedulerlist[schid].value+")</span>";
+                        if (this.schedulelist[schid]!=undefined) {
+                            arg += "<span class='label label-info' title='Schedule "+schid+"' >";
+                            arg += "<i class='icon-time icon-white'></i> ";
+                            arg += this.schedulelist[schid].name;
+                            arg += "</span>";
+                        } else {
+                            arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
+                            // does not exist or was deleted
+                        }
+                        //lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.schedulelist[schid].value+")</span>";
                         break;
                 }
                 
                 out += "<td>"+(i+1)+"</td><td>"+this.processlist[processid][0]+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
          
                 // Delete process button (icon)
-                out += '<td><a href="#" class="delete-process" title="Delete" processid='+i+'><i class="icon-trash"></i></a></td>';
+                out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash"></i></a></td>';
 
                 out += '</tr>';
                 
@@ -165,7 +175,7 @@ var processlist_ui =
                             return false;
                         }
                         
-                        processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':''};
+                        processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag};
                         
                         // Feedlist
                         var out = "<option value=-1>CREATE NEW:</option>";
@@ -275,7 +285,6 @@ var processlist_ui =
             }
 
             update_main_list(processlist_ui.inputid, processlist_ui.variableprocesslist);
-            
         });
         
         function update_main_list(inputid, processlist)

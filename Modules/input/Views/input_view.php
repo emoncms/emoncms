@@ -31,7 +31,7 @@
     <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
     
     <div id="processlist-ui" style="padding:15px; background-color:#efefef; display:none; border-radius: 4px;">
-    
+    <button type="button" id="close" class="close">×</button>
     <div style="font-size:30px; padding-bottom:20px; padding-top:18px"><b><span id="inputname"></span></b> config</div>
     <p><?php echo _('Input processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
     
@@ -158,7 +158,7 @@
     <div class="modal-body">
         <p><?php echo _('Deleting an input will loose its name and configured process list.<br>An new blank input is automatic created by API data post if it does not already exists.'); ?>
         </p>
-		<p>
+        <p>
            <?php echo _('Are you sure you want to delete?'); ?>
         </p>
     </div>
@@ -307,6 +307,10 @@
         window.scrollTo(0,0);
         
     });
+    
+    $("#processlist-ui").on('click', '.close', function() {
+        $("#processlist-ui").hide();
+    });
 
 function load_all()
 {
@@ -322,22 +326,22 @@ function load_all()
     }
     $("#input-select").html(out);
     
-    $.ajax({ url: path+"scheduler/list.json", dataType: 'json', async: true, success: function(result) {
-        var schedulers = {};
-        for (z in result) schedulers[result[z].id] = result[z];
+    $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
+        var schedules = {};
+        for (z in result) schedules[result[z].id] = result[z];
         
-        processlist_ui.schedulerlist = schedulers;
+        processlist_ui.schedulelist = schedules;
         var groupname = {0:'Public',1:'Mine'};
         var groups = [];
-        //for (z in result) schedulers[result[z].id] = result[z];
+        //for (z in result) schedules[result[z].id] = result[z];
         
-        for (z in processlist_ui.schedulerlist)
+        for (z in processlist_ui.schedulelist)
         {
-            var group = processlist_ui.schedulerlist[z].own;
+            var group = processlist_ui.schedulelist[z].own;
             group = groupname[group];
             if (!groups[group]) groups[group] = []
-            processlist_ui.schedulerlist[z]['_index'] = z;
-            groups[group].push(processlist_ui.schedulerlist[z]);
+            processlist_ui.schedulelist[z]['_index'] = z;
+            groups[group].push(processlist_ui.schedulelist[z]);
         }
         
         var out = "";
