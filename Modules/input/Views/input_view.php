@@ -122,9 +122,11 @@
                                     <option value=120>2m</option>
                                     <option value=300>5m</option>
                                     <option value=600>10m</option>
+                                    <option value=900>15m</option>
                                     <option value=1200>20m</option>
                                     <option value=1800>30m</option>
                                     <option value=3600>1h</option>
+                                    <option value=86400>1d</option>
                                 </select>
                             </div>
                         </div>
@@ -359,15 +361,8 @@ function load_all()
     
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
         var feeds = {};
-        for (z in result) feeds[result[z].id] = result[z];
-        
+        for (z in result) { feeds[result[z].id] = result[z]; }
         processlist_ui.feedlist = feeds;
-        // Feedlist
-        var out = "<option value=-1>CREATE NEW:</option>";
-        for (i in processlist_ui.feedlist) {
-          out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
-        }
-        $("#feed-select").html(out);
     }});
     
     $.ajax({ url: path+"input/getallprocesses.json", async: true, dataType: 'json', success: function(result){

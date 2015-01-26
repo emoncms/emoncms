@@ -127,6 +127,18 @@ var processlist_ui =
             var engine = $(this).val();
             $("#feed-interval").hide();
             if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
+            
+            var processid = $("#process-select").val();
+            var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+            // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
+            if (datatype==2) {
+                $("#feed-interval option").hide();
+                $("#feed-interval option[value=86400]").show(); // 3600*24
+                $("#feed-interval").val(86400); 
+            } else {
+                $("#feed-interval option").show();
+                $("#feed-interval").val(10);   // default to 10s
+            } 
         });
 
         $('#processlist-ui #process-add').click(function() 
@@ -156,11 +168,7 @@ var processlist_ui =
                         var datatype = process[4];
                         
                         var options = {};
-                        if (datatype==2) { 
-                            options = {interval:3600*24};
-                        } else {
-                            options = {interval:$('#feed-interval').val()};
-                        }
+                        options = {interval:$('#feed-interval').val()};
                         
                         if (feedname == '') {
                             alert('ERROR: Please enter a feed name');
@@ -175,17 +183,10 @@ var processlist_ui =
                             return false;
                         }
                         
-                        processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag};
-                        
-                        // Feedlist
-                        var out = "<option value=-1>CREATE NEW:</option>";
-                        for (i in processlist_ui.feedlist) {
-                          out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
-                        }
-                        $("#feed-select").html(out);
+                        processlist_ui.feedlist[feedid] = {'id':feedid, 'name':feedname,'value':'n/a','tag':feedtag,'datatype':datatype};
+                        processlist_ui.showfeedoptions(processid);  // Refresh Feedlist
                         
                         $.ajax({ url: path+"feed/set.json", data: "id="+feedid+"&fields="+JSON.stringify({'tag':feedtag}), async: true, success: function(data){} });
-                        
                     }
                     arg = feedid;
                     break;
@@ -249,17 +250,22 @@ var processlist_ui =
         $('#processlist-ui #feed-select').change(function() {
             var feedid = $("#feed-select").val();
 
-            if (feedid!=-1) {
+            if (feedid == -1) {
+                $("#feed-name").show();
+                $("#processlist-ui #feed-engine").change(); // select available interval for engine
+                // If there's only one feed engine to choose from then dont show feed engine selector
+                // CHAVEIRO: Commented for now so user can see what processor it's using.
+                //var processid = $('#process-select').val();
+                //var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
+                //if (engines.length > 1) 
+                    $("#feed-engine, .feed-engine-label").show();
+            } else {
                 $("#feed-name").hide();
                 $("#feed-interval").hide();
                 $("#feed-engine, .feed-engine-label").hide(); 
-            } else {
-                $("#feed-name").show();
-                $("#processlist-ui #feed-engine").change(); // select available interval for engine
-                $("#feed-engine, .feed-engine-label").show(); 
             }
         });
-
+        
         $('#processlist-ui .table').on('click', '.delete-process', function() {
             processlist_ui.variableprocesslist.splice($(this).attr('processid'),1);
             
@@ -321,47 +327,33 @@ var processlist_ui =
             if (!mysql_found) engines.push(0);
         }
 
-        if (prc!='histogram')
-        {
-            // Start by hiding all feed engine options
-            $("#feed-engine option").hide();
+        var out = "<option value=-1>CREATE NEW:</option>";
+        for (i in processlist_ui.feedlist) {
+          out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
+        }
+        $("#feed-select").html(out);
+        
+        $("#feed-select option").hide();    // Start by hiding all feeds
+        for (f in processlist_ui.feedlist) {
+            if (processlist_ui.feedlist[f].datatype == datatype)
+                $("#feed-select option[value="+processlist_ui.feedlist[f].id+"]").show(); // Only show feeds of the supported datatype
+        }
+        
+        $("#feed-engine option").hide();    // Start by hiding all feed engine options
+        for (e in engines) $("#feed-engine option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
 
-            // Show only the feed engine options that are available
-            for (e in engines) $("#feed-engine option[value="+engines[e]+"]").show(); 
-
-            $("#feed-engine, .feed-engine-label").hide(); 
-            if (typeof(engines) != "undefined") {
-                // Select the first feed engine in the engines array by default
-                $("#feed-engine").val(engines[0]);
-                
-                // If there's only one or none feed engine to choose from then dont show feed engine selector
-                if (engines.length > 1) {
-                    $("#feed-engine, .feed-engine-label").show();
-                }
-                $("#feed-select option[value=-1]").show(); // enable create new feed
-            } else {
-                $("#feed-select option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
-                for (i in processlist_ui.feedlist) {
-                    $("#feed-select").val(processlist_ui.feedlist[i].id); // select first feed
-                    break;
-                }
+        $("#feed-engine, .feed-engine-label").hide(); 
+        if (typeof(engines) != "undefined") {
+            $("#feed-engine").val(engines[0]);         // Select the first feed engine in the engines array by default
+            $("#feed-select option[value=-1]").show(); // enable create new feed
+        } else {
+            $("#feed-select option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
+            for (i in processlist_ui.feedlist) {
+                $("#feed-select").val(processlist_ui.feedlist[i].id); // select first feed
+                break;
             }
+        }
 
-            // If the datatype is daily then the interval is fixed to 3600s x 24h, no need to show interval selector
-            if (datatype==2) {
-                $("#feed-interval").hide();
-            } else {
-                $("#feed-interval").show();
-                $("#feed-interval").val(10);
-            } 
-        }
-        else
-        {
-            // Else feed engine is histogram
-            $("#feed-engine, .feed-engine-label").hide();
-            $("#feed-interval").hide();
-            $("#feed-engine").val(engines[0]);
-        }
         $('#processlist-ui #feed-select').change();    // refresh feed select
     },
 
