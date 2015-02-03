@@ -1,0 +1,445 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-02 22:42+0100\n"
+"PO-Revision-Date: 2015-02-03 14:26+0100\n"
+"Last-Translator: @sumpfing <anne@sumpfing.de>\n"
+"Language-Team: @sumpfing <anne@sumpfing.de>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../input_menu.php:7
+msgid "Input"
+msgstr "Input"
+
+#: ../../../process_model.php:61
+msgid "Log to feed"
+msgstr "In Feed loggen"
+
+#: ../../../process_model.php:62
+msgid "x"
+msgstr "x"
+
+#: ../../../process_model.php:63
+msgid "+"
+msgstr "+"
+
+#: ../../../process_model.php:64
+msgid "Power to kWh"
+msgstr "Leistung zu kW/h"
+
+#: ../../../process_model.php:65
+msgid "Power to kWh/d"
+msgstr "Leistung zu kW/h Tag"
+
+#: ../../../process_model.php:66
+msgid "x input"
+msgstr "x input"
+
+#: ../../../process_model.php:67
+msgid "Input on-time"
+msgstr "Zeitige Eingabe"
+
+#: ../../../process_model.php:68
+msgid "Wh increments to kWh/d"
+msgstr "Watt Schritte zu kW/h pro Tag"
+
+#: ../../../process_model.php:69
+msgid "kWh to kWh/d (OLD)"
+msgstr "kW/h zu kW/h pro Tag (ALT)"
+
+#: ../../../process_model.php:70
+msgid "update feed @time"
+msgstr "Feed updaten um @time"
+
+#: ../../../process_model.php:71
+msgid "+ input"
+msgstr "+ input"
+
+#: ../../../process_model.php:72
+msgid "/ input"
+msgstr "/ input"
+
+#: ../../../process_model.php:73
+msgid "Phaseshift"
+msgstr "Phasenverschiebung"
+
+#: ../../../process_model.php:74
+msgid "Accumulator"
+msgstr "Akkumulator"
+
+#: ../../../process_model.php:75
+msgid "Rate of change"
+msgstr "Änderungsrate"
+
+#: ../../../process_model.php:76
+msgid "Histogram"
+msgstr "Histogramm"
+
+#: ../../../process_model.php:77
+msgid "Daily Average"
+msgstr "Tagesdurchschnitt"
+
+#: ../../../process_model.php:80
+msgid "Heat flux"
+msgstr "Wärmefluss"
+
+#: ../../../process_model.php:83
+msgid "Power gained to kWh/d"
+msgstr "Leistung gewonnen zu kW/h pro Tag"
+
+#: ../../../process_model.php:86
+msgid "Total pulse count to pulse increment"
+msgstr "Gesamtimpulse zu Impulszuwachs"
+
+#: ../../../process_model.php:89
+msgid "kWh to Power"
+msgstr "kW/h zu Leistung"
+
+#: ../../../process_model.php:91
+msgid "- input"
+msgstr "- input"
+
+#: ../../../process_model.php:92
+msgid "kWh to kWh/d"
+msgstr "kW/h zu kW/h pro Tag"
+
+#: ../../../process_model.php:93
+msgid "Allow positive"
+msgstr "Erlaube positive"
+
+#: ../../../process_model.php:94
+msgid "Allow negative"
+msgstr "Erlaube negative"
+
+#: ../../../process_model.php:95
+msgid "Signed to unsigned"
+msgstr "Signiert zu unsigniert"
+
+#: ../../../process_model.php:96
+msgid "Max value"
+msgstr "Maximalwert"
+
+#: ../../../process_model.php:97
+msgid "Min value"
+msgstr "Minimalwert"
+
+#: ../../../process_model.php:99
+msgid " + feed"
+msgstr " + feed"
+
+#: ../../../process_model.php:100
+msgid " - feed"
+msgstr " - feed"
+
+#: ../../../process_model.php:101
+msgid " * feed"
+msgstr " * feed"
+
+#: ../../../process_model.php:102
+msgid " / feed"
+msgstr " / feed"
+
+#: ../../../process_model.php:103
+msgid "Reset to ZERO"
+msgstr "Zurücksetzen auf Null"
+
+#: ../../../process_model.php:105
+msgid "Wh Accumulator"
+msgstr "Wattstunden Akkumulator"
+
+#: ../../../process_model.php:108
+msgid "Publish to MQTT"
+msgstr "Veröffentlichen an MQTT"
+
+#: ../../../Views/input_api.php:3
+msgid "Input API"
+msgstr "Input API"
+
+#: ../../../Views/input_api.php:4
+msgid "Apikey authentication"
+msgstr "Apikey Authentifikation"
+
+#: ../../../Views/input_api.php:5
+msgid ""
+"If you want to call any of the following actions when your not logged in, "
+"add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr ""
+"Wenn du nachfolgende Aktionen aufrufen willst ohne eingeloggt zu sein füge "
+"den Apikey zur Request-URL hinzu: &apikey=APIKEY."
+
+#: ../../../Views/input_api.php:6
+msgid "Read only:"
+msgstr "Nur Lesen:"
+
+#: ../../../Views/input_api.php:9
+msgid "Read & Write:"
+msgstr "Lesen & Schreiben:"
+
+#: ../../../Views/input_api.php:13
+msgid "Available HTML URLs"
+msgstr "Verfügbare HTML URLs"
+
+#: ../../../Views/input_api.php:15
+msgid "The input list view"
+msgstr "Inputlistenanzeige"
+
+#: ../../../Views/input_api.php:16
+msgid "This page"
+msgstr "Diese Seite"
+
+#: ../../../Views/input_api.php:17
+msgid "Input processing configuration page"
+msgstr "Inputverarbeitungskonfiguration"
+
+#: ../../../Views/input_api.php:20
+msgid "Available JSON commands"
+msgstr "Verfügbare JSON Befehle"
+
+#: ../../../Views/input_api.php:21
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr ""
+"Um die json api zu nutzen benötigt die Request-URL den Inhalt <b>.json</b>"
+
+#: ../../../Views/input_api.php:23
+msgid "Post data"
+msgstr "Daten buchen"
+
+#: ../../../Views/input_api.php:25
+msgid "JSON format:"
+msgstr "JSON Format:"
+
+#: ../../../Views/input_api.php:26
+msgid "CSV format:"
+msgstr "CSV Format:"
+
+#: ../../../Views/input_api.php:27
+msgid "Assign inputs to a node group"
+msgstr "Inputs einer Nodegruppe zuweisen"
+
+#: ../../../Views/input_api.php:28
+msgid "Set the input entry time manually"
+msgstr "Inputzeit manuell setzen"
+
+#: ../../../Views/input_api.php:31
+msgid "APIKEY"
+msgstr "APIKEY"
+
+#: ../../../Views/input_api.php:32
+msgid ""
+"To post data from a remote device you will need to include in the request "
+"url your write apikey. This give your device write access to your emoncms "
+"account, allowing it to post data."
+msgstr ""
+"Um Daten von einem Remotegerät zu posten musst du den Write Apikey in die "
+"Request-URL einfügen. Dies gibt deinem Gerät Schreibzugriff auf deinen "
+"emoncms Konto."
+
+#: ../../../Views/input_api.php:34
+msgid ""
+"For example using the first json type request above just add the apikey to "
+"the end like this:"
+msgstr ""
+"Um beispielsweise den ersten JSON Request zu benutzen füge einfach den "
+"Apikey am Ende ein:"
+
+#: ../../../Views/input_api.php:37
+msgid "Bulk data"
+msgstr "Massendaten"
+
+#: ../../../Views/input_api.php:39
+msgid "You can provide data using bulk mode"
+msgstr "Du kannst Daten bereitstellen wenn du den Bulk Modus benutzt"
+
+#: ../../../Views/input_api.php:42
+msgid "The first number of each node is the time offset (see below)."
+msgstr "Die erste Zahl jedes Nodes ist der Zeitunterschied (siehe unten)."
+
+#: ../../../Views/input_api.php:43
+msgid ""
+"The second number is the node id, this is the unique identifer for the "
+"wireless node."
+msgstr ""
+"Die zweite Nummer ist die Node ID, dies ist die einmalige Kennzeichnung für "
+"einen Funknode."
+
+#: ../../../Views/input_api.php:44
+msgid ""
+"All the numbers after the first two are data values. The second node here "
+"(node 17) has two data values: 1437 and 3164."
+msgstr ""
+"Alle Zahlen nach den ersten beiden sind Datenwerte. Der zweite Node (Node "
+"17) hat zwei Datenwerte: 1437 und 3164."
+
+#: ../../../Views/input_api.php:45
+msgid ""
+"Optional offset and time parameters allow the sender to set the time "
+"reference for the packets. If none is specified, it is assumed that the last "
+"packet just arrived. The time for the other packets is then calculated "
+"accordingly."
+msgstr ""
+"Optionale Abstand- und Zeitparameter erlauben dem Sender die Referenzzeit "
+"für die Pakete zu setzen. Wenn nichts angegeben ist wird angenommen, dass es "
+"das letzte eingegangene Paket ist. Die Zeit für die anderenPakete wird dann "
+"errechnet."
+
+#: ../../../Views/input_api.php:48
+msgid ""
+"Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to now):"
+msgstr ""
+"Vererbtes Standardformat (4 ist aktuell, 2 ist -2 Sekunden und 0 ist -4 "
+"Sekunden zu jetzt:"
+
+#: ../../../Views/input_api.php:49
+msgid "Time offset format (-6 is -16 seconds to now):"
+msgstr "Zeitunterschied Format (-6 ist -16 Sekunden zu jetzt):"
+
+#: ../../../Views/input_api.php:50
+msgid "Sentat format: (useful for sending as positive increasing time index)"
+msgstr ""
+"Sentat Format: (hilfreich um positiv ansteigende Zeitindizes zu senden)"
+
+#: ../../../Views/input_api.php:51
+msgid ""
+"Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 "
+"UTC))"
+msgstr ""
+"Absolutes Zeitformat (-6 ist 1387730121 Sekunden seit 1970-01-01 00:00:00 "
+"UTC))"
+
+#: ../../../Views/input_api.php:55
+msgid "Input actions"
+msgstr "Input Aktionen"
+
+#: ../../../Views/input_api.php:57
+msgid "List of inputs"
+msgstr "Liste der Inputs"
+
+#: ../../../Views/input_api.php:58
+msgid "Delete an input"
+msgstr "Einen Input löschen"
+
+#: ../../../Views/input_api.php:61
+msgid "Input process actions"
+msgstr "Input Verarbeitungsaktionen"
+
+#: ../../../Views/input_api.php:63
+msgid "Add an input process"
+msgstr "Input Verarbeitungsaktion hinzufügen"
+
+#: ../../../Views/input_api.php:64
+msgid "List input process list"
+msgstr "Input Verabeitungsaktionen auflisten"
+
+#: ../../../Views/input_api.php:65
+msgid "Delete input process"
+msgstr "Input Verarbeitungsaktion löschen"
+
+#: ../../../Views/input_api.php:66
+msgid "Move input process"
+msgstr "Input Verarbeitung verschieben"
+
+#: ../../../Views/input_api.php:67
+msgid "Reset input process list"
+msgstr "Input Verarbeitungsliste löschen"
+
+#: ../../../Views/input_view.php:28
+msgid "Input API Help"
+msgstr "Input API Hilfe"
+
+#: ../../../Views/input_view.php:31
+msgid "Inputs"
+msgstr "Inputs"
+
+#: ../../../Views/input_view.php:36
+msgid ""
+"Input processes are executed sequentially with the result being passed back "
+"for further processing by the next processor in the input processing list."
+msgstr ""
+"Input Prozesse werden regelmässig ausgeführt und das Resultat wird zur "
+"weiteren Verarbeitung zurückgeliefert zum nächsten Prozess in der "
+"Verarbeitungsliste."
+
+#: ../../../Views/input_view.php:42
+msgid "Order"
+msgstr "Reihenfolge"
+
+#: ../../../Views/input_view.php:43
+msgid "Process"
+msgstr "Verarbeitung"
+
+#: ../../../Views/input_view.php:44
+msgid "Arg"
+msgstr "Arg"
+
+#: ../../../Views/input_view.php:46
+msgid "Actions"
+msgstr "Aktionen"
+
+#: ../../../Views/input_view.php:99
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: ../../../Views/input_view.php:113
+msgid "No inputs created"
+msgstr "Keine Inputs angelegt"
+
+#: ../../../Views/input_view.php:114
+msgid ""
+"Inputs is the main entry point for your monitoring device. Configure your "
+"device to post values here, you may want to follow the <a href=\"api\">Input "
+"API helper</a> as a guide for generating your request."
+msgstr ""
+"Inputs sind der Standardeinstiegspunkt für dein Anzeigegerät. Konfiguriere "
+"dein Gerät um hier Werte zu posten, folge vielleicht der <a href=\"api"
+"\">Input API Hilfe</a> als Anleitung zum Erzeugendeiner Requests."
+
+#: ../../../Views/input_view.php:133
+msgid "Node:"
+msgstr "Node:"
+
+#: ../../../Views/input_view.php:134
+msgid "Key"
+msgstr "Key"
+
+#: ../../../Views/input_view.php:135
+msgid "Name"
+msgstr "Name"
+
+#: ../../../Views/input_view.php:136
+msgid "Process list"
+msgstr "Prozessliste"
+
+#: ../../../Views/input_view.php:137
+msgid "Last updated"
+msgstr "Zuletzt upgedatet"
+
+#: ../../../Views/input_view.php:138
+msgid "Value"
+msgstr "Wert"
+
+#~ msgid "en_EN"
+#~ msgstr "English"
+
+#~ msgid "es_ES"
+#~ msgstr "Spanish"
+
+#~ msgid "nl_BE"
+#~ msgstr "Dutch (Belgium)"
+
+#~ msgid "nl_NL"
+#~ msgstr "Dutch (Netherlands)"
+
+#~ msgid "fr_FR"
+#~ msgstr "French"
+
+#~ msgid "AUTODETECTLANGUAGE"
+#~ msgstr "Use language browser"

@@ -1,0 +1,105 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms\n"
+"POT-Creation-Date: 2014-12-25 13:30+0100\n"
+"PO-Revision-Date: 2015-02-03 14:26+0100\n"
+"Last-Translator: @sumpfing <anne@sumpfing.de>\n"
+"Language-Team: @sumpfing <anne@sumpfing.de>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ..\\..\\..\n"
+
+#: ..\..\../node_api.php:3
+msgid "Node API"
+msgstr "Node API"
+
+#: ..\..\../node_api.php:4
+msgid "Apikey authentication"
+msgstr "Apikey Authentifikation"
+
+#: ..\..\../node_api.php:5
+msgid ""
+"If you want to call any of the following actions when your not logged in, "
+"add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr ""
+"Um eine der folgenden Aktionen auszuführen ohne eingeloggt zu sein füge den "
+"Apikey zu der Request-URL hinzu: &apikey=APIKEY."
+
+#: ..\..\../node_api.php:6
+msgid "Read only:"
+msgstr "Nur Lesen:"
+
+#: ..\..\../node_api.php:9
+msgid "Read & Write:"
+msgstr "Lesen & Schreiben:"
+
+#: ..\..\../node_api.php:13
+msgid "Posting data"
+msgstr "Daten posten"
+
+#: ..\..\../node_api.php:17
+msgid "With write apikey:"
+msgstr "Mit Schreib Apikey:"
+
+#: ..\..\../node_menu.php:7
+msgid "Node"
+msgstr "Node"
+
+#: ..\..\../node_view.php:15
+msgid "Node API Help"
+msgstr "Node API Hilfe"
+
+#: ..\..\../node_view.php:16
+msgid "Nodes"
+msgstr "Nodes"
+
+#: ..\..\../node_view.php:17
+msgid ""
+"This is an alternative entry point to inputs designed around providing "
+"flexible decoding of RF12b struct based data packets"
+msgstr ""
+"Dies ist ein alternativer Einstiegspunkt für Inputs, um Flexible Dekodierung "
+"von RF12b strukturierten Datenpaketen zu ermöglichen."
+
+#: ..\..\../node_view.php:33 ..\..\../process_list.php:31
+msgid ""
+"Input processes are executed sequentially with the result being passed back "
+"for further processing by the next processor in the input processing list."
+msgstr ""
+"Input Prozesse werden regelmässig ausgeführt und das Resultat wird zur "
+"weiteren Verarbeitung zurückgelieferrt zum nächsten Prozess in der "
+"Verarbeitungsliste."
+
+#: ..\..\../node_view.php:40 ..\..\../process_list.php:38
+msgid "Order"
+msgstr "Reihenfolge"
+
+#: ..\..\../node_view.php:41 ..\..\../process_list.php:39
+msgid "Process"
+msgstr "Prozess"
+
+#: ..\..\../node_view.php:42 ..\..\../process_list.php:40
+msgid "Arg"
+msgstr "Arg"
+
+#: ..\..\../node_view.php:44 ..\..\../process_list.php:42
+msgid "Actions"
+msgstr "Aktionen"
+
+#: ..\..\../node_view.php:107 ..\..\../process_list.php:105
+msgid "Add"
+msgstr "Hinzufügen"
+
+#: ..\..\../node_view.php:283
+msgid "No nodes detected yet"
+msgstr "Noch keine Nodes gefunden"
+
+#: ..\..\../node_view.php:283
+msgid "To use this module send a byte value csv string and the node id to: "
+msgstr "Um dieses Modul zu nutzen sende einen CSV-Wert und die Node ID an: "

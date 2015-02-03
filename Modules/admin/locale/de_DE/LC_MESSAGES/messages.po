@@ -1,0 +1,123 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-02 22:36+0100\n"
+"PO-Revision-Date: 2015-02-03 14:24+0100\n"
+"Last-Translator: @sumpfing <anne@sumpfing.de>\n"
+"Language-Team: @sumpfing <anne@sumpfing.de>\n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../userlist_view.php:32
+msgid "Id"
+msgstr "Id"
+
+#: ../../../userlist_view.php:33
+msgid "Username"
+msgstr "Benutzername"
+
+#: ../../../userlist_view.php:34
+msgid "Email"
+msgstr "Email"
+
+#: ../../../admin_menu.php:7
+msgid "Admin"
+msgstr "Admin"
+
+#: ../../../admin_main_view.php:10 ../../../admin_main_view.php:14
+msgid "Users"
+msgstr "Benutzer"
+
+#: ../../../admin_main_view.php:11
+msgid "Administer user accounts"
+msgstr "Benutzerkonten verwalten"
+
+#: ../../../admin_main_view.php:19 ../../../update_view.php:29
+msgid "Update database"
+msgstr "Datenbankupdate"
+
+#: ../../../admin_main_view.php:20
+msgid ""
+"Run this after updating emoncms, after installing a new module or to check "
+"emoncms database status."
+msgstr ""
+"Bitte starten nach einem emoncms Update, nach Installation eines Moduls oder "
+"um den Datenbankstatus zu prüfen."
+
+#: ../../../admin_main_view.php:23
+msgid "Update & check"
+msgstr "Update & prüfen"
+
+#: ../../../admin_db_view.php:1
+msgid "Database setup, update and status check"
+msgstr "Datenbanksetup, Update und Status prüfen"
+
+#: ../../../admin_db_view.php:2
+msgid ""
+"This page displays the output of the database setup and update process which "
+"checks the database requirements of each module installed and enter any new "
+"table or fields if required."
+msgstr ""
+"Diese Seite zeigt die Ausgabe des Datenbanksetup und Updateprozess der die "
+"Datenbankanforderungen von jedem installieren Modul."
+
+#: ../../../admin_db_view.php:3
+msgid ""
+"If all the item statuses below show ok that means your database is setup "
+"correctly."
+msgstr ""
+"Wenn alle Statusanzeigen OK zeigen ist die Datenbank korrekt eingerichtet."
+
+#: ../../../admin_db_view.php:7
+msgid "Schema item"
+msgstr "Schema item"
+
+#: ../../../admin_db_view.php:7
+msgid "Name"
+msgstr "Name"
+
+#: ../../../admin_db_view.php:7
+msgid "Status"
+msgstr "Status"
+
+#: ../../../update_view.php:37
+msgid "Apply changes"
+msgstr "Änderungen zuweisen"
+
+#: ../../../update_view.php:44
+msgid "Check for further updates"
+msgstr "Auf weitere Updates prüfen"
+
+#: ../../../update_view.php:51
+msgid "Database is up to date "
+msgstr "Datenbank ist aktuell"
+
+#: ../../../update_view.php:51
+msgid "Nothing to do"
+msgstr "Nichts zu tun"
+
+#~ msgid "en_EN"
+#~ msgstr "English"
+
+#~ msgid "es_ES"
+#~ msgstr "Spanish"
+
+#~ msgid "nl_BE"
+#~ msgstr "Dutch (Belgium)"
+
+#~ msgid "nl_NL"
+#~ msgstr "Dutch (Netherlands)"
+
+#~ msgid "fr_FR"
+#~ msgstr "French"
+
+#~ msgid "AUTODETECTLANGUAGE"
+#~ msgstr "Use language browser"
