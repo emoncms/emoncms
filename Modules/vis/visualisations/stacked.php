@@ -22,7 +22,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
 <?php if (!$embed) { ?>
-<h2>Stacked</h2>
+<h2><?php echo _("Stacked"); ?></h2>
 <?php } ?>
 
 <div id="graph_bound" style="width:100%; height:400px; position:relative; ">

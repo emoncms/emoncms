@@ -23,7 +23,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>Simpler kWh/d zoomer</h2>
+<h2><?php echo _("Simpler kWh/d zoomer"); ?></h2>
 <?php } ?>
 
         <div id="graph_bound" style="height:400px; width:100%; position:relative; ">

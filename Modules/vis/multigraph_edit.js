@@ -9,6 +9,7 @@
 
 var multigraph_id = 0;
 var multigraph_feedlist = [];
+var multigraph_name='';
 
 var timeWindow = (3600000*24.0*7);				            // Initial time window
 
@@ -44,7 +45,7 @@ function multigraphDropdown(multigraphs)
   for (z in multigraphs)
   {
     // console.log("item[z]", multigraphs[z]);
-    options +="<option value='"+multigraphs[z]['id']+"'>Multigraph: "+multigraphs[z]['id']+"</option>";
+    options +="<option value='"+multigraphs[z]['id']+"'>"+multigraphs[z]['id']+": "+multigraphs[z]['name']+"</option>";
   }
 
   var out = "<div class='alert'>No multigraphs created yet, click new to create one:</div>";
@@ -70,8 +71,8 @@ function draw_multigraph_feedlist_editor()
     movingtime=1;
 
   console.log("Moving time start: "+movingtime);
-
-  var out = "<table class='table' style='table-layout:fixed; width:300px;' >";
+  var name ="<table class='table'><tbody><tr><td style='width:100px'><b>Name:</b></td><td><input style='width:160px' class='options' id='multigraphname' value='"+multigraph_name+"' type='text'></td></tr></tbody></table>";
+  var out = name+"<table class='table' style='table-layout:fixed; width:300px;' >";
   out += "<tr><th style='width:130px;' >Feed</th><th style='text-align: center;'>Left</th><th style='text-align: center;'>Right</th><th style='text-align: center;'>Fill</th><th style='padding:0px; width:30px;'></th></tr>";
 
   for (z in multigraph_feedlist)
@@ -164,6 +165,7 @@ function load_events()
   $(baseElement).on("change","#midselector",function(event){
     multigraph_id = $(this).val();
     multigraph_feedlist = multigraph.get(multigraph_id);
+    multigraph_name = multigraph.getname(multigraph_id);
     // Draw multigraph feedlist editor
     draw_multigraph_feedlist_editor();
     // Draw multigraph
@@ -268,8 +270,11 @@ function load_events()
     console.log(multigraph_feedlist[0].timeWindow);
     console.log(movingtime);
     console.log(multigraph_feedlist[0].end);
+    
+    var multigraph_name=$("#multigraphname").val();
+    if(multigraph_name=="") multigraph_name="no name";
 
-    multigraph.set(multigraph_id,multigraph_feedlist);
+    multigraph.set(multigraph_id,multigraph_feedlist,multigraph_name);
     $("#saved").show();
   });
 }

@@ -33,18 +33,18 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
-<h2>kWh/d Zoomer</h2>
+<h2><?php echo _("kWh/d Zoomer"); ?></h2>
 <?php } ?>
 
 <div id="test" style="height:500px; width:100%; position:relative; ">
     <div id="placeholder" style="font-family: arial; position:absolute; top: 40px; left:60px;"></div>
 
-    <div style="position:absolute; top:10px; left:65px; font-size:18px;"><b><span id="out2"></span></b>: Hover on bar for info, press to zoom in</div>
+    <div style="position:absolute; top:10px; left:65px; font-size:18px;"><b><span id="out2"></span></b><?php echo _(": Hover on bar for info, press to zoom in"); ?></div>
     <h2 style="position:absolute; top:40px; left:80px;"><span id="out"></span></h2>
     <p id="bot_out" style="position:absolute; bottom:-10px; left:65px; font-size:18px; font-weight:bold;"></p>
 
     <b><p style="position:absolute; top: 200px; left:0px;"><span id="axislabely"></span></p>
-    <p style="position:absolute; bottom: 40px; left:450px;">Date / Time</p></b>
+    <p style="position:absolute; bottom: 40px; left:450px;"><?php echo _("Date / Time"); ?></p></b>
 
     <div id="return_ctr" style="position:absolute; top:0px; right:10px;">
         <input id="return" type="button" value="Back" style="font-size:18px; height:40px;"/>
@@ -103,7 +103,7 @@
         total += parseFloat(kwh_data[z][1]); ndays++;
     }
 
-    bot_kwhd_text = "Total: "+(total).toFixed(0)+" kWh : "+add_currency((total*price), 0)+" | Average: "+(total/ndays).toFixed(1)+" kWh : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" a week, "+add_currency((total/ndays)*price*365, 0)+" a year | Unit price: "+add_currency(price, 2);
+    bot_kwhd_text = "<?php echo _("Total:"); ?> "+(total).toFixed(0)+" <?php echo _("kWh"); ?> : "+add_currency((total*price), 0)+" | <?php echo _("Average:"); ?> "+(total/ndays).toFixed(1)+" <?php echo _("kWh"); ?> : "+add_currency((total/ndays)*price, 2)+" | "+add_currency((total/ndays)*price*7, 0)+" <?php echo _("a week"); ?>, "+add_currency((total/ndays)*price*365, 0)+" <?php echo _("a year"); ?> | <?php echo _("Unit price:"); ?> "+add_currency(price, 2);
 
     years = get_years(kwh_data);
     //set_annual_view();
@@ -137,7 +137,7 @@
         var datetext = "";
         if ((end-start)<3600000*25) {var mdate = new Date(start); datetext = mdate.format("dS mmm yyyy")}
 
-        $("#bot_out").html(datetext+": Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh | "+add_currency(stats['kwh']*price, 2));
+        $("#bot_out").html(datetext+": <?php echo _("Average:"); ?> "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" <?php echo _("kWh"); ?> | "+add_currency(stats['kwh']*price, 2));
     }
 
     //--------------------------------------------------------------

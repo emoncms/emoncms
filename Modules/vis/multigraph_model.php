@@ -34,12 +34,13 @@ class Multigraph
         $this->mysqli->query("DELETE FROM multigraph WHERE `id` = '$id' AND `userid` = '$userid'");
     }
 
-    public function set($id, $userid, $feedlist)
+    public function set($id, $userid, $feedlist, $name)
     {
         $id = intval($id);
         $userid = intval($userid);
         $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
-        $this->mysqli->query("UPDATE multigraph SET `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
+        $name = preg_replace('/[^\w\s-.]/','',$name);
+        $this->mysqli->query("UPDATE multigraph SET `name` = '$name', `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
     }
 
     /*
@@ -67,5 +68,14 @@ class Multigraph
             $multigraphs[] = array('id'=>$row->id,'name'=>$row->name,'feedlist'=>$row->feedlist);
         }
         return $multigraphs;
+    }
+    
+    public function getname($id, $userid)
+    {
+        $id = intval($id);
+        $userid = intval($userid);
+        $result = $this->mysqli->query("SELECT name FROM multigraph WHERE `id`='$id'");
+        $result = $result->fetch_array();
+        return $result['name'];
     }
 }

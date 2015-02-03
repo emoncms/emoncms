@@ -8,10 +8,10 @@ var multigraph = {
     return result;
   },
 
-  'set':function(id,feedlist)
+  'set':function(id,feedlist,name)
   {
     var result = {};
-    $.ajax({ url: path+"vis/multigraph/set.json", data: "id="+id+"&feedlist="+encodeURIComponent(JSON.stringify(feedlist)), async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"vis/multigraph/set.json", data: "id="+id+"&name="+encodeURIComponent(name)+"&feedlist="+encodeURIComponent(JSON.stringify(feedlist)), async: false, success: function(data){result = data;} });
     return result;
   },
 
@@ -34,6 +34,14 @@ var multigraph = {
     var result = {};
     $.ajax({ url: path+"vis/multigraph/getlist.json", async: false, dataType: 'json', success: function(data){result = data;} });
     return result;
-  }
+  },
+  
+  'getname':function(id)
+  {
+    var result = {};
+    $.ajax({ url: path+"vis/multigraph/getname.json", data: "id="+id, dataType: 'json', async: false, success: function(data){result = data;} });
+    return result;
+  },
+  
 
 }

@@ -16,11 +16,33 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     global $path;
 
     $languages = get_available_languages();
+    $languages_name = languagecode_to_name($languages);
+    //languages order by language name
+    $languages_new = array();
+    foreach ($languages_name as $key=>$lang){
+       $languages_new[$key]=$languages[$key];        
+    }
+    $languages= array_values($languages_new); 
+    $languages_name= array_values($languages_name);
 
-function languagecodetotext()
-{
-    _('es_ES');
-    _('fr_FR');
+
+function languagecode_to_name($lang){
+    
+    foreach ($lang as $key=>$val){
+      //echo $key.'-'.$val; 
+      switch($val) {
+              case 'cy_GB': $lang[$key]=_('Welsh (United Kingdom)'); break;
+              case 'da_DK': $lang[$key]=_('Danish (Denmark)'); break;
+              case 'en_EN': $lang[$key]=_('English'); break;
+              case 'es_ES': $lang[$key]=_('Spanish (Spain)'); break;
+              case 'fr_FR': $lang[$key]=_('French (France)'); break;
+              case 'it_IT': $lang[$key]=_('Italian (Italy)'); break;
+              case 'nl_BE': $lang[$key]=_('Dutch (Belgium)'); break;
+              case 'nl_NL': $lang[$key]=_('Dutch (Netherlands)'); break;
+      }
+    }
+   asort($lang);
+   return $lang;
 }
 
 ?>
@@ -105,6 +127,7 @@ function languagecodetotext()
 
     var path = "<?php echo $path; ?>";
     var lang = <?php echo json_encode($languages); ?>;
+    var lang_name = <?php echo json_encode($languages_name); ?>;
 
     list.data = user.get();
 
@@ -122,7 +145,7 @@ function languagecodetotext()
         'name':{'title':"<?php echo _('Name'); ?>", 'type':'text'},
         'location':{'title':"<?php echo _('Location'); ?>", 'type':'text'},
         'timezone':{'title':"<?php echo _('Timezone'); ?>", 'type':'timezone'},
-        'language':{'title':"<?php echo _('Language'); ?>", 'type':'select', 'options':lang},
+        'language':{'title':"<?php echo _('Language'); ?>", 'type':'select', 'options':lang, 'label':lang_name},
         'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'}
     }
 
