@@ -1,15 +1,15 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Emoncms 8.3.6 - Dashboard\n"
-"POT-Creation-Date: 2014-12-05 00:35+0100\n"
-"PO-Revision-Date: 2014-12-05 00:35+0100\n"
+"Project-Id-Version: Emoncms 8.4.0 - Dashboard\n"
+"POT-Creation-Date: 2015-02-04 02:56+0100\n"
+"PO-Revision-Date: 2015-02-04 21:27+0100\n"
 "Last-Translator: \n"
-"Language-Team: \n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
 "Language: it_IT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.10\n"
+"X-Generator: Poedit 1.7.4\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: _\n"
@@ -33,7 +33,7 @@ msgstr "Descrizione:"
 
 #: ../../../Views/dashboard_config.php:34
 msgid "Make this dashboard the first shown"
-msgstr ""
+msgstr "Rendi la prima dashboard visibile"
 
 #: ../../../Views/dashboard_config.php:34 ../../../Views/dashboard_list.php:54
 msgid "Main"
@@ -49,7 +49,7 @@ msgstr "Pubblicato"
 
 #: ../../../Views/dashboard_config.php:44
 msgid "Anyone with the URL can see this dashboard"
-msgstr ""
+msgstr "Qualsiasi persona con questo URL può vedere questa dashboard"
 
 #: ../../../Views/dashboard_config.php:44 ../../../Views/dashboard_list.php:55
 msgid "Public"
@@ -104,7 +104,7 @@ msgstr "Dashboard"
 
 #: ../../../Views/dashboard_list.php:19
 msgid "No dashboards created"
-msgstr ""
+msgstr "Nesuna dashboard creata"
 
 #: ../../../Views/dashboard_list.php:20
 msgid "Maybe you would like to add your first dashboard using the button"
@@ -458,6 +458,3 @@ msgstr "Unità"
 #: ../../../dashboard_model.php:52
 msgid " clone"
 msgstr " clona"
-
-#~ msgid "Value to show"
-#~ msgstr "Valore da mostrare"
