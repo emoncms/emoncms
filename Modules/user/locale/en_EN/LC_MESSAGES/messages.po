@@ -1,168 +1,264 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:42+0100\n"
-"PO-Revision-Date: 2012-10-18 18:42+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"Project-Id-Version: Emoncms 8.4.0 - User\n"
+"POT-Creation-Date: 2015-02-04 02:44+0100\n"
+"PO-Revision-Date: 2015-02-04 02:44+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Generator: Poedit 1.7.4\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../login_block.php:33 ../../../user_view.php:59
+#: ../../../login_block.php:30
 msgid "Username:"
 msgstr ""
 
-#: ../../../login_block.php:37
-msgid "Password:"
-msgstr ""
-
-#: ../../../login_block.php:41
-msgid "Login"
-msgstr ""
-
-#: ../../../login_block.php:49
-msgid ""
-"Or if you are new enter a username and password above and click register"
-msgstr ""
-
-#: ../../../login_block.php:49
-msgid "Register"
-msgstr ""
-
-#: ../../../user_controller.php:57
-msgid "Invalid username or password"
-msgstr ""
-
-#: ../../../user_controller.php:62
-msgid "Welcome, you are now logged in"
-msgstr ""
-
-#: ../../../user_controller.php:90 ../../../user_controller.php:154
-msgid "Sorry username already exists"
-msgstr ""
-
-#: ../../../user_controller.php:95 ../../../user_controller.php:158
-msgid "Please enter a username that is 4 to 30 characters long"
-msgstr ""
-
-#: ../../../user_controller.php:100 ../../../user_controller.php:127
-msgid "Please enter a password that is 4 to 30 characters long"
-msgstr ""
-
-#: ../../../user_controller.php:108
-msgid "Your new account has been created"
-msgstr ""
-
-#: ../../../user_controller.php:131
-msgid "Your password has been changed"
-msgstr ""
-
-#: ../../../user_controller.php:136
-msgid "Invalid password"
-msgstr ""
-
-#: ../../../user_controller.php:162
-msgid "No email address present"
-msgstr ""
-
-#: ../../../user_controller.php:166
-msgid "Username and password updated"
-msgstr ""
-
-#: ../../../user_controller.php:182
-msgid "New read apikey: "
-msgstr ""
-
-#: ../../../user_controller.php:198
-msgid "New write apikey: "
-msgstr ""
-
-#: ../../../user_controller.php:215
-msgid "You are logged out"
-msgstr ""
-
-#: ../../../user_controller.php:220
-msgid "Invalid token"
-msgstr ""
-
-#: ../../../user_view.php:17
-msgid "User: "
-msgstr ""
-
-#: ../../../user_view.php:23
-msgid "Select preferred language"
-msgstr ""
-
-#: ../../../user_view.php:27 ../../../user_view.php:29
-msgid "Browser language"
-msgstr ""
-
-#: ../../../user_view.php:42
-msgid "Save"
-msgstr ""
-
-#: ../../../user_view.php:48
-msgid "Local time"
-msgstr ""
-
-#: ../../../user_view.php:50
-msgid "Time offset in hours:"
-msgstr ""
-
-#: ../../../user_view.php:53
-msgid "Set"
-msgstr ""
-
-#: ../../../user_view.php:57
-msgid "Change details"
-msgstr ""
-
-#: ../../../user_view.php:62
+#: ../../../login_block.php:36
 msgid "Email:"
 msgstr ""
 
-#: ../../../user_view.php:65 ../../../user_view.php:76
-msgid "Change"
+#: ../../../login_block.php:42
+msgid "Password:"
 msgstr ""
 
-#: ../../../user_view.php:69
-msgid "Change password"
+#: ../../../login_block.php:48
+msgid "Confirm password:"
 msgstr ""
 
-#: ../../../user_view.php:70
-msgid "Current password:"
+#: ../../../login_block.php:56
+msgid "Remember me"
 msgstr ""
 
-#: ../../../user_view.php:73
-msgid "New password:"
+#: ../../../login_block.php:57
+msgid "Login"
 msgstr ""
 
-#: ../../../user_view.php:87
-msgid "en_EN"
-msgstr "English"
+#: ../../../login_block.php:58 ../../../login_block.php:62
+msgid "or"
+msgstr ""
 
-#: ../../../user_view.php:88
-msgid "es_ES"
-msgstr "Spanish"
+#: ../../../login_block.php:58
+msgid "register"
+msgstr ""
 
-#: ../../../user_view.php:89
-msgid "nl_BE"
-msgstr "Dutch (Belgium)"
+#: ../../../login_block.php:62
+msgid "Register"
+msgstr ""
 
-#: ../../../user_view.php:90
-msgid "nl_NL"
-msgstr "Dutch (Netherlands)"
+#: ../../../login_block.php:63
+msgid "cancel"
+msgstr ""
 
-#: ../../../user_view.php:91
-msgid "fr_FR"
-msgstr "French"
+#: ../../../profile/profile.php:34
+msgid "Welsh (United Kingdom)"
+msgstr ""
 
-#~ msgid "AUTODETECTLANGUAGE"
-#~ msgstr "Use language browser"
+#: ../../../profile/profile.php:35
+msgid "Danish (Denmark)"
+msgstr ""
+
+#: ../../../profile/profile.php:36
+msgid "English"
+msgstr ""
+
+#: ../../../profile/profile.php:37
+msgid "Spanish (Spain)"
+msgstr ""
+
+#: ../../../profile/profile.php:38
+msgid "French (France)"
+msgstr ""
+
+#: ../../../profile/profile.php:39
+msgid "Italian (Italy)"
+msgstr ""
+
+#: ../../../profile/profile.php:40
+msgid "Dutch (Belgium)"
+msgstr ""
+
+#: ../../../profile/profile.php:41
+msgid "Dutch (Netherlands)"
+msgstr ""
+
+#: ../../../profile/profile.php:57
+msgid "My account"
+msgstr ""
+
+#: ../../../profile/profile.php:61
+msgid "Username"
+msgstr ""
+
+#: ../../../profile/profile.php:62 ../../../profile/profile.php:71
+msgid "Edit"
+msgstr ""
+
+#: ../../../profile/profile.php:65 ../../../profile/profile.php:74
+#: ../../../profile/profile.php:99
+msgid "Save"
+msgstr ""
+
+#: ../../../profile/profile.php:70
+msgid "Email"
+msgstr ""
+
+#: ../../../profile/profile.php:80
+msgid "Change Password"
+msgstr ""
+
+#: ../../../profile/profile.php:87
+msgid "Current password"
+msgstr ""
+
+#: ../../../profile/profile.php:91
+msgid "New password"
+msgstr ""
+
+#: ../../../profile/profile.php:95
+msgid "Repeat new password"
+msgstr ""
+
+#: ../../../profile/profile.php:100
+msgid "Cancel"
+msgstr ""
+
+#: ../../../profile/profile.php:106
+msgid "Write API Key"
+msgstr ""
+
+#: ../../../profile/profile.php:111
+msgid "Read API Key"
+msgstr ""
+
+#: ../../../profile/profile.php:120
+msgid "My Profile"
+msgstr ""
+
+#: ../../../profile/profile.php:144
+msgid "Gravatar"
+msgstr ""
+
+#: ../../../profile/profile.php:145
+msgid "Name"
+msgstr ""
+
+#: ../../../profile/profile.php:146
+msgid "Location"
+msgstr ""
+
+#: ../../../profile/profile.php:147
+msgid "Timezone"
+msgstr ""
+
+#: ../../../profile/profile.php:148
+msgid "Language"
+msgstr ""
+
+#: ../../../profile/profile.php:149
+msgid "Bio"
+msgstr ""
+
+#: ../../../profile/profile.php:271
+msgid "Passwords do not match"
+msgstr ""
+
+#: ../../../user_menu.php:7
+msgid "Account"
+msgstr ""
+
+#: ../../../user_menu.php:8
+msgid "Logout"
+msgstr ""
+
+#: ../../../user_model.php:153
+msgid "Missing username, password or email parameter"
+msgstr ""
+
+#: ../../../user_model.php:155 ../../../user_model.php:381
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr ""
+
+#: ../../../user_model.php:159 ../../../user_model.php:392
+msgid "Username already exists"
+msgstr ""
+
+#: ../../../user_model.php:161 ../../../user_model.php:310
+#: ../../../user_model.php:401
+msgid "Email address format error"
+msgstr ""
+
+#: ../../../user_model.php:163 ../../../user_model.php:379
+msgid "Username length error"
+msgstr ""
+
+#: ../../../user_model.php:164 ../../../user_model.php:283
+#: ../../../user_model.php:284
+msgid "Password length error"
+msgstr ""
+
+#: ../../../user_model.php:177
+msgid "Error creating user"
+msgstr ""
+
+#: ../../../user_model.php:191 ../../../user_model.php:241
+msgid "Username or password empty"
+msgstr ""
+
+#: ../../../user_model.php:197
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
+
+#: ../../../user_model.php:204
+msgid "Username does not exist"
+msgstr ""
+
+#: ../../../user_model.php:211
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
+
+#: ../../../user_model.php:232
+msgid "Login successful"
+msgstr ""
+
+#: ../../../user_model.php:244
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr ""
+
+#: ../../../user_model.php:251 ../../../user_model.php:258
+msgid "Incorrect authentication"
+msgstr ""
+
+#: ../../../user_model.php:303
+msgid "Old password incorect"
+msgstr ""
+
+#: ../../../user_model.php:376
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change username"
+msgstr ""
+
+#: ../../../user_model.php:388
+msgid "Username updated"
+msgstr ""
+
+#: ../../../user_model.php:398
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change email"
+msgstr ""
+
+#: ../../../user_model.php:404
+msgid "Email updated"
+msgstr ""
