@@ -41,27 +41,27 @@ calls the feed API on the server via AJAX. -->
 
 <div id="config" style="margin: 0px auto; max-width:320px; display:none">
     
-    <div class="electric-title">My Electric config</div>
+    <div class="electric-title"><?php echo _('My Electric config'); ?></div>
     <br><br>
     
-    <p><b style="color:#0699fa">Power feed (Watts):</b></p>
+    <p><b style="color:#0699fa"><?php echo _('Power feed (Watts):'); ?></b></p>
     <select id="powerfeed" style="width:290px"></select>
     <br><br>
     
-    <p><b style="color:#0699fa">Bar graph feed:</b></p>
+    <p><b style="color:#0699fa"><?php echo _('Bar graph feed:'); ?></b></p>
     <select id="dailyfeed" style="width:290px"></select>
     
-    <p><b style="color:#0699fa">Bar graph feed type:</b></p>
+    <p><b style="color:#0699fa"><?php echo _('Bar graph feed type:'); ?></b></p>
     <select id="dailytype" style="width:290px">
-        <option value=0>Watt hours elapsed</option>
-        <option value=1>kWh elapsed</option>
-        <option value=2>kWh per day</option>
-        <option value=3>Power (Watts)</option>
+        <option value=0><?php echo _('Watt hours elapsed'); ?></option>
+        <option value=1><?php echo _('kWh elapsed'); ?></option>
+        <option value=2><?php echo _('kWh per day'); ?></option>
+        <option value=3><?php echo _('Power (Watts)'); ?></option>
         
     </select>
     <br><br>
     
-    <button id="configsave" class="btn btn-primary">Save</button>
+    <button id="configsave" class="btn btn-primary"><?php echo _('Save'); ?></button>
     
 </div>
 
@@ -76,11 +76,11 @@ calls the feed API on the server via AJAX. -->
 </div>
 
     <div style="width:100%;">
-        <div class="electric-title">POWER NOW:        
+        <div class="electric-title"><?php echo _('POWER NOW:'); ?>        
 
         </div>
         <div class="power-value"><span id="power"></span>W</div>
-        <div class="kwh-value">USE TODAY: <b><span id="kwhd"></span> kWh</b></div>
+        <div class="kwh-value"><?php echo _('USE TODAY:'); ?> <b><span id="kwhd"></span> <?php echo _('kWh'); ?></b></div>
     </div>
     <br><br>
     <div id="bound" style="width:100%; height:270px">
