@@ -2,10 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-22 23:49+0100\n"
-"PO-Revision-Date: 2014-12-22 23:50+0100\n"
-"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
-"com>\n"
+"POT-Creation-Date: 2015-02-05 15:44+0100\n"
+"PO-Revision-Date: 2015-02-05 15:45+0100\n"
+"Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -14,8 +13,64 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../update_view.php:29 ../../../admin_main_view.php:19
+msgid "Update database"
+msgstr "Actualizar base de datos"
+
+#: ../../../update_view.php:37
+msgid "Apply changes"
+msgstr "Guardar cambios"
+
+#: ../../../update_view.php:44
+msgid "Check for further updates"
+msgstr "Buscar actualizaciones"
+
+#: ../../../update_view.php:51
+msgid "Database is up to date "
+msgstr "La base de datos está actualizada"
+
+#: ../../../update_view.php:51
+msgid "Nothing to do"
+msgstr "Nada que hacer"
+
+#: ../../../admin_main_view.php:6
+msgid "version"
+msgstr "versión"
+
+#: ../../../admin_main_view.php:10 ../../../admin_main_view.php:14
+msgid "Users"
+msgstr "Usuarios"
+
+#: ../../../admin_main_view.php:11
+msgid "Administer user accounts"
+msgstr "Administrar cuentas de usuarios"
+
+#: ../../../admin_main_view.php:20
+msgid ""
+"Run this after updating emoncms, after installing a new module or to check "
+"emoncms database status."
+msgstr ""
+"Ejecute esta acción después de actualizar emoncms o instalar un nuevo "
+"módulo, o bien para verificar el estado de la base de datos de emoncms."
+
+#: ../../../admin_main_view.php:23
+msgid "Update & check"
+msgstr "Comprobar y actualizar"
+
+#: ../../../admin_main_view.php:27
+msgid "INSTALLED"
+msgstr "INSTALADO"
+
+#: ../../../admin_main_view.php:27
+msgid "yes"
+msgstr "sí"
+
+#: ../../../admin_main_view.php:27
+msgid "no"
+msgstr "no"
 
 #: ../../../admin_db_view.php:1
 msgid "Database setup, update and status check"
@@ -27,9 +82,9 @@ msgid ""
 "checks the database requirements of each module installed and enter any new "
 "table or fields if required."
 msgstr ""
-"Esta página muestra el proceso de creacion y actualización de la base de "
-"datos donde se comprueban los requisitos de cada módulo instalado y se "
-"actualiza el esquema si es necesario."
+"Esta página muestra la salida del proceso de creacion y actualización de la "
+"base de datos, donde se comprueban los requisitos de base de datos de cada "
+"módulo instalado y se actualiza el esquema si es necesario."
 
 #: ../../../admin_db_view.php:3
 msgid ""
@@ -51,47 +106,9 @@ msgstr "Nombre"
 msgid "Status"
 msgstr "Estado"
 
-#: ../../../admin_main_view.php:10 ../../../admin_main_view.php:14
-msgid "Users"
-msgstr "Usuarios"
-
-#: ../../../admin_main_view.php:11
-msgid "Administer user accounts"
-msgstr "Administrar cuentas de usuarios"
-
-#: ../../../admin_main_view.php:19 ../../../update_view.php:29
-msgid "Update database"
-msgstr "Actualizar base de datos"
-
-#: ../../../admin_main_view.php:20
-msgid ""
-"Run this after updating emoncms, after installing a new module or to check "
-"emoncms database status."
-msgstr ""
-
-#: ../../../admin_main_view.php:23
-msgid "Update & check"
-msgstr "Comprobar y actualizar"
-
 #: ../../../admin_menu.php:7
 msgid "Admin"
 msgstr "Administrar"
-
-#: ../../../update_view.php:37
-msgid "Apply changes"
-msgstr "Guardar cambios"
-
-#: ../../../update_view.php:44
-msgid "Check for further updates"
-msgstr "Buscar actualizaciones"
-
-#: ../../../update_view.php:51
-msgid "Database is up to date "
-msgstr "La base de datos está actualizada"
-
-#: ../../../update_view.php:51
-msgid "Nothing to do"
-msgstr ""
 
 #: ../../../userlist_view.php:32
 msgid "Id"

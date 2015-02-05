@@ -2,10 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-12-25 14:12+0100\n"
-"PO-Revision-Date: 2014-12-25 14:13+0100\n"
-"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
-"com>\n"
+"POT-Creation-Date: 2015-02-06 14:12+0100\n"
+"PO-Revision-Date: 2015-02-06 14:14+0100\n"
+"Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
@@ -14,8 +13,152 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../process_model.php:61
+msgid "Log to feed"
+msgstr "Enviar a una fuente"
+
+#: ../../../process_model.php:62
+msgid "x"
+msgstr "x"
+
+#: ../../../process_model.php:63
+msgid "+"
+msgstr "+"
+
+#: ../../../process_model.php:64
+msgid "Power to kWh"
+msgstr "Potencia a kWh"
+
+#: ../../../process_model.php:65
+msgid "Power to kWh/d"
+msgstr "Potencia a kWh/d"
+
+#: ../../../process_model.php:66
+msgid "x input"
+msgstr "x entrada"
+
+#: ../../../process_model.php:67
+msgid "Input on-time"
+msgstr ""
+
+#: ../../../process_model.php:68
+msgid "Wh increments to kWh/d"
+msgstr "Incrementos de Wh a kWh/d"
+
+#: ../../../process_model.php:69
+msgid "kWh to kWh/d (OLD)"
+msgstr "kWh a kWh/d (ANTIGUO)"
+
+#: ../../../process_model.php:70
+msgid "update feed @time"
+msgstr "Actualizar fuente @tiempo"
+
+#: ../../../process_model.php:71
+msgid "+ input"
+msgstr "+ entrada"
+
+#: ../../../process_model.php:72
+msgid "/ input"
+msgstr "/ entrada"
+
+#: ../../../process_model.php:73
+msgid "Phaseshift"
+msgstr ""
+
+#: ../../../process_model.php:74
+msgid "Accumulator"
+msgstr "Acumulador"
+
+#: ../../../process_model.php:75
+msgid "Rate of change"
+msgstr ""
+
+#: ../../../process_model.php:76
+msgid "Histogram"
+msgstr "Histograma"
+
+#: ../../../process_model.php:77
+msgid "Daily Average"
+msgstr "Media diaria"
+
+#: ../../../process_model.php:80
+msgid "Heat flux"
+msgstr ""
+
+#: ../../../process_model.php:83
+msgid "Power gained to kWh/d"
+msgstr ""
+
+#: ../../../process_model.php:86
+msgid "Total pulse count to pulse increment"
+msgstr ""
+
+#: ../../../process_model.php:89
+msgid "kWh to Power"
+msgstr "kWh a potencia"
+
+#: ../../../process_model.php:91
+msgid "- input"
+msgstr "- entrada"
+
+#: ../../../process_model.php:92
+msgid "kWh to kWh/d"
+msgstr "kWh a kWh/d"
+
+#: ../../../process_model.php:93
+msgid "Allow positive"
+msgstr "Permitir positivo"
+
+#: ../../../process_model.php:94
+msgid "Allow negative"
+msgstr "Permitir negativo"
+
+#: ../../../process_model.php:95
+msgid "Signed to unsigned"
+msgstr "Con signo a sin signo"
+
+#: ../../../process_model.php:96
+msgid "Max value"
+msgstr "Valor máximo"
+
+#: ../../../process_model.php:97
+msgid "Min value"
+msgstr "Valor mínimo"
+
+#: ../../../process_model.php:99
+msgid " + feed"
+msgstr "+ fuente"
+
+#: ../../../process_model.php:100
+msgid " - feed"
+msgstr "- fuente"
+
+#: ../../../process_model.php:101
+msgid " * feed"
+msgstr "* fuente"
+
+#: ../../../process_model.php:102
+msgid " / feed"
+msgstr "/ fuente"
+
+#: ../../../process_model.php:103
+msgid "Reset to ZERO"
+msgstr "Poner a CERO"
+
+#: ../../../process_model.php:105
+msgid "Wh Accumulator"
+msgstr "Acumulador de Wh"
+
+#: ../../../process_model.php:108
+msgid "Publish to MQTT"
+msgstr ""
+
+#: ../../../input_menu.php:7
+msgid "Input"
+msgstr "Entrada"
 
 #: ../../../Views/input_api.php:3
 msgid "Input API"
@@ -30,6 +173,9 @@ msgid ""
 "If you want to call any of the following actions when your not logged in, "
 "add an apikey to the URL of your request: &apikey=APIKEY."
 msgstr ""
+"Para ejecutar alguna de las siguientes acciones cuando no hay una sesión "
+"iniciada, es necesario añadir la clave de API (apikey) a la URL de la "
+"petición: &apikey=APIKEY."
 
 #: ../../../Views/input_api.php:6
 msgid "Read only:"
@@ -37,7 +183,7 @@ msgstr "Sólo lectura:"
 
 #: ../../../Views/input_api.php:9
 msgid "Read & Write:"
-msgstr "Lectura y escritura"
+msgstr "Lectura y escritura:"
 
 #: ../../../Views/input_api.php:13
 msgid "Available HTML URLs"
@@ -52,7 +198,6 @@ msgid "This page"
 msgstr "Esta página"
 
 #: ../../../Views/input_api.php:17
-#, fuzzy
 msgid "Input processing configuration page"
 msgstr "Configuración de la entrada:"
 
@@ -63,10 +208,11 @@ msgstr "Comandos JSON disponibles"
 #: ../../../Views/input_api.php:21
 msgid "To use the json api the request url needs to include <b>.json</b>"
 msgstr ""
+"Para usar la API JSON la URL de petición tiene que incluir <b>.json</b>"
 
 #: ../../../Views/input_api.php:23
 msgid "Post data"
-msgstr ""
+msgstr "Enviar datos"
 
 #: ../../../Views/input_api.php:25
 msgid "JSON format:"
@@ -78,15 +224,15 @@ msgstr "Formato CSV:"
 
 #: ../../../Views/input_api.php:27
 msgid "Assign inputs to a node group"
-msgstr ""
+msgstr "Asignar entradas a un grupo de nodos"
 
 #: ../../../Views/input_api.php:28
 msgid "Set the input entry time manually"
-msgstr ""
+msgstr "Establecer manualmente el tiempo de la entrada"
 
 #: ../../../Views/input_api.php:31
 msgid "APIKEY"
-msgstr ""
+msgstr "Clave de API"
 
 #: ../../../Views/input_api.php:32
 msgid ""
@@ -94,16 +240,21 @@ msgid ""
 "url your write apikey. This give your device write access to your emoncms "
 "account, allowing it to post data."
 msgstr ""
+"Para enviar datos desde un dispositivo remoto, es necesario incluir la clave "
+"de API de escritura en la URL de la petición. De esta manera, el dispositivo "
+"tendrá acceso de escritura a la cuenta de emoncms."
 
 #: ../../../Views/input_api.php:34
 msgid ""
 "For example using the first json type request above just add the apikey to "
 "the end like this:"
 msgstr ""
+"Por ejemplo, usando la primera forma de petición JSON mostrada arriba es "
+"suficiente añadir la clave de API al final de la URL de la siguiente manera:"
 
 #: ../../../Views/input_api.php:37
 msgid "Bulk data"
-msgstr ""
+msgstr "Cargas masivas de datos"
 
 #: ../../../Views/input_api.php:39
 msgid "You can provide data using bulk mode"
@@ -112,18 +263,24 @@ msgstr "Puedes proporcionar los datos usando un modo masivo"
 #: ../../../Views/input_api.php:42
 msgid "The first number of each node is the time offset (see below)."
 msgstr ""
+"El primer número de cada nodo es el desplazamiento temporal (ver a "
+"continuación)."
 
 #: ../../../Views/input_api.php:43
 msgid ""
 "The second number is the node id, this is the unique identifer for the "
 "wireless node."
 msgstr ""
+"El segundo número es el identificador de nodo, que es el identificador único "
+"del nodo inalámbrico."
 
 #: ../../../Views/input_api.php:44
 msgid ""
 "All the numbers after the first two are data values. The second node here "
 "(node 17) has two data values: 1437 and 3164."
 msgstr ""
+"Todos los números después del primero son valores de datos. En el ejemplo, "
+"el segundo nodo (nodo 17) tiene dos valores de datos: 1437 y 3164."
 
 #: ../../../Views/input_api.php:45
 msgid ""
@@ -132,28 +289,36 @@ msgid ""
 "packet just arrived. The time for the other packets is then calculated "
 "accordingly."
 msgstr ""
+"Los parámetros opcionales offset y time permiten establecer la referencia de "
+"tiempo para los paquetes. Si no se indica ninguno, se asume que el último "
+"paquete llega en ese mismo instante. El tiempo para el resto de paquetes se "
+"ajusta proporcionalmente."
 
 #: ../../../Views/input_api.php:48
 msgid ""
 "Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to now):"
 msgstr ""
+"Formato por defecto \"clásico\": (4 es ahora, 2 es -2 segundos y 0 es -4 "
+"segundos desde el momento de llegada):"
 
 #: ../../../Views/input_api.php:49
 msgid "Time offset format (-6 is -16 seconds to now):"
 msgstr ""
+"Formato de desplazamiento temporal (-6 es -16 respecto al momento actual)"
 
 #: ../../../Views/input_api.php:50
 msgid "Sentat format: (useful for sending as positive increasing time index)"
 msgstr ""
+"Formato sentat: (útil para enviar como positivo, incrementando el índice de "
+"tiempo)"
 
 #: ../../../Views/input_api.php:51
 msgid ""
 "Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 "
 "UTC))"
-msgstr ""
+msgstr "Formato de tiempo absoluto (-6 es 1387730121 desde el 01/01/1970 UTC)"
 
 #: ../../../Views/input_api.php:55
-#, fuzzy
 msgid "Input actions"
 msgstr "Acciones de procesos de entrada"
 
@@ -162,23 +327,20 @@ msgid "List of inputs"
 msgstr "Lista de entradas"
 
 #: ../../../Views/input_api.php:58
-#, fuzzy
 msgid "Delete an input"
-msgstr "¿Borrar entrada?"
+msgstr "Borrar entrada"
 
 #: ../../../Views/input_api.php:61
 msgid "Input process actions"
 msgstr "Acciones de procesos de entrada"
 
 #: ../../../Views/input_api.php:63
-#, fuzzy
 msgid "Add an input process"
-msgstr "Borrar proceso de entrada:"
+msgstr "Añadir un proceso de entrada"
 
 #: ../../../Views/input_api.php:64
-#, fuzzy
 msgid "List input process list"
-msgstr "Listado de la lista de procesos de entrada:"
+msgstr "Listado de la lista de procesos de entrada"
 
 #: ../../../Views/input_api.php:65
 msgid "Delete input process"
@@ -194,7 +356,7 @@ msgstr "Inicializar la lista de procesos"
 
 #: ../../../Views/input_view.php:28
 msgid "Input API Help"
-msgstr "Ver ayuda para el uso de la API"
+msgstr "Ayuda de la API de entradas"
 
 #: ../../../Views/input_view.php:31
 msgid "Inputs"
@@ -206,12 +368,12 @@ msgid ""
 "for further processing by the next processor in the input processing list."
 msgstr ""
 "Los procesos de entrada son ejecutados de manera secuencial y el resultado "
-"es pasado para ser procesador por el siguiente proceso de la lista de "
+"es pasado para ser procesado por el siguiente proceso de la lista de "
 "procesos de entrada."
 
 #: ../../../Views/input_view.php:42
 msgid "Order"
-msgstr "Ordenar"
+msgstr "Orden"
 
 #: ../../../Views/input_view.php:43
 msgid "Process"
@@ -219,15 +381,55 @@ msgstr "Procesar"
 
 #: ../../../Views/input_view.php:44
 msgid "Arg"
-msgstr "Argumento"
+msgstr "Parámetro"
 
 #: ../../../Views/input_view.php:46
 msgid "Actions"
 msgstr "Acciones"
 
+#: ../../../Views/input_view.php:54
+msgid "Add process"
+msgstr "Añadir un proceso de entrada"
+
+#: ../../../Views/input_view.php:74
+msgid "Feed engine"
+msgstr "Motor de la fuente"
+
+#: ../../../Views/input_view.php:76
+msgid "Fixed Interval With Averaging (PHPFIWA)"
+msgstr "Intervalo fijo, con promedios (PHPFIWA)"
+
+#: ../../../Views/input_view.php:77
+msgid "Fixed Interval No Averaging (PHPFINA)"
+msgstr "Intervalo fijo, sin promedios (PHPFINA)"
+
+#: ../../../Views/input_view.php:78
+msgid "Variable Interval No Averaging (PHPTIMESERIES)"
+msgstr "Intervalo variable, sin promedios (PHPTIMESERIES)"
+
+#: ../../../Views/input_view.php:83
+msgid "Select interval"
+msgstr "Seleccione intervalo"
+
+#: ../../../Views/input_view.php:84 ../../../Views/input_view.php:85
+#: ../../../Views/input_view.php:86 ../../../Views/input_view.php:87
+#: ../../../Views/input_view.php:88 ../../../Views/input_view.php:89
+msgid "s"
+msgstr "s"
+
+#: ../../../Views/input_view.php:90 ../../../Views/input_view.php:91
+#: ../../../Views/input_view.php:92 ../../../Views/input_view.php:93
+#: ../../../Views/input_view.php:94
+msgid "mins"
+msgstr "min"
+
+#: ../../../Views/input_view.php:95
+msgid "hour"
+msgstr "h"
+
 #: ../../../Views/input_view.php:99
 msgid "Add"
-msgstr ""
+msgstr "Añadir"
 
 #: ../../../Views/input_view.php:113
 msgid "No inputs created"
@@ -239,10 +441,14 @@ msgid ""
 "device to post values here, you may want to follow the <a href=\"api\">Input "
 "API helper</a> as a guide for generating your request."
 msgstr ""
+"Las entradas son el punto de entrada principal para los dispositivos de "
+"monitorización. Configure su dispositivo para enviar sus valores aquí. Puede "
+"seguir la <a href=\"api\">ayuda del API de entradas</a> como guía para "
+"generar sus URLs de petición."
 
 #: ../../../Views/input_view.php:133
 msgid "Node:"
-msgstr "Nodo"
+msgstr "Nodo:"
 
 #: ../../../Views/input_view.php:134
 msgid "Key"
@@ -264,150 +470,12 @@ msgstr "Última actualización"
 msgid "Value"
 msgstr "Valor"
 
-#: ../../../input_menu.php:7
-msgid "Input"
-msgstr ""
+#: ../../../Views/input_view.php:256
+msgid "CREATE NEW"
+msgstr "CREAR NUEVO"
 
-#: ../../../process_model.php:61
-msgid "Log to feed"
-msgstr "Enviar a una fuente"
-
-#: ../../../process_model.php:62
-msgid "x"
-msgstr ""
-
-#: ../../../process_model.php:63
-msgid "+"
-msgstr ""
-
-#: ../../../process_model.php:64
-msgid "Power to kWh"
-msgstr "Power to kWh"
-
-#: ../../../process_model.php:65
-msgid "Power to kWh/d"
-msgstr "Power to kWh/d"
-
-#: ../../../process_model.php:66
-msgid "x input"
-msgstr "entrada x"
-
-#: ../../../process_model.php:67
-msgid "Input on-time"
-msgstr ""
-
-#: ../../../process_model.php:68
-msgid "Wh increments to kWh/d"
-msgstr ""
-
-#: ../../../process_model.php:69
-#, fuzzy
-msgid "kWh to kWh/d (OLD)"
-msgstr "kWh to kWh/d"
-
-#: ../../../process_model.php:70
-msgid "update feed @time"
-msgstr "Actualizar fuente @tiempo"
-
-#: ../../../process_model.php:71
-msgid "+ input"
-msgstr "+ input"
-
-#: ../../../process_model.php:72
-msgid "/ input"
-msgstr "/ input"
-
-#: ../../../process_model.php:73
-msgid "Phaseshift"
-msgstr ""
-
-#: ../../../process_model.php:74
-msgid "Accumulator"
-msgstr ""
-
-#: ../../../process_model.php:75
-msgid "Rate of change"
-msgstr ""
-
-#: ../../../process_model.php:76
-msgid "Histogram"
-msgstr "Histograma"
-
-#: ../../../process_model.php:77
-msgid "Daily Average"
-msgstr ""
-
-#: ../../../process_model.php:80
-msgid "Heat flux"
-msgstr ""
-
-#: ../../../process_model.php:83
-msgid "Power gained to kWh/d"
-msgstr ""
-
-#: ../../../process_model.php:86
-msgid "Total pulse count to pulse increment"
-msgstr ""
-
-#: ../../../process_model.php:89
-msgid "kWh to Power"
-msgstr ""
-
-#: ../../../process_model.php:91
-msgid "- input"
-msgstr "- entrada"
-
-#: ../../../process_model.php:92
-msgid "kWh to kWh/d"
-msgstr "kWh to kWh/d"
-
-#: ../../../process_model.php:93
-msgid "Allow positive"
-msgstr ""
-
-#: ../../../process_model.php:94
-msgid "Allow negative"
-msgstr ""
-
-#: ../../../process_model.php:95
-msgid "Signed to unsigned"
-msgstr ""
-
-#: ../../../process_model.php:96
-msgid "Max value"
-msgstr ""
-
-#: ../../../process_model.php:97
-msgid "Min value"
-msgstr ""
-
-#: ../../../process_model.php:99
-msgid " + feed"
-msgstr ""
-
-#: ../../../process_model.php:100
-msgid " - feed"
-msgstr ""
-
-#: ../../../process_model.php:101
-msgid " * feed"
-msgstr ""
-
-#: ../../../process_model.php:102
-msgid " / feed"
-msgstr ""
-
-#: ../../../process_model.php:103
-msgid "Reset to ZERO"
-msgstr ""
-
-#: ../../../process_model.php:105
-msgid "Wh Accumulator"
-msgstr ""
-
-#: ../../../process_model.php:108
-msgid "Publish to MQTT"
-msgstr ""
+#~ msgid "Enviar datos"
+#~ msgstr "Enviar datos"
 
 #~ msgid "input on-time"
 #~ msgstr "input on-time"
@@ -522,9 +590,6 @@ msgstr ""
 
 #~ msgid "Feed tag changed"
 #~ msgstr "Etiqueta de la fuente cambiada"
-
-#~ msgid "Feed renamed"
-#~ msgstr "Fuente renombrada"
 
 #~ msgid "Feed "
 #~ msgstr "Fuente"
@@ -681,7 +746,7 @@ msgstr ""
 #~ msgstr "kWh/d Comparison"
 
 #~ msgid "Stacked"
-#~ msgstr "Apliada"
+#~ msgstr "Apilada"
 
 #~ msgid "Threshold"
 #~ msgstr "Threshold"
@@ -1052,9 +1117,6 @@ msgstr ""
 #~ msgid "s ago"
 #~ msgstr " s atrás"
 
-#~ msgid " mins ago"
-#~ msgstr " minutros atrás"
-
 #~ msgid " hours ago"
 #~ msgstr " horas atrás"
 
@@ -1179,9 +1241,6 @@ msgstr ""
 
 #~ msgid "12 hours"
 #~ msgstr "12 horas"
-
-#~ msgid "1 hour"
-#~ msgstr "1 hora"
 
 #~ msgid "Date / Time"
 #~ msgstr "Fecha / Hora"
