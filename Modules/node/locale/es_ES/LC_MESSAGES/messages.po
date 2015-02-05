@@ -2,15 +2,14 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "POT-Creation-Date: 2014-12-25 13:30+0100\n"
-"PO-Revision-Date: 2014-12-25 13:30+0100\n"
-"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
-"com>\n"
+"PO-Revision-Date: 2015-02-05 15:00+0100\n"
+"Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
@@ -22,21 +21,24 @@ msgstr "API para la gestión de nodos"
 
 #: ..\..\../node_api.php:4
 msgid "Apikey authentication"
-msgstr ""
+msgstr "Autenticación por clave de API"
 
 #: ..\..\../node_api.php:5
 msgid ""
 "If you want to call any of the following actions when your not logged in, "
 "add an apikey to the URL of your request: &apikey=APIKEY."
 msgstr ""
+"Para ejecutar alguna de las siguientes acciones cuando no hay una sesión "
+"iniciada, es necesario añadir la clave de API (apikey) a la URL de la "
+"petición: &apikey=APIKEY."
 
 #: ..\..\../node_api.php:6
 msgid "Read only:"
-msgstr "Solo lectura:"
+msgstr "Sólo lectura:"
 
 #: ..\..\../node_api.php:9
 msgid "Read & Write:"
-msgstr "Lectura y escritura"
+msgstr "Lectura y escritura:"
 
 #: ..\..\../node_api.php:13
 msgid "Posting data"
@@ -44,11 +46,11 @@ msgstr "Enviando información"
 
 #: ..\..\../node_api.php:17
 msgid "With write apikey:"
-msgstr "Con la apikey de escritura:"
+msgstr "Con la clave API de escritura:"
 
 #: ..\..\../node_menu.php:7
 msgid "Node"
-msgstr "Nodos"
+msgstr "Nodo"
 
 #: ..\..\../node_view.php:15
 msgid "Node API Help"
@@ -63,7 +65,7 @@ msgid ""
 "This is an alternative entry point to inputs designed around providing "
 "flexible decoding of RF12b struct based data packets"
 msgstr ""
-"Este es un punto de entrada alternativo designado para proporcionar una "
+"Este es un punto de entrada alternativo diseñado para proporcionar una "
 "decodificación flexible de paquetes de datos basados en RF12b"
 
 #: ..\..\../node_view.php:33 ..\..\../process_list.php:31
@@ -71,26 +73,29 @@ msgid ""
 "Input processes are executed sequentially with the result being passed back "
 "for further processing by the next processor in the input processing list."
 msgstr ""
+"Los procesos de entrada se ejecutan secuencialmente. La salida de cada "
+"proceso pasa al siguiente, en el orden indicado en la lista de procesos de "
+"la entrada."
 
 #: ..\..\../node_view.php:40 ..\..\../process_list.php:38
 msgid "Order"
-msgstr ""
+msgstr "Orden"
 
 #: ..\..\../node_view.php:41 ..\..\../process_list.php:39
 msgid "Process"
-msgstr ""
+msgstr "Proceso"
 
 #: ..\..\../node_view.php:42 ..\..\../process_list.php:40
 msgid "Arg"
-msgstr ""
+msgstr "Argumento"
 
 #: ..\..\../node_view.php:44 ..\..\../process_list.php:42
 msgid "Actions"
-msgstr ""
+msgstr "Acciones"
 
 #: ..\..\../node_view.php:107 ..\..\../process_list.php:105
 msgid "Add"
-msgstr ""
+msgstr "Añadir"
 
 #: ..\..\../node_view.php:283
 msgid "No nodes detected yet"
@@ -99,5 +104,5 @@ msgstr "No se han detectado nodos"
 #: ..\..\../node_view.php:283
 msgid "To use this module send a byte value csv string and the node id to: "
 msgstr ""
-"Para usar este módulo envía una lista separada por comas de valores y el "
-"identificador de nodo usando una url similar a esta: "
+"Para usar este módulo envía una lista de valores separados por comas y el id "
+"de nodo usando una URL similar a la siguiente: "
