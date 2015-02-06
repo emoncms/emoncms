@@ -253,7 +253,7 @@ function load_all()
         
         processlist_ui.feedlist = feeds;
         // Feedlist
-        var out = "<option value=-1>CREATE NEW:</option>";
+        var out = "<option value=-1><?php echo _("CREATE NEW"); ?>:</option>";
         for (i in processlist_ui.feedlist) {
           out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
         }
