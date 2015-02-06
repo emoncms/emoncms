@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 16:01+0100\n"
-"PO-Revision-Date: 2015-02-05 16:02+0100\n"
+"POT-Creation-Date: 2015-02-06 12:47+0100\n"
+"PO-Revision-Date: 2015-02-06 12:47+0100\n"
 "Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -125,7 +125,7 @@ msgstr "Mi cuenta"
 
 #: ../../../user_menu.php:8
 msgid "Logout"
-msgstr "Desconectar"
+msgstr "Cerrar sesión"
 
 #: ../../../login_block.php:30
 msgid "Username:"

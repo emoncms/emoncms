@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 16:16+0100\n"
-"PO-Revision-Date: 2015-02-05 16:16+0100\n"
+"POT-Creation-Date: 2015-02-06 14:01+0100\n"
+"PO-Revision-Date: 2015-02-06 14:01+0100\n"
 "Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -356,7 +356,7 @@ msgstr "Inicializar la lista de procesos"
 
 #: ../../../Views/input_view.php:28
 msgid "Input API Help"
-msgstr "Ver ayuda para el uso de la API"
+msgstr "Ayuda de la API de entradas"
 
 #: ../../../Views/input_view.php:31
 msgid "Inputs"
@@ -373,7 +373,7 @@ msgstr ""
 
 #: ../../../Views/input_view.php:42
 msgid "Order"
-msgstr "Ordenar"
+msgstr "Orden"
 
 #: ../../../Views/input_view.php:43
 msgid "Process"
@@ -381,7 +381,7 @@ msgstr "Procesar"
 
 #: ../../../Views/input_view.php:44
 msgid "Arg"
-msgstr "Argumento"
+msgstr "Parámetro"
 
 #: ../../../Views/input_view.php:46
 msgid "Actions"
@@ -408,7 +408,7 @@ msgstr ""
 
 #: ../../../Views/input_view.php:133
 msgid "Node:"
-msgstr "Nodo"
+msgstr "Nodo:"
 
 #: ../../../Views/input_view.php:134
 msgid "Key"
@@ -429,6 +429,10 @@ msgstr "Última actualización"
 #: ../../../Views/input_view.php:138
 msgid "Value"
 msgstr "Valor"
+
+#: ../../../Views/input_view.php:256
+msgid "CREATE NEW"
+msgstr "CREAR NUEVO"
 
 #~ msgid "Enviar datos"
 #~ msgstr "Enviar datos"

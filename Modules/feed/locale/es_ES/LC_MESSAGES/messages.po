@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 15:45+0100\n"
-"PO-Revision-Date: 2015-02-05 16:19+0100\n"
+"POT-Creation-Date: 2015-02-06 12:53+0100\n"
+"PO-Revision-Date: 2015-02-06 12:53+0100\n"
 "Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -96,7 +96,7 @@ msgstr ""
 
 #: ../../../Views/feedlist_view.php:23
 msgid "Feed API Help"
-msgstr "Ayuda de la API para fuentes de datos"
+msgstr "Ayuda de la API de fuentes de datos"
 
 #: ../../../Views/feedlist_view.php:31
 msgid "No feeds created"
@@ -121,7 +121,11 @@ msgstr ""
 
 #: ../../../Views/feedlist_view.php:32
 msgid "Feed API helper"
-msgstr "Ayuda de la API para fuentes de datos"
+msgstr "Ayuda de la API de fuentes de datos"
+
+#: ../../../Views/feedlist_view.php:36
+msgid "Refresh feed size"
+msgstr "Actualizar tamaños"
 
 #: ../../../Views/feedlist_view.php:42
 msgid "WARNING deleting a feed is permanent"
@@ -173,7 +177,7 @@ msgstr "Tamaño"
 
 #: ../../../Views/feedlist_view.php:135
 msgid "Updated"
-msgstr "Actualizado"
+msgstr "Última actualización"
 
 #: ../../../Views/feedlist_view.php:136
 msgid "Value"

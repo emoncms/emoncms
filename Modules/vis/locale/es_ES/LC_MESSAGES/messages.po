@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-05 16:02+0100\n"
-"PO-Revision-Date: 2015-02-05 16:16+0100\n"
+"POT-Creation-Date: 2015-02-06 14:03+0100\n"
+"PO-Revision-Date: 2015-02-06 14:03+0100\n"
 "Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -42,7 +42,7 @@ msgstr ""
 
 #: ../../../vis_main_view.php:53
 msgid "View"
-msgstr "Vista"
+msgstr "Ver"
 
 #: ../../../vis_main_view.php:54
 msgid "Full screen"
@@ -81,13 +81,13 @@ msgid "RealTime"
 msgstr "Tiempo real"
 
 #: ../../../vis_object.php:17 ../../../vis_object.php:22
-#: ../../../vis_object.php:32 ../../../vis_object.php:42
-#: ../../../vis_object.php:47 ../../../vis_object.php:52
-#: ../../../vis_object.php:79 ../../../vis_object.php:90
-#: ../../../vis_object.php:94 ../../../vis_object.php:101
-#: ../../../vis_object.php:105
+#: ../../../vis_object.php:31 ../../../vis_object.php:41
+#: ../../../vis_object.php:46 ../../../vis_object.php:51
+#: ../../../vis_object.php:78 ../../../vis_object.php:89
+#: ../../../vis_object.php:93 ../../../vis_object.php:100
+#: ../../../vis_object.php:104
 msgid "feedid"
-msgstr "idfuente:"
+msgstr "idfuente"
 
 #: ../../../vis_object.php:21
 msgid "RawData"
@@ -97,166 +97,162 @@ msgstr "Datos brutos"
 msgid "fill"
 msgstr "color de relleno"
 
-#: ../../../vis_object.php:24 ../../../vis_object.php:33
+#: ../../../vis_object.php:24 ../../../vis_object.php:32
 msgid "colour"
 msgstr "color"
 
-#: ../../../vis_object.php:25 ../../../vis_object.php:35
-#: ../../../vis_object.php:43
+#: ../../../vis_object.php:25 ../../../vis_object.php:34
+#: ../../../vis_object.php:42
 msgid "units"
 msgstr "unidades"
 
-#: ../../../vis_object.php:26 ../../../vis_object.php:36
+#: ../../../vis_object.php:26 ../../../vis_object.php:35
 msgid "dp"
 msgstr "dec"
 
-#: ../../../vis_object.php:27
-msgid "initialdaystoshow"
-msgstr "diasinicialesamostrar"
-
-#: ../../../vis_object.php:28 ../../../vis_object.php:37
+#: ../../../vis_object.php:27 ../../../vis_object.php:36
 msgid "scale"
 msgstr "escala"
 
-#: ../../../vis_object.php:31
+#: ../../../vis_object.php:30
 msgid "BarGraph"
 msgstr "Gráfico de barras"
 
-#: ../../../vis_object.php:34
+#: ../../../vis_object.php:33
 msgid "interval"
 msgstr "intervalo"
 
-#: ../../../vis_object.php:38
+#: ../../../vis_object.php:37
 msgid "delta"
 msgstr ""
 
-#: ../../../vis_object.php:41
+#: ../../../vis_object.php:40
 msgid "TimestoreDaily"
 msgstr ""
 
-#: ../../../vis_object.php:46 ../../../visualisations/smoothie.php:22
+#: ../../../vis_object.php:45 ../../../visualisations/smoothie.php:22
 msgid "Smoothie"
 msgstr "Smoothie"
 
-#: ../../../vis_object.php:48
+#: ../../../vis_object.php:47
 msgid "ufac"
 msgstr ""
 
-#: ../../../vis_object.php:51
+#: ../../../vis_object.php:50
 msgid "Histgraph"
 msgstr "Histograma"
 
-#: ../../../vis_object.php:53
+#: ../../../vis_object.php:52
 msgid "barwidth"
 msgstr "ancho de barra"
 
-#: ../../../vis_object.php:54
+#: ../../../vis_object.php:53
 msgid "start"
 msgstr "inicio"
 
-#: ../../../vis_object.php:55
+#: ../../../vis_object.php:54
 msgid "end"
 msgstr "fin"
 
-#: ../../../vis_object.php:59
+#: ../../../vis_object.php:58
 msgid "Zoom"
 msgstr "Zoom"
 
-#: ../../../vis_object.php:60 ../../../vis_object.php:85
-#: ../../../vis_object.php:95
+#: ../../../vis_object.php:59 ../../../vis_object.php:84
+#: ../../../vis_object.php:94
 msgid "power"
 msgstr "potencia"
 
-#: ../../../vis_object.php:61 ../../../vis_object.php:86
+#: ../../../vis_object.php:60 ../../../vis_object.php:85
 msgid "kwhd"
 msgstr "kWhd"
 
-#: ../../../vis_object.php:62
+#: ../../../vis_object.php:61
 msgid "currency"
 msgstr "moneda"
 
-#: ../../../vis_object.php:63
+#: ../../../vis_object.php:62
 msgid "currency_after_val"
 msgstr "moneda_despues_de_val"
 
-#: ../../../vis_object.php:64
+#: ../../../vis_object.php:63
 msgid "pricekwh"
 msgstr "preciokWh"
 
-#: ../../../vis_object.php:68 ../../../visualisations/stackedsolar.php:26
+#: ../../../vis_object.php:67 ../../../visualisations/stackedsolar.php:26
 #: ../../../visualisations/stacked.php:25
 msgid "Stacked"
 msgstr "Apilada"
 
-#: ../../../vis_object.php:69
+#: ../../../vis_object.php:68
 msgid "bottom"
 msgstr ""
 
-#: ../../../vis_object.php:70
+#: ../../../vis_object.php:69
 msgid "top"
 msgstr ""
 
-#: ../../../vis_object.php:73
+#: ../../../vis_object.php:72
 msgid "StackedSolar"
 msgstr "Apilada (solar)"
 
-#: ../../../vis_object.php:74
+#: ../../../vis_object.php:73
 msgid "solar"
 msgstr "solar"
 
-#: ../../../vis_object.php:75
+#: ../../../vis_object.php:74
 msgid "consumption"
 msgstr "consumo"
 
-#: ../../../vis_object.php:78 ../../../visualisations/threshold.php:25
+#: ../../../vis_object.php:77 ../../../visualisations/threshold.php:25
 msgid "Threshold"
 msgstr "Threshold"
 
-#: ../../../vis_object.php:80 ../../../vis_object.php:96
+#: ../../../vis_object.php:79 ../../../vis_object.php:95
 msgid "thresholdA"
 msgstr "ThresholdA"
 
-#: ../../../vis_object.php:81 ../../../vis_object.php:97
+#: ../../../vis_object.php:80 ../../../vis_object.php:96
 msgid "thresholdB"
 msgstr "ThresholdB"
 
-#: ../../../vis_object.php:84
+#: ../../../vis_object.php:83
 msgid "SimpleZoom"
 msgstr "Zoom sencillo"
 
-#: ../../../vis_object.php:89
+#: ../../../vis_object.php:88
 msgid "OrderBars"
 msgstr "Barras ordenadas"
 
-#: ../../../vis_object.php:93
+#: ../../../vis_object.php:92
 msgid "OrderThreshold"
 msgstr "Threshold ordenado"
 
-#: ../../../vis_object.php:100
+#: ../../../vis_object.php:99
 msgid "EditRealtime"
 msgstr "Tiempo real (editable)"
 
-#: ../../../vis_object.php:104
+#: ../../../vis_object.php:103
 msgid "EditDaily"
 msgstr ""
 
-#: ../../../vis_object.php:108
+#: ../../../vis_object.php:107
 msgid "MultiGraph"
 msgstr "Gráfico múltiple"
 
-#: ../../../vis_object.php:108
+#: ../../../vis_object.php:107
 msgid "mid"
 msgstr ""
 
-#: ../../../vis_object.php:110
+#: ../../../vis_object.php:109
 msgid "Compare"
 msgstr "Comparar"
 
-#: ../../../vis_object.php:111
+#: ../../../vis_object.php:110
 msgid "powerx"
 msgstr "powerx"
 
-#: ../../../vis_object.php:112
+#: ../../../vis_object.php:111
 msgid "powery"
 msgstr "powery"
 
@@ -402,7 +398,7 @@ msgstr "Desviación estándar:"
 msgid "Datapoints in view:"
 msgstr "Datos visibles:"
 
-#: ../../../visualisations/rawdata.php:114
+#: ../../../visualisations/rawdata.php:110
 msgid "Graph Raw Data:"
 msgstr "Datos brutos:"
 
@@ -482,6 +478,9 @@ msgstr "PowerX vs PowerY"
 #: ../../../visualisations/compare.php:73
 msgid "Relationship should be linear if measurements are the same"
 msgstr "La relación debería ser lineal si las medidas son las mismas"
+
+#~ msgid "initialdaystoshow"
+#~ msgstr "diasinicialesamostrar"
 
 #~ msgid "API Helper"
 #~ msgstr "API Helper"
