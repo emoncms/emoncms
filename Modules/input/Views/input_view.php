@@ -51,7 +51,7 @@ input[type="text"] {
         </table>
 
         <table class="table">
-        <tr><th>Add process:</th><tr>
+        <tr><th><?php echo _('Add process'); ?>:</th><tr>
         <tr>
             <td>
                 <div class="input-prepend input-append">
@@ -71,28 +71,28 @@ input[type="text"] {
                         <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
                         <input type="hidden" id="feed-tag"/>
 
-                        <span class="add-on feed-engine-label">Feed engine: </span>
+                        <span class="add-on feed-engine-label"><?php echo _('Feed engine'); ?>: </span>
                         <select id="feed-engine">
-                            <option value=6 >Fixed Interval With Averaging (PHPFIWA)</option>
-                            <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
-                            <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
+                        <option value=6 ><?php echo _('Fixed Interval With Averaging (PHPFIWA)'); ?></option>
+                        <option value=5 ><?php echo _('Fixed Interval No Averaging (PHPFINA)'); ?></option>
+                        <option value=2 ><?php echo _('Variable Interval No Averaging (PHPTIMESERIES)'); ?></option>
                         </select>
 
 
                         <select id="feed-interval" style="width:130px">
-                            <option value="">Select interval</option>
-                            <option value=5>5s</option>
-                            <option value=10>10s</option>
-                            <option value=15>15s</option>
-                            <option value=20>20s</option>
-                            <option value=30>30s</option>
-                            <option value=60>60s</option>
-                            <option value=120>2 mins</option>
-                            <option value=300>5 mins</option>
-                            <option value=600>10 mins</option>
-                            <option value=1200>20 mins</option>
-                            <option value=1800>30 mins</option>
-                            <option value=3600>1 hour</option>
+                        <option value=""><?php echo _('Select interval'); ?></option>
+                        <option value=5>5 <?php echo _('s'); ?></option>
+                        <option value=10>10 <?php echo _('s'); ?></option>
+                        <option value=15>15 <?php echo _('s'); ?></option>
+                        <option value=20>20 <?php echo _('s'); ?></option>
+                        <option value=30>30 <?php echo _('s'); ?></option>
+                        <option value=60>60 <?php echo _('s'); ?></option>
+                        <option value=120>2 <?php echo _('mins'); ?></option>
+                        <option value=300>5 <?php echo _('mins'); ?></option>
+                        <option value=600>10 <?php echo _('mins'); ?></option>
+                        <option value=1200>20 <?php echo _('mins'); ?></option>
+                        <option value=1800>30 <?php echo _('mins'); ?></option>
+                        <option value=3600>1 <?php echo _('hour'); ?></option>
                         </select>
                         
                     </span>
