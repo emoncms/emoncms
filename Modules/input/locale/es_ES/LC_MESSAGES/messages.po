@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-06 14:01+0100\n"
-"PO-Revision-Date: 2015-02-06 14:01+0100\n"
+"POT-Creation-Date: 2015-02-06 14:12+0100\n"
+"PO-Revision-Date: 2015-02-06 14:14+0100\n"
 "Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -387,6 +387,46 @@ msgstr "Parámetro"
 msgid "Actions"
 msgstr "Acciones"
 
+#: ../../../Views/input_view.php:54
+msgid "Add process"
+msgstr "Añadir un proceso de entrada"
+
+#: ../../../Views/input_view.php:74
+msgid "Feed engine"
+msgstr "Motor de la fuente"
+
+#: ../../../Views/input_view.php:76
+msgid "Fixed Interval With Averaging (PHPFIWA)"
+msgstr "Intervalo fijo, con promedios (PHPFIWA)"
+
+#: ../../../Views/input_view.php:77
+msgid "Fixed Interval No Averaging (PHPFINA)"
+msgstr "Intervalo fijo, sin promedios (PHPFINA)"
+
+#: ../../../Views/input_view.php:78
+msgid "Variable Interval No Averaging (PHPTIMESERIES)"
+msgstr "Intervalo variable, sin promedios (PHPTIMESERIES)"
+
+#: ../../../Views/input_view.php:83
+msgid "Select interval"
+msgstr "Seleccione intervalo"
+
+#: ../../../Views/input_view.php:84 ../../../Views/input_view.php:85
+#: ../../../Views/input_view.php:86 ../../../Views/input_view.php:87
+#: ../../../Views/input_view.php:88 ../../../Views/input_view.php:89
+msgid "s"
+msgstr "s"
+
+#: ../../../Views/input_view.php:90 ../../../Views/input_view.php:91
+#: ../../../Views/input_view.php:92 ../../../Views/input_view.php:93
+#: ../../../Views/input_view.php:94
+msgid "mins"
+msgstr "min"
+
+#: ../../../Views/input_view.php:95
+msgid "hour"
+msgstr "h"
+
 #: ../../../Views/input_view.php:99
 msgid "Add"
 msgstr "Añadir"
@@ -550,9 +590,6 @@ msgstr "CREAR NUEVO"
 
 #~ msgid "Feed tag changed"
 #~ msgstr "Etiqueta de la fuente cambiada"
-
-#~ msgid "Feed renamed"
-#~ msgstr "Fuente renombrada"
 
 #~ msgid "Feed "
 #~ msgstr "Fuente"
@@ -1080,9 +1117,6 @@ msgstr "CREAR NUEVO"
 #~ msgid "s ago"
 #~ msgstr " s atrás"
 
-#~ msgid " mins ago"
-#~ msgstr " minutros atrás"
-
 #~ msgid " hours ago"
 #~ msgstr " horas atrás"
 
@@ -1207,9 +1241,6 @@ msgstr "CREAR NUEVO"
 
 #~ msgid "12 hours"
 #~ msgstr "12 horas"
-
-#~ msgid "1 hour"
-#~ msgstr "1 hora"
 
 #~ msgid "Date / Time"
 #~ msgstr "Fecha / Hora"
