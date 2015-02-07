@@ -12,6 +12,8 @@
 
 [Europe Mirror 3](http://xn--pizzalg-v1a.dk/oem/emonSD-13-08-14.img.zip)
 
+[US Mirror](http://oem.aluminumalloyboats.com/oem/emonSD-13-08-14.img.zip)
+
 
 Many thanks to [Bo Herrmannsen (boelle)](http://openenergymonitor.org/emon/user/3149) for Europe mirror hosting, please DM to report broken link. 
 
