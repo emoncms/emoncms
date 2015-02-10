@@ -8,6 +8,8 @@ To install emoncms on a shared server
 
 2) Download the emoncms zip file from:
 
+You may want to install one of the other branches of emoncms here, perhaps to try out a new feature set not yet available in the master branch. See the branch list and descriptions on the start page
+
 [https://github.com/emoncms/emoncms/archive/master.zip](https://github.com/emoncms/emoncms/archive/master.zip)
 
 Unzip to your shared server's public_html folder, rename the folder to emoncms.
