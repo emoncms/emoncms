@@ -21,6 +21,8 @@ Emoncms is an open-source web application for processing, logging and visualisin
 ## Development
 
 **Development plan overview: [Github: Emoncms development overview](https://github.com/emoncms/emoncms/issues/244)**
+**EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/emoncms/emonview](https://github.com/emoncms/emonview)
+
 
 ## Using emoncms
 
