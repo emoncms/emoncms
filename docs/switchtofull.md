@@ -16,6 +16,8 @@ Switch to the master branch:
     
     git checkout master
     
+**You may want to install one of the other branches of emoncms here, perhaps to try out a new feature set not yet available in the master branch. See the branch list and descriptions on the [start page](https://github.com/emoncms/emoncms)**
+    
 It should give the following confirmation:
 
     Branch master set up to track remote branch master from origin.
