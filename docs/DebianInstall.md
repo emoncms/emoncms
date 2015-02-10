@@ -1,11 +1,6 @@
-# Installation on Raspian/Debian/Ubuntu
+# Installation on Raspian/Debian/Ubuntu (currently unmaintained)
 
-Starting with version 8, it is possible to install emoncms using standard Debian package management. This installation path involves fewer
-manual steps and controls for most dependency management automatically.
-
-The Debian package is the most stable way of maintaining an emoncms installation because only formally tagged versions of the master branch are included in the [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/) repository and uploaded to apt.
-
-You may prefer to use the git appraoch if you wish to run the very latest version of emoncms and receive bug fixes as soon as they are pushed to git. The git appraoch can also be easier if you wish to develop and improve emoncms yourself.
+Using the debian package installation approach is currently not recommended. We may move back to using the debian package approach in the future. Please install using the git method in the mean time.
 
 **Installation instructions are maintained in the [pkg-emoncms](https://github.com/Dave-McCraw/pkg-emoncms/) readme**
 
