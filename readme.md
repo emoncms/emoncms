@@ -9,8 +9,6 @@ Emoncms is an open-source web application for processing, logging and visualisin
 * Recommended: [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md)
- 
-* [Debian Package](docs/DebianInstall.md) - currently unmaintained, please use git method.
 
 ## Upgrade
 
