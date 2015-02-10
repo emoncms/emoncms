@@ -17,18 +17,26 @@ class Process
     private $mysqli;
     private $input;
     private $feed;
+    private $schedule;
     private $log;
     private $mqtt = false;
+    
+    private $proc_initialvalue;  // save the input value at beginning of the processes list execution
+    private $proc_skip_next;     // skip execution of next process in process list
+    private $proc_goto;          // goto step in process list
     
     private $timezoneoffset = 0;
 
     public function __construct($mysqli,$input,$feed)
     {
-            $this->mysqli = $mysqli;
-            $this->input = $input;
-            $this->feed = $feed;
-            $this->log = new EmonLogger(__FILE__);
-            
+        $this->mysqli = $mysqli;
+        $this->input = $input;
+        $this->feed = $feed;
+        $this->log = new EmonLogger(__FILE__);
+     
+        include "Modules/schedule/schedule_model.php";
+        $this->schedule = new Schedule($mysqli);
+         
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
         global $mqtt_enabled, $mqtt;
@@ -52,26 +60,29 @@ class Process
         
         // Note on engine selection
         
-        // The engines listed against each process are the recommended engines for each process - and is only used in the input and node config GUI dropdown selectors
-        // By using the create feed api and add input process its possible to create any feed type and add any process to it - this needs to be improved so that only 
-        // feeds capable of using a particular processor can be used. 
+        // The engines listed against each process must be the supported engines for each process - and is only used in the input and node config GUI dropdown selectors
+        // By using the create feed api and add input process its possible to create any feed type and add any process to it.
+        // Only feeds capable of using a particular processor are displayed to the user and can be selected from the gui.
+        // Daily datatype automaticaly adjust feed interval to 1d and user cant change it from gui.
+        // If there is only one engine available for a processor, it is selected and user cant change it from gui.
+        // The default selected engine is the first in the array of the sipported engines for each processor.
 
-        // description | Arg type | function | No. of datafields if creating feed | Datatype | Engine
+        // description | Arg type | function | No. of datafields if creating feed | Datatype | Engines
 
-        $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));                  
+        $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));
         $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED,"Calibration");                           
         $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED,"Calibration");                          
-        $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power",array(Engine::PHPFINA,Engine::PHPTIMESERIES));               
-        $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));               
+        $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power",array(Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));               
+        $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));               
         $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED,"Input");                   
-        $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES));                 
-        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));      
+        $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));                 
+        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));      
         $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));       // need to remove
-        $list[10] = array(_("update feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
+        $list[10] = array(_("Upsert feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
         $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    
         $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
         $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
-        $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES));                 
+        $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));                 
         $list[15] = array(_("Rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));               
         $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL));                   
         $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted",array(Engine::PHPTIMESERIES));               // need to remove
@@ -104,8 +115,31 @@ class Process
         
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
-        
         $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
+
+        $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc"); 
+        $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
+        
+        $list[38] = array(_("If !schedule, ZERO"),ProcessArg::SCHEDULEID,"if_not_schedule_zero",0,DataType::UNDEFINED,"Schedule");
+        $list[39] = array(_("If !schedule, NULL"),ProcessArg::SCHEDULEID,"if_not_schedule_null",0,DataType::UNDEFINED,"Schedule");
+        $list[40] = array(_("If schedule, ZERO"),ProcessArg::SCHEDULEID,"if_schedule_zero",0,DataType::UNDEFINED,"Schedule");
+        $list[41] = array(_("If schedule, NULL"),ProcessArg::SCHEDULEID,"if_schedule_null",0,DataType::UNDEFINED,"Schedule");
+        
+        $list[42] = array(_("If ZERO, skip next"),ProcessArg::NONE,"if_zero_skip",0,DataType::UNDEFINED,"Conditional");
+        $list[43] = array(_("If !ZERO, skip next"),ProcessArg::NONE,"if_not_zero_skip",0,DataType::UNDEFINED,"Conditional");
+        $list[44] = array(_("If NULL, skip next"),ProcessArg::NONE,"if_null_skip",0,DataType::UNDEFINED,"Conditional");
+        $list[45] = array(_("If !NULL, skip next"),ProcessArg::NONE,"if_not_null_skip",0,DataType::UNDEFINED,"Conditional");
+        
+        $list[46] = array(_("If >, skip next"),ProcessArg::VALUE,"if_gt_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[47] = array(_("If >=, skip next"),ProcessArg::VALUE,"if_gt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[48] = array(_("If <, skip next"),ProcessArg::VALUE,"if_lt_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[49] = array(_("If <=, skip next"),ProcessArg::VALUE,"if_lt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[50] = array(_("If =, skip next"),ProcessArg::VALUE,"if_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        $list[51] = array(_("If !=, skip next"),ProcessArg::VALUE,"if_not_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+        
+        // A bit or warning: if user goto's in loop, the php will lock until the server defined timesout with an error
+        $list[52] = array(_("GOTO"),ProcessArg::VALUE,"goto_process",0,DataType::UNDEFINED,"Misc");
+        
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         return $list;
@@ -114,21 +148,28 @@ class Process
     public function input($time, $value, $processList)
     {
         $this->log->info("input() received time=$time, value=$value");
-           
+
+        $this->proc_initialvalue = $value; // save the input value at beginning of the processes list execution
+        $this->proc_skip_next = false;     // skip execution of next process in process list
+    
         $process_list = $this->get_process_list();
         $pairs = explode(",",$processList);
-        foreach ($pairs as $pair)
-        {
-            $inputprocess = explode(":", $pair);                                // Divide into process id and arg
-            $processid = (int) $inputprocess[0];                                    // Process id
-
+        $total = count($pairs);
+        for($this->proc_goto = 0 ; $this->proc_goto < $total ; $this->proc_goto++) {
+            $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process id and arg
+            $processid = (int) $inputprocess[0];                     // Process id
+            
             $arg = 0;
             if (isset($inputprocess[1]))
                 $arg = $inputprocess[1];               // Can be value or feed id
 
-            $process_public = $process_list[$processid][2];             // get process public function name
+            $process_public = $process_list[$processid][2];          // get process public function name
 
-            $value = $this->$process_public($arg,$time,$value);           // execute process public function
+            $value = $this->$process_public($arg,$time,$value);      // execute process public function
+            
+            if ($this->proc_skip_next) {
+                $this->proc_skip_next = false; $this->proc_goto++;
+            }
         }
     }
 
@@ -166,10 +207,20 @@ class Process
     }
 
     public function reset2zero($arg, $time, $value)
-     {
+    {
          $value = 0;
          return $value;
-     }
+    }
+
+    public function reset2original($arg, $time, $value)
+    {
+         return $this->proc_initialvalue;
+    }
+
+    public function reset2null($arg, $time, $value)
+    {
+         return null;
+    }
 
     public function signed2unsigned($arg, $time, $value)
     {
@@ -202,24 +253,24 @@ class Process
         }
     }
     
-	public function update_feed_data($id, $time, $value)
-	{
-		$time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
+    public function update_feed_data($id, $time, $value)
+    {
+        $time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
 
-		$feedname = "feed_".trim($id)."";
-		$result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
-		$row = $result->fetch_array();
+        $feedname = "feed_".trim($id)."";
+        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
+        $row = $result->fetch_array();
 
-		if (!$row)
-		{
-			$this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
-		}
-		else
-		{
-			$this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
-		}
-		return $value;
-	} 
+        if (!$row)
+        {
+            $this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
+        }
+        else
+        {
+            $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
+        }
+        return $value;
+    } 
 
     public function add_input($id, $time, $value)
     {
@@ -649,6 +700,88 @@ class Process
         
         return $value;
     }
+    
+    // Schedule
+    public function if_not_schedule_zero($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? $value : 0);
+    }
+    public function if_not_schedule_null($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? $value : null);
+    }
+    public function if_schedule_zero($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? 0 : $value);
+    }
+    public function if_schedule_null($scheduleid, $time, $value) {
+        $expression = $this->schedule->get_expression($scheduleid)["expression"];
+        $result = $this->schedule->match($expression, $time);
+        return ($result ? null : $value);
+    }
+    
+    // Conditional process list flow
+    public function if_zero_skip($noarg, $time, $value) {
+        if ($value == 0)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_not_zero_skip($noarg, $time, $value) {
+        if ($value != 0)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_null_skip($noarg, $time, $value) {
+        if ($value === NULL)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_not_null_skip($noarg, $time, $value) {
+        if (!($value === NULL))
+            $this->proc_skip_next = true;
+        return $value;
+    }
+
+    public function if_gt_skip($arg, $time, $value) {
+        if ($value > $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_gt_equal_skip($arg, $time, $value) {
+        if ($value >= $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_lt_skip($arg, $time, $value) {
+        if ($value < $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_lt_equal_skip($arg, $time, $value) {
+        if ($value <= $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    
+    public function if_equal_skip($arg, $time, $value) {
+        if ($value == $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    public function if_not_equal_skip($arg, $time, $value) {
+        if ($value != $arg)
+            $this->proc_skip_next = true;
+        return $value;
+    }
+    
+    public function goto_process($proc_no, $time, $value){
+        $this->proc_goto = $proc_no - 2;
+        return $value;
+    }
+
 
     // No longer used
     public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing    

@@ -11,7 +11,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <style>
-input[type="text"] {
+#table input[type="text"] {
          width: 88%;
 }
 
@@ -30,12 +30,14 @@ input[type="text"] {
 <div class="container">
     <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
     
-    <div id="processlist-ui" style="padding:20px; background-color:#efefef; display:none">
-    
+    <div id="processlist-ui" style="padding:15px; background-color:#efefef; display:none; border-radius: 4px;">
+    <button type="button" id="close" class="close">×</button>
     <div style="font-size:30px; padding-bottom:20px; padding-top:18px"><b><span id="inputname"></span></b> config</div>
-    <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
+    <p><?php echo _('Input processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
     
-        <table class="table">
+        <div id="noprocess" class="alert">You have no processes defined</div>
+        
+        <table id="process-table" class="table table-hover">
 
             <tr>
                 <th style='width:5%;'></th>
@@ -54,54 +56,88 @@ input[type="text"] {
         <tr><th>Add process:</th><tr>
         <tr>
             <td>
-                <div class="input-prepend input-append">
-                    <select id="process-select"></select>
+                    <select id="process-select" class="input-large"></select>
 
                     <span id="type-value" style="display:none">
-                        <input type="text" id="value-input" style="width:125px" />
+                        <div class="input-prepend">
+                            <span class="add-on value-select-label">Value</span>
+                            <input type="text" id="value-input" class="input-medium" placeholder="Type value..." />
+                        </div>
+                    </span>
+                    
+                    <span id="type-text" style="display:none">
+                        <div class="input-prepend">
+                            <span class="add-on text-select-label">Text</span>
+                            <input type="text" id="text-input" class="input-large" placeholder="Type text..." />
+                        </div>
                     </span>
 
                     <span id="type-input" style="display:none">
-                        <select id="input-select" style="width:140px;"></select>
+                        <div class="input-prepend">
+                            <span class="add-on input-select-label">Node:Input</span>                   
+                            <div class="btn-group">
+                                <select id="input-select" class="input-medium"></select>
+                            </div>
+                        </div>
                     </span>
 
-                    <span id="type-feed">        
-                        <select id="feed-select" style="width:140px;"></select>
-                        
-                        <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
-                        <input type="hidden" id="feed-tag"/>
-
-                        <span class="add-on feed-engine-label">Feed engine: </span>
-                        <select id="feed-engine">
-                            <option value=6 >Fixed Interval With Averaging (PHPFIWA)</option>
-                            <option value=5 >Fixed Interval No Averaging (PHPFINA)</option>
-                            <option value=2 >Variable Interval No Averaging (PHPTIMESERIES)</option>
-                        </select>
-
-
-                        <select id="feed-interval" style="width:130px">
-                            <option value="">Select interval</option>
-                            <option value=5>5s</option>
-                            <option value=10>10s</option>
-                            <option value=15>15s</option>
-                            <option value=20>20s</option>
-                            <option value=30>30s</option>
-                            <option value=60>60s</option>
-                            <option value=120>2 mins</option>
-                            <option value=300>5 mins</option>
-                            <option value=600>10 mins</option>
-                            <option value=1200>20 mins</option>
-                            <option value=1800>30 mins</option>
-                            <option value=3600>1 hour</option>
-                        </select>
-                        
+                    <span id="type-schedule" style="display:none">
+                        <div class="input-prepend">
+                            <span class="add-on schedule-select-label">Schedule</span>
+                            <div class="btn-group">
+                                <select id="schedule-select" class="input-large"></select>
+                            </div>
+                        </div>
                     </span>
-                    <button id="process-add" class="btn btn-info"><?php echo _('Add'); ?></button>
-                </div>
+                    
+                    <span id="type-feed"> 
+                        <div class="input-prepend">
+                            <span class="add-on feed-select-label">Feed</span>
+                            <div class="btn-group">
+                                <select id="feed-select" class="input-medium"></select>
+
+                                <input type="text" id="feed-name" style="width:140px" placeholder="Type feed name..." />
+                                <input type="hidden" id="feed-tag"/>
+                            </div>
+                        </div>
+                        <div class="input-prepend">
+                            <span class="add-on feed-engine-label">Engine</span>
+                            <div class="btn-group">
+                                <select id="feed-engine" class="input-medium">
+<?php // All supported engines must be here, removing in process_model.php:get_process_list() arrays hides them from user ?>
+                                    <option value=6 >PHPFIWA Fixed Interval With Averaging</option>
+                                    <option value=5 >PHPFINA Fixed Interval No Averaging</option>
+                                    <option value=2 >PHPTIMESERIES Variable Interval No Averaging</option>
+                                    <option value=0 >MYSQL TimeSeries </option>
+                                </select>
+
+                                <select id="feed-interval" class="input-mini">
+                                    <option value="">Select interval</option>
+                                    <option value=5>5s</option>
+                                    <option value=10>10s</option>
+                                    <option value=15>15s</option>
+                                    <option value=20>20s</option>
+                                    <option value=30>30s</option>
+                                    <option value=60>60s</option>
+                                    <option value=120>2m</option>
+                                    <option value=300>5m</option>
+                                    <option value=600>10m</option>
+                                    <option value=900>15m</option>
+                                    <option value=1200>20m</option>
+                                    <option value=1800>30m</option>
+                                    <option value=3600>1h</option>
+                                    <option value=86400>1d</option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    <div class="input-prepend">
+                        <button id="process-add" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Add'); ?></button>
+                    </div>
             </td>
         </tr>
         <tr>
-          <td id="description"></td>
+          <td><div id="description" class="alert alert-info"></div></td>
         </tr>
         </table>
     </div>
@@ -114,8 +150,26 @@ input[type="text"] {
             <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 
-</div>
 
+
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"><?php echo _('Delete Input'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <p><?php echo _('Deleting an input will loose its name and configured process list.<br>An new blank input is automatic created by API data post if it does not already exists.'); ?>
+        </p>
+        <p>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete'); ?></button>
+    </div>
+</div>
+</div>
 <script>
 
     var path = "<?php echo $path; ?>";
@@ -127,10 +181,10 @@ input[type="text"] {
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
     table.element = "#table";
-
+    
     table.fields = {
         //'id':{'type':"fixed"},
-        'nodeid':{'title':'<?php echo _("Node:"); ?>','type':"fixed"},
+        'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
         'name':{'title':'<?php echo _("Key"); ?>','type':"text"},
         'description':{'title':'<?php echo _("Name"); ?>','type':"text"},
         'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
@@ -146,7 +200,8 @@ input[type="text"] {
 
     table.groupprefix = "Node ";
     table.groupby = 'nodeid';
-
+    table.deletedata = false;
+    
     update();
 
     function update()
@@ -172,22 +227,43 @@ input[type="text"] {
         }});
     }
 
-    var updater = setInterval(update, 10000);
-
-    $("#table").bind("onEdit", function(e){
+    var updater;
+    function updaterStart(func, interval)
+    {
         clearInterval(updater);
+        updater = null;
+        if (interval > 0) updater = setInterval(func, interval);
+    }
+    updaterStart(update, 10000);
+    
+    $("#table").bind("onEdit", function(e){
+        updaterStart(update, 0);
     });
 
     $("#table").bind("onSave", function(e,id,fields_to_update){
         input.set(id,fields_to_update);
-        updater = setInterval(update, 10000);
-    });
-
-    $("#table").bind("onDelete", function(e,id){
-        input.remove(id);
-        update();
     });
     
+    $("#table").bind("onResume", function(e){
+        updaterStart(update, 10000);
+    });
+
+    $("#table").bind("onDelete", function(e,id,row){
+        $('#myModal').modal('show');
+        $('#myModal').attr('scheduleid',id);
+        $('#myModal').attr('feedrow',row);
+    });
+
+    $("#confirmdelete").click(function()
+    {
+        var id = $('#myModal').attr('scheduleid');
+        var row = $('#myModal').attr('schedulerow');
+        input.remove(id);
+        table.remove(row);
+        update();
+
+        $('#myModal').modal('hide');
+    });
     
 //------------------------------------------------------------------------------------------------------------------------------------
 // Process list UI js
@@ -227,9 +303,15 @@ input[type="text"] {
         
         $("#feed-tag").val("Node:"+processlist_ui.inputlist[processlist_ui.inputid].nodeid);
         
+        $("#processlist-ui #process-select").change();  // Force a refresh
+        
         $("#processlist-ui").show();
         window.scrollTo(0,0);
         
+    });
+    
+    $("#processlist-ui").on('click', '.close', function() {
+        $("#processlist-ui").hide();
     });
 
 function load_all()
@@ -242,22 +324,45 @@ function load_all()
     var out = "";
     for (i in processlist_ui.inputlist) {
       var input = processlist_ui.inputlist[i];
-      out += "<option value="+input.id+">Node "+input.nodeid+":"+input.name+" "+input.description+"</option>";
+      out += "<option value="+input.id+">"+input.nodeid+":"+input.name+" "+input.description+"</option>";
     }
     $("#input-select").html(out);
     
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
+    $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
+        var schedules = {};
+        for (z in result) schedules[result[z].id] = result[z];
         
-        var feeds = {};
-        for (z in result) feeds[result[z].id] = result[z];
+        processlist_ui.schedulelist = schedules;
+        var groupname = {0:'Public',1:'Mine'};
+        var groups = [];
+        //for (z in result) schedules[result[z].id] = result[z];
         
-        processlist_ui.feedlist = feeds;
-        // Feedlist
-        var out = "<option value=-1>CREATE NEW:</option>";
-        for (i in processlist_ui.feedlist) {
-          out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
+        for (z in processlist_ui.schedulelist)
+        {
+            var group = processlist_ui.schedulelist[z].own;
+            group = groupname[group];
+            if (!groups[group]) groups[group] = []
+            processlist_ui.schedulelist[z]['_index'] = z;
+            groups[group].push(processlist_ui.schedulelist[z]);
         }
-        $("#feed-select").html(out);
+        
+        var out = "";
+        for (z in groups)
+        {
+            out += "<optgroup label='"+z+"'>";
+            for (p in groups[z])
+            {
+                out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+(z!=groupname[1]?" ["+groups[z][p]['id']+"]":"")+"</option>";
+            }
+            out += "</optgroup>";
+        }
+        $("#schedule-select").html(out);
+    }});
+    
+    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
+        var feeds = {};
+        for (z in result) { feeds[result[z].id] = result[z]; }
+        processlist_ui.feedlist = feeds;
     }});
     
     $.ajax({ url: path+"input/getallprocesses.json", async: true, dataType: 'json', success: function(result){

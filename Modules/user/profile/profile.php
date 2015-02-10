@@ -105,12 +105,12 @@ function languagecode_to_name($lang){
         <div class="account-item">
             <span class="muted"><?php echo _('Write API Key'); ?></span>
             <!--<a id="newapikeywrite" >new</a>-->
-            <input id="writeapikey" type="text" style="width:255px" readonly="readonly" />
+            <span class="writeapikey"></span>
         </div>
         <div class="account-item">
             <span class="muted"><?php echo _('Read API Key'); ?></span>
             <!--<a id="newapikeyread" >new</a>-->
-            <input id="readapikey" type="text" style="width:255px" readonly="readonly" />
+            <span class="readapikey"></span>
         </div>
         </div>
         
@@ -131,8 +131,8 @@ function languagecode_to_name($lang){
 
     list.data = user.get();
 
-    $("#writeapikey").val(list.data.apikey_write);
-    $("#readapikey").val(list.data.apikey_read);
+    $(".writeapikey").html(list.data.apikey_write);
+    $(".readapikey").html(list.data.apikey_read);
     
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});

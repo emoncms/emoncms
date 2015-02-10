@@ -14,8 +14,8 @@ var customtablefields = {
     {
         'draw': function(row,field)
         {
-            if (table.data[row][field] == true) return "<i class='"+table.fields[field].trueicon+"' type='input' ></i>";
-            if (table.data[row][field] == false) return "<i class='"+table.fields[field].falseicon+"' type='input' ></i>";
+            if (table.data[row][field] == true) return "<i class='"+table.fields[field].trueicon+"' type='input' style='cursor:pointer'></i>";
+            if (table.data[row][field] == false) return "<i class='"+table.fields[field].falseicon+"' type='input' style='cursor:pointer'></i>";
         },
 
         'event': function()
@@ -24,14 +24,16 @@ var customtablefields = {
             $(table.element).on('click', 'i[type=input]', function() {
                 var row = $(this).parent().attr('row');
                 var field = $(this).parent().attr('field');
-                table.data[row][field] = !table.data[row][field];
+                if (!table.data[row]['#READ_ONLY#']) {
+                    table.data[row][field] = !table.data[row][field];
 
-                var fields = {};
-                fields[field] = table.data[row][field];
+                    var fields = {};
+                    fields[field] = table.data[row][field];
 
-                $(table.element).trigger("onSave",[table.data[row]['id'],fields]);
-
-                if (table.data[row][field]) $(this).attr('class', table.fields[field].trueicon); else $(this).attr('class', table.fields[field].falseicon);
+                    $(table.element).trigger("onSave",[table.data[row]['id'],fields]);
+                    if (table.data[row][field]) $(this).attr('class', table.fields[field].trueicon); else $(this).attr('class', table.fields[field].falseicon);
+                    table.draw();
+                }
             });
         }
     },
@@ -133,14 +135,52 @@ var customtablefields = {
                 key = '/ feed'; type = 4; break;
               case 33:
                 key = '= 0'; type = 3; break;
+              case 34:
+                key = 'whacc'; type = 2; break;
+              case 35:
+                key = 'MQTT'; type = 5; break;
+              case 36:
+                key = 'null'; type = 3; break;
+              case 37:
+                key = 'ori'; type = 3; break;
+              case 38:
+                key = '!sched 0'; type = 6; break;
+              case 39:
+                key = '!sched N'; type = 6; break;
+              case 40:
+                key = 'sched 0'; type = 6; break;
+              case 41:
+                key = 'sched N'; type = 6; break;
+              case 42:
+                key = '0? skip'; type = 3; break;
+              case 43:
+                key = '!0? skip'; type = 3; break;
+              case 44:
+                key = 'N? skip'; type = 3; break;
+              case 45:
+                key = '!N? skip'; type = 3; break;
+              case 46:
+                key = '>? skip'; type = 0; break;
+              case 47:
+                key = '>=? skip'; type = 0; break;
+              case 48:
+                key = '<? skip'; type = 0; break;
+              case 49:
+                key = '<=? skip'; type = 0; break;
+              case 50:
+                key = '=? skip'; type = 0; break;
+              case 51:
+                key = '!=? skip'; type = 0; break;
+              case 52:
+                key = 'GOTO'; type = 0; break;
             }  
-
+			
             value = keyvalue[1];
             
             switch(type)
             {
               case 0:
-                type = 'value: '; color = 'important';
+                type = 'user value: '; color = 'important';
                 break;
               case 1:
                 type = 'input: '; color = 'warning';
@@ -155,10 +195,16 @@ var customtablefields = {
               case 4:
                 type = 'feed: '; color = 'warning';
                 break;
+              case 5:
+                type = 'topic: '; color = 'info';
+                break;
+              case 6:
+                type = 'schedule: '; color = 'warning';
+                break;
             }
 
             if (type == 'feed: ') { 
-              out += "<a href='"+path+"vis/auto?feedid="+value+"'<span class='label label-"+color+"' title='"+type+value+"' style='cursor:pointer'>"+key+"</span></a> "; 
+              out += "<a target='_blank' href='"+path+"vis/auto?feedid="+value+"'<span class='label label-"+color+"' title='"+type+value+"' style='cursor:pointer'>"+key+"</span></a> "; 
             } else {
               out += "<span class='label label-"+color+"' title='"+type+value+"' style='cursor:default'>"+key+"</span> ";
             }

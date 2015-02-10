@@ -63,10 +63,13 @@
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('WARNING deleting feed data is permanent'); ?></h3>
+        <h3 id="myModalLabel"><?php echo _('Delete feed data'); ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Are you sure you want to delete the data in this window?'); ?></p>
+        <p><?php echo _('Deleting feed data in this window is permanent.'); ?>
+           <br><br>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
