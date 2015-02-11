@@ -185,28 +185,42 @@ class Dashboard
         }
 
         $dashboards = $this->get_list($userid, $public, $published);
+        $arraycheck_dashboards = array_filter($dashboards);
+        
         $topmenu="";
-        foreach ($dashboards as $dashboard)
-        {
-            // Check show description
-            if ($dashboard['showdescription']) {
-                    $desc = ' title="'.$dashboard['description'].'"';
-            } else {
-                    $desc = '';
-            }
 
-                // Set URL using alias or id
-            if ($dashboard['alias']) {
-                $aliasurl = "/".$dashboard['alias'];
-            } else {
-                $aliasurl = '&id='.$dashboard['id'];
-            }
+		if (!empty($arraycheck_dashboards)) 
+		{
+			if ($session['write']) 
+			{
+			  $topmenu.='<li><a href="'.$path.'dashboard/list"><i class="icon-th-list" title="List view"></i> View List</a></li>';
+			  $topmenu.='<li class="divider"></li>';
+			}
 
-                // Build the menu item
-            $topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';
-        }
-        return $topmenu;
-    }
+			foreach ($dashboards as $dashboard)
+			{
+				// Check show description
+				if ($dashboard['showdescription']) {
+						$desc = ' title="'.$dashboard['description'].'"';
+				} else {
+						$desc = '';
+				}
 
+					// Set URL using alias or id
+				if ($dashboard['alias']) {
+					$aliasurl = "/".$dashboard['alias'];
+				} else {
+					$aliasurl = '&id='.$dashboard['id'];
+				}
+
+					// Build the menu item
+				$topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';
+			}
+
+		}
+		
+		return $topmenu;
+    
+	}
 }
 

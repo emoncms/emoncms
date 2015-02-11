@@ -12,6 +12,8 @@
 global $path, $session, $useckeditor;
 ?>
 
+<?php if ($session['write']) { ?>
+
 <style>
 
 .greydashmenu {
@@ -41,15 +43,8 @@ global $path, $session, $useckeditor;
 
 </style>
 
-<span style="float:left; color:#888; font: 13px/27px sans-serif; font-weight:bold; "><?php echo _("Dashboards:"); ?></span>
-
-<ul class="greydashmenu">
-    <?php echo $menu; ?>
-</ul>
-
-<?php if ($session['write']) { ?>
-
-    <div align="right" style="padding:4px;">
+    <div align="right" style="padding:0px;">
+    <span style="color:#888; font: 13px/27px sans-serif; font-weight:bold; "><?php echo _("Actions: "); ?></span>    
     <?php if ($type=="view" && isset($id)) { ?>
         <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" title="<?php echo _("Draw Editor"); ?>" ><i class="icon-edit"></i></a>
     <?php } ?>
