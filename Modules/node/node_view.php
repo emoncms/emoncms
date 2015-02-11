@@ -68,39 +68,39 @@
                         
                         <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
 
-                        <span class="add-on feed-engine-label">Feed engine: </span>
+                        <span class="add-on feed-engine-label"><?php echo _('Feed engine'); ?>: </span>
                         <select id="feed-engine">
 
                         <optgroup label="Recommended">
-                        <option value=6 selected>Fixed Interval With Averaging</option>
-                        <option value=5 >Fixed Interval No Averaging</option>
-                        <option value=2 >Variable Interval No Averaging</option>
+                        <option value=6 selected><?php echo _('Fixed Interval With Averaging'); ?></option>
+                        <option value=5 ><?php echo _('Fixed Interval No Averaging'); ?></option>
+                        <option value=2 ><?php echo _('Variable Interval No Averaging'); ?></option>
                         </optgroup>
 
                         <optgroup label="Other">
-                        <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
-                        <option value=1 >TIMESTORE (Requires installation of timestore)</option>
-                        <option value=3 >GRAPHITE (Requires installation of graphite)</option>
-                        <option value=0 >MYSQL (Slow when there is a lot of data)</option>
+                        <option value=4 ><?php echo _('PHPTIMESTORE (Port of timestore to PHP)'); ?></option>  
+                        <option value=1 ><?php echo _('TIMESTORE (Requires installation of timestore)'); ?></option>
+                        <option value=3 ><?php echo _('GRAPHITE (Requires installation of graphite)'); ?></option>
+                        <option value=0 ><?php echo _('MYSQL (Slow when there is a lot of data)'); ?></option>
                         </optgroup>
 
                         </select>
 
 
                         <select id="feed-interval" style="width:130px">
-                            <option value="">Select interval</option>
-                            <option value=5>5s</option>
-                            <option value=10>10s</option>
-                            <option value=15>15s</option>
-                            <option value=20>20s</option>
-                            <option value=30>30s</option>
-                            <option value=60>60s</option>
-                            <option value=120>2 mins</option>
-                            <option value=300>5 mins</option>
-                            <option value=600>10 mins</option>
-                            <option value=1200>20 mins</option>
-                            <option value=1800>30 mins</option>
-                            <option value=3600>1 hour</option>
+                            <option value=""><?php echo _('Select interval'); ?></option>
+                            <option value=5>5 <?php echo _('s'); ?></option>
+                            <option value=10>10 <?php echo _('s'); ?></option>
+                            <option value=15>15 <?php echo _('s'); ?></option>
+                            <option value=20>20 <?php echo _('s'); ?></option>
+                            <option value=30>30 <?php echo _('s'); ?></option>
+                            <option value=60>60 <?php echo _('s'); ?></option>
+                            <option value=120>2 <?php echo _('mins'); ?></option>
+                            <option value=300>5 <?php echo _('mins'); ?></option>
+                            <option value=600>10 <?php echo _('mins'); ?></option>
+                            <option value=1200>20 <?php echo _('mins'); ?></option>
+                            <option value=1800>30 <?php echo _('mins'); ?></option>
+                            <option value=3600>1 <?php echo _('hour'); ?></option>
                         </select>
                         
                     </span>
