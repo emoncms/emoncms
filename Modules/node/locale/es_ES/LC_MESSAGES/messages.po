@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
-"POT-Creation-Date: 2015-02-06 13:57+0100\n"
-"PO-Revision-Date: 2015-02-06 13:57+0100\n"
+"POT-Creation-Date: 2015-02-11 15:58+0100\n"
+"PO-Revision-Date: 2015-02-11 16:03+0100\n"
 "Last-Translator: Jesús Jiménez <jesjimenez@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -31,6 +31,11 @@ msgstr ""
 "Este es un punto de entrada alternativo diseñado para proporcionar una "
 "decodificación flexible de paquetes de datos basados en RF12b"
 
+#: ../../../node_view.php:28 ../../../node_view.php:214
+#: ../../../node_menu.php:7
+msgid "Node"
+msgstr "Nodo"
+
 #: ../../../node_view.php:33 ../../../process_list.php:31
 msgid ""
 "Input processes are executed sequentially with the result being passed back "
@@ -55,6 +60,10 @@ msgstr "Argumento"
 #: ../../../node_view.php:44 ../../../process_list.php:42
 msgid "Actions"
 msgstr "Acciones"
+
+#: ../../../node_view.php:52
+msgid "Add process:"
+msgstr "Añadir proceso:"
 
 #: ../../../node_view.php:71
 msgid "Feed engine"
@@ -112,6 +121,126 @@ msgstr "hora"
 msgid "Add"
 msgstr "Añadir"
 
+#: ../../../node_view.php:121
+msgid "Ok"
+msgstr "Ok"
+
+#: ../../../node_view.php:136
+msgid "No decoder"
+msgstr "Sin decodificador"
+
+#: ../../../node_view.php:141
+msgid "Low power temperature node"
+msgstr ""
+
+#: ../../../node_view.php:144
+msgid "Temperature"
+msgstr "Temperatura"
+
+#: ../../../node_view.php:145 ../../../node_view.php:185
+msgid "Battery Voltage"
+msgstr "Voltaje de la batería"
+
+#: ../../../node_view.php:150
+msgid "EmonTx V3 RFM12B DiscreteSampling"
+msgstr ""
+
+#: ../../../node_view.php:153
+msgid "Power 1"
+msgstr ""
+
+#: ../../../node_view.php:154
+msgid "Power 2"
+msgstr ""
+
+#: ../../../node_view.php:155
+msgid "Power 3"
+msgstr ""
+
+#: ../../../node_view.php:156
+msgid "Power 4"
+msgstr ""
+
+#: ../../../node_view.php:157
+msgid "Vrms"
+msgstr ""
+
+#: ../../../node_view.php:158
+msgid "temp"
+msgstr "temp"
+
+#: ../../../node_view.php:163
+msgid "EmonTx V3 (Continuous sampling with Wh totals)"
+msgstr "EmonTx V3 (Muestreo continuo con totales de Wh)"
+
+#: ../../../node_view.php:166
+msgid "Message Number"
+msgstr "Nº de mensaje"
+
+#: ../../../node_view.php:167
+msgid "Power CT1"
+msgstr ""
+
+#: ../../../node_view.php:168
+msgid "Power CT2"
+msgstr ""
+
+#: ../../../node_view.php:169
+msgid "Power CT3"
+msgstr ""
+
+#: ../../../node_view.php:170
+msgid "Power CT4"
+msgstr ""
+
+#: ../../../node_view.php:171
+msgid "Wh CT1"
+msgstr ""
+
+#: ../../../node_view.php:172
+msgid "Wh CT2"
+msgstr ""
+
+#: ../../../node_view.php:173
+msgid "Wh CT3"
+msgstr ""
+
+#: ../../../node_view.php:174
+msgid "Wh CT4"
+msgstr ""
+
+#: ../../../node_view.php:179
+msgid "EmonTH DHT22 DS18B20"
+msgstr ""
+
+#: ../../../node_view.php:182
+msgid "Internal temperature"
+msgstr "Temperatura interna"
+
+#: ../../../node_view.php:183
+msgid "External temperature"
+msgstr "Temperatura externa"
+
+#: ../../../node_view.php:184
+msgid "Humidity"
+msgstr "Humedad"
+
+#: ../../../node_view.php:190
+msgid "Custom decoder"
+msgstr "Decodificador personalizado"
+
+#: ../../../node_view.php:211
+msgid "(Click to select a decoder)"
+msgstr "(Pulse para seleccionar un decodificador)"
+
+#: ../../../node_view.php:270
+msgid "Config"
+msgstr "Opciones"
+
+#: ../../../node_view.php:277
+msgid "Raw byte data:"
+msgstr "Datos en bruto:"
+
 #: ../../../node_view.php:283
 msgid "No nodes detected yet"
 msgstr "No se han detectado nodos"
@@ -122,9 +251,61 @@ msgstr ""
 "Para usar este módulo envía una lista de valores separados por comas y el id "
 "de nodo usando una URL similar a la siguiente: "
 
-#: ../../../node_menu.php:7
-msgid "Node"
-msgstr "Nodo"
+#: ../../../node_view.php:312 ../../../node_view.php:423
+msgid "Name:"
+msgstr "Nombre:"
+
+#: ../../../node_view.php:314
+msgid "Datatype:"
+msgstr "Tipo de datos:"
+
+#: ../../../node_view.php:315
+msgid "Integer"
+msgstr "Entero"
+
+#: ../../../node_view.php:315
+msgid "Unsigned long"
+msgstr "Entero largo sin signo"
+
+#: ../../../node_view.php:316
+msgid "Scale:"
+msgstr "Escala:"
+
+#: ../../../node_view.php:318
+msgid "Units:"
+msgstr "Unidades:"
+
+#: ../../../node_view.php:320
+msgid "Save"
+msgstr "Guardar"
+
+#: ../../../node_view.php:425
+msgid "No of variables:"
+msgstr "Nº de variables:"
+
+#: ../../../node_view.php:427
+msgid "Create"
+msgstr "Crear"
+
+#: ../../../node_view.php:462
+msgid "variable:"
+msgstr "variable:"
+
+#: ../../../node_view.php:487
+msgid "s ago"
+msgstr "s atrás"
+
+#: ../../../node_view.php:488
+msgid "mins ago"
+msgstr "min atrás"
+
+#: ../../../node_view.php:489
+msgid "hours ago"
+msgstr "horas atrás"
+
+#: ../../../node_view.php:490
+msgid "inactive"
+msgstr "inactivo"
 
 #: ../../../node_api.php:3
 msgid "Node API"
@@ -154,6 +335,21 @@ msgstr "Lectura y escritura:"
 #: ../../../node_api.php:13
 msgid "Posting data"
 msgstr "Enviando información"
+
+#: ../../../node_api.php:14
+msgid ""
+"The node module accepts a comma seperated string of byte (0-256) values as "
+"generated by the rfm12pi adapter board running the RFM12Demo sketch written "
+"by Jean Claude Wippler of jeelabs. This byte value string is then decoded by "
+"the node module according to the decoder selected into the variables that "
+"where packaged up using the struct definitions on the sensor nodes."
+msgstr ""
+"El módulo de nodo acepta una cadena de bytes (0-256) separados por comas, "
+"iguales a los generados por la placa rfm12pi ejecutando el sketch RFM12Demo "
+"escrito por Jean Claude Wippler, de jeelabs. La cadena de valores se "
+"decodifica por el módulo de acuerdo al decodificador escogido en las "
+"variables que fueron incluidas usando las definiciones de estructura de los "
+"nodos sensores."
 
 #: ../../../node_api.php:17
 msgid "With write apikey:"
