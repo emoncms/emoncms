@@ -6,7 +6,9 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Branches
 
-* [Master](https://github.com/emoncms/emoncms/tree/master)
+* [Master](https://github.com/emoncms/emoncms/tree/master) - stable but less actively developed branch of emoncms. New features will be far and few between but testing will be more extensive.
+
+* [Extended](https://github.com/emoncms/emoncms/tree/Extended) - An extended feature set branch of emoncms for advanced users. This branch may be less stable than the master branch , pull requests are merged with light review for quick development. 
 
 * [BufferedWrite](https://github.com/emoncms/emoncms/tree/bufferedwrite) - A low write version of emoncms designed for running on SD cards, this is a cut down version of emoncms supporting only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. Data is written to disk at spaced out intervals allowing datapoints to buffer and be written to disk in larger blocks.
 
