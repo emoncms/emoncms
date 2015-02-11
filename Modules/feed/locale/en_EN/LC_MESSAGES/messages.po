@@ -1,106 +1,164 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: emoncms3\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:38+0100\n"
-"PO-Revision-Date: 2012-10-18 18:38+0100\n"
-"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"Project-Id-Version: Emoncms 8.4.0 - Feed\n"
+"POT-Creation-Date: 2015-02-04 02:34+0100\n"
+"PO-Revision-Date: 2015-02-04 02:34+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Generator: Poedit 1.7.4\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
 "X-Poedit-SearchPath-0: ../../..\n"
-
-#: ../../../feed_controller.php:200
-msgid "Feed "
-msgstr ""
-
-#: ../../../feed_controller.php:200
-msgid " deleted"
-msgstr ""
-
-#: ../../../feed_controller.php:201
-msgid "Feed does not exist"
-msgstr ""
 
 #: ../../../Views/feedapi_view.php:19
 msgid "Feed API"
 msgstr ""
 
 #: ../../../Views/feedapi_view.php:21
-msgid "General"
+msgid "Apikey authentication"
 msgstr ""
 
-#: ../../../Views/feedapi_view.php:26
-msgid "Feed properties"
+#: ../../../Views/feedapi_view.php:22
+msgid ""
+"If you want to call any of the following action's when your not logged in, "
+"add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:23
+msgid "Read only:"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:27
+msgid "Read & Write:"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:31
+msgid "Html"
 msgstr ""
 
 #: ../../../Views/feedapi_view.php:32
-msgid "Feed data"
+msgid "The feed list view"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:33
+msgid "This page"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:35
+msgid "JSON"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:36
+msgid "To use the json api the request url needs to include .json"
 msgstr ""
 
 #: ../../../Views/feedapi_view.php:37
-msgid "Delete feeds"
+msgid "returns a list of public feeds made public by the given user."
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:17
+#: ../../../Views/feedapi_view.php:38 ../../../Views/feedapi_view.php:39
+msgid "returns the present value of a given feed"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:40
+msgid "returns feed data"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:41
+msgid "returns histogram data"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:42
+msgid "returns kwh consumed in a given power band using histogram data type"
+msgstr ""
+
+#: ../../../Views/feedapi_view.php:44
+msgid "returns id of a feed given by name"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:23
 msgid "Feed API Help"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:18 ../../../Views/feedlist_view.php:21
-msgid "Deleted feeds"
-msgstr ""
-
-#: ../../../Views/feedlist_view.php:18
+#: ../../../Views/feedlist_view.php:26 ../../../feed_menu.php:7
 msgid "Feeds"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:22
-msgid "Delete feeds permanently"
+#: ../../../Views/feedlist_view.php:31
+msgid "No feeds created"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:32
+msgid ""
+"Feeds are where your monitoring data is stored. The recommended route for "
+"creating feeds is to start by creating inputs (see the inputs tab). Once you "
+"have inputs you can either log them straight to feeds or if you want you can "
+"add various levels of input processing to your inputs to create things like "
+"daily average data or to calibrate inputs before storage. You may want to "
+"follow the link as a guide for generating your request."
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:32
+msgid "Feed API helper"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:42
+msgid "WARNING deleting a feed is permanent"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:45
+msgid "Are you sure you want to delete this feed?"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:48
+msgid "Cancel"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:49
+msgid "Delete permanently"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:113
+msgid "Close"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:127
+msgid "Id"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:128
 msgid "Name"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:129
 msgid "Tag"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:66
-msgid "Type"
+#: ../../../Views/feedlist_view.php:130
+msgid "Datatype"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:131
+msgid "Engine"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:132
+msgid "Public"
+msgstr ""
+
+#: ../../../Views/feedlist_view.php:133
 msgid "Size"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:135
 msgid "Updated"
 msgstr ""
 
-#: ../../../Views/feedlist_view.php:66
+#: ../../../Views/feedlist_view.php:136
 msgid "Value"
 msgstr ""
-
-#~ msgid "en_EN"
-#~ msgstr "English"
-
-#~ msgid "es_ES"
-#~ msgstr "Spanish"
-
-#~ msgid "nl_BE"
-#~ msgstr "Dutch (Belgium)"
-
-#~ msgid "nl_NL"
-#~ msgstr "Dutch (Netherlands)"
-
-#~ msgid "fr_FR"
-#~ msgstr "French"
-
-#~ msgid "AUTODETECTLANGUAGE"
-#~ msgstr "Use language browser"

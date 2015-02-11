@@ -245,7 +245,7 @@ SmoothieChart.prototype.render = function(canvas, time) {
         firstX = x;
         canvasContext.moveTo(x, y);
       }
-      // Great explanation of Bezier curves: http://en.wikipedia.org/wiki/Bï¿½zier_curve#Quadratic_curves
+      // Great explanation of Bezier curves: http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
       //
       // Assuming A was the last point in the line plotted and B is the new point,
       // we draw a curve with control points P and Q as below.

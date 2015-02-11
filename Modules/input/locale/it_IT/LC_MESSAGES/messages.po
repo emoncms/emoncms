@@ -2,10 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Emoncms 8.4.0 - Input\n"
 "POT-Creation-Date: 2015-02-04 02:35+0100\n"
-"PO-Revision-Date: 2015-02-04 02:36+0100\n"
+"PO-Revision-Date: 2015-02-04 02:54+0100\n"
 "Last-Translator: \n"
-"Language-Team: \n"
-"Language: en_GB\n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language: it_IT\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../../Views/input_api.php:4
 msgid "Apikey authentication"
-msgstr ""
+msgstr "Apikey autenticazione"
 
 #: ../../../Views/input_api.php:5
 msgid ""
@@ -31,11 +31,11 @@ msgstr ""
 
 #: ../../../Views/input_api.php:6
 msgid "Read only:"
-msgstr ""
+msgstr "Sola lettura:"
 
 #: ../../../Views/input_api.php:9
 msgid "Read & Write:"
-msgstr ""
+msgstr "Lettura & Scrittura"
 
 #: ../../../Views/input_api.php:13
 msgid "Available HTML URLs"
@@ -47,7 +47,7 @@ msgstr ""
 
 #: ../../../Views/input_api.php:16
 msgid "This page"
-msgstr ""
+msgstr "Questa pagina"
 
 #: ../../../Views/input_api.php:17
 msgid "Input processing configuration page"
@@ -83,7 +83,7 @@ msgstr ""
 
 #: ../../../Views/input_api.php:31
 msgid "APIKEY"
-msgstr ""
+msgstr "APIKEY"
 
 #: ../../../Views/input_api.php:32
 msgid ""
@@ -213,11 +213,11 @@ msgstr ""
 
 #: ../../../Views/input_view.php:46
 msgid "Actions"
-msgstr ""
+msgstr "Azioni"
 
 #: ../../../Views/input_view.php:99
 msgid "Add"
-msgstr ""
+msgstr "Aggiungi"
 
 #: ../../../Views/input_view.php:113
 msgid "No inputs created"
@@ -240,7 +240,7 @@ msgstr ""
 
 #: ../../../Views/input_view.php:135
 msgid "Name"
-msgstr ""
+msgstr "Nome"
 
 #: ../../../Views/input_view.php:136
 msgid "Process list"
@@ -252,7 +252,7 @@ msgstr ""
 
 #: ../../../Views/input_view.php:138
 msgid "Value"
-msgstr ""
+msgstr "Valore"
 
 #: ../../../input_menu.php:7
 msgid "Input"
@@ -264,7 +264,7 @@ msgstr ""
 
 #: ../../../process_model.php:62
 msgid "x"
-msgstr ""
+msgstr "x"
 
 #: ../../../process_model.php:63
 msgid "+"
@@ -364,7 +364,7 @@ msgstr ""
 
 #: ../../../process_model.php:96
 msgid "Max value"
-msgstr ""
+msgstr "Valore massimo"
 
 #: ../../../process_model.php:97
 msgid "Min value"
@@ -372,19 +372,19 @@ msgstr ""
 
 #: ../../../process_model.php:99
 msgid " + feed"
-msgstr ""
+msgstr "+feed"
 
 #: ../../../process_model.php:100
 msgid " - feed"
-msgstr ""
+msgstr "- feed"
 
 #: ../../../process_model.php:101
 msgid " * feed"
-msgstr ""
+msgstr "* feed"
 
 #: ../../../process_model.php:102
 msgid " / feed"
-msgstr ""
+msgstr "/ feed"
 
 #: ../../../process_model.php:103
 msgid "Reset to ZERO"
@@ -397,21 +397,3 @@ msgstr ""
 #: ../../../process_model.php:108
 msgid "Publish to MQTT"
 msgstr ""
-
-#~ msgid "en_EN"
-#~ msgstr "English"
-
-#~ msgid "es_ES"
-#~ msgstr "Spanish"
-
-#~ msgid "nl_BE"
-#~ msgstr "Dutch (Belgium)"
-
-#~ msgid "nl_NL"
-#~ msgstr "Dutch (Netherlands)"
-
-#~ msgid "fr_FR"
-#~ msgstr "French"
-
-#~ msgid "AUTODETECTLANGUAGE"
-#~ msgstr "Use language browser"
