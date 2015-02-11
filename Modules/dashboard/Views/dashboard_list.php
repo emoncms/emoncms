@@ -41,7 +41,7 @@ input[type="text"] {
 
     var path = "<?php echo $path; ?>";
 
-    // Extemd table library field types
+    // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
     table.element = "#table";

@@ -25,29 +25,17 @@ global $path, $allowusersregister, $enable_rememberme, $enable_password_reset;
 
     <div class="login-container">
 
-        <div id="login-form"  class="well" style="text-align:left">
-            <p>
-                <label><?php echo _('Username:'); ?>
-                    <input type="text" tabindex="1" name="username"  />
-                </label>
-            </p>
-
+        <div id="login-form"  class="well" style="text-align:left">          
+            <input type="text" tabindex="1" name="username" placeholder="<?php echo _('Username'); ?>" />
+            
             <p class="register-item" style="display:none">
-                <label><?php echo _('Email:'); ?>
-                    <input type="text" name="email" style="width:94%" tabindex="2"/>
-                </label>
+                <input type="text" name="email" style="width:94%" tabindex="2" placeholder="<?php echo _('Email'); ?>"/>
             </p>
-
-            <p>
-                <label><?php echo _('Password:'); ?>
-                    <input type="password" tabindex="3" name="password" />
-                </label>
-            </p>
-
+    
+            <input type="password" tabindex="3" name="password" placeholder="<?php echo _('Password'); ?>" />
+            
             <p class="register-item" style="display:none">
-                <label><?php echo _('Confirm password:'); ?>
-                    <input id="confirm-password" type="password" name="confirm-password" tabindex="4"/>
-                </label>
+                <input id="confirm-password" type="password" name="confirm-password" tabindex="4" placeholder="<?php echo _('Confirm password'); ?>"/>
             </p>
 
             <div id="error" class="alert alert-error" style="display:none;"></div>
