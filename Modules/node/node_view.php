@@ -25,7 +25,7 @@
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close modal-exit">×</button>
-    <br><h3 id="myModalLabel"><b>Node <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> config:</h3>
+    <br><h3 id="myModalLabel"><b><?php echo _('Node'); ?> <span id="myModal-nodeid"></span>: <span id="myModal-variablename"></span></b> config:</h3>
   </div>
 
   <div class="modal-body">
@@ -49,7 +49,7 @@
         </table>
 
         <table id="process-table" class="table">
-        <tr><th>Add process:</th><tr>
+        <tr><th><?php echo _('Add process:'); ?></th><tr>
         <tr>
             <td>
                 <div class="input-prepend input-append">
@@ -68,27 +68,27 @@
                         
                         <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
 
-                        <span class="add-on feed-engine-label">Feed engine: </span>
+                        <span class="add-on feed-engine-label"><?php echo _('Feed engine:'); ?> </span>
                         <select id="feed-engine">
 
                         <optgroup label="Recommended">
-                        <option value=6 selected>Fixed Interval With Averaging</option>
-                        <option value=5 >Fixed Interval No Averaging</option>
-                        <option value=2 >Variable Interval No Averaging</option>
+                        <option value=6 selected><?php echo _('Fixed Interval With Averaging'); ?></option>
+                        <option value=5 ><?php echo _('Fixed Interval No Averaging'); ?></option>
+                        <option value=2 ><?php echo _('Variable Interval No Averaging'); ?></option>
                         </optgroup>
 
                         <optgroup label="Other">
-                        <option value=4 >PHPTIMESTORE (Port of timestore to PHP)</option>  
-                        <option value=1 >TIMESTORE (Requires installation of timestore)</option>
-                        <option value=3 >GRAPHITE (Requires installation of graphite)</option>
-                        <option value=0 >MYSQL (Slow when there is a lot of data)</option>
+                        <option value=4 ><?php echo _('PHPTIMESTORE (Port of timestore to PHP)'); ?></option>  
+                        <option value=1 ><?php echo _('TIMESTORE (Requires installation of timestore)'); ?></option>
+                        <option value=3 ><?php echo _('GRAPHITE (Requires installation of graphite'); ?>)</option>
+                        <option value=0 ><?php echo _('MYSQL (Slow when there is a lot of data)'); ?></option>
                         </optgroup>
 
                         </select>
 
 
                         <select id="feed-interval" style="width:130px">
-                            <option value="">Select interval</option>
+                            <option value=""><?php echo _('Select interval'); ?></option>
                             <option value=5>5s</option>
                             <option value=10>10s</option>
                             <option value=15>15s</option>
@@ -118,7 +118,7 @@
   </div>
 
   <div class="modal-footer">
-    <button class="btn btn-primary modal-exit">Ok</button>
+    <button class="btn btn-primary modal-exit"><?php echo _('Ok'); ?></button>
   </div>
 </div>
 
@@ -133,61 +133,61 @@
   var decoders = {
   
     nodecoder: {
-      name: 'No decoder',
+      name: '<?php echo _('No decoder'); ?>',
       variables:[]
     },
   
     lowpowertemperaturenode: {
-      name: 'Low power temperature node',
+      name: '<?php echo _('Low power temperature node'); ?>',
       updateinterval: 60,
       variables: [
-        {name: 'Temperature', type: 1, scale: 0.01, units: '°C' },
-        {name: 'Battery Voltage', type: 1, scale:0.001, units: 'V'}
+        {name: '<?php echo _('Temperature'); ?>', type: 1, scale: 0.01, units: '°C' },
+        {name: '<?php echo _('Battery Voltage'); ?>', type: 1, scale:0.001, units: 'V'}
       ]
     },
     
     emonTxV3_RFM12B_DiscreteSampling: {
-      name: 'EmonTx V3 RFM12B DiscreteSampling',
+      name: '<?php echo _('EmonTx V3 RFM12B DiscreteSampling'); ?>',
       updateinterval: 10,
       variables: [
-        {name: 'Power 1', type: 1, units: 'W'}, 
-        {name: 'Power 2', type: 1, units: 'W'}, 
-        {name: 'Power 3', type: 1, units: 'W'}, 
-        {name: 'Power 4', type: 1, units: 'W'},
-        {name: 'Vrms', type: 1, scale: 0.01, units: 'V'}, 
-        {name: 'temp', type: 1, scale: 0.1, units: '°C'}
+        {name: '<?php echo _('Power 1'); ?>', type: 1, units: 'W'}, 
+        {name: '<?php echo _('Power 2'); ?>', type: 1, units: 'W'}, 
+        {name: '<?php echo _('Power 3'); ?>', type: 1, units: 'W'}, 
+        {name: '<?php echo _('Power 4'); ?>', type: 1, units: 'W'},
+        {name: '<?php echo _('Vrms'); ?>', type: 1, scale: 0.01, units: 'V'}, 
+        {name: '<?php echo _('temp'); ?>', type: 1, scale: 0.1, units: '°C'}
       ]
     },
 
     emonTxV3_continuous_whtotals: {
-      name: 'EmonTx V3 (Continuous sampling with Wh totals)',
+      name: '<?php echo _('EmonTx V3 (Continuous sampling with Wh totals)'); ?>',
       updateinterval: 10,
       variables: [
-        {name: 'Message Number', type: 2 },
-        {name: 'Power CT1', type: 1, units: 'W'}, 
-        {name: 'Power CT2', type: 1, units: 'W'}, 
-        {name: 'Power CT3', type: 1, units: 'W'}, 
-        {name: 'Power CT4', type: 1, units: 'W'},
-        {name: 'Wh CT1', type: 2, units: 'Wh'}, 
-        {name: 'Wh CT2', type: 2, units: 'Wh'}, 
-        {name: 'Wh CT3', type: 2, units: 'Wh'}, 
-        {name: 'Wh CT4', type: 2, units: 'Wh'}
+        {name: '<?php echo _('Message Number'); ?>', type: 2 },
+        {name: '<?php echo _('Power CT1'); ?>', type: 1, units: 'W'}, 
+        {name: '<?php echo _('Power CT2'); ?>', type: 1, units: 'W'}, 
+        {name: '<?php echo _('Power CT3'); ?>', type: 1, units: 'W'}, 
+        {name: '<?php echo _('Power CT4'); ?>', type: 1, units: 'W'},
+        {name: '<?php echo _('Wh CT1'); ?>', type: 2, units: 'Wh'}, 
+        {name: '<?php echo _('Wh CT2'); ?>', type: 2, units: 'Wh'}, 
+        {name: '<?php echo _('Wh CT3'); ?>', type: 2, units: 'Wh'}, 
+        {name: '<?php echo _('Wh CT4'); ?>', type: 2, units: 'Wh'}
       ]
     },
     
     emonTH_DHT22_DS18B20: {
-      name: 'EmonTH DHT22 DS18B20',
+      name: '<?php echo _('EmonTH DHT22 DS18B20'); ?>',
       updateinterval: 60,
       variables: [
-        {name: 'Internal temperature', type: 1, scale: 0.1, units: '°C'}, 
-        {name: 'External temperature', type: 1, scale: 0.1, units: '°C'}, 
-        {name: 'Humidity', type: 1, scale: 0.1, units: '%'}, 
-        {name: 'Battery Voltage', type: 1, scale: 0.1, units: 'V'},
+        {name: '<?php echo _('Internal temperature'); ?>', type: 1, scale: 0.1, units: '°C'}, 
+        {name: '<?php echo _('External temperature'); ?>', type: 1, scale: 0.1, units: '°C'}, 
+        {name: '<?php echo _('Humidity'); ?>', type: 1, scale: 0.1, units: '%'}, 
+        {name: '<?php echo _('Battery Voltage'); ?>', type: 1, scale: 0.1, units: 'V'},
       ]
     },
     
     custom: {
-      name: 'Custom decoder',
+      name: '<?php echo _('Custom decoder'); ?>',
       variables:[]
     },
   };
@@ -208,10 +208,10 @@
     var out = "";
     for (z in nodes)
     {
-      var nodename = '(Click to select a decoder)';
+      var nodename = '<?php echo _('(Click to select a decoder)'); ?>';
       if (nodes[z].decoder!=undefined && nodes[z].decoder.name!=undefined) nodename = nodes[z].decoder.name;
         
-      out += "<tr style='background-color:#eee' node="+z+"><td><b>Node "+z+"</b></td><td><span class='select-decoder' node="+z+" mode='namedisplay'><b>"+nodename+"</b></span><span node="+z+" class='customdecoder'></span></td><td>"+list_format_updated(nodes[z].time)+"</td><td></td></tr>";
+      out += "<tr style='background-color:#eee' node="+z+"><td><b><?php echo _('Node'); ?> "+z+"</b></td><td><span class='select-decoder' node="+z+" mode='namedisplay'><b>"+nodename+"</b></span><span node="+z+" class='customdecoder'></span></td><td>"+list_format_updated(nodes[z].time)+"</td><td></td></tr>";
      
       var bytes = nodes[z].data.split(',');
       var pos = 0;
@@ -267,14 +267,14 @@
           var updateinterval = nodes[z].decoder.updateinterval;
           
           var processliststr = ""; if (variable.processlist!=undefined) processliststr = processlist_ui.drawinline(variable.processlist);
-          out += "</td><td style='text-align:right'>"+processliststr+"<span class='label "+labelcolor+" record' style='cursor:pointer' >Config <i class='icon-wrench icon-white'></i></span></td></tr>";
+          out += "</td><td style='text-align:right'>"+processliststr+"<span class='label "+labelcolor+" record' style='cursor:pointer' ><?php echo _('Config'); ?> <i class='icon-wrench icon-white'></i></span></td></tr>";
          
         }
       }
       
       if (nodes[z].decoder==undefined || nodes[z].decoder.variables.length==0)
       {
-        out += "<tr><td></td><td><i style='color:#aaa'>Raw byte data: "+nodes[z].data+"</i>"; 
+        out += "<tr><td></td><td><i style='color:#aaa'><?php echo _('Raw byte data:'); ?> "+nodes[z].data+"</i>"; 
         out += "</td><td></td></tr>";
       }
       
@@ -306,18 +306,18 @@
     var currentname = nodes[nodeid].decoder.variables[variableid].name;
     var currentscale = nodes[nodeid].decoder.variables[variableid].scale;
     if (currentscale==undefined) currentscale = 1;
-    
+                                    
     // Inline editing html
     var out = "<div class='input-prepend input-append'>";
-    out += "<span class='add-on'>Name:</span>";
+    out += "<span class='add-on'><?php echo _('Name:'); ?></span>";
     out += "<input style='width:150px' class='variable-name-edit' type='text'/ value='"+currentname+"'>";
-    out += "<span class='add-on'>Datatype:</span>";
-    out += "<select class='variable-datatype-selector' style='width:130px'><option value=1>Integer</option><option value=2>Unsigned long</option></select>";
-    out += "<span class='add-on'>Scale:</span>";
+    out += "<span class='add-on'><?php echo _('Datatype:'); ?></span>";
+    out += "<select class='variable-datatype-selector' style='width:130px'><option value=1><?php echo _('Integer'); ?></option><option value=2><?php echo _('Unsigned long'); ?></option></select>";
+    out += "<span class='add-on'><?php echo _('Scale:'); ?></span>";
     out += "<input class='variable-scale-edit' style='width:60px' type='text' value='"+currentscale+"' / >";
-    out += "<span class='add-on'>Units:</span>";
+    out += "<span class='add-on'><?php echo _('Units:'); ?></span>";
     out += "<select class='variable-units-selector' style='width:60px;'><option value=''></option><option>W</option><option>kW</option><option>Wh</option><option>kWh</option><option>°C</option><option>V</option><option>mV</option><option>A</option><option>mA</option></select>";
-    out += "<button class='btn save-variable'>Save</button>";
+    out += "<button class='btn save-variable'><?php echo _('Save'); ?></button>";
     out += "</div>";
     
     // Insert in place of variable name
@@ -420,11 +420,11 @@
     if (decoder=='custom')
     {
       var out = " <div class='input-prepend input-append'>";
-      out += "<span class='add-on'>Name:</span>";
+      out += "<span class='add-on'><?php echo _('Name:'); ?></span>";
       out += "<input style='width:150px' class='node-name-edit' type='text'/ >";
-      out += "<span class='add-on'>No of variables:</span>";
+      out += "<span class='add-on'><?php echo _('No of variables:'); ?></span>";
       out += "<input style='width:60px' class='node-varnum-edit' type='text'/ >";
-      out += "<button class='btn node-create' class='btn'>Create</button>";
+      out += "<button class='btn node-create' class='btn'><?php echo _('Create'); ?></button>";
       out += "</div>";
       $('.customdecoder[node='+nodeid+']').html(out);
     }
@@ -459,7 +459,7 @@
     
     for (var i=0; i<no_of_variables; i++)
     {
-      nodes[nodeid].decoder.variables.push({name: "variable: "+(i+1), type: 1, scale: 1, units: ''});
+      nodes[nodeid].decoder.variables.push({name: "<?php echo _('variable:'); ?> "+(i+1), type: 1, scale: 1, units: ''});
     }
     
     nodes[nodeid].decoder.decoder = nodename.toLowerCase().replace(/ /g, '-');
@@ -484,10 +484,10 @@
     var mins = secs/60;
     var hour = secs/3600
 
-    var updated = secs.toFixed(0)+"s ago";
-    if (secs>180) updated = mins.toFixed(0)+" mins ago";
-    if (secs>(3600*2)) updated = hour.toFixed(0)+" hours ago";
-    if (hour>24) updated = "inactive";
+    var updated = secs.toFixed(0)+"<?php echo _('s ago'); ?>";
+    if (secs>180) updated = mins.toFixed(0)+" <?php echo _('mins ago'); ?>";
+    if (secs>(3600*2)) updated = hour.toFixed(0)+" <?php echo _('hours ago'); ?>";
+    if (hour>24) updated = "<?php echo _('inactive'); ?>";
 
     var color = "rgb(255,125,20)";
     if (secs<25) color = "rgb(50,200,50)"
