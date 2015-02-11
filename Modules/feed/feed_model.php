@@ -621,7 +621,9 @@ class Feed
         if ($this->redis) {
             $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
         } else {
-            $this->mysqli->query("UPDATE feeds SET `time` = '$updatetime', `value` = '$value' WHERE `id`= '$feedid'");
+			// Explicitly set decimal separator, in case current locale doesn't use a dot (MySQL expects always a dot, regardless of locale)
+            $value2=number_format($value,10,'.','');
+            $this->mysqli->query("UPDATE feeds SET `time` = '$updatetime', `value` = '$value2' WHERE `id`= '$feedid'");
         }
     }
     
