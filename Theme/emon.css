@@ -60,15 +60,7 @@ div#account {
 input[type=text][class=variable-name-edit] {
     margin-bottom:0px;
 }
-body .modal {
-    /* new custom width */
-    width: 1080px;
-    /* must be half of the width, minus scrollbar on the left (30px) */
-    margin-left: -540px;
-}
-.modal-body {
-    max-height: 800px;
-}
+
 @media (min-width: 768px) and (max-width: 979px) {
     #topspacer {
         margin-top:-20px;

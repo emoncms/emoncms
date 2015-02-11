@@ -6,7 +6,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <style>
-input[type="text"] {
+#table input[type="text"] {
      width: 88%;
 }
 </style>
@@ -26,10 +26,13 @@ input[type="text"] {
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('WARNING deleting a dashboard is permanent') ?></h3>
+        <h3 id="myModalLabel"><?php echo _('Delete dashboard') ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Are you sure you want to delete this dashboard?'); ?></p>
+        <p><?php echo _('Deleting a dashboard is permanent.'); ?>
+           <br><br>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
