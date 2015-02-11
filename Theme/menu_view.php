@@ -10,12 +10,17 @@
         http://openenergymonitor.org
     */
 
-    global $path, $session, $menu, $menu;
+    global $path, $session, $menu, $menu, $mysqli;
     if (!isset($session['profile'])) $session['profile'] = 0;
 
     $menu_left = $menu['left'];
     $menu_right = $menu['right'];
     $menu_dropdown = $menu['dropdown'];
+
+    require_once "Modules/dashboard/dashboard_model.php";
+    $dashboardmenu = new Dashboard($mysqli);
+
+    $dashmenu = $dashboardmenu->build_menu($session['userid'],"view");  
 
     if ($session['write']) $menu_right[] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
     if (!$session['write']) $menu_right[] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
@@ -25,15 +30,33 @@
     <?php
 
     foreach ($menu_left as $item)
-    {
-        if (isset($item['session'])) {
-            if (isset($session[$item['session']]) && $session[$item['session']]==1) {
+	{
+	    if ($item['name'] == "Dashboard"  && $session['userid'] && !$dashmenu == "") 
+        {
+            echo "<li class=\"dropdown\">";
+            echo "<a href=\"".$path.$item['path']."\" data-toggle=\"dropdown\" class=\"dropdown-toggle\">".$item['name']." <b class=\"caret\"></b></a>";
+            echo "<ul class=\"dropdown-menu\">";			
+            echo $dashmenu;
+            echo "</ul>";
+            echo "</li>";
+
+        }
+		else {
+            if (isset($item['session'])) 
+            {
+                if (isset($session[$item['session']]) && $session[$item['session']]==1) 
+                {
+                    echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+                }
+            } 
+            else 
+            {
                 echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
             }
-        } else {
-            echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+
         }
-    }
+
+    }		
 
     ?>
 
