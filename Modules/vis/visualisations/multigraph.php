@@ -21,6 +21,12 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/jquery.flot.hiddengraphs.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/html2canvas.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/canvas2image.js"></script>
+
+
 <?php if (!$embed) { ?>
 <h2><?php echo _("Multigraph:"); ?> <div id="multigraph_name"></div></h2>
 <?php } ?>
