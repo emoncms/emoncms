@@ -360,6 +360,16 @@ Move the writer script to home folder and service script to /etc/init.d/
     sudo chmod 755 /etc/init.d/feedwriter
     sudo update-rc.d feedwriter defaults
     
+### Disable Serial console
+
+The RFM12Pi/RFM69Pi communicates with Raspberry Pi via /dev/ttyAMA0. The Raspberry Pi's serial console must be disabled to enable the RFM69Pi serial communication:
+
+    $ sudo wget https://raw.github.com/lurch/rpi-serial-console/master/rpi-serial-console -O /usr/bin/rpi-serial-console && sudo chmod +x /usr/bin/rpi-serial-console
+    $ sudo rpi-serial-console disable
+    $ sudo reboot
+    $ rpi-serial-console status
+
+
 ### Install Emonhub
 
 Copied from: [https://github.com/emonhub/dev-emonhub](https://github.com/emonhub/dev-emonhub)
@@ -372,7 +382,7 @@ This script is not intended to fully install emonHub, It clones into "emonhub" f
 
 Edit configurations
 
-   sudo nano /etc/emonhub/emonhub.conf
+    sudo nano /etc/emonhub/emonhub.conf
     
 Place OS Parition of SD card back in read only mode:
 
