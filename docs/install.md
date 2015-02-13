@@ -239,7 +239,7 @@ Find line:
 
 change to:
     
-    session.save_path = "/tmp"
+   ; session.save_path = "/tmp"
 
 
 ### Security
