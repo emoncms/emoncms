@@ -372,7 +372,7 @@ This script is not intended to fully install emonHub, It clones into "emonhub" f
 
 Edit configurations
 
-    nano /etc/emonhub/emonhub.conf
+   sudo nano /etc/emonhub/emonhub.conf
     
 Place OS Parition of SD card back in read only mode:
 
