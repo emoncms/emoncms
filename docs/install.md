@@ -16,7 +16,7 @@ The writer process writes the feed data to disk step periodically. The writing s
 
 Download the official raspberrpi raspbian image and write to the SD card.
 
-    [http://www.raspberrypi.org/downloads](http://www.raspberrypi.org/downloads)
+[http://www.raspberrypi.org/downloads](http://www.raspberrypi.org/downloads)
     
 To upload the image using dd on linux 
 
