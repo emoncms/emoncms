@@ -52,7 +52,7 @@ function feed_controller()
             for ($i=0; $i<count($feedids); $i++) {
                 $feedid = (int) $feedids[$i];
                 if ($feed->exist($feedid)) // if the feed exists
-                { $result[$i] = $feed->get_value($feedid);
+                { $result[$i] = (float) $feed->get_value($feedid);
                 } else { $result[$i] = ""; }
             }
         } else {
