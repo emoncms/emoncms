@@ -320,6 +320,55 @@ class PHPFiwa
         }
         return $data;
     }
+    
+    public function get_data_exact($name,$start,$end,$outinterval)
+    {
+        $name = (int) $name;
+        $start = floatval($start)/1000;
+        $end = floatval($end)/1000;
+        $outinterval= (int) $outinterval;
+        if ($outinterval<1) $outinterval = 1;
+        if ($end<=$start) return false;
+        
+        $numdp = (($end - $start) / $outinterval);
+        if ($numdp>5000) return false;
+        if ($outinterval<5) $outinterval = 5;
+
+        // If meta data file does not exist then exit
+        if (!$meta = $this->get_meta($name)) return false;
+        // $meta->npoints = $this->get_npoints($name);
+
+        $data = array();
+        $time = 0; $i = 0;
+
+        // The datapoints are selected within a loop that runs until we reach a
+        // datapoint that is beyond the end of our query range
+        $fh = fopen($this->dir.$name."_0.dat", 'rb');
+        while($time<=$end)
+        {
+            $time = $start + ($outinterval * $i);
+            $pos = round(($time - $meta->start_time) / $meta->interval[0]);
+
+            $value = null;
+
+            if ($pos>=0 && $pos < $meta->npoints[0])
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $val = unpack("f",fread($fh,4));
+                // add to the data array if its not a nan value
+                if (!is_nan($val[1])) {
+                    $value = $val[1];
+                } else {
+                    $value = null;
+                }
+            }
+            $data[] = array($time*1000,$value);
+
+            $i++;
+        }
+        return $data;
+    }
 
     public function get_data($feedid,$start,$end,$outinterval)
     {
