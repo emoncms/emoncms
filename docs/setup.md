@@ -207,7 +207,7 @@ Open the emonhub config file for editing:
     
    $ nano /boot/emonhub.conf
 
-In the Dispatchers section enter the write apikey of your local emoncms account and in the Listeners section set the group and frequency of your rfm12pi adapter board and rf network.
+In the Reporters section enter the write apikey of your local emoncms account and in the Listeners section set the group and frequency of your rfm12pi adapter board and rf network.
 
 Save and exit nano text editor using [Ctrl + X] then [Y] and [Enter]
 
@@ -218,6 +218,24 @@ Set the raspberrypi os back into read-only mode.
 That's it, if you have sensor nodes sending data, inputs should start appearing in the inputs section your emoncms account in a few seconds.
 
 Return to the OpenEnergyMonitor Guide to setup your sensor nodes and map the inputs to create feeds and build your dashboard in emoncms: http://openenergymonitor.org/emon/guide
+
+**Emonhub reporters config example for posting data to both the local buffered write installation and emoncms.org**
+
+    [reporters]
+
+    [[emonCMS_local]]
+        type = EmonHubEmoncmsReporter
+        [[[init_settings]]]
+        [[[runtime_settings]]]
+            url = http://localhost/emoncms
+            apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    [[emonCMS_remote]]
+        type = EmonHubEmoncmsReporter
+        [[[init_settings]]]
+        [[[runtime_settings]]]
+            url = http://emoncms.org
+            apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
 ## 4.) Things to do (Optional but recommended) 
