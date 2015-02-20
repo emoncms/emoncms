@@ -494,7 +494,6 @@ class Feed
     
     public function get_history($feedid,$start,$end,$outinterval)
     {
-        $this->redis->incr("fiveseconds:getdatahits");
         $feedid = (int) $feedid;
         if ($end == 0) $end = time()*1000;
         
