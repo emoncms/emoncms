@@ -2,15 +2,19 @@
 
 ## 1) Download the ready-to-go SD card image:
 
-**Download Latest - emonSD-13-08-14.img.zip (975Mb)**
+**Latest - emonSD-23-02-15.img.zip (1.2GB)**
+
+[UK Mirror 1](http://openenergymonitor.org/files/emonSD-23-02-15.zip)
+
+	Latest image (23-02-15) includes support for Raspberry Pi 2 and latest emonHub supporting new RFM69Pi
+
+
+
+**Older - emonSD-13-08-14.img.zip (975Mb)**
 
 [UK Mirror 1](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
 
 [Europe Mirror 1](http://pizzacapri-vissenbjerg.dk/oem/emonSD-13-08-14.img.zip)
-
-[Europe Mirror 2](http://peppes-pizza.dk/oem/emonSD-13-08-14.img.zip)
-
-[Europe Mirror 3](http://xn--pizzalg-v1a.dk/oem/emonSD-13-08-14.img.zip)
 
 [US Mirror](http://oem.aluminumalloyboats.com/oem/emonSD-13-08-14.img.zip)
 
