@@ -2,15 +2,21 @@
 
 ## 1) Download the ready-to-go SD card image:
 
-**Download Latest - emonSD-13-08-14.img.zip (975Mb)**
+**Latest - emonSD-23-02-15.img.zip (1.2GB)**
+
+[UK Mirror 1](http://openenergymonitor.org/files/emonSD-26-02-15.zip)
+
+	Latest image (26-02-15) includes support for Raspberry Pi 2 and latest emonHub supporting new RFM69Pi
+
+
+
+**Older - emonSD-13-08-14.img.zip (975Mb)**
 
 [UK Mirror 1](http://files.openenergymonitor.org/emonSD-13-08-14.img.zip)
 
 [Europe Mirror 1](http://pizzacapri-vissenbjerg.dk/oem/emonSD-13-08-14.img.zip)
 
-[Europe Mirror 2](http://peppes-pizza.dk/oem/emonSD-13-08-14.img.zip)
-
-[Europe Mirror 3](http://xn--pizzalg-v1a.dk/oem/emonSD-13-08-14.img.zip)
+[US Mirror](http://oem.aluminumalloyboats.com/oem/emonSD-13-08-14.img.zip)
 
 
 Many thanks to [Bo Herrmannsen (boelle)](http://openenergymonitor.org/emon/user/3149) for Europe mirror hosting, please DM to report broken link. 
@@ -205,7 +211,7 @@ Open the emonhub config file for editing:
     
    $ nano /boot/emonhub.conf
 
-In the Dispatchers section enter the write apikey of your local emoncms account and in the Listeners section set the group and frequency of your rfm12pi adapter board and rf network.
+In the Reporters section enter the write apikey of your local emoncms account and in the Listeners section set the group and frequency of your rfm12pi adapter board and rf network.
 
 Save and exit nano text editor using [Ctrl + X] then [Y] and [Enter]
 
@@ -216,6 +222,24 @@ Set the raspberrypi os back into read-only mode.
 That's it, if you have sensor nodes sending data, inputs should start appearing in the inputs section your emoncms account in a few seconds.
 
 Return to the OpenEnergyMonitor Guide to setup your sensor nodes and map the inputs to create feeds and build your dashboard in emoncms: http://openenergymonitor.org/emon/guide
+
+**Emonhub reporters config example for posting data to both the local buffered write installation and emoncms.org**
+
+    [reporters]
+
+    [[emonCMS_local]]
+        type = EmonHubEmoncmsReporter
+        [[[init_settings]]]
+        [[[runtime_settings]]]
+            url = http://localhost/emoncms
+            apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+    [[emonCMS_remote]]
+        type = EmonHubEmoncmsReporter
+        [[[init_settings]]]
+        [[[runtime_settings]]]
+            url = http://emoncms.org
+            apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
 ## 4.) Things to do (Optional but recommended) 

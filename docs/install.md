@@ -16,7 +16,7 @@ The writer process writes the feed data to disk step periodically. The writing s
 
 Download the official raspberrpi raspbian image and write to the SD card.
 
-    [http://www.raspberrypi.org/downloads](http://www.raspberrypi.org/downloads)
+[http://www.raspberrypi.org/downloads](http://www.raspberrypi.org/downloads)
     
 To upload the image using dd on linux 
 
@@ -239,7 +239,7 @@ Find line:
 
 change to:
     
-    session.save_path = "/tmp"
+   ; session.save_path = "/tmp"
 
 
 ### Security
@@ -360,19 +360,29 @@ Move the writer script to home folder and service script to /etc/init.d/
     sudo chmod 755 /etc/init.d/feedwriter
     sudo update-rc.d feedwriter defaults
     
+### Disable Serial console
+
+The RFM12Pi/RFM69Pi communicates with Raspberry Pi via /dev/ttyAMA0. The Raspberry Pi's serial console must be disabled to enable the RFM69Pi serial communication:
+
+    $ sudo wget https://raw.github.com/lurch/rpi-serial-console/master/rpi-serial-console -O /usr/bin/rpi-serial-console && sudo chmod +x /usr/bin/rpi-serial-console
+    $ sudo rpi-serial-console disable
+    $ sudo reboot
+    $ rpi-serial-console status
+
+
 ### Install Emonhub
 
 Copied from: [https://github.com/emonhub/dev-emonhub](https://github.com/emonhub/dev-emonhub)
 
 Use this commandline to install a "development" version of emonHub
 
-    git clone https://github.com/emonhub/dev-emonhub.git && dev-emonhub/install.sh
+    git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
     
 This script is not intended to fully install emonHub, It clones into "emonhub" folder in home directory and symlinks the files to where they are supposed to be.
 
 Edit configurations
 
-    nano /etc/emonhub/emonhub.conf
+    sudo nano /etc/emonhub/emonhub.conf
     
 Place OS Parition of SD card back in read only mode:
 
