@@ -6,7 +6,7 @@
 
 [UK Mirror 1](http://openenergymonitor.org/files/emonSD-26-02-15.zip)
 
-	Latest image (23-02-15) includes support for Raspberry Pi 2 and latest emonHub supporting new RFM69Pi
+	Latest image (26-02-15) includes support for Raspberry Pi 2 and latest emonHub supporting new RFM69Pi
 
 
 
