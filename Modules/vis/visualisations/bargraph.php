@@ -243,9 +243,9 @@ $(function() {
         dataend -= offset * 3600000;
  
         //need to be fixed, when the interval is a day, it returns the kwh elapsed in 24h from an eratic time (9:08 by example). It should returns the kwh elapsed in 24h from midnight to midnight.
-        $.ajax({
-            url: path+'feed/average.json',                         
-            data: "id="+feedid+"&start="+datastart+"&end="+dataend+"&interval="+interval,
+        $.ajax({                                      
+            url: path+'feed/data.json',                         
+            data: "id="+feedid+"&start="+datastart+"&end="+dataend+"&interval="+interval+"&skipmissing=0",
             dataType: 'json',
             async: false,                      
             success: function(data_in) { data = data_in; } 

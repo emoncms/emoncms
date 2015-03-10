@@ -37,11 +37,6 @@
             array('delta',_("delta"),7,'0'))
         ),
         
-        'timestoredaily'=> array('label'=>_("TimestoreDaily"), 'options'=>array(
-            array('feedid',_("feedid"),1),
-            array('units',_("units"),5,'kWh'))
-        ),
-        
         'smoothie'=> array('label'=>_("Smoothie"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('ufac',_("ufac"),6))

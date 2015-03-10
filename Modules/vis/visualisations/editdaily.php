@@ -73,7 +73,14 @@
 
     function vis_feed_data()
     {
-        var graph_data = get_feed_data(feedid,start,end,1000);
+        var graph_data = [];
+        $.ajax({                                      
+            url: path+'feed/data.json',                         
+            data: "id="+feedid+"&start="+start+"&end="+end+"&interval=86400",
+            dataType: 'json',
+            async: false,                      
+            success: function(data_in) { graph_data = data_in; } 
+        });
         var stats = power_stats(graph_data);
         //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
 
