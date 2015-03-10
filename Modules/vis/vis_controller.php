@@ -49,7 +49,7 @@
             $feedid = intval(get('feedid'));
             $datatype = $feed->get_field($feedid,'datatype');
             if ($datatype == 0) $result = "Feed type or authentication not valid";
-            if ($datatype == 1) $route->action = 'rawdata';
+            if ($datatype == 1) $route->action = 'graph';
             if ($datatype == 2) $route->action = 'bargraph';
             if ($datatype == 3) $route->action = 'histgraph';
         }

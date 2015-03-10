@@ -74,9 +74,14 @@ function feed_controller()
                     if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
                     if ($route->action == 'kwhatpowers') $result = $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
-                    if ($route->action == 'data') $result = $feed->get_data($feedid,get('start'),get('end'),get('dp'));
-                    if ($route->action == 'average') $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
-                    if ($route->action == 'history') $result = $feed->get_history($feedid,get('start'),get('end'),get('interval'));
+
+                    if ($route->action == 'data') {
+                        $skipmissing = 1;
+                        $limitinterval = 1;
+                        if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
+                        if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
+                        $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                    }
                 }
 
                 // write session required

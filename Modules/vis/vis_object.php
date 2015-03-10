@@ -109,5 +109,9 @@
         'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
             array('powerx',_("powerx"),1),
             array('powery',_("powery"),1)
+        )),
+        
+        'graph'=> array('options'=>array(
+            array('feedid',1)
         ))
     );

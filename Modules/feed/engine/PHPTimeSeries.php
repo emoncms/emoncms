@@ -150,8 +150,8 @@ class PHPTimeSeries
     {
         return filesize($this->dir."feed_$feedid.MYD");
     }
-    
-    public function get_data_new($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         $start = intval($start/1000);
         $end = intval($end/1000);
@@ -189,7 +189,7 @@ class PHPTimeSeries
             if ($limitinterval)
             {
                 $diff = abs($dptime-$time);
-                if ($diff<($interval)) {
+                if ($diff<($interval/2)) {
                     $value = $array['value'];
                 } 
             } else {
@@ -202,58 +202,6 @@ class PHPTimeSeries
             }
             
             $i++;
-        }
-
-        return $data;
-    }
-
-    public function get_data($feedid,$start,$end,$outinterval)
-    {
-        $start = $start/1000; $end = $end/1000;
-
-        if ($outinterval<1) $outinterval = 1;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        if ($dp<1) return false;
-
-        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
-        $filesize = filesize($this->dir."feed_$feedid.MYD");
-
-        $pos = $this->binarysearch($fh,$start,$filesize);
-
-        $interval = ($end - $start) / $dp;
-
-        // Ensure that interval request is less than 1
-        // adjust number of datapoints to request if $interval = 1;
-        if ($interval<1) {
-            $interval = 1;
-            $dp = ($end - $start) / $interval;
-        }
-
-        $data = array();
-
-        $time = 0;
-
-        for ($i=0; $i<$dp; $i++)
-        {
-            $pos = $this->binarysearch($fh,$start+($i*$interval),$filesize);
-
-            fseek($fh,$pos);
-
-            // Read the datapoint at this position
-            $d = fread($fh,9);
-
-            // Itime = unsigned integer (I) assign to 'time'
-            // fvalue = float (f) assign to 'value'
-            $array = unpack("x/Itime/fvalue",$d);
-
-            $last_time = $time;
-            $time = $array['time'];
-
-            // $last_time = 0 only occur in the first run
-            if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                $data[] = array($time*1000,$array['value']);
-            }
         }
 
         return $data;
@@ -394,7 +342,7 @@ class PHPTimeSeries
         global $csv_decimal_places;
         global $csv_decimal_place_separator;
         global $csv_field_separator;
-        
+
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
