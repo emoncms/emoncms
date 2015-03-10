@@ -150,6 +150,62 @@ class PHPTimeSeries
     {
         return filesize($this->dir."feed_$feedid.MYD");
     }
+    
+    public function get_data_new($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    {
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $interval= (int) $interval;
+
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>3000) return array("success"=>false, "message"=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        
+        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        $filesize = filesize($this->dir."feed_$feedid.MYD");
+
+        $data = array();
+        $time = 0; $i = 0;
+        $atime = 0;
+
+        while ($time<=$end)
+        {
+            $time = $start + ($interval * $i);
+            $pos = $this->binarysearch($fh,$time,$filesize);
+            fseek($fh,$pos);
+            $d = fread($fh,9);
+            $array = unpack("x/Itime/fvalue",$d);
+            $dptime = $array['time'];
+            
+            $value = null;
+            
+            $lasttime = $atime;
+            $atime = $time;
+            
+            if ($limitinterval)
+            {
+                $diff = abs($dptime-$time);
+                if ($diff<($interval)) {
+                    $value = $array['value'];
+                } 
+            } else {
+                $value = $array['value'];
+                $atime = $array['time'];
+            }
+            
+            if ($atime!=$lasttime) {
+                if ($value!=null || !$skipmissing) $data[] = array($atime*1000,$value);
+            }
+            
+            $i++;
+        }
+
+        return $data;
+    }
 
     public function get_data($feedid,$start,$end,$outinterval)
     {
@@ -338,7 +394,7 @@ class PHPTimeSeries
         global $csv_decimal_places;
         global $csv_decimal_place_separator;
         global $csv_field_separator;
-
+        
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;

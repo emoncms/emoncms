@@ -168,32 +168,35 @@ class PHPFina
      * @param integer $dp The number of data points to return (used by some engines)
     */
 
-    public function get_data_exact($name,$start,$end,$outinterval)
+    public function get_data_new($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $name = (int) $name;
-        $start = floatval($start)/1000;
-        $end = floatval($end)/1000;
-        $outinterval= (int) $outinterval;
-        if ($outinterval<1) $outinterval = 1;
-        if ($end<=$start) return false;
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $interval= (int) $interval;
         
-        $numdp = (($end - $start) / $outinterval);
-        if ($numdp>5000) return false;
-        if ($outinterval<5) $outinterval = 5;
-
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>3000) return array('success'=>false, 'message'=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($name)) return false;
+        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"error reading meta data $meta");
         // $meta->npoints = $this->get_npoints($name);
+        
+        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
 
         $data = array();
         $time = 0; $i = 0;
-
+        $numdp = 0;
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
         $fh = fopen($this->dir.$name.".dat", 'rb');
         while($time<=$end)
         {
-            $time = $start + ($outinterval * $i);
+            $time = $start + ($interval * $i);
             $pos = round(($time - $meta->start_time) / $meta->interval);
 
             $value = null;
@@ -211,7 +214,10 @@ class PHPFina
                     $value = null;
                 }
             }
-            $data[] = array($time*1000,$value);
+            
+            if ($value!=null || !$skipmissing) {
+                $data[] = array($time*1000,$value);
+            }
 
             $i++;
         }
@@ -486,7 +492,7 @@ class PHPFina
         global $csv_decimal_places;
         global $csv_decimal_place_separator;
         global $csv_field_separator;
-        
+
         $id = intval($id);
         $start = intval($start);
         $end = intval($end);

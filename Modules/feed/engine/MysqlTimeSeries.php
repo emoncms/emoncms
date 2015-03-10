@@ -55,6 +55,11 @@ class MysqlTimeSeries
         return $value;
     }
 
+    public function get_data_new($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
+    {
+        return $this->get_data($feedid,$start,$end,$interval);
+    }
+    
     public function get_data($feedid,$start,$end,$outinterval)
     {
         //echo $feedid;
@@ -250,8 +255,8 @@ class MysqlTimeSeries
         //echo $feedid;
         $outinterval = intval($outinterval);
         $feedid = intval($feedid);
-        $start = floatval($start/1000);
-        $end = floatval($end/1000);
+        $start = intval($start);
+        $end = intval($end);
         
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);

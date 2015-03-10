@@ -321,52 +321,76 @@ class PHPFiwa
         return $data;
     }
     
-    public function get_data_exact($name,$start,$end,$outinterval)
+    public function get_data_new($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
     {
-        $name = (int) $name;
-        $start = floatval($start)/1000;
-        $end = floatval($end)/1000;
-        $outinterval= (int) $outinterval;
-        if ($outinterval<1) $outinterval = 1;
-        if ($end<=$start) return false;
+        $feedid = intval($feedid);
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $outinterval = (int) $outinterval;
         
-        $numdp = (($end - $start) / $outinterval);
-        if ($numdp>5000) return false;
-        if ($outinterval<5) $outinterval = 5;
+        if (!$meta = $this->get_meta($feedid)) return false;
 
-        // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($name)) return false;
-        // $meta->npoints = $this->get_npoints($name);
-
+        // 1) Find nearest layer with interval less than request interval
+        $layer = 0;
+        if ($meta->nlayers>1 && $outinterval >= $meta->interval[1]) $layer = 1;
+        if ($meta->nlayers>2 && $outinterval >= $meta->interval[2]) $layer = 2;
+        if ($meta->nlayers>3 && $outinterval >= $meta->interval[3]) $layer = 3;
+        
+        // 2) Calculate the portion of the data file that we need to load:
+        $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
+        $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
+        $endpos = ceil(($end - $start_time_avl) / $meta->interval[$layer]);
+        if ($startpos<0) $startpos = 0;
+        if ($endpos<$startpos) $endpos = $startpos;
+        $dp_in_range = $endpos - $startpos;
+        
+        // 3) Load data values available in time range
+        if ($dp_in_range) {
+            $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
+            fseek($fh,$startpos*4);
+            $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
+            fclose($fh);
+            $dploaded = count($layer_values);
+        }
+        
         $data = array();
-        $time = 0; $i = 0;
 
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$name."_0.dat", 'rb');
-        while($time<=$end)
+        $i=0;
+        $time0 = 0;
+        while($time0<=$end)
         {
-            $time = $start + ($outinterval * $i);
-            $pos = round(($time - $meta->start_time) / $meta->interval[0]);
-
+            $time0 = $start + ($outinterval * $i);
+            $time1 = $start + ($outinterval * ($i+1));
+            $pos0 = round(($time0 - $start_time_avl) / $meta->interval[$layer]);
+            $pos1 = round(($time1 - $start_time_avl) / $meta->interval[$layer]);
+            
             $value = null;
-
-            if ($pos>=0 && $pos < $meta->npoints[0])
+            
+            if ($pos0>=0)
             {
-                // read from the file
-                fseek($fh,$pos*4);
-                $val = unpack("f",fread($fh,4));
-                // add to the data array if its not a nan value
-                if (!is_nan($val[1])) {
-                    $value = $val[1];
-                } else {
-                    $value = null;
+                $p = $pos0 - $startpos;
+                $point_sum = 0;
+                $points_in_sum = 0;
+                
+                while($p<$pos1-$startpos) {
+                    if (isset($layer_values[$p+1]) && !is_nan($layer_values[$p+1])) {
+                        $point_sum += $layer_values[$p+1];
+                        $points_in_sum++;
+                    }
+                    $p++;
+                }
+                
+                if ($points_in_sum) {
+                    $value = $point_sum / $points_in_sum;
                 }
             }
-            $data[] = array($time*1000,$value);
+            
+            if ($value!=null) $data[] = array($time0*1000,$value);
+            if ($value==null && !$skipmissing) $data[] = array($time0*1000,$value);
 
             $i++;
         }
+        
         return $data;
     }
 
@@ -837,7 +861,7 @@ class PHPFiwa
         global $csv_decimal_places;
         global $csv_decimal_place_separator;
         global $csv_field_separator;
-
+        
         $feedid = (int) $feedid;
         $start = (int) $start;
         $end = (int) $end;
