@@ -198,7 +198,7 @@ class PHPTimeSeries
             }
             
             if ($atime!=$lasttime) {
-                if ($value!=null || !$skipmissing) $data[] = array($atime*1000,$value);
+                if ($value!==null || $skipmissing===0) $data[] = array($atime*1000,$value);
             }
             
             $i++;
