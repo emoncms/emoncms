@@ -328,6 +328,7 @@ class PHPFiwa
         $start = intval($start/1000);
         $end = intval($end/1000);
         $outinterval = (int) $outinterval;
+        if ($outinterval<1) $outinterval = 1;
         
         if (!$meta = $this->get_meta($feedid)) return false;
 
