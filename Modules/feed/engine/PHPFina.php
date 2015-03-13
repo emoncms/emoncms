@@ -214,7 +214,7 @@ class PHPFina
                 }
             }
             
-            if ($value!=null || !$skipmissing) {
+            if ($value!==null || $skipmissing===0) {
                 $data[] = array($time*1000,$value);
             }
 
