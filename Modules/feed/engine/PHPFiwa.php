@@ -386,8 +386,8 @@ class PHPFiwa
                 }
             }
             
-            if ($value!=null) $data[] = array($time0*1000,$value);
-            if ($value==null && !$skipmissing) $data[] = array($time0*1000,$value);
+            if ($value!==null) $data[] = array($time0*1000,$value);
+            if ($value===null && $skipmissing===0) $data[] = array($time0*1000,$value);
 
             $i++;
         }
