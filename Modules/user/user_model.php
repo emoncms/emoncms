@@ -53,11 +53,11 @@ class User
             $session['write'] = 1;
             $session['admin'] = 0;
             $session['editmode'] = TRUE;
-            $session['lang'] = $this->redis->get("language:$apikey_in");
+            $session['lang'] = "en"; // API access is always in english
         }
         else
         {
-            $result = $this->mysqli->query("SELECT id,language FROM users WHERE apikey_write='$apikey_in'");
+            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
             if ($result->num_rows == 1)
             {
                 $row = $result->fetch_array();
@@ -69,15 +69,14 @@ class User
                     $session['write'] = 1;
                     $session['admin'] = 0;
                     $session['editmode'] = TRUE;
-                    $session['lang'] = $row['language'];
+                    $session['lang'] = "en"; // API access is always in english
 
                     if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$row['id']);
-                    if ($this->redis) $this->redis->set("language:$apikey_in",$row['language']);
                 }
             }
             else
             {
-            $result = $this->mysqli->query("SELECT id,language FROM users WHERE apikey_read='$apikey_in'");
+            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
             if ($result->num_rows == 1)
             {
                 $row = $result->fetch_array();
@@ -89,7 +88,7 @@ class User
                     $session['write'] = 0;
                     $session['admin'] = 0;
                     $session['editmode'] = TRUE;
-                    $session['lang'] = $row['language'];
+                    $session['lang'] = "en";  // API access is always in english
                 }
             }
             }
@@ -449,14 +448,45 @@ class User
         return $row['lang'];
     }
 
-    public function get_timezone($userid)
+    public function get_timezone_offset($userid)
     {
         $userid = intval($userid);
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
-        return intval($row->timezone);
+        $now = new DateTime();
+        $now->setTimezone(new DateTimeZone($row->timezone));
+        return intval($now->getOffset()); // Will return seconds offset from GMT
     }
+	
+    public function get_timezone($userid)
+    {
+        $userid = intval($userid);
+        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+        $row = $result->fetch_array();
+        return $row['timezone'];
+    }
+    
+    // List supported PHP timezones
+    public function get_timezones()
+    {
+        static $timezones = null;
 
+        if ($timezones === null) {
+            $timezones = [];
+            $now = new DateTime();
+
+            foreach (DateTimeZone::listIdentifiers() as $timezone) {
+                $now->setTimezone(new DateTimeZone($timezone));
+                $offset = $now->getOffset();
+                $hours = intval($offset / 3600);
+                $minutes = abs(intval($offset % 3600 / 60));
+                $gmt_offset_text = 'GMT ' . ($offset ? sprintf('%+03d:%02d', $hours, $minutes) : '+00:00');
+                $timezones[] =  array('id'=>$timezone, 'gmt_offset_secs'=>$offset, 'gmt_offset_text'=>$gmt_offset_text);
+            }
+        }
+        return $timezones;
+    }
+    
     public function get_salt($userid)
     {
         $userid = intval($userid);
@@ -520,7 +550,7 @@ class User
         $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
         $name = preg_replace('/[^\w\s-.]/','',$data->name);
         $location = preg_replace('/[^\w\s-.]/','',$data->location);
-        $timezone = intval($data->timezone);
+        $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
         $language = preg_replace('/[^\w\s-.]/','',$data->language); $_SESSION['lang'] = $language;
         $bio = preg_replace('/[^\w\s-.]/','',$data->bio);
 

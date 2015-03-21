@@ -134,7 +134,6 @@
         if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
         if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
         if ($route->subaction == 'getname') $result = $multigraph->getname(get('id'),$session['userid']);
-        
     }
 
     return array('content'=>$result);

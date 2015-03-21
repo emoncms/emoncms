@@ -25,17 +25,18 @@ class Process
     private $proc_skip_next;     // skip execution of next process in process list
     private $proc_goto;          // goto step in process list
     
-    private $timezoneoffset = 0;
+    private $timezone = 'UTC';
 
-    public function __construct($mysqli,$input,$feed)
+    public function __construct($mysqli,$input,$feed,$timezone)
     {
         $this->mysqli = $mysqli;
         $this->input = $input;
         $this->feed = $feed;
         $this->log = new EmonLogger(__FILE__);
+        if (!($timezone === NULL)) $this->timezone = $timezone;
      
         include "Modules/schedule/schedule_model.php";
-        $this->schedule = new Schedule($mysqli);
+        $this->schedule = new Schedule($mysqli, $this->timezone);
          
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
@@ -46,11 +47,6 @@ class Process
             $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms Publisher");
             $this->mqtt = $mqtt;
         }
-    }
-    
-    public function set_timezone_offset($timezoneoffset)
-    {
-        $this->timezoneoffset = $timezoneoffset;
     }
 
     public function get_process_list()
@@ -703,23 +699,19 @@ class Process
     
     // Schedule
     public function if_not_schedule_zero($scheduleid, $time, $value) {
-        $expression = $this->schedule->get_expression($scheduleid)["expression"];
-        $result = $this->schedule->match($expression, $time);
+        $result = $this->schedule->match($scheduleid, $time);
         return ($result ? $value : 0);
     }
     public function if_not_schedule_null($scheduleid, $time, $value) {
-        $expression = $this->schedule->get_expression($scheduleid)["expression"];
-        $result = $this->schedule->match($expression, $time);
+        $result = $this->schedule->match($scheduleid, $time);
         return ($result ? $value : null);
     }
     public function if_schedule_zero($scheduleid, $time, $value) {
-        $expression = $this->schedule->get_expression($scheduleid)["expression"];
-        $result = $this->schedule->match($expression, $time);
+        $result = $this->schedule->match($scheduleid, $time);
         return ($result ? 0 : $value);
     }
     public function if_schedule_null($scheduleid, $time, $value) {
-        $expression = $this->schedule->get_expression($scheduleid)["expression"];
-        $result = $this->schedule->match($expression, $time);
+        $result = $this->schedule->match($scheduleid, $time);
         return ($result ? null : $value);
     }
     
@@ -798,9 +790,10 @@ class Process
     // Get the start of the day
     private function getstartday($time_now)
     {
-        // $midnight  = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now)) - ($this->timezoneoffset * 3600);
-        // $this->log->warn($midnight." ".date("Y-n-j H:i:s",$midnight)." [".$this->timezoneoffset."]");
-        return mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now)) - ($this->timezoneoffset * 3600);
+        $now = DateTime::createFromFormat("U", $time_now);
+        $now->setTimezone(new DateTimeZone($this->timezone));
+        $now->setTime(0,0);    // Today at 00:00
+        return $now->format("U");
     }
 
 }

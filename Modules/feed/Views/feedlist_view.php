@@ -97,8 +97,8 @@
                 </select>
             </td>
             <td>
-                <p><b>Timezone (for day export):</b></p>
-                <input id="export-timezone" type="text" />
+                <p><b>Timezone offset (for day export):</b></p>
+                <input id="export-timezone-offset" type="text" />
             </td>
         </tr>
         <tr>
@@ -232,10 +232,10 @@
         $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
         $("#export").attr('feedid',table.data[row].id);
         
-        if ($("#export-timezone").val()=="") {
-            var u = user.get();
-            if (u.timezone==null) u.timezone = 0;
-            $("#export-timezone").val(parseInt(u.timezone));
+        if ($("#export-timezone-offset").val()=="") {
+            var timezoneoffset = user.timezoneoffset();
+            if (timezoneoffset==null) timezoneoffset = 0;
+            $("#export-timezone-offset").val(parseInt(timezoneoffset));
         }
         
         $('#ExportModal').modal('show');
@@ -274,7 +274,7 @@
         var export_start = parse_timepicker_time($("#export-start").val());
         var export_end = parse_timepicker_time($("#export-end").val());
         var export_interval = $("#export-interval").val();
-        var export_timezone = parseInt($("#export-timezone").val());
+        var export_timezone_offset = parseInt($("#export-timezone-offset").val());
         
         if (!export_start) {alert("Please enter a valid start date"); return false; }
         if (!export_end) {alert("Please enter a valid end date"); return false; }
@@ -284,7 +284,7 @@
         
         if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
         
-        window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone*3600))+"&end="+(export_end+(export_timezone*3600))+"&interval="+export_interval);
+        window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval);
     });
     
     function parse_timepicker_time(timestr)

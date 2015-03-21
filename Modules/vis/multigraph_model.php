@@ -70,6 +70,10 @@ class Multigraph
         return $multigraphs;
     }
     
+    /*
+    userid not used
+    need to implement public multigraph feature, only return feedlist if multigraph is public or user session
+    */
     public function getname($id, $userid)
     {
         $id = intval($id);
