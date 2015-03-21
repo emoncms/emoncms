@@ -17,8 +17,7 @@ function node_controller()
     $input = new Input($mysqli,$redis, $feed);
 
     require "Modules/input/process_model.php"; // 886
-    $process = new Process($mysqli,$input,$feed);
-    $process->set_timezone_offset($user->get_timezone($session['userid']));
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
     include "Modules/node/node_model.php";
     $node = new Node($mysqli,$redis,$process);
