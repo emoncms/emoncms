@@ -19,11 +19,13 @@ class Schedule
 {
     private $mysqli;
     private $log;
+    private $timezone = 'UTC';
     
-    public function __construct($mysqli)
+    public function __construct($mysqli,$timezone)
     {
         $this->mysqli = $mysqli;
         $this->log = new EmonLogger(__FILE__);
+        if (!($timezone === NULL)) $this->timezone = $timezone;
     }
     
     public function exist($id)
@@ -49,7 +51,7 @@ class Schedule
         $userid = (int) $userid;
         $schedules = array();
         
-        $result = $this->mysqli->query("SELECT `id`, `userid`, `name`, `expression`, `public`, CASE `userid` WHEN '$userid' THEN '1' ELSE '0' END AS `own` FROM schedule WHERE (userid = '$userid' OR public = '1')");
+        $result = $this->mysqli->query("SELECT `id`, `userid`, `name`, `expression`, `timezone`, `public`, CASE `userid` WHEN '$userid' THEN '1' ELSE '0' END AS `own` FROM schedule WHERE (userid = '$userid' OR public = '1')");
         while ($row = (array)$result->fetch_object())
         {
             $schedules[] = $row;
@@ -61,16 +63,16 @@ class Schedule
     {
         $id = (int) $id;
 
-        $result = $this->mysqli->query("SELECT `expression` FROM schedule WHERE id = '$id'");
+        $result = $this->mysqli->query("SELECT `expression`, `timezone` FROM schedule WHERE id = '$id'");
         $row = $result->fetch_array();
-        $get_expression = array('expression'=>$row['expression']);
+        $get_expression = array('expression'=>$row['expression'], 'timezone'=>$row['timezone']);
         return $get_expression;        
     }
     
     public function create($userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("INSERT INTO schedule (`userid`,`name`,`expression`,`public`) VALUES ('$userid','New Schedule','',0)");
+        $this->mysqli->query("INSERT INTO schedule (`userid`,`name`,`expression`,`timezone`, `public`) VALUES ('$userid','New Schedule','','".$this->timezone."',0)");
         return $this->mysqli->insert_id;  
     }
 
@@ -90,6 +92,7 @@ class Schedule
         $fields = json_decode(stripslashes($fields));
 
         $array = array();
+        $array[] = "`timezone` = '".$this->timezone."'";
 
         // Repeat this line changing the field name to add fields that can be updated:
         if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-:]/','',$fields->name)."'";
@@ -107,32 +110,40 @@ class Schedule
             return array('success'=>false, 'message'=>'Field could not be updated');
         }
     }
-	
-    public function test_expression($expression) {
-        $time = time();
-		$result = $this->match_engine($expression,$time,true);
+    
+    public function test_expression($scheduleid) {
+        $get_expression = $this->get_expression($scheduleid);
+        $expression = $get_expression["expression"];
+        $exp_timezone = $get_expression["timezone"];
+        $time = time(); //epoch is in UTC
+        $result = $this->match_engine($expression,$exp_timezone,$time,true);
         return $result;
     }
-	
-	public function match($expression, $time) {
-		return $this->match_engine($expression,$time,false);
-	}
+    
+    public function match($scheduleid, $time) {
+        $get_expression = $this->get_expression($scheduleid);
+        $expression = $get_expression["expression"];
+        $exp_timezone = $get_expression["timezone"];
+        return $this->match_engine($expression,$exp_timezone,$time,false);
+    }
 
-	// Private
-	
-	// used by expression builder for help debuging an expression
-	// support were: http://openenergymonitor.org/emon/node/10019
-    private function match_engine($expression, $time, $debug) {
-        // Check if input string is in range of day, month, week day and hour. White spaces are ignored and can be ommited.
+    // Private
+    
+    // used by expression builder for help debuging an expression
+    // support were: http://openenergymonitor.org/emon/node/10019
+    private function match_engine($expression, $exp_timezone, $time, $debug) {
+        // Check if input string is in range of Day light saving time, day, month, week day and hour. White spaces are ignored and can be ommited.
         // Returns true if in range, else returns 0.
-        // All dates must be in GMT as epow time is always GMT.
         //
         // Examples: '12:00-24:00'
-        //           'Mon-Fri | 00:00-24:00'
+        //           'Mon-Fri | 00:00-23:59'
+        //           'Summer | Mon-Fri | 00:00-24:00'
+        //           'Winter | Mon-Fri | 00:00-24:00'
+        //           'Winter | Mon-Fri | 09:00-10:00, Summer | Mon-Fri | 08:00-09:00'
         //           'Mon,Wed | 00:00-06:00, 12:00-00:00, Fri-Sun | 00:00-06:00, 12:00-00:00'
-        //           '25/12 | 00:00-24:00'
-        //           '01/12 - 31/12 | Sat,Sun | 09:00-12:00, 13:00-20:00'
-        //           '15/01, 29/02, 01/01-18/02, 01/08-25/12, 19/09 | Mon-Fri | 12:00-14:00, 18:00-22:30, Thu | 18:00-22:00'
+        //           '12/25 | 00:00-24:00'
+        //           '12/01 - 12/31 | Sat,Sun | 09:00-12:00, 13:00-20:00'
+        //           '01/15, 02/29, 01/01-02/18, 08/01-12/25, 09/19 | Mon-Fri | 12:00-14:00, 18:00-22:30, Thu | 18:00-22:00'
         //           '00:00-08:00,22:00-24:00'                              <- Diary Winter Empty 
         //           '08:00-09:00,10:30-18:00,20:30-22:00'                  <- Diary Winter Full
         //           '09:00-10:30,18:00-20:30'                              <- Diary Winter Top 
@@ -140,120 +151,152 @@ class Schedule
         //           '00:00-08:00,22:00-24:00'                              <- Diary Summer Empty
         //           '08:00-10:30,13:00-19:30,21:00-22:00'                  <- Diary Summer Full
         //           '10:30-13:00,19:30-21:00'                              <- Diary Summer Top
-        
-        //           'Mon-Fri|00:00-07:00, Sat|00:00-09:30,13:00-18:30,22:00-24:00, Sun|00:00-24:00'    <- Weekly Winter Empty 
-        //           'Mon-Fri|07:00-09:30,12:00-18:30,21:00-24:00, Sat|09:30-13:00,18:30-22:00'         <- Weekly Winter Full
-        //           'Mon-Fri|09:30-12:00,18:30-21:00'                                                  <- Weekly Winter Top
-        
-        //           'Mon-Fri|00:00-07:00, Sat|00:00-09:00,14:00-20:00,22:00-24:00, Sun|00:00-24:00'    <- Weekly Summer Empty 
-        //           'Mon-Fri|07:00-09:15,12:15-24:00, Sat|09:00-14:00,20:00-22:00'                     <- Weekly Summer Full
-        //           'Mon-Fri|09:15-12:15'                                                              <- Weekly Summer Top
 
-        $timezone = 'GMT';
-        $timeFull = DateTime::createFromFormat("U", $time);
-        $timeDay = DateTime::createFromFormat("!d/m/Y T",  $timeFull->format('d/m/Y T'), new DateTimeZone('GMT'));
-        $timeWeekDay = $timeFull->format('D');
-        $timeHrMin = DateTime::createFromFormat("!H:i",  $timeFull->format('H:i'), new DateTimeZone('GMT'));
+        // Tri schedule
+        //           'Mon-Fri|00:00-06:59, Sat|00:00-09:29,13:00-18:29,22:00-23:59, Sun|00:00-23:59'    <- Weekly Winter Empty 
+        //           'Mon-Fri|07:00-09:29,12:00-18:29,21:00-23:59, Sat|09:30-12:59,18:30-21:59'         <- Weekly Winter Full
+        //           'Mon-Fri|09:30-11:59,18:30-20:59'                                                  <- Weekly Winter Top
+        
+        //           'Mon-Fri|00:00-06:59, Sat|00:00-08:59,14:00-19:59,22:00-23:59, Sun|00:00-23:59'    <- Weekly Summer Empty 
+        //           'Mon-Fri|07:00-09:14,12:15-23:59, Sat|09:00-13:59,20:00-21:59'                     <- Weekly Summer Full
+        //           'Mon-Fri|09:15-12:14'                                                              <- Weekly Summer Top
+
+       
+        $timeDay =  DateTime::createFromFormat("U", $time);   // epoch is always in GMT 
+        $timeDay->setTimezone(new DateTimeZone($exp_timezone));
+        $timeDST= $timeDay->format("I");
+        $timeDay->setTime(0,0);
+        $timeWeekDay = $timeDay->format('D');
+        $timeHrMin = DateTime::createFromFormat("U", $time); // epoch is always in GMT 
+        $timeHrMin->setTimezone(new DateTimeZone($exp_timezone));
 
         $inrange_day = false;
         $inrange_dayweek = false;
         $inrange_hour = false;
         $debugval = "";
         
-        if ($debug) $debugval.=  $timeFull->format("H:i:s D d-m-Y T") . "<BR>";
-        if ($debug) $debugval.= $timeDay->format("H:i:s D d-m-Y T") . "<BR>";
-        if ($debug) $debugval.= $timeWeekDay . "<BR>";
-        if ($debug) $debugval.= $timeHrMin->format("H:i:s D d-m-Y T") . "<BR>";
-        if ($debug) $debugval.= $expression . "<br>";
+        if ($debug) $debugval.= "Expression =" . $expression . "\n";
+        if ($debug) $debugval.= "Input =" . DateTime::createFromFormat("U", $time)->format("H:i:s D d-m-Y I T") . "\n";
+        if ($debug) $debugval.= "Day =" . $timeDay->format("H:i:s D d-m-Y I e") . "\n";
+        if ($debug) $debugval.= "HrMin =" . $timeHrMin->format("H:i:s D d-m-Y I e") . "\n";
+        if ($debug) $debugval.= "WeekDay =" . $timeWeekDay . "\n";
         
-        preg_match_all('/((?<days>(([\d\s\/]*)\s*[-,]?)+)\|?\s*)((?<daysweek>((Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\s*[-,]?\s*)+)\|?\s*)(?<times>((\d\d:\d\d\s*-\s*\d\d:\d\d),?\s*)+)/x', $expression, $matches, PREG_SET_ORDER);
-
+        preg_match_all('/((?<dst>((Summer|Winter)?\s*)+)\|?\s*)((?<days>((\d{1,2}\/\d{1,2})?\s*[-,]?\s*)+)\|?\s*)((?<daysweek>((Mon|Tue|Wed|Thu|Fri|Sat|Sun)?\s*[-,]?\s*)+)\|?\s*)(?<hours>((\d\d:\d\d)\s*[-,]?\s*)*)/x', $expression, $matches, PREG_SET_ORDER);
+        
         if ($debug) $debug_schedule = array();
         foreach($matches as $match) {
+            $dst =  str_replace(" ", "", $match['dst']);
             $days = str_replace(" ", "", $match['days']);
             $days = explode(',', $days);
             $daysweek = str_replace(" ", "", $match['daysweek']);
             $daysweek = explode(',', $daysweek);
-            $times = str_replace(" ", "", $match['times']);
-            $times = array_filter(explode(',', $times));
+            $hours = str_replace(" ", "", $match['hours']);
+            $hours = array_filter(explode(',', $hours));
+            if ($debug) $debugval.= "\n\n________________________________________\nMATCH\n". print_r($match,true)."\n";
             
-            foreach($days as $day) {
-                if ($debug) $debugval.= "<br>";
-                if ($debug) $debugval.= print_r($day,true);
-                $inrange_day = false;
-                if (!empty($day)) {
-                    if (strpos($day, '-') !== false) {  // Is a day range
-                        list($start, $end) = explode('-', $day, 2);
-                        $start = DateTime::createFromFormat("!d/m", $start, new DateTimeZone($timezone));
-                        $end = DateTime::createFromFormat("!d/m", $end, new DateTimeZone($timezone));
-                        if ($timeDay >= $start && $timeDay <= $end) {
-                            $inrange_day = true;
+            if (empty($dst) || ((strpos($dst, "S") === 0 && $timeDST) || (strpos($dst, "W") === 0 && !$timeDST))) {
+                foreach($days as $day) {
+                    if ($debug) $debugval.= "\n";
+                    if ($debug) $debugval.= print_r($day,true);
+                    $inrange_day = false;
+                    if (!empty($day)) {
+                        if (strpos($day, '-') !== false) {  // Is a day range
+                            list($start, $end) = explode('-', $day, 2);
+                            list($m, $d) = explode('/', $start, 2);
+                            $start = clone $timeDay;
+                            $start->setDate($start->format('Y') , $m , $d); // set the wanted day and month for 00:00 of input year
+                            list($m, $d) = explode('/', $end, 2);
+                            $end = clone $timeDay;
+                            $end->setDate($end->format('Y') , $m , $d);  // set the wanted day and month for 00:00 of input year
+                            if ($debug) $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " - " . $end->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
+                            if ($timeDay >= $start && $timeDay <= $end) {
+                                $inrange_day = true;
+                            }
+                        } else {                            // Is just one day
+                            list($m, $d) = explode('/', $day, 2);
+                            $start = clone $timeDay;
+                            $start->setDate($start->format('Y') , $m , $d); // set the wanted day and month for 00:00 of input year
+                            if ($debug) $debugval.=("  ---->" . $start->format('D Y-m-d H:i:s e') . " ? ". $timeDay->format('D Y-m-d H:i:s e'));
+                            if ($timeDay == $start) {
+                                $inrange_day = true;
+                            }
                         }
-                    } else {                            // Is just one day
-                        $start = DateTime::createFromFormat("!d/m", $day, new DateTimeZone($timezone));
-                        if ($timeDay == $start) {
-                            $inrange_day = true;
-                        }
+                        if ($debug && $inrange_day) $debugval.=(" <- FOUND DAY");
+                    } else {
+                        $inrange_day = true;                // No day give, assume all
                     }
-                } else {
-                    $inrange_day = true;                // No day give, assume all
-                }
-                if ($inrange_day ) {
-                    if ($debug) $debugval.=("<----------- FOUND DAY");
-                    foreach($daysweek as $dayweek) {
-                        $inrange_dayweek = false;
-                        if ($debug) { $debugval.=("<br>&nbsp;&nbsp;"); $debugval.=print_r($dayweek,true); }
-                        if (!empty($dayweek)) {
-                            if (strpos($dayweek, '-') !== false) {      // Is a dayweek range
-                                // Gets the daysweek of the week in a range. e.g. given Mon-Wed
-                                list($start, $end) = explode('-', $dayweek, 2);
-                                $start = DateTime::createFromFormat("!D", $start, new DateTimeZone($timezone));
-                                for($i= 0 ; $i <= 6 ; $i++ ) {
-                                    if ($timeWeekDay == $start->format('D')) {
-                                        $inrange_dayweek = true;
-                                        break;
-                                    } else if ($start->format('D') == $end) {
-                                        break;
+                    if ($inrange_day ) {
+                        foreach($daysweek as $dayweek) {
+                            $inrange_dayweek = false;
+                            if ($debug) { $debugval .= "\n\t" . print_r($dayweek,true); }
+                            if (!empty($dayweek)) {
+                                if (strpos($dayweek, '-') !== false) {      // Is a dayweek range
+                                    // Gets the daysweek of the week in a range. e.g. given Mon-Wed
+                                    list($start, $end) = explode('-', $dayweek, 2);
+                                    $start = DateTime::createFromFormat("!D", $start);
+                                    for($i= 0 ; $i <= 6 ; $i++ ) {
+                                        if ($timeWeekDay == $start->format('D')) {
+                                            $inrange_dayweek = true;
+                                            break;
+                                        } else if ($start->format('D') == $end) {
+                                            break;
+                                        }
+                                        $start->modify('+1 day');
                                     }
-                                    $start->modify('+1 day');
+                                } else {                                    // Is just one day
+                                    if ($timeWeekDay == $dayweek) {
+                                        $inrange_dayweek = true;
+                                    }
                                 }
-                            } else {                                    // Is just one day
-                                if ($timeWeekDay == $dayweek) {
-                                    $inrange_dayweek = true;
-                                }
+                                if ($debug && $inrange_dayweek) $debugval.=(" <- FOUND A WEEKDAY");
                             }
-                        }
-                        else {
-                            $inrange_dayweek = true;                    // No day give, assume all
-                        }
+                            else {
+                                $inrange_dayweek = true;                    // No day give, assume all
+                            }
 
-                        if ($inrange_dayweek ) {
-                            if ($debug) $debugval.=("<----------- FOUND WEEKDAY");
-                            foreach($times as $time) {
-                                $inrange_hour = false;
-                                if ($debug) $debugval.="<br>&nbsp;&nbsp;&nbsp;&nbsp;";
-								if ($debug) $debugval.=print_r($time,true);
-                                list($start, $end) = explode('-', $time, 2);
-                                $startTime = DateTime::createFromFormat("!H:i", $start, new DateTimeZone($timezone));
-                                $endTime = DateTime::createFromFormat("!H:i", $end, new DateTimeZone($timezone));
-                                if ($debug) $debugval.=("  ---->". $startTime->format('D Y-m-d H:i:s T')   . " <-> " . $endTime->format('D Y-m-d H:i:s T') . " ? ". $timeHrMin->format('D Y-m-d H:i:s T'));
-                                if ($timeHrMin >= $startTime && $timeHrMin <= $endTime) {
-                                    $inrange_hour = true;
-                                    if ($debug) $debugval.=("<----------- FOUND TIME");
-									break;
+                            if ($inrange_dayweek ) {
+                                if (!empty($hours)) {
+                                    foreach($hours as $hour) {
+                                        $inrange_hour = false;
+                                        if ($debug) { $debugval .= "\nH " . print_r($hour,true); }
+                                        
+                                            if ($debug) $debugval .= "\n\t\t" . print_r($hour,true);
+                                            if (strpos($hour, '-') !== false) {      // Is a time range
+                                                list($start, $end) = explode('-', $hour, 2);
+                                            } else {                                 // Is just one time
+                                                $start = $end = $hour;
+                                            }
+                                            list($h, $m) = explode(':', $start, 2);
+                                            $startTime = clone $timeHrMin;
+                                            $startTime->setTime($h, $m, 00); // set the time for the input date
+                                            
+                                            list($h, $m) = explode(':', $end, 2);
+                                            $endTime = clone $timeHrMin;
+                                            $endTime->setTime($h, $m, 59); // set the time for the input date
+                                            
+                                            if ($startTime > $endTime) { $endTime->modify('+1 day'); }
+                                            
+                                            if ($debug) $debugval.=("  ---->". $startTime->format('D Y-m-d H:i:s e')   . " - " . $endTime->format('D Y-m-d H:i:s e') . " ? ". $timeHrMin->format('D Y-m-d H:i:s e'));
+                                            if ($timeHrMin >= $startTime && $timeHrMin <= $endTime) {
+                                                $inrange_hour = true;
+                                                if ($debug && $inrange_hour) $debugval.=(" <- FOUND A HOUR1");
+                                                break;
+                                            }
+
+                                        if ($debug) $debug_schedule[] = array ("day" => $day, "dayweek" => $dayweek, "hour" => $hour);
+                                    }
                                 }
                             }
                         }
-						if ($debug) $debug_schedule[] = array ("day" => $day, "dayweek" => $dayweek, "time" => $time);
                     }
                 }
             }
         }
         if ($debug) { 
-			$debugval.=print_r($debug_schedule,true);
-			return array ("result" => $inrange_hour, "debug" => $debugval);
-		}
-		return $inrange_hour;
+            //$debugval.="\n\nDebug dump of matched expressions:\n".print_r($debug_schedule,true);
+            return array ("result" => $inrange_hour, "debug" => $debugval);
+        }
+        return $inrange_hour;
     }
-	
+    
 }

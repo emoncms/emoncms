@@ -25,11 +25,11 @@ var schedule = {
     {
         $.ajax({ url: path+"schedule/delete.json", data: "id="+id, async: false, success: function(data){} });
     },
-	
-    'test':function(expression)
+    
+    'test':function(id)
     {
         var result = {};
-        $.ajax({ url: path+"schedule/test.json", data: "expression="+expression, async: false, success: function(data){result = data;} });
-		return result;
+        $.ajax({ url: path+"schedule/test.json", data: "id="+id, async: false, success: function(data){result = data;} });
+        return result;
     }
 }

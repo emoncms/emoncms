@@ -147,7 +147,6 @@
 //------------------------------------------------------------------------------------------------------------------------------------
  
     $("#table").on('click', '.icon-wrench', function() {
-        
         var i = table.data[$(this).attr('row')];
         console.log(i);
         alert("TBD: Javascript expression builder " + i['id']);
@@ -155,10 +154,10 @@
     });
     
     $("#table").on('click', '.icon-eye-open', function() {
-        
         var i = table.data[$(this).attr('row')];
         console.log(i);
-        alert("Test expression returned: " + schedule.test(i['expression']));
+        var result = schedule.test(i['id']);
+        alert("Schedule expression returned '" + result['result'] +"'.\n\nDetails:\n"+ result['debug']);
 
     });
 
