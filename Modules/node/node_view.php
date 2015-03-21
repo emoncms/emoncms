@@ -5,6 +5,18 @@
   if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
 
 ?>
+<style>
+body .modal {
+    /* new custom width */
+    width: 1080px; /* TODO  remove because distorting modal windows on lower resolutions*/
+    /* must be half of the width, minus scrollbar on the left (30px) */
+    margin-left: -540px; /* TODO remove because distorting modal windows on lower resolutions*/
+}
+.modal-body {
+    max-height: 800px;
+}
+</style>
+
 <script type="text/javascript" src="<?php echo $path; ?>Modules/node/node.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/node/processlist.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>

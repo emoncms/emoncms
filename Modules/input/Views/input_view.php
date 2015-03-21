@@ -11,7 +11,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <style>
-input[type="text"] {
+#table input[type="text"] {
          width: 88%;
 }
 
@@ -33,7 +33,7 @@ input[type="text"] {
     <div id="processlist-ui" style="padding:20px; background-color:#efefef; display:none">
     
     <div style="font-size:30px; padding-bottom:20px; padding-top:18px"><b><span id="inputname"></span></b> config</div>
-    <p><?php echo _('Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list.'); ?></p>
+    <p><?php echo _('Input processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
     
         <table class="table">
 
@@ -71,7 +71,7 @@ input[type="text"] {
                         <input type="text" id="feed-name" style="width:150px;" placeholder="Feed name..." />
                         <input type="hidden" id="feed-tag"/>
 
-                        <span class="add-on feed-engine-label"><?php echo _('Feed engine'); ?>: </span>
+                            <span class="add-on feed-engine-label"><?php echo _('Engine'); ?></span>
                         <select id="feed-engine">
                         <option value=6 ><?php echo _('Fixed Interval With Averaging (PHPFIWA)'); ?></option>
                         <option value=5 ><?php echo _('Fixed Interval No Averaging (PHPFINA)'); ?></option>
@@ -80,19 +80,21 @@ input[type="text"] {
 
 
                         <select id="feed-interval" style="width:130px">
-                        <option value=""><?php echo _('Select interval'); ?></option>
-                        <option value=5>5 <?php echo _('s'); ?></option>
-                        <option value=10>10 <?php echo _('s'); ?></option>
-                        <option value=15>15 <?php echo _('s'); ?></option>
-                        <option value=20>20 <?php echo _('s'); ?></option>
-                        <option value=30>30 <?php echo _('s'); ?></option>
-                        <option value=60>60 <?php echo _('s'); ?></option>
-                        <option value=120>2 <?php echo _('mins'); ?></option>
-                        <option value=300>5 <?php echo _('mins'); ?></option>
-                        <option value=600>10 <?php echo _('mins'); ?></option>
-                        <option value=1200>20 <?php echo _('mins'); ?></option>
-                        <option value=1800>30 <?php echo _('mins'); ?></option>
-                        <option value=3600>1 <?php echo _('hour'); ?></option>
+                                    <option value=""><?php echo _('Select interval'); ?></option>
+                                    <option value=5>5<?php echo _('s'); ?></option>
+                                    <option value=10>10<?php echo _('s'); ?></option>
+                                    <option value=15>15<?php echo _('s'); ?></option>
+                                    <option value=20>20<?php echo _('s'); ?></option>
+                                    <option value=30>30<?php echo _('s'); ?></option>
+                                    <option value=60>60<?php echo _('s'); ?></option>
+                                    <option value=120>2<?php echo _('m'); ?></option>
+                                    <option value=300>5<?php echo _('m'); ?></option>
+                                    <option value=600>10<?php echo _('m'); ?></option>
+                                    <option value=900>15<?php echo _('m'); ?></option>
+                                    <option value=1200>20<?php echo _('m'); ?></option>
+                                    <option value=1800>30<?php echo _('m'); ?></option>
+                                    <option value=3600>1<?php echo _('h'); ?></option>
+                                    <option value=86400>1<?php echo _('d'); ?></option>
                         </select>
                         
                     </span>
