@@ -28,7 +28,27 @@
     {
         if (isset($item['session'])) {
             if (isset($session[$item['session']]) && $session[$item['session']]==1) {
-                echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+                if (!isset($item['dropdown'])) {
+                    echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+                } else {
+                    ?>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <?php echo $item['name']; ?> <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu">
+                        <?php foreach ($item['dropdown'] as $dropdownitem) { ?>
+                            <li>
+                                <a href="<?php echo $path.$dropdownitem[1]; ?>">
+                                <?php echo $dropdownitem[0]; ?>
+                                </a>
+                            </li>
+                        <?php } ?>
+                        </ul>
+                    </li>
+                    
+                    <?php
+                }
             }
         } else {
             echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
@@ -67,4 +87,3 @@
 
     ?>
 </ul>
-

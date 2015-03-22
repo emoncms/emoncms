@@ -53,7 +53,7 @@
         </table>
 
         <table class="table">
-        <tr><th>Add process:</th><tr>
+        <tr><th><?php echo _('Add process'); ?>:</th><tr>
         <tr>
             <td>
                     <select id="process-select" class="input-large"></select>
@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <div class="input-prepend">
-                            <span class="add-on feed-engine-label">Engine</span>
+                            <span class="add-on feed-engine-label"><?php echo _('Engine'); ?></span>
                             <div class="btn-group">
                                 <select id="feed-engine" class="input-medium">
 <?php // All supported engines must be here, removing in process_model.php:get_process_list() arrays hides them from user ?>
@@ -112,21 +112,21 @@
                                 </select>
 
                                 <select id="feed-interval" class="input-mini">
-                                    <option value="">Select interval</option>
-                                    <option value=5>5s</option>
-                                    <option value=10>10s</option>
-                                    <option value=15>15s</option>
-                                    <option value=20>20s</option>
-                                    <option value=30>30s</option>
-                                    <option value=60>60s</option>
-                                    <option value=120>2m</option>
-                                    <option value=300>5m</option>
-                                    <option value=600>10m</option>
-                                    <option value=900>15m</option>
-                                    <option value=1200>20m</option>
-                                    <option value=1800>30m</option>
-                                    <option value=3600>1h</option>
-                                    <option value=86400>1d</option>
+                                    <option value=""><?php echo _('Select interval'); ?></option>
+                                    <option value=5>5<?php echo _('s'); ?></option>
+                                    <option value=10>10<?php echo _('s'); ?></option>
+                                    <option value=15>15<?php echo _('s'); ?></option>
+                                    <option value=20>20<?php echo _('s'); ?></option>
+                                    <option value=30>30<?php echo _('s'); ?></option>
+                                    <option value=60>60<?php echo _('s'); ?></option>
+                                    <option value=120>2<?php echo _('m'); ?></option>
+                                    <option value=300>5<?php echo _('m'); ?></option>
+                                    <option value=600>10<?php echo _('m'); ?></option>
+                                    <option value=900>15<?php echo _('m'); ?></option>
+                                    <option value=1200>20<?php echo _('m'); ?></option>
+                                    <option value=1800>30<?php echo _('m'); ?></option>
+                                    <option value=3600>1<?php echo _('h'); ?></option>
+                                    <option value=86400>1<?php echo _('d'); ?></option>
                                 </select>
                             </div>
                         </div>
