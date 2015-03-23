@@ -425,6 +425,28 @@ class Feed
 
         return $value;
     }
+    
+    public function insert_data_padding_mode($feedid,$updatetime,$feedtime,$value,$padding_mode)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        if ($feedtime == null) $feedtime = time();
+        $updatetime = intval($updatetime);
+        $feedtime = intval($feedtime);
+        $value = floatval($value);
+
+        $engine = $this->get_engine($feedid);
+        
+        // Call to engine post method
+        if ($engine==5 && $padding_mode=="last") $this->engine[$engine]->padding_mode = "last";
+        $this->engine[$engine]->post($feedid,$feedtime,$value);
+        if ($engine==5 && $padding_mode=="last") $this->engine[$engine]->padding_mode = "nan";
+        
+        $this->set_timevalue($feedid, $value, $updatetime);
+
+        return $value;
+    }
 
     public function update_data($feedid,$updatetime,$feedtime,$value)
     {
