@@ -256,7 +256,7 @@ $(function() {
         if (delta==1) {
             for (var z=1; z<data.length; z++) {
                 var val = (data[z][1] - data[z-1][1]) * scale;
-                out.push([data[z][0],val]);
+                out.push([data[z-1][0],val]);
             }
             data = out;
         } else if (scale!=1) {
