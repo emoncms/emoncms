@@ -10,13 +10,13 @@ var process_info = {
 
     '5':"Convert a power value in Watts to a feed that contains an entry for the total energy used each day (kWh/d)",
 
-    '6':"This multiplies the current selected input with another input as selected from the dropdown menu. The result is passed back for further processing by the next processor in the input processing list.",
+    '6':"This multiplies the current value with the value from other input as selected from the input list. The result is passed back for further processing by the next processor in the input processing list.",
     
-    '12':"This divides the current selected input with another input as selected from the dropdown menu. The result is passed back for further processing by the next processor in the input processing list.",
+    '12':"This divides the current value with the value from other input as selected from the input list. The result is passed back for further processing by the next processor in the input processing list.",
     
-    '11':"This adds the selected input from the dropdown menu to the current input. The result is passed back for further processing by the next processor in the input processing list.",
+    '11':"This adds the current value with the value from other input as selected from the input list. The result is passed back for further processing by the next processor in the input processing list.",
     
-    '22':"This subtracts the selected input from the dropdown menu from the current input. The result is passed back for further processing by the next processor in the input processing list.",
+    '22':"This subtracts the current value with the value from other input as selected from the input list. The result is passed back for further processing by the next processor in the input processing list.",
     
     '14':"Output feed accumulates by input value",  
 

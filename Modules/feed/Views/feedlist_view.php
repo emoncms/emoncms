@@ -9,12 +9,8 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
 <style>
-input[type="text"] {
+#table input[type="text"] {
          width: 88%;
-}
-
-.icon-circle-arrow-down {
-cursor:pointer
 }
 </style>
 
@@ -33,7 +29,7 @@ cursor:pointer
         </div>
 
         <hr>
-        <button id="refreshfeedsize" class="btn btn-small" ><?php echo _('Refresh feed size'); ?> <i class="icon-refresh" ></i></button>
+        <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
@@ -87,6 +83,7 @@ cursor:pointer
                     <option value=60>1 min</option>
                     <option value=300>5 mins</option>
                     <option value=600>10 mins</option>
+                    <option value=900>15 mins</option>
                     <option value=1800>30 mins</option>
                     <option value=3600>1 hour</option>
                     <option value=21600>6 hour</option>
