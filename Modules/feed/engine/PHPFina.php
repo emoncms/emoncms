@@ -126,21 +126,34 @@ class PHPFina
         // Write padding
         $padding = ($pos - $last_pos)-1;
         
+        // Max padding = 1 million datapoints ~4mb gap of 115 days at 10s
+        $maxpadding = 1000000;
+        
+        if ($padding>$maxpadding) {
+            $this->log->warn("PHPFina:post padding max block size exeeded id=$id, $padding dp");
+            return false;
+        }
+        
         if ($padding>0) {
-            $lastval = false;
-            if ($last_pos>=0 && $this->padding_mode=="last") {
+            $padding_value = NAN;
+            
+            if ($last_pos>=0 && $this->padding_mode!="nan") {
                 fseek($fh,$last_pos*4);
                 $val = unpack("f",fread($fh,4));
-                $lastval = $val[1];
-                print $last_pos." ".$padding." ".$lastval."\n";
+                $last_val = (float) $val[1];
+                
+                $padding_value = $last_val;
+                $div = ($value - $last_val) / ($padding+1);
             }
             
-            if ($this->write_padding($fh,$meta->npoints,$padding,$lastval)===false)
-            {
-                // Npadding returned false = max block size was exeeded
-                $this->log->warn("PHPFina:post padding max block size exeeded id=$id");
-                return false;
+            $buffer = "";
+            for ($i=0; $i<$padding; $i++) {
+                if ($this->padding_mode=="join") $padding_value += $div;
+                $buffer .= pack("f",$padding_value);
             }
+            fseek($fh,4*$meta->npoints);
+            fwrite($fh,$buffer);
+            
         } else {
             //$this->log->warn("PHPFINA padding less than 0 id=$id");
             //return false;
@@ -450,48 +463,6 @@ class PHPFina
         fwrite($metafile,pack("I",$meta->interval));
         fwrite($metafile,pack("I",$meta->start_time)); 
         fclose($metafile);
-    }
-    
-    private function write_padding($fh,$npoints,$npadding,$lastval)
-    {
-        $paddingvalue = NAN;
-        if ($this->padding_mode=="last") $paddingvalue = $lastval;
-        
-        $tsdb_max_padding_block = 1024 * 1024;
-        
-        // Padding amount too large
-        if ($npadding>$tsdb_max_padding_block*2) {
-            return false;
-        }
-
-        // Maximum points per block
-        $pointsperblock = $tsdb_max_padding_block / 4; // 262144
-
-        // If needed is less than max set to padding needed:
-        if ($npadding < $pointsperblock) $pointsperblock = $npadding;
-
-        
-        // Fill padding buffer
-        $buf = '';
-        for ($n = 0; $n < $pointsperblock; $n++) {
-            $buf .= pack("f",$paddingvalue);
-        }
-
-        fseek($fh,4*$npoints);
-
-        do {
-            if ($npadding < $pointsperblock) 
-            { 
-                $pointsperblock = $npadding;
-                $buf = ''; 
-                for ($n = 0; $n < $pointsperblock; $n++) {
-                    $buf .= pack("f",$paddingvalue);
-                }
-            }
-            
-            fwrite($fh, $buf);
-            $npadding -= $pointsperblock;
-        } while ($npadding); 
     }
     
     public function csv_export($id,$start,$end,$outinterval)

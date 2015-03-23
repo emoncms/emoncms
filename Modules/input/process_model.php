@@ -262,7 +262,7 @@ class Process
             $new_kwh = $last_kwh;
         }
 
-        $padding_mode = "last";
+        $padding_mode = "join";
         $this->feed->insert_data_padding_mode($feedid, $time_now, $time_now, $new_kwh, $padding_mode);
         
         return $value;
@@ -421,7 +421,7 @@ class Process
     {
         $last = $this->feed->get_timevalue($feedid);
         $value = $last['value'] + $value;
-        $padding_mode = "last";
+        $padding_mode = "join";
         $this->feed->insert_data_padding_mode($feedid, $time, $time, $value, $padding_mode);
         return $value;
     }
@@ -633,7 +633,7 @@ class Process
             
             if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
             
-            $padding_mode = "last";
+            $padding_mode = "join";
             $this->feed->insert_data_padding_mode($feedid, $time, $time, $totalwh, $padding_mode);
             
         }

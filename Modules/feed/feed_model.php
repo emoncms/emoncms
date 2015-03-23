@@ -439,7 +439,7 @@ class Feed
         $engine = $this->get_engine($feedid);
         
         // Call to engine post method
-        if ($engine==5 && $padding_mode=="last") $this->engine[$engine]->padding_mode = "last";
+        if ($engine==5 && $padding_mode=="join") $this->engine[$engine]->padding_mode = "join";
         $this->engine[$engine]->post($feedid,$feedtime,$value);
         if ($engine==5 && $padding_mode=="last") $this->engine[$engine]->padding_mode = "nan";
         
