@@ -7,6 +7,7 @@ class PHPFina
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
+    public $padding_mode = "nan";
     
     /**
      * Constructor.
@@ -69,6 +70,7 @@ class PHPFina
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
+    
     public function post($id,$timestamp,$value)
     {
         $this->log->info("PHPFina:post post id=$id timestamp=$timestamp value=$value");
@@ -125,10 +127,17 @@ class PHPFina
         $padding = ($pos - $last_pos)-1;
         
         if ($padding>0) {
-            if ($this->write_padding($fh,$meta->npoints,$padding)===false)
+            $lastval = false;
+            if ($last_pos>=0 && $this->padding_mode=="last") {
+                fseek($fh,$last_pos*4);
+                $val = unpack("f",fread($fh,4));
+                $lastval = $val[1];
+                print $last_pos." ".$padding." ".$lastval."\n";
+            }
+            
+            if ($this->write_padding($fh,$meta->npoints,$padding,$lastval)===false)
             {
                 // Npadding returned false = max block size was exeeded
-                
                 $this->log->warn("PHPFina:post padding max block size exeeded id=$id");
                 return false;
             }
@@ -443,8 +452,11 @@ class PHPFina
         fclose($metafile);
     }
     
-    private function write_padding($fh,$npoints,$npadding)
+    private function write_padding($fh,$npoints,$npadding,$lastval)
     {
+        $paddingvalue = NAN;
+        if ($this->padding_mode=="last") $paddingvalue = $lastval;
+        
         $tsdb_max_padding_block = 1024 * 1024;
         
         // Padding amount too large
@@ -458,10 +470,11 @@ class PHPFina
         // If needed is less than max set to padding needed:
         if ($npadding < $pointsperblock) $pointsperblock = $npadding;
 
+        
         // Fill padding buffer
         $buf = '';
         for ($n = 0; $n < $pointsperblock; $n++) {
-            $buf .= pack("f",NAN);
+            $buf .= pack("f",$paddingvalue);
         }
 
         fseek($fh,4*$npoints);
@@ -472,7 +485,7 @@ class PHPFina
                 $pointsperblock = $npadding;
                 $buf = ''; 
                 for ($n = 0; $n < $pointsperblock; $n++) {
-                    $buf .= pack("f",NAN);
+                    $buf .= pack("f",$paddingvalue);
                 }
             }
             
