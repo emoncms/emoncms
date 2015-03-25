@@ -37,9 +37,13 @@
             $feedid = $f[0];
             $timestamp = $f[1];
             $value = $f[2];
+            $padding_mode = (int) $f[3];
         
             $e = $redis->hget("feed:$feedid",'engine');
+            
+            if ($padding_mode==1 && $e==5) $engine[$e]->padding_mode == 'join';
             $engine[$e]->prepare($feedid,$timestamp,$value);
+            $engine[$e]->padding_mode == 'nan';
         }
         
         print $engine[Engine::PHPTIMESERIES]->save()."\n";

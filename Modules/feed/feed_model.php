@@ -288,7 +288,25 @@ class Feed
         $feedtime = (int) $feedtime;
         $value = (float) $value;
         
-        $this->redis->rpush('feedbuffer',"$feedid,$feedtime,$value");
+        $this->redis->rpush('feedbuffer',"$feedid,$feedtime,$value,0");
+        $this->set_timevalue($feedid, $value, $updatetime);
+
+        return $value;
+    }
+    
+    public function insert_data_padding_mode($feedid,$updatetime,$feedtime,$value,$padding_mode)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        if ($feedtime == null) $feedtime = time();
+        $updatetime = (int) $updatetime;
+        $feedtime = (int) $feedtime;
+        $value = (float) $value;
+        
+        $pad = 0;
+        if ($padding_mode=="join") $pad = 1;
+        $this->redis->rpush('feedbuffer',"$feedid,$feedtime,$value,$pad");
         $this->set_timevalue($feedid, $value, $updatetime);
 
         return $value;
@@ -298,39 +316,12 @@ class Feed
         return $this->insert_data($feedid,$updatetime,$feedtime,$value);
     }
 
-    public function get_data($feedid,$start,$end,$dp)
+    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
     {
         $feedid = (int) $feedid;
-        if ($end == 0) $end = time()*1000;
-                
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-  
         $engine = $this->get_engine($feedid);
-        
-        // Call to engine get_data method
-        $range = ($end - $start) * 0.001;
-        if ($dp>$this->max_npoints_returned) $dp = $this->max_npoints_returned;
-        if ($dp<1) $dp = 1;
-        $outinterval = round($range / $dp);
-        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
-
-    }
-
-    public function get_average($feedid,$start,$end,$outinterval)
-    {
-        $feedid = (int) $feedid;
-        if ($end == 0) $end = time()*1000;
-        
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $engine = $this->get_engine($feedid);
-
-        // Call to engine get_average method
-        if ($outinterval<1) $outinterval = 1;
-        $range = ($end - $start) * 0.001;
-        $npoints = ($range / $outinterval);
-        if ($npoints>$this->max_npoints_returned) $outinterval = round($range / $this->max_npoints_returned);
-        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
+        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
     }
     
     public function csv_export($feedid,$start,$end,$outinterval)

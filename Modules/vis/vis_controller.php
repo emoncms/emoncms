@@ -48,7 +48,7 @@
             if ($route->action == "auto")
             {
                 $feedid = (int) get('feedid');
-                $route->action = 'rawdata';
+                $route->action = 'graph';
             }
             while ($vis = current($visualisations))
             {

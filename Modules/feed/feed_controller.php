@@ -45,6 +45,16 @@ function feed_controller()
             $result = $feed->create($session['userid'],get('name'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
+        // To "fetch" multiple feed values in a single request
+        // http://emoncms.org/feed/fetch.json?ids=123,567,890
+        } elseif ($route->action == "fetch" && $session['read']) {
+            $feedids = (array) (explode(",",(get('ids'))));
+            for ($i=0; $i<count($feedids); $i++) {
+                $feedid = (int) $feedids[$i];
+                if ($feed->exist($feedid)) // if the feed exists
+                { $result[$i] = (float) $feed->get_value($feedid);
+                } else { $result[$i] = ""; }
+            }
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
@@ -61,8 +71,13 @@ function feed_controller()
                     if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     if ($route->action == "aget") $result = $feed->get($feedid);
 
-                    if ($route->action == 'data') $result = $feed->get_data($feedid,get('start'),get('end'),get('dp'));
-                    if ($route->action == 'average') $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                    if ($route->action == 'data') {
+                        $skipmissing = 1;
+                        $limitinterval = 1;
+                        if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
+                        if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
+                        $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                    }
                 }
 
                 // write session required

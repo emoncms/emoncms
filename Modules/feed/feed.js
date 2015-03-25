@@ -78,8 +78,6 @@ var feed = {
     $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
   },
 
-
-  // if ($route->action == 'data') $result = $feed->get_data(get('id'),get('start'),get('end'),get('dp'));
   'get_data':function(feedid,start,end,dp)
   {
     var feedIn = [];
@@ -92,21 +90,6 @@ var feed = {
       success: function(data_in) { feedIn = data_in; } 
     });
     return feedIn;
-  },
-  
-  'get_average':function(feedid,start,end,interval)
-  {
-    var feedIn = [];
-    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
-    $.ajax({                                      
-      url: path+'feed/average.json',                         
-      data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval,
-      dataType: 'json',
-      async: false,                      
-      success: function(data_in) { feedIn = data_in; } 
-    });
-    return feedIn;
   }
-
 }
 

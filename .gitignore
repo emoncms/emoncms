@@ -25,4 +25,5 @@ Modules/openbem
 Modules/scheduler
 Modules/nodes
 Modules/wifi
+Modules/app
 emoncms.log
