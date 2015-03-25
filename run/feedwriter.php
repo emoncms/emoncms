@@ -43,7 +43,7 @@
             
             if ($padding_mode==1) $engine[Engine::PHPFINA]->padding_mode = 'join';
             $engine[$e]->prepare($feedid,$timestamp,$value);
-            $engine[Engine::PHPFINA]->padding_mode == 'nan';
+            $engine[Engine::PHPFINA]->padding_mode = 'nan';
         }
         
         print $engine[Engine::PHPTIMESERIES]->save()."\n";
