@@ -134,9 +134,9 @@ class PHPFina
             if ($npadding>0) {
                 $padding_value = NAN;
                 if ($this->padding_mode=="join") {
-                    $last_val = $this->lastvalue($filename);
-                    $div = ($value - $last_val) / ($npadding+1);
-                    $padding_value = $last_val;
+                    $last = $this->lastvalue($filename);
+                    $div = ($value - $last['value']) / ($npadding+1);
+                    $padding_value = $last['value'];
                 }
                 
                 for ($n=0; $n<$npadding; $n++)
@@ -275,13 +275,14 @@ class PHPFina
         if (!$meta = $this->get_meta($filename)) return false;
         $meta->npoints = $this->get_npoints($filename);
         
-        if (isset($this->lastvalue_cache[$filename]))
-            return $this->lastvalue_cache[$filename];
+        if (isset($this->lastvalue_cache[$filename])) {
+            return array('value'=>$this->lastvalue_cache[$filename]);
+        }
         
         if ($meta->npoints>0)
         {
             $fh = fopen($this->dir.$filename.".dat", 'rb');
-            $size = $meta->npoints*4;
+            $size = filesize($this->dir.$filename.".dat");
             fseek($fh,$size-4);
              $d = fread($fh,4);
             fclose($fh);
@@ -290,7 +291,6 @@ class PHPFina
             $time = $meta->start_time + $meta->interval * $meta->npoints;
             
             $this->lastvalue_cache[$filename] = $val[1];
-            
             return array('time'=>$time, 'value'=>$val[1]);
         }
         

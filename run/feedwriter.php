@@ -41,13 +41,13 @@
         
             $e = $redis->hget("feed:$feedid",'engine');
             
-            if ($padding_mode==1 && $e==5) $engine[$e]->padding_mode == 'join';
+            if ($padding_mode==1) $engine[Engine::PHPFINA]->padding_mode = 'join';
             $engine[$e]->prepare($feedid,$timestamp,$value);
-            $engine[$e]->padding_mode == 'nan';
+            $engine[Engine::PHPFINA]->padding_mode == 'nan';
         }
         
         print $engine[Engine::PHPTIMESERIES]->save()."\n";
         print $engine[Engine::PHPFINA]->save()."\n";
         print "\n";
-        sleep(60);
+        sleep(10);
     }
