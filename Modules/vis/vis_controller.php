@@ -44,17 +44,11 @@
         }
         else 
         {
-
-            // Auto - automatically selects visualisation based on datatype
             // and is used primarily for quick checking feeds from the feeds page.
             if ($route->action == "auto")
             {
-                $feedid = intval(get('feedid'));
-                $datatype = $feed->get_field($feedid,'datatype');
-                if ($datatype == 0) $result = "Feed type or authentication not valid";
-                if ($datatype == 1) $route->action = 'rawdata';
-                if ($datatype == 2) $route->action = 'bargraph';
-                if ($datatype == 3) $route->action = 'histgraph';
+                $feedid = (int) get('feedid');
+                $route->action = 'rawdata';
             }
             while ($vis = current($visualisations))
             {

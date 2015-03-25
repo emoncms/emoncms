@@ -47,18 +47,20 @@ class Feed
         }
     }
 
-    public function create($userid,$name,$datatype,$engine,$options_in)
+    public function create($userid,$name,$engine,$options_in)
     {
         $userid = (int) $userid;
         $name = preg_replace('/[^\w\s-:]/','',$name);
-        $datatype = (int) $datatype;
         $engine = (int) $engine;
+        
+        if ($engine!=Engine::PHPFINA && $engine!=Engine::PHPTIMESERIES)
+            return array('success'=>false, 'message'=>'incorrect engine given, must be 5 or 6');
         
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
 
-        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','$datatype',false,'$engine')");
+        $result = $this->mysqli->query("INSERT INTO feeds (userid,name,datatype,public,engine) VALUES ('$userid','$name','1',false,'$engine')");
         $feedid = $this->mysqli->insert_id;
 
         if ($feedid>0)
@@ -68,7 +70,6 @@ class Feed
                 'id'=>$feedid,
                 'userid'=>$userid,
                 'name'=>$name,
-                'datatype'=>$datatype,
                 'tag'=>'',
                 'public'=>false,
                 'size'=>0,
@@ -83,8 +84,6 @@ class Feed
             if ($engineresult == false)
             {
                 $this->log->warn("Feed model: failed to create feed model feedid=$feedid");
-                // Feed engine creation failed so we need to delete the meta entry for the feed
-                
                 $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
 
                 $userid = $this->redis->hget("feed:$feedid",'userid');
@@ -134,7 +133,6 @@ class Feed
     public function get_user_feeds($userid)
     {
         $userid = (int) $userid;
-        
         if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
       
         $feeds = array();
@@ -142,9 +140,8 @@ class Feed
         foreach ($feedids as $id)
         {
             $row = $this->redis->hGetAll("feed:$id");
-
             $lastvalue = $this->get_timevalue($id);
-            $row['time'] = strtotime($lastvalue['time']);
+            $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
             $feeds[] = $row;
         }
@@ -180,7 +177,7 @@ class Feed
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         $row = $this->redis->hGetAll("feed:$id");
-        $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
+        $lastvalue = $this->redis->hmget("feed:timevalue:$id",array('time','value'));
         $row['time'] = $lastvalue['time'];
         $row['value'] = $lastvalue['value'];
 
@@ -206,24 +203,17 @@ class Feed
     {
         $id = (int) $id;
 
-        if ($this->redis->exists("feed:lastvalue:$id"))
+        if ($this->redis->exists("feed:timevalue:$id"))
         {
-            $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
+            $lastvalue = $this->redis->hmget("feed:timevalue:$id",array('time','value'));
         }
         else
         {
             // if it does not load it in to redis from the actual feed data.
             $lastvalue = $this->get_timevalue_from_data($id);
-            $this->redis->hMset("feed:lastvalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
+            $this->redis->hMset("feed:timevalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
         }
 
-        return $lastvalue;
-    }
-
-    public function get_timevalue_seconds($id)
-    {
-        $lastvalue = $this->get_timevalue($id);
-        $lastvalue['time'] = strtotime($lastvalue['time']);
         return $lastvalue;
     }
 
@@ -297,11 +287,8 @@ class Feed
         $updatetime = (int) $updatetime;
         $feedtime = (int) $feedtime;
         $value = (float) $value;
-
-        // $engine = $this->get_engine($feedid);
-        // $this->engine[$engine]->post($feedid,$feedtime,$value);
+        
         $this->redis->rpush('feedbuffer',"$feedid,$feedtime,$value");
-
         $this->set_timevalue($feedid, $value, $updatetime);
 
         return $value;
@@ -421,8 +408,7 @@ class Feed
 
     public function set_timevalue($feedid, $value, $time)
     {
-        $updatetime = date("Y-n-j H:i:s", $time);
-        $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
+        $this->redis->hMset("feed:timevalue:$feedid", array('value' => $value, 'time' => $time));
     }
     
     private function get_engine($feedid)
@@ -432,7 +418,7 @@ class Feed
 
     public function load_to_redis($userid)
     {
-        $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,userid,name,tag,public,size,engine FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:feeds:$userid", $row->id);
@@ -440,7 +426,6 @@ class Feed
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
-            'datatype'=>$row->datatype,
             'tag'=>$row->tag,
             'public'=>$row->public,
             'size'=>$row->size,
@@ -451,7 +436,7 @@ class Feed
 
     public function load_feed_to_redis($id)
     {
-        $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine FROM feeds WHERE `id` = '$id'");
+        $result = $this->mysqli->query("SELECT id,userid,name,tag,public,size,engine FROM feeds WHERE `id` = '$id'");
         $row = $result->fetch_object();
 
         if (!$row) {
@@ -463,7 +448,6 @@ class Feed
             'id'=>$row->id,
             'userid'=>$row->userid,
             'name'=>$row->name,
-            'datatype'=>$row->datatype,
             'tag'=>$row->tag,
             'public'=>$row->public,
             'size'=>$row->size,

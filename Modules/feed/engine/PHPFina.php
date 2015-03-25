@@ -306,7 +306,7 @@ class PHPFina
             fclose($fh);
 
             $val = unpack("f",$d);
-            $time = date("Y-n-j H:i:s", $meta->start_time + $meta->interval * $meta->npoints);
+            $time = $meta->start_time + $meta->interval * $meta->npoints;
             
             return array('time'=>$time, 'value'=>$val[1]);
         }

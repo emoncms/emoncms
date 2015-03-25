@@ -32,10 +32,7 @@ function admin_controller()
             if (!$applychanges) $applychanges = false;
             else $applychanges = true;
 
-            require "Modules/admin/update_class.php";
             require_once "Lib/dbschemasetup.php";
-
-            $update = new Update($mysqli);
 
             $updates = array();
             $updates[] = array(
@@ -43,16 +40,6 @@ function admin_controller()
                 'description'=>"",
                 'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
             );
-
-            if (!$updates[0]['operations']) {
-
-            // In future versions we could check against db version number as to what updates should be applied
-            $updates[] = $update->u0001($applychanges);
-            //$updates[] = $update->u0002($applychanges);
-            $updates[] = $update->u0003($applychanges);
-            $updates[] = $update->u0004($applychanges);
-
-            }
 
             $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));
         }

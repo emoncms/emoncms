@@ -203,8 +203,6 @@ class Process
 
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-
-        $last['time'] = strtotime($last['time']);
         if (!isset($last['value'])) $last['value'] = 0;
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
@@ -263,7 +261,6 @@ class Process
         {
             $pulse_diff = 0;
             $last = $this->feed->get_timevalue($feedid);
-            $last['time'] = strtotime($last['time']);
             if ($last['time']) {
                 // Need to handle resets of the pulse value (and negative 2**15?)
                 if ($value >= $last['value']) {

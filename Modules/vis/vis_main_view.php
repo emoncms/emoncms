@@ -196,10 +196,7 @@ global $path;
         var out = "<select style='width:120px' id='"+id+"' class='options' otype='feed'>";
         for (i in feedlist)
         {
-            
-            if (feedlist[i]['datatype']==type) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
-            if (type==0 && feedlist[i]['datatype']==1) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
-            if (type==0 && feedlist[i]['datatype']==2) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+            out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
         }
         out += "</select>";
         return out;
