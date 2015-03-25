@@ -224,6 +224,7 @@ class PHPFina
         
         // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"error reading meta data $meta");
+        $meta->npoints = $this->get_npoints($name);
         
         if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
 
