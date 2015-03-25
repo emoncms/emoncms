@@ -96,11 +96,7 @@ function feed_controller()
                     
                     if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'));
                     
-                    if ($f['engine']==Engine::MYSQL) {
-                        if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));
-                        if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
-                        if ($route->action == "deletedatarange") $result = $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
-                    } elseif ($f['engine']==Engine::PHPTIMESERIES) {
+                    if ($f['engine']==Engine::PHPTIMESERIES) {
                         if ($route->action == "export") $result = $feed->phptimeseries_export($feedid,get('start'));
                     } elseif ($f['engine']==Engine::PHPFIWA) {
                         if ($route->action == "export") $result = $feed->phpfiwa_export($feedid,get('start'),get('layer'));

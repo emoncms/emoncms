@@ -32,14 +32,10 @@ class Feed
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
         
-        // Load different storage engines
-        require "Modules/feed/engine/MysqlTimeSeries.php";
-        require "Modules/feed/engine/Histogram.php";
-        require "Modules/feed/engine/PHPTimeSeries.php";
-        
-        // Development engines
-        require "Modules/feed/engine/PHPFina.php";
-        require "Modules/feed/engine/PHPFiwa.php";     
+        require "Modules/feed/engine/PHPFiwa.php";          // Fixed interval with averaging
+        require "Modules/feed/engine/PHPFina.php";          // Fixed interval no averaging
+        require "Modules/feed/engine/PHPTimeSeries.php";    // Variable interval no averaging
+        require "Modules/feed/engine/Histogram.php";        // Histogram (to be moved to own module soon)
            
         if (!isset($settings)) $settings= array();
         if (!isset($settings['phpfiwa'])) $settings['phpfiwa'] = array();
@@ -48,7 +44,6 @@ class Feed
               
         // Load engine instances to engine array to make selection below easier
         $this->engine = array();
-        $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
         $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries($settings['phptimeseries']);
         $this->engine[Engine::PHPFINA] = new PHPFina($settings['phpfina']);
         $this->engine[Engine::PHPFIWA] = new PHPFiwa($settings['phpfiwa']);
@@ -535,20 +530,6 @@ class Feed
         $feedid = (int) $feedid;
         $engine = $this->get_engine($feedid);
         return $this->engine[$engine]->get_meta($feedid);
-    }
-    
-    // MysqlTimeSeries specific functions that we need to make available to the controller
-
-    public function mysqltimeseries_export($feedid,$start) {
-        return $this->engine[Engine::MYSQL]->export($feedid,$start);
-    }
-
-    public function mysqltimeseries_delete_data_point($feedid,$time) {
-        return $this->engine[Engine::MYSQL]->delete_data_point($feedid,$time);
-    }
-
-    public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
-        return $this->engine[Engine::MYSQL]->delete_data_range($feedid,$start,$end);
     }
 
     // Histogram specific functions that we need to make available to the controller
