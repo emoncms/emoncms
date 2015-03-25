@@ -54,9 +54,6 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         
-        // Histogram engine requires MYSQL
-        if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
-        
         // If feed of given name by the user already exists
         $feedid = $this->get_id($userid,$name);
         if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
@@ -66,20 +63,17 @@ class Feed
 
         if ($feedid>0)
         {
-            // Add the feed to redis
-            if ($this->redis) {
-                $this->redis->sAdd("user:feeds:$userid", $feedid);
-                $this->redis->hMSet("feed:$feedid",array(
-                    'id'=>$feedid,
-                    'userid'=>$userid,
-                    'name'=>$name,
-                    'datatype'=>$datatype,
-                    'tag'=>'',
-                    'public'=>false,
-                    'size'=>0,
-                    'engine'=>$engine
-                ));
-            }
+            $this->redis->sAdd("user:feeds:$userid", $feedid);
+            $this->redis->hMSet("feed:$feedid",array(
+                'id'=>$feedid,
+                'userid'=>$userid,
+                'name'=>$name,
+                'datatype'=>$datatype,
+                'tag'=>'',
+                'public'=>false,
+                'size'=>0,
+                'engine'=>$engine
+            ));
             
             $options = array();
             if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
@@ -93,11 +87,9 @@ class Feed
                 
                 $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
 
-                if ($this->redis) {
-                    $userid = $this->redis->hget("feed:$feedid",'userid');
-                    $this->redis->del("feed:$feedid");
-                    $this->redis->srem("user:feeds:$userid",$feedid);
-                }
+                $userid = $this->redis->hget("feed:$feedid",'userid');
+                $this->redis->del("feed:$feedid");
+                $this->redis->srem("user:feeds:$userid",$feedid);
 
                 return array('success'=>false, 'message'=>"");
             }
@@ -109,23 +101,13 @@ class Feed
     public function exist($id)
     {
         $feedexist = false;
-        if ($this->redis)
-        {
-            
-            if (!$this->redis->exists("feed:$id")) {
-                if ($this->load_feed_to_redis($id))
-                {
-                    $feedexist = true;
-                }
-            } else {
+        if (!$this->redis->exists("feed:$id")) {
+            if ($this->load_feed_to_redis($id))
+            {
                 $feedexist = true;
             }
-        }
-        else 
-        {
-            $id = intval($id);
-            $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$id'");
-            if ($result->num_rows>0) $feedexist = true;
+        } else {
+            $feedexist = true;
         }
         return $feedexist;
     }
@@ -137,6 +119,7 @@ class Feed
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
+    
     /*
 
     User Feed lists
@@ -152,26 +135,6 @@ class Feed
     {
         $userid = (int) $userid;
         
-        if ($this->redis) {
-            $feeds = $this->redis_get_user_feeds($userid);
-        } else {
-            $feeds = $this->mysql_get_user_feeds($userid);
-        }    
-        
-        return $feeds;
-    }
-    
-    public function get_user_public_feeds($userid)
-    {
-        $feeds = $this->get_user_feeds($userid);
-        $publicfeeds = array();
-        foreach ($feeds as $feed) { if ($feed['public']) $publicfeeds[] = $feed; }
-        return $publicfeeds;
-    }
-    
-    public function redis_get_user_feeds($userid)
-    {
-        $userid = (int) $userid;
         if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
       
         $feeds = array();
@@ -189,30 +152,19 @@ class Feed
         return $feeds;
     }
     
-    public function mysql_get_user_feeds($userid)
+    public function get_user_public_feeds($userid)
     {
-        $userid = (int) $userid;
-        $feeds = array();
-        $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
-        while ($row = (array)$result->fetch_object())
-        {
-            $row['time'] = strtotime($row['time']);
-            $feeds[] = $row;
-        }
-        return $feeds;
+        $feeds = $this->get_user_feeds($userid);
+        $publicfeeds = array();
+        foreach ($feeds as $feed) { if ($feed['public']) $publicfeeds[] = $feed; }
+        return $publicfeeds;
     }
     
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
-        if ($this->redis) {
-            if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
-            $feedids = $this->redis->sMembers("user:feeds:$userid");
-        } else {
-            $result = $this->mysqli->query("SELECT id FROM feeds WHERE `userid` = '$userid'");
-            $feedids = array();
-            while ($row = $result->fetch_array()) $feedids[] = $row['id'];
-        }
+        if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
+        $feedids = $this->redis->sMembers("user:feeds:$userid");
         return $feedids;
     }
 
@@ -227,18 +179,10 @@ class Feed
         $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
 
-        if ($this->redis) {
-            // Get from redis cache
-            $row = $this->redis->hGetAll("feed:$id");
-            $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
-            $row['time'] = $lastvalue['time'];
-            $row['value'] = $lastvalue['value'];
-        } else {
-            // Get from mysql db
-            $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
-            $row = (array) $result->fetch_object();
-            $row['time'] = strtotime($row['time']);
-        }
+        $row = $this->redis->hGetAll("feed:$id");
+        $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
+        $row['time'] = $lastvalue['time'];
+        $row['value'] = $lastvalue['value'];
 
         return $row;
     }
@@ -251,14 +195,7 @@ class Feed
         if ($field!=NULL) // if the feed exists
         {
             $field = preg_replace('/[^\w\s-]/','',$field);
-            
-            if ($this->redis) {
-                $val = $this->redis->hget("feed:$id",$field);
-            } else {
-                $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
-                $row = $result->fetch_array();
-                $val = $row[0];
-            }
+            $val = $this->redis->hget("feed:$id",$field);
             
             if ($val) return $val; else return 0;
         }
@@ -269,25 +206,15 @@ class Feed
     {
         $id = (int) $id;
 
-        // Get the timevalue from redis if it exists
-        if ($this->redis) 
+        if ($this->redis->exists("feed:lastvalue:$id"))
         {
-            if ($this->redis->exists("feed:lastvalue:$id"))
-            {
-                $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
-            }
-            else
-            {
-                // if it does not load it in to redis from the actual feed data.
-                $lastvalue = $this->get_timevalue_from_data($id);
-                $this->redis->hMset("feed:lastvalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
-            }
+            $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
         }
-        else 
+        else
         {
-            $result = $this->mysqli->query("SELECT time,value FROM feeds WHERE `id` = '$id'");
-            $row = $result->fetch_array();
-            $lastvalue = array('time'=>$row['time'], 'value'=>$row['value']);
+            // if it does not load it in to redis from the actual feed data.
+            $lastvalue = $this->get_timevalue_from_data($id);
+            $this->redis->hMset("feed:lastvalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
         }
 
         return $lastvalue;
@@ -342,9 +269,9 @@ class Feed
         $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
 
         // Update redis
-        if ($this->redis && isset($fields->name)) $this->redis->hset("feed:$id",'name',$fields->name);
-        if ($this->redis && isset($fields->tag)) $this->redis->hset("feed:$id",'tag',$fields->tag);
-        if ($this->redis && isset($fields->public)) $this->redis->hset("feed:$id",'public',$fields->public);
+        if (isset($fields->name)) $this->redis->hset("feed:$id",'name',$fields->name);
+        if (isset($fields->tag)) $this->redis->hset("feed:$id",'tag',$fields->tag);
+        if (isset($fields->public)) $this->redis->hset("feed:$id",'public',$fields->public);
 
         if ($this->mysqli->affected_rows>0){
             return array('success'=>true, 'message'=>'Field updated');
@@ -450,29 +377,29 @@ class Feed
 
         $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
 
-        if ($this->redis) {
-            $userid = $this->redis->hget("feed:$feedid",'userid');
-            $this->redis->del("feed:$feedid");
-            $this->redis->srem("user:feeds:$userid",$feedid);
-        }
+        $userid = $this->redis->hget("feed:$feedid",'userid');
+        $this->redis->del("feed:$feedid");
+        $this->redis->srem("user:feeds:$userid",$feedid);
     }
 
     public function update_user_feeds_size($userid)
     {
         $userid = (int) $userid;
         $total = 0;
-        $result = $this->mysqli->query("SELECT id,engine FROM feeds WHERE `userid` = '$userid'");
-        while ($row = $result->fetch_array())
+        $feeds = $this->get_user_feeds($userid);
+        
+        
+        foreach ($feeds as $feed)
         {
             $size = 0;
-            $feedid = $row['id'];
-            $engine = $row['engine'];
+            $feedid = $feed['id'];
+            $engine = $feed['engine'];
             
             // Call to engine get_feed_size method
             $size = $this->engine[$engine]->get_feed_size($feedid);
             
             $this->mysqli->query("UPDATE feeds SET `size` = '$size' WHERE `id`= '$feedid'");
-            if ($this->redis) $this->redis->hset("feed:$feedid",'size',$size);
+            $this->redis->hset("feed:$feedid",'size',$size);
             $total += $size;
         }
         return $total;
@@ -495,22 +422,12 @@ class Feed
     public function set_timevalue($feedid, $value, $time)
     {
         $updatetime = date("Y-n-j H:i:s", $time);
-        if ($this->redis) {
-            $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
-        } else {
-            $this->mysqli->query("UPDATE feeds SET `time` = '$updatetime', `value` = '$value' WHERE `id`= '$feedid'");
-        }
+        $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
     }
     
     private function get_engine($feedid)
     {
-        if ($this->redis) {
-            return $this->redis->hget("feed:$feedid",'engine');
-        } else {
-            $result = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
-            $row = $result->fetch_object();
-            return $row->engine;
-        }
+        return $this->redis->hget("feed:$feedid",'engine');
     }
 
     public function load_to_redis($userid)
