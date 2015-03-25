@@ -21,7 +21,7 @@ function input_controller()
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
 
-    global $feed, $timestore_adminkey;
+    global $feed;
     $result = false;
 
     include "Modules/feed/feed_model.php";

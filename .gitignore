@@ -18,7 +18,6 @@ Modules/adminusers
 Modules/feedconvert
 Modules/report
 Modules/notify
-Modules/converttotimestore
 Modules/mqtt
 Modules/packetgen
 Modules/openbem

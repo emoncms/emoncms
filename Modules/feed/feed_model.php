@@ -34,35 +34,22 @@ class Feed
         
         // Load different storage engines
         require "Modules/feed/engine/MysqlTimeSeries.php";
-        require "Modules/feed/engine/Timestore.php";
-        require "Modules/feed/engine/PHPTimestore.php";
         require "Modules/feed/engine/Histogram.php";
         require "Modules/feed/engine/PHPTimeSeries.php";
-        require "Modules/feed/engine/GraphiteTimeSeries.php";
         
         // Development engines
         require "Modules/feed/engine/PHPFina.php";
         require "Modules/feed/engine/PHPFiwa.php";     
            
-        // Backwards compatibility 
         if (!isset($settings)) $settings= array();
-        if (!isset($settings['timestore'])) {
-            global $timestore_adminkey; 
-            $settings['timestore'] = array('adminkey'=>$timestore_adminkey);
-        }
-        if (!isset($settings['graphite'])) $settings['graphite'] = array('host'=>"", 'port'=>0);
         if (!isset($settings['phpfiwa'])) $settings['phpfiwa'] = array();
         if (!isset($settings['phpfina'])) $settings['phpfina'] = array();
-        if (!isset($settings['phptimestore'])) $settings['phptimestore'] = array();
         if (!isset($settings['phptimeseries'])) $settings['phptimeseries'] = array();
               
         // Load engine instances to engine array to make selection below easier
         $this->engine = array();
         $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
-        $this->engine[Engine::TIMESTORE] = new Timestore($settings['timestore']);
-        $this->engine[Engine::PHPTIMESTORE] = new PHPTimestore($settings['phptimestore']);
         $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries($settings['phptimeseries']);
-        $this->engine[Engine::GRAPHITE] = new GraphiteTimeSeries($settings['graphite']);
         $this->engine[Engine::PHPFINA] = new PHPFina($settings['phpfina']);
         $this->engine[Engine::PHPFIWA] = new PHPFiwa($settings['phpfiwa']);
                 
@@ -112,8 +99,6 @@ class Feed
             }
             
             $options = array();
-            if ($engine==Engine::TIMESTORE) $options['interval'] = (int) $options_in->interval;
-            if ($engine==Engine::PHPTIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
             
@@ -566,20 +551,6 @@ class Feed
         return $this->engine[Engine::MYSQL]->delete_data_range($feedid,$start,$end);
     }
 
-    // Timestore specific functions that we need to make available to the controller
-
-    public function timestore_export($feedid,$start,$layer) {
-        return $this->engine[Engine::TIMESTORE]->export($feedid,$start,$layer);
-    }
-
-    public function timestore_export_meta($feedid) {
-        return $this->engine[Engine::TIMESTORE]->export_meta($feedid);
-    }
-
-    public function timestore_scale_range($feedid,$start,$end,$value) {
-        return $this->engine[Engine::TIMESTORE]->scale_range($feedid,$start,$end,$value);
-    }
-
     // Histogram specific functions that we need to make available to the controller
 
     public function histogram_get_power_vs_kwh($feedid,$start,$end) {
@@ -607,8 +578,6 @@ class Feed
     public function phpfina_export($feedid,$start) {
         return $this->engine[Engine::PHPFINA]->export($feedid,$start);
     }
-
-
 
     public function set_timevalue($feedid, $value, $time)
     {
