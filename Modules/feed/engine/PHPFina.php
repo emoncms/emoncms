@@ -7,6 +7,7 @@ class PHPFina
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
+    public $padding_mode = "nan";
     
     /**
      * Constructor.
@@ -69,6 +70,7 @@ class PHPFina
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
+    
     public function post($id,$timestamp,$value)
     {
         $this->log->info("PHPFina:post post id=$id timestamp=$timestamp value=$value");
@@ -124,14 +126,34 @@ class PHPFina
         // Write padding
         $padding = ($pos - $last_pos)-1;
         
+        // Max padding = 1 million datapoints ~4mb gap of 115 days at 10s
+        $maxpadding = 1000000;
+        
+        if ($padding>$maxpadding) {
+            $this->log->warn("PHPFina:post padding max block size exeeded id=$id, $padding dp");
+            return false;
+        }
+        
         if ($padding>0) {
-            if ($this->write_padding($fh,$meta->npoints,$padding)===false)
-            {
-                // Npadding returned false = max block size was exeeded
+            $padding_value = NAN;
+            
+            if ($last_pos>=0 && $this->padding_mode!="nan") {
+                fseek($fh,$last_pos*4);
+                $val = unpack("f",fread($fh,4));
+                $last_val = (float) $val[1];
                 
-                $this->log->warn("PHPFina:post padding max block size exeeded id=$id");
-                return false;
+                $padding_value = $last_val;
+                $div = ($value - $last_val) / ($padding+1);
             }
+            
+            $buffer = "";
+            for ($i=0; $i<$padding; $i++) {
+                if ($this->padding_mode=="join") $padding_value += $div;
+                $buffer .= pack("f",$padding_value);
+            }
+            fseek($fh,4*$meta->npoints);
+            fwrite($fh,$buffer);
+            
         } else {
             //$this->log->warn("PHPFINA padding less than 0 id=$id");
             //return false;
@@ -382,44 +404,6 @@ class PHPFina
         fwrite($metafile,pack("I",$meta->interval));
         fwrite($metafile,pack("I",$meta->start_time)); 
         fclose($metafile);
-    }
-    
-    private function write_padding($fh,$npoints,$npadding)
-    {
-        $tsdb_max_padding_block = 1024 * 1024;
-        
-        // Padding amount too large
-        if ($npadding>$tsdb_max_padding_block*2) {
-            return false;
-        }
-
-        // Maximum points per block
-        $pointsperblock = $tsdb_max_padding_block / 4; // 262144
-
-        // If needed is less than max set to padding needed:
-        if ($npadding < $pointsperblock) $pointsperblock = $npadding;
-
-        // Fill padding buffer
-        $buf = '';
-        for ($n = 0; $n < $pointsperblock; $n++) {
-            $buf .= pack("f",NAN);
-        }
-
-        fseek($fh,4*$npoints);
-
-        do {
-            if ($npadding < $pointsperblock) 
-            { 
-                $pointsperblock = $npadding;
-                $buf = ''; 
-                for ($n = 0; $n < $pointsperblock; $n++) {
-                    $buf .= pack("f",NAN);
-                }
-            }
-            
-            fwrite($fh, $buf);
-            $npadding -= $pointsperblock;
-        } while ($npadding); 
     }
     
     public function csv_export($id,$start,$end,$outinterval)
