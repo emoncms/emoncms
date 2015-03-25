@@ -37,11 +37,6 @@
             array('delta',_("delta"),7,'0'))
         ),
         
-        'timestoredaily'=> array('label'=>_("TimestoreDaily"), 'options'=>array(
-            array('feedid',_("feedid"),1),
-            array('units',_("units"),5,'kWh'))
-        ),
-        
         'smoothie'=> array('label'=>_("Smoothie"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('ufac',_("ufac"),6))
@@ -109,5 +104,9 @@
         'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
             array('powerx',_("powerx"),1),
             array('powery',_("powery"),1)
+        )),
+        
+        'graph'=> array('options'=>array(
+            array('feedid',1)
         ))
     );

@@ -168,32 +168,34 @@ class PHPFina
      * @param integer $dp The number of data points to return (used by some engines)
     */
 
-    public function get_data_exact($name,$start,$end,$outinterval)
+    public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $name = (int) $name;
-        $start = floatval($start)/1000;
-        $end = floatval($end)/1000;
-        $outinterval= (int) $outinterval;
-        if ($outinterval<1) $outinterval = 1;
-        if ($end<=$start) return false;
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $interval= (int) $interval;
         
-        $numdp = (($end - $start) / $outinterval);
-        if ($numdp>5000) return false;
-        if ($outinterval<5) $outinterval = 5;
-
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>3000) return array('success'=>false, 'message'=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($name)) return false;
-        // $meta->npoints = $this->get_npoints($name);
+        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"error reading meta data $meta");
+        
+        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
 
         $data = array();
         $time = 0; $i = 0;
-
+        $numdp = 0;
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
         $fh = fopen($this->dir.$name.".dat", 'rb');
         while($time<=$end)
         {
-            $time = $start + ($outinterval * $i);
+            $time = $start + ($interval * $i);
             $pos = round(($time - $meta->start_time) / $meta->interval);
 
             $value = null;
@@ -211,71 +213,10 @@ class PHPFina
                     $value = null;
                 }
             }
-            $data[] = array($time*1000,$value);
-
-            $i++;
-        }
-        return $data;
-    }
-    
-    
-    public function get_data($id,$start,$end,$outinterval)
-    {
-        $id = intval($id);
-        $start = intval($start/1000);
-        $end = intval($end/1000);
-        $outinterval= (int) $outinterval;
-        
-        // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
-        
-        if ($outinterval<$meta->interval) $outinterval = $meta->interval;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        
-        // $dpratio = $outinterval / $meta->interval;
-        if ($dp<1) return false;
-
-        // The number of datapoints in the query range:
-        $dp_in_range = ($end - $start) / $meta->interval;
-
-        // Divided by the number we need gives the number of datapoints to skip
-        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
-        // datapoints every 100 datapoints.
-        $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
-
-        // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        } else {
-            $start = ceil($meta->start_time / $outinterval) * $outinterval;
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        }
-
-        $data = array();
-        $time = 0; $i = 0;
-
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$id.".dat", 'rb');
-        while($time<=$end)
-        {
-            // $position steps forward by skipsize every loop
-            $pos = ($startpos + ($i * $skipsize));
-
-            // Exit the loop if the position is beyond the end of the file
-            if ($pos > $meta->npoints-1) break;
-
-            // read from the file
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
-
-            // calculate the datapoint time
-            $time = $meta->start_time + $pos * $meta->interval;
-
-            // add to the data array if its not a nan value
-            if (!is_nan($val[1])) $data[] = array($time*1000,$val[1]);
+            
+            if ($value!==null || $skipmissing===0) {
+                $data[] = array($time*1000,$value);
+            }
 
             $i++;
         }

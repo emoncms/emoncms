@@ -124,7 +124,7 @@
                     }
                     
                     $.ajax({                                      
-                        url: path+'feed/average.json',                         
+                        url: path+'feed/data.json',                         
                         data: "id="+feedlist[i].id+"&start="+datastart+"&end="+dataend+"&interval="+interval,
                         dataType: 'json',
                         async: false,                      
