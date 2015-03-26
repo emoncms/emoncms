@@ -133,7 +133,6 @@
         if ($route->subaction == 'set' && $session['write']) $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'),get('name'));
         if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
         if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
-        if ($route->subaction == 'getname') $result = $multigraph->getname(get('id'),$session['userid']);
     }
 
     return array('content'=>$result);

@@ -34,14 +34,6 @@ var multigraph = {
     var result = {};
     $.ajax({ url: path+"vis/multigraph/getlist.json", async: false, dataType: 'json', success: function(data){result = data;} });
     return result;
-  },
-  
-  'getname':function(id)
-  {
-    var result = {};
-    $.ajax({ url: path+"vis/multigraph/getname.json", data: "id="+id, dataType: 'json', async: false, success: function(data){result = data;} });
-    return result;
-  },
-  
+  }
 
 }

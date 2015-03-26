@@ -24,7 +24,7 @@ class Multigraph
     public function create($userid)
     {
         $userid = intval($userid);
-        $this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`) VALUES ('$userid','')");
+        $this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`, `name`) VALUES ('$userid','', 'New Multigraph')");
         return $this->mysqli->insert_id;  
     }
 
@@ -69,17 +69,5 @@ class Multigraph
         }
         return $multigraphs;
     }
-    
-    /*
-    userid not used
-    need to implement public multigraph feature, only return feedlist if multigraph is public or user session
-    */
-    public function getname($id, $userid)
-    {
-        $id = intval($id);
-        $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT name FROM multigraph WHERE `id`='$id'");
-        $result = $result->fetch_array();
-        return $result['name'];
-    }
+
 }
