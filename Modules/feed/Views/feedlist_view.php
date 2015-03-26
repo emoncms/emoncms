@@ -202,14 +202,14 @@
     $("#table").bind("onDelete", function(e,id,row){
         updaterStart(update, 0);
         $('#myModal').modal('show');
-        $('#myModal').attr('feedid',id);
-        $('#myModal').attr('feedrow',row);
+        $('#myModal').attr('the_id',id);
+        $('#myModal').attr('the_row',row);
     });
 
     $("#confirmdelete").click(function()
     {
-        var id = $('#myModal').attr('feedid');
-        var row = $('#myModal').attr('feedrow');
+        var id = $('#myModal').attr('the_id');
+        var row = $('#myModal').attr('the_row');
         feed.remove(id);
         table.remove(row);
         update();
