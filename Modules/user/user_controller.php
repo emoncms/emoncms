@@ -56,7 +56,9 @@ function user_controller()
         if ($route->action == 'setconvert' && $session['write']) $result = $user->set_convert_status($session['userid']);
 
 
-        if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone($session['userid']);
+        if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
+        if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
+        if ($route->action == 'gettimezones' && $session['read']) $result = $user->get_timezones();
     }
 
     return array('content'=>$result);
