@@ -250,14 +250,14 @@
 
     $("#table").bind("onDelete", function(e,id,row){
         $('#myModal').modal('show');
-        $('#myModal').attr('scheduleid',id);
-        $('#myModal').attr('feedrow',row);
+        $('#myModal').attr('the_id',id);
+        $('#myModal').attr('the_row',row);
     });
 
     $("#confirmdelete").click(function()
     {
-        var id = $('#myModal').attr('scheduleid');
-        var row = $('#myModal').attr('schedulerow');
+        var id = $('#myModal').attr('the_id');
+        var row = $('#myModal').attr('the_row');
         input.remove(id);
         table.remove(row);
         update();
