@@ -486,7 +486,7 @@ class PHPFina
         global $csv_decimal_places;
         global $csv_decimal_place_separator;
         global $csv_field_separator;
-        
+
         $id = intval($id);
         $start = intval($start);
         $end = intval($end);

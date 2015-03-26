@@ -156,6 +156,7 @@ var table = {
             var state = table.groupshow[group];
             if (state == true) { $("#"+group).hide(); $(this).html('<i class="icon-plus-sign"></i>'); table.groupshow[group] = false; }
             if (state == false) { $("#"+group).show(); $(this).html('<i class="icon-minus-sign"></i>'); table.groupshow[group] = true; }
+            table.draw();
         });
 
         // Event: sort by field
@@ -192,8 +193,8 @@ var table = {
 
                 if (mode == 'save' && typeof table.fieldtypes[type].save === 'function') {
                   var value = table.fieldtypes[type].save(row,field);
-                  if (table.data[row][field] != value) fields_to_update[field] = value;	// only update db if value has changed
-                  table.update(row,field,value); 	// but update html table because this reverts back from <input>		
+                  if (table.data[row][field] != value) fields_to_update[field] = value; // only update db if value has changed
+                  table.update(row,field,value);    // but update html table because this reverts back from <input>     
                 }
             }
 
@@ -204,8 +205,8 @@ var table = {
               if (fields_to_update[table.groupby]!=undefined) table.draw();
             }
 
-            if (mode == 'edit') {$(this).attr('mode','save'); $(this).html("<i class='icon-ok' ></i>");}
-            if (mode == 'save') {$(this).attr('mode','edit'); $(this).html("<i class='icon-pencil' ></i>");}
+            if (mode == 'edit') {$(this).attr('mode','save'); $(this).html("<i class='icon-ok' style='cursor:pointer'></i>");}
+            if (mode == 'save') {$(this).attr('mode','edit'); $(this).html("<i class='icon-pencil' style='cursor:pointer'></i>"); $(table.element).trigger("onResume");}
         });
 
         // Check if events have been defined for field types.
@@ -231,7 +232,7 @@ var table = {
         'text':
         {
             'draw': function (row,field) { return table.data[row][field] },
-            'edit': function (row,field) { return "<input type='text' style='width:120px' value='"+table.data[row][field]+"' / >" },
+            'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
             'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() },
         },
 
@@ -271,13 +272,13 @@ var table = {
 
         'delete':
         {
-            'draw': function (row,field) { return "<a type='delete' row='"+row+"' uid='"+table.data[row]['id']+"' ><i class='icon-trash' ></i></a>"; }
+            'draw': function (row,field) { return table.data[row]['#READ_ONLY#'] ? "" : "<a type='delete' row='"+row+"' uid='"+table.data[row]['id']+"' ><i class='icon-trash' style='cursor:pointer'></i></a>"; }
         },
 
         'edit':
         {
-            'draw': function (row,field) { return "<a type='edit' row='"+row+"' uid='"+table.data[row]['id']+"' mode='edit'><i class='icon-pencil' ></i></a>"; }
-        },
+            'draw': function (row,field) { return table.data[row]['#READ_ONLY#'] ? "" : "<a type='edit' row='"+row+"' uid='"+table.data[row]['id']+"' mode='edit'><i class='icon-pencil' style='cursor:pointer'></i></a>"; },
+        }
     }
 }
 

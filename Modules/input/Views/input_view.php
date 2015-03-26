@@ -30,12 +30,14 @@
 <div class="container">
     <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
     
-    <div id="processlist-ui" style="padding:20px; background-color:#efefef; display:none">
-    
+    <div id="processlist-ui" style="padding:15px; background-color:#efefef; display:none; border-radius: 4px;">
+    <button type="button" id="close" class="close">×</button>
     <div style="font-size:30px; padding-bottom:20px; padding-top:18px"><b><span id="inputname"></span></b> config</div>
     <p><?php echo _('Input processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
     
-        <table class="table">
+        <div id="noprocess" class="alert">You have no processes defined</div>
+        
+        <table id="process-table" class="table table-hover">
 
             <tr>
                 <th style='width:5%;'></th>
@@ -78,8 +80,7 @@
                         <option value=2 ><?php echo _('Variable Interval No Averaging (PHPTIMESERIES)'); ?></option>
                         </select>
 
-
-                        <select id="feed-interval" style="width:130px">
+                                <select id="feed-interval" class="input-mini">
                                     <option value=""><?php echo _('Select interval'); ?></option>
                                     <option value=5>5<?php echo _('s'); ?></option>
                                     <option value=10>10<?php echo _('s'); ?></option>
@@ -103,7 +104,7 @@
             </td>
         </tr>
         <tr>
-          <td id="description"></td>
+          <td><div id="description" class="alert alert-info"></div></td>
         </tr>
         </table>
     </div>
@@ -116,8 +117,26 @@
             <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 
-</div>
 
+
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"><?php echo _('Delete Input'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <p><?php echo _('Deleting an input will loose its name and configured process list.<br>An new blank input is automatic created by API data post if it does not already exists.'); ?>
+        </p>
+        <p>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete'); ?></button>
+    </div>
+</div>
+</div>
 <script>
 
     var path = "<?php echo $path; ?>";
@@ -129,10 +148,10 @@
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
     table.element = "#table";
-
+    
     table.fields = {
         //'id':{'type':"fixed"},
-        'nodeid':{'title':'<?php echo _("Node:"); ?>','type':"fixed"},
+        'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
         'name':{'title':'<?php echo _("Key"); ?>','type':"text"},
         'description':{'title':'<?php echo _("Name"); ?>','type':"text"},
         'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
@@ -148,7 +167,8 @@
 
     table.groupprefix = "Node ";
     table.groupby = 'nodeid';
-
+    table.deletedata = false;
+    
     update();
 
     function update()
@@ -174,22 +194,43 @@
         }});
     }
 
-    var updater = setInterval(update, 10000);
-
-    $("#table").bind("onEdit", function(e){
+    var updater;
+    function updaterStart(func, interval)
+    {
         clearInterval(updater);
+        updater = null;
+        if (interval > 0) updater = setInterval(func, interval);
+    }
+    updaterStart(update, 10000);
+    
+    $("#table").bind("onEdit", function(e){
+        updaterStart(update, 0);
     });
 
     $("#table").bind("onSave", function(e,id,fields_to_update){
         input.set(id,fields_to_update);
-        updater = setInterval(update, 10000);
-    });
-
-    $("#table").bind("onDelete", function(e,id){
-        input.remove(id);
-        update();
     });
     
+    $("#table").bind("onResume", function(e){
+        updaterStart(update, 10000);
+    });
+
+    $("#table").bind("onDelete", function(e,id,row){
+        $('#myModal').modal('show');
+        $('#myModal').attr('the_id',id);
+        $('#myModal').attr('the_row',row);
+    });
+
+    $("#confirmdelete").click(function()
+    {
+        var id = $('#myModal').attr('the_id');
+        var row = $('#myModal').attr('the_row');
+        input.remove(id);
+        table.remove(row);
+        update();
+
+        $('#myModal').modal('hide');
+    });
     
 //------------------------------------------------------------------------------------------------------------------------------------
 // Process list UI js
@@ -229,9 +270,15 @@
         
         $("#feed-tag").val("Node:"+processlist_ui.inputlist[processlist_ui.inputid].nodeid);
         
+        $("#processlist-ui #process-select").change();  // Force a refresh
+        
         $("#processlist-ui").show();
         window.scrollTo(0,0);
         
+    });
+    
+    $("#processlist-ui").on('click', '.close', function() {
+        $("#processlist-ui").hide();
     });
 
 function load_all()
@@ -244,15 +291,13 @@ function load_all()
     var out = "";
     for (i in processlist_ui.inputlist) {
       var input = processlist_ui.inputlist[i];
-      out += "<option value="+input.id+">Node "+input.nodeid+":"+input.name+" "+input.description+"</option>";
+      out += "<option value="+input.id+">"+input.nodeid+":"+input.name+" "+input.description+"</option>";
     }
     $("#input-select").html(out);
     
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
-        
         var feeds = {};
-        for (z in result) feeds[result[z].id] = result[z];
-        
+        for (z in result) { feeds[result[z].id] = result[z]; }
         processlist_ui.feedlist = feeds;
         // Feedlist
         var out = "<option value=-1><?php echo _("CREATE NEW"); ?>:</option>";

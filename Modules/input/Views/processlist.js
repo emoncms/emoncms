@@ -19,9 +19,11 @@ var processlist_ui =
         console.log(this.variableprocesslist);
         
         if (this.variableprocesslist.length==0) {
-            out += "<tr class='alert'><td></td><td></td><td><b>You have no processes defined</b></td><td></td><td></td><td></td></tr>";
+            $("#process-table").hide();
+            $("#noprocess").show();
         } else {
-        
+            $("#process-table").show();
+            $("#noprocess").hide();
             for (z in this.variableprocesslist)
             {
                 
@@ -30,11 +32,11 @@ var processlist_ui =
                 // Move process up or down
                 out += '<td>';
                 if (i > 0) {
-                    out += '<a class="move-process" href="#" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
+                    out += '<a class="move-process" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
                 }
 
                 if (i < this.variableprocesslist.length-1) {
-                    out += '<a class="move-process" href="#" title="Move up" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
+                    out += '<a class="move-process" title="Move up" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
                 }
                 out += '</td>';
 
@@ -74,7 +76,7 @@ var processlist_ui =
                 out += "<td>"+(i+1)+"</td><td>"+this.processlist[processid][0]+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
          
                 // Delete process button (icon)
-                out += '<td><a href="#" class="delete-process" title="Delete" processid='+i+'><i class="icon-trash"></i></a></td>';
+                out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash"></i></a></td>';
 
                 out += '</tr>';
                 
@@ -199,7 +201,7 @@ var processlist_ui =
                 $(".feed-engine-label").show();
             }
         });
-
+        
         $('#processlist-ui .table').on('click', '.delete-process', function() {
             processlist_ui.variableprocesslist.splice($(this).attr('processid'),1);
             
@@ -225,7 +227,6 @@ var processlist_ui =
             }
 
             update_main_list(processlist_ui.inputid, processlist_ui.variableprocesslist);
-            
         });
         
         function update_main_list(inputid, processlist)
@@ -332,112 +333,6 @@ var processlist_ui =
         }
         array.splice(new_index, 0, array.splice(old_index, 1)[0]);
         return array; // for testing purposes
-    },
-    
-    'drawinline': function (processliststr) { 
+    }
 
-      if (!processliststr) return "";
-      
-      var processPairs = processliststr.split(",");
-      console.log(processPairs);
-      var out = "";
-
-      for (var z in processPairs)
-      {
-        var keyvalue = processPairs[z].split(":");
-
-        var key = parseInt(keyvalue[0]);
-        var type = "";
-        var color = "";
-
-        switch(key)
-        {
-          case 1:
-            key = 'log'; type = 2; break;
-          case 2:  
-            key = 'x'; type = 0; break;
-          case 3:  
-            key = '+'; type = 0; break;
-          case 4:    
-            key = 'kwh'; type = 2; break;
-          case 5:  
-            key = 'kwhd'; type = 2; break;
-          case 6:
-            key = 'x inp'; type = 1; break;
-          case 7:
-            key = 'ontime'; type = 2; break;
-          case 8:
-            key = 'kwhinckwhd'; type = 2; break;
-          case 9:
-            key = 'kwhkwhd'; type = 2; break;
-          case 10:  
-            key = 'update'; type = 2; break;
-          case 11: 
-            key = '+ inp'; type = 1; break;
-          case 12:
-            key = '/ inp'; type = 1; break;
-          case 13:
-            key = 'phaseshift'; type =2; break;
-          case 14:
-            key = 'accumulate'; type = 2; break;
-          case 15:
-            key = 'rate'; type = 2; break;
-          case 16:
-            key = 'hist'; type = 2; break;
-          case 17:  
-            key = 'average'; type = 2; break;
-          case 18:
-            key = 'flux'; type = 2; break;
-          case 19:
-            key = 'pwrgain'; type = 2; break;
-          case 20:
-            key = 'pulsdiff'; type = 2; break;
-          case 21:
-            key = 'kwhpwr'; type = 2; break;
-          case 22:
-            key = '- inp'; type = 1; break;
-          case 23:
-            key = 'kwhkwhd'; type = 2; break;
-          case 24:
-            key = '> 0'; type = 3; break;
-          case 25:
-            key = '< 0'; type = 3; break;
-          case 26:
-            key = 'unsign'; type = 3; break;
-          case 27:
-            key = 'max'; type = 2; break;
-          case 28:
-            key = 'min'; type = 2; break;
-        }  
-
-        value = keyvalue[1];
-        
-        switch(type)
-        {
-          case 0:
-            type = 'value: '; color = 'important';
-            break;
-          case 1:
-            type = 'input: '; color = 'warning';
-            break;
-          case 2:
-            type = 'feed: '; color = 'info';
-            break;
-          case 3:
-            type = ''; color = 'important';
-            value = ''; // Argument type is NONE, we don't mind the value
-            break;
-        }
-
-        if (type == 'feed: ') { 
-          out += "<a href='"+path+"vis/auto?feedid="+value+"'<span class='label label-"+color+"' title='"+type+value+"' style='cursor:pointer'>"+key+"</span></a> "; 
-        } else {
-          out += "<span class='label label-"+color+"' title='"+type+value+"' style='cursor:default'>"+key+"</span> ";
-        }
-        
-      }
-      
-      return out;
-    }    
-    
 }
