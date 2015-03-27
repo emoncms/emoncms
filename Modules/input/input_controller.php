@@ -31,10 +31,8 @@ function input_controller()
     $input = new Input($mysqli,$redis, $feed);
 
     require "Modules/input/process_model.php"; // 886
-    $process = new Process($mysqli,$input,$feed);
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
     
-    $process->set_timezone_offset($user->get_timezone($session['userid']));
-
     if ($route->format == 'html')
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
