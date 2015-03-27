@@ -24,5 +24,6 @@ Modules/openbem
 Modules/scheduler
 Modules/myip
 Modules/heat
+Modules/app
 emoncms.log
 .idea
