@@ -1,5 +1,5 @@
 <?php
-    global $path;
+    global $path, $feed_settings;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
@@ -174,9 +174,6 @@
 
     var path = "<?php echo $path; ?>";
     
-    var firstrun = true;
-    var assoc_inputs = {};
-
     // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
@@ -219,11 +216,7 @@
                 $("#localheading").hide();
                 $("#apihelphead").hide();
             }
-            
-            if (firstrun) {
-                firstrun = false;
-                load_all(); 
-            }
+            processlist_init();
         }});
     }
 
@@ -268,9 +261,20 @@
 //------------------------------------------------------------------------------------------------------------------------------------
 // Process list UI js
 //------------------------------------------------------------------------------------------------------------------------------------
+     var firstrun = true;
+
+     function processlist_init() {
+        if (firstrun) {
+            firstrun = false;
+            for (z in table.data) {
+                processlist_ui.inputlist[table.data[z].id] = table.data[z];
+            }
+            processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
+            processlist_ui.load_all(); 
+        }
+     }
  
     $("#table").on('click', '.icon-wrench', function() {
-        
         var i = table.data[$(this).attr('row')];
         console.log(i);
         processlist_ui.inputid = i.id;
@@ -314,88 +318,4 @@
         $("#processlist-ui").hide();
     });
 
-function load_all()
-{
-    for (z in table.data) assoc_inputs[table.data[z].id] = table.data[z];
-    console.log(assoc_inputs);
-    processlist_ui.inputlist = assoc_inputs;
-    
-    // Inputlist
-    var out = "";
-    for (i in processlist_ui.inputlist) {
-      var input = processlist_ui.inputlist[i];
-      out += "<option value="+input.id+">"+input.nodeid+":"+input.name+" "+input.description+"</option>";
-    }
-    $("#input-select").html(out);
-    
-    $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
-        var schedules = {};
-        for (z in result) schedules[result[z].id] = result[z];
-        
-        processlist_ui.schedulelist = schedules;
-        var groupname = {0:'Public',1:'Mine'};
-        var groups = [];
-        //for (z in result) schedules[result[z].id] = result[z];
-        
-        for (z in processlist_ui.schedulelist)
-        {
-            var group = processlist_ui.schedulelist[z].own;
-            group = groupname[group];
-            if (!groups[group]) groups[group] = []
-            processlist_ui.schedulelist[z]['_index'] = z;
-            groups[group].push(processlist_ui.schedulelist[z]);
-        }
-        
-        var out = "";
-        for (z in groups)
-        {
-            out += "<optgroup label='"+z+"'>";
-            for (p in groups[z])
-            {
-                out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+(z!=groupname[1]?" ["+groups[z][p]['id']+"]":"")+"</option>";
-            }
-            out += "</optgroup>";
-        }
-        $("#schedule-select").html(out);
-    }});
-    
-    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
-        var feeds = {};
-        for (z in result) { feeds[result[z].id] = result[z]; }
-        processlist_ui.feedlist = feeds;
-    }});
-    
-    $.ajax({ url: path+"input/getallprocesses.json", async: true, dataType: 'json', success: function(result){
-        processlist_ui.processlist = result;
-        var processgroups = [];
-        var i = 0;
-        for (z in processlist_ui.processlist)
-        {
-            i++;
-            var group = processlist_ui.processlist[z][5];
-            if (group!="Deleted") {
-                if (!processgroups[group]) processgroups[group] = []
-                processlist_ui.processlist[z]['id'] = z;
-                processgroups[group].push(processlist_ui.processlist[z]);
-            }
-        }
-
-        var out = "";
-        for (z in processgroups)
-        {
-            out += "<optgroup label='"+z+"'>";
-            for (p in processgroups[z])
-            {
-                out += "<option value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+"</option>";
-            }
-            out += "</optgroup>";
-        }
-        $("#process-select").html(out);
-        
-        $("#description").html(process_info[1]);
-        processlist_ui.showfeedoptions(1);
-    }});
-   
-    processlist_ui.events();
-}
 </script>

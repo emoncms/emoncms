@@ -19,7 +19,13 @@
     
     $feed_settings = array(
 
-        'enable_mysql_all'=>true,
+        // Configure supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds engines still work.
+        'engines_hidden'=>array(
+            ENGINE::MYSQL             // 0
+            ,Engine::PHPTIMESERIES    // 2
+            //,Engine::PHPFINA        // 5
+            //,Engine::PHPFIWA        // 6
+        ),
         
         'timestore'=>array(
             'adminkey'=>"_TS_ADMINKEY_"

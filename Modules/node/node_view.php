@@ -1,8 +1,5 @@
 <?php 
   global $path, $feed_settings; 
-  
-  $enable_mysql_all = 0;
-  if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
 
 ?>
 <style>
@@ -138,7 +135,7 @@ body .modal {
 
   var path = "<?php echo $path; ?>";
   
-  processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
+  processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
   
   var nodes = node.getall();
   
@@ -511,7 +508,25 @@ body .modal {
   processlist_ui.nodes = nodes;
   processlist_ui.feedlist = feed.list_assoc();
   processlist_ui.inputlist = input.list_assoc();
-  processlist_ui.processlist = input.getallprocesses();
+  var result = input.getallprocesses();
+  if (processlist_ui.engines_hidden.length > 0) {
+    for (p in result)  // for each processor
+    {
+        if (result[p][6]!=undefined) {  // processor has supported engines?
+            for (var e=result[p][6].length-1; e > -1; e--) {  // for each processor engine
+                for (h in processlist_ui.engines_hidden) {
+                    if (result[p][6][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
+                        result[p][6].splice(e, 1);       // remove engine from processor
+                    }
+                }
+            }
+            if (result[p][6].length == 0) {
+                result[p][6] = undefined;    // if processor now has no engines, undefine its array
+            }
+        }
+    }
+  }
+  processlist_ui.processlist = result;
   processlist_ui.events();
  
 </script>

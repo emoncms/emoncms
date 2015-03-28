@@ -10,7 +10,7 @@ var processlist_ui =
     inputlist:[],
     schedulelist:[],
     
-    enable_mysql_all: false,
+    engines_hidden:[],
 
     'draw':function()
     {
@@ -132,11 +132,14 @@ var processlist_ui =
             var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
             // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
             if (datatype==2) {
-                $("#feed-interval option").hide();
-                $("#feed-interval option[value=86400]").show(); // 3600*24
+                $("#feed-interval option").hide();                  // Hide all
+                $("#feed-interval option").prop('disabled', true);  // for IE hide (grayed out)
+                $("#feed-interval option[value=86400]").show();     // show this 3600*24
+                $("#feed-interval option[value=86400]").prop('disabled', false);  //for IE show
                 $("#feed-interval").val(86400); 
             } else {
-                $("#feed-interval option").show();
+                $("#feed-interval option").show(); // Show all
+                $("#feed-interval option").prop('disabled', false);  //for IE show
                 $("#feed-interval").val(10);   // default to 10s
             } 
         });
@@ -319,38 +322,41 @@ var processlist_ui =
         var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
         var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
         
-        if (this.enable_mysql_all) {
-            var mysql_found = false;
-            for (e in engines) {
-                if (engines[e]==0) mysql_found = true;
-            }
-            if (!mysql_found) engines.push(0);
-        }
-
         var out = "<option value=-1>CREATE NEW:</option>";
         for (i in processlist_ui.feedlist) {
-          out += "<option value="+processlist_ui.feedlist[i].id+">"+processlist_ui.feedlist[i].name+"</option>";
+          out += "<option value="+processlist_ui.feedlist[i].id+">"+(processlist_ui.feedlist[i].tag === null ? "" : processlist_ui.feedlist[i].tag + ":") + processlist_ui.feedlist[i].name+"</option>";
         }
         $("#feed-select").html(out);
         
         $("#feed-select option").hide();    // Start by hiding all feeds
+        $("#feed-select option").prop('disabled', true);  //for IE hide (grayed out)
         for (f in processlist_ui.feedlist) {
-            if (processlist_ui.feedlist[f].datatype == datatype)
+            if (processlist_ui.feedlist[f].datatype == datatype) {
                 $("#feed-select option[value="+processlist_ui.feedlist[f].id+"]").show(); // Only show feeds of the supported datatype
+                $("#feed-select option[value="+processlist_ui.feedlist[f].id+"]").prop('disabled', false);  //for IE show
+            }
         }
         
         $("#feed-engine option").hide();    // Start by hiding all feed engine options
-        for (e in engines) $("#feed-engine option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
+        $("#feed-engine option").prop('disabled', true);  //for IE hide (grayed out)
+        for (e in engines) { 
+            $("#feed-engine option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
+            $("#feed-engine option[value=-1]").prop('disabled', false);  //for IE show
+        }
 
         $("#feed-engine, .feed-engine-label").hide(); 
         if (typeof(engines) != "undefined") {
             $("#feed-engine").val(engines[0]);         // Select the first feed engine in the engines array by default
             $("#feed-select option[value=-1]").show(); // enable create new feed
+            $("#feed-select option[value=-1]").prop('disabled', false);  //for IE show
         } else {
             $("#feed-select option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
-            for (i in processlist_ui.feedlist) {
-                $("#feed-select").val(processlist_ui.feedlist[i].id); // select first feed
-                break;
+            $("#feed-select option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
+            for (f in processlist_ui.feedlist) {
+                if (processlist_ui.feedlist[f].datatype == datatype) {    // Only feeds of the supported datatype
+                    $("#feed-select").val(processlist_ui.feedlist[f].id); // select first feed
+                    break;
+                }
             }
         }
 
@@ -391,6 +397,109 @@ var processlist_ui =
         }
         array.splice(new_index, 0, array.splice(old_index, 1)[0]);
         return array; // for testing purposes
+    },
+
+
+    'load_all':function()
+    {
+        // Input Select List    
+        var out = "";
+        for (i in processlist_ui.inputlist) {
+          var input = processlist_ui.inputlist[i];
+          out += "<option value="+input.id+">"+input.nodeid+":"+input.name+" "+input.description+"</option>";
+        }
+        $("#input-select").html(out);
+        
+        // Schedule Select List
+        $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
+            var schedules = {};
+            for (z in result) schedules[result[z].id] = result[z];
+            
+            processlist_ui.schedulelist = schedules;
+            var groupname = {0:'Public',1:'Mine'};
+            var groups = [];
+            //for (z in result) schedules[result[z].id] = result[z];
+            
+            for (z in processlist_ui.schedulelist)
+            {
+                var group = processlist_ui.schedulelist[z].own;
+                group = groupname[group];
+                if (!groups[group]) groups[group] = []
+                processlist_ui.schedulelist[z]['_index'] = z;
+                groups[group].push(processlist_ui.schedulelist[z]);
+            }
+            
+            var out = "";
+            for (z in groups)
+            {
+                out += "<optgroup label='"+z+"'>";
+                for (p in groups[z])
+                {
+                    out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+(z!=groupname[1]?" ["+groups[z][p]['id']+"]":"")+"</option>";
+                }
+                out += "</optgroup>";
+            }
+            $("#schedule-select").html(out);
+        }});
+        
+        // Feeds Select List
+        $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
+            var feeds = {};
+            for (z in result) { feeds[result[z].id] = result[z]; }
+            processlist_ui.feedlist = feeds;
+        }});
+        
+        // Processors Select List
+        $.ajax({ url: path+"input/getallprocesses.json", async: true, dataType: 'json', success: function(result){
+            if (processlist_ui.engines_hidden.length > 0) {
+                for (p in result)  // for each processor
+                {
+                    if (result[p][6]!=undefined) {  // processor has supported engines?
+                        for (var e=result[p][6].length-1; e > -1; e--) {  // for each processor engine
+                            for (h in processlist_ui.engines_hidden) {
+                                if (result[p][6][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
+                                    result[p][6].splice(e, 1);       // remove engine from processor
+                                }
+                            }
+                        }
+                        if (result[p][6].length == 0) {
+                            result[p][6] = undefined;    // if processor now has no engines, undefine its array
+                        }
+                    }
+                }
+            }
+            
+            processlist_ui.processlist = result;
+            var processgroups = [];
+            var i = 0;
+            for (z in processlist_ui.processlist)
+            {
+                i++;
+                var group = processlist_ui.processlist[z][5];
+                if (group!="Deleted") {
+                    if (!processgroups[group]) processgroups[group] = []
+                    processlist_ui.processlist[z]['id'] = z;
+                    processgroups[group].push(processlist_ui.processlist[z]);
+                }
+            }
+
+            var out = "";
+            for (z in processgroups)
+            {
+                out += "<optgroup label='"+z+"'>";
+                for (p in processgroups[z])
+                {
+                    out += "<option value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+"</option>";
+                }
+                out += "</optgroup>";
+            }
+            $("#process-select").html(out);
+            
+            $("#description").html(process_info[1]);
+            processlist_ui.showfeedoptions(1);
+        }});
+       
+        processlist_ui.events();
     }
 
 }
