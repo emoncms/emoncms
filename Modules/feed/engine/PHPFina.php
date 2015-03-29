@@ -7,6 +7,7 @@ class PHPFina
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
+    public $padding_mode = "nan";
     
     /**
      * Constructor.
@@ -69,6 +70,7 @@ class PHPFina
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
+    
     public function post($id,$timestamp,$value)
     {
         $this->log->info("PHPFina:post post id=$id timestamp=$timestamp value=$value");
@@ -124,14 +126,34 @@ class PHPFina
         // Write padding
         $padding = ($pos - $last_pos)-1;
         
+        // Max padding = 1 million datapoints ~4mb gap of 115 days at 10s
+        $maxpadding = 1000000;
+        
+        if ($padding>$maxpadding) {
+            $this->log->warn("PHPFina:post padding max block size exeeded id=$id, $padding dp");
+            return false;
+        }
+        
         if ($padding>0) {
-            if ($this->write_padding($fh,$meta->npoints,$padding)===false)
-            {
-                // Npadding returned false = max block size was exeeded
+            $padding_value = NAN;
+            
+            if ($last_pos>=0 && $this->padding_mode!="nan") {
+                fseek($fh,$last_pos*4);
+                $val = unpack("f",fread($fh,4));
+                $last_val = (float) $val[1];
                 
-                $this->log->warn("PHPFina:post padding max block size exeeded id=$id");
-                return false;
+                $padding_value = $last_val;
+                $div = ($value - $last_val) / ($padding+1);
             }
+            
+            $buffer = "";
+            for ($i=0; $i<$padding; $i++) {
+                if ($this->padding_mode=="join") $padding_value += $div;
+                $buffer .= pack("f",$padding_value);
+            }
+            fseek($fh,4*$meta->npoints);
+            fwrite($fh,$buffer);
+            
         } else {
             //$this->log->warn("PHPFINA padding less than 0 id=$id");
             //return false;
@@ -167,63 +189,56 @@ class PHPFina
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $dp The number of data points to return (used by some engines)
     */
-    public function get_data($id,$start,$end,$outinterval)
+
+    public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $id = intval($id);
         $start = intval($start/1000);
         $end = intval($end/1000);
-        $outinterval= (int) $outinterval;
+        $interval= (int) $interval;
+        
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>3000) return array('success'=>false, 'message'=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
+        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"error reading meta data $meta");
         
-        if ($outinterval<$meta->interval) $outinterval = $meta->interval;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        
-        // $dpratio = $outinterval / $meta->interval;
-        if ($dp<1) return false;
-
-        // The number of datapoints in the query range:
-        $dp_in_range = ($end - $start) / $meta->interval;
-
-        // Divided by the number we need gives the number of datapoints to skip
-        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
-        // datapoints every 100 datapoints.
-        $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
-
-        // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        } else {
-            $start = ceil($meta->start_time / $outinterval) * $outinterval;
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        }
+        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
 
         $data = array();
         $time = 0; $i = 0;
-
+        $numdp = 0;
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$id.".dat", 'rb');
+        $fh = fopen($this->dir.$name.".dat", 'rb');
         while($time<=$end)
         {
-            // $position steps forward by skipsize every loop
-            $pos = ($startpos + ($i * $skipsize));
+            $time = $start + ($interval * $i);
+            $pos = round(($time - $meta->start_time) / $meta->interval);
 
-            // Exit the loop if the position is beyond the end of the file
-            if ($pos > $meta->npoints-1) break;
+            $value = null;
 
-            // read from the file
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
+            if ($pos>=0 && $pos < $meta->npoints)
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $val = unpack("f",fread($fh,4));
 
-            // calculate the datapoint time
-            $time = $meta->start_time + $pos * $meta->interval;
-
-            // add to the data array if its not a nan value
-            if (!is_nan($val[1])) $data[] = array($time*1000,$val[1]);
+                // add to the data array if its not a nan value
+                if (!is_nan($val[1])) {
+                    $value = $val[1];
+                } else {
+                    $value = null;
+                }
+            }
+            
+            if ($value!==null || $skipmissing===0) {
+                $data[] = array($time*1000,$value);
+            }
 
             $i++;
         }
@@ -389,44 +404,6 @@ class PHPFina
         fwrite($metafile,pack("I",$meta->interval));
         fwrite($metafile,pack("I",$meta->start_time)); 
         fclose($metafile);
-    }
-    
-    private function write_padding($fh,$npoints,$npadding)
-    {
-        $tsdb_max_padding_block = 1024 * 1024;
-        
-        // Padding amount too large
-        if ($npadding>$tsdb_max_padding_block*2) {
-            return false;
-        }
-
-        // Maximum points per block
-        $pointsperblock = $tsdb_max_padding_block / 4; // 262144
-
-        // If needed is less than max set to padding needed:
-        if ($npadding < $pointsperblock) $pointsperblock = $npadding;
-
-        // Fill padding buffer
-        $buf = '';
-        for ($n = 0; $n < $pointsperblock; $n++) {
-            $buf .= pack("f",NAN);
-        }
-
-        fseek($fh,4*$npoints);
-
-        do {
-            if ($npadding < $pointsperblock) 
-            { 
-                $pointsperblock = $npadding;
-                $buf = ''; 
-                for ($n = 0; $n < $pointsperblock; $n++) {
-                    $buf .= pack("f",NAN);
-                }
-            }
-            
-            fwrite($fh, $buf);
-            $npadding -= $pointsperblock;
-        } while ($npadding); 
     }
     
     public function csv_export($id,$start,$end,$outinterval)

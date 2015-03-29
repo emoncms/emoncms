@@ -19,18 +19,16 @@
     
     $feed_settings = array(
 
-        'enable_mysql_all'=>true,
-        
-        'timestore'=>array(
-            'adminkey'=>"_TS_ADMINKEY_"
-        ),
-
-        'graphite'=>array(
-            'port'=>0,
-            'host'=>0
+        // Configure supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds engines still work.
+        'engines_hidden'=>array(
+            ENGINE::MYSQL             // 0
+            ,Engine::PHPTIMESERIES    // 2
+            //,Engine::PHPFINA        // 5
+            //,Engine::PHPFIWA        // 6
         ),
         
-        // The default data directory is /var/lib/phpfiwa,phpfina,phptimeseries on windows or shared hosting you will likely need to specify a different data directory.
+        // The default data directory is /var/lib/phpfiwa,phpfina,phptimeseries 
+        // --on windows or shared hosting you will likely need to specify a different data directory--
         // Make sure that emoncms has write permission's to the datadirectory folders
         
         'phpfiwa'=>array(
@@ -41,9 +39,6 @@
         ),
         'phptimeseries'=>array(
             'datadir'=>'/var/lib/phptimeseries/'
-        ),
-        'phptimestore'=>array(
-            'datadir'=>'/var/lib/phptimestore/'
         )
     );
     

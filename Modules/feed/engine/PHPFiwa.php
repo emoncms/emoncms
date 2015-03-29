@@ -320,106 +320,78 @@ class PHPFiwa
         }
         return $data;
     }
+    
 
-    public function get_data($feedid,$start,$end,$outinterval)
+    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
     {
         $feedid = intval($feedid);
         $start = intval($start/1000);
         $end = intval($end/1000);
         $outinterval = (int) $outinterval;
+        if ($outinterval<1) $outinterval = 1;
         
-        $layer = 0;
-
-        // If meta data file does not exist then exit
         if (!$meta = $this->get_meta($feedid)) return false;
 
-
-
-        if ($outinterval<$meta->interval[0]) $outinterval = $meta->interval[0];
-        $dp = floor(($end - $start) / $outinterval);
-        if ($dp<1) return false;
+        // 1) Find nearest layer with interval less than request interval
+        $layer = 0;
+        if ($meta->nlayers>1 && $outinterval >= $meta->interval[1]) $layer = 1;
+        if ($meta->nlayers>2 && $outinterval >= $meta->interval[2]) $layer = 2;
+        if ($meta->nlayers>3 && $outinterval >= $meta->interval[3]) $layer = 3;
         
-        $end = $start + ($dp * $outinterval);
-        
-        $dpratio = $outinterval / $meta->interval[0];
-        
-        // The number of datapoints in the query range:
-        //$dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
-        
-        // Cant return more datapoints than exists in bottom layer
-        //if ($dp>$dp_in_range) $dp = $dp_in_range;
-        
-        // Find out the closest layer to the range we have selected
-        //$dpratio = $dp_in_range / $dp;
-        
-        //print $dpratio;
-        
-        if ($meta->nlayers>1) {
-          if ($dpratio >= ($meta->interval[1] / $meta->interval[0])) $layer = 1;
-        }   
-        
-        if ($meta->nlayers>2) {
-          if ($dpratio >= ($meta->interval[2] / $meta->interval[0])) $layer = 2;
-        }
-        
-        if ($meta->nlayers>3) {
-          if ($dpratio >= ($meta->interval[3] / $meta->interval[0])) $layer = 3;
-        }
-        
-        $dp_in_range = ceil(($end - $start) / $meta->interval[$layer]);
-                
+        // 2) Calculate the portion of the data file that we need to load:
         $start_time_avl = floor($meta->start_time / $meta->interval[$layer]) * $meta->interval[$layer];
-
-        // Divided by the number we need gives the number of datapoints to skip
-        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
-        // datapoints every 100 datapoints.
-        $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
-
-        // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
-            $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
-        } else {
-            $startpos = 0;
-        }
-
-        $data = array();
-        $time = 0; $i = 0;
-     
-        // The datapoints are selected within a loop that runs until we reach a
-        // datapoint that is beyond the end of our query range
-        $mstart = microtime(true);
-        $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
-        fseek($fh,$startpos*4);
-        $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
-        fclose($fh);
-
-        $count = count($layer_values);
+        $startpos = ceil(($start - $start_time_avl) / $meta->interval[$layer]);
+        $endpos = ceil(($end - $start_time_avl) / $meta->interval[$layer]);
+        if ($startpos<0) $startpos = 0;
+        if ($endpos<$startpos) $endpos = $startpos;
+        $dp_in_range = $endpos - $startpos;
         
-        $naverage = $skipsize;
-        for ($i=1; $i<=($count-$naverage+1); $i+=$naverage)
+        // 3) Load data values available in time range
+        if ($dp_in_range) {
+            $fh = fopen($this->dir.$meta->id."_$layer.dat", 'rb');
+            fseek($fh,$startpos*4);
+            $layer_values = unpack("f*",fread($fh, 4 * $dp_in_range));
+            fclose($fh);
+            $dploaded = count($layer_values);
+        }
+        
+        $data = array();
+
+        $i=0;
+        $time0 = 0;
+        while($time0<=$end)
         {
-            // Calculate the average value of each block
-            $point_sum = 0;
-            $points_in_sum = 0;
+            $time0 = $start + ($outinterval * $i);
+            $time1 = $start + ($outinterval * ($i+1));
+            $pos0 = round(($time0 - $start_time_avl) / $meta->interval[$layer]);
+            $pos1 = round(($time1 - $start_time_avl) / $meta->interval[$layer]);
             
-            for ($n=0; $n<$naverage; $n++) {
-                $value = $layer_values[$i+$n];
-                if (!is_nan($value)) {
-                    $point_sum += $value;
-                    $points_in_sum++;
+            $value = null;
+            
+            if ($pos0>=0)
+            {
+                $p = $pos0 - $startpos;
+                $point_sum = 0;
+                $points_in_sum = 0;
+                
+                while($p<$pos1-$startpos) {
+                    if (isset($layer_values[$p+1]) && !is_nan($layer_values[$p+1])) {
+                        $point_sum += $layer_values[$p+1];
+                        $points_in_sum++;
+                    }
+                    $p++;
+                }
+                
+                if ($points_in_sum) {
+                    $value = $point_sum / $points_in_sum;
                 }
             }
+            
+            if ($value!==null) $data[] = array($time0*1000,$value);
+            if ($value===null && $skipmissing===0) $data[] = array($time0*1000,$value);
 
-            // If there was a value in the block then add to data array
-            if ($points_in_sum) {
-                $timestamp = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
-                $average = $point_sum / $points_in_sum;
-                $data[] = array($timestamp*1000,$average);
-            }
+            $i++;
         }
-        
-        //error_log("datapoints: ".($dp_in_range).":".$count." ".(microtime(true)-$mstart)." ".(memory_get_usage(true)/1024)."kb");
         
         return $data;
     }

@@ -527,7 +527,7 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = intval($userid);
-        $timezone = intval($timezone);
+        $timezone = preg_replace('/[^\w-.\\/_]/','',$timezone);
         $this->mysqli->query("UPDATE users SET timezone = '$timezone' WHERE id='$userid'");
     }
 

@@ -12,13 +12,12 @@
 
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.js"></script>
 
@@ -146,7 +145,7 @@ $(function() {
         var offset = n / -60;
 
         var datastart = (Math.round((view.start/1000.0)/interval) * interval)+3600*offset;
-        data = feed.get_average(feedid,datastart*1000,view.end+(interval*1000),interval);
+        data = get_feed_data(feedid,datastart*1000,view.end+(interval*1000),interval,1,1);
 
         if (units=='kWh') {
             for (z in data)

@@ -10,8 +10,7 @@ var processlist_ui =
     feedlist:[],
     inputlist:[],
     
-    enable_mysql_all: false,
-
+    engines_hidden:[],
 
     'init':function()
     {
@@ -279,15 +278,13 @@ var processlist_ui =
         var prc = processlist_ui.processlist[processid][2];
         var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
         var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
-        
-        //processlist_ui.enable_mysql_all = true;
-        
-        if (processlist_ui.enable_mysql_all) {
-            var mysql_found = false;
+
+        if (this.engines_hidden.length > 0) {
             for (e in engines) {
-                if (engines[e]==0) mysql_found = true;
+                for (h in this.engines_hidden) {
+                    if (engines[e]==this.engines_hidden[h]) engines.pop(e);
+                }
             }
-            if (!mysql_found) engines.push(0);
         }
 
         if (prc!='histogram')

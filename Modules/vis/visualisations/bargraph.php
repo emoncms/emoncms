@@ -17,6 +17,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.js"></script>
 
@@ -231,8 +232,6 @@ $(function() {
 
     function draw()
     {
-        data = [];
-        
         var d = new Date()
         var n = d.getTimezoneOffset();
         var offset = n / -60;
@@ -242,21 +241,17 @@ $(function() {
         datastart -= offset * 3600000;
         dataend -= offset * 3600000;
  
-        //need to be fixed, when the interval is a day, it returns the kwh elapsed in 24h from an eratic time (9:08 by example). It should returns the kwh elapsed in 24h from midnight to midnight.
-        $.ajax({
-            url: path+'feed/average.json',                         
-            data: "id="+feedid+"&start="+datastart+"&end="+dataend+"&interval="+interval,
-            dataType: 'json',
-            async: false,                      
-            success: function(data_in) { data = data_in; } 
-        });
+        //TODO: need to be fixed, when the interval is a day, it returns the kwh elapsed in 24h from an eratic time (9:08 by example). It should returns the kwh elapsed in 24h from midnight to midnight.
+        data = get_feed_data(feedid,datastart,dataend,interval,0,1);
  
         var out = [];
         
         if (delta==1) {
             for (var z=1; z<data.length; z++) {
-                var val = (data[z][1] - data[z-1][1]) * scale;
-                out.push([data[z][0],val]);
+                if (data[z][1]!=null && data[z-1][1]!=null) {
+                    var val = (data[z][1] - data[z-1][1]) * scale;
+                    out.push([data[z-1][0],val]);
+                }
             }
             data = out;
         } else if (scale!=1) {

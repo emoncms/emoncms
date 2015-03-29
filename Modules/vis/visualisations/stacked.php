@@ -11,7 +11,6 @@
     global $path, $embed;
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
@@ -44,9 +43,11 @@
     var start = +new Date - timeWindow;  //Get start time
     var end = +new Date; 
     
-    var dataA = feed.get_average(kwhdA,start,end,3600*24);
-    var dataB = feed.get_average(kwhdB,start,end,3600*24);
-
+    start = Math.floor(start / 86400000) * 86400000;
+    end = Math.floor(end / 86400000) * 86400000;
+    
+    var dataA = get_feed_data(kwhdA,start,end,3600*24,1,1);
+    var dataB = get_feed_data(kwhdB,start,end,3600*24,1,1);
 
     var embed = <?php echo $embed; ?>;
     $('#graph').width($('#graph_bound').width());

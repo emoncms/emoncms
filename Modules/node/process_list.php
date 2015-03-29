@@ -9,10 +9,7 @@
     http://openenergymonitor.org
 */
 
-global $path, $session;
-
-$enable_mysql_all = 0;
-if (isset($feed_settings['enable_mysql_all']) && $feed_settings['enable_mysql_all']==true) $enable_mysql_all = 1;
+global $path, $session, feed_settings;
 
 $nodeid = $_GET['node'];
 $variableid = $_GET['variable'];
@@ -120,7 +117,7 @@ $variableid = $_GET['variable'];
 
 var path = "<?php echo $path; ?>";
 
-processlist_ui.enable_mysql_all = <?php echo $enable_mysql_all; ?>;
+processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
 
 processlist_ui.nodeid = <?php echo $nodeid; ?>;
 processlist_ui.variableid = <?php echo $variableid; ?>;

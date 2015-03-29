@@ -96,7 +96,9 @@
 
     function vis_feed_data()
     {
-        var graph_data = get_feed_data(feedid,start,end,1000);
+        var npoints = 800;
+        interval = Math.round(((end - start)/npoints)/1000);
+        var graph_data = get_feed_data(feedid,start,end,interval,1,1);
         var stats = power_stats(graph_data);
         //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
 
@@ -112,9 +114,11 @@
     }
 
     $("#graph").bind("plotclick", function (event, pos, item) {
-        $("#time").val(item.datapoint[0]/1000);
-        $("#newvalue").val(item.datapoint[1]);
-        //$("#stats").html("Value: "+item.datapoint[1]);
+        if (item != null) {
+            $("#time").val(item.datapoint[0]/1000);
+            $("#newvalue").val(item.datapoint[1]);
+            //$("#stats").html("Value: "+item.datapoint[1]);
+        }
     });
 
     //--------------------------------------------------------------------------------------

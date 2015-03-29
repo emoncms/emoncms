@@ -160,7 +160,15 @@ class Schedule
         //           'Mon-Fri|00:00-06:59, Sat|00:00-08:59,14:00-19:59,22:00-23:59, Sun|00:00-23:59'    <- Weekly Summer Empty 
         //           'Mon-Fri|07:00-09:14,12:15-23:59, Sat|09:00-13:59,20:00-21:59'                     <- Weekly Summer Full
         //           'Mon-Fri|09:15-12:14'                                                              <- Weekly Summer Top
+        
+        // Tri schedule
+        // Weekly Empty -> 'Winter|Mon-Fri|00:00-06:59, Winter|Sat|00:00-09:29,13:00-18:29,22:00-23:59, Winter|Sun|00:00-23:59 , Summer|Mon-Fri|00:00-06:59, Summer|Sat|00:00-08:59,14:00-19:59,22:00-23:59, Summer|Sun|00:00-23:59'
+        //        Full  -> 'Winter|Mon-Fri|07:00-09:29,12:00-18:29,21:00-23:59, Winter|Sat|09:30-12:59,18:30-21:59 , Summer|Mon-Fri|07:00-09:14,12:15-23:59, Summer|Sat|09:00-13:59,20:00-21:59'
+        //        Top   -> 'Winter|Mon-Fri|09:30-11:59,18:30-20:59 , Summer|Mon-Fri|09:15-12:14'
 
+        // Bi schedule
+        // Weekly Empty -> 'Winter|Mon-Fri|00:00-06:59, Winter|Sat|00:00-09:29,13:00-18:29,22:00-23:59, Winter|Sun|00:00-23:59 , Summer|Mon-Fri|00:00-06:59, Summer|Sat|00:00-08:59,14:00-19:59,22:00-23:59, Summer|Sun|00:00-23:59'
+        //        Full  -> 'Winter|Mon-Fri|07:00-23:59, Winter|Sat|09:30-12:59,18:30-21:59 , Summer|Mon-Fri|07:00-23:59, Summer|Sat|09:00-13:59,20:00-21:59'
        
         $timeDay =  DateTime::createFromFormat("U", $time);   // epoch is always in GMT 
         $timeDay->setTimezone(new DateTimeZone($exp_timezone));

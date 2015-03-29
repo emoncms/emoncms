@@ -122,14 +122,8 @@
                         dataend = end;
                         interval = Math.round(((end-start)/500)*0.001);
                     }
-                    
-                    $.ajax({                                      
-                        url: path+'feed/average.json',                         
-                        data: "id="+feedlist[i].id+"&start="+datastart+"&end="+dataend+"&interval="+interval,
-                        dataType: 'json',
-                        async: false,                      
-                        success: function(data_in) { feedlist[i].plot.data = data_in; } 
-                    });
+
+                    feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,86400,1,1);
                 }
                 
                 if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);

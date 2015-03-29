@@ -49,7 +49,7 @@
             $feedid = intval(get('feedid'));
             $datatype = $feed->get_field($feedid,'datatype');
             if ($datatype == 0) $result = "Feed type or authentication not valid";
-            if ($datatype == 1) $route->action = 'rawdata';
+            if ($datatype == 1) $route->action = 'graph';
             if ($datatype == 2) $route->action = 'bargraph';
             if ($datatype == 3) $route->action = 'histgraph';
         }
@@ -133,7 +133,6 @@
         if ($route->subaction == 'set' && $session['write']) $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'),get('name'));
         if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
         if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
-        if ($route->subaction == 'getname') $result = $multigraph->getname(get('id'),$session['userid']);
     }
 
     return array('content'=>$result);

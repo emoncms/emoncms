@@ -22,8 +22,8 @@
             array('feedid',_("feedid"),1),
             array('fill',_("fill"),7,0),
             array('colour',_("colour"),5,'EDC240'),
-            array('units',_("units"),5,'W'),
-            array('dp',_("dp"),7,'1'),
+            array('units',_("units"),5,''),
+            array('dp',_("dp"),7,'2'),
             array('scale',_("scale"),6,'1'))
         ),
         
@@ -37,7 +37,7 @@
             array('delta',_("delta"),7,'0'))
         ),
         
-        'timestoredaily'=> array('label'=>_("TimestoreDaily"), 'options'=>array(
+        'timestoredaily'=> array('label'=>_("Daily from Multiple (BETA)"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('units',_("units"),5,'kWh'))
         ),
@@ -104,10 +104,16 @@
             array('feedid',_("feedid"),2)
         )),
         
-        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(array('mid',_("mid"),7)) ),
+        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(
+            array('mid',_("mid"),7)
+        )),
         
         'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
-            array('powerx',_("powerx"),1),
-            array('powery',_("powery"),1)
+            array('feedA',_("Feed A"),1),
+            array('feedB',_("Feed B"),1)
+        )),
+        
+        'graph'=> array('label'=>_("Graph (BETA)"), 'options'=>array(
+            array('feedid',_("feedid"),1)
         ))
     );
