@@ -52,12 +52,13 @@ function db_schema_setup($mysqli, $schema, $apply)
                   $array = $result->fetch_array();
                   $query = "";
                   
-                  if ($array['Type']!=$type) $query .= ";";
+                  
                   if (isset($default) && $array['Default']!=$default) $query .= " Default '$default'";
                   if ($array['Null']!=$null && $null=="NO") $query .= " not null";
                   if ($array['Extra']!=$extra && $extra=="auto_increment") $query .= " auto_increment";
                   if ($array['Key']!=$key && $key=="PRI") $query .= " primary key";
-
+                  if ($array['Type']!=$type) $query .= ";";
+                  
                   if ($query) $query = "ALTER TABLE $table MODIFY `$field` $type".$query;
                   if ($query) $operations[] = $query;
                   if ($query && $apply) $mysqli->query($query);
