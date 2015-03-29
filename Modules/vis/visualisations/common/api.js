@@ -18,10 +18,10 @@
   //-------------------------------------------------------------------------------
   // Get feed data
   //-------------------------------------------------------------------------------
-  function get_feed_data(feedID,start,end,dp)
+  function get_feed_data(feedID,start,end,interval,skipmissing,limitinterval)
   {
     var feedIn = [];
-    var query = "&id="+feedID+"&start="+start+"&end="+end+"&dp="+dp;
+    var query = "&id="+feedID+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"$limitinterval="+limitinterval;
     if (apikey!="") query+= "&apikey="+apikey;
 
     $.ajax({                                    
@@ -37,10 +37,11 @@
   //-------------------------------------------------------------------------------
   // Get feed data async with callback
   //-------------------------------------------------------------------------------
-  function get_feed_data_async(feedID,start,end,dp,pfn)
+//CHAVEIRO: TODO CHECK WHERE IS USED
+  function ___get_feed_data_async(feedID,start,end,interval,pfn)
   {
     var feedIn = [];
-    var query = "&id="+feedID+"&start="+start+"&end="+end+"&dp="+dp;
+    var query = "&id="+feedID+"&start="+start+"&end="+end+"&interval="+interval;
     if (apikey!="") query+= "&apikey="+apikey;
 
     $.ajax({                                    

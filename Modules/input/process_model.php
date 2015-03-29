@@ -35,9 +35,11 @@ class Process
         $this->log = new EmonLogger(__FILE__);
         if (!($timezone === NULL)) $this->timezone = $timezone;
      
-        include "Modules/schedule/schedule_model.php";
-        $this->schedule = new Schedule($mysqli, $this->timezone);
-         
+        if(file_exists("Modules/schedule/schedule_model.php")) {
+            include "Modules/schedule/schedule_model.php";
+            $this->schedule = new Schedule($mysqli, $this->timezone);
+        }
+        
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
         global $mqtt_enabled, $mqtt;
@@ -115,12 +117,13 @@ class Process
 
         $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc"); 
         $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
-        
+
+    if (is_object($this->schedule)) {
         $list[38] = array(_("If !schedule, ZERO"),ProcessArg::SCHEDULEID,"if_not_schedule_zero",0,DataType::UNDEFINED,"Schedule");
         $list[39] = array(_("If !schedule, NULL"),ProcessArg::SCHEDULEID,"if_not_schedule_null",0,DataType::UNDEFINED,"Schedule");
         $list[40] = array(_("If schedule, ZERO"),ProcessArg::SCHEDULEID,"if_schedule_zero",0,DataType::UNDEFINED,"Schedule");
         $list[41] = array(_("If schedule, NULL"),ProcessArg::SCHEDULEID,"if_schedule_null",0,DataType::UNDEFINED,"Schedule");
-        
+    }        
         $list[42] = array(_("If ZERO, skip next"),ProcessArg::NONE,"if_zero_skip",0,DataType::UNDEFINED,"Conditional");
         $list[43] = array(_("If !ZERO, skip next"),ProcessArg::NONE,"if_not_zero_skip",0,DataType::UNDEFINED,"Conditional");
         $list[44] = array(_("If NULL, skip next"),ProcessArg::NONE,"if_null_skip",0,DataType::UNDEFINED,"Conditional");
@@ -159,6 +162,7 @@ class Process
             if (isset($inputprocess[1]))
                 $arg = $inputprocess[1];               // Can be value or feed id
 
+            if (!isset($process_list[$processid])) throw new Exception("ABORTED: Processor '".$processid."' does not exists. Module missing?");
             $process_public = $process_list[$processid][2];          // get process public function name
 
             $value = $this->$process_public($arg,$time,$value);      // execute process public function
@@ -309,8 +313,9 @@ class Process
             $new_kwh = $last_kwh;
         }
 
-        $this->feed->insert_data($feedid, $time_now, $time_now, $new_kwh);
-
+        $padding_mode = "join";
+        $this->feed->insert_data_padding_mode($feedid, $time_now, $time_now, $new_kwh, $padding_mode);
+        
         return $value;
     }
 
@@ -467,7 +472,8 @@ class Process
     {
         $last = $this->feed->get_timevalue($feedid);
         $value = $last['value'] + $value;
-        $this->feed->insert_data($feedid, $time, $time, $value);
+        $padding_mode = "join";
+        $this->feed->insert_data_padding_mode($feedid, $time, $time, $value, $padding_mode);
         return $value;
     }
     /*
@@ -678,7 +684,8 @@ class Process
             
             if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
             
-            $this->feed->insert_data($feedid, $time, $time, $totalwh);
+            $padding_mode = "join";
+            $this->feed->insert_data_padding_mode($feedid, $time, $time, $totalwh, $padding_mode);
             
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));

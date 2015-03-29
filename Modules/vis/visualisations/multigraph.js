@@ -110,16 +110,10 @@
         if (!plotlist[i].plot.data)
         {
           
-          var npoints = 400;
+          var npoints = 800;
           interval = Math.round(((view.end - view.start)/npoints)/1000);
 
-          $.ajax({                                      
-              url: path+'feed/average.json',                         
-              data: "id="+plotlist[i].id+"&start="+view.start+"&end="+view.end+"&interval="+interval,
-              dataType: 'json',
-              async: false,                      
-              success: function(data_in) { plotlist[i].plot.data = data_in; } 
-          });
+          plotlist[i].plot.data = get_feed_data(plotlist[i].id,view.start,view.end,interval,1,1);
         }
 
         if ( plotlist[i].plot.data)

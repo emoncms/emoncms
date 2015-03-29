@@ -37,7 +37,7 @@
             array('delta',_("delta"),7,'0'))
         ),
         
-        'timestoredaily'=> array('label'=>_("TimestoreDaily"), 'options'=>array(
+        'timestoredaily'=> array('label'=>_("Daily from Multiple (BETA)"), 'options'=>array(
             array('feedid',_("feedid"),1),
             array('units',_("units"),5,'kWh'))
         ),
@@ -111,5 +111,9 @@
         'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
             array('feedA',_("Feed A"),1),
             array('feedB',_("Feed B"),1)
+        )),
+        
+        'graph'=> array('label'=>_("Graph (BETA)"), 'options'=>array(
+            array('feedid',_("feedid"),1)
         ))
     );

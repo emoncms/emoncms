@@ -17,12 +17,11 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/zoom/view.js"></script>
@@ -96,7 +95,7 @@
 
     var bot_kwhd_text = "";
 
-    var kwh_data = feed.get_average(kwhd,start,end,3600*24);
+    var kwh_data = get_feed_data(kwhd,start,end,3600*24,1,1);
 
     var total = 0, ndays=0;
     for (z in kwh_data) {
@@ -128,7 +127,9 @@
 
     function vis_feed_data()
     {
-        var power_data = get_feed_data(feedid,start,end,500);
+        var power_data = [];
+        var interval = Math.round(((end - start)*0.001) / 800);
+        var power_data = get_feed_data(feedid,start,end,interval,1,1);
         var stats = power_stats(power_data);
         instgraph(power_data);
 

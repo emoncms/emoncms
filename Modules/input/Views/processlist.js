@@ -46,68 +46,75 @@ var processlist_ui =
                 var arg = "";
                 var lastvalue = "";
                 
+                var processname = "";
                 // Check ProcessArg Type
-                switch(this.processlist[processid][1]) {
-                    case 0: // VALUE
-                        arg += "<span class='label label-info' title='Value'>";
-                        arg += "<i class='icon-edit icon-white'></i> ";
-                        arg += this.variableprocesslist[z][1];
-                        arg += "</span>";
-                        break;
-                    
-                    case 1: //INPUTID
-                        var inpid = this.variableprocesslist[z][1];
-                        if (this.inputlist[inpid]!=undefined) {
-                            arg += "<span class='label label-info' title='Input "+inpid+"'>";
-                            arg += "<i class='icon-signal icon-white'></i> ";
-                            arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
-                            if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
+                if (this.processlist[processid] != undefined) {
+                    switch(this.processlist[processid][1]) {
+                        case 0: // VALUE
+                            arg += "<span class='label label-info' title='Value'>";
+                            arg += "<i class='icon-edit icon-white'></i> ";
+                            arg += this.variableprocesslist[z][1];
                             arg += "</span>";
-                            lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.inputlist[inpid].value+")</span>";
-                        } else {
-                            arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
-                            // does not exist or was deleted
-                        }
-                        break;
+                            break;
                         
-                    case 2: //FEEDID
-                        var feedid = this.variableprocesslist[z][1];
-                        if (this.feedlist[feedid]!=undefined) {
-                            arg += "<a class='label label-info' title='Feed "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
-                            arg += "<i class='icon-list-alt icon-white'></i> ";
-                            if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
-                            arg += this.feedlist[feedid].name;
-                            arg += "</a>";
-                            lastvalue = "<span style='color:#888; font-size:12px'>(feed last value:"+this.feedlist[feedid].value+")</span>";
-                        } else {
-                            arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
-                          // does not exist or was deleted
-                        }
-                        break;
+                        case 1: //INPUTID
+                            var inpid = this.variableprocesslist[z][1];
+                            if (this.inputlist[inpid]!=undefined) {
+                                arg += "<span class='label label-info' title='Input "+inpid+"'>";
+                                arg += "<i class='icon-signal icon-white'></i> ";
+                                arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
+                                if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
+                                arg += "</span>";
+                                lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
+                            } else {
+                                arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
+                                // does not exist or was deleted
+                            }
+                            break;
+                            
+                        case 2: //FEEDID
+                            var feedid = this.variableprocesslist[z][1];
+                            if (this.feedlist[feedid]!=undefined) {
+                                arg += "<a class='label label-info' title='Feed "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
+                                arg += "<i class='icon-list-alt icon-white'></i> ";
+                                if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
+                                arg += this.feedlist[feedid].name;
+                                arg += "</a>";
+                                lastvalue = "<span style='color:#888; font-size:12px'>(feed last value:"+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
+                            } else {
+                                arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
+                              // does not exist or was deleted
+                            }
+                            break;
 
-                    case 4: // TEXT
-                        arg += "<span class='label label-info' title='Text'>";
-                        arg += "<i class='icon-edit icon-white'></i> ";
-                        arg += this.variableprocesslist[z][1];
-                        arg += "</span>";
-                        break;
-
-                    case 5: // SCHEDULEID
-                        var schid = this.variableprocesslist[z][1];
-                        if (this.schedulelist[schid]!=undefined) {
-                            arg += "<span class='label label-info' title='Schedule "+schid+"' >";
-                            arg += "<i class='icon-time icon-white'></i> ";
-                            arg += this.schedulelist[schid].name;
+                        case 4: // TEXT
+                            arg += "<span class='label label-info' title='Text'>";
+                            arg += "<i class='icon-edit icon-white'></i> ";
+                            arg += this.variableprocesslist[z][1];
                             arg += "</span>";
-                        } else {
-                            arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
-                            // does not exist or was deleted
-                        }
-                        //lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.schedulelist[schid].value+")</span>";
-                        break;
+                            break;
+
+                        case 5: // SCHEDULEID
+                            var schid = this.variableprocesslist[z][1];
+                            if (this.schedulelist[schid]!=undefined) {
+                                arg += "<span class='label label-info' title='Schedule "+schid+"' >";
+                                arg += "<i class='icon-time icon-white'></i> ";
+                                arg += this.schedulelist[schid].name;
+                                arg += "</span>";
+                            } else {
+                                arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
+                                // does not exist or was deleted
+                            }
+                            //lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+this.schedulelist[schid].value+")</span>";
+                            break;
+                    }
+                    processname = this.processlist[processid][0];
                 }
-                
-                out += "<td>"+(i+1)+"</td><td>"+this.processlist[processid][0]+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
+                else {
+                    processname = "UNSUPPORTED";
+                    arg += "<span class='label label-important' title='Value'>Process '"+processid+"' not available. Module missing?</span>";
+                }
+                out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
          
                 // Delete process button (icon)
                 out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash"></i></a></td>';

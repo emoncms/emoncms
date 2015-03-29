@@ -17,6 +17,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.js"></script>
 
@@ -152,18 +153,11 @@ $(function() {
 
     function draw()
     {
-        data = [];
         
         var npoints = 800;
         interval = Math.round(((view.end - view.start)/npoints)/1000);
-        
-        $.ajax({                                      
-            url: path+'feed/average.json',                         
-            data: "id="+feedid+"&start="+view.start+"&end="+view.end+"&interval="+interval,
-            dataType: 'json',
-            async: false,                      
-            success: function(data_in) { data = data_in; } 
-        });
+
+        data = get_feed_data(feedid,view.start,view.end,interval,1,1);
         
         var out = [];
         
