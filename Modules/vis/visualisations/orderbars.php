@@ -60,7 +60,7 @@
 
     function vis_feed_data()
     {
-        graph_data = get_feed_data(feedid,start,end,86400,1,1);
+        graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
 
         for(x = 0; x < graph_data.length; x++) {
             for(y = 0; y < (graph_data.length-1); y++) {

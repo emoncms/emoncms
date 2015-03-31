@@ -58,12 +58,12 @@ class Process
         
         // Note on engine selection
         
-        // The engines listed against each process must be the supported engines for each process - and is only used in the input and node config GUI dropdown selectors
+        // The engines listed against each process must be the supported engines for each process - and are only used in the input and node config GUI dropdown selectors
         // By using the create feed api and add input process its possible to create any feed type and add any process to it.
         // Only feeds capable of using a particular processor are displayed to the user and can be selected from the gui.
         // Daily datatype automaticaly adjust feed interval to 1d and user cant change it from gui.
         // If there is only one engine available for a processor, it is selected and user cant change it from gui.
-        // The default selected engine is the first in the array of the sipported engines for each processor.
+        // The default selected engine is the first in the array of the supported engines for each processor.
 
         // description | Arg type | function | No. of datafields if creating feed | Datatype | Engines
 
