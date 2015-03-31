@@ -123,7 +123,7 @@
                         interval = Math.round(((end-start)/500)*0.001);
                     }
 
-                    feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,86400,1,1);
+                    feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,interval,1,1);
                 }
                 
                 if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);

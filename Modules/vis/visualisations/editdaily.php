@@ -73,7 +73,7 @@
 
     function vis_feed_data()
     {
-        var graph_data = get_feed_data(feedid,start,end,86400,1,1);
+        var graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
         var stats = power_stats(graph_data);
         //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
 

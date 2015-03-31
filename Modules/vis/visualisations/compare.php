@@ -126,8 +126,8 @@
         if (feedAid>0 && feedBid>0 && calibration_update != true) {
             feedA = [];
             feedB = [];
-            feedA = get_feed_data(feedAid,start,end,800);
-            feedB = get_feed_data(feedBid,start,end,800);
+            feedA = get_feed_data(feedAid,start,end,800,1,1);
+            feedB = get_feed_data(feedBid,start,end,800,1,1);
         }
 
         var sumX=0,sumY=0,sumXY=0,sumX2=0,n=0;

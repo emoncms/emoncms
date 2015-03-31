@@ -86,7 +86,7 @@ var feed = {
 	//if (limitinterval == undefined) limitinterval = 1;
     $.ajax({                                      
       url: path+'feed/data.json',                         
-      data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"$limitinterval="+limitinterval,
+      data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval,
       dataType: 'json',
       async: false,                      
       success: function(data_in) { feedIn = data_in; } 

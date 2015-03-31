@@ -21,7 +21,7 @@
   function get_feed_data(feedID,start,end,interval,skipmissing,limitinterval)
   {
     var feedIn = [];
-    var query = "&id="+feedID+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"$limitinterval="+limitinterval;
+    var query = "&id="+feedID+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval;
     if (apikey!="") query+= "&apikey="+apikey;
 
     $.ajax({                                    

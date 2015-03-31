@@ -182,7 +182,7 @@ calls the feed API on the server via AJAX. -->
             var interval = 3600*24;
             var datastart = (Math.round((start/1000.0)/interval) * interval); //+3600*offset;
 
-            daily_data = feed.get_average(dailyfeed,datastart*1000,end+(interval*1000),interval);
+            daily_data = feed.get_data(dailyfeed,datastart*1000,end+(interval*1000),interval,1,1);
             if (daily_data.success != undefined) daily_data = [];
         }
         refresh = false; 
