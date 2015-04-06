@@ -21,8 +21,7 @@ var app_graph = {
         "static/flot/jquery.flot.min.js",
         "static/flot/jquery.flot.time.min.js",
         "static/flot/jquery.flot.selection.min.js",
-        "static/vis.helper.js",
-        "static/flot/date.format.js"
+        "static/vis.helper.js"
     ],
     
     init: function()

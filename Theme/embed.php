@@ -19,7 +19,7 @@
 
         <title>Emoncms embed</title>
         
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.2.min.js"></script>
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
