@@ -139,6 +139,13 @@
             print json_encode($output['content']);
         }
     }
+
+    if ($route->format == 'text')
+    {
+        header('Content-Type: text');
+        print $output['content'];
+    }
+
     if ($route->format == 'html')
     {
         $menu = load_menu();

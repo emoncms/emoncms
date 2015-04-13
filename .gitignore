@@ -26,4 +26,5 @@ Modules/scheduler
 Modules/nodes
 Modules/wifi
 Modules/app
+Modules/config
 emoncms.log
