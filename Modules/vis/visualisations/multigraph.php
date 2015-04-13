@@ -17,6 +17,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -44,11 +45,6 @@
         success: function(data)
         {
                 multigraph_feedlist = data;
-
-                var timeWindow = (3600000*24.0*7);              //Initial time window
-                view.start = ((new Date()).getTime())-timeWindow;        //Get start time
-                view.end = (new Date()).getTime();               //Get end time
-
                 multigraph_init("#multigraph");
                 vis_feed_data();
         }

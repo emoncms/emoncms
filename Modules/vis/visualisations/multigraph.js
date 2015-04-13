@@ -99,7 +99,6 @@
   function vis_feed_data()
   {
     var plotlist = convert_to_plotlist(multigraph_feedlist);
-    console.log(plotlist);
     plotdata = [];
     for(var i in plotlist) {
     if (timeWindowChanged)
@@ -139,7 +138,8 @@
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
-      legend: { position: "nw"}
+      legend: { position: "nw"},
+	  touch: { pan: "x", scale: "x"}
     });
   }
 
@@ -165,25 +165,25 @@ function multigraph_init(element)
   var out =
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
       "<div id='graph'></div>"+
-      "<div id='graph_buttons' style='position:absolute; top:20px; right:30px; opacity:0.5; display: none;'>"+
+      "<div id='graph-buttons' style='position:absolute; top:20px; right:30px; opacity:0.5; display: none;'>"+
 
 
-        "<div class='input-prepend input-append' style='margin:0'>"+
+        "<div class='input-prepend input-append' id='graph-tooltip' style='margin:0'>"+
         "<span class='add-on'>Tooltip:</span>"+
         "<span class='add-on'><input id='enableTooltip' type='checkbox' checked ></span>"+
-        "</div> | "+
+        "</div> "+
 
         "<div class='btn-group'>"+
-        "<button class='btn time' type='button' time='1'>D</button>"+
-        "<button class='btn time' type='button' time='7'>W</button>"+
-        "<button class='btn time' type='button' time='30'>M</button>"+
-        "<button class='btn time' type='button' time='365'>Y</button></div> |"+
+        "<button class='btn graph-time' type='button' time='1'>D</button>"+
+        "<button class='btn graph-time' type='button' time='7'>W</button>"+
+        "<button class='btn graph-time' type='button' time='30'>M</button>"+
+        "<button class='btn graph-time' type='button' time='365'>Y</button></div>"+
 
-        "<div class='btn-group'>"+
-        "<button id='zoomin' class='btn' >+</button>"+
-        "<button id='zoomout' class='btn' >-</button>"+
-        "<button id='left' class='btn' ><</button>"+
-        "<button id='right' class='btn' >></button></div>"+
+        "<div class='btn-group' id='graph-navbar' style='display: none;'>"+
+        "<button class='btn graph-nav' id='zoomin'>+</button>"+
+        "<button class='btn graph-nav' id='zoomout'>-</button>"+
+        "<button class='btn graph-nav' id='left'><</button>"+
+        "<button class='btn graph-nav' id='right'>></button></div>"+
 
       "</div>"+
     "</div>"
@@ -200,13 +200,6 @@ function multigraph_init(element)
     plot();
   });
 
-
-  // Fade in/out the control buttons on mouse-over the plot container
-  $("#graph_bound").mouseenter(function(){
-    $("#graph_buttons").stop().fadeIn();
-  }).mouseleave(function(){
-    $("#graph_buttons").stop().fadeOut();
-  });
 
   //--------------------------------------------------------------------------------------
   // Graph zooming
@@ -225,6 +218,34 @@ function multigraph_init(element)
   $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
   $('#right').click(function () {view.panright(); vis_feed_data();});
   $('#left').click(function () {view.panleft(); vis_feed_data();});
-  $('.time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
+  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
   //-----------------------------------------------------------------------------------------------
+  
+	// Graph buttons and navigation efects for mouse and touch
+	$("#graph").mouseenter(function(){
+		$("#graph-navbar").show();
+		$("#graph-tooltip").show();
+		$("#graph-buttons").stop().fadeIn();
+		$("#stats").stop().fadeIn();
+	});
+	$("#graph_bound").mouseleave(function(){
+		$("#graph-buttons").stop().fadeOut();
+		$("#stats").stop().fadeOut();
+	});
+	$("#graph").bind("touchstarted", function (event, pos)
+	{
+		$("#graph-navbar").hide();
+		$("#graph-tooltip").hide();
+		$("#graph-buttons").stop().fadeOut();
+		$("#stats").stop().fadeOut();
+	});
+
+	$("#graph").bind("touchended", function (event, ranges)
+	{
+		$("#graph-buttons").stop().fadeIn();
+		$("#stats").stop().fadeIn();
+		view.start = ranges.xaxis.from; 
+		view.end = ranges.xaxis.to;
+		timeWindowChanged = 1; vis_feed_data();
+	});
 }

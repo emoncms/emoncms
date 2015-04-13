@@ -14,8 +14,9 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
@@ -31,34 +32,27 @@
 <div id="vis-title"></div>
 <div id="#stats"></div>
 
+
 <div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
-<div id="placeholder" style="position:absolute; top:0px;"></div>
-<div style="position:absolute; top:18px; left:32px;">
-
-<div class='btn-group'>
-<button class='btn time' type='button' time='1'>D</button>
-<button class='btn time' type='button' time='7'>W</button>
-<button class='btn time' type='button' time='30'>M</button>
-<button class='btn time' type='button' time='365'>Y</button>
+    <div id="placeholder" style="position:absolute; top:0px;"></div>
+    <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
+        <div class='btn-group'>
+            <button class='btn graph-time' type='button' time='1'>D</button>
+            <button class='btn graph-time' type='button' time='7'>W</button>
+            <button class='btn graph-time' type='button' time='30'>M</button>
+            <button class='btn graph-time' type='button' time='365'>Y</button>
+        </div>
+        <div class='btn-group' id='graph-navbar' style='display: none;'>
+            <button class='btn graph-nav' id='zoomin'>+</button>
+            <button class='btn graph-nav' id='zoomout'>-</button>
+            <button class='btn graph-nav' id='left'><</button>
+            <button class='btn graph-nav' id='right'>></button>
+        </div>
+    </div>
+    <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
 
-<div class='btn-group'>
-<button id='zoomin' class='btn' >+</button>
-<button id='zoomout' class='btn' >-</button>
-<button id='left' class='btn' ><</button>
-<button id='right' class='btn' >></button>
-</div>
-<!--
-<div class='btn-group'>
-<button id='csv' class='btn' >csv</button>
-<button id='info' class='btn' >i</button>
-</div>
--->
 
-</div>
-
-<h3 style="position:absolute; top:0px; right:25px;"><span id="stats"></span></h3>
-</div>
 
 <script id="source" language="javascript" type="text/javascript">
 
@@ -68,9 +62,6 @@ var units = "<?php echo $units; ?>";
 var embed = <?php echo $embed; ?>;
 
 var interval = 3600*24;
-
-//$("#placeholder").css('top',18);
-//$("#placeholder").css('left',32);
 
 var top_offset = 0;
 
@@ -84,26 +75,13 @@ var placeholder_bound = $('#placeholder_bound');
 var placeholder = $('#placeholder').width(placeholder_bound.width()).height($('#placeholder_bound').height()-top_offset);
 if (embed) placeholder.height($(window).height()-top_offset);
 
-$(window).resize(function(){
-    placeholder.width(placeholder_bound.width());
-    if (embed) placeholder.height($(window).height()-top_offset);
 
-    var options = {
-        //points: {show:true},
-        bars: { show: true, align: "center", barWidth: 0.75*interval*1000, fill: true},
-        xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
-        grid: {hoverable: true, clickable: true},
-        selection: { mode: "x" }
-    }
-
-    $.plot(placeholder, [data], options);
-});
 
 var timeWindow = (3600000*24.0*7);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
 
-var data = [];
+var plotdata = [];
 
 $(function() {
 
@@ -114,7 +92,7 @@ $(function() {
     $("#zoomin").click(function () {view.zoomin(); draw();});
     $('#right').click(function () {view.panright(); draw();});
     $('#left').click(function () {view.panleft(); draw();});
-    $('.time').click(function () {view.timewindow($(this).attr("time")); draw();});
+    $('.graph-time').click(function () {view.timewindow($(this).attr("time")); draw();});
 
     placeholder.bind("plotselected", function (event, ranges)
     {
@@ -138,36 +116,75 @@ $(function() {
 
     function draw()
     {
-        data = [];
+        plotdata = [];
 
         var d = new Date()
         var n = d.getTimezoneOffset();
         var offset = n / -60;
 
         var datastart = (Math.round((view.start/1000.0)/interval) * interval)+3600*offset;
-        data = get_feed_data(feedid,datastart*1000,view.end+(interval*1000),interval,1,1);
+        plotdata = get_feed_data(feedid,datastart*1000,view.end+(interval*1000),interval,1,1);
 
         if (units=='kWh') {
-            for (z in data)
+            for (z in plotdata)
             {
-                data[z][1] = data[z][1] * 0.024;
-                data[z][0] = data[z][0] - 3600000*offset;
+                plotdata[z][1] = plotdata[z][1] * 0.024;
+                plotdata[z][0] = plotdata[z][0] - 3600000*offset;
             }
         }
 
-        stats.calc(data);
-        console.log(stats.mean);
+        stats.calc(plotdata);
+        //console.log(stats.mean);
 
-        var options = {
+        plot();
+    }
+	
+    function plot()
+    {
+        var plot = $.plot(placeholder, [plotdata], {
             //points: {show:true},
             bars: { show: true, align: "center", barWidth: 0.75*interval*1000, fill: true},
             xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
             grid: {hoverable: true, clickable: true},
-            selection: { mode: "x" }
-        }
-
-        $.plot(placeholder, [data], options);
+            selection: { mode: "x" },
+			touch: { pan: "x", scale: "x" }
+        });
     }
+	
+	// Graph buttons and navigation efects for mouse and touch
+	placeholder.mouseenter(function(){
+		$("#graph-navbar").show();
+		$("#graph-buttons").stop().fadeIn();
+		$("#stats").stop().fadeIn();
+	});
+	placeholder_bound.mouseleave(function(){
+		$("#graph-buttons").stop().fadeOut();
+		$("#stats").stop().fadeOut();
+	});
+	placeholder.bind("touchstarted", function (event, pos)
+	{
+		$("#graph-navbar").hide();
+		$("#graph-buttons").stop().fadeOut();
+		$("#stats").stop().fadeOut();
+	});
+	
+
+	placeholder.bind("touchended", function (event, ranges)
+	{
+		$("#graph-buttons").stop().fadeIn();
+		$("#stats").stop().fadeIn();
+		view.start = ranges.xaxis.from;
+		view.end = ranges.xaxis.to;
+		draw();
+	});
+		
+
+	$(window).resize(function(){
+		placeholder.width(placeholder_bound.width());
+		if (embed) placeholder.height($(window).height()-top_offset);
+
+		plot();
+	});
 });
 
 </script>

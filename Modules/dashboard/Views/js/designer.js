@@ -96,6 +96,9 @@ var designer = {
                     'height':parseInt($(this).css("height"))
                 };
 
+                if (designer.boxlist[id]['width'] < designer.grid_size) designer.boxlist[id]['width'] = designer.grid_size;    // Zero cant be selected se we default to minimal grid size
+                if (designer.boxlist[id]['height'] < designer.grid_size) designer.boxlist[id]['height'] = designer.grid_size;
+                
                 if ((designer.boxlist[id]['top'] + designer.boxlist[id]['height'])>designer.page_height) designer.page_height = (designer.boxlist[id]['top'] + designer.boxlist[id]['height']);
             });
         }
@@ -120,7 +123,7 @@ var designer = {
         {
             for (var y=1; y<parseInt(designer.page_height/designer.grid_size); y++)
             {
-                designer.ctx.fillRect((x*designer.grid_size)-1,(y*designer.grid_size)-1,2,2);
+                designer.ctx.fillRect((x*designer.grid_size)-1,(y*designer.grid_size)-1,1,1);
             }
         }
         designer.ctx.strokeRect(0,0,designer.page_width,designer.page_height);
@@ -130,20 +133,24 @@ var designer = {
         //--------------------------------------------------------------------
         if (designer.selected_box)
         {
-        designer.modified();
+            designer.modified();
 
-        var top = designer.boxlist[designer.selected_box]['top'];
-        var left = designer.boxlist[designer.selected_box]['left'];
-        var width = designer.boxlist[designer.selected_box]['width'];
-        var height = designer.boxlist[designer.selected_box]['height'];
+            var top = designer.boxlist[designer.selected_box]['top'];
+            var left = designer.boxlist[designer.selected_box]['left'];
+            var width = designer.boxlist[designer.selected_box]['width'];
+            var height = designer.boxlist[designer.selected_box]['height'];
 
-        designer.ctx.fillRect(left-5,top+(height/2)-5,10,10);
-        designer.ctx.fillRect(left+width-5,top+(height/2)-5,10,10);
+            designer.ctx.fillRect(left-8,top+(height/2)-4,8,8);
+            designer.ctx.fillRect(left+width,top+(height/2)-4,8,8);
 
-        designer.ctx.fillRect(left+(width/2)-5,top-5,10,10);
-        designer.ctx.fillRect(left+(width/2)-5,top+height-5,10,10);
+            designer.ctx.fillRect(left+(width/2)-4,top-8,8,8);
+            designer.ctx.fillRect(left+(width/2)-4,top+height,8,8);
 
-        designer.ctx.fillRect(left+(width/2)-5,top+(height/2)-5,10,10);
+            designer.ctx.fillRect(left+(width/2)-4,top+(height/2)-4,8,8);
+            
+            designer.ctx.setLineDash([4]);
+            //designer.ctx.lineWidth = 0.5;
+            designer.ctx.strokeRect(left,top,width,height);
         }
 
         //--------------------------------------------------------------------
@@ -312,6 +319,11 @@ var designer = {
         $("#page").append('<div id="'+designer.boxi+'" class="'+type+'" style="position:absolute; margin: 0; top:'+designer.snap(my+widgets[type]['offsety'])+'px; left:'+designer.snap(mx+widgets[type]['offsetx'])+'px; width:'+widgets[type]['width']+'px; height:'+widgets[type]['height']+'px;" >'+html+'</div>');
 
         designer.scan();
+        if (designer.page_height>parseInt($("#page-container").css("height")))
+        {
+            $("#page-container").css("height",designer.page_height+designer.grid_size);
+            $("#can").attr("height",designer.page_height+designer.grid_size);
+        }
         redraw = 1;
         designer.edit_mode = true;
     },
@@ -364,15 +376,15 @@ var designer = {
                     var midx = resize['left']+(resize['width']/2);
                     var midy = resize['top']+(resize['height']/2);
 
-                    if (Math.abs(mx - rightedge)<20)
+                    if (Math.abs(mx - rightedge-4)<4)
                         selected_edge = selected_edges.right;
-                    else if (Math.abs(mx - resize['left'])<20)
+                    else if (Math.abs(mx - resize['left']+4)<4)
                         selected_edge = selected_edges.left;
-                    else if (Math.abs(my - bottedge)<20)
+                    else if (Math.abs(my - bottedge-4)<4)
                         selected_edge = selected_edges.bottom;
-                    else if (Math.abs(my - resize['top'])<20)
+                    else if (Math.abs(my - resize['top']+4)<4)
                         selected_edge = selected_edges.top;
-                    else if (Math.abs(my - midy)<20 && Math.abs(mx - midx)<20)
+                    else if (Math.abs(my - midy)<4 && Math.abs(mx - midx)<4)
                         selected_edge = selected_edges.center;
                     else
                         selected_edge = selected_edges.none;
@@ -434,12 +446,15 @@ var designer = {
                         designer.boxlist[designer.selected_box]['top'] = (designer.snap(my-designer.boxlist[designer.selected_box]['height']/2));
                         break;
                 }
-
+                
+                if (designer.boxlist[designer.selected_box]['width'] < designer.grid_size) designer.boxlist[designer.selected_box]['width'] = designer.grid_size;    // Zero cant be selected se we default to minimal grid size
+                if (designer.boxlist[designer.selected_box]['height'] < designer.grid_size) designer.boxlist[designer.selected_box]['height'] = designer.grid_size;
+                
                 if (bottedge>parseInt($("#page-container").css("height")))
                 {
                     $("#page-container").css("height",bottedge);
-                    $("#can").attr("height",bottedge);
-                    designer.page_height = bottedge;
+                    $("#can").attr("height",bottedge+designer.grid_size);
+                    designer.page_height = bottedge+designer.grid_size;
                 }
 
                 designer.draw();

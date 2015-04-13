@@ -18,7 +18,13 @@ var dashboard = {
   'remove':function(id)
   {
     $.ajax({ url: path+"dashboard/delete.json", data: "id="+id, async: false, success: function(data){} });
+  },
+  
+  'clone':function(id)
+  {
+    var result = {};
+    $.ajax({ url: path+"dashboard/clone.json", data: "id="+id, async: false, success: function(data){result = data;} });
+    return result;
   }
 
 }
-

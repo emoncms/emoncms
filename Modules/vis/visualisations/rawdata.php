@@ -14,8 +14,9 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
@@ -23,27 +24,25 @@
 
 <div id="vis-title"></div>
 
-<div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
-    <div id="placeholder" style="position:absolute; top:0px;"></div>
-    <div id="graph_buttons" style="position:absolute; top:18px; left:32px; opacity:0.5;">
-
+<div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+    <div id="graph"></div>
+    <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
         <div class='btn-group'>
-            <button class='btn time' type='button' time='1'>D</button>
-            <button class='btn time' type='button' time='7'>W</button>
-            <button class='btn time' type='button' time='30'>M</button>
-            <button class='btn time' type='button' time='365'>Y</button>
+            <button class='btn graph-time' type='button' time='1'>D</button>
+            <button class='btn graph-time' type='button' time='7'>W</button>
+            <button class='btn graph-time' type='button' time='30'>M</button>
+            <button class='btn graph-time' type='button' time='365'>Y</button>
         </div>
 
-        <div class='btn-group'>
-            <button id='zoomin' class='btn' >+</button>
-            <button id='zoomout' class='btn' >-</button>
-            <button id='left' class='btn' ><</button>
-            <button id='right' class='btn' >></button>
+        <div class='btn-group' id='graph-navbar' style='display: none;'>
+            <button class='btn graph-nav' id='zoomin'>+</button>
+            <button class='btn graph-nav' id='zoomout'>-</button>
+            <button class='btn graph-nav' id='left'><</button>
+            <button class='btn graph-nav' id='right'>></button>
         </div>
 
     </div>
-
-    <h3 style="position:absolute; top:0px; right:25px;"><span id="stats"></span></h3>
+    <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
 
 <div id="info" style="padding:20px; margin:25px; background-color:rgb(245,245,245); font-style:italic; display:none">
@@ -87,8 +86,8 @@ if (plotColour.indexOf("#") == -1) {
 }
 
 var top_offset = 0;
-var placeholder_bound = $('#placeholder_bound');
-var placeholder = $('#placeholder');
+var placeholder_bound = $('#graph_bound');
+var placeholder = $('#graph');
 
 var width = placeholder_bound.width();
 var height = width * 0.5;
@@ -108,7 +107,7 @@ var data = [];
 $(function() {
 
     if (embed==false) {
-        $("#vis-title").html("<br><h2><?php echo _("Graph Raw Data:") ?> "+feedname+"<h2>");
+        $("#vis-title").html("<br><h2><?php echo _("Raw:") ?> "+feedname+"<h2>");
         $("#info").show();
     }
     draw();
@@ -117,7 +116,7 @@ $(function() {
     $("#zoomin").click(function () {view.zoomin(); draw();});
     $('#right').click(function () {view.panright(); draw();});
     $('#left').click(function () {view.panleft(); draw();});
-    $('.time').click(function () {view.timewindow($(this).attr("time")); draw();});
+    $('.graph-time').click(function () {view.timewindow($(this).attr("time")); draw();});
     
     placeholder.bind("plotselected", function (event, ranges)
     {
@@ -186,23 +185,38 @@ $(function() {
             xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
             //yaxis: { min: 0 },
             grid: {hoverable: true, clickable: true},
-            selection: { mode: "x" }
+            selection: { mode: "x" },
+			touch: { pan: "x", scale: "x" }
         }
 
         $.plot(placeholder, [{data:data,color: plotColour}], options);
     }
 
-    placeholder.click(function(){
-      $("#graph_buttons").css('opacity',0.5);
-    });
-            
-    // Fade in/out the control buttons on mouse-over the plot container
-    placeholder_bound.mouseenter(function(){
-        $("#graph_buttons").stop().fadeIn();
+    
+    // Graph buttons and navigation efects for mouse and touch
+    $("#graph").mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-buttons").stop().fadeIn();
         $("#stats").stop().fadeIn();
-    }).mouseleave(function(){
-        $("#graph_buttons").stop().fadeOut();
+    });
+    $("#graph_bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
         $("#stats").stop().fadeOut();
+    });
+    $("#graph").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $("#graph").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        view.start = ranges.xaxis.from; 
+		view.end = ranges.xaxis.to;
+        draw();
     });
     
     $(window).resize(function(){

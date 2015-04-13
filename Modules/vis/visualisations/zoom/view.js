@@ -10,23 +10,27 @@
 
 function set_daily_view()
 {
-  $('#inst-buttons').hide();
   bargraph(days,3600*22,"day");
   $("#out").html(""); view = 2;
-  $("#return").val("View: monthly view");
+  $("#return").html("View: monthly view");
   $("#out2").html("Daily view");
-  $('#axislabely').html("Energy<br/ >(kWh)");
+  $('#axislabely').html("Energy (kWh)");
   $("#bot_out").html(bot_kwhd_text);
+  $("#graph-return").show();
+  $("#graph-navbar").hide();
+  $('.graph-time').hide();
 }
 
 function set_monthly_view()
 {
   bargraph(months.data,3600*24*20, "month");
   $("#out").html(""); view = 1;
-  $("#return").val("View: annual view");
+  $("#return").html("View: annual view");
   $("#out2").html("Monthly view");
-  $('#axislabely').html("Energy<br/ >(kWh)");
-  $("#return_ctr").show();
+  $('#axislabely').html("Energy (kWh)");
+  $("#graph-return").show();
+  $("#graph-navbar").hide();
+  $('.graph-time').hide();
 }
 
 function set_annual_view()
@@ -34,19 +38,23 @@ function set_annual_view()
   bargraph(years.data,3600*24*330, "year");
   $("#out").html(""); view = 0;
   $("#out2").html("Annual view");
-  $('#axislabely').html("Energy<br/ >(kWh)");
-  $("#return_ctr").hide();
-
+  $('#axislabely').html("Energy (kWh)");
+  $("#graph-return").hide();
+  $("#graph-navbar").hide();
+  $('.graph-time').hide();
 }
 
 function set_last30days_view()
 {
   bargraph(days,3600*22, "day");
   $("#out").html(""); view = 2;
-  $("#return").val("View: monthly view");
+  $("#return").html("View: monthly view");
   $("#out2").html("Last 30 days");
-  $('#axislabely').html("Energy<br/ >(kWh)");
+  $('#axislabely').html("Energy (kWh)");
   $("#bot_out").html(bot_kwhd_text);
+  $("#graph-return").show();
+  $("#graph-navbar").hide();
+  $('.graph-time').hide();
 }
 
 //--------------------------------------------------------------------------
@@ -59,7 +67,9 @@ function set_inst_view(day)
       vis_feed_data();
       view = 3;
       $("#out2").html("Power view");
-      $("#return").val("View: daily view");
-      $('#axislabely').html("Power<br />(Watts)");
-      $('#inst-buttons').show();
+      $("#return").html("View: daily view");
+      $('#axislabely').html("Power (Watts)");
+	  $("#graph-return").show();
+	  $("#graph-navbar").show();
+	  $('.graph-time').show();
 }

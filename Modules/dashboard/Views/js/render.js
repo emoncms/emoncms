@@ -63,7 +63,7 @@ function update()
     type: "GET",
     url : query,
     dataType : 'json',
-    async: false,
+    async: true,
     success : function(data)
     { 
 
