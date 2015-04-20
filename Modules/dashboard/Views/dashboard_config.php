@@ -24,7 +24,7 @@
 
         <label><?php echo _('Dashboard name: '); ?></label>
         <input type="text" name="name" value="<?php echo $dashboard['name']; ?>" />
-        <label><?php echo _('Menu name: (lowercase a-z only)'); ?></label>
+        <label><?php echo _('Menu name: '); ?></label>
         <input type="text" name="alias" value="<?php echo $dashboard['alias']; ?>" />
         <label><?php echo _('Description: '); ?></label>
         <textarea name="description"><?php echo $dashboard['description']; ?></textarea>

@@ -89,8 +89,8 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
     show_dashboard();
 
-    setInterval(function() { update(); }, 10000);
-    setInterval(function() { fast_update(); }, 30);
+    setInterval(function() { update(); }, 5000);
+    setInterval(function() { fast_update(); }, 100);
 
 
     $("#save-dashboard").click(function (){

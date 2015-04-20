@@ -45,7 +45,7 @@ http://openenergymonitor.org
     var reloadiframe = 0;
 
     show_dashboard();
-    setInterval(function() { update(); }, 10000);
-    setInterval(function() { fast_update(); }, 30);
+    setInterval(function() { update(); }, 5000);
+    setInterval(function() { fast_update(); }, 100);
 
 </script>

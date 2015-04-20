@@ -52,15 +52,14 @@
     table.fields = {
         'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
         'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
-        'alias':{'title':"<?php echo _('Alias'); ?>", 'type':"text"},
+        'alias':{'title':"<?php echo _('Menu name'); ?>", 'type':"text"},
          // 'description':{'title':"<?php echo _('Description'); ?>", 'type':"text"},
         'main':{'title':"<?php echo _('Main'); ?>", 'type':"icon", 'trueicon':"icon-star", 'falseicon':"icon-star-empty"},
         'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
         'published':{'title':"<?php echo _('Published'); ?>", 'type':"icon", 'trueicon':"icon-ok", 'falseicon':"icon-remove"},
 
         // Actions
-        'clone-action':{'title':'', 'type':"iconlink", 'icon':"icon-random", 'link':path+"dashboard/clone.json?id="},
-
+        'clone-action':{'title':'', 'type':"iconbasic", 'icon':'icon-random'},
         'edit-action':{'title':'', 'type':"edit"},
         'delete-action':{'title':'', 'type':"delete"},
         'draw-action':{'title':'', 'type':"iconlink", 'icon':"icon-edit", 'link':path+"dashboard/edit?id="},
@@ -107,4 +106,14 @@
         $('#myModal').modal('hide');
     });
 
+    
+//------------------------------------------------------------------------------------------------------------------------------------
+// Expression helper UI js
+//------------------------------------------------------------------------------------------------------------------------------------
+    $("#table").on('click', '.icon-random', function() {
+        var i = table.data[$(this).attr('row')];
+        var result = dashboard.clone(i['id']);
+        update();
+    });
+    
 </script>

@@ -195,7 +195,8 @@ global $path;
             });
         }
         if (options) visurl += "?"+options.join("&");
-        $(window.location).attr('href',visurl);
+        //$(window.location).attr('href',visurl);
+        window.open(visurl,'_blank');
     });
 
     $(window).resize(function(){vis_resize();});

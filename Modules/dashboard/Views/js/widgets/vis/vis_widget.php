@@ -19,4 +19,3 @@
 <script>
     var multigraphs = <?php echo json_encode($multigraphs); ?>;
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgets/vis/vis_render.js"></script>

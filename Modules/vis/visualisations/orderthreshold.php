@@ -15,9 +15,10 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
@@ -27,10 +28,15 @@
 <h2><?php echo _("Threshold Order"); ?></h2>
 <?php } ?>
 
-<div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-    <div id="graph"></div>
-        <h3 style="position:absolute; top:10px; right:12px; text-align:right;"><span id="stats"></span> <input id="back" type="button" value="<?php echo _("Reload"); ?>" /></h3>
-</div>
+    <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+        <div id="graph"></div>
+        <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
+            <div class='btn-group'>
+                <button class='btn graph-back' type='button' time='1'><?php echo _("Reload"); ?></button>
+            </div>
+        </div>
+        <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
+    </div>
 
 <script id="source" language="javascript" type="text/javascript">
 
@@ -122,16 +128,17 @@
 
     function draw_ordered_kwhd_histogram()
     {
-    // Draw the plot
-    $.plot($("#graph"), [{color: "#c1a81f", data:dataA}, {color: "#dec225", data:dataB}, {color: "#deb368", data:dataC}],
-    {
-        series: {
-            stack: true,
-            bars: { show: true,align: "center",fill: true }
-        },
-        grid: { show: true, hoverable: true, clickable: true },
-        legend: { position: "nw"}
-    });
+        // Draw the plot
+        $.plot($("#graph"), [{color: "#c1a81f", data:dataA}, {color: "#dec225", data:dataB}, {color: "#deb368", data:dataC}],
+        {
+            series: {
+                stack: true,
+                bars: { show: true,align: "center",fill: true }
+            },
+            grid: { show: true, hoverable: true, clickable: true },
+            legend: { position: "nw"},
+            touch: { pan: "x", scale: "x" ,delayTouchEnded: 0}
+        });
     }
 
     $("#graph").bind("plothover", function (event, pos, item) {
@@ -142,7 +149,7 @@
             if (item.seriesIndex == 2) val = dataC[item.dataIndex][1];
             var total = dataA[item.dataIndex][1] + dataB[item.dataIndex][1] + dataC[item.dataIndex][1];
             var mdate = new Date(1*timedata[item.dataIndex]);
-            $("#stats").html(val.toFixed(1)+"kWh of "+total.toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy")+" | ");
+            $("#stats").html(val.toFixed(1)+"kWh of "+total.toFixed(1)+"kWh | "+mdate.format("ddd, mmm dS, yyyy"));
         }
     });
 
@@ -155,13 +162,39 @@
             var power_data = get_feed_data(powerfeed,start,end,500);
 
             $.plot($("#graph"), [{data: power_data, lines: { show: true, fill: true }}], {
-                grid: { show: true, hoverable: true, clickable: true },
+                grid: { show: true, hoverable: false, clickable: false },
                 xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-                selection: { mode: "x" }
+                //selection: { mode: "x" }
+                touch: { pan: "x", scale: "x" ,delayTouchEnded: 0}
             });
         }
     });
-    $('#back').click(function () { draw_ordered_kwhd_histogram(); });
+    $('.graph-back').click(function () { draw_ordered_kwhd_histogram(); });
 
+    // Graph buttons and navigation efects for mouse and touch
+    $("#graph").mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    $("#graph_bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    $("#graph").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $("#graph").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        //start = ranges.xaxis.from; end = ranges.xaxis.to;
+        //vis_feed_data();
+    });
+    
 </script>
 

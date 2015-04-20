@@ -17,12 +17,13 @@
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Feed calibration and comparison tool"); ?></h2>
@@ -47,23 +48,25 @@
 
 <?php } ?>
 
-<div id="graph_bound" style="width:100%; height:400px; position:relative; ">
-    <div id="power"></div>
-    <div style="position:absolute; top:20px; left:40px;">
+<div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+    <div id="graph"></div>
+    <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
+        <div class='btn-group'>
+            <button class='btn graph-time' type='button' time='1'>D</button>
+            <button class='btn graph-time' type='button' time='7'>W</button>
+            <button class='btn graph-time' type='button' time='30'>M</button>
+            <button class='btn graph-time' type='button' time='365'>Y</button>
+        </div>
 
-        <input class="time" type="button" value="D" time="1"/>
-        <input class="time" type="button" value="W" time="7"/>
-        <input class="time" type="button" value="M" time="30"/>
-        <input class="time" type="button" value="Y" time="365"/> |
-
-        <input id="zoomin" type="button" value="+"/>
-        <input id="zoomout" type="button" value="-"/>
-        <input id="left" type="button" value="<"/>
-        <input id="right" type="button" value=">"/>
+        <div class='btn-group' id='graph-navbar' style='display: none;'>
+            <button class='btn graph-nav' id='zoomin'>+</button>
+            <button class='btn graph-nav' id='zoomout'>-</button>
+            <button class='btn graph-nav' id='left'><</button>
+            <button class='btn graph-nav' id='right'>></button>
+        </div>
 
     </div>
-
-    <h3 style="position:absolute; top:0px; left:410px;"><span id="stats"></span></h3>
+    <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
 
 <h3><?php echo _("Difference between feeds (FeedB calibration applied - FeedA)"); ?></h3>
@@ -80,9 +83,9 @@
     var valid = "<?php echo $valid; ?>";
 
     var embed = <?php echo $embed; ?>;
-    $('#power').width($('#graph_bound').width());
-    $('#power').height($('#graph_bound').height());
-    if (embed) $('#graph').height($(window).height());
+    $('#graph').width($('#graph_bound').width());
+    $('#graph').height($('#graph_bound').height());
+    //if (embed) $('#graph').height($(window).height());
 
     var timeWindow = (3600000*24.0*7);                //Initial time window
     var start = ((new Date()).getTime())-timeWindow;      //Get start time
@@ -101,16 +104,16 @@
     var feedB_cal = [];
     var diff = [];
 
-    var feedAY = [];
+    var feedAB = [];
     var line_data = [];
 
-    var calibration_update = false;
-
+    var lineAmin,lineBmin,lineAmax,lineBmax;
+    
     vis_feed_data();
 
     $(window).resize(function(){
         $('#graph').width($('#graph_bound').width());
-        if (embed) $('#graph').height($(window).height());
+        //if (embed) $('#graph').height($(window).height());
         plot();
     });
 
@@ -120,10 +123,10 @@
         feedB_cal = [];
         diff = [];
 
-        feedAY = [];
+        feedAB = [];
         line_data = [];
 
-        if (feedAid>0 && feedBid>0 && calibration_update != true) {
+        if (feedAid>0 && feedBid>0) {
             feedA = [];
             feedB = [];
             feedA = get_feed_data(feedAid,start,end,800,1,1);
@@ -133,24 +136,26 @@
         var sumX=0,sumY=0,sumXY=0,sumX2=0,n=0;
         for (z in  feedB)
         {
-            // Create calibrated B
-            feedB_cal[z] = [];
-            feedB_cal[z][0] = feedB[z][0];
-            feedB_cal[z][1] = calibration * feedB[z][1];
+            if (feedB[z][0] >= start && feedB[z][0] <= end) { // skip data points not in graph range
+                // Create calibrated B
+                feedB_cal[z] = [];
+                feedB_cal[z][0] = feedB[z][0];
+                feedB_cal[z][1] = calibration * feedB[z][1];
 
-            if (feedA[z]!=undefined)
-            {
-                // Calculate line of best fit variables
-                var XY = 1.0*feedA[z][1] * feedB[z][1];
-                var X2 = 1.0*feedA[z][1] * feedA[z][1];
+                if (feedA[z]!=undefined)
+                {
+                    // Calculate line of best fit variables
+                    var XY = 1.0*feedA[z][1] * feedB[z][1];
+                    var X2 = 1.0*feedA[z][1] * feedA[z][1];
 
-                sumX += 1.0*feedA[z][1];
-                sumY += 1.0*feedB[z][1];
+                    sumX += 1.0*feedA[z][1];
+                    sumY += 1.0*feedB[z][1];
 
-                sumXY += XY;
-                sumX2 += X2;
+                    sumXY += XY;
+                    sumX2 += X2;
 
-                n++;
+                    n++;
+                }
             }
         }
 
@@ -159,11 +164,11 @@
         console.log(slope);
 
         line_data[0] = [];
-        line_data[0][0] = 0;
+        line_data[0][0] = -100000;
         line_data[0][1] = slope * line_data[0][0] + intercept;
 
         line_data[1] = [];
-        line_data[1][0] = 9000;
+        line_data[1][0] = 100000;
         line_data[1][1] = slope * line_data[1][0] + intercept;
 
         for (z in feedA)
@@ -173,45 +178,69 @@
                 diff[z][0] = 1.0*feedA[z][0];
                 diff[z][1] = 1.0*feedB_cal[z][1] - 1.0*feedA[z][1];
 
-                feedAY[z] = [];
-                feedAY[z][0] = feedA[z][1];
-                feedAY[z][1] = feedB_cal[z][1];
+                feedAB[z] = [];
+                feedAB[z][0] = feedA[z][1];
+                feedAB[z][1] = feedB_cal[z][1];
             }
         }
 
+        lineAmin = feedAB.reduce(function(min, obj) { 
+                      return obj[0] < min ? obj[0] : min; 
+                  }, Infinity);
+        
+        lineBmin = feedAB.reduce(function(min, obj) { 
+                      return obj[1] < min ? obj[1] : min; 
+                  }, Infinity);
+                  
+        lineAmax = feedAB.reduce(function(max, obj) { 
+                      return obj[0] > max ? obj[0] : max; 
+                  }, -Infinity);
+        
+        lineBmax = feedAB.reduce(function(max, obj) { 
+                      return obj[1] > max ? obj[1] : max; 
+                  }, -Infinity);
+        
         plot();
-        calibration_update = false;
     }
 
     function plot()
     {
 
-        var plot = $.plot($("#power"), [
+        var plot = $.plot($("#graph"), [
         {data: feedA, lines: { show: true }},
         {data: feedB_cal, lines: { show: true }}], {
             grid: { show: true, hoverable: true, clickable: true },
             xaxis: { mode: "time", timezone: "browser", min: start, max: end },
-            selection: { mode: "x" }
+            selection: { mode: "x" },
+            touch: { pan: "x", scale: "x" }
         });
 
         var plot = $.plot($("#diff"), [{color:2, data: diff, lines: { show: true }}], {
             grid: { show: true, hoverable: true },
-            xaxis: { mode: "time", timezone: "browser", min: start, max: end }
+            xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+            touch: { pan: "", scale: "x" , delayTouchEnded: 0}
         });
 
+        // define line relation graph ranges
+        lineAoffset=(lineAmax-lineAmin)/10;
+        if (lineAoffset == 0) lineAoffset = lineAmin/10;
+        lineBoffset=(lineBmax-lineBmin)/10;
+        if (lineBoffset == 0) lineBoffset = lineBmin/10;
+        
         var plot = $.plot($("#line"), [
-            {color:2,data: feedAY, points: { show: true }},
+            {color:2,data: feedAB, points: { show: true }},
             {color: "#000",data: line_data,lines: { show: true, fill: false }}],{
                 grid: { show: true, hoverable: true },
-                xaxis: { min: 0, max: 500 },
-                yaxis: { min: 0, max: 500 }
+                xaxis: { min: lineAmin-lineAoffset, max: lineAmax+lineAoffset},
+                yaxis: { min: lineBmin-lineBoffset, max: lineBmax+lineBoffset},
+                touch: { pan: "xy", scale: "xy", delayTouchEnded: 0}
             });
     }
 
     //--------------------------------------------------------------------------------------
     // Graph zooming
     //--------------------------------------------------------------------------------------
-    $("#power").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
+    $("#graph").bind("plotselected", function (event, ranges) { start = ranges.xaxis.from; end = ranges.xaxis.to; vis_feed_data(); });
     //----------------------------------------------------------------------------------------------
     // Operate buttons
     //----------------------------------------------------------------------------------------------
@@ -219,7 +248,7 @@
     $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
     $('#right').click(function () {inst_panright(); vis_feed_data();});
     $('#left').click(function () {inst_panleft(); vis_feed_data();});
-    $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+    $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
     //-----------------------------------------------------------------------------------------------
 
     $("#load").click(function () {
@@ -230,7 +259,32 @@
 
     $("#update").click(function () {
         calibration = 1.0 * $("#calibration").val();
-        calibration_update = true;
+        vis_feed_data();
+    });
+    
+    // Graph buttons and navigation efects for mouse and touch
+    $("#graph").mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    $("#graph_bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    $("#graph").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $("#graph").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        start = ranges.xaxis.from; 
+        end = ranges.xaxis.to;
         vis_feed_data();
     });
 </script>
