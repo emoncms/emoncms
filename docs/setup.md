@@ -230,16 +230,16 @@ Return to the OpenEnergyMonitor Guide to setup your sensor nodes and map the inp
     [reporters]
 
     [[emonCMS_local]]
-        type = EmonHubEmoncmsReporter
+        Type = EmonHubEmoncmsReporter
         [[[init_settings]]]
-        [[[runtime_settings]]]
+        [[[runtimesettings]]]
             url = http://localhost/emoncms
             apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
     [[emonCMS_remote]]
-        type = EmonHubEmoncmsReporter
+        Type = EmonHubEmoncmsReporter
         [[[init_settings]]]
-        [[[runtime_settings]]]
+        [[[runtimesettings]]]
             url = http://emoncms.org
             apikey = xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
