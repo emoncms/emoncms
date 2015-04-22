@@ -30,6 +30,7 @@ class Feed
         $this->mysqli = $mysqli;
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
+        $this->log->set_topic("FEED");
         
         require "Modules/feed/engine/PHPTimeSeries.php";
         require "Modules/feed/engine/PHPFina.php";
