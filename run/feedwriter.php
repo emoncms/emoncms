@@ -13,10 +13,17 @@
     require "Modules/log/EmonLogger.php";
     require "process_settings.php";
     
-    // Sleep here seemed to be needed to allow redis time to start at startup
-    sleep(10);
+    $log = new EmonLogger(__FILE__);
+    $log->set_logfile("/var/log/emoncms.log");
+    $log->set_topic("FEEDWRITER");
+    $log->info("Starting feedwriter process");
+    
+    // Connect to redis
     $redis = new Redis();
-    $connected = $redis->connect("127.0.0.1");
+    while (!$redis->connect("127.0.0.1")) {
+        sleep(1);
+        $log->warn("Could not connect to redis, retrying");
+    }
     
     require "Modules/feed/engine/PHPTimeSeries.php";
     require "Modules/feed/engine/PHPFina.php";
@@ -25,8 +32,6 @@
     $engine[Engine::PHPTIMESERIES] = new PHPTimeSeries($feed_settings['phptimeseries']);
     $engine[Engine::PHPFINA] = new PHPFina($feed_settings['phpfina']);
     
-    
-
     while(true)
     {
         $len = $redis->llen("feedbuffer");
@@ -46,8 +51,7 @@
             $engine[Engine::PHPFINA]->padding_mode = 'nan';
         }
         
-        print $engine[Engine::PHPTIMESERIES]->save()."\n";
-        print $engine[Engine::PHPFINA]->save()."\n";
-        print "\n";
+        $log->info("PHPTimeSeries bytes written: ".$engine[Engine::PHPTIMESERIES]->save());
+        $log->info("PHPFina bytes written: ".$engine[Engine::PHPFINA]->save());
         sleep(60);
     }
