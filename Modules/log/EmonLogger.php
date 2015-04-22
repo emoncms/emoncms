@@ -32,14 +32,22 @@ class EmonLogger
     }
 
     public function info ($message){
-        $fh = fopen($this->logfile,"a");
-        fwrite($fh,date("Y-n-j H:i:s", time())." $this->topic INFO ".$message."\n");
-        fclose($fh);
+        if (!is_writable($this->logfile))
+            return;
+    
+        if ($fh = fopen($this->logfile,"a")) {
+            fwrite($fh,date("Y-n-j H:i:s", time())." $this->topic INFO ".$message."\n");
+            fclose($fh);
+        }
     }
 
     public function warn ($message){
-        $fh = fopen($this->logfile,"a");
-        fwrite($fh,date("Y-n-j H:i:s", time())." $this->topic WARN ".$message."\n");
-        fclose($fh);
+        if (!is_writable($this->logfile))
+            return;
+            
+        if ($fh = fopen($this->logfile,"a")) {
+            fwrite($fh,date("Y-n-j H:i:s", time())." $this->topic WARN ".$message."\n");
+            fclose($fh);
+        }
     }
 }
