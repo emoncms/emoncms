@@ -29,7 +29,7 @@ class MysqlTimeSeries
         if (result===false) {
             $this->log->warn("MySQL: Feed $feedid, Create failed, MySQL table creation unsucessful");
         	$this->delete($feedid);
-        	return false
+        	return false;
         } else {
             $this->log->info("MySQL: Feed $feedid, Create successful");
             return true;
