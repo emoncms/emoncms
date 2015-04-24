@@ -547,6 +547,9 @@ class Feed
             $userid = $this->redis->hget("feed:$feedid",'userid');
             $this->redis->del("feed:$feedid");
             $this->redis->srem("user:feeds:$userid",$feedid);
+            //delete feed and lastvalue keys
+            $this->redis->del("feed:$feedid");
+            $this->redis->del("feed:lastvalue:$feedid");
         }
     }
 
