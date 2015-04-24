@@ -469,6 +469,7 @@ class Input
         // Inputs are deleted permanentely straight away rather than a soft delete
         // as in feeds - as no actual feed data will be lost
         $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
+        $this->mysqli->query("ALTER TABLE input AUTO_INCREMENT = 1;"); //reset auto_increment counter
         
         if ($this->redis) {
             $this->redis->del("input:$inputid");
