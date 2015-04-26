@@ -542,11 +542,15 @@ class Feed
         $this->engine[$engine]->delete($feedid);
 
         $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
+        $this->mysqli->query("ALTER TABLE feeds AUTO_INCREMENT = 1;"); //reset auto_increment counter
 
         if ($this->redis) {
             $userid = $this->redis->hget("feed:$feedid",'userid');
             $this->redis->del("feed:$feedid");
             $this->redis->srem("user:feeds:$userid",$feedid);
+            //delete feed and lastvalue keys
+            $this->redis->del("feed:$feedid");
+            $this->redis->del("feed:lastvalue:$feedid");
         }
     }
 
