@@ -26,7 +26,7 @@ class MysqlTimeSeries
         $feedname = "feed_".trim($feedid);
         $this->log->info("MySQL: Feed $feedid, Create started");
         $result = $this->mysqli->query("CREATE TABLE $feedname (`time` INT UNSIGNED, `data` float, INDEX (`time`)) ENGINE=MYISAM;");
-        if (result===false) {
+        if ($result===false) {
             $this->log->warn("MySQL: Feed $feedid, Create failed, MySQL table creation unsucessful");
         	$this->delete($feedid);
         	return false;
@@ -41,12 +41,12 @@ class MysqlTimeSeries
         $feedname = "feed_".trim($feedid);
         $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time`='$time';");
 
-        if ($result==false) {
+        if ($result->num_rows==0) {
            $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value');");
-           $this->log->info("MySQL: Feed $feedid - timestamp=$timestamp value=$value, Post successful");
+           $this->log->info("MySQL: Feed $feedid - timestamp=$time value=$value, Post successful");
            return $value;
         } else {
-            $this->log->warn("MySQL: Feed $feedid - timestamp=$timestamp value=$value, updating of datapoints to be made via update function");
+            $this->log->warn("MySQL: Feed $feedid - timestamp=$time value=$value, updating of datapoints to be made via update function");
             return false; //value already exists
         }
         
@@ -57,12 +57,12 @@ class MysqlTimeSeries
         $feedname = "feed_".trim($feedid);
         $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time`='$time';");
 
-        if ($result!==false) {
+        if ($result->num_rows==1) {
             $this->mysqli->query("UPDATE $feedname SET `data`='$value' WHERE `time` ='$time';");
-            $this->log->info("MySQL: Feed $feedid - timestamp=$timestamp value=$value, Update successful");
+            $this->log->info("MySQL: Feed $feedid - timestamp=$time value=$value, Update successful");
             return $value;
         } else {
-            $this->log->warn("MySQL: Feed $feedid - timestamp=$timestamp value=$value, posting of datapoints to be made via update function");
+            $this->log->warn("MySQL: Feed $feedid - timestamp=$time value=$value, posting of datapoints to be made via update function");
             return false; //value does not exist
         }
     }
