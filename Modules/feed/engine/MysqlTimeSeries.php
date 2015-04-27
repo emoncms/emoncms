@@ -62,7 +62,8 @@ class MysqlTimeSeries
             $this->log->info("MySQL: Feed $feedid - timestamp=$time value=$value, Update successful");
             return $value;
         } else {
-            $this->log->warn("MySQL: Feed $feedid - timestamp=$time value=$value, posting of datapoints to be made via update function");
+            //need way to check process_type and disable if "Power to kWh/d"
+            $this->log->warn("MySQL: Feed $feedid - timestamp=$time value=$value, posting of datapoints to be made via post function");
             return false; //value does not exist
         }
     }
