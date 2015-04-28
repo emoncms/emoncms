@@ -19,6 +19,11 @@ function user_controller()
     global $user, $path, $session, $route ,$allowusersregister;
 
     $result = false;
+    
+    // Disables further user creation after first admin user is created
+    if ($user->get_number_of_users()) {
+        $allowusersregister = false;
+    }
 
     // Load html,css,js pages to the client
     if ($route->format == 'html')
