@@ -16,19 +16,21 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function user_controller()
 {
-    global $user, $path, $session, $route ,$allowusersregister;
+    global $user, $path, $session, $route ,$enable_multi_user;
 
     $result = false;
     
+    $allowusersregister = true;
+    
     // Disables further user creation after first admin user is created
-    if ($user->get_number_of_users()) {
+    if ($enable_multi_user===false && $user->get_number_of_users()>0) {
         $allowusersregister = false;
     }
 
     // Load html,css,js pages to the client
     if ($route->format == 'html')
     {
-        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array());
+        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister));
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         if ($route->action == 'logout' && $session['read']) {$user->logout(); header('Location: '.$path);}
     }
