@@ -6,7 +6,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Branches
 
-* [New: v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focuses emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api is simplified and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module.
+* [New: v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focuses emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api has been improved and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module.
 
 * [Extended](https://github.com/emoncms/emoncms/tree/Extended) - An extended feature set branch of emoncms for advanced users. This branch may be less stable than the master branch , pull requests are merged with light review for quick development. 
 
