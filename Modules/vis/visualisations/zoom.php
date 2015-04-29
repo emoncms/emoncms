@@ -96,7 +96,17 @@
 
     var bot_kwhd_text = "";
 
-    var kwh_data = feed.get_average(kwhd,start,end,3600*24);
+    start = Math.floor(start / 86400000) * 86400000;
+    end = Math.floor(end / 86400000) * 86400000;
+    
+    var kwh_data = [];
+    $.ajax({                                      
+        url: path+'feed/data.json',                         
+        data: "id="+kwhd+"&start="+start+"&end="+end+"&interval=86400",
+        dataType: 'json',
+        async: false,                      
+        success: function(data_in) { kwh_data = data_in; } 
+    });
 
     var total = 0, ndays=0;
     for (z in kwh_data) {
@@ -128,7 +138,17 @@
 
     function vis_feed_data()
     {
-        var power_data = get_feed_data(feedid,start,end,500);
+        var power_data = [];
+        var interval = Math.round(((end - start)*0.001) / 800);
+        
+        $.ajax({                                      
+            url: path+'feed/data.json',                         
+            data: "id="+feedid+"&start="+start+"&end="+end+"&interval="+interval,
+            dataType: 'json',
+            async: false,                      
+            success: function(data_in) { power_data = data_in; } 
+        });
+        
         var stats = power_stats(power_data);
         instgraph(power_data);
 

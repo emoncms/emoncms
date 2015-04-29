@@ -44,8 +44,6 @@ Enter in your database settings.
     $password = "PASSWORD";
     $server   = "localhost";
     $database = "emoncms";
-    
-If your data is stored in the timestore feed engine add your timestore adminkey to the timestore adminkey settings entry.
 
 ## 4) Upgrading to v8 from older versions
 
@@ -89,12 +87,11 @@ Click on apply changes to apply these changes.
 If you cannot see any of your data in the new installation:
 
 1) try clearing your browser cache
-2) if you where using timestore to store your feed data check that the adminkey is entered correctly in settings.php
-3) if you already have redis installed, try reseting redis with:
+2) if you already have redis installed, try reseting redis with:
         
     $ redis-cli and then: flushall
 
-4) Make a note of any errors that you see, check if there are any errors in your browser's console window. Check that data is still coming in and viewable in your old emoncms installation. Post on the forums with information on the errors that you see and we can try to help.
+3) Make a note of any errors that you see, check if there are any errors in your browser's console window. Check that data is still coming in and viewable in your old emoncms installation. Post on the forums with information on the errors that you see and we can try to help.
 
 ### 7) Rename your old emoncms folder to emoncms_old and rename emoncms_new to emoncms
 

@@ -44,9 +44,26 @@
     var start = +new Date - timeWindow;  //Get start time
     var end = +new Date; 
     
-    var dataA = feed.get_average(kwhdA,start,end,3600*24);
-    var dataB = feed.get_average(kwhdB,start,end,3600*24);
-
+    start = Math.floor(start / 86400000) * 86400000;
+    end = Math.floor(end / 86400000) * 86400000;
+    
+    var dataA = [];
+    $.ajax({                                      
+        url: path+'feed/data.json',                         
+        data: "id="+kwhdA+"&start="+start+"&end="+end+"&interval=86400",
+        dataType: 'json',
+        async: false,                      
+        success: function(data_in) { dataA = data_in; } 
+    });
+    
+    var dataB = [];
+    $.ajax({                                      
+        url: path+'feed/data.json',                         
+        data: "id="+kwhdB+"&start="+start+"&end="+end+"&interval=86400",
+        dataType: 'json',
+        async: false,                      
+        success: function(data_in) { dataB = data_in; } 
+    });
 
     var embed = <?php echo $embed; ?>;
     $('#graph').width($('#graph_bound').width());

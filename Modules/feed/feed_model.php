@@ -32,37 +32,19 @@ class Feed
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
         
-        // Load different storage engines
-        require "Modules/feed/engine/MysqlTimeSeries.php";
-        require "Modules/feed/engine/Timestore.php";
-        require "Modules/feed/engine/PHPTimestore.php";
-        require "Modules/feed/engine/Histogram.php";
-        require "Modules/feed/engine/PHPTimeSeries.php";
-        require "Modules/feed/engine/GraphiteTimeSeries.php";
-        
-        // Development engines
-        require "Modules/feed/engine/PHPFina.php";
-        require "Modules/feed/engine/PHPFiwa.php";     
+        require "Modules/feed/engine/PHPFiwa.php";          // Fixed interval with averaging
+        require "Modules/feed/engine/PHPFina.php";          // Fixed interval no averaging
+        require "Modules/feed/engine/PHPTimeSeries.php";    // Variable interval no averaging
+        require "Modules/feed/engine/Histogram.php";        // Histogram (to be moved to own module soon)
            
-        // Backwards compatibility 
         if (!isset($settings)) $settings= array();
-        if (!isset($settings['timestore'])) {
-            global $timestore_adminkey; 
-            $settings['timestore'] = array('adminkey'=>$timestore_adminkey);
-        }
-        if (!isset($settings['graphite'])) $settings['graphite'] = array('host'=>"", 'port'=>0);
         if (!isset($settings['phpfiwa'])) $settings['phpfiwa'] = array();
         if (!isset($settings['phpfina'])) $settings['phpfina'] = array();
-        if (!isset($settings['phptimestore'])) $settings['phptimestore'] = array();
         if (!isset($settings['phptimeseries'])) $settings['phptimeseries'] = array();
               
         // Load engine instances to engine array to make selection below easier
         $this->engine = array();
-        $this->engine[Engine::MYSQL] = new MysqlTimeSeries($mysqli);
-        $this->engine[Engine::TIMESTORE] = new Timestore($settings['timestore']);
-        $this->engine[Engine::PHPTIMESTORE] = new PHPTimestore($settings['phptimestore']);
         $this->engine[Engine::PHPTIMESERIES] = new PHPTimeSeries($settings['phptimeseries']);
-        $this->engine[Engine::GRAPHITE] = new GraphiteTimeSeries($settings['graphite']);
         $this->engine[Engine::PHPFINA] = new PHPFina($settings['phpfina']);
         $this->engine[Engine::PHPFIWA] = new PHPFiwa($settings['phpfiwa']);
                 
@@ -112,8 +94,6 @@ class Feed
             }
             
             $options = array();
-            if ($engine==Engine::TIMESTORE) $options['interval'] = (int) $options_in->interval;
-            if ($engine==Engine::PHPTIMESTORE) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFINA) $options['interval'] = (int) $options_in->interval;
             if ($engine==Engine::PHPFIWA) $options['interval'] = (int) $options_in->interval;
             
@@ -425,6 +405,28 @@ class Feed
 
         return $value;
     }
+    
+    public function insert_data_padding_mode($feedid,$updatetime,$feedtime,$value,$padding_mode)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        if ($feedtime == null) $feedtime = time();
+        $updatetime = intval($updatetime);
+        $feedtime = intval($feedtime);
+        $value = floatval($value);
+
+        $engine = $this->get_engine($feedid);
+        
+        // Call to engine post method
+        if ($engine==5 && $padding_mode=="join") $this->engine[$engine]->padding_mode = "join";
+        $this->engine[$engine]->post($feedid,$feedtime,$value);
+        if ($engine==5 && $padding_mode=="last") $this->engine[$engine]->padding_mode = "nan";
+        
+        $this->set_timevalue($feedid, $value, $updatetime);
+
+        return $value;
+    }
 
     public function update_data($feedid,$updatetime,$feedtime,$value)
     {
@@ -457,61 +459,14 @@ class Feed
         return $value;
     }
 
-    public function get_data($feedid,$start,$end,$dp)
+    public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
     {
-        $feedid = (int) $feedid;
-        if ($end == 0) $end = time()*1000;
-                
+        $feedid = (int) $feedid;      
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-  
         $engine = $this->get_engine($feedid);
-        
-        // Call to engine get_data method
-        $range = ($end - $start) * 0.001;
-        if ($dp>$this->max_npoints_returned) $dp = $this->max_npoints_returned;
-        if ($dp<1) $dp = 1;
-        $outinterval = round($range / $dp);
-        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
-
+        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
     }
-
-    public function get_average($feedid,$start,$end,$outinterval)
-    {
-        $feedid = (int) $feedid;
-        if ($end == 0) $end = time()*1000;
         
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $engine = $this->get_engine($feedid);
-
-        // Call to engine get_average method
-        if ($outinterval<1) $outinterval = 1;
-        $range = ($end - $start) * 0.001;
-        $npoints = ($range / $outinterval);
-        if ($npoints>$this->max_npoints_returned) $outinterval = round($range / $this->max_npoints_returned);
-        return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval);
-    }
-    
-    public function get_history($feedid,$start,$end,$outinterval)
-    {
-        $feedid = (int) $feedid;
-        if ($end == 0) $end = time()*1000;
-        
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-
-        $engine = $this->get_engine($feedid);
-        
-        if ($engine==Engine::PHPFINA || $engine==Engine::PHPFIWA) {
-            // Call to engine get_average method
-            if ($outinterval<1) $outinterval = 1;
-            $range = ($end - $start) * 0.001;
-            $npoints = ($range / $outinterval);
-            if ($npoints>$this->max_npoints_returned) $outinterval = round($range / $this->max_npoints_returned);
-            return $this->engine[$engine]->get_data_exact($feedid,$start,$end,$outinterval);
-        }
-        return false;
-    }
-    
     public function csv_export($feedid,$start,$end,$outinterval)
     {
         $feedid = (int) $feedid;
@@ -576,34 +531,6 @@ class Feed
         $engine = $this->get_engine($feedid);
         return $this->engine[$engine]->get_meta($feedid);
     }
-    
-    // MysqlTimeSeries specific functions that we need to make available to the controller
-
-    public function mysqltimeseries_export($feedid,$start) {
-        return $this->engine[Engine::MYSQL]->export($feedid,$start);
-    }
-
-    public function mysqltimeseries_delete_data_point($feedid,$time) {
-        return $this->engine[Engine::MYSQL]->delete_data_point($feedid,$time);
-    }
-
-    public function mysqltimeseries_delete_data_range($feedid,$start,$end) {
-        return $this->engine[Engine::MYSQL]->delete_data_range($feedid,$start,$end);
-    }
-
-    // Timestore specific functions that we need to make available to the controller
-
-    public function timestore_export($feedid,$start,$layer) {
-        return $this->engine[Engine::TIMESTORE]->export($feedid,$start,$layer);
-    }
-
-    public function timestore_export_meta($feedid) {
-        return $this->engine[Engine::TIMESTORE]->export_meta($feedid);
-    }
-
-    public function timestore_scale_range($feedid,$start,$end,$value) {
-        return $this->engine[Engine::TIMESTORE]->scale_range($feedid,$start,$end,$value);
-    }
 
     // Histogram specific functions that we need to make available to the controller
 
@@ -632,8 +559,6 @@ class Feed
     public function phpfina_export($feedid,$start) {
         return $this->engine[Engine::PHPFINA]->export($feedid,$start);
     }
-
-
 
     public function set_timevalue($feedid, $value, $time)
     {

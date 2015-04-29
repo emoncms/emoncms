@@ -158,7 +158,7 @@ $(function() {
         interval = Math.round(((view.end - view.start)/npoints)/1000);
         
         $.ajax({                                      
-            url: path+'feed/average.json',                         
+            url: path+'feed/data.json',                         
             data: "id="+feedid+"&start="+view.start+"&end="+view.end+"&interval="+interval,
             dataType: 'json',
             async: false,                      

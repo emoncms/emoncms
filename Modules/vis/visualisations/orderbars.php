@@ -47,6 +47,9 @@
     var start = +new Date - timeWindow;  //Get start time
     var end = +new Date; 
 
+    start = Math.floor(start / 86400000) * 86400000;
+    end = Math.floor(end / 86400000) * 86400000;
+    
     var graph_data = [];
     vis_feed_data();
 
@@ -58,7 +61,14 @@
 
     function vis_feed_data()
     {
-        graph_data = feed.get_average(feedid,start,end,3600*24);
+        graph_data = [];
+        $.ajax({                                      
+            url: path+'feed/data.json',                         
+            data: "id="+feedid+"&start="+start+"&end="+end+"&interval=86400",
+            dataType: 'json',
+            async: false,                      
+            success: function(data_in) { graph_data = data_in; } 
+        });
 
         for(x = 0; x < graph_data.length; x++) {
             for(y = 0; y < (graph_data.length-1); y++) {

@@ -20,14 +20,15 @@ class Process
     private $log;
     private $mqtt = false;
     
-    private $timezoneoffset = 0;
+    private $timezone = 'UTC';
 
-    public function __construct($mysqli,$input,$feed)
+    public function __construct($mysqli,$input,$feed,$timezone)
     {
-            $this->mysqli = $mysqli;
-            $this->input = $input;
-            $this->feed = $feed;
-            $this->log = new EmonLogger(__FILE__);
+        $this->mysqli = $mysqli;
+        $this->input = $input;
+        $this->feed = $feed;
+        $this->log = new EmonLogger(__FILE__);
+        if (!($timezone === NULL)) $this->timezone = $timezone;
             
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
@@ -38,11 +39,6 @@ class Process
             $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms Publisher");
             $this->mqtt = $mqtt;
         }
-    }
-    
-    public function set_timezone_offset($timezoneoffset)
-    {
-        $this->timezoneoffset = $timezoneoffset;
     }
 
     public function get_process_list()
@@ -202,24 +198,24 @@ class Process
         }
     }
     
-	public function update_feed_data($id, $time, $value)
-	{
-		$time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
+    public function update_feed_data($id, $time, $value)
+    {
+        $time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
 
-		$feedname = "feed_".trim($id)."";
-		$result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
-		$row = $result->fetch_array();
+        $feedname = "feed_".trim($id)."";
+        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
+        $row = $result->fetch_array();
 
-		if (!$row)
-		{
-			$this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
-		}
-		else
-		{
-			$this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
-		}
-		return $value;
-	} 
+        if (!$row)
+        {
+            $this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value')");
+        }
+        else
+        {
+            $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE `time` = '$time'");
+        }
+        return $value;
+    } 
 
     public function add_input($id, $time, $value)
     {
@@ -262,8 +258,9 @@ class Process
             $new_kwh = $last_kwh;
         }
 
-        $this->feed->insert_data($feedid, $time_now, $time_now, $new_kwh);
-
+        $padding_mode = "join";
+        $this->feed->insert_data_padding_mode($feedid, $time_now, $time_now, $new_kwh, $padding_mode);
+        
         return $value;
     }
 
@@ -420,7 +417,8 @@ class Process
     {
         $last = $this->feed->get_timevalue($feedid);
         $value = $last['value'] + $value;
-        $this->feed->insert_data($feedid, $time, $time, $value);
+        $padding_mode = "join";
+        $this->feed->insert_data_padding_mode($feedid, $time, $time, $value, $padding_mode);
         return $value;
     }
     /*
@@ -631,7 +629,8 @@ class Process
             
             if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
             
-            $this->feed->insert_data($feedid, $time, $time, $totalwh);
+            $padding_mode = "join";
+            $this->feed->insert_data_padding_mode($feedid, $time, $time, $totalwh, $padding_mode);
             
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
@@ -665,9 +664,10 @@ class Process
     // Get the start of the day
     private function getstartday($time_now)
     {
-        // $midnight  = mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now)) - ($this->timezoneoffset * 3600);
-        // $this->log->warn($midnight." ".date("Y-n-j H:i:s",$midnight)." [".$this->timezoneoffset."]");
-        return mktime(0, 0, 0, date("m",$time_now), date("d",$time_now), date("Y",$time_now)) - ($this->timezoneoffset * 3600);
+        $now = DateTime::createFromFormat("U", $time_now);
+        $now->setTimezone(new DateTimeZone($this->timezone));
+        $now->setTime(0,0);    // Today at 00:00
+        return $now->format("U");
     }
 
 }

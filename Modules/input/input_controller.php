@@ -21,7 +21,7 @@ function input_controller()
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
 
-    global $feed, $timestore_adminkey;
+    global $feed;
     $result = false;
 
     include "Modules/feed/feed_model.php";
@@ -31,10 +31,8 @@ function input_controller()
     $input = new Input($mysqli,$redis, $feed);
 
     require "Modules/input/process_model.php"; // 886
-    $process = new Process($mysqli,$input,$feed);
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
     
-    $process->set_timezone_offset($user->get_timezone($session['userid']));
-
     if ($route->format == 'html')
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
