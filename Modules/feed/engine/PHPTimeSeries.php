@@ -154,53 +154,57 @@ class PHPTimeSeries
         return floor($bytesize / 9.0);
     } 
 
-    public function get_data($feedid,$start,$end,$outinterval)
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $start = $start/1000; $end = $end/1000;
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $interval= (int) $interval;
 
-        if ($outinterval<1) $outinterval = 1;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        if ($dp<1) return false;
-
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>3000) return array("success"=>false, "message"=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 
-        $pos = $this->binarysearch($fh,$start,$filesize);
-
-        $interval = ($end - $start) / $dp;
-
-        // Ensure that interval request is less than 1
-        // adjust number of datapoints to request if $interval = 1;
-        if ($interval<1) {
-            $interval = 1;
-            $dp = ($end - $start) / $interval;
-        }
-
         $data = array();
+        $time = 0; $i = 0;
+        $atime = 0;
 
-        $time = 0;
-
-        for ($i=0; $i<$dp; $i++)
+        while ($time<=$end)
         {
-            $pos = $this->binarysearch($fh,$start+($i*$interval),$filesize);
-
+            $time = $start + ($interval * $i);
+            $pos = $this->binarysearch($fh,$time,$filesize);
             fseek($fh,$pos);
-
-            // Read the datapoint at this position
             $d = fread($fh,9);
-
-            // Itime = unsigned integer (I) assign to 'time'
-            // fvalue = float (f) assign to 'value'
             $array = unpack("x/Itime/fvalue",$d);
-
-            $last_time = $time;
-            $time = $array['time'];
-
-            // $last_time = 0 only occur in the first run
-            if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                $data[] = array($time*1000,$array['value']);
+            $dptime = $array['time'];
+            
+            $value = null;
+            
+            $lasttime = $atime;
+            $atime = $time;
+            
+            if ($limitinterval)
+            {
+                $diff = abs($dptime-$time);
+                if ($diff<($interval/2)) {
+                    $value = $array['value'];
+                } 
+            } else {
+                $value = $array['value'];
+                $atime = $array['time'];
             }
+            
+            if ($atime!=$lasttime) {
+                if ($value!==null || $skipmissing===0) $data[] = array($atime*1000,$value);
+            }
+            
+            $i++;
         }
 
         return $data;
@@ -218,7 +222,7 @@ class PHPTimeSeries
             fseek($fh,$filesize-9);
             $d = fread($fh,9);
             $array = unpack("x/Itime/fvalue",$d);
-            $array['time'] = date("Y-n-j H:i:s", $array['time']);
+            $array['time'] = $array['time'];
             fclose($fh);
             return $array;
         }

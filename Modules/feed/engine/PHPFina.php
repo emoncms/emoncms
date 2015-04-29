@@ -10,6 +10,9 @@ class PHPFina
     
     private $buffers = array();
     private $metadata_cache = array();
+    private $lastvalue_cache = array();
+    
+    public $padding_mode = "nan";
     
     /**
      * Constructor.
@@ -129,13 +132,22 @@ class PHPFina
             }
             
             if ($npadding>0) {
+                $padding_value = NAN;
+                if ($this->padding_mode=="join") {
+                    $last = $this->lastvalue($filename);
+                    $div = ($value - $last['value']) / ($npadding+1);
+                    $padding_value = $last['value'];
+                }
+                
                 for ($n=0; $n<$npadding; $n++)
                 {
-                    $this->buffers[$filename] .= pack("f",NAN);
+                    if ($this->padding_mode=="join") $padding_value += $div; 
+                    $this->buffers[$filename] .= pack("f",$padding_value);
                 }
             }
             
             $this->buffers[$filename] .= pack("f",$value);
+            $this->lastvalue_cache[$filename] = $value;
         }
         
         return $value;
@@ -196,87 +208,55 @@ class PHPFina
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $dp The number of data points to return (used by some engines)
     */
-    public function get_data($feedid,$start,$end,$outinterval)
+    public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $feedid = intval($feedid);
         $start = intval($start/1000);
         $end = intval($end/1000);
-        $outinterval= (int) $outinterval;
+        $interval= (int) $interval;
+        
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>3000) return array('success'=>false, 'message'=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($feedid)) return false;
-        $meta->npoints = $this->get_npoints($feedid);
+        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"error reading meta data $meta");
+        $meta->npoints = $this->get_npoints($name);
         
-        if ($outinterval<$meta->interval) $outinterval = $meta->interval;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        
-        // $dpratio = $outinterval / $meta->interval;
-        if ($dp<1) return false;
-
-        // The number of datapoints in the query range:
-        $dp_in_range = ($end - $start) / $meta->interval;
-
-        // Divided by the number we need gives the number of datapoints to skip
-        // i.e if we want 1000 datapoints out of 100,000 then we need to get one
-        // datapoints every 100 datapoints.
-        $skipsize = round($dp_in_range / $dp);
-        if ($skipsize<1) $skipsize = 1;
-
-        // Calculate the starting datapoint position in the timestore file
-        if ($start>$meta->start_time){
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        } else {
-            $start = ceil($meta->start_time / $outinterval) * $outinterval;
-            $startpos = ceil(($start - $meta->start_time) / $meta->interval);
-        }
+        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
 
         $data = array();
         $time = 0; $i = 0;
-
+        $numdp = 0;
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$feedid.".dat", 'rb');
+        $fh = fopen($this->dir.$name.".dat", 'rb');
         while($time<=$end)
         {
-            // $position steps forward by skipsize every loop
-            $pos = ($startpos + ($i * $skipsize));
+            $time = $start + ($interval * $i);
+            $pos = round(($time - $meta->start_time) / $meta->interval);
 
-            // Exit the loop if the position is beyond the end of the file
-            if ($pos > $meta->npoints-1) break;
+            $value = null;
 
-            // read from the file
-            fseek($fh,$pos*4);
-            $val = unpack("f",fread($fh,4));
+            if ($pos>=0 && $pos < $meta->npoints)
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $val = unpack("f",fread($fh,4));
 
-            // calculate the datapoint time
-            $time = $meta->start_time + $pos * $meta->interval;
-
-            // add to the data array if its not a nan value
-            if (!is_nan($val[1])) {
-                $data[] = array($time*1000,$val[1]);
-            } else {
-                /*
-                // Find non nan nearest within ten
-                for ($x=1; $x<20; $x++)
-                {
-                    // +1, +2, +3..
-                    fseek($fh,($pos+$x)*4);
-                    $val = unpack("f",fread($fh,4));
-                    if (!is_nan($val[1])) {
-                        $data[] = array($time*1000,$val[1]);
-                        break;
-                    }
-
-                    // -1, -2, -3..
-                    fseek($fh,($pos-$x)*4);
-                    $val = unpack("f",fread($fh,4));
-                    if (!is_nan($val[1])) {
-                        $data[] = array($time*1000,$val[1]);
-                        break;
-                    }
-                }*/
-                
+                // add to the data array if its not a nan value
+                if (!is_nan($val[1])) {
+                    $value = $val[1];
+                } else {
+                    $value = null;
+                }
+            }
+            
+            if ($value!==null || $skipmissing===0) {
+                $data[] = array($time*1000,$value);
             }
 
             $i++;
@@ -289,31 +269,32 @@ class PHPFina
      *
      * @param integer $feedid The id of the feed
     */
-    public function lastvalue($id)
-    {
-        $id = (int) $id;
-        
+    public function lastvalue($filename)
+    {   
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($id)) return false;
-        $meta->npoints = $this->get_npoints($id);
+        if (!$meta = $this->get_meta($filename)) return false;
+        $meta->npoints = $this->get_npoints($filename);
+        
+        if (isset($this->lastvalue_cache[$filename])) {
+            return array('value'=>$this->lastvalue_cache[$filename]);
+        }
         
         if ($meta->npoints>0)
         {
-            $fh = fopen($this->dir.$id.".dat", 'rb');
-            $size = $meta->npoints*4;
+            $fh = fopen($this->dir.$filename.".dat", 'rb');
+            $size = filesize($this->dir.$filename.".dat");
             fseek($fh,$size-4);
              $d = fread($fh,4);
             fclose($fh);
 
             $val = unpack("f",$d);
-            $time = date("Y-n-j H:i:s", $meta->start_time + $meta->interval * $meta->npoints);
+            $time = $meta->start_time + $meta->interval * $meta->npoints;
             
+            $this->lastvalue_cache[$filename] = $val[1];
             return array('time'=>$time, 'value'=>$val[1]);
         }
-        else
-        {
-            return array('time'=>0, 'value'=>0);
-        }
+        
+        return false;
     }
     
     public function export($id,$start)

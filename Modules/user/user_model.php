@@ -543,4 +543,10 @@ class User
         $this->mysqli->query("UPDATE users SET apikey_write = '$apikey' WHERE id='$userid'");
         return $apikey;
     }
+    
+    public function get_number_of_users()
+    {
+        $result = $this->mysqli->query("SELECT id FROM users");
+        return $result->num_rows;
+    }
 }

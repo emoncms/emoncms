@@ -73,8 +73,10 @@
     // Error processing
     $display_errors = TRUE;
 
-    // Allow user register in emoncms
-    $allowusersregister = TRUE;
+    // Enable multi user emoncms.
+    // If set to false, emoncms will automatically remove the register form and 
+    // ability to create further users after the first user has been created
+    $enable_multi_user = false;
 
     // Enable remember me feature - needs more testing
     $enable_rememberme = TRUE;

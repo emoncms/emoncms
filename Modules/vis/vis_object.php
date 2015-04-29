@@ -37,5 +37,9 @@
             array('delta',7,'0'))
         ),
         
-        'multigraph' => array ('action'=>'multigraph', 'options'=>array(array('mid',7)) )
+        'multigraph' => array ('action'=>'multigraph', 'options'=>array(array('mid',7)) ),
+        
+        'graph'=> array('options'=>array(
+            array('feedid',1)
+        ))
     );

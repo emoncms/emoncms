@@ -38,13 +38,11 @@
 <p><a href="<?php echo $path; ?>feed/value.json?id=0"><?php echo $path; ?>feed/value.json?id=0</a> - <?php echo _("returns the present value of a given feed");?></p>
 <p><a href="<?php echo $path; ?>feed/get.json?id=0&field="><?php echo $path; ?>feed/get.json?id=0&field=</a> - <?php echo _("returns the present value of a given feed");?></p>
 <p><a href="<?php echo $path; ?>feed/data.json?id=0&start=&end=&dp="><?php echo $path; ?>feed/data.json?id=0&start=&end=&dp=</a> - <?php echo _("returns feed data");?></p>
-<p><a href="<?php echo $path; ?>feed/histogram.json?id=0&start=&end="><?php echo $path; ?>feed/histogram.json?id=0&start=&end=</a> - <?php echo _("returns histogram data");?></p>
-<p><a href="<?php echo $path; ?>feed/kwhatpower.json?id=0&min=&max="><?php echo $path; ?>feed/kwhatpower.json?id=0&min=&max=</a> - <?php echo _("returns kwh consumed in a given power band using histogram data type");?></p>
 
 <p><a href="<?php echo $path; ?>feed/getid.json?name="><?php echo $path; ?>feed/getid.json?name=</a> - <?php echo _("returns id of a feed given by name");?></p>
 <p><a href="<?php echo $path; ?>feed/list.json"><?php echo $path; ?>feed/list.json</a></p>
 
-<p><a href='<?php echo $path; ?>feed/create.json?name=Power&datatype=1&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?name=Power&datatype=1&engine=5&options={"interval":10}</a></p>
+<p><a href='<?php echo $path; ?>feed/create.json?name=Power&&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?name=Power&&engine=5&options={"interval":10}</a></p>
 
 <p><a href="<?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}"><?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}</a></p>
 <p><a href="<?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0</a></p>
