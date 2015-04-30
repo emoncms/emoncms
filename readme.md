@@ -16,21 +16,13 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder.
 
-**App** provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump
+- App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump. git clone https://github.com/emoncms/app.git
 
-    git clone https://github.com/emoncms/app.git
-
-**Nodes** provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration.
-
-    git clone https://github.com/emoncms/nodes.git
+- Nodes provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration. git clone https://github.com/emoncms/nodes.git
     
-**Config** provides an in-browser emonhub.conf editor and emonhub.log log viewer
-
-    git clone https://github.com/emoncms/config.git
+- Config provides an in-browser emonhub.conf editor and emonhub.log log viewer. git clone https://github.com/emoncms/config.git
     
-**Wifi** provides an in emoncms wifi configuration interface designed for use on the emonpi
-
-    git clone https://github.com/emoncms/wifi.git
+- Wifi provides an in emoncms wifi configuration interface designed for use on the emonpi. git clone https://github.com/emoncms/wifi.git
 
 
 **Older versions:**
