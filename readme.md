@@ -47,7 +47,7 @@ There are many other modules such as the event module and openbem (open source b
 
 ## Development
 
-**Development plan overview: [Github: Emoncms development overview](https://github.com/emoncms/emoncms/issues/244)**
+**Development plan overview: [Github: Emoncms development overview](https://github.com/emoncms/emoncms/issues/244)** (Out of date but pre v8.5)
 
 **EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/emoncms/emonview](https://github.com/emoncms/emonview)
 
