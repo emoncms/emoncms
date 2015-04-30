@@ -14,7 +14,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 **Optional modules**
 
-Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder.
+Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. New for version v8.5 are:
 
 - App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump. git clone https://github.com/emoncms/app.git
 
@@ -24,6 +24,7 @@ Optional modules can be installed by downloading or git cloning into the emoncms
     
 - Wifi provides an in emoncms wifi configuration interface designed for use on the emonpi. git clone https://github.com/emoncms/wifi.git
 
+There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the emoncms repo list: https://github.com/emoncms
 
 **Older versions:**
 
