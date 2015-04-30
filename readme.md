@@ -12,6 +12,10 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 * [New: low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The latest version of the low write version of emoncms designed for running on SD cards. v8.5 includes the new data request api and default data viewer as found in the main v8.5 version, It also supports the new app and nodes module. Low-write-v8.5 is the version of emoncms installed on the emonpi. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. Data is written to disk at spaced out intervals allowing datapoints to buffer and be written to disk in larger blocks. 
 
+**Older versions:**
+
+* [Master (v8.4)](https://github.com/emoncms/emoncms/tree/master) - in the process of being replaced by the v8.5 branch. v8.5 will break older installations of emoncms that are using the older feed engines: timestore, phptimestore and mysqltimeseries, the upgrade procedure has not yet been written, if you have an existing system thats working then stay on this branch. If your setting up a new emoncms installation use the v8.5 branch.
+
 **Optional modules**
 
 Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. New for version v8.5 are:
@@ -26,9 +30,6 @@ Optional modules can be installed by downloading or git cloning into the emoncms
 
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the emoncms repo list: https://github.com/emoncms
 
-**Older versions:**
-
-* [Master (v8.4)](https://github.com/emoncms/emoncms/tree/master) - in the process of being replaced by the v8.5 branch. v8.5 will break older installations of emoncms that are using the older feed engines: timestore, phptimestore and mysqltimeseries, the upgrade procedure has not yet been written, if you have an existing system thats working then stay on this branch. If your setting up a new emoncms installation use the v8.5 branch.
 
 ## Install
 
