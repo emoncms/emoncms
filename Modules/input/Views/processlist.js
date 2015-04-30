@@ -348,7 +348,7 @@ var processlist_ui =
         $("#feed-engine option").prop('disabled', true);  //for IE hide (grayed out)
         for (e in engines) { 
             $("#feed-engine option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
-            $("#feed-engine option[value=-1]").prop('disabled', false);  //for IE show
+            $("#feed-engine option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
         }
 
         $("#feed-engine, .feed-engine-label").hide(); 
