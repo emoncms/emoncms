@@ -266,7 +266,7 @@ var processlist_ui =
                 // If there's only one feed engine to choose from then dont show feed engine selector
                 // CHAVEIRO: Commented for now so user can see what processor it's using.
                 //var processid = $('#process-select').val();
-                //var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
+                //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
                 //if (engines.length > 1) 
                     $("#feed-engine, .feed-engine-label").show();
             } else {
@@ -326,8 +326,8 @@ var processlist_ui =
     'showfeedoptions':function(processid)
     {
         var prc = processlist_ui.processlist[processid][2];
-        var engines = processlist_ui.processlist[processid][6];   // 5:PHPFINA, 6:PHPFIWA
-        var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+        var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
+        var datatype = processlist_ui.processlist[processid][4];  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
         
         var out = "<option value=-1>CREATE NEW:</option>";
         for (i in processlist_ui.feedlist) {
@@ -338,7 +338,7 @@ var processlist_ui =
         $("#feed-select option").hide();    // Start by hiding all feeds
         $("#feed-select option").prop('disabled', true);  //for IE hide (grayed out)
         for (f in processlist_ui.feedlist) {
-            if (processlist_ui.feedlist[f].datatype == datatype) {
+            if (datatype == 0 || (processlist_ui.feedlist[f].datatype == datatype)) {
                 $("#feed-select option[value="+processlist_ui.feedlist[f].id+"]").show(); // Only show feeds of the supported datatype
                 $("#feed-select option[value="+processlist_ui.feedlist[f].id+"]").prop('disabled', false);  //for IE show
             }
@@ -360,7 +360,7 @@ var processlist_ui =
             $("#feed-select option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
             $("#feed-select option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
             for (f in processlist_ui.feedlist) {
-                if (processlist_ui.feedlist[f].datatype == datatype) {    // Only feeds of the supported datatype
+                if (datatype == 0 || (processlist_ui.feedlist[f].datatype == datatype)) {    // Only feeds of the supported datatype
                     $("#feed-select").val(processlist_ui.feedlist[f].id); // select first feed
                     break;
                 }
