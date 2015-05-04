@@ -22,7 +22,7 @@
     {
         if (filetype(WIDGETS_PATH_EXT.$dir[$i])=='dir')
         {
-			$gotWidget = false;
+            $gotWidget = false;
             if (is_file(WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_widget.php"))
             {
                 require_once WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_widget.php";
@@ -31,9 +31,9 @@
             if (is_file(WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_render.js"))
             {
                 echo "<script type='text/javascript' src='".$path.WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_render.js'></script>";
-				$gotWidget = true;
+                $gotWidget = true;
             }
-			if ($gotWidget == true) $widgets[] = $dir[$i];
+            if ($gotWidget == true) $widgets[] = $dir[$i];
         }
     }
 
@@ -44,7 +44,7 @@
     {
         if (filetype(MODULE_PATH_EXT.$dir[$i])=='dir')
         {
-			$gotWidget = false;
+            $gotWidget = false;
             if (is_file(MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_widget.php"))
             {
                 require_once MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_widget.php";
@@ -53,8 +53,8 @@
             if (is_file(MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_render.js"))
             {
                 echo "<script type='text/javascript' src='".$path.MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_render.js'></script>";
-				$gotWidget = true;
+                $gotWidget = true;
             }
-			if ($gotWidget == true) $widgets[] = $dir[$i];
+            if ($gotWidget == true) $widgets[] = $dir[$i];
         }
     }
