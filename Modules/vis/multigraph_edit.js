@@ -14,7 +14,7 @@ var multigraph_name='';
 var timeWindow = (3600000*24.0*7);				            // Initial time window
 
 // var view = {}                                    // Should already be defined
-view.start ((new Date()).getTime())-timeWindow;		  // Get start time
+view.start = ((new Date()).getTime())-timeWindow;		  // Get start time
 view.end = (new Date()).getTime();				              // Get end time
 
 // This is used with multigraph.js to tell it to call a save request in multigraph_edit.js
