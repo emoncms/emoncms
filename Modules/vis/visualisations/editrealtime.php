@@ -110,10 +110,10 @@
 
         var plot = $.plot($("#graph"), [plotdata], {
             //grid: { show: true, clickable: true},
-			grid: { show: true, hoverable: true, clickable: true },
+            grid: { show: true, hoverable: true, clickable: true },
             xaxis: { mode: "time", timezone: "browser", min: start, max: end },
             selection: { mode: "x" },
-			touch: { pan: "x", scale: "x" }
+            touch: { pan: "x", scale: "x" }
         });
 
     }
@@ -184,7 +184,7 @@
         vis_feed_data();
         $('#myModal').modal('hide');
     });
-	
+    
 
     // Graph buttons and navigation efects for mouse and touch
     $("#graph").mouseenter(function(){
@@ -210,6 +210,6 @@
         start = ranges.xaxis.from; end = ranges.xaxis.to;
         vis_feed_data();
     });
-	
+    
 </script>
 

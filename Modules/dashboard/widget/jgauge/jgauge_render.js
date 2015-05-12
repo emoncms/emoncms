@@ -38,11 +38,11 @@ function jgauge_init()
 
   // Load the needle image
   needle = new Image();
-  needle.src = path+'Modules/dashboard/Views/js/widgets/jgauge/needle2.png';
+  needle.src = path+'Modules/dashboard/widget/jgauge/needle2.png';
 
   // Load the jgauge image
   img = new Image();
-  img.src = path+'Modules/dashboard/Views/js/widgets/jgauge/jgauge.png';
+  img.src = path+'Modules/dashboard/widget/jgauge/jgauge.png';
 }
 
 function jgauge_draw()

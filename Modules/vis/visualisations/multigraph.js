@@ -139,7 +139,7 @@
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
       legend: { position: "nw"},
-	  touch: { pan: "x", scale: "x"}
+      touch: { pan: "x", scale: "x"}
     });
   }
 
@@ -221,31 +221,31 @@ function multigraph_init(element)
   $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
   //-----------------------------------------------------------------------------------------------
   
-	// Graph buttons and navigation efects for mouse and touch
-	$("#graph").mouseenter(function(){
-		$("#graph-navbar").show();
-		$("#graph-tooltip").show();
-		$("#graph-buttons").stop().fadeIn();
-		$("#stats").stop().fadeIn();
-	});
-	$("#graph_bound").mouseleave(function(){
-		$("#graph-buttons").stop().fadeOut();
-		$("#stats").stop().fadeOut();
-	});
-	$("#graph").bind("touchstarted", function (event, pos)
-	{
-		$("#graph-navbar").hide();
-		$("#graph-tooltip").hide();
-		$("#graph-buttons").stop().fadeOut();
-		$("#stats").stop().fadeOut();
-	});
+    // Graph buttons and navigation efects for mouse and touch
+    $("#graph").mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-tooltip").show();
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    $("#graph_bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    $("#graph").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-tooltip").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
 
-	$("#graph").bind("touchended", function (event, ranges)
-	{
-		$("#graph-buttons").stop().fadeIn();
-		$("#stats").stop().fadeIn();
-		view.start = ranges.xaxis.from; 
-		view.end = ranges.xaxis.to;
-		timeWindowChanged = 1; vis_feed_data();
-	});
+    $("#graph").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        view.start = ranges.xaxis.from; 
+        view.end = ranges.xaxis.to;
+        timeWindowChanged = 1; vis_feed_data();
+    });
 }

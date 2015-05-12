@@ -1,14 +1,15 @@
 <?php
 
-    /*
-      0 - realtime or daily
-      1 - realtime
-      2 - daily
-      3 - histogram
+    /* Types:
+      0 - feed realtime or daily
+      1 - feed realtime
+      2 - feed daily
+      3 - feed histogram
       4 - boolean (not used uncomment line 122)
       5 - text
       6 - float value
       7 - int value
+      8 - multigraph id
     */
 
     $visualisations = array(
@@ -105,7 +106,7 @@
         )),
         
         'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(
-            array('mid',_("mid"),7)
+            array('mid',_("mid"),8)
         )),
         
         'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(

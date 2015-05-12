@@ -39,6 +39,8 @@
     </div>
     <div class="modal-body">
         <p><?php echo _('Deleting a feed is permanent.'); ?>
+           <br>
+	   <?php echo _('If you have input processlist processors that use this feed, after deleting it, review the processlist or they will be in error.'); ?>
            <br><br>
            <?php echo _('Are you sure you want to delete?'); ?>
         </p>

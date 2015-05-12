@@ -25,7 +25,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
 <?php if (!$embed) { ?>
-<h2><?php echo _("Multigraph:"); ?> <div id="multigraph_name"></div></h2>
+<h2><div id="multigraph_name"></div></h2>
 <?php } ?>
 
 
@@ -44,20 +44,13 @@
     $.ajax({ url: path+"vis/multigraph/get.json", data: "&id="+mid, dataType: 'json', async: true,
         success: function(data)
         {
-                multigraph_feedlist = data;
+                if (data['feedlist'] != undefined) multigraph_feedlist = data['feedlist'];
+                $("#multigraph_name").replaceWith('<?php echo _("Multigraph:"); ?>' + ' ' + data['name']);
                 multigraph_init("#multigraph");
                 vis_feed_data();
         }
     });
     
-    $.ajax({ url: path+"vis/multigraph/getname.json", data: "id="+mid, dataType: 'json', async: true, 
-      success: function(data)
-      {
-        $("#multigraph_name").replaceWith(data);
-      } 
-    });
-
-
     var previousPoint = null;
     $("#multigraph").bind("plothover", function (event, pos, item)
     {

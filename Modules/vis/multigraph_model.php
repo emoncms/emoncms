@@ -51,10 +51,12 @@ class Multigraph
     {
         $id = intval($id);
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT feedlist FROM multigraph WHERE `id`='$id'");
+        $result = $this->mysqli->query("SELECT name, feedlist FROM multigraph WHERE `id`='$id'");
         $result = $result->fetch_array();
-        $feedlist = json_decode($result['feedlist']);
-        return $feedlist;
+        if (!$result) return array('success'=>false, 'message'=>'Multigraph does not exist');
+        $row['name'] = $result['name'];
+        $row['feedlist'] = json_decode($result['feedlist']);
+        return $row;
     }
 
     public function getlist($userid)

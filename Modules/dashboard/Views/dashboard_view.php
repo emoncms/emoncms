@@ -34,6 +34,8 @@ http://openenergymonitor.org
     var apikey = "<?php echo get('apikey'); ?>";
     var userid = <?php echo $session['userid']; ?>;
 
+    $('body').css("background-color","#<?php echo $dashboard['backgroundcolor']; ?>");
+
     for (z in widget)
     {
         var fname = widget[z]+"_widgetlist";
@@ -48,4 +50,7 @@ http://openenergymonitor.org
     setInterval(function() { update(); }, 5000);
     setInterval(function() { fast_update(); }, 100);
 
+    $(window).resize(function(){
+        redraw = 1;
+    });
 </script>

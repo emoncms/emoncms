@@ -51,17 +51,21 @@ global $path, $session, $useckeditor;
 
     <div align="right" style="padding:4px;">
     <?php if ($type=="view" && isset($id)) { ?>
-        <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" title="<?php echo _("Draw Editor"); ?>" ><i class="icon-edit"></i></a>
+        <a href="<?php echo $path; ?>dashboard/edit?id=<?php echo $id; ?>" ><i class="icon-edit" title="<?php echo _("Draw Editor"); ?>"></i></a>
     <?php } ?>
 
     <?php if ($type=="edit" && isset($id)) { ?>
-        <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>" title="<?php echo _("View mode"); ?>"><i class="icon-eye-open"></i></a>
-        <a href="#myModal" role="button" data-toggle="modal" title="<?php echo _("Configure dashboard"); ?>"><i class="icon-wrench"></i></a>
+        <a href="#dashConfigModal" role="button" data-toggle="modal"><i class="icon-wrench" title="<?php echo _("Configure dashboard"); ?>"></i></a>
+        <a href="<?php echo $path; ?>dashboard/view?id=<?php echo $id; ?>"><i class="icon-eye-open" title="<?php echo _("View mode"); ?>"></i></a>
     <?php } ?>
 
-    <a href="#" onclick="$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});" title="<?php echo _("New"); ?>"><i class="icon-plus-sign"></i></a>
-
-    <a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _('List view'); ?>"></i></a>
+	<?php if ($type=="list") { ?>
+		<a onclick="$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});"><i class="icon-plus-sign" title="<?php echo _("New"); ?>" style="cursor:pointer"></i></a>
+    <?php } ?>
+	
+	<?php if ($type!="list") { ?>
+		<a href="<?php echo $path; ?>dashboard/list"><i class="icon-th-list" title="<?php echo _('List view'); ?>"></i></a>
+    <?php } ?>
     </div>
 
 <?php } 
