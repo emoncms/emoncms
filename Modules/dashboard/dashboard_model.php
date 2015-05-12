@@ -116,6 +116,8 @@ class Dashboard
         if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
         if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
 
+        if (isset($fields->backgroundcolor)) $array[] = "`backgroundcolor` = '".preg_replace('/[^[0-9A-F]]/','', strtolower($fields->backgroundcolor))."'";
+
         if (isset($fields->main))
         {
             $main = (bool)$fields->main;

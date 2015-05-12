@@ -186,7 +186,7 @@ $(function() {
             //yaxis: { min: 0 },
             grid: {hoverable: true, clickable: true},
             selection: { mode: "x" },
-			touch: { pan: "x", scale: "x" }
+            touch: { pan: "x", scale: "x" }
         }
 
         $.plot(placeholder, [{data:data,color: plotColour}], options);
@@ -215,7 +215,7 @@ $(function() {
         $("#graph-buttons").stop().fadeIn();
         $("#stats").stop().fadeIn();
         view.start = ranges.xaxis.from; 
-		view.end = ranges.xaxis.to;
+        view.end = ranges.xaxis.to;
         draw();
     });
     

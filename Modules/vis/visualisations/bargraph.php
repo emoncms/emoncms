@@ -130,10 +130,10 @@
         $("#zoomin").click(function () {view.zoomin(); draw();});
         $('#right').click(function () {view.panright(); draw();});
         $('#left').click(function () {view.panleft(); draw();});
-		
+        
         $('.graph-time').click(function () {view.timewindow($(this).attr("time")); draw();});
         
-		$('.graph-interval').click(function () {
+        $('.graph-interval').click(function () {
             intervalcode=$(this).attr("interval");
 
             if (intervalcode==0 || intervalcode=='y' || intervalcode=='m' || intervalcode=='d') 
@@ -327,7 +327,7 @@
                 //yaxis: { min: 0 },
                 grid: {hoverable: true, clickable: true},
                 selection: { mode: "x" },
-				touch: { pan: "x", scale: "x" }
+                touch: { pan: "x", scale: "x" }
             }
 
             $.plot(placeholder, [{data:data,color: plotColour}], options);
@@ -336,31 +336,31 @@
 
         // Graph buttons and navigation efects for mouse and touch
         placeholder.mouseenter(function(){
-			$("#graph-navbar").show();
+            $("#graph-navbar").show();
             $("#graph-buttons").stop().fadeIn();
             $("#stats").stop().fadeIn();
         });
-		placeholder_bound.mouseleave(function(){
+        placeholder_bound.mouseleave(function(){
             $("#graph-buttons").stop().fadeOut();
             $("#stats").stop().fadeOut();
         });
-		placeholder.bind("touchstarted", function (event, pos)
-		{
-			$("#graph-navbar").hide();
-		    $("#graph-buttons").stop().fadeOut();
+        placeholder.bind("touchstarted", function (event, pos)
+        {
+            $("#graph-navbar").hide();
+            $("#graph-buttons").stop().fadeOut();
             $("#stats").stop().fadeOut();
-		});
+        });
         
-		placeholder.bind("touchended", function (event, ranges)
-		{
+        placeholder.bind("touchended", function (event, ranges)
+        {
             $("#graph-buttons").stop().fadeIn();
             $("#stats").stop().fadeIn();
             view.start = ranges.xaxis.from;
             view.end = ranges.xaxis.to;
             draw();
-		});
-		
-		
+        });
+        
+        
         $(window).resize(function(){
             var width = placeholder_bound.width();
             var height = width * 0.5;

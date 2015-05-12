@@ -10,17 +10,6 @@
     http://openenergymonitor.org
 */
 
-// dashboard/new						New dashboard
-// dashboard/delete 				POST: id=			Delete dashboard
-// dashboard/clone					POST: id=			Clone dashboard
-// dashboard/thumb 					List dashboards
-// dashboard/list         	List mode
-// dashboard/view?id=1			View and run dashboard (id)
-// dashboard/edit?id=1			Edit dashboard (id) with the draw editor
-// dashboard/ckeditor?id=1	Edit dashboard (id) with the CKEditor
-// dashboard/set POST				Set dashboard
-// dashboard/setconf POST 	Set dashboard configuration
-
 defined('EMONCMS_EXEC') or die('Restricted access');
 
 function dashboard_controller()
@@ -41,10 +30,10 @@ function dashboard_controller()
             $result = view("Modules/dashboard/Views/dashboard_list.php",array());
 
             $menu = $dashboard->build_menu($session['userid'],"view");
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('menu'=>$menu, 'type'=>"view"));
+            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('menu'=>$menu, 'type'=>"list"));
         }
 
-        if ($route->action == "view" && $session['read'])
+        else if ($route->action == "view" && $session['read'])
         {
             if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
             elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
@@ -60,7 +49,7 @@ function dashboard_controller()
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"view"));
         }
 
-        if ($route->action == "edit" && $session['write'])
+        else if ($route->action == "edit" && $session['write'])
         {
             if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
             elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
@@ -72,20 +61,16 @@ function dashboard_controller()
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"edit"));
         }
     }
-
-    if ($route->format == 'json')
+    else if ($route->format == 'json')
     {
-        if ($route->action=='list' && $session['write']) $result = $dashboard->get_list($session['userid'], false, false);
-
-        if ($route->action=='set' && $session['write']) $result = $dashboard->set($session['userid'],get('id'),get('fields'));
-        if ($route->action=='setcontent' && $session['write']) $result = $dashboard->set_content($session['userid'],post('id'),post('content'),post('height'));
-        if ($route->action=='delete' && $session['write']) $result = $dashboard->delete(get('id'));
-
-        if ($route->action=='create' && $session['write']) $result = $dashboard->create($session['userid']);
-        if ($route->action=='clone' && $session['write']) $result = $dashboard->dashclone($session['userid'], get('id'));
+        if ($session['write']) {
+            if ($route->action=='list') $result = $dashboard->get_list($session['userid'], false, false);
+            else if ($route->action=='set') $result = $dashboard->set($session['userid'],get('id'),get('fields'));
+            else if ($route->action=='setcontent') $result = $dashboard->set_content($session['userid'],post('id'),post('content'),post('height'));
+            else if ($route->action=='create') $result = $dashboard->create($session['userid']);
+            else if ($route->action=='delete') $result = $dashboard->delete(get('id'));
+            else if ($route->action=='clone') $result = $dashboard->dashclone($session['userid'], get('id'));
+        }
     }
-
-    // $result = $dashboard->get_main($session['userid'])
-
     return array('content'=>$result, 'submenu'=>$submenu);
 }

@@ -91,7 +91,7 @@
             xaxis: { mode: "time", timezone: "browser", min: start, max: end, minTickSize: [1, "day"], tickLength: 1 },
             selection: { mode: "x" },
             legend: { position: "nw"},
-			touch: { pan: "x", scale: "x" ,delayTouchEnded: 0}
+            touch: { pan: "x", scale: "x" ,delayTouchEnded: 0}
         });
     }
 
@@ -123,7 +123,7 @@
     $('#left').click(function () {inst_panleft(); vis_feed_data();});
     $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
     //-----------------------------------------------------------------------------------------------
-	
+    
     // Graph buttons and navigation efects for mouse and touch
     $("#graph").mouseenter(function(){
         $("#graph-navbar").show();
