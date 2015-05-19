@@ -332,7 +332,9 @@ class Feed
         $engine = $this->get_engine($feedid);
         
         // Call to engine lastvalue method
-        return $this->engine[$engine]->lastvalue($feedid);
+        if (isset($this->engine[$engine])) {
+            return $this->engine[$engine]->lastvalue($feedid);
+        }
     }
 
     /*
