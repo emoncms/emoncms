@@ -33,26 +33,34 @@ function dashboard_controller()
             $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('menu'=>$menu, 'type'=>"list"));
         }
 
-        else if ($route->action == "view" && $session['read'])
+        else if ($route->action == "view")
         {
-            if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
-            elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
-            else $dash = $dashboard->get_main($session['userid']);
-
-            if ($dash) {
-              $result = view("Modules/dashboard/Views/dashboard_view.php",array('dashboard'=>$dash));
-            } else {
-              $result = view("Modules/dashboard/Views/dashboard_list.php",array());
+            $dashid =(int) get('id');
+            if ($dashid) {
+                $dash = $dashboard->get($dashid);
             }
-
-            $menu = $dashboard->build_menu($session['userid'],"view");
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"view"));
+            else if ($session['read']) {
+                if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction);
+                else $dash = $dashboard->get_main($session['userid']);
+            }
+            if (isset($dash)){
+                if ($dash['public'] || ($session['read'] && $session['userid']>0 && $dash['userid']==$session['userid'] && !isset($session['profile']) )) {
+                    if (!$session['userid']) { $session['userid'] =  $dash['userid']; } // Required for passing userid to feed api
+                    $result = view("Modules/dashboard/Views/dashboard_view.php",array('dashboard'=>$dash));
+                } else if ($session['read'] && !isset($session['profile'])) {
+                    $result = view("Modules/dashboard/Views/dashboard_list.php",array());
+                }
+            }
+            if ($session['read']) {
+                $menu = $dashboard->build_menu($session['userid'],"view");
+                $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('id'=>$dash['id'], 'menu'=>$menu, 'type'=>"view"));
+            }
         }
 
         else if ($route->action == "edit" && $session['write'])
         {
-            if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction,false,false);
-            elseif (isset($_GET['id'])) $dash = $dashboard->get($session['userid'],get('id'),false,false);
+            if ($route->subaction) $dash = $dashboard->get_from_alias($session['userid'],$route->subaction);
+            elseif (isset($_GET['id'])) $dash = $dashboard->get(get('id'));
 
             $result = view("Modules/dashboard/Views/dashboard_edit_view.php",array('dashboard'=>$dash));
             $result .= view("Modules/dashboard/Views/dashboard_config.php", array('dashboard'=>$dash));

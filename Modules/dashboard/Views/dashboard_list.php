@@ -44,7 +44,7 @@
 
     var path = "<?php echo $path; ?>";
 
-    // Extemd table library field types
+    // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
     table.element = "#table";
@@ -52,7 +52,7 @@
     table.fields = {
         'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
         'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
-        'alias':{'title':"<?php echo _('Menu name'); ?>", 'type':"text"},
+        'alias':{'title':"<?php echo _('Alias'); ?>", 'type':"text"},
          // 'description':{'title':"<?php echo _('Description'); ?>", 'type':"text"},
         'main':{'title':"<?php echo _('Main'); ?>", 'type':"icon", 'trueicon':"icon-star", 'falseicon':"icon-star-empty"},
         'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
@@ -107,9 +107,9 @@
     });
 
     
-//------------------------------------------------------------------------------------------------------------------------------------
-// Expression helper UI js
-//------------------------------------------------------------------------------------------------------------------------------------
+//----------
+//  UI js
+//----------
     $("#table").on('click', '.icon-random', function() {
         var i = table.data[$(this).attr('row')];
         var result = dashboard.clone(i['id']);

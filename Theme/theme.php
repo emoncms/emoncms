@@ -9,19 +9,15 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-
   global $path,$emoncms_version;
 ?>
-    
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Emoncms</title>
 
-        <!-- Thanks to Baptiste Gaultier for the emoncms dial icon http://bit.ly/zXgScz -->
         <link rel="shortcut icon" href="<?php echo $path; ?>Theme/favicon.png" />
-        <!-- APPLE TWEAKS - thanks to Paul Dreed -->
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">

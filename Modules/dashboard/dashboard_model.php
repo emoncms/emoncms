@@ -148,26 +148,19 @@ class Dashboard
         return $result->fetch_array();
     }
 
-    public function get($userid, $id, $public, $published)
+    public function get($id)
     {
-        $userid = (int) $userid;
         $id = (int) $id;
-        $qB = ""; if ($public==true) $qB = " and public=1";
-        $qC = ""; if ($published==true) $qC = " and published=1";
-
-        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and id='$id'".$qB.$qC);
+        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE id='$id'");
         return $result->fetch_array();
     }
 
     // Returns the $id dashboard from $userid
-    public function get_from_alias($userid, $alias, $public, $published)
+    public function get_from_alias($userid, $alias)
     {
         $userid = (int) $userid;
         $alias = preg_replace('/[^\w\s-]/','',$alias);
-        $qB = ""; if ($public==true) $qB = " and public=1";
-        $qC = ""; if ($published==true) $qC = " and published=1";
-
-        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'".$qB.$qC);
+        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'");
         return $result->fetch_array();
     }
 
