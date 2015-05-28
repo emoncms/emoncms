@@ -164,10 +164,10 @@ class Dashboard
         return $result->fetch_array();
     }
 
-    public function build_menu($userid,$location)
+    public function build_menu_array($location)
     {
-        global $path, $session;
-        $userid = (int) $userid;
+        global $session;
+        $userid = (int) $session['userid'];
 
         $public = 0; $published = 0;
 
@@ -180,7 +180,7 @@ class Dashboard
         }
 
         $dashboards = $this->get_list($userid, $public, $published);
-        $topmenu="";
+        $menu = array();
         foreach ($dashboards as $dashboard)
         {
             // Check show description
@@ -197,10 +197,10 @@ class Dashboard
                 $aliasurl = '&id='.$dashboard['id'];
             }
 
-                // Build the menu item
-            $topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';
+            // Build the menu item
+            $menu[] = array('name' => $dashboard['name'], 'path' => $dashpath.$aliasurl);
         }
-        return $topmenu;
+        return $menu;
     }
 
 }
