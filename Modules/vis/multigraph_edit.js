@@ -163,7 +163,7 @@ function load_events()
 
   $(baseElement).on("change","#multigraph-selector",function(event){
     multigraph_id = $(this).val();
-    multigraph_feedlist = multigraph.get(multigraph_id);
+    multigraph_feedlist = multigraph.get(multigraph_id)['feedlist'];
     // Draw multigraph feedlist editor
     draw_multigraph_feedlist_editor();
     // Draw multigraph

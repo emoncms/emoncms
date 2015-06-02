@@ -1,91 +1,29 @@
 <?php
+/*
+  All Emoncms code is released under the GNU Affero General Public License.
+  See COPYRIGHT.txt and LICENSE.txt.
 
-function set_lang_by_user($lang)
-{
-    putenv("LC_ALL=$lang".'.UTF8');
-    setlocale(LC_ALL,$lang.'.UTF8');
+  ---------------------------------------------------------------------
+  Emoncms - open source energy visualisation
+  Part of the OpenEnergyMonitor project:
+  http://openenergymonitor.org
+*/
 
-}
-
-function lang_http_accept()
-{
-    $langs = array();
-
-    foreach (explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']) as $lang)
-    {
-        $pattern = '/^(?P<primarytag>[a-zA-Z]{2,8})'.
-        '(?:-(?P<subtag>[a-zA-Z]{2,8}))?(?:(?:;q=)'.
-        '(?P<quantifier>\d\.\d))?$/';
-
-        $splits = array();
-
-        if (preg_match($pattern, $lang, $splits)) {
-            $a = $splits["primarytag"];
-            if (isset($splits["subtag"]) && $splits["subtag"]<> "") $a = $a."_".$splits["subtag"];
-            $langs[]=$a;
-        } else {
-            // No match
-        }
-    }
-    return $langs;
-}
-
-function set_lang($language)
-{
-    // set the first browser selected language
-    // TODO: iterate to find a suitable available language
-
-    // Chrome returns different HTTP_ACCEPT_LANGUAGE code than firefox!!!
-    // Firefox      Chrome
-    // -------------------
-    //  en_EN         en
-    //  es_ES         es
-    // ... so translation system does not work in Chrome!!!
-    // lets try to fix quickly
-    if (isset($language[0]))
-    {
-        $lang=$language[0];
-
-        switch($lang) {
-            case 'cy': $lang='cy_GB'; break;
-            case 'da': $lang='da_DK'; break;
-            case 'en': $lang='en_EN'; break;
-            case 'es': $lang='es_ES'; break;
-            case 'fr': $lang='fr_FR'; break;
-            case 'it': $lang='it_IT'; break;
-            case 'nl': $lang='nl_NL'; break;
-            //case 'nl': $lang='nl_BE'; break;
-        }
-
-        set_lang_by_user($lang);
-    }
-}
-
-    // get browser language. 
-    //to do: get user config
-    set_lang(lang_http_accept());
-
-    
-    // Loaded like JS File, so we need to specify domain for getText translation
-    $domain = "messages";
-    bindtextdomain($domain, "locale");
-    bind_textdomain_codeset($domain, 'UTF-8');
-    textdomain($domain);
-?>
+// no direct access
+defined('EMONCMS_EXEC') or die('Restricted access');
 
 // Create a Javascript associative array who contain all sentences from module
+?>
 var LANG_JS = new Array();
-
 function _Tr(key)
 {
-    // will return the default value if LANG_JS[key] is not defined.
+<?php // will return the default value if LANG_JS[key] is not defined. ?>
     return LANG_JS[key] || key;
 }
-
-
+<?php
 //Please USE the "builder" every javascript modify at: /script/dashboard_langjs_builder.php
 // paste source code below
-
+?>
 //START
 // designer.js
 LANG_JS["Changed, press to save"] = '<?php echo addslashes(_("Changed, press to save")); ?>';

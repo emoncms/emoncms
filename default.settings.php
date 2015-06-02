@@ -75,6 +75,9 @@
     $default_action_auth = "view";
 
     // Public profile functionality
+    // Allows http://yourdomain.com/[username]/[dash alias] or ?id=[dash id]
+    // Alternative to http://yourdomain.com/dashboard/view?id=[dash id]
+    // Add optional '&embed=1' in the end to remove header and footer
     $public_profile_enabled = TRUE;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";

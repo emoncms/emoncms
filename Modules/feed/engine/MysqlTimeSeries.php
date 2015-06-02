@@ -26,11 +26,7 @@ class MysqlTimeSeries
     {
         $feedname = "feed_".trim($feedid)."";
 
-        $result = $this->mysqli->query(
-        "CREATE TABLE $feedname (
-    time INT UNSIGNED, data float,
-        INDEX ( `time` )) ENGINE=MYISAM");
-
+        $result = $this->mysqli->query("CREATE TABLE $feedname (time INT UNSIGNED, data float, INDEX ( `time` )) ENGINE=MYISAM");
         return true;
     }
 
@@ -57,11 +53,10 @@ class MysqlTimeSeries
 
     public function get_data($feedid,$start,$end,$outinterval)
     {
-        //echo $feedid;
         $outinterval = intval($outinterval);
         $feedid = intval($feedid);
-        $start = floatval($start/1000);
-        $end = floatval($end/1000);
+        $start = round($start/1000);
+        $end = round($end/1000);
                 
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);
@@ -250,8 +245,8 @@ class MysqlTimeSeries
         //echo $feedid;
         $outinterval = intval($outinterval);
         $feedid = intval($feedid);
-        $start = floatval($start/1000);
-        $end = floatval($end/1000);
+        $start = round($start/1000);
+        $end = round($end/1000);
         
         if ($outinterval<1) $outinterval = 1;
         $dp = ceil(($end - $start) / $outinterval);

@@ -10,80 +10,66 @@
         http://openenergymonitor.org
     */
 
-    global $path, $session, $menu, $menu;
+    global $path, $session, $menu;
     if (!isset($session['profile'])) $session['profile'] = 0;
 
-    $menu_left = $menu['left'];
-    $menu_right = $menu['right'];
-    $menu_dropdown = $menu['dropdown'];
-
-    if ($session['write']) $menu_right[] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
-    if (!$session['write']) $menu_right[] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
-?>
-
-<ul class="nav">
-    <?php
-
-    foreach ($menu_left as $item)
+    if ($session['write']) $menu['right'][] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
+    if (!$session['write']) $menu['right'][] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
+    
+    function drawItem($item)
     {
+        global $path,$session;
+        $out="";
         if (isset($item['session'])) {
-            if (isset($session[$item['session']]) && $session[$item['session']]==1) {
-                if (!isset($item['dropdown'])) {
-                    echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
-                } else {
-                    ?>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                            <?php echo $item['name']; ?> <b class="caret"></b>
-                        </a>
-                        <ul class="dropdown-menu">
-                        <?php foreach ($item['dropdown'] as $dropdownitem) { ?>
-                            <li>
-                                <a href="<?php echo $path.$dropdownitem[1]; ?>">
-                                <?php echo $dropdownitem[0]; ?>
-                                </a>
-                            </li>
-                        <?php } ?>
-                        </ul>
-                    </li>
-                    
-                    <?php
+            if ((isset($session[$item['session']]) && ($session[$item['session']]==1)) || $item['session'] == 'all') {
+                $i = 0;
+                if (isset($item['dropdown']) && count($item['dropdown']) > 0) {
+                    $outdrop="";
+                    foreach ($item['dropdown'] as $dropdownitem) {
+                        if (!isset($dropdownitem['session']) || (isset($dropdownitem['session']) && $session[$dropdownitem['session']]==1)) {
+                            $i++;
+                            // TODO: Remove dependency of index position on APPs module
+                            $outdrop .= '<li><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? $dropdownitem['name']:$dropdownitem['0']) . '</a></li>';
+                        }
+                    }
+                }
+                if ($i > 0) {
+                    $out .= '<li class="dropdown">';
+                    $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">'. $item['name'] . '<b class="caret"></b></a>';
+                    $out .= '<ul class="dropdown-menu">';
+                    $out .= $outdrop;
+                    $out .= '</ul></li>';
+                }   
+                else if (isset($item['path']) && isset($item['name'])) {
+                    $out .= "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
                 }
             }
         } else {
-            echo "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+            $out .=  "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
         }
+        return $out;
+    }
+?>
+
+<ul class="nav">
+<?php
+    foreach ($menu['left'] as $item) {
+        echo drawItem($item);
     }
 
-    ?>
-
-    <?php if (count($menu_dropdown) && $session['read']) { ?>
-    <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Extras <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-            <?php foreach ($menu_dropdown as $item) { ?>
-                <?php if (isset($session[$item['session']]) && $session[$item['session']]==1) { ?>
-                    <li><a href="<?php echo $path.$item['path']; ?>"><?php echo $item['name']; ?></a></li>
-                <?php } ?>
-            <?php } ?>
-        </ul>
-    </li>
-    <?php } ?>
+    if (count($menu['dropdown']) && $session['read']) { 
+        $extra = array();
+        $extra['name'] = 'Extras';
+        $extra['session'] = 'read';
+        $extra['dropdown'] = $menu['dropdown'];
+        echo drawItem($extra);
+    }
+?>
 </ul>
-
 <ul class="nav pull-right">
-    <?php
-
-    foreach ($menu_right as $item)
-    {
-        if (isset($item['session'])) {
-            if (isset($session[$item['session']]) && $session[$item['session']]==1) {
-                echo "<li><a href=".$path.$item['path']." >".$item['name']."</a></li>";
-            }
-        } else {
-            echo "<li><a href=".$path.$item['path']." >".$item['name']."</a></li>";
-        }
+<?php
+    foreach ($menu['right'] as $item) {
+        echo drawItem($item);
     }
-
-    ?>
+?>
 </ul>

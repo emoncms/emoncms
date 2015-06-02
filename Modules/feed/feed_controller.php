@@ -34,10 +34,11 @@ function feed_controller()
         // Public actions available on public feeds.
         if ($route->action == "list")
         {
-            if (!isset($_GET['userid']) && $session['read']) $result = $feed->get_user_feeds($session['userid']);
-            if (isset($_GET['userid']) && $session['read'] && $_GET['userid'] == $session['userid']) $result = $feed->get_user_feeds($session['userid']);
-            if (isset($_GET['userid']) && $session['read'] && $_GET['userid'] != $session['userid']) $result = $feed->get_user_public_feeds(get('userid'));
-            if (isset($_GET['userid']) && !$session['read']) $result = $feed->get_user_public_feeds(get('userid'));
+            if ($session['read']) {
+                if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) $result = $feed->get_user_feeds($session['userid']);
+                else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) $result = $feed->get_user_public_feeds(get('userid'));
+            }
+            else if (isset($_GET['userid'])) $result = $feed->get_user_public_feeds(get('userid'));
 
         } elseif ($route->action == "getid" && $session['read']) {
             $result = $feed->get_id($session['userid'],get('name'));
