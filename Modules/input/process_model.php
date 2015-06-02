@@ -542,8 +542,11 @@ class Process
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
+        
         $last_val = $last['value'];
         $last_time = strtotime($last['time']);
+        if ($last['time']=="") $last_time = 0;
+        
         $feedtime = $this->getstartday($time_now);
         $time_check = $this->getstartday($last_time);
 
@@ -560,8 +563,11 @@ class Process
     {
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
+        
         $last_val = $last['value'];
         $last_time = strtotime($last['time']);
+        if ($last['time']=="") $last_time = 0;
+        
         $feedtime = $this->getstartday($time_now);
         $time_check = $this->getstartday($last_time);
 
@@ -667,6 +673,7 @@ class Process
         $now = DateTime::createFromFormat("U", $time_now);
         $now->setTimezone(new DateTimeZone($this->timezone));
         $now->setTime(0,0);    // Today at 00:00
+
         return $now->format("U");
     }
 
