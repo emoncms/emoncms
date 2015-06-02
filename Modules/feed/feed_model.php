@@ -199,7 +199,7 @@ class Feed
             $row = $this->redis->hGetAll("feed:$id");
 
             $lastvalue = $this->get_timevalue($id);
-            $row['time'] = strtotime($lastvalue['time']);
+            $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
             $feeds[] = $row;
         }
@@ -214,7 +214,6 @@ class Feed
         $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
-            $row['time'] = strtotime($row['time']);
             $feeds[] = $row;
         }
         return $feeds;
@@ -255,7 +254,6 @@ class Feed
             // Get from mysql db
             $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
             $row = (array) $result->fetch_object();
-            $row['time'] = strtotime($row['time']);
         }
 
         return $row;
@@ -307,15 +305,19 @@ class Feed
             $row = $result->fetch_array();
             $lastvalue = array('time'=>$row['time'], 'value'=>$row['value']);
         }
+        
+        // check for date string format and convert to unix time.
+        if (!is_numeric($lastvalue['time'])) {
+            $lastvalue['time'] = strtotime($lastvalue['time']);
+            if ($lastvalue['time']=="") $lastvalue['time'] = 0;
+        }
 
         return $lastvalue;
     }
 
     public function get_timevalue_seconds($id)
     {
-        $lastvalue = $this->get_timevalue($id);
-        $lastvalue['time'] = strtotime($lastvalue['time']);
-        return $lastvalue;
+        return $this->get_timevalue($id);
     }
 
     public function get_value($id)
@@ -564,11 +566,10 @@ class Feed
 
     public function set_timevalue($feedid, $value, $time)
     {
-        $updatetime = date("Y-n-j H:i:s", $time);
         if ($this->redis) {
-            $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
+            $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $time));
         } else {
-            $this->mysqli->query("UPDATE feeds SET `time` = '$updatetime', `value` = '$value' WHERE `id`= '$feedid'");
+            $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = '$value' WHERE `id`= '$feedid'");
         }
     }
     
