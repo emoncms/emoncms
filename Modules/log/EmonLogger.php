@@ -30,7 +30,6 @@ class EmonLogger
             return;
         }
         
-        
         if (LOG4PHP_INSTALLED){
             Logger::configure( $log4php_configPath );
             $clientFileNameWithoutPath = basename($clientFileName);

@@ -169,7 +169,7 @@ value (8000, 16000 should be fine).
 
 #### Enable Multi lingual support using gettext
 
-Follow the guide here step 4 onwards: [http://emoncms.org/site/docs/gettext](http://emoncms.org/site/docs/gettext)
+Follow the guide here step 4 onwards: [https://github.com/emoncms/emoncms/blob/master/docs/gettext.md](https://github.com/emoncms/emoncms/blob/master/docs/gettext.md#4-install-gettext)
 
 #### Configure PHP Timezone
 

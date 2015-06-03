@@ -163,9 +163,9 @@ class Feed
     User Feed lists
 
     Returns a specified user's feedlist in different forms:
-    get_user_feeds: 	all the feeds table data
-    get_user_feed_ids: 	only the id's
-    get_user_feed_names: 	id's and names
+    get_user_feeds:      all the feeds table data
+    get_user_feed_ids:   only the id's
+    get_user_feed_names: id's and names
 
     */
 
@@ -190,7 +190,7 @@ class Feed
         return $publicfeeds;
     }
     
-    public function redis_get_user_feeds($userid)
+    private function redis_get_user_feeds($userid)
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
@@ -202,7 +202,7 @@ class Feed
             $row = $this->redis->hGetAll("feed:$id");
 
             $lastvalue = $this->get_timevalue($id);
-            $row['time'] = strtotime($lastvalue['time']);
+            $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
             $feeds[] = $row;
         }
@@ -210,14 +210,14 @@ class Feed
         return $feeds;
     }
     
-    public function mysql_get_user_feeds($userid)
+    private function mysql_get_user_feeds($userid)
     {
         $userid = (int) $userid;
         $feeds = array();
         $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
-            $row['time'] = strtotime($row['time']);
+            $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
             $feeds[] = $row;
         }
         return $feeds;
@@ -258,7 +258,7 @@ class Feed
             // Get from mysql db
             $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
             $row = (array) $result->fetch_object();
-            $row['time'] = strtotime($row['time']);
+            $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
         }
 
         return $row;
@@ -278,6 +278,7 @@ class Feed
             } else {
                 $result = $this->mysqli->query("SELECT `$field` FROM feeds WHERE `id` = '$id'");
                 $row = $result->fetch_array();
+                if ($field=='time') $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
                 $val = $row[0];
             }
             
@@ -308,6 +309,7 @@ class Feed
         {
             $result = $this->mysqli->query("SELECT time,value FROM feeds WHERE `id` = '$id'");
             $row = $result->fetch_array();
+	    $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
             $lastvalue = array('time'=>$row['time'], 'value'=>$row['value']);
         }
 
@@ -316,9 +318,7 @@ class Feed
 
     public function get_timevalue_seconds($id)
     {
-        $lastvalue = $this->get_timevalue($id);
-        $lastvalue['time'] = strtotime($lastvalue['time']);
-        return $lastvalue;
+        return $this->get_timevalue($id);
     }
 
     public function get_value($id)
@@ -422,7 +422,7 @@ class Feed
         $engine = $this->get_engine($feedid);
         
         // Call to engine post method
-	// TODO CHAVEIRO: This ifs does not look good
+        // TODO CHAVEIRO: This ifs does not look good
         if ($engine==5 && $padding_mode=="join") $this->engine[$engine]->padding_mode = "join";
         $this->engine[$engine]->post($feedid,$feedtime,$value);
         if ($engine==5 && $padding_mode=="last") $this->engine[$engine]->padding_mode = "nan";
@@ -580,11 +580,11 @@ class Feed
 
     public function set_timevalue($feedid, $value, $time)
     {
-        $updatetime = date("Y-n-j H:i:s", $time);
         if ($this->redis) {
-            $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $updatetime));
+            $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $time));
         } else {
-            $this->mysqli->query("UPDATE feeds SET `time` = '$updatetime', `value` = '$value' WHERE `id`= '$feedid'");
+            $time = date("Y-n-j H:i:s", $time); // feeds table time is datetime, convert it
+            $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = '$value' WHERE `id`= '$feedid'");
         }
     }
     
@@ -599,7 +599,7 @@ class Feed
         }
     }
 
-    public function load_to_redis($userid)
+    private function load_to_redis($userid)
     {
         $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_object())
@@ -618,7 +618,7 @@ class Feed
         }
     }
 
-    public function load_feed_to_redis($id)
+    private function load_feed_to_redis($id)
     {
         $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine FROM feeds WHERE `id` = '$id'");
         $row = $result->fetch_object();

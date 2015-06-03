@@ -102,8 +102,8 @@ class Process
         $list[24] = array(_("Allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED,"Limits");           
         $list[25] = array(_("Allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED,"Limits");           
         $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc");       
-        $list[27] = array(_("Max value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES));                        
-        $list[28] = array(_("Min value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES));  
+        $list[27] = array(_("Max daily value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));                        
+        $list[28] = array(_("Min daily value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));  
                               
         $list[29] = array(_(" + feed"),ProcessArg::FEEDID,"add_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.2014
         $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.
@@ -292,7 +292,6 @@ class Process
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
 
-        $last['time'] = strtotime($last['time']);
         if (!isset($last['value'])) $last['value'] = 0;
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
@@ -326,7 +325,6 @@ class Process
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
 
-        $last['time'] = strtotime($last['time']);
         if (!isset($last['value'])) $last['value'] = 0;
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
@@ -366,7 +364,7 @@ class Process
         if (!$redis) return $value; // return if redis is not available
         
         $currentkwhd = $this->feed->get_timevalue($feedid);
-        $last_time = strtotime($currentkwhd['time']);
+        $last_time = $currentkwhd['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
         //$last_slot = floor($last_time / 86400) * 86400;
@@ -402,7 +400,7 @@ class Process
     {
         // Get last value
         $last = $this->feed->get_timevalue($feedid);
-        $last_time = strtotime($last['time']);
+        $last_time = $last['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
         //$last_slot = floor($last_time / 86400) * 86400;
@@ -453,7 +451,7 @@ class Process
     public function kwhinc_to_kwhd($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
-        $last_time = strtotime($last['time']);
+        $last_time = $last['time'];
         
         //$current_slot = floor($time_now / 86400) * 86400;
         //$last_slot = floor($last_time / 86400) * 86400;
@@ -513,7 +511,7 @@ class Process
 
         // Get the last time
         $lastvalue = $this->feed->get_timevalue($feedid);
-        $last_time = strtotime($lastvalue['time']);
+        $last_time = $lastvalue['time'];
 
         // kWh calculation
         if ((time()-$last_time)<7200) {
@@ -558,7 +556,6 @@ class Process
         {
             $pulse_diff = 0;
             $last = $this->feed->get_timevalue($feedid);
-            $last['time'] = strtotime($last['time']);
             if ($last['time']) {
                 // Need to handle resets of the pulse value (and negative 2**15?)
                 if ($value >= $last['value']) {
@@ -598,7 +595,7 @@ class Process
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
         $last_val = $last['value'];
-        $last_time = strtotime($last['time']);
+        $last_time = $last['time'];
         $feedtime = $this->getstartday($time_now);
         $time_check = $this->getstartday($last_time);
 
@@ -616,7 +613,7 @@ class Process
         // Get last values
         $last = $this->feed->get_timevalue($feedid);
         $last_val = $last['value'];
-        $last_time = strtotime($last['time']);
+        $last_time = $last['time'];
         $feedtime = $this->getstartday($time_now);
         $time_check = $this->getstartday($last_time);
 
@@ -797,7 +794,7 @@ class Process
     // Get the start of the day
     private function getstartday($time_now)
     {
-        $now = DateTime::createFromFormat("U", $time_now);
+        $now = DateTime::createFromFormat("U", (int)$time_now);
         $now->setTimezone(new DateTimeZone($this->timezone));
         $now->setTime(0,0);    // Today at 00:00
         return $now->format("U");
