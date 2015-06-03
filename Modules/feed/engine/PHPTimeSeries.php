@@ -217,7 +217,6 @@ class PHPTimeSeries
             fseek($fh,$filesize-9);
             $d = fread($fh,9);
             $array = unpack("x/Itime/fvalue",$d);
-            $array['time'] = date("Y-n-j H:i:s", $array['time']);
             return $array;
         }
         else

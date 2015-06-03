@@ -33,7 +33,10 @@ var process_info = {
     '24':"Negative input values are zeroed for further processing by the next processor in the input processing list",
     
     '25':"Positive input values are zeroed for further processing by the next processor in the input processing list",
-    
+
+    '27':"Maximal daily value. Upserts on the selected daily feed the highest value reached each day",
+    '28':"Minimal daily value. Upserts on the selected daily feed the lowest value reached each day",
+
     '35':"Publish to the specified MQTT topic",
     
     '36':"A NULL value is passed back for further processing by the next processor in the input processing list.<br>Usefull for conditional process to work on.",

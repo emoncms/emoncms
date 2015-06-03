@@ -1,3 +1,9 @@
 <configuration xmlns="http://logging.apache.org/log4php/">
-
+<appender name="myAppender" class="LoggerAppenderFile">
+    <param name="file" value="/var/log/emoncms.log" />
+</appender>
+<root>
+    <level value="WARN" />
+    <appender_ref ref="myAppender" />
+</root>
 </configuration>
