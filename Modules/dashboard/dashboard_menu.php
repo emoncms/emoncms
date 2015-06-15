@@ -4,7 +4,7 @@
     $dashboard = new Dashboard($mysqli);
 
     $location = 'view';
-    $sess = (isset($session['write']) && $session['write']) ? 'write':(isset($session['read']) && $session['read']) ? 'read':''));
+    $sess = (isset($session['write']) && $session['write'] ? 'write':(isset($session['read']) && $session['read'] ? 'read':''));
     if (isset($session['profile']) && $session['profile']==1) {
         $dashpath = $session['username'];
         $sess= 'all';
