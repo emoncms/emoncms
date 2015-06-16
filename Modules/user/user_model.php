@@ -472,7 +472,7 @@ class User
         static $timezones = null;
 
         if ($timezones === null) {
-            $timezones = [];
+            $timezones = array();
             $now = new DateTime();
 
             foreach (DateTimeZone::listIdentifiers() as $timezone) {
