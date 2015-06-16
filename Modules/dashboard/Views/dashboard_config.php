@@ -13,19 +13,21 @@
 
 ?>
 
-<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div id="dashConfigModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="dashConfigModalLabel" aria-hidden="true">
 
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('Dashboard Configuration'); ?></h3>
+        <h3 id="dashConfigModalLabel"><?php echo _('Dashboard Configuration'); ?></h3>
     </div>
 
     <div class="modal-body">
 
         <label><?php echo _('Dashboard name: '); ?></label>
         <input type="text" name="name" value="<?php echo $dashboard['name']; ?>" />
-        <label><?php echo _('Menu name: (lowercase a-z only)'); ?></label>
+        <label><?php echo _('Menu name: '); ?></label>
         <input type="text" name="alias" value="<?php echo $dashboard['alias']; ?>" />
+        <label><?php echo _('Background color: '); ?></label>
+        <input type="color" name="backgroundcolor" value="#<?php echo $dashboard['backgroundcolor']; ?>" />
         <label><?php echo _('Description: '); ?></label>
         <textarea name="description"><?php echo $dashboard['description']; ?></textarea>
 
@@ -69,7 +71,8 @@
 
         fields['name'] = $("input[name=name]").val();
         fields['alias']  = $("input[name=alias]").val();
-        fields['description']  = $("input[name=description]").val();
+        fields['description']  = $("textarea[name=description]").val();
+        fields['backgroundcolor']  = $("input[name=backgroundcolor]").val().replace('#','');
 
         if ($("#chk_main").is(":checked")) fields['main'] = true; else fields['main'] = false;
             if ($("#chk_public").is(":checked")) fields['public'] = true; else fields['public'] = false;
@@ -83,7 +86,9 @@
             success : function(result) {console.log(result)}
         });
 
-        $('#myModal').modal('hide');
+        $('#dashConfigModal').modal('hide');
+        
+        $('#page-container').css("background-color","#"+fields['backgroundcolor']);
     });
 </script>
 

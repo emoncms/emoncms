@@ -10,8 +10,6 @@ class PHPTimeSeries
      * @api
     */
 
-    private $timestoreApi;
-
     private $dir = "/var/lib/phptimeseries/";
     private $log;
 

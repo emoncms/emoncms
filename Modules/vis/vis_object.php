@@ -1,14 +1,15 @@
 <?php
 
-    /*
-      0 - realtime or daily
-      1 - realtime
-      2 - daily
-      3 - histogram
+    /* Types:
+      0 - feed realtime or daily
+      1 - feed realtime
+      2 - feed daily
+      3 - feed histogram
       4 - boolean (not used uncomment line 122)
       5 - text
       6 - float value
       7 - int value
+      8 - multigraph id
     */
 
     $visualisations = array(
@@ -22,8 +23,8 @@
             array('feedid',_("feedid"),1),
             array('fill',_("fill"),7,0),
             array('colour',_("colour"),5,'EDC240'),
-            array('units',_("units"),5,'W'),
-            array('dp',_("dp"),7,'1'),
+            array('units',_("units"),5,''),
+            array('dp',_("dp"),7,'2'),
             array('scale',_("scale"),6,'1'))
         ),
         
@@ -99,14 +100,16 @@
             array('feedid',_("feedid"),2)
         )),
         
-        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(array('mid',_("mid"),7)) ),
-        
-        'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
-            array('powerx',_("powerx"),1),
-            array('powery',_("powery"),1)
+        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(
+            array('mid',_("mid"),8)
         )),
         
-        'graph'=> array('options'=>array(
-            array('feedid',1)
+        'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
+            array('feedA',_("Feed A"),1),
+            array('feedB',_("Feed B"),1)
+        )),
+        
+        'graph'=> array('label'=>_("Graph"), 'options'=>array(
+            array('feedid',_("feedid"),1)
         ))
     );

@@ -25,7 +25,7 @@ var assoc = [];
 var assoc_curve = [];
 var widgetcanvas = {};
 
-var dialrate = 0.02;
+var dialrate = 0.2;
 var browserVersion = 999;
 
 var Browser =
@@ -42,7 +42,7 @@ var Browser =
 function show_dashboard()
 {
   browserVersion = Browser.Version();
-  if (browserVersion < 9) dialrate = 0.2;
+  if (browserVersion < 9) dialrate = 0.4;
 
   for (z in widget)
   {
@@ -60,8 +60,10 @@ function update()
   var query = path + "feed/list.json?userid="+userid;
   $.ajax(
   {
+    type: "GET",
     url : query,
     dataType : 'json',
+    async: true,
     success : function(data)
     { 
 

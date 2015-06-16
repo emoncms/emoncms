@@ -15,13 +15,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 global $path;
 ?>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_edit.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_edit.js"></script>
 
 <h2><?php echo _("Visualisations"); ?></h2>
 
@@ -84,6 +86,8 @@ global $path;
     //var apikey = "<?php echo $apikey; ?>";
     var apikey = "";
 
+    vis_resize();
+    
     var out = '<select id="visselect" style="width:180px; margin:0px;">';
     for (z in widgets)
     {
@@ -99,7 +103,8 @@ global $path;
 
     draw_options(widgets['realtime']['options']);
 
-    // 1) ON CLICK OF VISUALISATION OPTION:
+    
+    // --- Actions
 
     $("#visselect").change(function() {
         // Custom multigraph visualisation items
@@ -128,7 +133,18 @@ global $path;
         var options = [];
         $(".options").each(function() {
             if ($(this).val()) {
-                options.push($(this).attr("id")+"="+$(this).val());
+                if ($(this).attr("id")=="colour")
+                {
+                    // Since colour values are generally prefixed with "#", and "#" isn't valid in URLs, we strip out the "#".
+                    // It will be replaced by the value-checking in the actual plot function, so this won't cause issues.
+                    var colour = $(this).val();
+                    colour = colour.replace("#","");
+                    options.push($(this).attr("id")+"="+colour);
+                }
+                else 
+                {
+                    options.push($(this).attr("id")+"="+$(this).val());
+                }
                 if ($(this).attr("otype")=='feed') publicfeed = $('option:selected', this).attr('public');
             }
         });
@@ -136,10 +152,13 @@ global $path;
         visurl += "?"+options.join("&");
         var width = $("#vis_bound").width();
         var height = width * 0.58;
+        if (vistype == "compare") height = height * 3;
+        $("#visiframe").width(width);
+        $("#visiframe").height(height);
         $("#visiframe").html('<iframe style="width:'+width+'px; height:'+height+'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
+        vis_resize();
 
         if (publicfeed == 1) $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>'); else $("#embedcode").val('<?php echo addslashes(_("Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public."));?>\n\n<?php echo _("To embed privately:");?>\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
-
     });
 
     $("#fullscreen").click(function(){
@@ -160,60 +179,79 @@ global $path;
             $(".options").each(function() {
                 if ($(this).val())
                 {
-                    options.push($(this).attr("id")+"="+$(this).val());
+                    if ($(this).attr("id")=="colour")
+                    {
+                        // Since colour values are generally prefixed with "#", and "#" isn't valid in URLs, we strip out the "#".
+                        // It will be replaced by the value-checking in the actual plot function, so this won't cause issues.
+                        var colour = $(this).val();
+                        colour = colour.replace("#","");
+                        options.push($(this).attr("id")+"="+colour);
+                    }
+                    else 
+                    {
+                        options.push($(this).attr("id")+"="+$(this).val());
+                    }
                 }
             });
         }
         if (options) visurl += "?"+options.join("&");
-        $(window.location).attr('href',visurl);
+        //$(window.location).attr('href',visurl);
+        window.open(visurl,'_blank');
     });
 
+    $(window).resize(function(){vis_resize();});
+
+
+    // --- Functions
     function draw_options(box_options)
     {
         // Build options table html
-        var options_html = "<table>";
+        var options_html = "";
         for (z in box_options)
         {
-            options_html += "<tr><td style='width:100px'><b>"+box_options[z][1]+":</b></td>";
 
+            options_html += "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+box_options[z][1]+"</span>";
+			
             var type = box_options[z][2];
 
             if (type == 0 || type == 1 || type == 2 || type == 3)
             {
-                options_html += "<td>"+select_feed(box_options[z][0], feedlist, type)+"</td>";
+                options_html += select_feed(box_options[z][0], feedlist, type);
             }
             else
             {
-                options_html += "<td><input style='width:120px' class='options' id='"+box_options[z][0]+"' type='text' value='"+box_options[z][3]+"' / ></td>";
+                if (box_options[z][0] == "colour") 
+                {
+                    options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
+                } else {
+                    options_html += "<input type='text' class='options' id='"+box_options[z][0]+"' value='"+box_options[z][3]+"'>";
+                }
             }
-            options_html += "</tr>";
+            options_html += "</div>";
         }
-        options_html += "</table>";
+		options_html += "";
+
         $("#box-options").html(options_html);
     }
 
     // Create a drop down select box with a list of feeds.
     function select_feed(id, feedlist, type)
     {
-        var out = "<select style='width:120px' id='"+id+"' class='options' otype='feed'>";
+        var out = "<select id='"+id+"' class='options' otype='feed'>";
         for (i in feedlist)
         {
-            
-            if (feedlist[i]['datatype']==type) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
-            if (type==0 && feedlist[i]['datatype']==1) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
-            if (type==0 && feedlist[i]['datatype']==2) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['name']+"</option>";
+            if (feedlist[i]['datatype']==type) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
+            if (type==0 && feedlist[i]['datatype']==1) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
+            if (type==0 && feedlist[i]['datatype']==2) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
         }
         out += "</select>";
         return out;
     }
 
-    vis_resize();
-    $(window).resize(function(){vis_resize();});
-
     function vis_resize()
     {
         var viswidth = $("#vispage").width() - 340;
-        var visheight = viswidth * (3/4);
+        var visheight = $("#visiframe").height();
 
         $("#vis_bound").width(viswidth);
         $("#vis_bound").height(visheight);

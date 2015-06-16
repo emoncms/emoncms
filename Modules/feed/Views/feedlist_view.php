@@ -35,10 +35,15 @@
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('WARNING deleting a feed is permanent'); ?></h3>
+        <h3 id="myModalLabel"><?php echo _('Delete feed'); ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Are you sure you want to delete this feed?'); ?></p>
+        <p><?php echo _('Deleting a feed is permanent.'); ?>
+           <br>
+	   <?php echo _('If you have input processlist processors that use this feed, after deleting it, review the processlist or they will be in error.'); ?>
+           <br><br>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
