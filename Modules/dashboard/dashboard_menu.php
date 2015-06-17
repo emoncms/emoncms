@@ -1,5 +1,5 @@
 <?php
-    global $mysqli,$route;
+    global $mysqli,$route,$session;
     require_once "Modules/dashboard/dashboard_model.php";
     $dashboard = new Dashboard($mysqli);
 
