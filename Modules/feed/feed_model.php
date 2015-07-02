@@ -268,7 +268,7 @@ class Feed
         $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
-            $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
+                $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
             $feeds[] = $row;
         }
         return $feeds;
@@ -301,7 +301,7 @@ class Feed
     public function get($id)
     {
         $id = (int) $id;
-        if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
+        //if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         if ($this->redis) {
             // Get from redis cache
@@ -351,9 +351,9 @@ class Feed
                 $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
             }
         } else {
-            if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
-            $engine = $this->get_engine($feedid);
-            $lastvalue = $this->engine[$engine]->lastvalue($feedid);
+            //if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
+            $engine = $this->get_engine($id);
+            $lastvalue = $this->engine[$engine]->lastvalue($id);
             if ($this->redis) { // load fresh values to redis
                 $this->redis->hMset("feed:lastvalue:$id", array('value' => $lastvalue['value'], 'time' => $lastvalue['time']));
             }
@@ -371,7 +371,7 @@ class Feed
     {
         $feedid = (int) $feedid;      
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        //if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
         return $this->engine[$engine]->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
     }
@@ -430,20 +430,21 @@ class Feed
         }
     }
 
-    public function set_timevalue($feedid, $value, $time)
+    public function set_timevalue($id, $value, $time)
     {
         if ($this->redis) {
-            $this->redis->hMset("feed:lastvalue:$feedid", array('value' => $value, 'time' => $time));
+            $this->redis->hMset("feed:lastvalue:$id", array('value' => $value, 'time' => $time));
         } else {
             $time = date("Y-n-j H:i:s", $time); // feeds table time is datetime, convert it
-            $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = '$value' WHERE `id`= '$feedid'");
+            if ($value === null) $value = 'NULL';
+            $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = $value WHERE `id`= '$id'");
         }
     }
 
     public function insert_data($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
         $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        //if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
         if ($feedtime == null) $feedtime = time();
         $updatetime = intval($updatetime);
