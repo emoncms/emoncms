@@ -30,7 +30,7 @@ class MysqlTimeSeries
         return true;
     }
 
-    public function post($feedid,$time,$value)
+    public function post($feedid,$time,$value,$arg=null)
     {
         $feedname = "feed_".trim($feedid)."";
         $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");
@@ -51,16 +51,16 @@ class MysqlTimeSeries
         return $value;
     }
 
-    public function get_data($feedid,$start,$end,$outinterval)
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $outinterval = intval($outinterval);
         $feedid = intval($feedid);
         $start = round($start/1000);
         $end = round($end/1000);
+        $interval = intval($interval); // time gap in seconds
                 
-        if ($outinterval<1) $outinterval = 1;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
+        if ($interval<1) $interval = 1;
+        $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
+        $end = $start + ($dp * $interval);
         if ($dp<1) return false;
 
         // Check if datatype is daily so that select over range is used rather than 
@@ -73,10 +73,10 @@ class MysqlTimeSeries
         $feedname = "feed_".trim($feedid)."";
 
         $data = array();
-        $range = $end - $start;
+        $range = $end - $start; // window duration in seconds
         if ($range > 180000 && $dp > 0) // 50 hours
         {
-            $td = $range / $dp;
+            $td = $range / $dp; // time duration for each datapoint
             $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
             $t = $start; $tb = 0;
             $stmt->bind_param("ii", $t, $tb);
@@ -86,7 +86,7 @@ class MysqlTimeSeries
                 $tb = $start + intval(($i+1)*$td);
                 $stmt->execute();
                 if ($stmt->fetch()) {
-                    if ($dataValue!=NULL) { // Remove this to show white space gaps in graph
+                    if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $dataTime * 1000;
                         $data[] = array($time, (float)$dataValue);
                     }
@@ -94,7 +94,7 @@ class MysqlTimeSeries
                 $t = $tb;
             }
         } else {
-            if ($range > 5000 && $dp > 0)
+            if ($range > 5000 && $dp > 0) // 83.33 min
             {
                 $td = intval($range / $dp);
                 $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
@@ -110,7 +110,7 @@ class MysqlTimeSeries
             if($result) {
                 while($row = $result->fetch_array()) {
                     $dataValue = $row['data'];
-                    if ($dataValue!=NULL) { // Remove this to show white space gaps in graph
+                    if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * 1000 * $td;
                         $data[] = array($time , (float)$dataValue);
                     }

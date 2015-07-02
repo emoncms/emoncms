@@ -1,4 +1,6 @@
 <?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
+
     global $mysqli, $session;
 
     require "Modules/vis/multigraph_model.php";

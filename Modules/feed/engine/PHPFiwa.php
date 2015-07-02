@@ -97,7 +97,7 @@ class PHPFiwa
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function post($id,$timestamp,$value)
+    public function post($id,$timestamp,$value,$arg=null)
     {   
         $this->log->info("PHPFiwa:post id=$id timestamp=$timestamp value=$value");
 

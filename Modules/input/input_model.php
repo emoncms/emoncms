@@ -12,8 +12,6 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-
-
 class Input
 {
     private $mysqli;
@@ -127,15 +125,6 @@ class Input
     }
 
     // USES: redis input
-    private function set_processlist($id, $processlist)
-    {
-        // CHECK REDIS
-        if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist);
-        $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
-
-    }
-
-    // USES: redis input
     public function set_fields($id,$fields)
     {
         $id = intval($id);
@@ -162,112 +151,6 @@ class Input
         }
     }
 
-    // USES: redis input
-    public function add_process($process_class,$userid,$inputid,$processid,$arg)
-    {
-        $userid = (int) $userid;
-        $inputid = (int) $inputid;
-        $processid = (int) $processid;                                    // get process type (ProcessArg::)
-        
-        $process = $process_class->get_process($processid);
-        $processtype = $process[1];                                       // Array position 1 is the processtype: VALUE, INPUT, FEED
-        $datatype = $process[4];                                          // Array position 4 is the datatype
-        
-        switch ($processtype) {
-            case ProcessArg::VALUE:                                       // If arg type value
-                if ($arg == '') return array('success'=>false, 'message'=>'Argument must be a valid number greater or less than 0.');
-                
-                $arg = (float)$arg;
-                $arg = str_replace(',','.',$arg); // hack to fix locale issue that converts . to ,
-                    
-                break;
-            case ProcessArg::INPUTID:                                     // If arg type input
-                $arg = (int) $arg;
-                if (!$this->exists($arg)) return array('success'=>false, 'message'=>'Input does not exist!');
-                break;
-            case ProcessArg::FEEDID:                                      // If arg type feed
-                $arg = (int) $arg;
-                if (!$this->feed->exist($arg)) return array('success'=>false, 'message'=>'Feed does not exist!');
-                break;
-            case ProcessArg::NONE:                                        // If arg type none
-                $arg = 0;
-                break;
-            case ProcessArg::TEXT:                                       // If arg type TEXT
-                $arg = $arg;
-                break;
-
-        }
-
-        $list = $this->get_processlist($inputid);
-        if ($list) $list .= ',';
-        $list .= $processid . ':' . $arg;
-        $this->set_processlist($inputid, $list);
-
-        return array('success'=>true, 'message'=>'Process added');
-    }
-
-    /******
-    * delete input process by index
-    ******/
-    // USES: redis input
-    public function delete_process($inputid, $index)
-    {
-        $inputid = (int) $inputid;
-        $index = (int) $index;
-
-        $success = false;
-        $index--; // Array is 0-based. Index from process page is 1-based.
-
-        // Load process list
-        $array = explode(",", $this->get_processlist($inputid));
-
-        // Delete process
-        if (count($array)>$index && $array[$index]) {unset($array[$index]); $success = true;}
-
-        // Save new process list
-        $this->set_processlist($inputid, implode(",", $array));
-
-        return $success;
-    }
-
-    /******
-    * move_input_process - move process up/down list of processes by $moveby (eg. -1, +1)
-    ******/
-    // USES: redis input
-    public function move_process($id, $index, $moveby)
-    {
-        $id = (int) $id;
-        $index = (int) $index;
-        $moveby = (int) $moveby;
-
-        if (($moveby > 1) || ($moveby < -1)) return false;  // Only support +/-1 (logic is easier)
-
-        $process_list = $this->get_processlist($id);
-        $array = explode(",", $process_list);
-        $index = $index - 1; // Array is 0-based. Index from process page is 1-based.
-
-        $newindex = $index + $moveby; // Calc new index in array
-        // Check if $newindex is greater than size of list
-        if ($newindex > (count($array)-1)) $newindex = (count($array)-1);
-        // Check if $newindex is less than 0
-        if ($newindex < 0) $newindex = 0;
-
-        $replace = $array[$newindex]; // Save entry that will be replaced
-        $array[$newindex] = $array[$index];
-        $array[$index] = $replace;
-
-        // Save new process list
-        $this->set_processlist($id, implode(",", $array));
-        return true;
-    }
-
-    // USES: redis input
-    public function reset_process($id)
-    {
-        $id = (int) $id;
-        $this->set_processlist($id, "");
-    }
-    
     public function get_inputs($userid)
     {
         if ($this->redis) {
@@ -278,7 +161,7 @@ class Input
     }
 
     // USES: redis input & user
-    public function redis_get_inputs($userid)
+    private function redis_get_inputs($userid)
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
@@ -297,7 +180,7 @@ class Input
         return $dbinputs;
     }
     
-    public function mysql_get_inputs($userid)
+    private function mysql_get_inputs($userid)
     {
         $userid = (int) $userid;
         $dbinputs = array();
@@ -325,7 +208,7 @@ class Input
         }
     }
     
-    public function redis_getlist($userid)
+    private function redis_getlist($userid)
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
@@ -343,7 +226,7 @@ class Input
         return $inputs;
     }
     
-    public function mysql_getlist($userid)
+    private function mysql_getlist($userid)
     {
         $userid = (int) $userid;
         $inputs = array();
@@ -370,23 +253,6 @@ class Input
             $result = $this->mysqli->query("SELECT name FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();
             return $row['name'];
-        }
-    }
-
-    // USES: redis input
-    public function get_processlist($id)
-    {
-        // LOAD REDIS
-        $id = (int) $id;
-        
-        if ($this->redis) {
-            if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
-            return $this->redis->hget("input:$id",'processList');
-        } else {
-            $result = $this->mysqli->query("SELECT processList FROM input WHERE `id` = '$id'");
-            $row = $result->fetch_array();
-            if (!$row['processList']) $row['processList'] = "";
-            return $row['processList'];
         }
     }
 
@@ -497,8 +363,147 @@ class Input
         return $result;
     }
 
-    // Redis cache loaders
+    //------------------------
+    // Processlist functions
+    //------------------------
+    // USES: redis input
+    public function get_processlist($id)
+    {
+        // LOAD REDIS
+        $id = (int) $id;
+        
+        if ($this->redis) {
+            if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
+            return $this->redis->hget("input:$id",'processList');
+        } else {
+            $result = $this->mysqli->query("SELECT processList FROM input WHERE `id` = '$id'");
+            $row = $result->fetch_array();
+            if (!$row['processList']) $row['processList'] = "";
+            return $row['processList'];
+        }
+    }
 
+    // USES: redis input
+    private function set_processlist($id, $processlist)
+    {
+        $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
+        if ($this->mysqli->affected_rows>0){
+            // CHECK REDIS
+            if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist);
+            return array('success'=>true, 'message'=>'Input processlist updated');
+        } else {
+            return array('success'=>false, 'message'=>'Input processlist was not updated');
+        }
+    }
+
+    // USES: redis input
+    public function add_process($process_class,$userid,$inputid,$processid,$arg)
+    {
+        $userid = (int) $userid;
+        $inputid = (int) $inputid;
+        $processid = (int) $processid;                                    // get process type (ProcessArg::)
+        
+        $process = $process_class->get_process($processid);
+        $processtype = $process[1];                                       // Array position 1 is the processtype: VALUE, INPUT, FEED
+        $datatype = $process[4];                                          // Array position 4 is the datatype
+        
+        switch ($processtype) {
+            case ProcessArg::VALUE:                                       // If arg type value
+                if ($arg == '') return array('success'=>false, 'message'=>'Argument must be a valid number greater or less than 0.');
+                
+                $arg = (float)$arg;
+                $arg = str_replace(',','.',$arg); // hack to fix locale issue that converts . to ,
+                    
+                break;
+            case ProcessArg::INPUTID:                                     // If arg type input
+                $arg = (int) $arg;
+                if (!$this->exists($arg)) return array('success'=>false, 'message'=>'Input does not exist!');
+                break;
+            case ProcessArg::FEEDID:                                      // If arg type feed
+                $arg = (int) $arg;
+                if (!$this->feed->exist($arg)) return array('success'=>false, 'message'=>'Feed does not exist!');
+                break;
+            case ProcessArg::NONE:                                        // If arg type none
+                $arg = 0;
+                break;
+            case ProcessArg::TEXT:                                       // If arg type TEXT
+                $arg = $arg;
+                break;
+
+        }
+
+        $list = $this->get_processlist($inputid);
+        if ($list) $list .= ',';
+        $list .= $processid . ':' . $arg;
+        $this->set_processlist($inputid, $list);
+
+        return array('success'=>true, 'message'=>'Process added');
+    }
+
+    /******
+    * delete input process by index
+    ******/
+    // USES: redis input
+    public function delete_process($inputid, $index)
+    {
+        $inputid = (int) $inputid;
+        $index = (int) $index;
+
+        $success = false;
+        $index--; // Array is 0-based. Index from process page is 1-based.
+
+        // Load process list
+        $array = explode(",", $this->get_processlist($inputid));
+
+        // Delete process
+        if (count($array)>$index && $array[$index]) {unset($array[$index]); $success = true;}
+
+        // Save new process list
+        $this->set_processlist($inputid, implode(",", $array));
+
+        return $success;
+    }
+
+    /******
+    * move_input_process - move process up/down list of processes by $moveby (eg. -1, +1)
+    ******/
+    // USES: redis input
+    public function move_process($id, $index, $moveby)
+    {
+        $id = (int) $id;
+        $index = (int) $index;
+        $moveby = (int) $moveby;
+
+        if (($moveby > 1) || ($moveby < -1)) return false;  // Only support +/-1 (logic is easier)
+
+        $process_list = $this->get_processlist($id);
+        $array = explode(",", $process_list);
+        $index = $index - 1; // Array is 0-based. Index from process page is 1-based.
+
+        $newindex = $index + $moveby; // Calc new index in array
+        // Check if $newindex is greater than size of list
+        if ($newindex > (count($array)-1)) $newindex = (count($array)-1);
+        // Check if $newindex is less than 0
+        if ($newindex < 0) $newindex = 0;
+
+        $replace = $array[$newindex]; // Save entry that will be replaced
+        $array[$newindex] = $array[$index];
+        $array[$index] = $replace;
+
+        // Save new process list
+        $this->set_processlist($id, implode(",", $array));
+        return true;
+    }
+
+    // USES: redis input
+    public function reset_process($id)
+    {
+        $id = (int) $id;
+        $this->set_processlist($id, "");
+    }
+
+
+    // Redis cache loaders
     private function load_input_to_redis($inputid)
     {
         $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid'");

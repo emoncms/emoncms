@@ -14,29 +14,26 @@
 
 function input_controller()
 {
-    //return array('content'=>"ok");
-
     global $mysqli, $redis, $user, $session, $route, $max_node_id_limit, $feed_settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
 
-    global $feed;
     $result = false;
 
-    include "Modules/feed/feed_model.php";
+    require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $feed_settings);
 
-    require "Modules/input/input_model.php"; // 295
+    require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
+    require "Modules/input/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
     
     if ($route->format == 'html')
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
-        if ($route->action == 'view') $result =  view("Modules/input/Views/input_view.php", array());
+        else if ($route->action == 'view') $result =  view("Modules/input/Views/input_view.php", array());
     }
 
     else if ($route->format == 'json')
@@ -191,12 +188,9 @@ function input_controller()
                 $error = "Format error, json string supplied is not valid";
             }
 
-            if ($valid)
-            {
+            if ($valid) {
                 $result = 'ok';
-            }
-            else
-            {
+            } else {
                 $result = "Error: $error\n";
             }
         }

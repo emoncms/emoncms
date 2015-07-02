@@ -20,7 +20,7 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !^/?Modules.*$
   RewriteCond %{REQUEST_URI} !^/?scripts.*$
   RewriteCond %{REQUEST_URI} !^/?Theme.*$
-  RewriteCond %{ENV:REDIRECT_STATUS} !=404
+  RewriteCond %{ENV:REDIRECT_STATUS} !=[45]0[0-9]
   RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
 </IfModule>
 

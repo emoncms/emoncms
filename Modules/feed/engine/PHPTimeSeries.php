@@ -37,7 +37,7 @@ class PHPTimeSeries
     // - append if file is empty
     // - append if datapoint is in the future
     // - update if datapoint is older than last datapoint value
-    public function post($feedid,$time,$value)
+    public function post($feedid,$time,$value,$arg=null)
     {
         $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
         

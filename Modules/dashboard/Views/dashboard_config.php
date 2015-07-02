@@ -13,15 +13,12 @@
 
 ?>
 
-<div id="dashConfigModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="dashConfigModalLabel" aria-hidden="true">
-
+<div id="dashConfigModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="dashConfigModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="dashConfigModalLabel"><?php echo _('Dashboard Configuration'); ?></h3>
     </div>
-
     <div class="modal-body">
-
         <label><?php echo _('Dashboard name: '); ?></label>
         <input type="text" name="name" value="<?php echo $dashboard['name']; ?>" />
         <label><?php echo _('Menu name: '); ?></label>
@@ -52,12 +49,10 @@
         </label>
 
     </div>
-
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
         <button id="configure-save" class="btn btn-primary"><?php echo _('Save changes'); ?></button>
     </div>
-
 </div>
 
 <script type="application/javascript">

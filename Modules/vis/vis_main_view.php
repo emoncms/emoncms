@@ -211,7 +211,7 @@ global $path;
         {
 
             options_html += "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+box_options[z][1]+"</span>";
-			
+
             var type = box_options[z][2];
 
             if (type == 0 || type == 1 || type == 2 || type == 3)
@@ -229,7 +229,7 @@ global $path;
             }
             options_html += "</div>";
         }
-		options_html += "";
+        options_html += "";
 
         $("#box-options").html(options_html);
     }
@@ -237,12 +237,23 @@ global $path;
     // Create a drop down select box with a list of feeds.
     function select_feed(id, feedlist, type)
     {
+        var feedgroups = [];
+        for (z in feedlist) {
+            if (feedlist[z].datatype == type || (type == 0 && (feedlist[z].datatype == 1 || feedlist[z].datatype == 2))) {
+                var group = (feedlist[z].tag === null ? "NoGroup" : feedlist[z].tag);
+                if (group!="Deleted") {
+                    if (!feedgroups[group]) feedgroups[group] = []
+                    feedgroups[group].push(feedlist[z]);
+                }
+            }
+        }
         var out = "<select id='"+id+"' class='options' otype='feed'>";
-        for (i in feedlist)
-        {
-            if (feedlist[i]['datatype']==type) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
-            if (type==0 && feedlist[i]['datatype']==1) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
-            if (type==0 && feedlist[i]['datatype']==2) out += "<option value='"+feedlist[i]['id']+"' public='"+feedlist[i]['public']+"'>"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
+        for (z in feedgroups) {
+            out += "<optgroup label='"+z+"'>";
+            for (p in feedgroups[z]) {
+                out += "<option value="+feedgroups[z][p]['id']+" public="+feedgroups[z][p]['public']+">"+feedgroups[z][p].id+": "+feedgroups[z][p].name+"</option>";
+            }
+            out += "</optgroup>";
         }
         out += "</select>";
         return out;

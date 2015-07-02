@@ -93,20 +93,11 @@ function draw_multigraph_feedlist_editor()
 
     if (publicfeed == 1) publicfeed = (get_feed_public(multigraph_feedlist[z]['id']));
   }
-  out += "<tr><td><select id='feedselect' style='width:220px;'>";
-  
   var visurl = path+"vis/"+"multigraph?mid="+multigraph_id;
   if (publicfeed == 1) $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>'); else $("#embedcode").val('Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.\n\nTo embed privately:\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
 
-  for (z in feedlist)
-  {
-    if (feedlist[z]['datatype']==1 || feedlist[z]['datatype']==2)
-    {
-      out += "<option value='"+feedlist[z]['id']+"' >"+feedlist[z]['id']+" :"+feedlist[z]['tag']+":"+feedlist[z]['name'] + "</options>";
-    }
-  }
-  
-  out += "</select></td>";
+  out += "<tr>";
+  out += "<td>"+select_feed('feedselect', feedlist, 0)+"</td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td><input id='add' type='button' class='btn' value='Add'/ ></td>";

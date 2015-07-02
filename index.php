@@ -12,7 +12,7 @@
 
     */
     
-    $emoncms_version = "8.5.1 XT";
+    $emoncms_version = "XT 8.5.2 | 2015.07.02";
     
     $ltime = microtime(true);
 

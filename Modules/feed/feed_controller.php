@@ -20,7 +20,7 @@ function feed_controller()
     global $mysqli, $redis, $session, $route, $feed_settings;
     $result = false;
 
-    include "Modules/feed/feed_model.php";
+    require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$feed_settings);
 
     if ($route->format == 'html')
@@ -67,7 +67,7 @@ function feed_controller()
                 // if public or belongs to user
                 if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
                 {
-                    if ($route->action == "timevalue") $result = $feed->get_timevalue_seconds($feedid);
+                    if ($route->action == "timevalue") $result = $feed->get_timevalue($feedid);
                     else if ($route->action == 'data') {
                         $skipmissing = 1;
                         $limitinterval = 1;

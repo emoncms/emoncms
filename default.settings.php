@@ -90,6 +90,7 @@
 
     // Theme location
     $theme = "basic";
+    $fullwidth=false; // dashboard and vis use full screen width
 
     // Error processing
     $display_errors = TRUE;

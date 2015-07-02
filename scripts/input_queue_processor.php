@@ -30,7 +30,7 @@
     include "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $feed_settings);
 
-    require "Modules/input/input_model.php"; // 295
+    require "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
     require "Modules/input/process_model.php"; // 886
