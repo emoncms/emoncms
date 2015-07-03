@@ -203,4 +203,6 @@ Now save and close and restart your apache.
     
 ensure that log file has write permissions for www-data, pi and root.
     
-    sudo chmod 660 emoncms.log 
+    sudo touch /var/log/emoncms.log
+    sudo chown www-data:root /var/log/emoncms.log
+    sudo chmod 660 /var/log/emoncms.log
