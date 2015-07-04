@@ -154,20 +154,16 @@ class Feed
     public function exist($id)
     {
         $feedexist = false;
-        if ($this->redis)
-        {
+        if ($this->redis) {
             
             if (!$this->redis->exists("feed:$id")) {
-                if ($this->load_feed_to_redis($id))
-                {
+                if ($this->load_feed_to_redis($id)) {
                     $feedexist = true;
                 }
             } else {
                 $feedexist = true;
             }
-        }
-        else 
-        {
+        } else {
             $id = intval($id);
             $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$id'");
             if ($result->num_rows>0) $feedexist = true;
@@ -306,7 +302,7 @@ class Feed
         if ($this->redis) {
             // Get from redis cache
             $row = $this->redis->hGetAll("feed:$id");
-            $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
+            $lastvalue = $this->get_timevalue($id);
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
         } else {
@@ -346,10 +342,8 @@ class Feed
     {
         $id = (int) $id;
 
-        if ($this->redis) {
-            if ($this->redis->exists("feed:lastvalue:$id")) {
-                $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
-            }
+        if ($this->redis && $this->redis->exists("feed:lastvalue:$id")) {
+            $lastvalue = $this->redis->hmget("feed:lastvalue:$id",array('time','value'));
         } else {
             //if (!$this->exist($id)) return array('success'=>false, 'message'=>'Feed does not exist');
             $engine = $this->get_engine($id);
