@@ -134,7 +134,7 @@ class PHPFiwa
         if ($timestamp < $meta->start_time) {
             $this->log->warn("PHPFiwa:post timestamp older than feed start time id=$id");
             return false; // in the past
-        }	
+        }
 
         // Calculate position in base data file of datapoint
         $point = floor(($timestamp - $meta->start_time) / $meta->interval[$layer]);
@@ -177,7 +177,7 @@ class PHPFiwa
         }
         
         // 2) Write new datapoint
-	    fseek($fh,4*$point);
+        fseek($fh,4*$point);
         if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
         
         if ($point >= $meta->npoints[$layer])

@@ -105,7 +105,7 @@ class PHPFina
         if ($timestamp < $meta->start_time) {
             $this->log->warn("PHPFina:post timestamp older than feed start time id=$id");
             return false; // in the past
-        }	
+        }
 
         // Calculate position in base data file of datapoint
         $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
@@ -159,7 +159,7 @@ class PHPFina
         }
         
         // Write new datapoint
-	    fseek($fh,4*$pos);
+        fseek($fh,4*$pos);
         if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
         
         // Close file

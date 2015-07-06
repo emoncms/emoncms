@@ -236,7 +236,7 @@ var customtablefields = {
         'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
         'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() }
     },
-	
+
     'iconconfig':
     {
         'draw': function(row,field)

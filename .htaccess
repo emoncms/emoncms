@@ -12,7 +12,7 @@ DirectoryIndex index.php
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  # Skip rewrites for known files, folders and 404 errors so we know if something is wrong
+  # Skip rewrites for known files, folders and 4xx/5xx errors so we know if something is wrong
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteCond %{REQUEST_URI} !=/robots.txt
   RewriteCond %{REQUEST_URI} !^/?docs.*$
