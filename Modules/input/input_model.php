@@ -80,8 +80,7 @@ class Input
         $userid = (int) $userid;
         $nodeid = preg_replace('/[^\w\s-.]/','',$nodeid);
         $name = preg_replace('/[^\w\s-.]/','',$name);
-        $this->mysqli->query("INSERT INTO input (userid,name,nodeid) VALUES ('$userid','$name','$nodeid')");
-
+        $this->mysqli->query("INSERT INTO input (userid,name,nodeid,description,processList) VALUES ('$userid','$name','$nodeid','','')");
         $id = $this->mysqli->insert_id;
 
         if ($this->redis) {
@@ -499,7 +498,7 @@ class Input
     public function reset_process($id)
     {
         $id = (int) $id;
-        $this->set_processlist($id, "");
+        return $this->set_processlist($id, "");
     }
 
 
