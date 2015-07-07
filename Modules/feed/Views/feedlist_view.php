@@ -32,7 +32,7 @@
         <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
 </div>
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel"><?php echo _('Delete feed'); ?></h3>
@@ -120,7 +120,7 @@
 
     var path = "<?php echo $path; ?>";
 
-    // Extemd table library field types
+    // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
     table.element = "#table";
@@ -156,18 +156,22 @@
     {   
         var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
         
-        $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: true, success: function(data) {
-        
+        $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+            table.timeServerLocalOffset = (new Date()).getTime()-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
             table.data = data;
         
             for (z in table.data)
             {
-                if (table.data[z].size<1024*100) {
-                    table.data[z].size = (table.data[z].size/1024).toFixed(1)+"kb";
+                if (table.data[z].size<1024) {
+                    table.data[z].size = table.data[z].size+"B";
+                } else if (table.data[z].size<1024*100) {
+                    table.data[z].size = (table.data[z].size/1024).toFixed(1)+"KB";
                 } else if (table.data[z].size<1024*1024) {
-                    table.data[z].size = Math.round(table.data[z].size/1024)+"kb";
-                } else if (table.data[z].size>=1024*1024) {
-                    table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"Mb";
+                    table.data[z].size = Math.round(table.data[z].size/1024)+"KB";
+                } else if (table.data[z].size<=1024*1024*1024) {
+                    table.data[z].size = Math.round(table.data[z].size/(1024*1024))+"MB";
+                } else {
+                    table.data[z].size = Math.round(table.data[z].size/(1024*1024*1024))+"GB";
                 }
             }
             table.draw();
@@ -206,6 +210,8 @@
 
     $("#table").bind("onDelete", function(e,id,row){
         updaterStart(update, 0);
+            $('#myModal #deleteFeedText').show();
+            $('#myModal #deleteVirtualFeedText').hide();
         $('#myModal').modal('show');
         $('#myModal').attr('the_id',id);
         $('#myModal').attr('the_row',row);
@@ -224,7 +230,7 @@
     });
 
     $("#refreshfeedsize").click(function(){
-        $.ajax({ url: path+"feed/updatesize.json", success: function(data){update();} });
+        $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){update();} });
     });
     
     

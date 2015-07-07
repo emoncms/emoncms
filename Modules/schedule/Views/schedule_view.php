@@ -31,7 +31,7 @@
     <button id="addnewschedule" class="btn btn-small" ><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New schedule'); ?></button>
 </div>
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="myModalLabel"><?php echo _('Delete schedule'); ?></h3>

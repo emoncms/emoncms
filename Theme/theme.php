@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $path,$emoncms_version;
+  global $path,$fullwidth,$emoncms_version;
 ?>
 <html>
     <head>
@@ -76,7 +76,7 @@
         <div id="footer">
             <?php echo _('Powered by '); ?>
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
-            <span> | v<?php echo $emoncms_version; ?></span>
+            <span> | <?php echo $emoncms_version; ?></span>
         </div>
 
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>

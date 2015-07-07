@@ -22,6 +22,8 @@ var table = {
     
     'groupprefix':"",
      
+    'timeServerLocalOffset':0, // offset of server to client time in ms
+
     'draw':function()
     {
         /*if (table.data && table.sortable) {
@@ -89,9 +91,9 @@ var table = {
             if (table.groupshow[group]==false) {symbol = '<i class="icon-plus-sign"></i>'; visible = "display:none";}
 
             if (group_num>1) {
-              html += "<tr><th colspan='2'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
+              html += "<tr><th colspan='3'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
               var count = 0; for (field in table.fields) count++;   // Calculate amount of padding required
-              for (i=1; i<count-1; i++) html += "<th></th>";          // Add th padding
+              for (i=2; i<count-1; i++) html += "<th></th>";          // Add th padding
               html += "</tr>";
             }
 

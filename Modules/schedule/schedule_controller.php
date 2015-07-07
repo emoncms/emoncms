@@ -9,7 +9,7 @@ function schedule_controller()
 
     $result = false;
 
-    include "Modules/schedule/schedule_model.php";
+    require "Modules/schedule/schedule_model.php";
     $schedule = new Schedule($mysqli,$user->get_timezone($session['userid']));
 
     if ($route->format == 'html')

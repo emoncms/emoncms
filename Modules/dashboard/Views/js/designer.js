@@ -229,15 +229,7 @@ var designer = {
 
             else if (options_type && options_type[z] == "feedid")
             {
-                options_html += "<select id='"+box_options[z]+"' class='options' >";
-                for (i in feedlist)
-                {
-                    var selected = "";
-                    if (val == feedlist[i]['id'])
-                        selected = "selected";
-                    options_html += "<option value='"+feedlist[i]['id']+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
-                }
-                options_html += "</select>";
+                options_html += designer.select_feed(box_options[z],feedlist,0,val);
             }
 
             else if (options_type && options_type[z] == "html")
@@ -311,6 +303,33 @@ var designer = {
         // Fill the modal configuration window with options
         $("#widget_options_body").html(options_html);
 
+    },
+
+    'select_feed': function (id, feedlist, type, currentval)
+    {
+        var feedgroups = [];
+        for (f in feedlist) {
+            if (type == 0 || feedlist[f].datatype == type) {
+                var group = (feedlist[f].tag === null ? "NoGroup" : feedlist[f].tag);
+                if (group!="Deleted") {
+                    if (!feedgroups[group]) feedgroups[group] = []
+                    feedgroups[group].push(feedlist[f]);
+                }
+            }
+        }
+        var out = "<select id='"+id+"' class='options'>";
+        for (f in feedgroups) {
+            out += "<optgroup label='"+f+"'>";
+            for (p in feedgroups[f]) {
+                var selected = "";
+                if (currentval == feedgroups[f][p]['id'])
+                    selected = "selected";
+                out += "<option value="+feedgroups[f][p]['id']+" "+selected+">"+feedgroups[f][p].name+"</option>";
+            }
+            out += "</optgroup>";
+        }
+        out += "</select>";
+        return out;
     },
 
     'widget_buttons': function()

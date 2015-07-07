@@ -35,8 +35,7 @@ class Process
         $this->log = new EmonLogger(__FILE__);
         if (!($timezone === NULL)) $this->timezone = $timezone;
      
-        if(file_exists("Modules/schedule/schedule_model.php")) {
-            include "Modules/schedule/schedule_model.php";
+        if (@include_once "Modules/schedule/schedule_model.php") { // false if not found
             $this->schedule = new Schedule($mysqli, $this->timezone);
         }
         
@@ -65,7 +64,7 @@ class Process
         // If there is only one engine available for a processor, it is selected and user cant change it from gui.
         // The default selected engine is the first in the array of the supported engines for each processor.
 
-        // description | Arg type | function | No. of datafields if creating feed | Datatype | Engines
+        // description | Arg type | function | No. of datafields if creating feed | Datatype | Group | Engines
 
         $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES,ENGINE::MYSQL));
         $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED,"Calibration");                           
@@ -76,7 +75,7 @@ class Process
         $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));                 
         $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,ENGINE::MYSQL));      
         $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));       // need to remove
-        $list[10] = array(_("Upsert feed @time"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
+        $list[10] = array(_("Upsert feed at day"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL));           
         $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    
         $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
         $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
@@ -144,7 +143,7 @@ class Process
         return $list;
     }
 
-    public function input($time, $value, $processList)
+    public function input($time, $value, $processList, $options = null)
     {
         $this->log->info("input() received time=$time, value=$value");
 
@@ -165,12 +164,13 @@ class Process
             if (!isset($process_list[$processid])) throw new Exception("ABORTED: Processor '".$processid."' does not exists. Module missing?");
             $process_public = $process_list[$processid][2];          // get process public function name
 
-            $value = $this->$process_public($arg,$time,$value);      // execute process public function
+            $value = $this->$process_public($arg,$time,$value,$options);      // execute process public function
             
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; $this->proc_goto++;
             }
         }
+        return $value;
     }
 
     public function get_process($id)
@@ -255,10 +255,10 @@ class Process
     
     public function update_feed_data($id, $time, $value)
     {
-        $time = mktime(0, 0, 0, date("m",$time), date("d",$time), date("Y",$time));
+        $time = $this->getstartday($time);
 
         $feedname = "feed_".trim($id)."";
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE `time` = '$time'");
+        $result = $this->mysqli->query("SELECT time FROM $feedname WHERE `time` = '$time'");
         $row = $result->fetch_array();
 
         if (!$row)
@@ -313,7 +313,7 @@ class Process
         }
 
         $padding_mode = "join";
-        $this->feed->insert_data_padding_mode($feedid, $time_now, $time_now, $new_kwh, $padding_mode);
+        $this->feed->insert_data($feedid, $time_now, $time_now, $new_kwh, $padding_mode);
         
         return $value;
     }
@@ -326,17 +326,16 @@ class Process
         $last = $this->feed->get_timevalue($feedid);
 
         if (!isset($last['value'])) $last['value'] = 0;
+        if (!isset($last['time'])) $last['time'] = $time_now;
         $last_kwh = $last['value']*1;
         $last_time = $last['time']*1;
-        
-        //$current_slot = floor($time_now / 86400) * 86400;
-        //$last_slot = floor($last_time / 86400) * 86400;
+
         $current_slot = $this->getstartday($time_now);
         $last_slot = $this->getstartday($last_time);    
 
-        if ($last_time && ((time()-$last_time)<7200)) {
+        $time_elapsed = ($time_now - $last_time);   
+        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
             // kWh calculation
-            $time_elapsed = ($time_now - $last_time);
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
         } else {
             // in the event that redis is flushed the last time will
@@ -344,14 +343,14 @@ class Process
             // rather than enter 0 we dont increase it
             $kwh_inc = 0;
         }
-        
+
         if($last_slot == $current_slot) {
             $new_kwh = $last_kwh + $kwh_inc;
         } else {
             # We are working in a new slot (new day) so don't increment it with the data from yesterday
             $new_kwh = $kwh_inc;
         }
-        
+
         $this->feed->update_data($feedid, $time_now, $current_slot, $new_kwh);
 
         return $value;
@@ -471,7 +470,7 @@ class Process
         $last = $this->feed->get_timevalue($feedid);
         $value = $last['value'] + $value;
         $padding_mode = "join";
-        $this->feed->insert_data_padding_mode($feedid, $time, $time, $value, $padding_mode);
+        $this->feed->insert_data($feedid, $time, $time, $value, $padding_mode);
         return $value;
     }
     /*
@@ -682,7 +681,7 @@ class Process
             if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
             
             $padding_mode = "join";
-            $this->feed->insert_data_padding_mode($feedid, $time, $time, $totalwh, $padding_mode);
+            $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
             
         }
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));

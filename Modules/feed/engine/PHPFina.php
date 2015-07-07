@@ -7,7 +7,6 @@ class PHPFina
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
-    public $padding_mode = "nan";
     
     /**
      * Constructor.
@@ -71,7 +70,7 @@ class PHPFina
      * @param float $value The value of the data point
     */
     
-    public function post($id,$timestamp,$value)
+    public function post($id,$timestamp,$value,$padding_mode)
     {
         $this->log->info("PHPFina:post post id=$id timestamp=$timestamp value=$value");
         
@@ -106,7 +105,7 @@ class PHPFina
         if ($timestamp < $meta->start_time) {
             $this->log->warn("PHPFina:post timestamp older than feed start time id=$id");
             return false; // in the past
-        }	
+        }
 
         // Calculate position in base data file of datapoint
         $pos = floor(($timestamp - $meta->start_time) / $meta->interval);
@@ -137,7 +136,7 @@ class PHPFina
         if ($padding>0) {
             $padding_value = NAN;
             
-            if ($last_pos>=0 && $this->padding_mode!="nan") {
+            if ($last_pos>=0 && $padding_mode!=null) {
                 fseek($fh,$last_pos*4);
                 $val = unpack("f",fread($fh,4));
                 $last_val = (float) $val[1];
@@ -148,7 +147,7 @@ class PHPFina
             
             $buffer = "";
             for ($i=0; $i<$padding; $i++) {
-                if ($this->padding_mode=="join") $padding_value += $div;
+                if ($padding_mode=="join") $padding_value += $div;
                 $buffer .= pack("f",$padding_value);
             }
             fseek($fh,4*$meta->npoints);
@@ -160,7 +159,7 @@ class PHPFina
         }
         
         // Write new datapoint
-	    fseek($fh,4*$pos);
+        fseek($fh,4*$pos);
         if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
         
         // Close file
@@ -198,8 +197,6 @@ class PHPFina
         
         // Minimum interval
         if ($interval<1) $interval = 1;
-        // End must be larger than start
-        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
         if ($req_dp>3000) return array('success'=>false, 'message'=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");

@@ -97,7 +97,7 @@ class PHPFiwa
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
     */
-    public function post($id,$timestamp,$value)
+    public function post($id,$timestamp,$value,$arg=null)
     {   
         $this->log->info("PHPFiwa:post id=$id timestamp=$timestamp value=$value");
 
@@ -134,7 +134,7 @@ class PHPFiwa
         if ($timestamp < $meta->start_time) {
             $this->log->warn("PHPFiwa:post timestamp older than feed start time id=$id");
             return false; // in the past
-        }	
+        }
 
         // Calculate position in base data file of datapoint
         $point = floor(($timestamp - $meta->start_time) / $meta->interval[$layer]);
@@ -177,7 +177,7 @@ class PHPFiwa
         }
         
         // 2) Write new datapoint
-	    fseek($fh,4*$point);
+        fseek($fh,4*$point);
         if (!is_nan($value)) fwrite($fh,pack("f",$value)); else fwrite($fh,pack("f",NAN));
         
         if ($point >= $meta->npoints[$layer])

@@ -82,8 +82,8 @@ var feed = {
   {
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
-	//if (skipmissing == undefined) skipmissing = 1;
-	//if (limitinterval == undefined) limitinterval = 1;
+  //if (skipmissing == undefined) skipmissing = 1;
+  //if (limitinterval == undefined) limitinterval = 1;
     $.ajax({                                      
       url: path+'feed/data.json',                         
       data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval,

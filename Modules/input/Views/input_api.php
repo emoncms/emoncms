@@ -12,7 +12,7 @@
 
 <h3><?php echo _('Available HTML URLs'); ?></h3>
 <table class="table">
-    <tr><td><?php echo _('The input list view'); ?></td><td><a href="<?php echo $path; ?>input/view"><?php echo $path; ?>input/node</a></td></tr>
+    <tr><td><?php echo _('The input list view'); ?></td><td><a href="<?php echo $path; ?>input/view"><?php echo $path; ?>input/view</a></td></tr>
     <tr><td><?php echo _('This page'); ?></td><td><a href="<?php echo $path; ?>input/api"><?php echo $path; ?>input/api</a></td></tr>
     <tr><td><?php echo _('Input processing configuration page'); ?></td><td><a href="<?php echo $path; ?>input/process?inputid=1"><?php echo $path; ?>input/process?inputid=1</a></td></tr>
 </table>
@@ -34,7 +34,7 @@
     <tr><td><?php echo _('For example using the first json type request above just add the apikey to the end like this:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?json={power:200}&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>"><?php echo $path; ?>input/post.json?json={power:200}<b>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?></b></a></td></tr>
 </table>
 
-<p><b><?php echo _('Bulk data'); ?></b>
+<p><b><?php echo _('Bulk data'); ?></b></p>
 <table class="table">
 <tr><td><?php echo _('You can provide data using bulk mode'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]"><?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]</a></td></tr>
 </table>
@@ -52,14 +52,18 @@
 </table>
 
 <br>
-<p><b><?php echo _('Input actions'); ?></b>
+<p><b><?php echo _('Input actions'); ?></b></p>
 <table class="table">
-<tr><td><?php echo _('List of inputs'); ?></td><td><a href="<?php echo $path; ?>input/list.json"><?php echo $path; ?>input/list.json</a></td></tr>
-<tr><td><?php echo _('Delete an input'); ?></td><td><a href="<?php echo $path; ?>input/delete.json?id=1"><?php echo $path; ?>input/delete.json?id=1</a></td></tr>
+<tr><td><?php echo _('List of inputs with latest data'); ?></td><td><a href="<?php echo $path; ?>input/list.json"><?php echo $path; ?>input/list.json</a></td></tr>
+<tr><td><?php echo _('Get inputs configuration'); ?></td><td><a href="<?php echo $path; ?>input/get_inputs.json"><?php echo $path; ?>input/get_inputs.json</a></td></tr>
+<tr><td><?php echo _('Set input fields'); ?></td><td><a href="<?php echo $path; ?>input/set.json?inputid=0&fields={'description':'Input Description'}"><?php echo $path; ?>input/set.json?inputid=0&fields={'description':'Input Description'}</a></td></tr>
+<tr><td><?php echo _('Delete an input'); ?></td><td><a href="<?php echo $path; ?>input/delete.json?inputid=0"><?php echo $path; ?>input/delete.json?inputid=0</a></td></tr>
+<tr><td><?php echo _('Clean inputs without a process list'); ?></td><td><a href="<?php echo $path; ?>input/clean.json"><?php echo $path; ?>input/clean.json</a></td></tr>
 </table>
 
 <p><b><?php echo _('Input process actions'); ?></b></p>
 <table class="table">
+    <tr><td><?php echo _('List all supported process'); ?></td><td><a href="<?php echo $path; ?>input/getallprocesses.json"><?php echo $path; ?>input/getallprocesses.json</a></td></tr>
     <tr><td><?php echo _('Add an input process'); ?></td><td><a href="<?php echo $path; ?>input/process/add.json?inputid=1&processid=1&arg=-1&newfeedname=power"><?php echo $path; ?>input/process/add.json?inputid=1&processid=1&arg=-1&newfeedname=power</a></td></tr>
     <tr><td><?php echo _('List input process list'); ?></td><td><a href="<?php echo $path; ?>input/process/list.json?inputid=1"><?php echo $path; ?>input/process/list.json?inputid=1</a></td></tr>
     <tr><td><?php echo _('Delete input process'); ?></td><td><a href="<?php echo $path; ?>input/process/delete.json?inputid=1&processid=1"><?php echo $path; ?>input/process/delete.json?inputid=1&processid=1</a></td></tr>
