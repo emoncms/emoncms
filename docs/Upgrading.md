@@ -82,6 +82,8 @@ You should now see a list of changes to be performed on your existing emoncms da
 
 Click on apply changes to apply these changes.
 
+After updating the db go to each user's account profile page and set the correct timezone.
+
 ### 6) Confirm that you can access your data via the new emoncms installation
 
 If you cannot see any of your data in the new installation:
