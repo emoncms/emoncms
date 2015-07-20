@@ -139,8 +139,42 @@ var customtablefields = {
                 key = 'whacc'; type = 2; break;
               case 35:
                 key = 'MQTT'; type = 5; break;
+              case 36:
+                key = 'null'; type = 3; break;
+              case 37:
+                key = 'ori'; type = 3; break;
+              case 38:
+                key = '!sched 0'; type = 6; break;
+              case 39:
+                key = '!sched N'; type = 6; break;
+              case 40:
+                key = 'sched 0'; type = 6; break;
+              case 41:
+                key = 'sched N'; type = 6; break;
+              case 42:
+                key = '0? skip'; type = 3; break;
+              case 43:
+                key = '!0? skip'; type = 3; break;
+              case 44:
+                key = 'N? skip'; type = 3; break;
+              case 45:
+                key = '!N? skip'; type = 3; break;
+              case 46:
+                key = '>? skip'; type = 0; break;
+              case 47:
+                key = '>=? skip'; type = 0; break;
+              case 48:
+                key = '<? skip'; type = 0; break;
+              case 49:
+                key = '<=? skip'; type = 0; break;
+              case 50:
+                key = '=? skip'; type = 0; break;
+              case 51:
+                key = '!=? skip'; type = 0; break;
+              case 52:
+                key = 'GOTO'; type = 0; break;
             }  
-			
+
             value = keyvalue[1];
             
             switch(type)
@@ -163,6 +197,9 @@ var customtablefields = {
                 break;
               case 5:
                 type = 'topic: '; color = 'info';
+                break;
+              case 6:
+                type = 'schedule: '; color = 'warning';
                 break;
             }
 
@@ -191,30 +228,51 @@ var customtablefields = {
         {
             return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
         }
-    }
+    },
+    
+    'hinteditable':
+    {
+        'draw': function (row,field) { return "…";},
+        'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
+        'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() }
+    },
+
+    'iconconfig':
+    {
+        'draw': function(row,field)
+        {
+            return table.data[row]['#NO_CONFIG#'] ? "" : "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
+        }
+    },
 }
+
 
 
 // Calculate and color updated time
 function list_format_updated(time)
 {
   time = time * 1000;
-  var now = (new Date()).getTime();
+  var now = (new Date()).getTime() - table.timeServerLocalOffset;
   var update = (new Date(time)).getTime();
-  var lastupdate = (now-update)/1000;
 
   var secs = (now-update)/1000;
   var mins = secs/60;
-  var hour = secs/3600
+  var hour = secs/3600;
+  var day = hour/24;
 
   var updated = secs.toFixed(0)+"s ago";
-  if (secs>180) updated = mins.toFixed(0)+" mins ago";
-  if (secs>(3600*2)) updated = hour.toFixed(0)+" hours ago";
-  if (hour>24) updated = "inactive";
+  if (secs< 0) updated = secs.toFixed(0)+"s ahead<br>(set clock)";
+  else if (secs.toFixed(0) == 0) updated = "now";
+  else if (day>7) updated = "inactive";
+  else if (day>2) updated = day.toFixed(1)+" days ago";
+  else if (hour>2) updated = hour.toFixed(0)+" hrs ago";
+  else if (secs>180) updated = mins.toFixed(0)+" mins ago";
 
-  var color = "rgb(255,125,20)";
+  secs = Math.abs(secs);
+  var color = "rgb(255,0,0)";
   if (secs<25) color = "rgb(50,200,50)"
   else if (secs<60) color = "rgb(240,180,20)"; 
+  else if (secs<(3600*2)) color = "rgb(255,125,20)"
 
   return "<span style='color:"+color+";'>"+updated+"</span>";
 }
@@ -222,10 +280,13 @@ function list_format_updated(time)
 // Format value dynamically 
 function list_format_value(value)
 {
-  if (value>=10) value = (1*value).toFixed(1);
-  if (value>=100) value = (1*value).toFixed(0);
-  if (value<10) value = (1*value).toFixed(2);
-  if (value<=-10) value = (1*value).toFixed(1);
-  if (value<=-100) value = (1*value).toFixed(0);
+  if (value == null) return 'NULL';
+  value = parseFloat(value);
+  if (value>=1000) value = parseFloat((value).toFixed(0));
+  else if (value>=100) value = parseFloat((value).toFixed(1));
+  else if (value>=10) value = parseFloat((value).toFixed(2));
+  else if (value<=-1000) value = parseFloat((value).toFixed(0));
+  else if (value<=-100) value = parseFloat((value).toFixed(1));
+  else if (value<10) value = parseFloat((value).toFixed(2));
   return value;
 }

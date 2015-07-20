@@ -85,6 +85,7 @@ function set_lang($language)
             case 'it': $lang='it_IT'; break;
             case 'nl': $lang='nl_NL'; break;
             //case 'nl': $lang='nl_BE'; break; //to do??
+            default  : $lang='en_EN';
         }
 
         set_lang_by_user($lang);

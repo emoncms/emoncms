@@ -15,33 +15,37 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Threshold"); ?></h2>
 <?php } ?>
 
-    <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
-        <div id="graph"></div>
-        <h4 style="position:absolute; top:10px; left:75px; text-align:right;"><span id="stats"></span></h4>
-        <div style="position:absolute; top:20px; right:20px;">
+        <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
+            <div id="graph"></div>
+            <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
+                <div class='btn-group'>
+                    <button class='btn graph-time' type='button' time='1'>D</button>
+                    <button class='btn graph-time' type='button' time='7'>W</button>
+                    <button class='btn graph-time' type='button' time='30'>M</button>
+                    <button class='btn graph-time' type='button' time='365'>Y</button>
+                </div>
 
-            <input class="time" type="button" value="D" time="1"/>
-            <input class="time" type="button" value="W" time="7"/>
-            <input class="time" type="button" value="M" time="30"/>
-            <input class="time" type="button" value="Y" time="365"/> |
+                <div class='btn-group' id='graph-navbar' style='display: none;'>
+                    <button class='btn graph-nav' id='zoomin'>+</button>
+                    <button class='btn graph-nav' id='zoomout'>-</button>
+                    <button class='btn graph-nav' id='left'><</button>
+                    <button class='btn graph-nav' id='right'>></button>
+                </div>
 
-            <input id="zoomin" type="button" value="+"/>
-            <input id="zoomout" type="button" value="-"/>
-            <input id="left" type="button" value="<"/>
-            <input id="right" type="button" value=">"/>
-
+            </div>
+            <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
         </div>
-    </div>
 
 <script id="source" language="javascript" type="text/javascript">
 
@@ -86,7 +90,8 @@
             grid: { show: true, hoverable: true, clickable: true },
             xaxis: { mode: "time", timezone: "browser", min: start, max: end, minTickSize: [1, "day"], tickLength: 1 },
             selection: { mode: "x" },
-            legend: { position: "nw"}
+            legend: { position: "nw"},
+            touch: { pan: "x", scale: "x" ,delayTouchEnded: 0}
         });
     }
 
@@ -116,7 +121,32 @@
     $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
     $('#right').click(function () {inst_panright(); vis_feed_data();});
     $('#left').click(function () {inst_panleft(); vis_feed_data();});
-    $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+    $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
     //-----------------------------------------------------------------------------------------------
+    
+    // Graph buttons and navigation efects for mouse and touch
+    $("#graph").mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    $("#graph_bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    $("#graph").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $("#graph").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        start = ranges.xaxis.from; end = ranges.xaxis.to;
+        vis_feed_data();
+    });
 </script>
 

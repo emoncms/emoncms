@@ -14,32 +14,29 @@
 
 function input_controller()
 {
-    //return array('content'=>"ok");
-
     global $mysqli, $redis, $user, $session, $route, $max_node_id_limit, $feed_settings;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
 
-    global $feed;
     $result = false;
 
-    include "Modules/feed/feed_model.php";
+    require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $feed_settings);
 
-    require "Modules/input/input_model.php"; // 295
+    require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
+    require "Modules/input/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
     
     if ($route->format == 'html')
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
-        if ($route->action == 'view') $result =  view("Modules/input/Views/input_view.php", array());
+        else if ($route->action == 'view') $result =  view("Modules/input/Views/input_view.php", array());
     }
 
-    if ($route->format == 'json')
+    else if ($route->format == 'json')
     {
         /*
         
@@ -191,12 +188,9 @@ function input_controller()
                 $error = "Format error, json string supplied is not valid";
             }
 
-            if ($valid)
-            {
+            if ($valid) {
                 $result = 'ok';
-            }
-            else
-            {
+            } else {
                 $result = "Error: $error\n";
             }
         }
@@ -204,7 +198,7 @@ function input_controller()
         // input/post.json?node=10&json={power1:100,power2:200,power3:300}
         // input/post.json?node=10&csv=100,200,300
 
-        if ($route->action == 'post')
+        else if ($route->action == 'post')
         {
             $valid = true; $error = "";
 
@@ -294,24 +288,24 @@ function input_controller()
                 $result = "Error: $error\n";
         }
 
-        if ($route->action == "clean") $result = $input->clean($session['userid']);
-        if ($route->action == "list") $result = $input->getlist($session['userid']);
-        if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
-        if ($route->action == "getallprocesses") $result = $process->get_process_list();
+        else if ($route->action == "clean") $result = $input->clean($session['userid']);
+        else if ($route->action == "list") $result = $input->getlist($session['userid']);
+        else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
+        else if ($route->action == "getallprocesses") $result = $process->get_process_list();
 
-        if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
+        else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
             if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
 
-            if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
+            else if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
 
-            if ($route->action == "process")
+            else if ($route->action == "process")
             {
                 if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'),get('engine'));
-                if ($route->subaction == "list") $result = $input->get_processlist(get("inputid"));
-                if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
-                if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
-                if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
+                else if ($route->subaction == "list") $result = $input->get_processlist(get("inputid"));
+                else if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
+                else if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
+                else if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
             }           
         }
     }

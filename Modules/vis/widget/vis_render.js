@@ -152,15 +152,15 @@ function vis_widgetlist()
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["mid"],
-      "optionstype":["multigraph"],
-      "optionsname":[_Tr("Mid")],
-      "optionshint":[_Tr("Mid value")],
+      "optionstype":["dropbox"],
+      "optionsname":[_Tr("Multigraph")],
+      "optionshint":[_Tr("Managed on Visualization module")],
+      "optionsdata":[multigraphsDropBoxOptions],
       "html":""
     }
   }
 
   // Gets multigraphs from vis_widget.php public multigraphs variable
-
   return widgets;
 }
 
@@ -175,8 +175,7 @@ function vis_draw()
 
   var visclasslist = '';
   for (z in vislist) { visclasslist += '.'+z+','; }
-
-  visclasslist = visclasslist.slice(0, -1)
+  visclasslist = visclasslist.slice(0, -1);
 
   $(visclasslist).each(function()
   {
@@ -185,41 +184,34 @@ function vis_draw()
     var width = $(this).width();
     var height = $(this).height();
 
-    var attrstring = "";
-    var target = $(this).get(0);
-    var l = target.attributes.length
-    for (var i=0; i<l; i++)
-    {
-      var attr = target.attributes[i].name;
-      if (attr!="id" && attr!="class" && attr!="style")
-      {
-        attrstring += "&"+attr+"="+target.attributes[i].value;
-      }
-    }
-
     var apikey_string = "";
     if (apikey) apikey_string = "&apikey="+apikey;
+    
     if (!$(this).html() || reloadiframe==id || apikey){
-      $(this).html('<iframe style="width:'+width+'px; height:'+height+'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+path+'vis/'+$(this).attr("class")+'?embed=1'+attrstring+apikey_string+'"></iframe>');
+        var attrstring = "";
+        var target = $(this).get(0);
+        var l = target.attributes.length;
+        for (var i=0; i<l; i++)
+        {
+          var attr = target.attributes[i].name;
+          if (attr!="id" && attr!="class" && attr!="style")
+          {
+            attrstring += "&"+attr+"="+target.attributes[i].value;
+          }
+        }
+        $(this).html('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+path+'vis/'+$(this).attr("class")+'?embed=1'+attrstring+apikey_string+'"></iframe>');
     }
 
     var iframe = $(this).children('iframe');
     iframe.width(width);
     iframe.height(height);
+    //iframe.width('100%');
+    //iframe.height('100%');
 
   });
-reloadiframe = 0;
+  reloadiframe = 0;
 }
 
-function vis_slowupdate()
-{
-  // Are these supposed to be empty?
-}
+function vis_slowupdate() {}
 
-function vis_fastupdate()
-{
-
-}
-
-
-
+function vis_fastupdate() {}

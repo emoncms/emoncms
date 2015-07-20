@@ -44,7 +44,7 @@
 
         // Auto - automatically selects visualisation based on datatype
         // and is used primarily for quick checking feeds from the feeds page.
-        if ($route->action == "auto")
+        else if ($route->action == "auto")
         {
             $feedid = intval(get('feedid'));
             $datatype = $feed->get_field($feedid,'datatype');
@@ -74,8 +74,7 @@
                         $key = $option[0]; $type = $option[2];
                         if (isset($option[3])) $default = $option[3]; else $default = "";
 
-                        if ($type==0 || $type==1 || $type==2 || $type==3)
-                        {
+                        if ($type==0 || $type==1 || $type==2 || $type==3) {
                             $feedid = (int) get($key);
                             if ($feedid) {
                               $f = $feed->get($feedid);
@@ -87,24 +86,32 @@
                             } else {
                               $array['valid'] = false;
                             }
-
                         }
-
-                        // Boolean not used at the moment
-                            if ($type==4)
-                                if (get($key)==true || get($key)==false)
-                                    $array[$key] = get($key); else $array[$key] = $default;
-                            if ($type==5)
-                                $array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
-                            if ($type==6)
-                                $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
-                            if ($type==7)
-                                $array[$key] = intval((get($key)?get($key):$default));
-
-                            # we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
-                            # we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
-                            if ($key == "colour")
-                                $array[$key] = preg_replace('/[^\dA-Za-z]/','',$array[$key]);
+                        else if ($type==4)
+                            // Boolean not used at the moment
+                            if (get($key)==true || get($key)==false)
+                                $array[$key] = get($key); else $array[$key] = $default;
+                        else if ($type==5)
+                            $array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
+                        else if ($type==6)
+                            $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
+                        else if ($type==7)
+                            $array[$key] = intval((get($key)?get($key):$default));
+                        else if ($type==8) {
+                            $mid = (int) get($key);
+                            if ($mid) {
+                              $f = $multigraph->get($mid,$session['userid']);
+                              $array[$key] = intval(($mid?$mid:$default));
+                              if (!isset($f['feedlist'])) $array['valid'] = false;
+                            } else {
+                              $array['valid'] = false;
+                            }
+                        }
+                        
+                        # we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
+                        # we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
+                        if ($key == "colour")
+                            $array[$key] = preg_replace('/[^\dA-Za-z]/','',$array[$key]);
                     }
                 }
 
@@ -121,19 +128,20 @@
     }
 
     /*
-
     MULTIGRAPH ACTIONS
-
     */
 
-    if ($route->format == 'json' && $route->action == 'multigraph')
+    else if ($route->format == 'json' && $route->action == 'multigraph')
     {
-        if ($route->subaction == 'new' && $session['write']) $result = $multigraph->create($session['userid']);
-        if ($route->subaction == 'delete' && $session['write']) $result = $multigraph->delete(get('id'),$session['userid']);
-        if ($route->subaction == 'set' && $session['write']) $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'),get('name'));
         if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
-        if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
-        if ($route->subaction == 'getname') $result = $multigraph->getname(get('id'),$session['userid']);
+        else if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
+        
+        else if ($session['write']) {
+            if ($route->subaction == 'new') $result = $multigraph->create($session['userid']);
+            else if ($route->subaction == 'delete') $result = $multigraph->delete(get('id'),$session['userid']);
+            else if ($route->subaction == 'set') $result = $multigraph->set(get('id'),$session['userid'],get('feedlist'),get('name'));
+        }
+
     }
 
     return array('content'=>$result);

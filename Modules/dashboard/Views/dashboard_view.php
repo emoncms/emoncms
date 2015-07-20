@@ -10,9 +10,11 @@ Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 */
 
-    global $session, $path; ?>
+global $session,$path;
 
-    <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/dashboard_langjs.php"></script>
+
+?>
+    <script type="text/javascript"><?php require "Modules/dashboard/dashboard_langjs.php"; ?></script>
     <link href="<?php echo $path; ?>Modules/dashboard/Views/js/widget.css" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
@@ -34,6 +36,8 @@ http://openenergymonitor.org
     var apikey = "<?php echo get('apikey'); ?>";
     var userid = <?php echo $session['userid']; ?>;
 
+    $('body').css("background-color","#<?php echo $dashboard['backgroundcolor']; ?>");
+
     for (z in widget)
     {
         var fname = widget[z]+"_widgetlist";
@@ -45,7 +49,10 @@ http://openenergymonitor.org
     var reloadiframe = 0;
 
     show_dashboard();
-    setInterval(function() { update(); }, 10000);
-    setInterval(function() { fast_update(); }, 30);
+    setInterval(function() { update(); }, 5000);
+    setInterval(function() { fast_update(); }, 100);
 
+    $(window).resize(function(){
+        redraw = 1;
+    });
 </script>

@@ -13,11 +13,9 @@
 ?>
 
  <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
- <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
  
  <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
-
+ 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
@@ -61,14 +59,7 @@
 
     function vis_feed_data()
     {
-        graph_data = [];
-        $.ajax({                                      
-            url: path+'feed/data.json',                         
-            data: "id="+feedid+"&start="+start+"&end="+end+"&interval=86400",
-            dataType: 'json',
-            async: false,                      
-            success: function(data_in) { graph_data = data_in; } 
-        });
+        graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
 
         for(x = 0; x < graph_data.length; x++) {
             for(y = 0; y < (graph_data.length-1); y++) {

@@ -14,8 +14,7 @@ global $session,$path;
 
 if (!$dashboard['height']) $dashboard['height'] = 400;
 ?>
-    <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/dashboard_langjs.php"></script>
-
+    <script type="text/javascript"><?php require "Modules/dashboard/dashboard_langjs.php"; ?></script>
     <link href="<?php echo $path; ?>Modules/dashboard/Views/js/widget.css" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
@@ -27,17 +26,16 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
     <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
 <div id="dashboardpage">
-
-<div id="widget_options" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3><?php echo _('Configure element'); ?></h3>
-    </div>
-    <div id="widget_options_body" class="modal-body"></div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="options-save" class="btn btn-primary"><?php echo _('Save changes'); ?></button>
-    </div>
+    <div id="widget_options" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"><?php echo _('Configure element'); ?></h3>
+        </div>
+        <div id="widget_options_body" class="modal-body"></div>
+        <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+            <button id="options-save" class="btn btn-primary"><?php echo _('Save changes'); ?></button>
+        </div>
     </div>
 </div>
 
@@ -47,10 +45,10 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
         <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i><?php echo _('Configure'); ?></button>
         <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>
     </span>
-    <button id="save-dashboard" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button>
+    <span><button id="save-dashboard" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button></span>
 </div>
 
-<div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; position:relative;">
+<div id="page-container" style="height:<?php echo $dashboard['height']; ?>px; background-color:#<?php echo $dashboard['backgroundcolor']; ?>; position:relative;">
     <div id="page"><?php echo $dashboard['content']; ?></div>
     <canvas id="can" width="940px" height="<?php echo $dashboard['height']; ?>px" style="position:absolute; top:0px; left:0px; margin:0; padding:0;"></canvas>
 </div>
@@ -89,8 +87,8 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
     show_dashboard();
 
-    setInterval(function() { update(); }, 10000);
-    setInterval(function() { fast_update(); }, 30);
+    setInterval(function() { update(); }, 5000);
+    setInterval(function() { fast_update(); }, 100);
 
 
     $("#save-dashboard").click(function (){
@@ -98,6 +96,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
         //otherwise a user can drag a component far down then up again and a too high value will be stored to db.
         designer.page_height = 0;
         designer.scan();
+        designer.draw();
         $.ajax({
             type: "POST",
             url :  path+"dashboard/setcontent.json",

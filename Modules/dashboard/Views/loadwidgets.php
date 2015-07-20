@@ -10,47 +10,44 @@
     http://openenergymonitor.org
 
     */
-
+    
     define("MODULE_PATH","Modules");
-    define("MODULE_PATH_EXT",MODULE_PATH."/");
-    define("WIDGETS_PATH",MODULE_PATH_EXT."dashboard/Views/js/widgets");
-    define("WIDGETS_PATH_EXT",WIDGETS_PATH."/");
 
     $widgets = array();
-    $dir = scandir(WIDGETS_PATH);
-    for ($i=2; $i<count($dir); $i++)
-    {
-        if (filetype(WIDGETS_PATH_EXT.$dir[$i])=='dir')
-        {
-            if (is_file(WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_widget.php"))
-            {
-                require_once WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_widget.php";
-                $widgets[] = $dir[$i];
-            }
-            else if (is_file(WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_render.js"))
-            {
-                echo "<script type='text/javascript' src='".$path.WIDGETS_PATH_EXT.$dir[$i]."/".$dir[$i]."_render.js'></script>";
-                $widgets[] = $dir[$i];
+
+    // Load module specific widgets
+    $basedir = scandir(MODULE_PATH);
+    for ($i=2; $i<count($basedir); $i++) {
+        $base = MODULE_PATH."/".$basedir[$i]."/widget";
+        if (is_dir($base)) {
+            // Look for /Modules/[module_name]/widget/[module_name].js or php files
+            if (load_widget($base,$basedir[$i]))
+                $widgets[] = $basedir[$i];
+            $extendeddir = scandir($base);
+            for ($j=2; $j<count($extendeddir); $j++) {
+                $extended = $base."/".$extendeddir[$j];
+                if (is_dir($extended)) {
+                    // Look for /Modules/[module_name]/widget/[widget_name]/[widget_name].js or php files
+                    if (load_widget($extended,$extendeddir[$j])) 
+                        $widgets[] = $extendeddir[$j];
+                }
             }
         }
     }
-
-    // Load module specific widgets
-
-    $dir = scandir(MODULE_PATH);
-    for ($i=2; $i<count($dir); $i++)
+    
+    function load_widget($folder,$widgetname)
     {
-        if (filetype(MODULE_PATH_EXT.$dir[$i])=='dir')
+        global $path;
+        $gotWidget = false;
+        if (is_file($folder."/".$widgetname."_widget.php"))
         {
-            if (is_file(MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_widget.php"))
-            {
-                require_once MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_widget.php";
-                $widgets[] = $dir[$i];
-            }
-            else if (is_file(MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_render.js"))
-            {
-                echo "<script type='text/javascript' src='".$path.MODULE_PATH_EXT.$dir[$i]."/widget/".$dir[$i]."_render.js'></script>";
-                $widgets[] = $dir[$i];
-            }
+            require_once $folder."/".$widgetname."_widget.php";
+            $gotWidget = true;
         }
+        if (is_file($folder."/".$widgetname."_render.js"))
+        {
+            echo "<script type='text/javascript' src='".$path.$folder."/".$widgetname."_render.js'></script>";
+            $gotWidget = true;
+        }
+        return $gotWidget;
     }

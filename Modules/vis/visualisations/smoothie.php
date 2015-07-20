@@ -41,8 +41,7 @@ http://openenergymonitor.org/emon/node/600
 
         var line1 = new TimeSeries();
 
-        if (feedid2 != "")
-          var line2 = new TimeSeries();
+        if (feedid2 != "") var line2 = new TimeSeries();
 
         // Used to filter out repeated data (Might be bad)
         var old	= 0;
@@ -68,8 +67,7 @@ http://openenergymonitor.org/emon/node/600
             end = (new Date()).getTime();
 
             vis_feed_data(apikey,feedid,start,end,line1,0);
-            if (feedid2 != "")
-            vis_feed_data(apikey,feedid2,start,end,line2,1);
+            if (feedid2 != "") vis_feed_data(apikey,feedid2,start,end,line2,1);
         }
 
         function vis_feed_data(apikey,feedid,start,end,line,oldref)

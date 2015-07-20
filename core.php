@@ -58,8 +58,6 @@ function controller($controller_name)
             $domain = "messages";
             bindtextdomain($domain, "Modules/".$controller_name."/locale");
             bind_textdomain_codeset($domain, 'UTF-8');
-
-
             textdomain($domain);
 
             require $controllerScript;
