@@ -9,19 +9,15 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-
-  global $path,$emoncms_version;
+  global $path,$fullwidth,$emoncms_version;
 ?>
-    
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Emoncms</title>
 
-        <!-- Thanks to Baptiste Gaultier for the emoncms dial icon http://bit.ly/zXgScz -->
         <link rel="shortcut icon" href="<?php echo $path; ?>Theme/favicon.png" />
-        <!-- APPLE TWEAKS - thanks to Paul Dreed -->
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/ios_load.png">
@@ -30,7 +26,7 @@
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Theme/emon.css" rel="stylesheet">
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.9.0.min.js"></script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.2.min.js"></script>
     </head>
 
     <body>
@@ -80,7 +76,7 @@
         <div id="footer">
             <?php echo _('Powered by '); ?>
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
-            <span> | v<?php echo $emoncms_version; ?></span>
+            <span> | <?php echo $emoncms_version; ?></span>
         </div>
 
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>

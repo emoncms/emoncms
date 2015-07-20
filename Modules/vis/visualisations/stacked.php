@@ -11,13 +11,12 @@
     global $path, $embed;
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
@@ -47,23 +46,8 @@
     start = Math.floor(start / 86400000) * 86400000;
     end = Math.floor(end / 86400000) * 86400000;
     
-    var dataA = [];
-    $.ajax({                                      
-        url: path+'feed/data.json',                         
-        data: "id="+kwhdA+"&start="+start+"&end="+end+"&interval=86400",
-        dataType: 'json',
-        async: false,                      
-        success: function(data_in) { dataA = data_in; } 
-    });
-    
-    var dataB = [];
-    $.ajax({                                      
-        url: path+'feed/data.json',                         
-        data: "id="+kwhdB+"&start="+start+"&end="+end+"&interval=86400",
-        dataType: 'json',
-        async: false,                      
-        success: function(data_in) { dataB = data_in; } 
-    });
+    var dataA = get_feed_data(kwhdA,start,end,3600*24,1,1);
+    var dataB = get_feed_data(kwhdB,start,end,3600*24,1,1);
 
     var embed = <?php echo $embed; ?>;
     $('#graph').width($('#graph_bound').width());

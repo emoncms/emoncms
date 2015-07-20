@@ -45,7 +45,7 @@ function bar_widgetlist()
 	var graduationDropBoxOptions = [
 					[1, "On"],
 					[0, "Off"]
-				]
+				];
 
 	addOption(widgets["bar"], "feed",        "feed",          _Tr("Feed"),            _Tr("Feed value"),                                                                  []);
 	addOption(widgets["bar"], "max",         "value",         _Tr("Max value"),       _Tr("Max value to show"),                                                           []);

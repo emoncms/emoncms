@@ -15,13 +15,11 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/graph.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/graph.js"></script>
-
-<h3>Data viewer</h2>
+<h3>Data viewer</h3>
 
 <div id="error" style="display:none"></div>
 
@@ -30,10 +28,10 @@
     <button class='btn graph_time' type='button' time='7'>W</button>
     <button class='btn graph_time' type='button' time='30'>M</button>
     <button class='btn graph_time' type='button' time='365'>Y</button>
-    <button id='graph_zoomin' class='btn' >+</button>
-    <button id='graph_zoomout' class='btn' >-</button>
-    <button id='graph_left' class='btn' ><</button>
-    <button id='graph_right' class='btn' >></button>
+    <button id='graph_zoomin' class='btn'>+</button>
+    <button id='graph_zoomout' class='btn'>-</button>
+    <button id='graph_left' class='btn'><</button>
+    <button id='graph_right' class='btn'>></button>
 </div>
 
 <div id="placeholder_bound" style="width:100%; height:400px;">

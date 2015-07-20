@@ -12,7 +12,7 @@
 
     */
     
-    $emoncms_version = "8.5.0";
+    $emoncms_version = "XT 8.5.2 | 2015.07.06";
     
     $ltime = microtime(true);
 
@@ -101,9 +101,9 @@
         }
     }
 
-    if ($route->controller == 'api') $route->controller = 'input';
-    if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json';
     if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json';
+    else if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json';
+    else if ($route->controller == 'api') $route->controller = 'input';
 
     // 6) Load the main page controller
     $output = controller($route->controller);
@@ -141,12 +141,20 @@
             print json_encode($output['content']);
         }
     }
-    if ($route->format == 'html')
+    else if ($route->format == 'html')
     {
-        $menu = load_menu();
-        $output['mainmenu'] = view("Theme/menu_view.php", array());
-        if ($embed == 0) print view("Theme/theme.php", $output);
-        if ($embed == 1) print view("Theme/embed.php", $output);
+        if ($embed == 1) {
+            print view("Theme/embed.php", $output);
+        } else {
+            $menu = load_menu();
+            $output['mainmenu'] = view("Theme/menu_view.php", array());
+            print view("Theme/theme.php", $output);
+        }
+    }
+    else if ($route->format == 'text')
+    {
+        header('Content-Type: text');
+        print $output['content'];
     }
 
     $ltime = microtime(true) - $ltime;

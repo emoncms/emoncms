@@ -23,13 +23,16 @@
 
 </div>
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('WARNING deleting a dashboard is permanent') ?></h3>
+        <h3 id="myModalLabel"><?php echo _('Delete dashboard') ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Are you sure you want to delete this dashboard?'); ?></p>
+        <p><?php echo _('Deleting a dashboard is permanent.'); ?>
+           <br><br>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -41,7 +44,7 @@
 
     var path = "<?php echo $path; ?>";
 
-    // Extemd table library field types
+    // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
     table.element = "#table";
@@ -56,8 +59,7 @@
         'published':{'title':"<?php echo _('Published'); ?>", 'type':"icon", 'trueicon':"icon-ok", 'falseicon':"icon-remove"},
 
         // Actions
-        'clone-action':{'title':'', 'type':"iconlink", 'icon':"icon-random", 'link':path+"dashboard/clone.json?id="},
-
+        'clone-action':{'title':'', 'type':"iconbasic", 'icon':'icon-random'},
         'edit-action':{'title':'', 'type':"edit"},
         'delete-action':{'title':'', 'type':"delete"},
         'draw-action':{'title':'', 'type':"iconlink", 'icon':"icon-edit", 'link':path+"dashboard/edit?id="},
@@ -104,4 +106,14 @@
         $('#myModal').modal('hide');
     });
 
+    
+//----------
+//  UI js
+//----------
+    $("#table").on('click', '.icon-random', function() {
+        var i = table.data[$(this).attr('row')];
+        var result = dashboard.clone(i['id']);
+        update();
+    });
+    
 </script>

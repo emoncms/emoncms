@@ -15,12 +15,13 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Simpler kWh/d zoomer"); ?></h2>
@@ -28,22 +29,26 @@
 
         <div id="graph_bound" style="height:400px; width:100%; position:relative; ">
             <div id="graph"></div>
-            <div style="position:absolute; top:20px; right:20px; opacity:0.5;">
+            <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
+                <div class='btn-group'>
+                    <button class='btn graph-mode' id="mode" type="button">power</button>
+                </div>
+                <div class='btn-group'>
+                    <button class='btn graph-time' type='button' time='1'>D</button>
+                    <button class='btn graph-time' type='button' time='7'>W</button>
+                    <button class='btn graph-time' type='button' time='30'>M</button>
+                    <button class='btn graph-time' type='button' time='365'>Y</button>
+                </div>
 
-                <input id="mode" type="button" value="power" /> |
-
-                <input class="time" type="button" value="D" time="1"/>
-                <input class="time" type="button" value="W" time="7"/>
-                <input class="time" type="button" value="M" time="30"/>
-                <input class="time" type="button" value="Y" time="365"/> |
-
-                <input id="zoomin" type="button" value="+"/>
-                <input id="zoomout" type="button" value="-"/>
-                <input id="left" type="button" value="<"/>
-                <input id="right" type="button" value=">"/>
+                <div class='btn-group' id='graph-navbar' style='display: none;'>
+                    <button class='btn graph-nav' id='zoomin'>+</button>
+                    <button class='btn graph-nav' id='zoomout'>-</button>
+                    <button class='btn graph-nav' id='left'><</button>
+                    <button class='btn graph-nav' id='right'>></button>
+                </div>
 
             </div>
-                <h3 style="position:absolute; top:00px; left:50px;"><span id="stats"></span></h3>
+            <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
         </div>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -122,14 +127,8 @@
                         dataend = end;
                         interval = Math.round(((end-start)/500)*0.001);
                     }
-                    
-                    $.ajax({                                      
-                        url: path+'feed/data.json',                         
-                        data: "id="+feedlist[i].id+"&start="+datastart+"&end="+dataend+"&interval="+interval,
-                        dataType: 'json',
-                        async: false,                      
-                        success: function(data_in) { feedlist[i].plot.data = data_in; } 
-                    });
+
+                    feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,interval,1,1);
                 }
                 
                 if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);
@@ -151,7 +150,8 @@
         var plot = $.plot($("#graph"), plotdata, {
             selection: { mode: "x" },
             grid: { show: true, clickable: true, hoverable: true },
-            xaxis: { mode: "time", timezone: "browser", min: start, max: end }
+            xaxis: { mode: "time", timezone: "browser", min: start, max: end },
+            touch: { pan: "x", scale: "x" }
         });
     }
 
@@ -186,7 +186,7 @@
             timeWindowChanged = 1;
             feedlist[0].selected = 1;
             feedlist[1].selected = 0;
-            $('#mode').val("kwhd");
+            $('#mode').html("kwhd");
             vis_feed_data();
         }
     });
@@ -198,23 +198,49 @@
     $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
     $('#right').click(function () {inst_panright(); vis_feed_data();});
     $('#left').click(function () {inst_panleft(); vis_feed_data();});
-    $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+    $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
     //-----------------------------------------------------------------------------------------------
 
     $('#mode').click(function ()
     {
-        if ($(this).val() == "kwhd") {
+        if ($(this).html() == "kwhd") {
             start = kwhd_start; end = kwhd_end; timeWindowChanged = 1;
             feedlist[0].selected = 0;
             feedlist[1].selected = 1;
-            $('#mode').val("power");
-        } else if ($(this).val() == "power") {
+            $('#mode').html("power");
+        } else if ($(this).html() == "power") {
             feedlist[0].selected = 1;
             feedlist[1].selected = 0;
-            $('#mode').val("kwhd");
+            $('#mode').html("kwhd");
         }
         vis_feed_data();
     });
 
+    // Graph buttons and navigation efects for mouse and touch
+    $("#graph").mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    $("#graph-bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    $("#graph").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $("#graph").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        start = ranges.xaxis.from; end = ranges.xaxis.to;
+        timeWindowChanged = 1; vis_feed_data();
+        panning = true; setTimeout(function() {panning = false; }, 100);
+    });
+    
 </script>
 

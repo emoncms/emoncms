@@ -17,48 +17,55 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.js"></script>
- <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/zoom/view.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/zoom/graphs.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/view.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/graphs.js"></script>
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/proc.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/proc.js"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("kWh/d Zoomer"); ?></h2>
 <?php } ?>
 
-<div id="test" style="height:500px; width:100%; position:relative; ">
-    <div id="placeholder" style="font-family: arial; position:absolute; top: 40px; left:60px;"></div>
-
-    <div style="position:absolute; top:10px; left:65px; font-size:18px;"><b><span id="out2"></span></b><?php echo _(": Hover on bar for info, press to zoom in"); ?></div>
-    <h2 style="position:absolute; top:40px; left:80px;"><span id="out"></span></h2>
-    <p id="bot_out" style="position:absolute; bottom:-10px; left:65px; font-size:18px; font-weight:bold;"></p>
-
-    <b><p style="position:absolute; top: 200px; left:0px;"><span id="axislabely"></span></p>
-    <p style="position:absolute; bottom: 40px; left:450px;"><?php echo _("Date / Time"); ?></p></b>
-
-    <div id="return_ctr" style="position:absolute; top:0px; right:10px;">
-        <input id="return" type="button" value="Back" style="font-size:18px; height:40px;"/>
+<div id="placeholder_bound" style="height:500px; width:100%; position:relative; ">
+    <div style="position:absolute; top:10px; left:0px; font-size:18px;">
+        <b><span id="out2"></span></b><?php echo _(": Hover on bar for info, press to zoom in"); ?>
     </div>
+    <div id="placeholder" style="font-family: arial; position:absolute; top: 40px; left:0px;"></div>
+    
+    <b><p style="position:absolute; bottom: 50px; left:10px;"><span id="axislabely"></span></p></b>
+    <h2 style="position:absolute; top:40px; left:32px;"><span id="out"></span></h2>
+    <p id="bot_out" style="position:absolute; bottom:-10px; font-size:18px; font-weight:bold;"></p>
 
-    <div id="inst-buttons" style="position:absolute; top:55px; right:20px;">
-        <input class="time" type="button" value="D" time="1"/>
-        <input class="time" type="button" value="W" time="7"/>
-        <input class="time" type="button" value="M" time="30"/>
-        <input class="time" type="button" value="Y" time="365"/> |
-        <input id="zoomin" type="button" value="+"/>
-        <input id="zoomout" type="button" value="-"/>
-        <input id="left" type="button" value="<"/>
-        <input id="right" type="button" value=">"/>
+    
+
+    <div id="graph-buttons" style="position:absolute; top:55px; right:32px; opacity:0.5;">
+        <div class='btn-group' id="graph-return">
+            <button class='btn graph-return' id="return">Back</button>
+        </div>
+        
+        <div class='btn-group'>
+            <button class='btn graph-time' time='1'>D</button>
+            <button class='btn graph-time' time='7'>W</button>
+            <button class='btn graph-time' time='30'>M</button>
+            <button class='btn graph-time' time='365'>Y</button>
+        </div>
+        
+        <div class='btn-group' id='graph-navbar' style='display: none;'>
+            <button class='btn graph-nav' id='zoomin'>+</button>
+            <button class='btn graph-nav' id='zoomout'>-</button>
+            <button class='btn graph-nav' id='left'><</button>
+            <button class='btn graph-nav' id='right'>></button>
+        </div>
     </div>
 
 </div>
@@ -74,10 +81,9 @@
     var start = +new Date - timeWindow;  //Get start time
     var end = +new Date; 
 
-    $('#placeholder').width($('#test').width()-60);
-    $('#placeholder').height($('#test').height()-120);
-    //  if (embed) $('#graph').height($(window).height());
-    $('#inst-buttons').hide();
+    $('#placeholder').width($('#placeholder_bound').width());
+    $('#placeholder').height($('#placeholder_bound').height()-120);
+    if (embed) $('#placeholder').height($(window).height()-120);
 
     var data = [];
     var days = [];
@@ -87,7 +93,6 @@
     var view = 0;
 
     // Global instantaneous graph variables
-    var start, end;
     var feedid = power;
 
     var price = <?php echo $pricekwh ?>;
@@ -96,17 +101,7 @@
 
     var bot_kwhd_text = "";
 
-    start = Math.floor(start / 86400000) * 86400000;
-    end = Math.floor(end / 86400000) * 86400000;
-    
-    var kwh_data = [];
-    $.ajax({                                      
-        url: path+'feed/data.json',                         
-        data: "id="+kwhd+"&start="+start+"&end="+end+"&interval=86400",
-        dataType: 'json',
-        async: false,                      
-        success: function(data_in) { kwh_data = data_in; } 
-    });
+    var kwh_data = get_feed_data(kwhd,start,end,3600*24,1,1);
 
     var total = 0, ndays=0;
     for (z in kwh_data) {
@@ -140,15 +135,7 @@
     {
         var power_data = [];
         var interval = Math.round(((end - start)*0.001) / 800);
-        
-        $.ajax({                                      
-            url: path+'feed/data.json',                         
-            data: "id="+feedid+"&start="+start+"&end="+end+"&interval="+interval,
-            dataType: 'json',
-            async: false,                      
-            success: function(data_in) { power_data = data_in; } 
-        });
-        
+        var power_data = get_feed_data(feedid,start,end,interval,1,1);
         var stats = power_stats(power_data);
         instgraph(power_data);
 
@@ -228,7 +215,50 @@
     $("#zoomin").click(function () {inst_zoomin(); vis_feed_data();});
     $('#right').click(function () {inst_panright(); vis_feed_data();});
     $('#left').click(function () {inst_panleft(); vis_feed_data();});
-    $('.time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
+    $('.graph-time').click(function () {inst_timewindow($(this).attr("time")); vis_feed_data();});
     //-----------------------------------------------------------------------------------------------
 
+  $(window).resize(function(){
+    $('#placeholder').width($('#placeholder_bound').width());
+    $('#placeholder').height($('#placeholder_bound').height()-120);
+    if (embed) $('#placeholder').height($(window).height()-120);
+    
+    if (view==0) set_annual_view();
+    if (view==1) set_monthly_view();
+    if (view==2) set_daily_view();
+    if (view==3) vis_feed_data();
+    //plot();
+  });
+    
+// Graph buttons and navigation efects for mouse and touch
+    $("#placeholder").mouseenter(function(){
+        if (view==3) {
+            $("#graph-navbar").show();
+        }
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    $("#placeholder_bound").mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    $("#placeholder").bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
+    $("#placeholder").bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        if (view==3) {
+            start = ranges.xaxis.from; 
+            end = ranges.xaxis.to;
+            vis_feed_data();
+        }
+    });
+    
+    
 </script>

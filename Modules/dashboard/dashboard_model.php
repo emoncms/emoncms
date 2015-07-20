@@ -116,6 +116,8 @@ class Dashboard
         if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\w\s-]/','',$fields->alias)."'";
         if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
 
+        if (isset($fields->backgroundcolor)) $array[] = "`backgroundcolor` = '".preg_replace('/[^[0-9A-F]]/','', strtolower($fields->backgroundcolor))."'";
+
         if (isset($fields->main))
         {
             $main = (bool)$fields->main;
@@ -146,33 +148,26 @@ class Dashboard
         return $result->fetch_array();
     }
 
-    public function get($userid, $id, $public, $published)
+    public function get($id)
     {
-        $userid = (int) $userid;
         $id = (int) $id;
-        $qB = ""; if ($public==true) $qB = " and public=1";
-        $qC = ""; if ($published==true) $qC = " and published=1";
-
-        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and id='$id'".$qB.$qC);
+        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE id='$id'");
         return $result->fetch_array();
     }
 
     // Returns the $id dashboard from $userid
-    public function get_from_alias($userid, $alias, $public, $published)
+    public function get_from_alias($userid, $alias)
     {
         $userid = (int) $userid;
         $alias = preg_replace('/[^\w\s-]/','',$alias);
-        $qB = ""; if ($public==true) $qB = " and public=1";
-        $qC = ""; if ($published==true) $qC = " and published=1";
-
-        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'".$qB.$qC);
+        $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'");
         return $result->fetch_array();
     }
 
-    public function build_menu($userid,$location)
+    public function build_menu_array($location)
     {
-        global $path, $session;
-        $userid = (int) $userid;
+        global $session;
+        $userid = (int) $session['userid'];
 
         $public = 0; $published = 0;
 
@@ -185,7 +180,7 @@ class Dashboard
         }
 
         $dashboards = $this->get_list($userid, $public, $published);
-        $topmenu="";
+        $menu = array();
         foreach ($dashboards as $dashboard)
         {
             // Check show description
@@ -202,10 +197,10 @@ class Dashboard
                 $aliasurl = '&id='.$dashboard['id'];
             }
 
-                // Build the menu item
-            $topmenu.='<li><a href="'.$path.$dashpath.$aliasurl.'"'.$desc.'>'.$dashboard['name'].'</a></li>';
+            // Build the menu item
+            $menu[] = array('name' => $dashboard['name'], 'path' => $dashpath.$aliasurl);
         }
-        return $topmenu;
+        return $menu;
     }
 
 }

@@ -1,34 +1,35 @@
 <?php
 
-    /*
-      0 - realtime or daily
-      1 - realtime
-      2 - daily
-      3 - histogram
+    /* Types:
+      0 - feed realtime or daily
+      1 - feed realtime
+      2 - feed daily
+      3 - feed histogram
       4 - boolean (not used uncomment line 122)
       5 - text
       6 - float value
       7 - int value
+      8 - multigraph id
     */
 
     $visualisations = array(
     
         'realtime' => array('label'=>_("RealTime"), 'options'=>array(
-            array('feedid',_("feedid"),1))
+            array('feedid',_("feed"),1))
         ),
         
         // Hex colour EDC240 is the default color for flot. since we want existing setups to not change, we set the default value to it manually now,
         'rawdata'=> array('label'=>_("RawData"), 'options'=>array(
-            array('feedid',_("feedid"),1),
+            array('feedid',_("feed"),1),
             array('fill',_("fill"),7,0),
             array('colour',_("colour"),5,'EDC240'),
-            array('units',_("units"),5,'W'),
-            array('dp',_("dp"),7,'1'),
+            array('units',_("units"),5,''),
+            array('dp',_("dp"),7,'2'),
             array('scale',_("scale"),6,'1'))
         ),
         
         'bargraph'=> array('label'=>_("BarGraph"), 'options'=>array(
-            array('feedid',_("feedid"),0),
+            array('feedid',_("feed"),0),
             array('colour',_("colour"),5,'EDC240'),
             array('interval',_("interval"),7,'86400'),
             array('units',_("units"),5,''),
@@ -38,12 +39,12 @@
         ),
         
         'smoothie'=> array('label'=>_("Smoothie"), 'options'=>array(
-            array('feedid',_("feedid"),1),
+            array('feedid',_("feed"),1),
             array('ufac',_("ufac"),6))
         ),
         
         'histgraph'=> array('label'=>_("Histgraph"), 'options'=>array(
-            array('feedid',_("feedid"),3),
+            array('feedid',_("feed"),3),
             array('barwidth',_("barwidth"),7,50),
             array('start',_("start"),7,0),
             array('end',_("end"),7,0))
@@ -70,7 +71,7 @@
         ),
         
         'threshold'=> array('label'=>_("Threshold"), 'options'=>array(
-            array('feedid',_("feedid"),3),
+            array('feedid',_("feed"),3),
             array('thresholdA',_("thresholdA"),6,500),
             array('thresholdB',_("thresholdB"),6,2500))
         ),
@@ -81,32 +82,34 @@
         )),
         
         'orderbars'=> array('label'=>_("OrderBars"), 'options'=>array(
-            array('feedid',_("feedid"),2)
+            array('feedid',_("feed"),2)
         )),
         
         'orderthreshold'=> array('label'=>_("OrderThreshold"), 'options'=>array(
-            array('feedid',_("feedid"),3),
+            array('feedid',_("feed"),3),
             array('power',_("power"),1),
             array('thresholdA',_("thresholdA"),6,500),
             array('thresholdB',_("thresholdB"),6,2500)
         )),
         
         'editrealtime'=> array('label'=>_("EditRealtime"), 'options'=>array(
-            array('feedid',_("feedid"),1)
+            array('feedid',_("feed"),1)
         )),
         
         'editdaily'=> array('label'=>_("EditDaily"), 'options'=>array(
-            array('feedid',_("feedid"),2)
+            array('feedid',_("feed"),2)
         )),
         
-        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(array('mid',_("mid"),7)) ),
+        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(
+            array('mid',_("mid"),8)
+        )),
         
         'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
-            array('powerx',_("powerx"),1),
-            array('powery',_("powery"),1)
+            array('feedA',_("Feed A"),1),
+            array('feedB',_("Feed B"),1)
         )),
         
-        'graph'=> array('options'=>array(
-            array('feedid',1)
+        'graph'=> array('label'=>_("Graph"), 'options'=>array(
+            array('feedid',_("feed"),1)
         ))
     );
