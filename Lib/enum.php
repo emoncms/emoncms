@@ -18,11 +18,13 @@
 
   class Engine {
     const MYSQL = 0;
-    const TIMESTORE = 1;    // Depreciated
+    const TIMESTORE = 1;     // Depreciated
     const PHPTIMESERIES = 2;
-    const GRAPHITE = 3;     // Not included in core
-    const PHPTIMESTORE = 4; // Depreciated
+    const GRAPHITE = 3;      // Not included in core
+    const PHPTIMESTORE = 4;  // Depreciated
     const PHPFINA = 5;
     const PHPFIWA = 6;
-    const VIRTUALFEED = 7;  // Virtual feed, on demand post processing
+    const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
+    const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
+    const REDISBUFFER = 9;   // Redis Read/Write buffer, for low write mode
   }

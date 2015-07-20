@@ -46,7 +46,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
 
     if (!isset($feed_settings['redisbuffer']['enabled'])) $feed_settings['redisbuffer'] = array('enabled'=>false);
-    if (isset($feed_settings['redisbuffer']['enabled']) && !$redis_enabled) $error_out .= "<p>buffered writing requires redis but its disabled, check settings: settings['redisbuffer']['enabled'], redis_enabled";
+    if ($feed_settings['redisbuffer']['enabled'] && !$redis_enabled) $error_out .= "<p>buffered writing requires redis but its disabled, check settings: settings['redisbuffer']['enabled'], redis_enabled";
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
     if (!isset($data_sampling)) $data_sampling = true; // default

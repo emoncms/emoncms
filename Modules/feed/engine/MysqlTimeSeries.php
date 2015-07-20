@@ -24,7 +24,7 @@ class MysqlTimeSeries
     public function post($feedid,$time,$value,$arg=null)
     {
         $feedname = "feed_".trim($feedid)."";
-        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");
+        $this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value') ON DUPLICATE KEY UPDATE data=VALUES(data)");
     }
 
     // Insert data in post buffer
@@ -37,7 +37,7 @@ class MysqlTimeSeries
     // Saves post buffer to mysql feed_table, performing bulk inserts instead of an insert for each point
     public function post_bulk_save()
     {
-        $stepcnt = 10; // Data points to save in each insert command
+        $stepcnt = 512; // Data points to save in each insert command limit is max_allowed_packet = 1Mb default
         foreach ($this->writebuffer as $feedid=>$data) {
             $feedname = "feed_".trim($feedid)."";
             $cnt=count($data);
@@ -48,14 +48,14 @@ class MysqlTimeSeries
                     $s=0; // data point step
                     while($s<$stepcnt) {
                         if (isset($data[$p][0]) && isset($data[$p][1])) {
-                            $sql_values .= "('".$data[$p][0]."','".$data[$p][1]."'),";
+                            $sql_values .= "(".$data[$p][0].",".$data[$p][1]."),";
                         }
                         $s++; $p++; 
                         if ($p>=$cnt) break;
                     }
                     if ($sql_values!="") {
-                        $this->log->info("post_bulk_save() " . "INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1));
-                        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES " . $substr($sql_values,0,-1));
+                        $this->log->info("post_bulk_save() " . "INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
+                        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
                     }
                 }
             }
@@ -68,10 +68,11 @@ class MysqlTimeSeries
         $feedid = (int) $feedid;
         if ($this->writebuffer_update_time($feedid,(int)$time,$value)) {
             $this->post_bulk_save();// if data is on buffer, update it and flush buffer now
-            $this->log->info("update() value updated with buffer");
+            $this->log->info("update() $feedid with buffer");
         }
         else 
         {
+            $this->log->info("update() $feedid");
             // else, update or insert data value in feed table
             $feedname = "feed_".trim($feedid)."";
             $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time'");
@@ -370,7 +371,7 @@ class MysqlTimeSeries
 
 
     // Search time in buffer if found update its value and return true 
-    private function buffer_update_time($feedid,$time,$newvalue) {
+    private function writebuffer_update_time($feedid,$time,$newvalue) {
        if (isset($this->writebuffer[$feedid])) {
            $array=$this->writebuffer[$feedid];
            foreach ($array as $key => $val) {

@@ -20,7 +20,7 @@ class Feed
     private $redis;
     private $settings;
 
-	
+
     public function __construct($mysqli,$redis,$settings)
     {
         $this->log = new EmonLogger(__FILE__);
@@ -33,10 +33,10 @@ class Feed
     // Return instance of engine class, autoload when needed
     public function EngineClass($e)
     {
-		$e = (string)$e;
+        $e = (string)$e;
         static $engines = array();
         if (isset($engines[$e])) {
-			//$this->log->info("EngineClass() reused instance of '".get_class($engines[$e])."' id '".$e."'. <----------");
+            //$this->log->info("EngineClass() reused instance of '".get_class($engines[$e])."' id '".$e."'. <----------");
             return $engines[$e];
         }
         else {
@@ -44,7 +44,7 @@ class Feed
             if ($e == (string)Engine::MYSQL) {
                     require "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
                     $engines[$e] = new MysqlTimeSeries($this->mysqli);
-			} else if ($e == (string)Engine::VIRTUALFEED) {
+            } else if ($e == (string)Engine::VIRTUALFEED) {
                     require "Modules/feed/engine/VirtualFeed.php";      // Takes care of Virtual Feeds
                     $engines[$e] =  new VirtualFeed($this->mysqli,$this->redis,$this);
             } else if ($e == (string)Engine::PHPFINA) {
@@ -55,22 +55,22 @@ class Feed
                     $engines[$e] = new PHPFiwa($this->settings['phpfiwa']);
             } else if ($e == (string)Engine::REDISBUFFER) {
                     require "Modules/feed/engine/RedisBuffer.php";      // Redis buffer for low-write mode
-                    $engines[$e] = new RedisBuffer($this->redis,$this->settings['redisbuffer']);
+                    $engines[$e] = new RedisBuffer($this->redis,$this->settings['redisbuffer'],$this);
             } else if ($e == (string)Engine::PHPTIMESERIES) {
                     require "Modules/feed/engine/PHPTimeSeries.php";    // Variable interval no averaging
                     $engines[$e] =  new PHPTimeSeries($this->settings['phptimeseries']);
             } else if ($e == (string)Engine::MYSQLMEMORY) {
                     require_once "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
-					require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
+                    require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
                     $engines[$e] =  new MysqlMemory($this->mysqli);
             } else if ($e == "histogram") {
                     require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
                     $engines[$e] = new Histogram($this->mysqli);
-			} else {
+            } else {
                     $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
                     throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
-			}
-			$this->log->info("EngineClass() Autoloaded new instance of '".get_class($engines[$e])."'.");
+            }
+            $this->log->info("EngineClass() Autoloaded new instance of '".get_class($engines[$e])."'.");
             return $engines[$e];
         }
     }
@@ -161,6 +161,7 @@ class Feed
             $userid = $this->redis->hget("feed:$feedid",'userid');
             $this->redis->del("feed:$feedid");
             $this->redis->srem("user:feeds:$userid",$feedid);
+            $this->redis->srem("feed:active",$feedid); // remove from feedlist
         }
         if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
@@ -168,6 +169,7 @@ class Feed
 
     public function exist($feedid)
     {
+        //$this->log->info("exist() $feedid");
         static $feed_exists_cache = array(); // Array to hold the cache
         if (isset($feed_exists_cache[$feedid])) {
             $feedexist = $feed_exists_cache[$feedid]; // Retrieve from static cache
@@ -280,12 +282,17 @@ class Feed
     {
         $userid = (int) $userid;
         $feeds = array();
-        $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,processList FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,time,value,processList FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
-            $lastvalue = $this->get_timevalue($row['id']); 
-            $row['time'] = $lastvalue['time'];
-            $row['value'] = $lastvalue['value'];
+            if ($row['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
+                $this->log->info("mysql_get_user_feeds() calling VIRTUAL lastvalue " . $row['id']);
+                $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']); 
+                $row['time'] = $lastvirtual['time'];
+                $row['value'] = $lastvirtual['value'];
+            } else {
+                $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
+            }
             $feeds[] = $row;
         }
         return $feeds;
@@ -367,19 +374,19 @@ class Feed
         //$this->log->info("get_timevalue() $id");
         
         if ($engine == Engine::VIRTUALFEED) { //if virtual get it now
-            $this->log->info("get_timevalue() VIRTUAL $id");
+            $this->log->info("get_timevalue() calling VIRTUAL lastvalue $id");
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id); 
             return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
 
         if ($this->redis) 
         {
-            if ($this->redis->exists("feed:timevalue:$id")) {
-                $lastvalue = $this->redis->hmget("feed:timevalue:$id",array('time','value'));
+            if ($this->redis->hExists("feed:$id",'time')) {
+                $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 $lastvalue = $this->EngineClass($engine)->lastvalue($id);
-                $this->redis->hMset("feed:timevalue:$id", array('time' => $lastvalue['time'],'value' => $lastvalue['value']));
+                $this->redis->hMset("feed:$id", array('time' => $lastvalue['time'],'value' => $lastvalue['value']));
             }
         }
         else 
@@ -413,8 +420,16 @@ class Feed
         if ($engine == Engine::VIRTUALFEED) {
             $this->log->info("get_data() $feedid,$start,$end,$outinterval,$skipmissing,$limitinterval");
         }
-        //CHAVEIRO TODO: load redisbuffer cache if available
-        return $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+
+        //if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer post
+            //CHAVEIRO TODO: load redisbuffer cache if available
+            //$args = array('engine'=>$engine,'updatetime'=>$updatetime,'arg'=>$arg);
+            //$this->EngineClass(Engine::REDISBUFFER)->post($feedid,$feedtime,$value,$args);
+        //} else {
+            // Call to engine get_data  
+            return $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+        //}
     }
 
     public function csv_export($feedid,$start,$end,$outinterval)
@@ -475,7 +490,7 @@ class Feed
     {
         if ($value === null) $value = 'NULL'; // Null is a valid value
         if ($this->redis) {
-            $this->redis->hMset("feed:timevalue:$id", array('value' => $value, 'time' => $time));
+            $this->redis->hMset("feed:$id", array('value' => $value, 'time' => $time));
         } else {
             $time = date("Y-n-j H:i:s", $time); // feeds table time is datetime, convert it
             $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = $value WHERE `id`= '$id'");
@@ -484,6 +499,7 @@ class Feed
 
     public function insert_data($feedid,$updatetime,$feedtime,$value,$arg=null)
     {
+        $this->log->info("insert_data() feedid=$feedid updatetime=$updatetime feedtime=$feedtime value=$value arg=$arg");
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
@@ -493,13 +509,14 @@ class Feed
         $value = floatval($value);
 
         $engine = $this->get_engine($feedid);
-        //if ($feed_settings['redisbuffer']['enabled']) {
-			$args = array(engine=>$engine,updatetime=>$updatetime,arg=>$arg);
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer post
+            $args = array('engine'=>$engine,'updatetime'=>$updatetime,'arg'=>$arg);
             $this->EngineClass(Engine::REDISBUFFER)->post($feedid,$feedtime,$value,$args);
-        //} else {
-            // Call to engine post method       
+        } else {
+            // Call to engine post  
             $this->EngineClass($engine)->post($feedid,$feedtime,$value,$arg);
-        //}
+        }
 
         $this->set_timevalue($feedid, $value, $updatetime);
 
@@ -524,15 +541,15 @@ class Feed
         $value = floatval($value);
 
         $engine = $this->get_engine($feedid);
-        //if ($feed_settings['redisbuffer']['enabled']) {
-            $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,   $engine,$feedid);
-        //} else {
-            // Call to engine post method       
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer update
+            $args = array('engine'=>$engine,'updatetime'=>$updatetime);
+            $this->EngineClass(Engine::REDISBUFFER)->update($feedid,$feedtime,$value,$args);
+        } else {
+            // Call to engine update
             $this->EngineClass($engine)->update($feedid,$feedtime,$value);
-        //}     
-        // Call to engine update method
-        //$value = $this->EngineClass($engine)->update($feedid,$feedtime,$value);
-       
+        }     
+
         // need to find a way to not update if value being updated is older than the last value
         // in the database, redis lastvalue is last update time rather than last datapoint time.
         // So maybe we need to store both in redis.
@@ -675,6 +692,7 @@ class Feed
             'processList'=>$row->processList
         ));
 
+        $this->redis->sAdd("feed:active",$id); // save feed id to feedlist redis used on feedwriter
         return true;
     }
 
