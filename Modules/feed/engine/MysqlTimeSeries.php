@@ -3,30 +3,21 @@
 class MysqlTimeSeries
 {
 
-    private $mysqli;
+    protected $mysqli;
+    protected $log;
+    private $writebuffer = array();
 
-    /**
-     * Constructor.
-     *
-     * @param api $mysqli Instance of mysqli
-     *
-     * @api
-    */
     public function __construct($mysqli)
     {
         $this->mysqli = $mysqli;
+        $this->log = new EmonLogger(__FILE__);
     }
 
-    /**
-     * Creates a histogram type mysql table.
-     *
-     * @param integer $feedid The feedid of the histogram table to be created
-    */
     public function create($feedid,$options)
     {
         $feedname = "feed_".trim($feedid)."";
 
-        $result = $this->mysqli->query("CREATE TABLE $feedname (time INT UNSIGNED, data float, INDEX ( `time` )) ENGINE=MYISAM");
+        $result = $this->mysqli->query("CREATE TABLE $feedname (time INT UNSIGNED NOT NULL, data FLOAT NOT NULL, UNIQUE (time)) ENGINE=MYISAM");
         return true;
     }
 
@@ -36,23 +27,68 @@ class MysqlTimeSeries
         $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");
     }
 
+    // Insert data in post buffer
+    public function post_bulk_prepare($feedid,$time,$value,$arg=null)
+    {
+        $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
+        //$this->log->info("post_bulk_prepare() $feedid, $time, $value, $arg");
+    }
+
+    // Saves post buffer to mysql feed_table, performing bulk inserts instead of an insert for each point
+    public function post_bulk_save()
+    {
+        $stepcnt = 10; // Data points to save in each insert command
+        foreach ($this->writebuffer as $feedid=>$data) {
+            $feedname = "feed_".trim($feedid)."";
+            $cnt=count($data);
+            if ($cnt>0) {
+                $p = 0; // point
+                while($p<$cnt) {
+                    $sql_values="";
+                    $s=0; // data point step
+                    while($s<$stepcnt) {
+                        if (isset($data[$p][0]) && isset($data[$p][1])) {
+                            $sql_values .= "('".$data[$p][0]."','".$data[$p][1]."'),";
+                        }
+                        $s++; $p++; 
+                        if ($p>=$cnt) break;
+                    }
+                    if ($sql_values!="") {
+                        $this->log->info("post_bulk_save() " . "INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1));
+                        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES " . $substr($sql_values,0,-1));
+                    }
+                }
+            }
+        }
+        $this->writebuffer = array(); // clear buffer
+    }
+
     public function update($feedid,$time,$value)
     {
-        $feedname = "feed_".trim($feedid)."";
-        // a. update or insert data value in feed table
-        $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time'");
+        $feedid = (int) $feedid;
+        if ($this->writebuffer_update_time($feedid,(int)$time,$value)) {
+            $this->post_bulk_save();// if data is on buffer, update it and flush buffer now
+            $this->log->info("update() value updated with buffer");
+        }
+        else 
+        {
+            // else, update or insert data value in feed table
+            $feedname = "feed_".trim($feedid)."";
+            $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time'");
 
-        if (!$result) return $value;
-        $row = $result->fetch_array();
+            if (!$result) return $value;
+            $row = $result->fetch_array();
 
-        if ($row) $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE time = '$time'");
-        if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");}
-
+            if ($row) $this->mysqli->query("UPDATE $feedname SET data = '$value' WHERE time = '$time'");
+            if (!$row) {$value = 0; $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES ('$time','$value')");}
+        }
         return $value;
     }
 
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        global $data_sampling;
+        
         $feedid = intval($feedid);
         $start = round($start/1000);
         $end = round($end/1000);
@@ -63,18 +99,23 @@ class MysqlTimeSeries
         $end = $start + ($dp * $interval);
         if ($dp<1) return false;
 
-        // Check if datatype is daily so that select over range is used rather than 
-        // skip select approach
-        $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
-        $row = $result->fetch_array();
-        $datatype = $row['datatype'];
+        // Check if datatype is daily so that select over range is used rather than skip select approach
+        static $feed_datatype_cache = array(); // Array to hold the cache
+        if (isset($feed_datatype_cache[$feedid])) {
+            $datatype = $feed_datatype_cache[$feedid]; // Retrieve from static cache
+        } else {
+            $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
+            $row = $result->fetch_array();
+            $datatype = $row['datatype'];
+            $feed_datatype_cache[$feedid] = $datatype; // Cache it
+        }
         if ($datatype==2) $dp = 0;
 
         $feedname = "feed_".trim($feedid)."";
 
         $data = array();
         $range = $end - $start; // window duration in seconds
-        if ($range > 180000 && $dp > 0) // 50 hours
+        if ($data_sampling && $range > 180000 && $dp > 0) // 50 hours
         {
             $td = $range / $dp; // time duration for each datapoint
             $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
@@ -97,7 +138,7 @@ class MysqlTimeSeries
             if ($range > 5000 && $dp > 0) // 83.33 min
             {
                 $td = intval($range / $dp);
-                $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
+                $sql = "SELECT time DIV $td AS time, AVG(data) AS data".
                     " FROM $feedname WHERE time BETWEEN $start AND $end".
                     " GROUP BY 1 ORDER BY time ASC";
             } else {
@@ -232,7 +273,13 @@ class MysqlTimeSeries
     
     public function get_meta($feedid)
     {
-    
+        $meta = new stdClass();
+        $meta->id = $feedid;
+        $meta->start_time = 0;
+        $meta->nlayers = 1;
+        $meta->npoints = -1;
+        $meta->interval = 1;
+        return $meta;
     }
     
     public function csv_export($feedid,$start,$end,$outinterval)
@@ -321,4 +368,18 @@ class MysqlTimeSeries
         exit;
     }
 
+
+    // Search time in buffer if found update its value and return true 
+    private function buffer_update_time($feedid,$time,$newvalue) {
+       if (isset($this->writebuffer[$feedid])) {
+           $array=$this->writebuffer[$feedid];
+           foreach ($array as $key => $val) {
+               if ($val[0] === $time) {
+                   $this->writebuffer[$feedid][$key][1] = $newvalue;
+                   return true;
+               }
+           }
+       }
+       return false;
+    }
 }

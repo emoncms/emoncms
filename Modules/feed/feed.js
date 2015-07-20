@@ -3,15 +3,13 @@ var feed = {
 
   apikey: "",
   
-  'create':function(name, datatype, engine, options)
-  {
+  'create':function(tag, name, datatype, engine, options){
     var result = {};
-    $.ajax({ url: path+"feed/create.json", data: "name="+name+"&datatype="+datatype+"&engine="+engine+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"feed/create.json", data: "tag="+tag+"&name="+name+"&datatype="+datatype+"&engine="+engine+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data){result = data;} });
     return result;
   },
   
-  'list':function()
-  {
+  'list':function(){
     var result = {};
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
     
@@ -19,8 +17,7 @@ var feed = {
     return result;
   },
   
-  'list_assoc':function()
-  {
+  'list_assoc':function(){
     var result = {};
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
     
@@ -32,8 +29,7 @@ var feed = {
     return feeds;
   },
   
-  'list_by_id':function()
-  {
+  'list_by_id':function(){
     var feeds = {};
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
     
@@ -49,8 +45,7 @@ var feed = {
     return feeds;
   },
   
-  'list_by_name':function()
-  {
+  'list_by_name':function(){
     var feeds = {};
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
     
@@ -66,27 +61,24 @@ var feed = {
     return feeds;
   },
 
-  'set':function(id, fields)
-  {
+  'set':function(id, fields){
     var result = {};
     $.ajax({ url: path+"feed/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data){} });
     return result;
   },
 
-  'remove':function(id)
-  {
+  'remove':function(id){
     $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
   },
 
-  'get_data':function(feedid,start,end,interval,skipmissing,limitinterval)
-  {
+  'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
   //if (skipmissing == undefined) skipmissing = 1;
   //if (limitinterval == undefined) limitinterval = 1;
     $.ajax({                                      
       url: path+'feed/data.json',                         
-      data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval,
+      data: "id="+feedid+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval+apikeystr,
       dataType: 'json',
       async: false,                      
       success: function(data_in) { feedIn = data_in; } 
@@ -94,13 +86,12 @@ var feed = {
     return feedIn;
   },
 
-  'get_kwhatpowers':function(feedid,points)
-  {
+  'get_kwhatpowers':function(feedid,points){
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
     $.ajax({                                      
       url: path+'feed/kwhatpowers.json',                         
-      data: apikeystr+"&id="+feedid+"&points="+JSON.stringify(points),
+      data: "id="+feedid+"&points="+JSON.stringify(points)+apikeystr,
       dataType: 'json',
       async: false,                      
       success: function(data_in) { feedIn = data_in; } 
@@ -108,19 +99,46 @@ var feed = {
     return feedIn;
   },
 
-  'histogram':function(feedid,start,end)
-  {
+  'histogram':function(feedid,start,end){
     var feedIn = [];
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
     $.ajax({                                      
       url: path+'feed/histogram.json',                         
-      data: apikeystr+"&id="+feedid+"&start="+start+"&end="+end+"&res=1",
+      data: "id="+feedid+"&start="+start+"&end="+end+"&res=1"+apikeystr,
       dataType: 'json',
       async: false,                      
       success: function(data_in) { feedIn = data_in; } 
     });
     return feedIn;
-  }
+  },
 
+  // Virtual feed process
+  'set_process':function(feedid,processlist){
+    var result = {};
+    $.ajax({ url: path+"feed/process/set.json", data: "id="+feedid+"&processlist="+processlist, async: false, success: function(data){result = data;} });
+    return result;
+  },
+
+  'processlist':function(feedid){
+    var result = {};
+    $.ajax({ url: path+"feed/process/list.json", data: "id="+feedid, async: false, dataType: 'json', success: function(data){result = data;} });
+    var processlist = [];
+    if (result!="")
+    {
+      var tmp = result.split(",");
+      for (n in tmp)
+      {
+        var process = tmp[n].split(":"); 
+        processlist.push(process);
+      }
+    }
+    return processlist;
+  },
+
+  'reset_processlist':function(feedid,processid){
+    var result = {};
+    $.ajax({ url: path+"feed/process/reset.json", data: "id="+feedid, async: false, success: function(data){result = data;} });
+    return result;
+  }
 }
 

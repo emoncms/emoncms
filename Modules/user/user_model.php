@@ -457,7 +457,7 @@ class User
         $now->setTimezone(new DateTimeZone($row->timezone));
         return intval($now->getOffset()); // Will return seconds offset from GMT
     }
-	
+
     public function get_timezone($userid)
     {
         $userid = intval($userid);
@@ -573,5 +573,12 @@ class User
         $apikey = md5(uniqid(mt_rand(), true));
         $this->mysqli->query("UPDATE users SET apikey_write = '$apikey' WHERE id='$userid'");
         return $apikey;
+    }
+
+    public function get_number_of_users()
+    {
+        $result = $this->mysqli->query("SELECT COUNT(*) FROM users");
+	$row = $result->fetch_row();
+        return $row[0];
     }
 }

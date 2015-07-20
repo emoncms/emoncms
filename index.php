@@ -1,5 +1,4 @@
 <?php
-
     /*
 
     All Emoncms code is released under the GNU Affero General Public License.
@@ -12,10 +11,7 @@
 
     */
     
-    $emoncms_version = "XT 8.5.2 | 2015.07.06";
-    
     $ltime = microtime(true);
-
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
@@ -24,25 +20,26 @@
     require "route.php";
     require "locale.php";
 
-    $path = get_application_path();
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "XT 8.6.0 alfa | 2015.07.18 | for testers only";
 
-    require "Modules/log/EmonLogger.php";
+    $path = get_application_path();
+    require "Lib/EmonLogger.php";
+
 
     // 2) Database
-    $mysqli = @new mysqli($server,$username,$password,$database);
-
-    if (class_exists('Redis') && $redis_enabled) {
+    if ($redis_enabled) {
         $redis = new Redis();
-        $connected = $redis->connect("127.0.0.1");
+        $connected = $redis->connect($redis_server);
         if (!$connected) {
-            echo "Can't connect to redis database, it may be that redis-server is not installed or started see readme for redis installation"; die;
+            echo "Can't connect to redis at $redis_server, it may be that redis-server is not installed or started see readme for redis installation"; die;
         }
     } else {
         $redis = false;
     }
     
     $mqtt = false;
-    
+
+    $mysqli = @new mysqli($server,$username,$password,$database);
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {

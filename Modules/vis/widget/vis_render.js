@@ -2,17 +2,15 @@
    All emon_widgets code is released under the GNU General Public License v3.
    See COPYRIGHT.txt and LICENSE.txt.
 
-    ---------------------------------------------------------------------
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
+   Part of the OpenEnergyMonitor project:
+   http://openenergymonitor.org
 
-    Author: Trystan Lea: trystan.lea@googlemail.com
-    If you have any questions please get in touch, try the forums here:
-    http://openenergymonitor.org/emon/forum
+   Author: Trystan Lea: trystan.lea@googlemail.com
+   If you have any questions please get in touch, try the forums here:
+   http://openenergymonitor.org/emon/forum
  */
 
-function vis_widgetlist()
-{
+function vis_widgetlist(){
   var widgets = {
     "realtime":
     {
@@ -166,30 +164,26 @@ function vis_widgetlist()
       "optionstype":["dropbox"],
       "optionsname":[_Tr("Multigraph")],
       "optionshint":[_Tr("Managed on Visualization module")],
-      "optionsdata":[multigraphsDropBoxOptions],
+      "optionsdata":[multigraphsDropBoxOptions], // Gets multigraphs from vis_widget.php multigraphsDropBoxOptions variable
       "html":""
     }
   }
 
-  // Gets multigraphs from vis_widget.php public multigraphs variable
   return widgets;
 }
 
-function vis_init()
-{
+function vis_init(){
   vis_draw();
 }
 
-function vis_draw()
-{
+function vis_draw(){
   var vislist = vis_widgetlist();
 
   var visclasslist = '';
   for (z in vislist) { visclasslist += '.'+z+','; }
   visclasslist = visclasslist.slice(0, -1);
 
-  $(visclasslist).each(function()
-  {
+  $(visclasslist).each(function(){
     var id = $(this).attr("id");
     var feed = $(this).attr("feed") || 0;
     var width = $(this).width();
@@ -197,27 +191,26 @@ function vis_draw()
 
     var apikey_string = "";
     if (apikey) apikey_string = "&apikey="+apikey;
-    
-    if (!$(this).html() || reloadiframe==id || apikey){
+
+    if (!$(this).html() || reloadiframe!=0 || apikey){ //originally reloadiframe==id 
         var attrstring = "";
         var target = $(this).get(0);
         var l = target.attributes.length;
-        for (var i=0; i<l; i++)
-        {
+        for (var i=0; i<l; i++){
           var attr = target.attributes[i].name;
-          if (attr!="id" && attr!="class" && attr!="style")
-          {
+          if (attr!="id" && attr!="class" && attr!="style"){
             attrstring += "&"+attr+"="+target.attributes[i].value;
           }
         }
-        $(this).html('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+path+'vis/'+$(this).attr("class")+'?embed=1'+attrstring+apikey_string+'"></iframe>');
+        pathfix=path.substr(path.indexOf('://')+3); // remove protocol
+        pathfix=pathfix.substr(pathfix.indexOf('/')); // remove hostname
+        $(this).html('<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+pathfix+'vis/'+$(this).attr("class")+'?embed=1'+attrstring+apikey_string+'"></iframe>');
+        console.log('--> new relative url for iframe of '+ $(this).attr("class") + ': '+pathfix+'vis/'+$(this).attr("class")+'?embed=1'+attrstring+apikey_string);
     }
 
     var iframe = $(this).children('iframe');
     iframe.width(width);
     iframe.height(height);
-    //iframe.width('100%');
-    //iframe.height('100%');
 
   });
   reloadiframe = 0;

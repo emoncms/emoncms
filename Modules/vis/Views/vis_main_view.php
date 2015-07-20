@@ -2,10 +2,8 @@
 All Emoncms code is released under the GNU Affero General Public License.
 See COPYRIGHT.txt and LICENSE.txt.
 
----------------------------------------------------------------------
 Emoncms - open source energy visualisation
-Part of the OpenEnergyMonitor project:
-http://openenergymonitor.org
+Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 -->
 
 <?php
@@ -20,10 +18,10 @@ global $path;
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/multigraph_edit.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/vis.helper.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph/multigraph.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_edit.js"></script>
 
 <h2><?php echo _("Visualisations"); ?></h2>
 
@@ -89,8 +87,7 @@ global $path;
     vis_resize();
     
     var out = '<select id="visselect" style="width:180px; margin:0px;">';
-    for (z in widgets)
-    {
+    for (z in widgets) {
         // If widget action specified: use action otherwise override with widget key
         var action = z;
         var label = z;
@@ -108,12 +105,9 @@ global $path;
 
     $("#visselect").change(function() {
         // Custom multigraph visualisation items
-        if ($(this).val()=="multigraph")
-        {
+        if ($(this).val()=="multigraph") {
             multigraphGUI();
-        }
-        else
-        {
+        } else {
             $("#viewbtn").show();
             // Normal visualisation items
             draw_options(widgets[$(this).val()]['options'], widgets[$(this).val()]['optionstype']);
@@ -133,16 +127,13 @@ global $path;
         var options = [];
         $(".options").each(function() {
             if ($(this).val()) {
-                if ($(this).attr("id")=="colour")
-                {
+                if ($(this).attr("id")=="colour") {
                     // Since colour values are generally prefixed with "#", and "#" isn't valid in URLs, we strip out the "#".
                     // It will be replaced by the value-checking in the actual plot function, so this won't cause issues.
                     var colour = $(this).val();
                     colour = colour.replace("#","");
                     options.push($(this).attr("id")+"="+colour);
-                }
-                else 
-                {
+                } else {
                     options.push($(this).attr("id")+"="+$(this).val());
                 }
                 if ($(this).attr("otype")=='feed') publicfeed = $('option:selected', this).attr('public');
@@ -168,34 +159,26 @@ global $path;
         // Added in custom action for multigraph
         // if the vis type is multigraph then we construct
         // the visurl with multigraph?id=1
-        if (vistype=="multigraph")
-        {
+        if (vistype=="multigraph") {
             visurl = "multigraph?mid="+multigraph_id;
-        }
-        else
-        {
+        } else {
             visurl += path+"vis/"+vistype;
             var options = [];
             $(".options").each(function() {
-                if ($(this).val())
-                {
-                    if ($(this).attr("id")=="colour")
-                    {
+                if ($(this).val()) {
+                    if ($(this).attr("id")=="colour") {
                         // Since colour values are generally prefixed with "#", and "#" isn't valid in URLs, we strip out the "#".
                         // It will be replaced by the value-checking in the actual plot function, so this won't cause issues.
                         var colour = $(this).val();
                         colour = colour.replace("#","");
                         options.push($(this).attr("id")+"="+colour);
-                    }
-                    else 
-                    {
+                    } else  {
                         options.push($(this).attr("id")+"="+$(this).val());
                     }
                 }
             });
         }
         if (options) visurl += "?"+options.join("&");
-        //$(window.location).attr('href',visurl);
         window.open(visurl,'_blank');
     });
 
@@ -203,25 +186,17 @@ global $path;
 
 
     // --- Functions
-    function draw_options(box_options)
-    {
+    function draw_options(box_options) {
         // Build options table html
         var options_html = "";
-        for (z in box_options)
-        {
-
+        for (z in box_options) {
             options_html += "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+box_options[z][1]+"</span>";
-
             var type = box_options[z][2];
 
-            if (type == 0 || type == 1 || type == 2 || type == 3)
-            {
+            if (type == 0 || type == 1 || type == 2 || type == 3) {
                 options_html += select_feed(box_options[z][0], feedlist, type);
-            }
-            else
-            {
-                if (box_options[z][0] == "colour") 
-                {
+            } else {
+                if (box_options[z][0] == "colour")  {
                     options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
                 } else {
                     options_html += "<input type='text' class='options' id='"+box_options[z][0]+"' value='"+box_options[z][3]+"'>";
@@ -235,8 +210,7 @@ global $path;
     }
 
     // Create a drop down select box with a list of feeds.
-    function select_feed(id, feedlist, type)
-    {
+    function select_feed(id, feedlist, type) {
         var feedgroups = [];
         for (z in feedlist) {
             if (feedlist[z].datatype == type || (type == 0 && (feedlist[z].datatype == 1 || feedlist[z].datatype == 2))) {
@@ -259,8 +233,7 @@ global $path;
         return out;
     }
 
-    function vis_resize()
-    {
+    function vis_resize() {
         var viswidth = $("#vispage").width() - 340;
         var visheight = $("#visiframe").height();
 

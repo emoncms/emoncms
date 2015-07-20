@@ -30,7 +30,7 @@ function input_controller()
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
+    require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed);
 
 

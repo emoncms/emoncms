@@ -10,5 +10,6 @@ $schema['feeds'] = array(
     'datatype' => array('type' => 'int(11)', 'Null'=>'NO'),
     'public' => array('type' => 'tinyint(1)', 'default'=>0),
     'size' => array('type' => 'int(11)'),
-    'engine' => array('type' => 'int(11)', 'Null'=>'NO', 'default'=>0)
+    'engine' => array('type' => 'int(11)', 'Null'=>'NO', 'default'=>0),
+    'processList' => array('type' => 'text')
 );

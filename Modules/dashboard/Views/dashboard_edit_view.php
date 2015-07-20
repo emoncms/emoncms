@@ -1,5 +1,4 @@
 <?php
-
 /*
 All Emoncms code is released under the GNU Affero General Public License.
 See COPYRIGHT.txt and LICENSE.txt.
@@ -55,41 +54,25 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/designer.js"></script>
 <script type="application/javascript">
-
     var dashid = <?php echo $dashboard['id']; ?>;
     var path = "<?php echo $path; ?>";
     var apikey = "";
     var feedlist = feed.list();
     var userid = <?php echo $session['userid']; ?>;
-
-    $("#testo").hide();
-
     var widget = <?php echo json_encode($widgets); ?>;
-
-    for (z in widget)
-    {
-        var fname = widget[z]+"_widgetlist";
-        var fn = window[fname];
-        $.extend(widgets,fn());
-    }
-
     var redraw = 0;
-    var reloadiframe = 0;
+    var reloadiframe = 1; // force iframe url to recalculate for all vis widgets 
 
-    var grid_size = 20;
     $('#can').width($('#dashboardpage').width());
 
-    designer.canvas = "#can";
-    designer.grid_size = 20;
-    designer.widgets = widgets;
+    render_widgets_init(widget); // populate widgets variable 
 
+    designer.canvas = "#can";
+    designer.grid_size = 20; // change default here
+    designer.widgets = widgets;
     designer.init();
 
-    show_dashboard();
-
-    setInterval(function() { update(); }, 5000);
-    setInterval(function() { fast_update(); }, 100);
-
+    render_widgets_start(); // start widgets refresh
 
     $("#save-dashboard").click(function (){
         //recalculate the height so the page_height is shrunk to the minimum but still wrapping all components
@@ -102,11 +85,11 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
             url :  path+"dashboard/setcontent.json",
             data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+designer.page_height,
             dataType: 'json',
+            async: true,
             success : function(data) { console.log(data); if (data.success==true) $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>');
             }
         });
     });
-
 
     $(window).resize(function(){
         designer.draw();

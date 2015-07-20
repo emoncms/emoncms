@@ -5,12 +5,14 @@
       1 - feed realtime
       2 - feed daily
       3 - feed histogram
-      4 - boolean (not used uncomment line 122)
+      4 - boolean (not used uncomment lines)
       5 - text
       6 - float value
       7 - int value
       8 - multigraph id
     */
+
+    //CHAVEIRO TODO: only used in vis_main_view.php, should be php source for vis/widget/vis_render.js vis_widgetlist variable data
 
     $visualisations = array(
     

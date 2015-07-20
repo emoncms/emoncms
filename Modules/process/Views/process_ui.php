@@ -1,0 +1,136 @@
+﻿<?php
+    defined('EMONCMS_EXEC') or die('Restricted access');
+	global $path, $feed_settings;
+?>
+
+<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_info.js"></script>
+<script>
+    processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
+</script>
+
+<div id="processlist-ui" style="padding:15px; background-color:#efefef; display:none; border-radius: 4px;">
+    <button type="button" id="close" class="close">×</button>
+    <h3><b><span id="contextname"></span></b> processlist configuration</h3>
+    <p><?php echo _('Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
+    
+        <div id="noprocess" class="alert"><?php echo _('You have no processes defined'); ?></div>
+        
+        <table id="process-table" class="table table-hover">
+            <tr>
+                <th style='width:5%;'></th>
+                <th style='width:5%;'><?php echo _('Order'); ?></th>
+                <th><?php echo _('Process'); ?></th>
+                <th><?php echo _('Arg'); ?></th>
+                <th></th>
+                <th><?php echo _('Actions'); ?></th>
+            </tr>
+            <tbody id="process-table-elements"></tbody>
+        </table>
+
+        <table class="table">
+        <tr><th>
+            <span><?php echo _('Add process'); ?>:</span>
+            <span><button id="save-processlist" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button></span>
+		</th></tr>
+        <tr>
+            <td>
+                    <select id="process-select" class="input-large"></select>
+
+                    <span id="type-value" style="display:none">
+                        <div class="input-prepend">
+                            <span class="add-on value-select-label">Value</span>
+                            <input type="text" id="value-input" class="input-medium" placeholder="Type value..." />
+                        </div>
+                    </span>
+                    
+                    <span id="type-text" style="display:none">
+                        <div class="input-prepend">
+                            <span class="add-on text-select-label">Text</span>
+                            <input type="text" id="text-input" class="input-large" placeholder="Type text..." />
+                        </div>
+                    </span>
+
+                    <span id="type-input" style="display:none">
+                        <div class="input-prepend">
+                            <span class="add-on input-select-label">Input</span>                   
+                            <div class="btn-group">
+                                <select id="input-select" class="input-medium"></select>
+                            </div>
+                        </div>
+                    </span>
+
+                    <span id="type-schedule" style="display:none">
+                        <div class="input-prepend">
+                            <span class="add-on schedule-select-label">Schedule</span>
+                            <div class="btn-group">
+                                <select id="schedule-select" class="input-large"></select>
+                            </div>
+                        </div>
+                    </span>
+                    
+                    <span id="type-feed"> 
+                        <div class="input-prepend">
+                            <span class="add-on feed-select-label">Data</span>
+                            <div class="btn-group">
+						        <select id="feed-data-type" class="input-medium" style="width: 105px;" readonly>
+                                    <option value=0>Any type</option>
+                                    <option value=1>Realtime</option>
+                                    <option value=2>Daily</option>
+                                    <option value=3>Histogram</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="input-prepend">
+                            <span class="add-on feed-select-label">Feed</span>
+                            <div class="btn-group">
+                                <select id="feed-select" class="input-medium"></select>
+                                <input type="text" id="new-feed-name" style="width:140px" placeholder="Type feed name..." />
+                                <input type="hidden" id="new-feed-tag"/>
+                            </div>
+                        </div>
+						
+                        <div class="input-prepend">
+                            <span class="add-on feed-engine-label"><?php echo _('Engine'); ?></span>
+                            <div class="btn-group">
+                                <select id="feed-engine" class="input-medium">
+<?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
+                                    <option value=6>PHPFIWA Fixed Interval With Averaging</option>
+                                    <option value=5>PHPFINA Fixed Interval No Averaging</option>
+                                    <option value=2>PHPTIMESERIES Variable Interval No Averaging</option>
+                                    <option value=0>MYSQL TimeSeries</option>
+                                    <option value=8>MYSQL Memory (RAM data lost on power off)</option>
+                                </select>
+
+                                <select id="feed-interval" class="input-mini">
+                                    <option value=""><?php echo _('Select interval'); ?></option>
+                                    <option value=5>5<?php echo _('s'); ?></option>
+                                    <option value=10>10<?php echo _('s'); ?></option>
+                                    <option value=15>15<?php echo _('s'); ?></option>
+                                    <option value=20>20<?php echo _('s'); ?></option>
+                                    <option value=30>30<?php echo _('s'); ?></option>
+                                    <option value=60>60<?php echo _('s'); ?></option>
+                                    <option value=120>2<?php echo _('m'); ?></option>
+                                    <option value=300>5<?php echo _('m'); ?></option>
+                                    <option value=600>10<?php echo _('m'); ?></option>
+                                    <option value=900>15<?php echo _('m'); ?></option>
+                                    <option value=1200>20<?php echo _('m'); ?></option>
+                                    <option value=1800>30<?php echo _('m'); ?></option>
+                                    <option value=3600>1<?php echo _('h'); ?></option>
+                                    <option value=86400>1<?php echo _('d'); ?></option>
+                                </select>
+                            </div>
+                        </div>
+                    </span>
+                    <div class="input-prepend">
+                        <button id="process-add" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Add'); ?></button>
+                    </div>
+            </td>
+        </tr>
+        <tr>
+          <td><div id="description" class="alert alert-info"></div></td>
+        </tr>
+        </table>
+</div>
+<br>

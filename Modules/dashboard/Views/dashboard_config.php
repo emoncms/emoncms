@@ -8,9 +8,7 @@
     Part of the OpenEnergyMonitor project:
     http://openenergymonitor.org
     */
-
-    global $session,$path;
-
+    global $path;
 ?>
 
 <div id="dashConfigModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="dashConfigModalLabel" aria-hidden="true" data-backdrop="static">
@@ -56,12 +54,10 @@
 </div>
 
 <script type="application/javascript">
-
     var dashid = <?php echo $dashboard['id']; ?>;
     var path = "<?php echo $path; ?>";
 
-    $("#configure-save").click(function ()
-    {
+    $("#configure-save").click(function (){
         var fields = {};
 
         fields['name'] = $("input[name=name]").val();
@@ -78,11 +74,12 @@
             url :  path+"dashboard/set.json",
             data : "&id="+dashid+"&fields="+JSON.stringify(fields),
             dataType : 'json',
+            async: true,
             success : function(result) {console.log(result)}
         });
 
         $('#dashConfigModal').modal('hide');
-        
+
         $('#page-container').css("background-color","#"+fields['backgroundcolor']);
     });
 </script>

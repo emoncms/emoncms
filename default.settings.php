@@ -1,22 +1,26 @@
 <?php
 
-    /*
-
-    Database connection settings
-
-    */
-
+    // Database connection settings
     $username = "_DB_USER_";
     $password = "_DB_PASSWORD_";
     $server   = "localhost";
     $database = "emoncms";
 
+    // Low-write mode, if true requires redis enabled
+    $bufferwrite = false;
+    
+    // Redis
     $redis_enabled = true;
+    $redis_server = "127.0.0.1";
 
     // Enable this to try out the experimental MQTT Features:
     // - updated to feeds are published to topic: emoncms/feed/feedid    
     $mqtt_enabled = false;
     
+    // Installed on Emonpi ? You can allow update from admin menu
+    $allow_emonpi_update = true;
+
+
     $feed_settings = array(
 
         // Configure supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds engines still work.
@@ -95,8 +99,10 @@
     // Error processing
     $display_errors = TRUE;
 
-    // Allow user register in emoncms
-    $allowusersregister = TRUE;
+    // Enable multi user emoncms.
+    // If set to false, emoncms will automatically remove the register form and 
+    // ability to create further users after the first user has been created
+    $enable_multi_user = false;
 
     // Enable remember me feature - needs more testing
     $enable_rememberme = TRUE;
@@ -104,8 +110,9 @@
     // Skip database setup test - set to false once database has been setup.
     $dbtest = TRUE;
 
-    // Log4PHP configuration
-    $log4php_configPath = 'logconfig.xml';
+    // Log file configuration
+    $log_enabled = true;
+    $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
 
     // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
     // The thousands separator is not used (specified as "nothing")

@@ -157,8 +157,6 @@ class PHPTimeSeries
 
         // Minimum interval
         if ($interval<1) $interval = 1;
-        // End must be larger than start
-        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
         if ($req_dp>3000) return array("success"=>false, "message"=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");

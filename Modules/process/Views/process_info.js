@@ -61,7 +61,9 @@ var process_info = {
     '50':"If value from last process is equal to the specified value, process execution will skip execution of next process in list",
     '51':"If value from last process is NOT equal to the specified value, process execution will skip execution of next process in list",
     
-    '52':"<p>Jumps the process execution to the specified position.</p><p><b>Warning</b><br>If you're not carefull you can create a goto loop on the process list.<br>When a loop occours, the API will appear to lock until the server php times out with an error.</p>"
+    '52':"<p>Jumps the process execution to the specified position.</p><p><b>Warning</b><br>If you're not carefull you can create a goto loop on the process list.<br>When a loop occours, the API will appear to lock until the server php times out with an error.</p>",
+	
+    '53':"<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations request that use this virtual feed.</p>"
     
 }
         

@@ -1,10 +1,12 @@
   var plotdata = [];
   var timeWindowChanged = 0;
-  var multigraph_editmode = false;
-
+  var ajaxAsyncXdr = [];
+  var event_vis_feed_data;
+  
   function convert_to_plotlist(multigraph_feedlist){
    var plotlist = [];
    for (z in multigraph_feedlist){
+	var tag = (multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag'] !="" ? multigraph_feedlist[z]['tag']+": " : "");
     if (multigraph_feedlist[z]['datatype']==1){
       plotlist[z] = {
         id: multigraph_feedlist[z]['id'],
@@ -12,7 +14,7 @@
         plot:
         {
           data: null,
-          label: multigraph_feedlist[z]['name'],
+          label: tag + multigraph_feedlist[z]['name'],
           lines:
           {
             show: true,
@@ -29,7 +31,7 @@
         plot:
         {
           data: null,
-          label: multigraph_feedlist[z]['name'],
+          label: tag + multigraph_feedlist[z]['name'],
           bars:
           {
             show: true,
@@ -64,51 +66,53 @@
     if (multigraph_feedlist[z]['left']==false && multigraph_feedlist[z]['right']==false){
       plotlist[z].selected = 0;
     }
-
    }
    return plotlist;
   }
 
   /*
   Handle_feeds
-
-  For all feeds in the plotlist:
-  - remove all plot data if the time window has changed
-  - if the feed is selected load new data
-  - add the feed to the multigraph plot
-  - plot the multigraph
   */
+  //ignore multiple fast load feed requests
   function vis_feed_data(){
+     clearTimeout(event_vis_feed_data); // cancel pending event
+     event_vis_feed_data = setTimeout(function(){ vis_feed_data_delayed(); }, 500);
+     if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
+     plot();
+  }
+  
+  //for feeds selected load new data
+  function vis_feed_data_delayed(){
     var plotlist = convert_to_plotlist(multigraph_feedlist);
-    plotdata = [];
     for(var i in plotlist) {
-      if (timeWindowChanged) {
-        plotlist[i].plot.data = null;
-      }
       if (plotlist[i].selected) {
         if (!plotlist[i].plot.data)
         {
           var npoints = 800;
           interval = Math.round(((view.end - view.start)/npoints)/1000);
           var skipmissing = 0; if (multigraph_feedlist[i]['skipmissing']) skipmissing = 1;
-          plotlist[i].plot.data = get_feed_data(plotlist[i].id,view.start,view.end,interval,skipmissing,1);
-        }
 
-        if ( plotlist[i].plot.data)
-        {
-          plotdata.push(plotlist[i].plot);
+          if (plotdata[i] === undefined) plotdata[i] = [];
+
+          if (typeof ajaxAsyncXdr[i] !== 'undefined') { 
+            ajaxAsyncXdr[i].abort(); // abort pending requests
+            ajaxAsyncXdr[i]=undefined;
+          }
+          var context = {index:i, plotlist:plotlist[i]}; 
+          ajaxAsyncXdr[i] = get_feed_data_async(vis_feed_data_callback,context,plotlist[i].id,view.start,view.end,interval,skipmissing,1);
         }
       }
     }
-
-    plot();
-
-    timeWindowChanged=0;
-
-    if (multigraph_editmode==true)
-    {
-      //update_multigraph_feedlist();
+  }
+  
+  //load feed data to multigraph plot
+  function vis_feed_data_callback(context,data){
+    var i = context['index'];
+    context['plotlist'].plot.data = data;
+    if (context['plotlist'].plot.data) {
+      plotdata[i] = context['plotlist'].plot;
     }
+    plot();
   }
 
   function plot(){
@@ -125,14 +129,15 @@ function multigraph_init(element){
   // Get start and end time of multigraph view
   // end time and timewindow is stored in the first multigraph_feedlist item.
   // start time is calculated from end - timewindow
-  
+  plotdata = [];
   var timeWindow = (3600000*24.0*7);
-  view.start = +new Date - timeWindow;
-  view.end = +new Date;
-  
-  if (multigraph_feedlist[0]!=undefined){
+  var now = new Date().getTime();
+  view.start = now - timeWindow;
+  view.end = now;
+
+  if (multigraph_feedlist !== undefined && multigraph_feedlist[0]!=undefined){
     view.end = multigraph_feedlist[0].end;
-    if (view.end==0) view.end = (new Date()).getTime();
+    if (view.end==0) view.end = now;
     if (multigraph_feedlist[0].timeWindow) {
         view.start = view.end - multigraph_feedlist[0].timeWindow;
     }
@@ -142,8 +147,6 @@ function multigraph_init(element){
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
       "<div id='graph'></div>"+
       "<div id='graph-buttons' style='position:absolute; top:20px; right:30px; opacity:0.5; display: none;'>"+
-
-
         "<div class='input-prepend input-append' id='graph-tooltip' style='margin:0'>"+
         "<span class='add-on'>Tooltip:</span>"+
         "<span class='add-on'><input id='enableTooltip' type='checkbox' checked ></span>"+
@@ -160,7 +163,6 @@ function multigraph_init(element){
         "<button class='btn graph-nav' id='zoomout'>-</button>"+
         "<button class='btn graph-nav' id='left'><</button>"+
         "<button class='btn graph-nav' id='right'>></button></div>"+
-
       "</div>"+
     "</div>"
   ;
@@ -176,49 +178,49 @@ function multigraph_init(element){
     plot();
   });
 
-
-  //--------------------------------------------------------------------------------------
+ 
+  //-----------------
   // Graph zooming
-  //--------------------------------------------------------------------------------------
+  //-----------------
   $("#graph").bind("plotselected", function (event, ranges){
      view.start = ranges.xaxis.from; 
      view.end = ranges.xaxis.to;
-     timeWindowChanged = 1; vis_feed_data();
+     vis_feed_data();
   });
 
-  //----------------------------------------------------------------------------------------------
+  //-----------------
   // Operate buttons
-  //----------------------------------------------------------------------------------------------
+  //-----------------
   $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
   $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
   $('#right').click(function () {view.panright(); vis_feed_data();});
   $('#left').click(function () {view.panleft(); vis_feed_data();});
   $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
-  //-----------------------------------------------------------------------------------------------
-  
-    // Graph buttons and navigation efects for mouse and touch
-    $("#graph").mouseenter(function(){
-        $("#graph-navbar").show();
-        $("#graph-tooltip").show();
-        $("#graph-buttons").stop().fadeIn();
-        $("#stats").stop().fadeIn();
-    });
-    $("#graph_bound").mouseleave(function(){
-        $("#graph-buttons").stop().fadeOut();
-        $("#stats").stop().fadeOut();
-    });
-    $("#graph").bind("touchstarted", function (event, pos){
-        $("#graph-navbar").hide();
-        $("#graph-tooltip").hide();
-        $("#graph-buttons").stop().fadeOut();
-        $("#stats").stop().fadeOut();
-    });
+  //-----------------
 
-    $("#graph").bind("touchended", function (event, ranges){
-        $("#graph-buttons").stop().fadeIn();
-        $("#stats").stop().fadeIn();
-        view.start = ranges.xaxis.from; 
-        view.end = ranges.xaxis.to;
-        timeWindowChanged = 1; vis_feed_data();
-    });
+  // Graph buttons and navigation efects for mouse and touch
+  $("#graph").mouseenter(function(){
+      $("#graph-navbar").show();
+      $("#graph-tooltip").show();
+      $("#graph-buttons").stop().fadeIn();
+      $("#stats").stop().fadeIn();
+  });
+  $("#graph_bound").mouseleave(function(){
+      $("#graph-buttons").stop().fadeOut();
+      $("#stats").stop().fadeOut();
+  });
+  $("#graph").bind("touchstarted", function (event, pos){
+      $("#graph-navbar").hide();
+      $("#graph-tooltip").hide();
+      $("#graph-buttons").stop().fadeOut();
+      $("#stats").stop().fadeOut();
+  });
+
+  $("#graph").bind("touchended", function (event, ranges){
+      $("#graph-buttons").stop().fadeIn();
+      $("#stats").stop().fadeIn();
+      view.start = ranges.xaxis.from; 
+      view.end = ranges.xaxis.to;
+      vis_feed_data();
+  });
 }

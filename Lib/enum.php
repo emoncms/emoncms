@@ -24,4 +24,5 @@
     const PHPTIMESTORE = 4; // Depreciated
     const PHPFINA = 5;
     const PHPFIWA = 6;
+    const VIRTUALFEED = 7;  // Virtual feed, on demand post processing
   }

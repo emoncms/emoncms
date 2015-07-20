@@ -43,7 +43,7 @@ function feed_controller()
         } elseif ($route->action == "getid" && $session['read']) {
             $result = $feed->get_id($session['userid'],get('name'));
         } elseif ($route->action == "create" && $session['write']) {
-            $result = $feed->create($session['userid'],get('name'),get('datatype'),get('engine'),json_decode(get('options')));
+            $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
         // To "fetch" multiple feed values in a single request
@@ -52,9 +52,9 @@ function feed_controller()
             $feedids = (array) (explode(",",(get('ids'))));
             for ($i=0; $i<count($feedids); $i++) {
                 $feedid = (int) $feedids[$i];
-                if ($feed->exist($feedid)) // if the feed exists
-                { $result[$i] = (float) $feed->get_value($feedid);
-                } else { $result[$i] = ""; }
+                if ($feed->exist($feedid)) { // if the feed exists
+                   $result[$i] = $feed->get_value($feedid); // null is a valid response
+                } else { $result[$i] = false; } // false means feed not found
             }
         } else {
             $feedid = (int) get('id');
@@ -75,7 +75,7 @@ function feed_controller()
                         if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
                         $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                     }
-                    else if ($route->action == "value") $result = $feed->get_value($feedid);
+                    else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);
 
@@ -93,10 +93,17 @@ function feed_controller()
                     else if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
                     else if ($route->action == "delete") $result = $feed->delete($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
-                    
                     else if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'));
-                    
-                    if ($f['engine']==Engine::MYSQL) {
+
+                    else if ($route->action == "process")
+                    {
+                        if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }
+                        else if ($route->subaction == "get") $result = $feed->get_processlist($feedid);
+                        else if ($route->subaction == "set") $result = $feed->set_processlist($feedid, get('processlist'));
+                        else if ($route->subaction == "reset") $result = $feed->reset_processlist($feedid);
+                    }
+
+                    if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
                         if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));
                         else if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
                         else if ($route->action == "deletedatarange") $result = $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));

@@ -183,13 +183,14 @@ class PHPFina
     /**
      * Return the data for the given timerange
      *
-     * @param integer $id The id of the feed to fetch from
+     * @param integer $feedid The id of the feed to fetch from
      * @param integer $start The unix timestamp in ms of the start of the data range
      * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $dp The number of data points to return (used by some engines)
+     * @param integer $interval The number os seconds for each data point to return (used by some engines)
+     * @param integer $skipmissing Skip null values from returned data (used by some engines)
+     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
     */
-
-    public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         $start = intval($start/1000);
         $end = intval($end/1000);
@@ -202,7 +203,7 @@ class PHPFina
         if ($req_dp>3000) return array('success'=>false, 'message'=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist then exit
-        if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"error reading meta data $meta");
+        if (!$meta = $this->get_meta($feedid)) return array('success'=>false, 'message'=>"error reading meta data $meta");
         
         if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
 
@@ -211,7 +212,7 @@ class PHPFina
         $numdp = 0;
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
-        $fh = fopen($this->dir.$name.".dat", 'rb');
+        $fh = fopen($this->dir.$feedid.".dat", 'rb');
         while($time<=$end)
         {
             $time = $start + ($interval * $i);

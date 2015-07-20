@@ -27,7 +27,7 @@ function input_controller()
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php";
+    require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
     
     if ($route->format == 'html')
@@ -288,24 +288,20 @@ function input_controller()
                 $result = "Error: $error\n";
         }
 
-        else if ($route->action == "clean") $result = $input->clean($session['userid']);
+        
         else if ($route->action == "list") $result = $input->getlist($session['userid']);
         else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
-        else if ($route->action == "getallprocesses") $result = $process->get_process_list();
-
+        else if ($route->action == "clean") $result = $input->clean($session['userid']);
+        
         else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
-            if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
-
-            else if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
-
+            if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
+            else if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
             else if ($route->action == "process")
             {
-                if ($route->subaction == "add") $result = $input->add_process($process,$session['userid'], get('inputid'), get('processid'), get('arg'), get('newfeedname'), get('newfeedinterval'),get('engine'));
-                else if ($route->subaction == "list") $result = $input->get_processlist(get("inputid"));
-                else if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
-                else if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
-                else if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
+                if ($route->subaction == "get") $result = $input->get_processlist(get("inputid"));
+                else if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), get('processlist'));
+                else if ($route->subaction == "reset") $result = $input->reset_processlist(get("inputid"));
             }           
         }
     }

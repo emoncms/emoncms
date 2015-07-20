@@ -33,7 +33,7 @@
     require "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
+    require "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed);
 
     $rn = 0;

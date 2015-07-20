@@ -63,10 +63,7 @@
 
 <p><b><?php echo _('Input process actions'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('List all supported process'); ?></td><td><a href="<?php echo $path; ?>input/getallprocesses.json"><?php echo $path; ?>input/getallprocesses.json</a></td></tr>
-    <tr><td><?php echo _('Add an input process'); ?></td><td><a href="<?php echo $path; ?>input/process/add.json?inputid=1&processid=1&arg=-1&newfeedname=power"><?php echo $path; ?>input/process/add.json?inputid=1&processid=1&arg=-1&newfeedname=power</a></td></tr>
-    <tr><td><?php echo _('List input process list'); ?></td><td><a href="<?php echo $path; ?>input/process/list.json?inputid=1"><?php echo $path; ?>input/process/list.json?inputid=1</a></td></tr>
-    <tr><td><?php echo _('Delete input process'); ?></td><td><a href="<?php echo $path; ?>input/process/delete.json?inputid=1&processid=1"><?php echo $path; ?>input/process/delete.json?inputid=1&processid=1</a></td></tr>
-    <tr><td><?php echo _('Move input process'); ?></td><td><a href="<?php echo $path; ?>input/process/move.json?inputid=1&processid=1&moveby=1"><?php echo $path; ?>input/process/move.json?inputid=1&processid=1&moveby=1</a></td></tr>
-    <tr><td><?php echo _('Reset input process list'); ?></td><td><a href="<?php echo $path; ?>input/process/reset.json?inputid=1"><?php echo $path; ?>input/process/reset.json?inputid=1</a></td></tr>
+    <tr><td><?php echo _('Get input process list'); ?></td><td><a href="<?php echo $path; ?>input/process/get.json?inputid=1"><?php echo $path; ?>input/process/get.json?inputid=1</a></td></tr>
+    <tr><td><?php echo _('Set input process list'); ?></td><td><a href="<?php echo $path; ?>input/process/set.json?inputid=0&processlist=0:0"><?php echo $path; ?>input/process/set.json?inputid=0&processlist=0:0</a></td></tr>
+    <tr><td><?php echo _('Reset input process list'); ?></td><td><a href="<?php echo $path; ?>input/process/reset.json?inputid=0"><?php echo $path; ?>input/process/reset.json?inputid=0</a></td></tr>
 </table>
