@@ -26,10 +26,10 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
     <?php require_once "Modules/dashboard/Views/loadwidgets.php"; ?>
 
 <div id="dashboardpage">
-    <div id="widget_options" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div id="widget_options" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3><?php echo _('Configure element'); ?></h3>
+            <h3 id="myModalLabel"><?php echo _('Configure element'); ?></h3>
         </div>
         <div id="widget_options_body" class="modal-body"></div>
         <div class="modal-footer">

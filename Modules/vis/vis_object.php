@@ -15,12 +15,12 @@
     $visualisations = array(
     
         'realtime' => array('label'=>_("RealTime"), 'options'=>array(
-            array('feedid',_("feedid"),1))
+            array('feedid',_("feed"),1))
         ),
         
         // Hex colour EDC240 is the default color for flot. since we want existing setups to not change, we set the default value to it manually now,
         'rawdata'=> array('label'=>_("RawData"), 'options'=>array(
-            array('feedid',_("feedid"),1),
+            array('feedid',_("feed"),1),
             array('fill',_("fill"),7,0),
             array('colour',_("colour"),5,'EDC240'),
             array('units',_("units"),5,''),
@@ -29,7 +29,7 @@
         ),
         
         'bargraph'=> array('label'=>_("BarGraph"), 'options'=>array(
-            array('feedid',_("feedid"),0),
+            array('feedid',_("feed"),0),
             array('colour',_("colour"),5,'EDC240'),
             array('interval',_("interval"),7,'86400'),
             array('units',_("units"),5,''),
@@ -39,12 +39,12 @@
         ),
         
         'smoothie'=> array('label'=>_("Smoothie"), 'options'=>array(
-            array('feedid',_("feedid"),1),
+            array('feedid',_("feed"),1),
             array('ufac',_("ufac"),6))
         ),
         
         'histgraph'=> array('label'=>_("Histgraph"), 'options'=>array(
-            array('feedid',_("feedid"),3),
+            array('feedid',_("feed"),3),
             array('barwidth',_("barwidth"),7,50),
             array('start',_("start"),7,0),
             array('end',_("end"),7,0))
@@ -71,7 +71,7 @@
         ),
         
         'threshold'=> array('label'=>_("Threshold"), 'options'=>array(
-            array('feedid',_("feedid"),3),
+            array('feedid',_("feed"),3),
             array('thresholdA',_("thresholdA"),6,500),
             array('thresholdB',_("thresholdB"),6,2500))
         ),
@@ -82,22 +82,22 @@
         )),
         
         'orderbars'=> array('label'=>_("OrderBars"), 'options'=>array(
-            array('feedid',_("feedid"),2)
+            array('feedid',_("feed"),2)
         )),
         
         'orderthreshold'=> array('label'=>_("OrderThreshold"), 'options'=>array(
-            array('feedid',_("feedid"),3),
+            array('feedid',_("feed"),3),
             array('power',_("power"),1),
             array('thresholdA',_("thresholdA"),6,500),
             array('thresholdB',_("thresholdB"),6,2500)
         )),
         
         'editrealtime'=> array('label'=>_("EditRealtime"), 'options'=>array(
-            array('feedid',_("feedid"),1)
+            array('feedid',_("feed"),1)
         )),
         
         'editdaily'=> array('label'=>_("EditDaily"), 'options'=>array(
-            array('feedid',_("feedid"),2)
+            array('feedid',_("feed"),2)
         )),
         
         'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(
@@ -110,6 +110,6 @@
         )),
         
         'graph'=> array('label'=>_("Graph"), 'options'=>array(
-            array('feedid',_("feedid"),1)
+            array('feedid',_("feed"),1)
         ))
     );
