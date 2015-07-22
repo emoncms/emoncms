@@ -25,7 +25,7 @@ function admin_controller()
         if ($route->format == 'html') {
             if ($route->action == 'view') $result = view("Modules/admin/admin_main_view.php", array());
 
-            if ($route->action == 'db')
+            else if ($route->action == 'db')
             {
                 $applychanges = get('apply');
                 if (!$applychanges) $applychanges = false;
@@ -48,14 +48,6 @@ function admin_controller()
                 $result = view("Modules/admin/userlist_view.php", array());
             }
 
-            else if ($route->action == 'userlist' && $session['write'])
-            {
-                $data = array();
-                $result = $mysqli->query("SELECT id,username,email FROM users");
-                while ($row = $result->fetch_object()) $data[] = $row;
-                $result = $data;
-            }
-
             else if ($route->action == 'setuser' && $session['write'])
             {
                 $_SESSION['userid'] = intval(get('id'));
@@ -73,7 +65,7 @@ function admin_controller()
                     $result = "Log is disabled.";
                 }
             }
-            
+
             else if ($allow_emonpi_update && $route->action == 'emonpi') {
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) { 
                     $route->format = "text";
@@ -99,7 +91,13 @@ function admin_controller()
                 $redis->flushDB();
                 $result = array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
             }
-
+            else if ($route->action == 'userlist' && $session['write'])
+            {
+                $data = array();
+                $result = $mysqli->query("SELECT id,username,email FROM users");
+                while ($row = $result->fetch_object()) $data[] = $row;
+                $result = $data;
+            }
         }
     }
 

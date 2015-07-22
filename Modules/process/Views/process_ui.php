@@ -2,14 +2,14 @@
     defined('EMONCMS_EXEC') or die('Restricted access');
 	global $path, $feed_settings;
 ?>
-
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_info.js"></script>
+
 <script>
     processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
 </script>
 
-<div id="processlist-ui" style="padding:15px; background-color:#efefef; display:none; border-radius: 4px;">
+<div id="processlist-ui" style="padding:15px; background-color:#efefef; display:none; border-radius: 6px; margin-bottom: 15px;">
     <button type="button" id="close" class="close">×</button>
     <h3><b><span id="contextname"></span></b> processlist configuration</h3>
     <p><?php echo _('Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
@@ -133,4 +133,3 @@
         </tr>
         </table>
 </div>
-<br>

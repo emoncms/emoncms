@@ -28,20 +28,19 @@
 </style>
 
 <div>
-    <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a>&nbsp;</div></div>
-    <div id="localheading"><h2>&nbsp;<?php echo _('Feeds'); ?></h2></div>
-
-    <?php require "Modules/process/Views/process_ui.php"; ?>
-
-    <div id="table"><div align='center'>loading...</div></div>
+    <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div>
+    <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
 
     <div id="nofeeds" class="alert alert-block hide">
             <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
             <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
     </div>
 
-    <div id="bottomtoolbar" class="hide">
-        <hr>
+    <?php require "Modules/process/Views/process_ui.php"; ?>
+
+    <div id="table"><div align='center'>loading...</div></div>
+
+    <div id="bottomtoolbar" class="hide"><hr>
         <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
         <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
     </div>
@@ -154,225 +153,225 @@
 </div>
 
 <script>
-    var path = "<?php echo $path; ?>";
+  var path = "<?php echo $path; ?>";
 
-    // Extend table library field types
-    for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-    table.element = "#table";
-    table.groupby = 'tag';
-    table.deletedata = false;
-    table.fields = {
-        'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
-        'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"hinteditable"},
-        'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
-        'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
-        'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
-        'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"fixedselect", 'options':['','REALTIME','DAILY','HISTOGRAM']},
-        'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"fixedselect", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER']},
-        'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
-        'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
-        'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
-        // Actions
-        'edit-action':{'title':'', 'type':"edit"},
-        'delete-action':{'title':'', 'type':"delete"},
-        'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="},
-        'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
-        'icon-basic':{'title':'', 'type':"iconbasic", 'icon':'icon-circle-arrow-down'}
+  // Extend table library field types
+  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
+  table.element = "#table";
+  table.groupby = 'tag';
+  table.deletedata = false;
+  table.fields = {
+    'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
+    'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"hinteditable"},
+    'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
+    'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
+    'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"fixedselect", 'options':['','REALTIME','DAILY','HISTOGRAM']},
+    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"fixedselect", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER']},
+    'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
+    'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
+    'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
+    // Actions
+    'edit-action':{'title':'', 'type':"edit"},
+    'delete-action':{'title':'', 'type':"delete"},
+    'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="},
+    'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
+    'icon-basic':{'title':'', 'type':"iconbasic", 'icon':'icon-circle-arrow-down'}
+  }
+
+  update();
+
+  function update()
+  {   
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
+    
+    $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+      table.timeServerLocalOffset = (new Date()).getTime()-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+      table.data = data;
+    
+      for (z in table.data)
+      {
+        if (data[z]['engine'] != 7){ 
+          data[z]['#NO_CONFIG#'] = true;  // if the data field #NO_CONFIG# is true, the field type: iconconfig will be ommited from the table row
+        }
+      }
+      table.draw();
+      if (table.data.length != 0) {
+        $("#nofeeds").hide();
+        $("#localheading").show();
+        $("#apihelphead").show();
+        $("#bottomtoolbar").show();
+      } else {
+        $("#nofeeds").show();
+        $("#localheading").hide();
+        $("#apihelphead").hide();
+        $("#bottomtoolbar").hide();
+      }
+    } });
+  }
+
+  var updater;
+  function updaterStart(func, interval){
+    clearInterval(updater);
+    updater = null;
+    if (interval > 0) updater = setInterval(func, interval);
+  }
+  updaterStart(update, 5000);
+
+  $("#table").bind("onEdit", function(e){
+    updaterStart(update, 0);
+  });
+
+  $("#table").bind("onSave", function(e,id,fields_to_update){
+    feed.set(id,fields_to_update);
+  });
+  
+  $("#table").bind("onResume", function(e){
+    updaterStart(update, 5000);
+  });
+
+  $("#table").bind("onDelete", function(e,id,row){
+    updaterStart(update, 0);
+    if (table.data[row]['engine'] == 7) { //Virtual
+      $('#myModal #deleteFeedText').hide();
+      $('#myModal #deleteVirtualFeedText').show();
+    } else {
+      $('#myModal #deleteFeedText').show();
+      $('#myModal #deleteVirtualFeedText').hide();
     }
+    $('#myModal').modal('show');
+    $('#myModal').attr('the_id',id);
+    $('#myModal').attr('the_row',row);
+  });
 
+  $("#confirmdelete").click(function(){
+    var id = $('#myModal').attr('the_id');
+    var row = $('#myModal').attr('the_row');
+    feed.remove(id);
+    table.remove(row);
     update();
 
-    function update()
-    {   
-        var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
-        
-        $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-            table.timeServerLocalOffset = (new Date()).getTime()-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-            table.data = data;
-        
-            for (z in table.data)
-            {
-                if (data[z]['engine'] != 7){ 
-                    data[z]['#NO_CONFIG#'] = true;  // if the data field #NO_CONFIG# is true, the field type: iconconfig will be ommited from the table row
-                }
-            }
-            table.draw();
-            if (table.data.length != 0) {
-                $("#nofeeds").hide();
-                $("#localheading").show();
-                $("#apihelphead").show();
-                $("#bottomtoolbar").show();
-            } else {
-                $("#nofeeds").show();
-                $("#localheading").hide();
-                $("#apihelphead").hide();
-                $("#bottomtoolbar").hide();
-            }
-        } });
-    }
-
-    var updater;
-    function updaterStart(func, interval){
-        clearInterval(updater);
-        updater = null;
-        if (interval > 0) updater = setInterval(func, interval);
-    }
+    $('#myModal').modal('hide');
     updaterStart(update, 5000);
+  });
 
-    $("#table").bind("onEdit", function(e){
-        updaterStart(update, 0);
-    });
-
-    $("#table").bind("onSave", function(e,id,fields_to_update){
-        feed.set(id,fields_to_update);
-    });
+  $("#refreshfeedsize").click(function(){
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
+  });
+  
+  
+  // Feed Export feature
+  
+  $("#table").on("click",".icon-circle-arrow-down", function(){
+    var row = $(this).attr('row');
+    $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
+    $("#export").attr('feedid',table.data[row].id);
     
-    $("#table").bind("onResume", function(e){
-        updaterStart(update, 5000);
-    });
-
-    $("#table").bind("onDelete", function(e,id,row){
-        updaterStart(update, 0);
-        if (table.data[row]['engine'] == 7) { //Virtual
-            $('#myModal #deleteFeedText').hide();
-            $('#myModal #deleteVirtualFeedText').show();
-        } else {
-            $('#myModal #deleteFeedText').show();
-            $('#myModal #deleteVirtualFeedText').hide();
-        }
-        $('#myModal').modal('show');
-        $('#myModal').attr('the_id',id);
-        $('#myModal').attr('the_row',row);
-    });
-
-    $("#confirmdelete").click(function(){
-        var id = $('#myModal').attr('the_id');
-        var row = $('#myModal').attr('the_row');
-        feed.remove(id);
-        table.remove(row);
-        update();
-
-        $('#myModal').modal('hide');
-        updaterStart(update, 5000);
-    });
-
-    $("#refreshfeedsize").click(function(){
-        $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
-    });
-    
-    
-    // Feed Export feature
-    
-    $("#table").on("click",".icon-circle-arrow-down", function(){
-        var row = $(this).attr('row');
-        $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
-        $("#export").attr('feedid',table.data[row].id);
-        
-        if ($("#export-timezone-offset").val()=="") {
-            var timezoneoffset = user.timezoneoffset();
-            if (timezoneoffset==null) timezoneoffset = 0;
-            $("#export-timezone-offset").val(parseInt(timezoneoffset));
-        }
-        
-        $('#ExportModal').modal('show');
-    });
-
-    $('#datetimepicker1').datetimepicker({
-        language: 'en-EN'
-    });
-    
-    $('#datetimepicker2').datetimepicker({
-        language: 'en-EN'
-    });
-
-    $('#export-interval').on('change', function(e) 
-    {
-        var export_start = parse_timepicker_time($("#export-start").val());
-        var export_end = parse_timepicker_time($("#export-end").val());
-        var export_interval = $("#export-interval").val();
-        var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-        console.log(downloadsize);
-        $("#downloadsize").html((downloadsize/1024).toFixed(0));
-    });
-        
-    $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) 
-    {
-        var export_start = parse_timepicker_time($("#export-start").val());
-        var export_end = parse_timepicker_time($("#export-end").val());
-        var export_interval = $("#export-interval").val();
-        var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-        $("#downloadsize").html((downloadsize/1024).toFixed(0));
-    });
-    
-    $("#export").click(function()
-    {
-        var feedid = $(this).attr('feedid');
-        var export_start = parse_timepicker_time($("#export-start").val());
-        var export_end = parse_timepicker_time($("#export-end").val());
-        var export_interval = $("#export-interval").val();
-        var export_timezone_offset = parseInt($("#export-timezone-offset").val());
-        
-        if (!export_start) {alert("Please enter a valid start date"); return false; }
-        if (!export_end) {alert("Please enter a valid end date"); return false; }
-        if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
-        if (export_interval=="") {alert("Please select interval to download"); return false; }
-        var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-        
-        if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
-        
-        window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval);
-    });
-    
-    function parse_timepicker_time(timestr)
-    {
-        var tmp = timestr.split(" ");
-        if (tmp.length!=2) return false;
-        
-        var date = tmp[0].split("/");
-        if (date.length!=3) return false;
-        
-        var time = tmp[1].split(":");
-        if (time.length!=3) return false;
-        
-        return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+    if ($("#export-timezone-offset").val()=="") {
+      var timezoneoffset = user.timezoneoffset();
+      if (timezoneoffset==null) timezoneoffset = 0;
+      $("#export-timezone-offset").val(parseInt(timezoneoffset));
     }
-
     
-    // Virtual Feed feature
-    $("#newfeed-save").click(function (){
-        var newfeedname = $('#newfeed-name').val();
-        var newfeedtag = $('#newfeed-tag').val();
-        var engine = 7;   // Virtual Engine
-        var datatype = $('#newfeed-datatype').val();
-        var options = {};
-        
-        var result = feed.create(newfeedtag,newfeedname,datatype,engine,options);
-        feedid = result.feedid;
+    $('#ExportModal').modal('show');
+  });
 
-        if (!result.success || feedid<1) {
-            alert('ERROR: Feed could not be created. '+result.message);
-            return false;
-        } else {
-            update(); 
-            $('#newFeedNameModal').modal('hide');
-        }
-    });
+  $('#datetimepicker1').datetimepicker({
+    language: 'en-EN'
+  });
+  
+  $('#datetimepicker2').datetimepicker({
+    language: 'en-EN'
+  });
+
+  $('#export-interval').on('change', function(e) 
+  {
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
+    console.log(downloadsize);
+    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+  });
     
-    // Process list UI js
-    processlist_ui.init(1); // is virtual feed
+  $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) 
+  {
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
+    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+  });
+  
+  $("#export").click(function()
+  {
+    var feedid = $(this).attr('feedid');
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var export_timezone_offset = parseInt($("#export-timezone-offset").val());
+    
+    if (!export_start) {alert("Please enter a valid start date"); return false; }
+    if (!export_end) {alert("Please enter a valid end date"); return false; }
+    if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
+    if (export_interval=="") {alert("Please select interval to download"); return false; }
+    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
+    
+    if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
+    
+    window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval);
+  });
+  
+  function parse_timepicker_time(timestr)
+  {
+    var tmp = timestr.split(" ");
+    if (tmp.length!=2) return false;
+    
+    var date = tmp[0].split("/");
+    if (date.length!=3) return false;
+    
+    var time = tmp[1].split(":");
+    if (time.length!=3) return false;
+    
+    return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+  }
+
+  
+  // Virtual Feed feature
+  $("#newfeed-save").click(function (){
+    var newfeedname = $('#newfeed-name').val();
+    var newfeedtag = $('#newfeed-tag').val();
+    var engine = 7;   // Virtual Engine
+    var datatype = $('#newfeed-datatype').val();
+    var options = {};
+    
+    var result = feed.create(newfeedtag,newfeedname,datatype,engine,options);
+    feedid = result.feedid;
+
+    if (!result.success || feedid<1) {
+      alert('ERROR: Feed could not be created. '+result.message);
+      return false;
+    } else {
+      update(); 
+      $('#newFeedNameModal').modal('hide');
+    }
+  });
+  
+  // Process list UI js
+  processlist_ui.init(1); // is virtual feed
  
-    $("#table").on('click', '.icon-wrench', function() {
-        var i = table.data[$(this).attr('row')];
-        console.log(i);
-        var contextid = i.id; // Feed ID
-        var contextname = i.tag + " : " + i.name;
-        var processlist = processlist_ui.decode(i.processList);
-        processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
-        window.scrollTo(0,0);
-     });
-    
-    $("#save-processlist").click(function (){
-        var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-        if (result.success) { processlist_ui.saved(); } else { alert('ERROR: Could not save processlist. '+result.message); }
-    }); 
+  $("#table").on('click', '.icon-wrench', function() {
+    var i = table.data[$(this).attr('row')];
+    console.log(i);
+    var contextid = i.id; // Feed ID
+    var contextname = i.tag + " : " + i.name;
+    var processlist = processlist_ui.decode(i.processList);
+    processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
+    window.scrollTo(0,0);
+   });
+  
+  $("#save-processlist").click(function (){
+    var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
+    if (result.success) { processlist_ui.saved(); } else { alert('ERROR: Could not save processlist. '+result.message); }
+  }); 
 </script>
