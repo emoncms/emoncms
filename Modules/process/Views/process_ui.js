@@ -149,7 +149,7 @@ var processlist_ui =
                                 break;
 
                             case 1: //INPUTID
-                                var inpid = this.contextprocesslist[z][1];
+                                var inpid = localprocesslist[z][1];
                                 if (this.inputlist[value]!=undefined) {
                                     title = "Input " +value+ " (Node "+this.inputlist[value].nodeid+":"+this.inputlist[value].name + (this.inputlist[value].description!="" ? " "+this.inputlist[value].description : "") +")";
                                     color = 'info';
