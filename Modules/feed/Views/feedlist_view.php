@@ -27,24 +27,24 @@
 #table td:nth-of-type(15) { width:14px; text-align: center; }
 </style>
 
-<br>
-<div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div></div>
+<div>
+    <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a>&nbsp;</div></div>
+    <div id="localheading"><h2>&nbsp;<?php echo _('Feeds'); ?></h2></div>
 
-<div class="container">
-        <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
+    <?php require "Modules/process/Views/process_ui.php"; ?>
 
-        <?php require "Modules/process/Views/process_ui.php"; ?>
+    <div id="table"><div align='center'>loading...</div></div>
 
-        <div id="table"></div>
+    <div id="nofeeds" class="alert alert-block hide">
+            <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
+            <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
+    </div>
 
-        <div id="nofeeds" class="alert alert-block hide">
-                <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
-                <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
-        </div>
-
+    <div id="bottomtoolbar" class="hide">
         <hr>
         <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
         <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
+    </div>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
@@ -158,22 +158,20 @@
 
     // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-
     table.element = "#table";
-
+    table.groupby = 'tag';
+    table.deletedata = false;
     table.fields = {
         'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
         'tag':{'title':"<?php echo _('Tag'); ?>", 'type':"hinteditable"},
         'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
         'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
-
         'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
         'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"fixedselect", 'options':['','REALTIME','DAILY','HISTOGRAM']},
         'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"fixedselect", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER']},
         'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
         'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
         'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
-
         // Actions
         'edit-action':{'title':'', 'type':"edit"},
         'delete-action':{'title':'', 'type':"delete"},
@@ -181,11 +179,6 @@
         'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
         'icon-basic':{'title':'', 'type':"iconbasic", 'icon':'icon-circle-arrow-down'}
     }
-
-    table.groupby = 'tag';
-    table.deletedata = false;
-
-    table.draw();
 
     update();
 
@@ -206,12 +199,14 @@
             table.draw();
             if (table.data.length != 0) {
                 $("#nofeeds").hide();
-                $("#apihelphead").show();
                 $("#localheading").show();
+                $("#apihelphead").show();
+                $("#bottomtoolbar").show();
             } else {
                 $("#nofeeds").show();
                 $("#localheading").hide();
                 $("#apihelphead").hide();
+                $("#bottomtoolbar").hide();
             }
         } });
     }
@@ -223,7 +218,7 @@
         if (interval > 0) updater = setInterval(func, interval);
     }
     updaterStart(update, 5000);
-    
+
     $("#table").bind("onEdit", function(e){
         updaterStart(update, 0);
     });

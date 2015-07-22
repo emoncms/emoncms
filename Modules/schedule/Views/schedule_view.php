@@ -12,23 +12,21 @@
          width: 88%;
 }
 </style>
-
-<br>
-<div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Schedule Help'); ?></a></div></div>
-
 <div class="container">
-    <div id="localheading"><h2><?php echo _('Schedules'); ?></h2></div>
+    <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Schedule Help'); ?></a>&nbsp;</div></div>
+    <div id="localheading"><h2>&nbsp;<?php echo _('Schedules'); ?></h2></div>
  
-    <div id="table"></div>
+    <div id="table"><div align='center'>loading...</div></div>
         
     <div id="noschedules" class="alert alert-block hide">
             <h4 class="alert-heading"><?php echo _('No schedules created'); ?></h4>
             <p><?php echo _('No schedules defined. Please add a new schedule. <a href="api">Schedule helper</a> as a guide for generating your request.'); ?></p>
     </div>
     
-    <hr>
-    
-    <button id="addnewschedule" class="btn btn-small" ><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New schedule'); ?></button>
+    <div id="bottomtoolbar" class="hide">
+        <hr>
+        <button id="addnewschedule" class="btn btn-small" ><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New schedule'); ?></button>
+    </div>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
@@ -49,14 +47,13 @@
 </div>
 
 <script>
-
     var path = "<?php echo $path; ?>";
     
     // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-
     table.element = "#table";
-
+    //table.groupby = 'userid';
+    table.deletedata = false;
     table.fields = {
         'id':{'type':"fixed"},
         'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
@@ -69,10 +66,7 @@
         'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'},
         'test-action':{'title':'', 'type':"iconbasic", 'icon':'icon-eye-open'}
     }
-    
-    //table.groupby = 'userid';
-    table.deletedata = false;
-    
+
     update();
 
     function update()
@@ -89,12 +83,14 @@
             table.draw();
             if (table.data.length != 0) {
                 $("#noschedules").hide();
-                $("#apihelphead").show();
                 $("#localheading").show();
+                $("#apihelphead").show();
+                $("#bottomtoolbar").show();
             } else {
                 $("#noschedules").show();
                 $("#localheading").hide();
                 $("#apihelphead").hide();
+                $("#bottomtoolbar").hide();
             }
         }});
     }

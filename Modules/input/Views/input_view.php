@@ -22,48 +22,47 @@
 #table td:nth-of-type(9) { width:14px; text-align: center; }
 </style>
 
-<br>
-<div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div></div>
-
-<div class="container">
-    <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
+<div >
+    <div id="apihelphead"><div style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a>&nbsp;</div></div>
+    <div id="localheading"><h2>&nbsp;<?php echo _('Inputs'); ?></h2></div>
     
     <?php require "Modules/process/Views/process_ui.php"; ?>
     
-    <div id="table"></div>
+    <div id="table"><div align='center'>loading...</div></div>
 
     <div id="noinputs" class="alert alert-block hide">
             <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
             <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
+</div>
 
-    <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
-        <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="myModalLabel"><?php echo _('Delete Input'); ?></h3>
-        </div>
-        <div class="modal-body">
-            <p><?php echo _('Deleting an input will loose its name and configured process list.<br>An new blank input is automatic created by API data post if it does not already exists.'); ?>
-            </p>
-            <p>
-               <?php echo _('Are you sure you want to delete?'); ?>
-            </p>
-        </div>
-        <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-            <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete'); ?></button>
-        </div>
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"><?php echo _('Delete Input'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <p><?php echo _('Deleting an input will loose its name and configured process list.<br>An new blank input is automatic created by API data post if it does not already exists.'); ?>
+        </p>
+        <p>
+           <?php echo _('Are you sure you want to delete?'); ?>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete'); ?></button>
     </div>
 </div>
-<script>
 
+<script>
     var path = "<?php echo $path; ?>";
     
     // Extend table library field types
     for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-
     table.element = "#table";
-    
+    table.groupprefix = "Node ";
+    table.groupby = 'nodeid';
+    table.deletedata = false;
     table.fields = {
         //'id':{'type':"fixed"},
         'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
@@ -72,17 +71,12 @@
         'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
         'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
         'value':{'title':'<?php echo _("Value"); ?>','type':"value"},
-
         // Actions
         'edit-action':{'title':'', 'type':"edit"},
         'delete-action':{'title':'', 'type':"delete"},
         'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'}
     }
 
-    table.groupprefix = "Node ";
-    table.groupby = 'nodeid';
-    table.deletedata = false;
-    
     update();
 
     function update()
@@ -93,8 +87,8 @@
             table.draw();
             if (table.data.length != 0) {
                 $("#noinputs").hide();
-                $("#apihelphead").show();
                 $("#localheading").show();
+                $("#apihelphead").show();
             } else {
                 $("#noinputs").show();
                 $("#localheading").hide();
