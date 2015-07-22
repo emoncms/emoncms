@@ -276,7 +276,7 @@ var processlist_ui =
                     arg = feedid;
                     break;
                     
-                case 4: // NONE
+                case 3: // NONE
                     arg = 0;
                     break;
                     

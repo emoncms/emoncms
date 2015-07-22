@@ -24,7 +24,7 @@ http://openenergymonitor.org/emon/node/600
 <?php if (!$embed) { ?> </div> <?php } ?>
 
 <script id="source" language="javascript" type="text/javascript">
-    var feedid = <?php echo $feedid; ?>;
+  var feedid = <?php echo $feedid; ?>;
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var ufac = "<?php echo $ufac; ?>";

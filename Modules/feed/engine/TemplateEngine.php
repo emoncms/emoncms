@@ -149,8 +149,7 @@ class TemplateEngine
     {
         foreach ($this->writebuffer as $feedid=>$data) {
         // $this->someSaveMechanism->array($data[$p][0],$data[$p][1]);
-    }
-
+	}
     }
 
 
