@@ -26,9 +26,9 @@
         // Supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds with a hidden engine still work.
         // Place a ',' as the first character on all uncommented engines lines but first.
         'engines_hidden'=>array(
-            Engine::MYSQL           // 0  Mysql traditional
+            //Engine::MYSQL         // 0  Mysql traditional
             //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown 
-            ,Engine::PHPTIMESERIES  // 2
+            Engine::PHPTIMESERIES   // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
         ),
@@ -64,7 +64,7 @@
     $theme = "basic";   
 
     // Dashboard and vis use full screen width
-    $fullwidth = true;  
+    $fullwidth = false;  
 
     // Enable multi user emoncms.
     // If set to false, emoncms will automatically remove the register form and 

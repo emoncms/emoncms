@@ -18,16 +18,32 @@ class RedisBuffer
         $this->log = new EmonLogger(__FILE__);
     }
 
-    /**
-     * Create feed
-     *
-     * @param integer $feedid The id of the feed to be created
-    */
+// #### \/ Below are required methods
     public function create($feedid,$options)
     {
         return true;
     }
 
+    public function delete($feedid)
+    {
+        $this->redis->srem("feed:bufferactive",$feedid); // remove from feedlist
+        $this->redis->zRemRangeByRank('feed:$feedid:buffer', 0, -1); // remove buffer
+    }
+
+    public function get_meta($feedid)
+    {
+        $meta = new stdClass();
+        $meta->id = $feedid;
+        $meta->start_time = 0;//tbd
+        $meta->nlayers = 1;
+        $meta->interval = 1;
+        return $meta;
+    }
+
+    public function get_feed_size($feedid)
+    {
+        return 0;
+    }
 
     /**
      * Adds a data point to the buffer feed
@@ -35,7 +51,7 @@ class RedisBuffer
      * @param integer $feedid The id of the feed to add to
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
-     * @param args array of optional arguments
+     * @param array $arg optional arguments
     */
     public function post($feedid,$time,$value,$args=null)
     {
@@ -43,7 +59,9 @@ class RedisBuffer
         $engine = $args['engine'];
         $updatetime = $args['updatetime']; // This is time it was received not time for value
         if ($arg != null) $arg="|".json_encode($arg); // passes arg to redis
+
         $this->redis->zAdd("feed:$feedid:buffer",(int)$time,$updatetime."|".$value.$arg);
+        $this->redis->sAdd("feed:bufferactive",$feedid); // save feed id to feedlist redis used on feedwriter
         //$this->log->info("post() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value arg=$arg");
     }
     
@@ -57,11 +75,30 @@ class RedisBuffer
     public function update($feedid,$time,$value,$args=null)
     {
         $engine = $args['engine'];
-        $updatetime = $args['updatetime']; // This is time it was received not time for value
-        //TODO: Next 2 redis should be atomic
+        $updatetime = $args['updatetime']; // This is time it was received not time for value, used as score order
+        
+        $this->setLock($feedid,"write"); // set write lock
+
+        // A value update on a range being processed may get deleted without being saved, so check lock and wait for release
+        $this->checkLock_blocking($feedid,"read");
+
         $remcnt = $this->redis->zRemRangeByScore("feed:$feedid:buffer", (int)$time, (int)$time); // Remove for buffer existing time, return num of removed
-        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,$updatetime."|".$value);   // Add new value to buffer
-        $this->log->info("update() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value remcnt=$remcnt");
+        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,$updatetime."|".$value."|U");   // Add new value to buffer
+        $this->redis->sAdd("feed:bufferactive",$feedid); // save feed id to feedlist redis used on feedwriter
+
+        $this->removeLock($feedid,"write"); // remove write lock
+        //$this->log->info("update() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value remcnt=$remcnt");
+    }
+
+    /**
+     * Get array with last time and value from a feed
+     *
+     * @param integer $feedid The id of the feed
+    */
+    public function lastvalue($feedid)
+    {
+        //TBD
+        return array('time'=>time(), 'value'=>0);
     }
 
     /**
@@ -76,6 +113,7 @@ class RedisBuffer
     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        //TBD
         $data = array();
 
         // example of datapoint format
@@ -86,63 +124,41 @@ class RedisBuffer
         return $data;
     }
 
-    /**
-     * Get the last value from a feed
-     *
-     * @param integer $feedid The id of the feed
-    */
-    public function lastvalue($feedid)
-    {
-        // time returned as date (to be changed to unixtimestamp in future)
-        return array('time'=>date("Y-n-j H:i:s",0), 'value'=>0);
-    }
-    
     public function export($feedid,$start)
     {
-    
+
     }
-    
-    public function delete($feedid)
-    {
-    
-    }
-    
-    public function get_feed_size($feedid)
-    {
-    
-    }
-    
-    public function get_meta($feedid)
-    {
-        $meta = new stdClass();
-        $meta->id = $feedid;
-        $meta->start_time = 0;//tbd
-        $meta->nlayers = 1;
-        $meta->npoints = -1; //tbd
-        $meta->interval = 1;
-        return $meta;
-    }
-    
+
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-        return false; // TBD
+
     }
-    
+
+// #### /\ Above are required methods
+
+
+// #### \/ Below engine specific methods
+
     // Write data in buffer to all feeds
     public function process_buffers(){
-        $feedids = $this->redis->sMembers("feed:active");
+        $feedids = $this->redis->sMembers("feed:bufferactive");
         foreach ($feedids as $feedid) {
             $this->process_feed_buffer($feedid);
         }
     }
-    
+
+
+// #### \/ Bellow are engine private methods      
+
     // Write data in buffer to feed
     private function process_feed_buffer($feedid){
         $feeddata = $this->redis->hGetAll("feed:$feedid");
         if (isset($feeddata['engine'])) {
             $engine = $feeddata['engine'];
             $len = $this->redis->zCount("feed:$feedid:buffer","-inf","+inf");
-            if ($len > 0 ) {
+            // process if there is data on buffer and no write lock from real data
+            if ($len > 0 && !$this->checkLock($feedid,"write")) {
+                $this->setLock($feedid,"read"); // set read lock
                 echo "Processing feed=$feedid len=$len :\n";
                 $this->log->info("process_buffer() engine=$engine feed=$feedid len=$len");
                 $lasttime=0;
@@ -161,11 +177,11 @@ class RedisBuffer
                         $updatetime = $f[0]; // This is time it was received not time for value
                         $value = $f[1];
                         $arg = (isset($f[2]) ? $f[2] : "");
-                        if ($lasttime == $time) {
-                            echo " Invoking update engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
+                        if ($arg == "U" || $lasttime == $time) {
+                            //echo " Invoking update engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
                             $this->feed->EngineClass($engine)->update($feedid,$time,$value);
                         } else {
-                            echo "  Invoking post_bulk_prepare engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
+                            //echo "  Invoking post_bulk_prepare engine=" . $engine . " time=$time rawvalue=$rawvalue\n";
                             $this->feed->EngineClass($engine)->post_bulk_prepare($feedid,$time,$value,$arg);
                             //$this->feed->EngineClass($engine)->post($feedid,$time,$value,$arg);
                         }
@@ -181,7 +197,44 @@ class RedisBuffer
                     $remcnt = $this->redis->zRemRangeByRank("feed:$feedid:buffer", 0, $range-1); // Remove processed range
                     if ($remcnt != $matchcnt) { echo "WARN: found $matchcnt but deleted $remcnt items\n"; }
                 }
+                $this->removeLock($feedid,"write"); // remove write lock just in case something halted without releasing it
+            }
+            $this->removeLock($feedid,"read"); // remove read lock
+        }
+    }
+
+    //Checks redis locks and wait if locked
+    private function checkLock_blocking($feedid,$type)
+    {
+        $lock = $this->checkLock($feedid,$type);
+        if ($lock) {
+            $this->log->info("checkLock_blocking() Redis buffer has a $type lock on feed=$feedid waiting for release...");
+            while ($this->checkLock($feedid,$type)) {
+                sleep(1);
             }
         }
     }
+    
+    //Checks redis lock
+    private function checkLock($feedid,$type)
+    {
+        $lock = $this->redis->hGet("feed:$feedid:bufferstatus",$type);
+        //$this->log->info("checkLock() $type lock on feed=$feedid is $lock");
+        return $lock == "1";
+    }
+    
+    //Set redis lock
+    private function setLock($feedid,$type)
+    {
+        $this->redis->hSet("feed:$feedid:bufferstatus",$type,"1"); 
+        //$this->log->info("setLock() $type lock on feed=$feedid");
+    }
+    
+    //Remove redis lock
+    private function removeLock($feedid,$type)
+    {
+        $this->redis->hSet("feed:$feedid:bufferstatus",$type,"0"); 
+        //$this->log->info("removeLock() $type lock on feed=$feedid");
+    }
+    
 }

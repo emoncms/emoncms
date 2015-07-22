@@ -2,17 +2,29 @@
 
 class MysqlTimeSeries
 {
-
     protected $mysqli;
     protected $log;
     private $writebuffer = array();
 
+    /**
+     * Constructor.
+     *
+     * @api
+    */
     public function __construct($mysqli)
     {
         $this->mysqli = $mysqli;
         $this->log = new EmonLogger(__FILE__);
     }
 
+// #### \/ Below are required methods
+
+    /**
+     * Create feed
+     *
+     * @param integer $feedid The id of the feed to be created
+     * @param array $options for the engine
+    */
     public function create($feedid,$options)
     {
         $feedname = "feed_".trim($feedid)."";
@@ -21,48 +33,67 @@ class MysqlTimeSeries
         return true;
     }
 
+    /**
+     * Delete feed
+     *
+     * @param integer $feedid The id of the feed to be created
+    */
+    public function delete($feedid)
+    {
+        $this->mysqli->query("DROP TABLE feed_".$feedid);
+    }
+
+    /**
+     * Gets engine metadata
+     *
+     * @param integer $feedid The id of the feed to be created
+    */
+    public function get_meta($feedid)
+    {
+        $meta = new stdClass();
+        $meta->id = $feedid;
+        $meta->start_time = 0;
+        $meta->nlayers = 1;
+        $meta->npoints = -1;
+        $meta->interval = 1;
+        return $meta;
+    }
+
+    /**
+     * Returns engine occupied size in bytes
+     *
+     * @param integer $feedid The id of the feed to be created
+    */
+    public function get_feed_size($feedid)
+    {
+        $feedname = "feed_".$feedid;
+        $result = $this->mysqli->query("SHOW TABLE STATUS LIKE '$feedname'");
+        $row = $result->fetch_array();
+        $tablesize = $row['Data_length']+$row['Index_length'];
+        return $tablesize;
+    }
+
+    /**
+     * Adds a data point to the feed
+     *
+     * @param integer $feedid The id of the feed to add to
+     * @param integer $time The unix timestamp of the data point, in seconds
+     * @param float $value The value of the data point
+     * @param arg $value optional padding mode argument
+    */
     public function post($feedid,$time,$value,$arg=null)
     {
         $feedname = "feed_".trim($feedid)."";
         $this->mysqli->query("INSERT INTO $feedname (time,data) VALUES ('$time','$value') ON DUPLICATE KEY UPDATE data=VALUES(data)");
     }
 
-    // Insert data in post buffer
-    public function post_bulk_prepare($feedid,$time,$value,$arg=null)
-    {
-        $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
-        //$this->log->info("post_bulk_prepare() $feedid, $time, $value, $arg");
-    }
-
-    // Saves post buffer to mysql feed_table, performing bulk inserts instead of an insert for each point
-    public function post_bulk_save()
-    {
-        $stepcnt = 512; // Data points to save in each insert command limit is max_allowed_packet = 1Mb default
-        foreach ($this->writebuffer as $feedid=>$data) {
-            $feedname = "feed_".trim($feedid)."";
-            $cnt=count($data);
-            if ($cnt>0) {
-                $p = 0; // point
-                while($p<$cnt) {
-                    $sql_values="";
-                    $s=0; // data point step
-                    while($s<$stepcnt) {
-                        if (isset($data[$p][0]) && isset($data[$p][1])) {
-                            $sql_values .= "(".$data[$p][0].",".$data[$p][1]."),";
-                        }
-                        $s++; $p++; 
-                        if ($p>=$cnt) break;
-                    }
-                    if ($sql_values!="") {
-                        $this->log->info("post_bulk_save() " . "INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
-                        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
-                    }
-                }
-            }
-        }
-        $this->writebuffer = array(); // clear buffer
-    }
-
+    /**
+     * Updates a data point in the feed
+     *
+     * @param integer $feedid The id of the feed to add to
+     * @param integer $time The unix timestamp of the data point, in seconds
+     * @param float $value The value of the data point
+    */
     public function update($feedid,$time,$value)
     {
         $feedid = (int) $feedid;
@@ -86,6 +117,34 @@ class MysqlTimeSeries
         return $value;
     }
 
+    /**
+     * Get array with last time and value from a feed
+     *
+     * @param integer $feedid The id of the feed
+    */
+    public function lastvalue($feedid)
+    {
+        $feedid = (int) $feedid;
+        $feedname = "feed_".trim($feedid)."";
+
+        $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time Desc LIMIT 1");
+        if ($result && $row = $result->fetch_array()){
+            return array('time'=>$row['time'], 'value'=>$row['data']);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Return the data for the given timerange
+     *
+     * @param integer $feedid The id of the feed to fetch from
+     * @param integer $start The unix timestamp in ms of the start of the data range
+     * @param integer $end The unix timestamp in ms of the end of the data range
+     * @param integer $interval The number os seconds for each data point to return (used by some engines)
+     * @param integer $skipmissing Skip null values from returned data (used by some engines)
+     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
+    */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         global $data_sampling;
@@ -163,19 +222,6 @@ class MysqlTimeSeries
         return $data;
     }
 
-    public function lastvalue($feedid)
-    {
-        $feedid = (int) $feedid;
-        $feedname = "feed_".trim($feedid)."";
-
-        $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time Desc LIMIT 1");
-        if ($result && $row = $result->fetch_array()){
-            return array('time'=>$row['time'], 'value'=>$row['data']);
-        } else {
-            return false;
-        }
-    }
-
     public function export($feedid,$start)
     {
         // Feed id and start time of feed to export
@@ -237,52 +283,6 @@ class MysqlTimeSeries
         exit;
     }
 
-    public function delete_data_point($feedid,$time)
-    {
-        $feedid = intval($feedid);
-        $time = intval($time);
-
-        $feedname = "feed_".trim($feedid)."";
-        $this->mysqli->query("DELETE FROM $feedname where `time` = '$time' LIMIT 1");
-    }
-
-    public function deletedatarange($feedid,$start,$end)
-    {
-        $feedid = intval($feedid);
-        $start = intval($start/1000.0);
-        $end = intval($end/1000.0);
-
-        $feedname = "feed_".trim($feedid)."";
-        $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
-
-        return true;
-    }
-
-    public function delete($feedid)
-    {
-        $this->mysqli->query("DROP TABLE feed_".$feedid);
-    }
-
-    public function get_feed_size($feedid)
-    {
-        $feedname = "feed_".$feedid;
-        $result = $this->mysqli->query("SHOW TABLE STATUS LIKE '$feedname'");
-        $row = $result->fetch_array();
-        $tablesize = $row['Data_length']+$row['Index_length'];
-        return $tablesize;
-    }
-    
-    public function get_meta($feedid)
-    {
-        $meta = new stdClass();
-        $meta->id = $feedid;
-        $meta->start_time = 0;
-        $meta->nlayers = 1;
-        $meta->npoints = -1;
-        $meta->interval = 1;
-        return $meta;
-    }
-    
     public function csv_export($feedid,$start,$end,$outinterval)
     {
         global $csv_decimal_places;
@@ -369,6 +369,74 @@ class MysqlTimeSeries
         exit;
     }
 
+// #### /\ Above are required methods
+
+
+// #### \/ Below are buffer write methods
+
+    // Insert data in post buffer
+    public function post_bulk_prepare($feedid,$time,$value,$arg=null)
+    {
+        $this->writebuffer[(int)$feedid][] = array((int)$time,$value);
+        //$this->log->info("post_bulk_prepare() $feedid, $time, $value, $arg");
+    }
+
+    // Saves post buffer to mysql feed_table, performing bulk inserts instead of an insert for each point
+    public function post_bulk_save()
+    {
+        $stepcnt = 1048576/30; // Data points to save in each insert command limit is max_allowed_packet = 1Mb default ~20-30bytes are used for each data point
+        foreach ($this->writebuffer as $feedid=>$data) {
+            $feedname = "feed_".trim($feedid)."";
+            $cnt=count($data);
+            if ($cnt>0) {
+                $p = 0; // point
+                while($p<$cnt) {
+                    $sql_values="";
+                    $s=0; // data point step
+                    while($s<$stepcnt) {
+                        if (isset($data[$p][0]) && isset($data[$p][1])) {
+                            $sql_values .= "(".$data[$p][0].",".$data[$p][1]."),";
+                        }
+                        $s++; $p++; 
+                        if ($p>=$cnt) break;
+                    }
+                    if ($sql_values!="") {
+                        $this->log->info("post_bulk_save() " . "INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
+                        $this->mysqli->query("INSERT INTO $feedname (`time`,`data`) VALUES " . substr($sql_values,0,-1) . " ON DUPLICATE KEY UPDATE data=VALUES(data)");
+                    }
+                }
+            }
+        }
+        $this->writebuffer = array(); // clear buffer
+    }
+
+    
+
+// #### \/ Below engine specific public methods
+
+    public function delete_data_point($feedid,$time)
+    {
+        $feedid = intval($feedid);
+        $time = intval($time);
+
+        $feedname = "feed_".trim($feedid)."";
+        $this->mysqli->query("DELETE FROM $feedname where `time` = '$time' LIMIT 1");
+    }
+
+    public function deletedatarange($feedid,$start,$end)
+    {
+        $feedid = intval($feedid);
+        $start = intval($start/1000.0);
+        $end = intval($end/1000.0);
+
+        $feedname = "feed_".trim($feedid)."";
+        $this->mysqli->query("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
+
+        return true;
+    }
+
+
+// #### \/ Bellow are engine private methods    
 
     // Search time in buffer if found update its value and return true 
     private function writebuffer_update_time($feedid,$time,$newvalue) {
@@ -383,4 +451,5 @@ class MysqlTimeSeries
        }
        return false;
     }
+
 }

@@ -36,7 +36,7 @@ class Feed
         $e = (string)$e;
         static $engines = array();
         if (isset($engines[$e])) {
-            //$this->log->info("EngineClass() reused instance of '".get_class($engines[$e])."' id '".$e."'. <----------");
+            //$this->log->info("EngineClass() reused instance of '".get_class($engines[$e])."' id '".$e."'.");
             return $engines[$e];
         }
         else {
@@ -86,7 +86,7 @@ class Feed
         $name = preg_replace('/[^\w\s-:]/','',$name);
         $datatype = (int) $datatype;
         $engine = (int) $engine;
-        
+
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
         
@@ -107,7 +107,7 @@ class Feed
                     'userid'=>$userid,
                     'name'=>$name,
                     'datatype'=>$datatype,
-                    'tag'=>'',
+                    'tag'=>$tag,
                     'public'=>false,
                     'size'=>0,
                     'engine'=>$engine
@@ -125,9 +125,9 @@ class Feed
                 $engineresult = $this->EngineClass($engine)->create($feedid,$options);
             }
 
-            if ($engineresult == false)
+            if ($engineresult !== true)
             {
-                $this->log->warn("Feed model: failed to create feed model feedid=$feedid");
+                $this->log->warn("create() failed to create feed model feedid=$feedid");
                 // Feed engine creation failed so we need to delete the meta entry for the feed
                 
                 $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
@@ -138,11 +138,11 @@ class Feed
                     $this->redis->srem("user:feeds:$userid",$feedid);
                 }
 
-                return array('success'=>false, 'message'=>"");
+                return array('success'=>false, 'message'=> $engineresult);
             }
-
+            $this->log->info("create() feedid=$feedid");
             return array('success'=>true, 'feedid'=>$feedid, 'result'=>$engineresult);
-        } else return array('success'=>false);
+        } else return array('success'=>false, 'result'=>"SQL returned invalid insert feed id");
     }
 
     public function delete($feedid)
@@ -152,6 +152,11 @@ class Feed
 
         $engine = $this->get_engine($feedid);
         
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
         // Call to engine delete method
         $this->EngineClass($engine)->delete($feedid);
 
@@ -161,15 +166,16 @@ class Feed
             $userid = $this->redis->hget("feed:$feedid",'userid');
             $this->redis->del("feed:$feedid");
             $this->redis->srem("user:feeds:$userid",$feedid);
-            $this->redis->srem("feed:active",$feedid); // remove from feedlist
         }
+
         if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
+        $this->log->info("delete() feedid=$feedid");
     }
 
     public function exist($feedid)
     {
-        //$this->log->info("exist() $feedid");
+        //$this->log->info("exist() feedid=$feedid");
         static $feed_exists_cache = array(); // Array to hold the cache
         if (isset($feed_exists_cache[$feedid])) {
             $feedexist = $feed_exists_cache[$feedid]; // Retrieve from static cache
@@ -470,7 +476,7 @@ class Feed
         if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\w\s-:]/','',$fields->tag)."'";
         if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
 
-        // Convert to a comma seperated string for the mysql query
+        // Convert to a comma separated string for the mysql query
         $fieldstr = implode(",",$array);
         $this->mysqli->query("UPDATE feeds SET ".$fieldstr." WHERE `id` = '$id'");
 
@@ -549,10 +555,6 @@ class Feed
             // Call to engine update
             $this->EngineClass($engine)->update($feedid,$feedtime,$value);
         }     
-
-        // need to find a way to not update if value being updated is older than the last value
-        // in the database, redis lastvalue is last update time rather than last datapoint time.
-        // So maybe we need to store both in redis.
 
         $this->set_timevalue($feedid, $value, $updatetime);
 
@@ -674,12 +676,10 @@ class Feed
     {
         $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine,processList FROM feeds WHERE `id` = '$id'");
         $row = $result->fetch_object();
-
         if (!$row) {
             $this->log->warn("Feed model: Requested feed does not exist feedid=$id");
             return false;
         }
-
         $this->redis->hMSet("feed:$row->id",array(
             'id'=>$row->id,
             'userid'=>$row->userid,
@@ -691,8 +691,6 @@ class Feed
             'engine'=>$row->engine,
             'processList'=>$row->processList
         ));
-
-        $this->redis->sAdd("feed:active",$id); // save feed id to feedlist redis used on feedwriter
         return true;
     }
 

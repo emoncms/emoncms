@@ -27,6 +27,26 @@ class VirtualFeed
         return true;  // Always true
     }
 
+    public function delete($feedid)
+    {
+        return true; // Always true
+    }
+
+    public function get_meta($feedid)
+    {
+        $meta = new stdClass();
+        $meta->id = $feedid;
+        $meta->start_time = 0;
+        $meta->nlayers = 1;
+        $meta->interval = 1;
+        return $meta;
+    }
+
+    public function get_feed_size($feedid)
+    {
+        return 0;  // Always 0
+    }
+
     public function post($feedid,$time,$value,$arg=null)
     {
         return false; // Not supported by engine
@@ -35,6 +55,34 @@ class VirtualFeed
     public function update($feedid,$time,$value)
     {
         return false; // Not supported by engine
+    }
+
+    public function lastvalue($feedid)
+    {
+        $feedid = intval($feedid);
+        $processList = $this->feed->get_processlist($feedid);
+        if ($processList == '' || $processList == null) { return false; }
+        
+        // Check if datatype is daily so that select over range is used rather than skip select approach
+        static $feed_datatype_cache = array(); // Array to hold the cache
+        if (isset($feed_datatype_cache[$feedid])) {
+            $datatype = $feed_datatype_cache[$feedid]; // Retrieve from static cache
+        } else {
+            $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
+            $row = $result->fetch_array();
+            $datatype = $row['datatype'];
+            $feed_datatype_cache[$feedid] = $datatype; // Cache it
+        }
+        $now = time();
+        if ($datatype==2) { //daily
+            $start=$this->process->getstartday($now); // start of day
+            $endslot = $start + 86400; // one day range
+            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400);
+            $dataValue = $this->process->input($start, null, $processList, $opt_timearray); // execute processlist 
+        } else {
+            $dataValue = $this->process->input($now, null, $processList); // execute processlist 
+        }
+        return array('time'=>$now, 'value'=>$dataValue);
     }
 
     // Calculates data gaps for given start, end and interval. Then executes feed processlist for each slot data and returns all slots processed data.
@@ -109,64 +157,12 @@ class VirtualFeed
         return $data;
     }
 
-    public function lastvalue($feedid)
-    {
-        $feedid = intval($feedid);
-        $processList = $this->feed->get_processlist($feedid);
-        if ($processList == '' || $processList == null) { return false; }
-        
-        // Check if datatype is daily so that select over range is used rather than skip select approach
-        static $feed_datatype_cache = array(); // Array to hold the cache
-        if (isset($feed_datatype_cache[$feedid])) {
-            $datatype = $feed_datatype_cache[$feedid]; // Retrieve from static cache
-        } else {
-            $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
-            $row = $result->fetch_array();
-            $datatype = $row['datatype'];
-            $feed_datatype_cache[$feedid] = $datatype; // Cache it
-        }
-        $now = time();
-        if ($datatype==2) { //daily
-            $start=$this->process->getstartday($now); // start of day
-            $endslot = $start + 86400; // one day range
-            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400);
-            $dataValue = $this->process->input($start, null, $processList, $opt_timearray); // execute processlist 
-        } else {
-            $dataValue = $this->process->input($now, null, $processList); // execute processlist 
-        }
-        return array('time'=>$now, 'value'=>$dataValue);
-    }
 
     public function export($feedid,$start)
     {
         return false; // TBD
     }
 
-    public function delete_data_point($feedid,$time)
-    {
-        return true; // Always true
-    }
-
-    public function deletedatarange($feedid,$start,$end)
-    {
-        return true; // Always true
-    }
-
-    public function delete($feedid)
-    {
-        return true; // Always true
-    }
-
-    public function get_feed_size($feedid)
-    {
-        return 0;  // Always 0
-    }
-    
-    public function get_meta($feedid)
-    {
-    
-    }
-    
     public function csv_export($feedid,$start,$end,$outinterval)
     {
         return false; // TBD

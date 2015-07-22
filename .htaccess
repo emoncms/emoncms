@@ -9,6 +9,8 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine on
  
+  #RewriteBase /sites/emon/
+
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
