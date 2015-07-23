@@ -145,6 +145,7 @@
         } else {
             $menu = load_menu();
             $output['mainmenu'] = view("Theme/menu_view.php", array());
+            $output['controller'] = $route->controller;
             print view("Theme/theme.php", $output);
         }
     }

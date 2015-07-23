@@ -16,7 +16,6 @@
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Emoncms</title>
-
         <link rel="shortcut icon" href="<?php echo $path; ?>Theme/favicon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -28,7 +27,6 @@
         <link href="<?php echo $path; ?>Theme/emon.css" rel="stylesheet">
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     </head>
-
     <body>
         <div id="wrap">
         <div class="navbar navbar-inverse navbar-fixed-top">
@@ -58,17 +56,20 @@
 
         <?php
           if (!isset($fullwidth)) $fullwidth = false;
-          if (!$fullwidth) {
+          if ($fullwidth && $controller=="dashboard") {
         ?>
-
+        <div>
+            <?php echo $content; ?>
+        </div>
+        <?php } else if ($fullwidth) { ?>
+        <div style="margin:10px;">
+            <?php echo $content; ?>
+        </div>
+        <?php } else { ?>
         <div class="container">
             <?php echo $content; ?>
         </div>
-
-        <?php } else { ?>
-            <?php echo $content; ?>
         <?php } ?>
-
 
         <div style="clear:both; height:60px;"></div>
         </div>
@@ -78,9 +79,6 @@
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
             <span> | <?php echo $emoncms_version; ?></span>
         </div>
-
         <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-
     </body>
-
 </html>

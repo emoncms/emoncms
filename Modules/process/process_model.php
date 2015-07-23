@@ -82,7 +82,7 @@ class Process
         $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
         $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
         $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                 
-        $list[15] = array(_("Rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));               
+        $list[15] = array(_("Rate of change (REDIS)"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));               
         $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL,Engine::MYSQLMEMORY));                   
         $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted",array(Engine::PHPTIMESERIES));               // need to remove
         
@@ -96,7 +96,7 @@ class Process
         $list[20] = array(_("Total pulse count to pulse increment"),ProcessArg::FEEDID,"pulse_diff",1,DataType::REALTIME,"Pulse",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
         
         // fixed works now with redis - look into state implementation without feed
-        $list[21] = array(_("kWh to Power"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME,"Power",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));
+        $list[21] = array(_("kWh to Power (REDIS)"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME,"Power",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));
         
         $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED,"Input");               
         $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd",2,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));                  // fixed works now with redis
