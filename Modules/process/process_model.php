@@ -52,106 +52,107 @@ class Process
 
     public function get_process_list()
     {
-        
-        $list = array();
-        
-        // Note on engine selection
-        
-        // The engines listed against each process must be the supported engines for each process - and are only used in the input and node config GUI dropdown selectors
-        // By using the create feed api and input set processlist its possible to create any feed type with any process list combination.
-        // Only feeds capable of using a particular processor are displayed to the user and can be selected from the gui.
-        // Daily datatype automaticaly adjust feed interval to 1d and user cant change it from gui.
-        // If there is only one engine available for a processor, it is selected and user cant change it from gui.
-        // The default selected engine is the first in the array of the supported engines for each processor.
-        // Virtual feeds are feeds that are calculed in realtime when queried and use a processlist as post processor. 
-        // Processors that write or update a feed are not supported and hidden from the gui on the context of virtual feeds.
+        static $list = array(); // Array to hold the cache
+        if (empty($list)) {     // Cache it now
 
-        // description | Arg type | function | No. of datafields if creating feed | Datatype | Group | Engines
+            // Note on engine selection
+            
+            // The engines listed against each process must be the supported engines for each process - and are only used in the input and node config GUI dropdown selectors
+            // By using the create feed api and input set processlist its possible to create any feed type with any process list combination.
+            // Only feeds capable of using a particular processor are displayed to the user and can be selected from the gui.
+            // Daily datatype automaticaly adjust feed interval to 1d and user cant change it from gui.
+            // If there is only one engine available for a processor, it is selected and user cant change it from gui.
+            // The default selected engine is the first in the array of the supported engines for each processor.
+            // Virtual feeds are feeds that are calculed in realtime when queried and use a processlist as post processor. 
+            // Processors that write or update a feed are not supported and hidden from the gui on the context of virtual feeds.
 
-        $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));
-        $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED,"Calibration");                           
-        $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED,"Calibration");                          
-        $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power",array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));               
-        $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));               
-        $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED,"Input");                   
-        $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                 
-        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));      
-        $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));       // need to remove
-        $list[10] = array(_("Upsert feed at day"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL,Engine::MYSQLMEMORY));           
-        $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    
-        $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
-        $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
-        $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                 
-        $list[15] = array(_("Rate of change (REDIS)"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));               
-        $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL,Engine::MYSQLMEMORY));                   
-        $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted",array(Engine::PHPTIMESERIES));               // need to remove
-        
-        // to be reintroduced in post-processing
-        $list[18] = array(_("Heat flux"),ProcessArg::FEEDID,"heat_flux",1,DataType::REALTIME,"Deleted",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));                  
-        
-        // need to remove - result can be achieved with allow_positive & power_to_kwhd
-        $list[19] = array(_("Power gained to kWh/d"),ProcessArg::FEEDID,"power_acc_to_kwhd",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));              
-        
-        // - look into implementation that doesnt need to store the ref feed
-        $list[20] = array(_("Total pulse count to pulse increment"),ProcessArg::FEEDID,"pulse_diff",1,DataType::REALTIME,"Pulse",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
-        
-        // fixed works now with redis - look into state implementation without feed
-        $list[21] = array(_("kWh to Power (REDIS)"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME,"Power",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));
-        
-        $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED,"Input");               
-        $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd",2,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));                  // fixed works now with redis
-        $list[24] = array(_("Allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED,"Limits");           
-        $list[25] = array(_("Allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED,"Limits");           
-        $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc");       
-        $list[27] = array(_("Max daily value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                        
-        $list[28] = array(_("Min daily value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));  
-                              
-        $list[29] = array(_(" + feed"),ProcessArg::FEEDID,"add_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.2014
-        $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.
-        $list[31] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed");
-        $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed");
-        $list[33] = array(_("Reset to ZERO"),ProcessArg::NONE,"reset2zero",0,DataType::UNDEFINED,"Misc");
-        
-        $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
-        
-        $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
+            // description | Arg type | function | No. of datafields if creating feed | Datatype | Group | Engines
 
-        $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc"); 
-        $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
+            $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));
+            $list[2] = array(_("x"),ProcessArg::VALUE,"scale",0,DataType::UNDEFINED,"Calibration");                           
+            $list[3] = array(_("+"),ProcessArg::VALUE,"offset",0,DataType::UNDEFINED,"Calibration");                          
+            $list[4] = array(_("Power to kWh"),ProcessArg::FEEDID,"power_to_kwh",1,DataType::REALTIME,"Power",array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));               
+            $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));               
+            $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED,"Input");                   
+            $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                 
+            $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));      
+            $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));       // need to remove
+            $list[10] = array(_("Upsert feed at day"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL,Engine::MYSQLMEMORY));           
+            $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input");                    
+            $list[12] = array(_("/ input"),ProcessArg::INPUTID,"divide_input",0,DataType::UNDEFINED,"Input");                 
+            $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted");                             // need to remove
+            $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                 
+            $list[15] = array(_("Rate of change (REDIS)"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));               
+            $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL,Engine::MYSQLMEMORY));                   
+            $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted",array(Engine::PHPTIMESERIES));               // need to remove
+            
+            // to be reintroduced in post-processing
+            $list[18] = array(_("Heat flux"),ProcessArg::FEEDID,"heat_flux",1,DataType::REALTIME,"Deleted",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));                  
+            
+            // need to remove - result can be achieved with allow_positive & power_to_kwhd
+            $list[19] = array(_("Power gained to kWh/d"),ProcessArg::FEEDID,"power_acc_to_kwhd",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES));              
+            
+            // - look into implementation that doesnt need to store the ref feed
+            $list[20] = array(_("Total pulse count to pulse increment"),ProcessArg::FEEDID,"pulse_diff",1,DataType::REALTIME,"Pulse",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
+            
+            // fixed works now with redis - look into state implementation without feed
+            $list[21] = array(_("kWh to Power (REDIS)"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME,"Power",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES));
+            
+            $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED,"Input");               
+            $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd",2,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES));                  // fixed works now with redis
+            $list[24] = array(_("Allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED,"Limits");           
+            $list[25] = array(_("Allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED,"Limits");           
+            $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc");       
+            $list[27] = array(_("Max daily value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));                        
+            $list[28] = array(_("Min daily value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY));  
+                                  
+            $list[29] = array(_(" + feed"),ProcessArg::FEEDID,"add_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.2014
+            $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed");        // Klaus 24.2.
+            $list[31] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed");
+            $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed");
+            $list[33] = array(_("Reset to ZERO"),ProcessArg::NONE,"reset2zero",0,DataType::UNDEFINED,"Misc");
+            
+            $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES));
+            
+            $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main");     
 
-    if (is_object($this->schedule)) {
-        $list[38] = array(_("If !schedule, ZERO"),ProcessArg::SCHEDULEID,"if_not_schedule_zero",0,DataType::UNDEFINED,"Schedule");
-        $list[39] = array(_("If !schedule, NULL"),ProcessArg::SCHEDULEID,"if_not_schedule_null",0,DataType::UNDEFINED,"Schedule");
-        $list[40] = array(_("If schedule, ZERO"),ProcessArg::SCHEDULEID,"if_schedule_zero",0,DataType::UNDEFINED,"Schedule");
-        $list[41] = array(_("If schedule, NULL"),ProcessArg::SCHEDULEID,"if_schedule_null",0,DataType::UNDEFINED,"Schedule");
-    }        
-        $list[42] = array(_("If ZERO, skip next"),ProcessArg::NONE,"if_zero_skip",0,DataType::UNDEFINED,"Conditional");
-        $list[43] = array(_("If !ZERO, skip next"),ProcessArg::NONE,"if_not_zero_skip",0,DataType::UNDEFINED,"Conditional");
-        $list[44] = array(_("If NULL, skip next"),ProcessArg::NONE,"if_null_skip",0,DataType::UNDEFINED,"Conditional");
-        $list[45] = array(_("If !NULL, skip next"),ProcessArg::NONE,"if_not_null_skip",0,DataType::UNDEFINED,"Conditional");
-        
-        $list[46] = array(_("If >, skip next"),ProcessArg::VALUE,"if_gt_skip",0,DataType::UNDEFINED,"Conditional - User value");
-        $list[47] = array(_("If >=, skip next"),ProcessArg::VALUE,"if_gt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
-        $list[48] = array(_("If <, skip next"),ProcessArg::VALUE,"if_lt_skip",0,DataType::UNDEFINED,"Conditional - User value");
-        $list[49] = array(_("If <=, skip next"),ProcessArg::VALUE,"if_lt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
-        $list[50] = array(_("If =, skip next"),ProcessArg::VALUE,"if_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
-        $list[51] = array(_("If !=, skip next"),ProcessArg::VALUE,"if_not_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
-        
-        // A bit or warning: if user goto's in loop, the php will lock until the server defined timesout with an error
-        $list[52] = array(_("GOTO"),ProcessArg::VALUE,"goto_process",0,DataType::UNDEFINED,"Misc");
-        
-        // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
+            $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc"); 
+            $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc"); 
 
-        //Virtual Feed specific processors (WARNING: all virtual feed specific processors must be on the "Virtual" group because there is logic in the UI to hide it on input context)
-        $list[53] = array(_("Source Feed"),ProcessArg::FEEDID,"source_feed_data_time",1,DataType::REALTIME,"Virtual");
-        //$list[54] = array(_("Source Daily (TBD)"),ProcessArg::FEEDID,"get_feed_data_day",1,DataType::DAILY,"Virtual");        
+        if (is_object($this->schedule)) {
+            $list[38] = array(_("If !schedule, ZERO"),ProcessArg::SCHEDULEID,"if_not_schedule_zero",0,DataType::UNDEFINED,"Schedule");
+            $list[39] = array(_("If !schedule, NULL"),ProcessArg::SCHEDULEID,"if_not_schedule_null",0,DataType::UNDEFINED,"Schedule");
+            $list[40] = array(_("If schedule, ZERO"),ProcessArg::SCHEDULEID,"if_schedule_zero",0,DataType::UNDEFINED,"Schedule");
+            $list[41] = array(_("If schedule, NULL"),ProcessArg::SCHEDULEID,"if_schedule_null",0,DataType::UNDEFINED,"Schedule");
+        }        
+            $list[42] = array(_("If ZERO, skip next"),ProcessArg::NONE,"if_zero_skip",0,DataType::UNDEFINED,"Conditional");
+            $list[43] = array(_("If !ZERO, skip next"),ProcessArg::NONE,"if_not_zero_skip",0,DataType::UNDEFINED,"Conditional");
+            $list[44] = array(_("If NULL, skip next"),ProcessArg::NONE,"if_null_skip",0,DataType::UNDEFINED,"Conditional");
+            $list[45] = array(_("If !NULL, skip next"),ProcessArg::NONE,"if_not_null_skip",0,DataType::UNDEFINED,"Conditional");
+            
+            $list[46] = array(_("If >, skip next"),ProcessArg::VALUE,"if_gt_skip",0,DataType::UNDEFINED,"Conditional - User value");
+            $list[47] = array(_("If >=, skip next"),ProcessArg::VALUE,"if_gt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+            $list[48] = array(_("If <, skip next"),ProcessArg::VALUE,"if_lt_skip",0,DataType::UNDEFINED,"Conditional - User value");
+            $list[49] = array(_("If <=, skip next"),ProcessArg::VALUE,"if_lt_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+            $list[50] = array(_("If =, skip next"),ProcessArg::VALUE,"if_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+            $list[51] = array(_("If !=, skip next"),ProcessArg::VALUE,"if_not_equal_skip",0,DataType::UNDEFINED,"Conditional - User value");
+            
+            // A bit or warning: if user goto's in loop, the php will lock until the server defined timesout with an error
+            $list[52] = array(_("GOTO"),ProcessArg::VALUE,"goto_process",0,DataType::UNDEFINED,"Misc");
+            
+            // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
+            //Virtual Feed specific processors (WARNING: all virtual feed specific processors must be on the "Virtual" group because there is logic in the UI to hide it on input context)
+            $list[53] = array(_("Source Feed"),ProcessArg::FEEDID,"source_feed_data_time",1,DataType::REALTIME,"Virtual");
+            //$list[54] = array(_("Source Daily (TBD)"),ProcessArg::FEEDID,"get_feed_data_day",1,DataType::DAILY,"Virtual");        
+
+        }
         return $list;
     }
 
     public function input($time, $value, $processList, $options = null)
     {
-        $this->log->info("input() received time=$time\tvalue=$value");
+        //$this->log->info("input() received time=$time\tvalue=$value");
 
         $this->proc_initialvalue = $value; // save the input value at beginning of the processes list execution
         $this->proc_skip_next = false;     // skip execution of next process in process list

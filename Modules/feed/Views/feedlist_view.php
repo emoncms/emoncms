@@ -367,7 +367,6 @@
     var contextname = i.tag + " : " + i.name;
     var processlist = processlist_ui.decode(i.processList);
     processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
-    window.scrollTo(0,0);
    });
   
   $("#save-processlist").click(function (){

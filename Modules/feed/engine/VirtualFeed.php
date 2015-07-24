@@ -85,9 +85,12 @@ class VirtualFeed
         return array('time'=>$now, 'value'=>$dataValue);
     }
 
-    // Calculates data gaps for given start, end and interval. Then executes feed processlist for each slot data and returns all slots processed data.
-    // First processor of virtual feed processlist should be the source_feed_data_time()
-    // If feed is realtime data is calculated based on interval, if daily, dayly data is returned starting at midnight of user timezone.
+    // 1 - Calculates date slots for given start, end and interval. Representing about a pixel on the x axis of the graph for each time slot.
+    // 2 - If feed is realtime slots are calculated based on interval, if daily, slots date is at its datetime midnight of user timezone.
+    // 3 - Executes virtual feed processlist for each slot individually.
+    // 4-  First processor of virtual feed processlist should be the source_feed_data_time() this will get data from a slot.
+    // 5 - Agreggates all slots time and processed data.
+    // 6 - Returns data to the graph.
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         $feedid = intval($feedid);
@@ -117,6 +120,7 @@ class VirtualFeed
         $this->log->info("get_data() feedid=$feedid start=$start end=$end int=$interval sk=$skipmissing li=$limitinterval");
 
         $data = array();
+        $dataValue = null;
         if ($dp > 0) 
         {
             $range = $end - $start; // windows duration in seconds
@@ -126,7 +130,7 @@ class VirtualFeed
             {
                 $tb = $start + intval(($i+1)*$td); //next end time
                 $opt_timearray = array('start' => $t, 'end' => $tb, 'interval' => $interval);
-                $dataValue = $this->process->input($t, null, $processList, $opt_timearray); // execute processlist 
+                $dataValue = $this->process->input($t, $dataValue, $processList, $opt_timearray); // execute processlist 
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $t * 1000;
@@ -144,7 +148,7 @@ class VirtualFeed
              while ($startslot<$endslot)
              {
                 $opt_timearray = array('start' => $startslot, 'end' => $startslot+86400, 'interval' => $interval);
-                $dataValue = $this->process->input($startslot, null, $processList, $opt_timearray); // execute processlist 
+                $dataValue = $this->process->input($startslot, $dataValue, $processList, $opt_timearray); // execute processlist 
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $startslot * 1000;

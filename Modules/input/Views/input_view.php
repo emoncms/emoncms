@@ -155,7 +155,6 @@
     var processlist = processlist_ui.decode(i.processList);
 
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
-    window.scrollTo(0,0);
    });
 
   $("#save-processlist").click(function (){

@@ -63,8 +63,8 @@
     // Theme location
     $theme = "basic";   
 
-    // Dashboard and vis use full screen width
-    $fullwidth = false;  
+    // Use fullscreen width
+    $fullwidth = true;  
 
     // Enable multi user emoncms.
     // If set to false, emoncms will automatically remove the register form and 

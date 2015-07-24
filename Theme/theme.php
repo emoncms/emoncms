@@ -62,7 +62,7 @@
             <?php echo $content; ?>
         </div>
         <?php } else if ($fullwidth) { ?>
-        <div style="margin:10px;">
+        <div style="margin:20px;">
             <?php echo $content; ?>
         </div>
         <?php } else { ?>
