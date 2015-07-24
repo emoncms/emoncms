@@ -26,8 +26,6 @@
     <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
     <div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
 
-    <?php require "Modules/process/Views/process_ui.php"; ?>
-    
     <div id="table"><div align='center'>loading...</div></div>
 
     <div id="noinputs" class="alert alert-block hide">
@@ -54,6 +52,8 @@
     </div>
 </div>
 
+<?php require "Modules/process/Views/process_ui.php"; ?>
+
 <script>
   var path = "<?php echo $path; ?>";
 
@@ -79,27 +79,26 @@
 
   update();
 
-  function update()
-  {   
+  function update(){   
+    var requestTime = (new Date()).getTime();
     $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-      table.timeServerLocalOffset = (new Date()).getTime()-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+      table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
       table.data = data;
       table.draw();
-      if (table.data.length != 0) {
-        $("#noinputs").hide();
-        $("#localheading").show();
-        $("#apihelphead").show();
-      } else {
+      if (table.data.length == 0) {
         $("#noinputs").show();
         $("#localheading").hide();
         $("#apihelphead").hide();
+      } else {
+        $("#noinputs").hide();
+        $("#localheading").show();
+        $("#apihelphead").show();
       }
     }});
   }
 
   var updater;
-  function updaterStart(func, interval)
-  {
+  function updaterStart(func, interval){
     clearInterval(updater);
     updater = null;
     if (interval > 0) updater = setInterval(func, interval);
@@ -124,17 +123,14 @@
     $('#myModal').attr('the_row',row);
   });
 
-  $("#confirmdelete").click(function()
-  {
+  $("#confirmdelete").click(function() {
     var id = $('#myModal').attr('the_id');
     var row = $('#myModal').attr('the_row');
     input.remove(id);
     table.remove(row);
     update();
-
     $('#myModal').modal('hide');
   });
-
   
   // Process list UI js
   processlist_ui.init(0); // Set input context
@@ -143,17 +139,13 @@
     var i = table.data[$(this).attr('row')];
     console.log(i);
     var contextid = i.id; // Current Input ID
-
     // Input name
     var newfeedname = "";
     if (i.description != "") newfeedname = i.description;
     else newfeedname = "node:" + i.nodeid+":" + i.name;
     var newfeedtag = "Node " + i.nodeid;
     var contextname = "Node" + i.nodeid + " : " + newfeedname;
-
-    // Input process list
-    var processlist = processlist_ui.decode(i.processList);
-
+    var processlist = processlist_ui.decode(i.processList); // Input process list
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
    });
 

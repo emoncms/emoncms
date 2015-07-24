@@ -36,8 +36,6 @@
             <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want to follow the link as a guide for generating your request.'); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
     </div>
 
-    <?php require "Modules/process/Views/process_ui.php"; ?>
-
     <div id="table"><div align='center'>loading...</div></div>
 
     <div id="bottomtoolbar" class="hide"><hr>
@@ -152,6 +150,8 @@
     </div>
 </div>
 
+<?php require "Modules/process/Views/process_ui.php"; ?>
+
 <script>
   var path = "<?php echo $path; ?>";
 
@@ -181,31 +181,29 @@
 
   update();
 
-  function update()
-  {   
+  function update(){   
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
-    
+
+    var requestTime = (new Date()).getTime();
     $.ajax({ url: path+"feed/list.json"+apikeystr, dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-      table.timeServerLocalOffset = (new Date()).getTime()-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+      table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
       table.data = data;
-    
-      for (z in table.data)
-      {
+      for (z in table.data){
         if (data[z]['engine'] != 7){ 
           data[z]['#NO_CONFIG#'] = true;  // if the data field #NO_CONFIG# is true, the field type: iconconfig will be ommited from the table row
         }
       }
       table.draw();
-      if (table.data.length != 0) {
-        $("#nofeeds").hide();
-        $("#localheading").show();
-        $("#apihelphead").show();
-        $("#bottomtoolbar").show();
-      } else {
+      if (table.data.length == 0){
         $("#nofeeds").show();
         $("#localheading").hide();
         $("#apihelphead").hide();
         $("#bottomtoolbar").hide();
+      } else {
+        $("#nofeeds").hide();
+        $("#localheading").show();
+        $("#apihelphead").show();
+        $("#bottomtoolbar").show();
       }
     } });
   }
@@ -225,7 +223,7 @@
   $("#table").bind("onSave", function(e,id,fields_to_update){
     feed.set(id,fields_to_update);
   });
-  
+
   $("#table").bind("onResume", function(e){
     updaterStart(update, 5000);
   });
@@ -258,28 +256,25 @@
   $("#refreshfeedsize").click(function(){
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
   });
-  
-  
+
   // Feed Export feature
-  
   $("#table").on("click",".icon-circle-arrow-down", function(){
     var row = $(this).attr('row');
     $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
     $("#export").attr('feedid',table.data[row].id);
-    
+
     if ($("#export-timezone-offset").val()=="") {
       var timezoneoffset = user.timezoneoffset();
       if (timezoneoffset==null) timezoneoffset = 0;
       $("#export-timezone-offset").val(parseInt(timezoneoffset));
     }
-    
     $('#ExportModal').modal('show');
   });
 
   $('#datetimepicker1').datetimepicker({
     language: 'en-EN'
   });
-  
+
   $('#datetimepicker2').datetimepicker({
     language: 'en-EN'
   });
@@ -293,7 +288,7 @@
     console.log(downloadsize);
     $("#downloadsize").html((downloadsize/1024).toFixed(0));
   });
-    
+
   $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) 
   {
     var export_start = parse_timepicker_time($("#export-start").val());
@@ -321,22 +316,21 @@
     
     window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval);
   });
-  
-  function parse_timepicker_time(timestr)
-  {
+
+  function parse_timepicker_time(timestr){
     var tmp = timestr.split(" ");
     if (tmp.length!=2) return false;
-    
+
     var date = tmp[0].split("/");
     if (date.length!=3) return false;
-    
+
     var time = tmp[1].split(":");
     if (time.length!=3) return false;
-    
+
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
   }
 
-  
+
   // Virtual Feed feature
   $("#newfeed-save").click(function (){
     var newfeedname = $('#newfeed-name').val();
@@ -356,16 +350,16 @@
       $('#newFeedNameModal').modal('hide');
     }
   });
-  
+
   // Process list UI js
   processlist_ui.init(1); // is virtual feed
- 
+
   $("#table").on('click', '.icon-wrench', function() {
     var i = table.data[$(this).attr('row')];
     console.log(i);
     var contextid = i.id; // Feed ID
     var contextname = i.tag + " : " + i.name;
-    var processlist = processlist_ui.decode(i.processList);
+    var processlist = processlist_ui.decode(i.processList); // Feed process list
     processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
    });
   
