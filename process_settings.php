@@ -22,7 +22,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     $error_out = "";
 
-    if (!isset($config_file_version) && $config_file_version < 2) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
+    if (!isset($config_file_version) || $config_file_version < 2) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';

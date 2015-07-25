@@ -427,15 +427,20 @@ class Feed
             $this->log->info("get_data() $feedid,$start,$end,$outinterval,$skipmissing,$limitinterval");
         }
 
-        //if ($this->settings['redisbuffer']['enabled']) {
-            // Call to buffer post
-            //CHAVEIRO TODO: load redisbuffer cache if available
-            //$args = array('engine'=>$engine,'updatetime'=>$updatetime,'arg'=>$arg);
-            //$this->EngineClass(Engine::REDISBUFFER)->post($feedid,$feedtime,$value,$args);
-        //} else {
-            // Call to engine get_data  
-            return $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
-        //}
+        // Call to engine get_data  
+        $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Add redisbuffer cache if available
+            $bufferstart=end($data)[0];
+            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+            if (!empty($bufferdata)) {
+                $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
+                $data = array_merge($data, $bufferdata);
+            }
+        }
+
+        return $data;
     }
 
     public function csv_export($feedid,$start,$end,$outinterval)
