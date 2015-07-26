@@ -1,4 +1,3 @@
-
 var dashboard = {
 
   'list':function()
@@ -11,7 +10,21 @@ var dashboard = {
   'set':function(id, fields)
   {
     var result = {};
-    $.ajax({ url: path+"dashboard/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data){} });
+    $.ajax({ url: path+"dashboard/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data){result = data;} });
+    return result;
+  },
+
+  'setcontent':function(id, content,height)
+  {
+    var result = {};
+    $.ajax({
+        type: "POST",
+        url :  path+"dashboard/setcontent.json",
+        data : "&id="+id+'&content='+encodeURIComponent(content)+'&height='+height,
+        dataType: 'json',
+        async: false,
+        success : function(data) { result = data; }
+    });
     return result;
   },
 
@@ -19,7 +32,7 @@ var dashboard = {
   {
     $.ajax({ url: path+"dashboard/delete.json", data: "id="+id, async: false, success: function(data){} });
   },
-  
+
   'clone':function(id)
   {
     var result = {};

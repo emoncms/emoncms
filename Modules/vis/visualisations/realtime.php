@@ -88,10 +88,10 @@
         dataType: 'json', 
         async: true, 
         success: function(result) {
-          if (data[data.length-1][0]!=result.time*1000) {
+          if (data.length==0 || data[data.length-1][0]!=result.time*1000) {
             data.push([result.time*1000,parseFloat(result.value)]);
           }
-          if (data[1][0]<(start-20)) data.splice(0, 1);
+          if (data[0][0]<(start-20)) data.splice(0, 1);
           data.sort();
         }
      });

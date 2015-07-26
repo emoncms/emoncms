@@ -89,13 +89,15 @@ class Dashboard
         $height = (int) $height;
         $content = $this->mysqli->real_escape_string($content);
 
-        //echo $content;
-
         $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid = '$userid' AND id='$id'");
         $row = $result->fetch_array();
-        if ($row) $this->mysqli->query("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid='$userid' AND id='$id'");
-
-        return array('success'=>true);
+        if ($row) { 
+            $this->mysqli->query("UPDATE dashboard SET content = '$content', height = '$height' WHERE userid='$userid' AND id='$id'");
+            if ($this->mysqli->affected_rows>0){
+                return array('success'=>true, 'message'=>'Dashboard updated');
+            }
+        }
+        return array('success'=>false, 'message'=>'Dashboard not updated');
     }
 
     public function set($userid,$id,$fields)

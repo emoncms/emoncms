@@ -17,6 +17,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
     <link href="<?php echo $path; ?>Modules/dashboard/Views/js/widget.css" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/dashboard.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgetlist.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/render.js"></script>
 
@@ -80,15 +81,12 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
         designer.page_height = 0;
         designer.scan();
         designer.draw();
-        $.ajax({
-            type: "POST",
-            url :  path+"dashboard/setcontent.json",
-            data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+designer.page_height,
-            dataType: 'json',
-            async: true,
-            success : function(data) { console.log(data); if (data.success==true) $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>');
-            }
-        });
+        console.log('Dashboard HTML content: '.$("#page").html());
+        var result=dashboard.setcontent(dashid,$("#page").html(),designer.page_height)
+        if (!result.success) { alert('ERROR: Could not save Dashboard. '+result.message); }
+        else {
+            $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>');
+        }
     });
 
     $(window).resize(function(){

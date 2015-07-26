@@ -62,9 +62,9 @@
             <?php echo $content; ?>
         </div>
         <?php } else if ($fullwidth) { ?>
-        <div style="margin:20px;">
+        <div class = "container-fluid"><div class="row-fluid"><div class="span12">
             <?php echo $content; ?>
-        </div>
+        </div></div></div>
         <?php } else { ?>
         <div class="container">
             <?php echo $content; ?>

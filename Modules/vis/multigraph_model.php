@@ -41,6 +41,11 @@ class Multigraph
         $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
         $name = preg_replace('/[^\w\s-.]/','',$name);
         $this->mysqli->query("UPDATE multigraph SET `name` = '$name', `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
+        if ($this->mysqli->affected_rows>0){
+            return array('success'=>true, 'message'=>'Multigraph updated');
+        } else {
+            return array('success'=>false, 'message'=>'Multigraph was not updated');
+        }
     }
 
     /*

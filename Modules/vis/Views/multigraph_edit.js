@@ -266,10 +266,14 @@ function load_events(){
     var new_name=$("#multigraph-name").val();
     if(new_name=="") new_name="No name";
 
-    multigraph.set(multigraph_id,multigraph_feedlist,new_name);
-    $(baseElement).html(multigraphDropdown());                    // Reload all
-    $(baseElement + ' #multigraph-selector').val(multigraph_id);  // Refresh
-    $(baseElement + ' #multigraph-selector').change();            // 
-	$(baseElement + ' #save-multigraph-button').attr('class','btn btn-success').text('Saved');
+    var result = multigraph.set(multigraph_id,multigraph_feedlist,new_name);
+    if (!result.success) { alert('ERROR: Could not save Multigraph. '+result.message); }
+    else {
+        alert('Multigraph saved');
+        $(baseElement).html(multigraphDropdown());                    // Reload all
+        $(baseElement + ' #multigraph-selector').val(multigraph_id);  // Refresh
+        $(baseElement + ' #multigraph-selector').change();            // 
+        $(baseElement + ' #save-multigraph-button').attr('class','btn btn-success').text('Saved');
+    }
   });
 }
