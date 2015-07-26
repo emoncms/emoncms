@@ -81,11 +81,13 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
         designer.page_height = 0;
         designer.scan();
         designer.draw();
-        console.log('Dashboard HTML content: '.$("#page").html());
+        console.log("Dashboard HTML content: " + $("#page").html());
         var result=dashboard.setcontent(dashid,$("#page").html(),designer.page_height)
-        if (!result.success) { alert('ERROR: Could not save Dashboard. '+result.message); }
-        else {
-            $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>');
+        if (result.success) {
+            alert('Multigraph saved');
+            $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>'); 
+        } else {
+            alert('ERROR: Could not save Dashboard. '+result.message);
         }
     });
 
