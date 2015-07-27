@@ -45,13 +45,13 @@ class Dashboard
         $id = (int) $id;
 
         // Get content, name and description from origin dashboard
-        $result = $this->mysqli->query("SELECT content,name,description FROM dashboard WHERE userid = '$userid' AND id='$id'");
+        $result = $this->mysqli->query("SELECT content,name,description,height FROM dashboard WHERE userid = '$userid' AND id='$id'");
         $row = $result->fetch_array();
 
         // Name for cloned dashboard
         $name = $row['name']._(' clone');
 
-        $this->mysqli->query("INSERT INTO dashboard (`userid`,`content`,`name`,`description`) VALUES ('$userid','{$row['content']}','$name','{$row['description']}')");
+        $this->mysqli->query("INSERT INTO dashboard (`userid`,`content`,`name`,`description`,`height`) VALUES ('$userid','{$row['content']}','$name','{$row['description']}','{$row['height']}')");
 
         return $this->mysqli->insert_id;
     }

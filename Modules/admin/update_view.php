@@ -12,7 +12,7 @@
             $out.='<table class="table table-striped ">';
             foreach ($update['operations'] as $operation)
             {
-                $out.="<tr><td>$operation</td></tr>";
+                $out.="<tr><td>$operation;</td></tr>";
             }
             $out.="</table>";
         }
