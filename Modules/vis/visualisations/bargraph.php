@@ -233,9 +233,7 @@
         
             var datastart = Math.floor(view.start / intervalms) * intervalms;
             var dataend = Math.ceil(view.end / intervalms) * intervalms;
-            datastart -= offset * 3600000;
-            dataend -= offset * 3600000;
-     
+
             //TODO: need to be fixed, when the interval is a day, it returns the kwh elapsed in 24h from an eratic time (9:08 by example). It should returns the kwh elapsed in 24h from midnight to midnight.
             data = get_feed_data(feedid,datastart,dataend,interval,0,1);
      
