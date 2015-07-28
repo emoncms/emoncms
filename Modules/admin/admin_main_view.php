@@ -1,4 +1,4 @@
-<?php global $path, $emoncms_version, $allow_emonpi_update, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled;
+<?php global $path, $emoncms_version, $allow_emonpi_update, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings;
 
   // Retrieve server information
   $system = system_information();
@@ -9,6 +9,7 @@
     $db = $result->fetch_array();
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', @exec('uname -a'), 5);
+    @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
 
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
@@ -27,10 +28,11 @@
 
                  'redis_server' => $redis_server,       
                  'redis_ip' => gethostbyname($redis_server),
-				 
+                 'feedwriter' => !empty($feedwriterproc),
+
                  'mqtt_server' => $mqtt_server,       
                  'mqtt_ip' => gethostbyname($mqtt_server),
-				 
+
                  'hostbyaddress' => gethostbyaddr(gethostbyname($host)),
                  'http_proto' => $_SERVER['SERVER_PROTOCOL'],
                  'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
@@ -113,6 +115,14 @@ if ($allow_emonpi_update) {
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
               <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
+<?php
+if ($feed_settings['redisbuffer']['enabled']) {
+?>
+              <tr><td class="subinfo"></td><td>Buffer</td><td><span id="bufferused">loading...</span></td></tr>
+              <tr><td class="subinfo"></td><td>Writer</td><td><?php echo ($system['feedwriter'] ? "Daemon is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Daemon is not running, start it at ~/scripts/feedwriter</font>"); ?></td></tr>
+<?php
+}
+?>
               <tr><td><b>Server</b></td><td>OS</td><td><?php echo $system['system'] . ' ' . $system['kernel']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['date']; ?></td></tr>
@@ -128,7 +138,7 @@ if ($allow_emonpi_update) {
 if ($redis_enabled) {
 ?>
               <tr><td><b>Redis</b></td><td>Version</td><td><?php echo $redis->info()['redis_version']; ?></td></tr>
-			  <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['redis_server'] . ' (' . $system['redis_ip'] . ')'; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['redis_server'] . ' (' . $system['redis_ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Size</td><td><span id="redisused"><?php echo $redis->dbSize() . " keys  (" . $redis->info()['used_memory_human'].")";?></span><button id="redisflush" class="btn btn-info btn-small pull-right"><?php echo _('Flush'); ?></button></td></tr>
               <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $redis->info()['uptime_in_days'] . " days"; ?></td></tr>
 <?php
@@ -136,7 +146,7 @@ if ($redis_enabled) {
 if ($mqtt_enabled) {
 ?>
               <tr><td><b>MQTT</b></td><td>Version</td><td><?php echo "n/a"; ?></td></tr>
-			  <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
 <?php
 }
 ?>
@@ -151,6 +161,18 @@ if ($mqtt_enabled) {
 <script>
 var path = "<?php echo $path; ?>";
 var logrunning = false;
+
+<?php if ($feed_settings['redisbuffer']['enabled']) { ?>
+  getBufferSize();
+<?php } ?>
+function getBufferSize() {
+  $.ajax({ url: path+"feed/buffersize.json", async: true, dataType: "json", success: function(result)
+    {
+      var data = JSON.parse(result);
+      $("#bufferused").html( data + " feed points pending write");
+    }
+  });
+}
 
 var updater;
 function updaterStart(func, interval){

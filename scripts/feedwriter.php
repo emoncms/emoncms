@@ -12,8 +12,9 @@
     require "Lib/EmonLogger.php";
     require "process_settings.php";
 
-    if (!$feed_settings['redisbuffer']['enabled']) { echo "Error: setting must be true: feed_settings['redisbuffer']['enabled']\n"; die; }
     if (!$redis_enabled) { echo "Error: setting must be true: redis_enabled\n"; die; }
+    if (!$feed_settings['redisbuffer']['enabled']) { echo "Error: setting must be true: feed_settings['redisbuffer']['enabled']\n"; die; }
+    if (!$feed_settings['redisbuffer']['sleep'] || (int)$feed_settings['redisbuffer']['sleep'] < 1) { echo "Error: setting must be > 0 : feed_settings['redisbuffer']['sleep']\n"; die; }
 
     $log = new EmonLogger(__FILE__);
     $log->info("Starting feedwriter");
@@ -34,8 +35,15 @@
     require("Modules/feed/feed_model.php");
     $feed = new Feed($mysqli,$redis,$feed_settings);
 
+    // Remove write locks just in case something halted without releasing
+    $feedids = $redis->sMembers("feed:bufferactive");
+    foreach ($feedids as $feedid) {
+        $feed->EngineClass(Engine::REDISBUFFER)->removeLock($feedid,"write"); 
+    }
+
+    echo "Buffered feed writer daemon started with sleep " . $feed_settings['redisbuffer']['sleep'] . "s...\n";
     while(true)
     {
         $feed->EngineClass(Engine::REDISBUFFER)->process_buffers();
-      sleep(60);
+        sleep((int)$feed_settings['redisbuffer']['sleep']);
     }

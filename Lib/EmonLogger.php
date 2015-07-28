@@ -55,8 +55,8 @@ class EmonLogger
         $micro = sprintf("%03d",($now - ($now >> 0)) * 1000);
         $now = DateTime::createFromFormat('U', (int)$now); // Only use UTC for logs
         $now = $now->format("Y-m-d H:i:s").".$micro";
-        // Clear log file if more than 10MB (temporary solution)
-        if (filesize($this->logfile)>(1024*1024*1024)) {
+        // Clear log file if more than 256MB (temporary solution)
+        if (filesize($this->logfile)>(1024*1024*256)) {
             $fh = @fopen($this->logfile,"w");
             @fclose($fh);
         }

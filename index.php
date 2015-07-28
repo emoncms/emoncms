@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "8.6.0 beta | 2015.07.27 | for testers only";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "8.6.0 beta | 2015.07.28 | for testers only";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -146,6 +146,7 @@
             $menu = load_menu();
             $output['mainmenu'] = view("Theme/menu_view.php", array());
             $output['controller'] = $route->controller;
+            $output['session'] = $session;
             print view("Theme/theme.php", $output);
         }
     }

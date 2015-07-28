@@ -22,7 +22,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     $error_out = "";
 
-    if (!isset($config_file_version) || $config_file_version < 2) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
+    if (!isset($config_file_version) || $config_file_version < 3) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';
@@ -32,8 +32,15 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
 
     if (!isset($redis_enabled) ) $redis_enabled = false;
-    if ($redis_enabled && !class_exists('Redis')) $error_out .= "<p>redis enabled but not installed, check setting: redis_enabled</p>";
-    if ($redis_enabled && !isset($redis_server)) $error_out .= "<p>redis server not configured, check setting: redis_server</p>";
+    if ($redis_enabled) {
+        if (!class_exists('Redis')) $error_out .= "<p>redis enabled but not installed, check setting: redis_enabled</p>";
+        if (!isset($redis_server)) $error_out .= "<p>redis server not configured, check setting: redis_server</p>";
+        if (!isset($feed_settings['redisbuffer']['enabled'])) $feed_settings['redisbuffer'] = array('enabled'=>false);
+        if (!$feed_settings['redisbuffer']['sleep']) $feed_settings['redisbuffer']['sleep'] = 60;
+        if ((int)$feed_settings['redisbuffer']['sleep'] < 1) $error_out .= "<p>buffered writing sleep interval must be > 0, check settings: settings['redisbuffer']['sleep']";
+    } else {
+        if ($feed_settings['redisbuffer']['enabled']) $error_out .= "<p>buffered writing requires redis but its disabled, check settings: settings['redisbuffer']['enabled'], redis_enabled";
+    }
 
     if (!isset($mqtt_enabled) ) $mqtt_enabled = false;
     if ($mqtt_enabled && !isset($mqtt_server)) $error_out .= "<p>mqtt server not configured, check setting: mqtt_server</p>";
@@ -44,9 +51,6 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings['phptimeseries'])) $error_out .= "<p>feed setting for phptimeseries is not configured, check settings: settings['phptimeseries']";
     if (!isset($feed_settings['redisbuffer'])) $error_out .= "<p>feed setting for redisbuffer is not configured, check settings: settings['redisbuffer']";
     if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
-
-    if (!isset($feed_settings['redisbuffer']['enabled'])) $feed_settings['redisbuffer'] = array('enabled'=>false);
-    if ($feed_settings['redisbuffer']['enabled'] && !$redis_enabled) $error_out .= "<p>buffered writing requires redis but its disabled, check settings: settings['redisbuffer']['enabled'], redis_enabled";
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
     if (!isset($data_sampling)) $data_sampling = true; // default

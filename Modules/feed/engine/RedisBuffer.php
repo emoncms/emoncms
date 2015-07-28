@@ -44,6 +44,12 @@ class RedisBuffer
 
     public function get_feed_size($feedid)
     {
+        // Return number of points in buffer, not size. Estimated 24 bytes + num of digits of value in string format for each date point.
+        $feeddata = $this->redis->hGetAll("feed:$feedid");
+        if (isset($feeddata['engine'])) {
+            $engine = $feeddata['engine'];
+            return $this->redis->zCount("feed:$feedid:buffer","-inf","+inf");
+        }
         return 0;
     }
 
@@ -62,7 +68,7 @@ class RedisBuffer
         $updatetime = $args['updatetime']; // This is time it was received not time for value
         if ($arg != null) $arg="|".json_encode($arg); // passes arg to redis
 
-        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,$updatetime."|".$value.$arg);
+        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,dechex((int)$updatetime)."|".$value.$arg);
         $this->redis->sAdd("feed:bufferactive",$feedid); // save feed id to feedlist redis used on feedwriter
         //$this->log->info("post() engine=$engine feed=$feedid updatetime=$updatetime time=$time value=$value arg=$arg");
     }
@@ -85,7 +91,7 @@ class RedisBuffer
         $this->checkLock_blocking($feedid,"read");
 
         $remcnt = $this->redis->zRemRangeByScore("feed:$feedid:buffer", (int)$time, (int)$time); // Remove for buffer existing time, return num of removed
-        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,$updatetime."|".$value."|U");   // Add new value to buffer
+        $this->redis->zAdd("feed:$feedid:buffer",(int)$time,dechex((int)$updatetime)."|".$value."|U");   // Add new value to buffer
         $this->redis->sAdd("feed:bufferactive",$feedid); // save feed id to feedlist redis used on feedwriter
 
         $this->removeLock($feedid,"write"); // remove write lock
@@ -99,14 +105,12 @@ class RedisBuffer
     */
     public function lastvalue($feedid)
     {
-        $buf_item = $this->redis->zRevRangeByScore("feed:$feedid:buffer", "+inf","-inf", array('withscores' => TRUE, 'limit' => array(0, 1)));
-        if (!empty($buf_item)){
-            foreach($buf_item as $rawvalue => $time) {
-                $f = explode("|",$rawvalue);    
-                $value = $f[1];
-                return array('time'=>(int)$time, 'value'=>(float)$value);   
-            }
-        } 
+        $buf_item = $this->redis->zRevRangeByScore("feed:$feedid:buffer", "+inf","-inf", array('withscores' => true, 'limit' => array(0, 1)));
+        foreach($buf_item as $rawvalue => $time) {
+            $f = explode("|",$rawvalue);    
+            $value = $f[1];
+            return array('time'=>(int)$time, 'value'=>(float)$value);   
+        }
         return false;
     }
 
@@ -125,36 +129,23 @@ class RedisBuffer
         $feedid = intval($feedid);
         $start = round($start/1000);
         $end = round($end/1000);
-
         $data = array();
 
         $len = $this->redis->zCount("feed:$feedid:buffer",$start,$end);
         // process if there is data on buffer for the range
         if ($len > 0) {
             $this->log->info("get_data() feed=$feedid len=$len start=$start end=$end");
-            $lasttime = 0;
             $range = 50000; // step range number of points to extract on each iteration 50k-100k is ok
-
             for ($i=0; $i<=$len; $i = $i + $range)
             {
                 //$this->log->info("get_data() Reading block $i");
-                $buf_item = $this->redis->zRangeByScore("feed:$feedid:buffer", $start,$end, array('withscores' => TRUE, 'limit' => array($i, $range)));
-
+                $buf_item = $this->redis->zRangeByScore("feed:$feedid:buffer", $start, $end, array('withscores' => true, 'limit' => array($i, $range)));
                 foreach($buf_item as $rawvalue => $time) {
-                    $f = explode("|",$rawvalue);    
-                    $updatetime = $f[0]; // This is time it was received not time for value
+                    //$this->log->info("get_data() time=$time rawvalue=$rawvalue");
+                    $f = explode("|",$rawvalue);
                     $value = $f[1];
-                    $arg = (isset($f[2]) ? $f[2] : "");
                     $time=$time*1000;
-
-                    if ($arg == "U" || $lasttime == $time) {
-                        //$this->log->info("get_data() UPDATE time=$time rawvalue=$rawvalue");
-                        $data[$time] = array($time,(float)$value);
-                    } else {
-                        //$this->log->info("get_data() time=$time rawvalue=$rawvalue");
-                        $data[$time] = array($time,(float)$value);
-                    }
-                    $lasttime=$time;
+                    $data[$time] = array($time,(float)$value);
                 }
             }
             $data = array_values($data); // re-index array
@@ -211,7 +202,7 @@ class RedisBuffer
                     $matchcnt=0;
                     foreach($buf_item as $rawvalue => $time) {
                         $f = explode("|",$rawvalue);    
-                        $updatetime = $f[0]; // This is time it was received not time for value
+                        $updatetime = hexdec((string)$f[0]); // This is time it was received not time for value
                         $value = $f[1];
                         $arg = (isset($f[2]) ? $f[2] : "");
                         if ($arg == "U" || $lasttime == $time) {
@@ -234,7 +225,6 @@ class RedisBuffer
                     $remcnt = $this->redis->zRemRangeByRank("feed:$feedid:buffer", 0, $range-1); // Remove processed range
                     if ($remcnt != $matchcnt) { echo "WARN: found $matchcnt but deleted $remcnt items\n"; }
                 }
-                $this->removeLock($feedid,"write"); // remove write lock just in case something halted without releasing it
             }
             $this->removeLock($feedid,"read"); // remove read lock
         }
@@ -268,7 +258,7 @@ class RedisBuffer
     }
     
     //Remove redis lock
-    private function removeLock($feedid,$type)
+    public function removeLock($feedid,$type)
     {
         $this->redis->hSet("feed:$feedid:bufferstatus",$type,"0"); 
         //$this->log->info("removeLock() $type lock on feed=$feedid");

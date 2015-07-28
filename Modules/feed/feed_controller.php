@@ -46,6 +46,8 @@ function feed_controller()
             $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
+        } elseif ($route->action == "buffersize" && $session['write']) {
+            $result = $feed->get_buffer_size();
         // To "fetch" multiple feed values in a single request
         // http://emoncms.org/feed/fetch.json?ids=123,567,890
         } elseif ($route->action == "fetch" && $session['read']) {

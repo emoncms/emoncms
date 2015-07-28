@@ -118,9 +118,17 @@
   });
 
   $("#table").bind("onDelete", function(e,id,row){
-    $('#myModal').modal('show');
-    $('#myModal').attr('the_id',id);
-    $('#myModal').attr('the_row',row);
+    var i = table.data[row];
+    if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
+      // delete now if has no values and updated +15m
+      input.remove(id);
+      table.remove(row);
+      update();
+    } else {
+      $('#myModal').modal('show');
+      $('#myModal').attr('the_id',id);
+      $('#myModal').attr('the_row',row);
+    }
   });
 
   $("#confirmdelete").click(function() {

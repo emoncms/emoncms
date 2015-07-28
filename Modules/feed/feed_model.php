@@ -78,7 +78,7 @@ class Feed
 
     /*
     Configurations operations
-    create, delete, exist, update_user_feeds_size, get_meta
+    create, delete, exist, update_user_feeds_size, get_buffer_size, get_meta
     */
     public function create($userid,$tag,$name,$datatype,$engine,$options_in)
     {
@@ -218,6 +218,19 @@ class Feed
             if ($this->redis) $this->redis->hset("feed:$feedid",'size',$size);
             $total += $size;
         }
+        return $total;
+    }
+
+    // Get REDISBUFFER date value elements pending save to a feed
+    public function get_buffer_size()
+    {
+		$total = 0;
+		if ($this->redis) {
+			$feedids = $this->redis->sMembers("feed:bufferactive");
+			foreach ($feedids as $feedid) {
+				$total += $this->EngineClass(Engine::REDISBUFFER)->get_feed_size($feedid); 
+			}
+		}
         return $total;
     }
 

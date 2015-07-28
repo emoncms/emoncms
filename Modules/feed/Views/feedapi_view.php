@@ -105,6 +105,9 @@
     <tr><td><?php echo _("Return total engines size");?></td><td>
 		<a href="<?php echo $path; ?>feed/updatesize.json"><?php echo $path; ?>feed/updatesize.json</a>
 	</td></tr>
+    <tr><td><?php echo _("Return buffer points pending write");?></td><td>
+		<a href="<?php echo $path; ?>feed/buffersize.json"><?php echo $path; ?>feed/buffersize.json</a>
+	</td></tr>
 </table>
 	
 <p><b><?php echo _('Virtual feed process actions'); ?></b></p>

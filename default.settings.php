@@ -28,15 +28,15 @@
         'engines_hidden'=>array(
             //Engine::MYSQL         // 0  Mysql traditional
             //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown 
-            Engine::PHPTIMESERIES   // 2
+            //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
         ),
 
         // Redis Low-write mode 
         'redisbuffer'=>array(
-            // If enabled is true, requires redis enabled and feedwriter service running
-            'enabled' => false           
+            'enabled' => false      // If enabled is true, requires redis enabled and feedwriter service running
+            ,'sleep' => 60          // Number of seconds to wait before write buffer to disk
         ),
 
         'csvdownloadlimit_mb' => 10,     // Max csv download size in MB
@@ -130,4 +130,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developper updates this when the config format changes
-    $config_file_version = "2";
+    $config_file_version = "3";
