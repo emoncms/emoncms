@@ -134,6 +134,7 @@ function load_menu()
     $menu_left = array();
     $menu_right = array();
     $menu_dropdown = array();
+    $menu_dropdown_config = array();
 
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
@@ -148,7 +149,8 @@ function load_menu()
     }
 
     usort($menu_left, "menu_sort");
-    return array('left'=>$menu_left, 'right'=>$menu_right, 'dropdown'=>$menu_dropdown);
+    usort($menu_dropdown_config, "menu_sort");
+    return array('left'=>$menu_left, 'right'=>$menu_right, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config);
 }
 
 // Menu sort by order

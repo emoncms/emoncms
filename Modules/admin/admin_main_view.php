@@ -46,7 +46,7 @@ table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
 
-<h2>Admin</h2>
+<h2>Administration</h2>
 <table class="table table-hover">
     <tr>
         <td>
