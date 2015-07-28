@@ -39,7 +39,7 @@ var input = {
         $.ajax({ url: path+"input/process/set.json", data: "inputid="+inputid+"&processlist="+processlist, async: false, success: function(data){result = data;} });
         return result;
     },
-	
+
     'processlist':function(inputid)
     {
         var result = {};

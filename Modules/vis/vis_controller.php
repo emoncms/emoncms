@@ -115,10 +115,11 @@
                 $array['apikey'] = $read_apikey;
                 $array['write_apikey'] = $write_apikey;
 
-                $result = view("Modules/".$visdir.$viskey.".php", $array);
-
-                if ($array['valid'] == false) $result .= "<div style='position:absolute; top:0px; left:0px; background-color:rgba(240,240,240,0.5); width:100%; height:100%; text-align:center; padding-top:100px;'><h3>"._('Authentication not valid')."</h3></div>";
-
+                if ($array['valid'] == false) { 
+                    $result .= "<div style='position:absolute; top:0px; left:0px; width:100%; height:100%; display: table;'><div class='alert-error' style='text-align:center; display:table-cell; vertical-align:middle;'><h4>"._('Not configured')."<br>"._('or')."<br>"._('Authentication not valid')."</h4></div></div>";
+                } else {
+                    $result .= view("Modules/".$visdir.$viskey.".php", $array);
+                }
             }
             next($visualisations);
         }

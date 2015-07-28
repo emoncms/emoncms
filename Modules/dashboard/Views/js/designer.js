@@ -194,6 +194,7 @@ var designer = {
             options_html += '<span class="add-on" style="width:80px; text-align: right;">'+options_name[z]+'</span>';
 
             if (options_type && options_type[z] == "feed"){
+                //CHAVEIRO TODO: This is to be removed and use feedid only
                 options_html += "<select id='"+box_options[z]+"' class='options' >";
                 for (i in feedlist){
                     var selected = "";
@@ -495,7 +496,7 @@ var designer = {
             $('#widget_options').modal('hide')
             designer.draw();
             designer.modified();
-            //reloadiframe = designer.selected_box;
+            reloadiframe = designer.selected_box;
         });
 
          $("#delete-button").click(function(event){

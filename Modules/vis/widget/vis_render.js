@@ -192,7 +192,7 @@ function vis_draw(){
     var apikey_string = "";
     if (apikey) apikey_string = "&apikey="+apikey;
 
-    if (!$(this).html() || reloadiframe!=0 || apikey){ //originally reloadiframe==id 
+    if (!$(this).html() || reloadiframe==id || reloadiframe==-1 || apikey){
         var attrstring = "";
         var target = $(this).get(0);
         var l = target.attributes.length;

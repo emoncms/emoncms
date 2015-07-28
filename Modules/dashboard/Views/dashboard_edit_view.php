@@ -42,8 +42,8 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 <div style="background-color:#ddd; padding:4px;">
     <span id="widget-buttons"></span>
     <span id="when-selected">
-        <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i><?php echo _('Configure'); ?></button>
-        <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>
+        <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i> <?php echo _('Configure'); ?></button>
+        <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i> <?php echo _('Delete'); ?></button>
     </span>
     <span><button id="save-dashboard" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button></span>
 </div>
@@ -62,7 +62,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
     var userid = <?php echo $session['userid']; ?>;
     var widget = <?php echo json_encode($widgets); ?>;
     var redraw = 0;
-    var reloadiframe = 1; // force iframe url to recalculate for all vis widgets 
+    var reloadiframe = -1; // force iframes url to recalculate for all vis widgets 
 
     $('#can').width($('#dashboardpage').width());
 

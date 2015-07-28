@@ -78,7 +78,7 @@
         $setup['dropdown'] = $menu['dropdownconfig'];
         echo drawItem($setup);
     }
-    
+
     foreach ($menu['right'] as $item) {
         echo drawItem($item);
     }
