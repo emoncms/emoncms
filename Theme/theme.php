@@ -56,7 +56,7 @@
 
         <?php
           if (!isset($fullwidth)) $fullwidth = false;
-          if ($fullwidth && $controller=="dashboard") {
+          if ($fullwidth && $route->controller=="dashboard") {
         ?>
         <div>
             <?php echo $content; ?>
@@ -80,6 +80,6 @@
             <span> | <?php echo $emoncms_version; ?></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-        <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-227875-4','auto');ga('send', 'pageview');ga('set','&uid','<?php echo $session['userid']; ?>');</script>
+        <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-227875-4','auto');ga(function(e){ga('set','&dCon','<?php echo $route->controller;?>');ga('set','&dAct','<?php echo $route->action;?>');ga('set','&dSub','<?php echo $route->subaction;?>');ga('set','&dCId',e.get('clientId'));ga('set','&uid','<?php echo $session['userid'];?>');ga('set','&uname','<?php echo $session['username'];?>');ga('send','pageview',{'&dVer':'<?php echo $emoncms_version;?>'});});</script>
     </body>
 </html>

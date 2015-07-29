@@ -52,7 +52,7 @@
     <div class="modal-body">
         <p><?php echo _('Deleting a feed is permanent.'); ?></p>
         <br>
-        <div id="deleteFeedText"><?php echo _('If you have input processlist processors that use this feed, after deleting it, review the Input Processlist or they will be in error, freezing other inputs. Also make sure no Dashboards use the deleted feed.'); ?></div>
+        <div id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></div>
         <div id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></div>
         <br><br>
         <p><?php echo _('Are you sure you want to delete?'); ?></p>

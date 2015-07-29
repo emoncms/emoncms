@@ -30,7 +30,7 @@
 
     <div id="noinputs" class="alert alert-block hide">
             <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-            <p><?php echo _('Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+            <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
 </div>
 
@@ -40,7 +40,7 @@
         <h3 id="myModalLabel"><?php echo _('Delete Input'); ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Deleting an input will loose its name and configured process list.<br>An new blank input is automatic created by API data post if it does not already exists.'); ?>
+        <p><?php echo _('Deleting an Input will lose it name and configured Processlist.<br>A new blank input is automatic created by API data post if it does not already exists.'); ?>
         </p>
         <p>
            <?php echo _('Are you sure you want to delete?'); ?>

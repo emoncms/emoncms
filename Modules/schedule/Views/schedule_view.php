@@ -8,7 +8,7 @@
 
 <style>
 #table input[type="text"] {
-         width: 88%;
+  width: 88%;
 }
 </style>
 
@@ -16,14 +16,17 @@
     <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Schedule Help'); ?></a></div>
     <div id="localheading"><h2><?php echo _('Schedules'); ?></h2></div>
 
-    <div id="noschedules" class="alert alert-block hide">
-            <h4 class="alert-heading"><?php echo _('No schedules created'); ?></h4>
-            <p><?php echo _('No schedules defined. Please add a new schedule. <a href="api">Schedule helper</a> as a guide for generating your request.'); ?></p>
+    <div id="noschedules" class="hide">
+        <br>
+        <div class="alert alert-block">
+            <h4 class="alert-heading"><?php echo _('No schedules'); ?></h4><br>
+            <p><?php echo _('There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
+        </div>
     </div>
 
     <div id="table"><div align='center'>loading...</div></div>
 
-    <div id="bottomtoolbar" class="hide"><hr>
+    <div id="bottomtoolbar"><hr>
         <button id="addnewschedule" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New schedule'); ?></button>
     </div>
 </div>
@@ -35,6 +38,8 @@
     </div>
     <div class="modal-body">
         <p><?php echo _('Deleting a schedule is permanent.'); ?>
+           <br><br>
+           <?php echo _('If you have an Input or Feed Processlist that use this schedule, after deleting it, review that process list or it will be in error freezing other process lists.'); ?>
            <br><br>
            <?php echo _('Are you sure you want to delete?'); ?>
         </p>
@@ -83,12 +88,10 @@
         $("#noschedules").hide();
         $("#localheading").show();
         $("#apihelphead").show();
-        $("#bottomtoolbar").show();
       } else {
         $("#noschedules").show();
         $("#localheading").hide();
         $("#apihelphead").hide();
-        $("#bottomtoolbar").hide();
       }
     }});
   }
