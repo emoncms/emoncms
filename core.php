@@ -46,7 +46,7 @@ function db_check($mysqli,$database)
 
 function controller($controller_name)
 {
-    $output = array('content'=>'');
+    $output = array('content'=>"#UNDEFINED#");
 
     if ($controller_name)
     {

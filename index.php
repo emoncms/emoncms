@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "8.6.0 beta | 2015.07.29 | for testers only";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "8.6.0 beta | 2015.07.30 | for testers only";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -108,7 +108,7 @@
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if (!$output['content'] && $public_profile_enabled && $route->controller!='admin')
+    if ($output['content'] == "#UNDEFINED#" && $public_profile_enabled && $route->controller!='admin')
     {
         $userid = $user->get_id($route->controller);
         if ($userid) {
@@ -118,11 +118,16 @@
             $session['read'] = 1;
             $session['profile'] = 1;
             $route->action = $public_profile_action;
-            $output = controller($public_profile_controller);
+            $route->controller = $public_profile_controller;
+            $output = controller($route->controller);
         }
     }
 
-    // $mysqli->close();
+    // If no controller found or nothing is returned, give friendly error
+    if ($output['content'] == "#UNDEFINED#") {
+        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
+        $output['content'] = "ERROR: URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
+    }
 
     // 7) Output
     if ($route->format == 'json')
@@ -154,6 +159,10 @@
     {
         header('Content-Type: text');
         print $output['content'];
+    }
+    else {
+        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
+        print "ERROR: URI not acceptable. Unknown format '".$route->format."'.";
     }
 
     $ltime = microtime(true) - $ltime;

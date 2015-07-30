@@ -345,8 +345,8 @@ Use as follow:
             var options = plot.getOptions();
             updateAxesMinMax();
 
-            if (typeof options.callback == 'function') {
-                options.callback();
+            if (typeof options.touch.callback == 'function') {
+                options.touch.callback();
             }
             else {
                 plot.setupGrid();

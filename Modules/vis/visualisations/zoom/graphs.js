@@ -18,7 +18,7 @@ function bargraph(data,barwidth,mode)
     bars: { show: true,align: "center",barWidth: (barwidth*1000),fill: true },
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", minTickSize: [1, mode], tickLength: 1},
-    touch: { pan: "", scale: "" }
+    touch: { pan: "", scale: "", callback: function(){} }
   });
 }
 

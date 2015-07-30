@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $path,$fullwidth,$emoncms_version;
+  global $ltime,$path,$fullwidth,$emoncms_version;
 ?>
 <html>
     <head>
@@ -80,6 +80,6 @@
             <span> | <?php echo $emoncms_version; ?></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-        <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-227875-4','auto');ga(function(e){ga('set','&dCon','<?php echo $route->controller;?>');ga('set','&dAct','<?php echo $route->action;?>');ga('set','&dSub','<?php echo $route->subaction;?>');ga('set','&dCId',e.get('clientId'));ga('set','&uid','<?php echo $session['userid'];?>');ga('set','&uname','<?php echo $session['username'];?>');ga('send','pageview',{'&dVer':'<?php echo $emoncms_version;?>'});});</script>
+        <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-227875-4','auto');ga('require', 'linkid', 'linkid.js');ga(function(e){ga('set','screenName','<?php echo $route->controller.'/'.$route->action.'/'.$route->subaction;?>');ga('set','dimension1',e.get('clientId'));ga('set','dimension2','<?php echo $session['lang'];?>');ga('set','&uid',window.location.host+'|<?php echo $session['userid'].'|'.$session['username'];?>');ga('set','appVersion','<?php echo $emoncms_version;?>');ga('send','pageview');ga('send', 'timing', 'main', 'pageview', '<?php echo microtime(true)-$ltime;?>', 'LoadTime', {'page': '<?php echo $route->controller.'/'.$route->action.'/'.$route->subaction;?>'});});</script>
     </body>
 </html>
