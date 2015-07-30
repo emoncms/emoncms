@@ -129,6 +129,9 @@
         $output['content'] = "ERROR: URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
     }
 
+    $output['route'] = $route;
+    $output['session'] = $session;
+
     // 7) Output
     if ($route->format == 'json')
     {
@@ -150,8 +153,6 @@
         } else {
             $menu = load_menu();
             $output['mainmenu'] = view("Theme/menu_view.php", array());
-            $output['route'] = $route;
-            $output['session'] = $session;
             print view("Theme/theme.php", $output);
         }
     }
