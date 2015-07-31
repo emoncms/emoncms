@@ -1,4 +1,3 @@
-
 <!--
 
      All Emoncms code is released under the GNU Affero General Public License.
@@ -16,9 +15,6 @@
         &start=0&end=0&res=1
 
         These arguments tells the get feed data model to fetch all data and sum all energy used over the different power segments.
-
-
-
 -->
 
 <?php
@@ -43,71 +39,61 @@
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
-    //--------------------------------------------------------------------------------------
-    var barwidth = <?php echo $barwidth; ?>;             //Fetch table name
-    var feedid = "<?php echo $feedid; ?>";               //Fetch table name
-    var path = "<?php echo $path; ?>";
-    var apikey = "<?php echo $apikey; ?>";
-    var valid = "<?php echo $valid; ?>";
-    // Eventually We can store the plot colors in the DB, and use a php command to stick it here
-    var plotColour = null;
+  var barwidth = <?php echo $barwidth; ?>;       //Fetch table name
+  var feedid = "<?php echo $feedid; ?>";         //Fetch table name
+  var path = "<?php echo $path; ?>";
+  var apikey = "<?php echo $apikey; ?>";
+  var valid = "<?php echo $valid; ?>";
+  // Eventually We can store the plot colors in the DB, and use a php command to stick it here
+  var plotColour = null;
 
-    var start = <?php echo $start ?>;
-    var end = <?php echo $end ?>;
+  var start = <?php echo $start ?>;
+  var end = <?php echo $end ?>;
 
-    $(function () {
+  $(function () {
+    var placeholder = $("#graph");
 
-        var placeholder = $("#graph");
+    // Get window width and height from page size
+    var embed = <?php echo $embed; ?>;
+    $('#graph').width($('#graph_bound').width());
+    $('#graph').height($('#graph_bound').height());
+    if (embed) $('#graph').height($(window).height());
 
-        //----------------------------------------------------------------------------------------
-        // Get window width and height from page size
-        //----------------------------------------------------------------------------------------
-        var embed = <?php echo $embed; ?>;
-        $('#graph').width($('#graph_bound').width());
-        $('#graph').height($('#graph_bound').height());
-        if (embed) $('#graph').height($(window).height());
-        //----------------------------------------------------------------------------------------
+    var graph_data = [];                //data array declaration
+    if (valid) vis_feed_data(apikey,feedid);
+    if (feedid == 0) plotGraph();
 
-        var graph_data = [];                              //data array declaration
-        if (valid) vis_feed_data(apikey,feedid);
-        if (feedid == 0) plotGraph();
-
-        $(window).resize(function(){
-            $('#graph').width($('#graph_bound').width());
-            if (embed) $('#graph').height($(window).height());
-            plotGraph();
-        });
-
-        //--------------------------------------------------------------------------------------
-        // Plot flot graph
-        //--------------------------------------------------------------------------------------
-        function plotGraph()
-        {
-            $.plot(placeholder,[
-            {
-                data: graph_data ,                //data
-                bars: { show: true, align: "center", barWidth: barwidth, fill: true },
-                color: plotColour
-            }], {
-                xaxis: { mode: null }, grid: { show: true, hoverable: true }
-            });
-            $('#loading').hide();
-        }
-
-        //--------------------------------------------------------------------------------------
-        // Fetch Data
-        //--------------------------------------------------------------------------------------
-        function vis_feed_data(apikey,feedid)
-        {
-            $("#stat").html("");
-            $('#loading').show();
-            graph_data = feed.histogram(feedid,start,end);
-            plotGraph();
-        }
-
-        placeholder.bind("plothover", function (event, pos, item) {
-            if (item!=null) $("#stat").html((item.datapoint[1]).toFixed(2)+" kWh");
-        });
+    $(window).resize(function(){
+    $('#graph').width($('#graph_bound').width());
+    if (embed) $('#graph').height($(window).height());
+    plotGraph();
     });
-    //--------------------------------------------------------------------------------------
-    </script>
+
+    // Plot flot graph
+    function plotGraph()
+    {
+    $.plot(placeholder,[
+    {
+      data: graph_data ,        //data
+      bars: { show: true, align: "center", barWidth: barwidth, fill: true },
+      color: plotColour
+    }], {
+      xaxis: { mode: null }, grid: { show: true, hoverable: true }
+    });
+    $('#loading').hide();
+    }
+
+    // Fetch Data
+    function vis_feed_data(apikey,feedid)
+    {
+    $("#stat").html("");
+    $('#loading').show();
+    graph_data = feed.histogram(feedid,start,end);
+    plotGraph();
+    }
+
+    placeholder.bind("plothover", function (event, pos, item) {
+    if (item!=null) $("#stat").html((item.datapoint[1]).toFixed(2)+" kWh");
+    });
+  });
+</script>

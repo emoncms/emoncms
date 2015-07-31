@@ -148,12 +148,6 @@ function load_menu()
         }
     }
 
-    usort($menu_left, "menu_sort");
-    usort($menu_dropdown_config, "menu_sort");
     return array('left'=>$menu_left, 'right'=>$menu_right, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config);
 }
 
-// Menu sort by order
-function menu_sort($a,$b) {
-    return $a['order']>$b['order'];
-}

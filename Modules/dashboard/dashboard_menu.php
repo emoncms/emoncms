@@ -20,5 +20,4 @@
     bindtextdomain($domain, "Modules/dashboard/locale");
     bind_textdomain_codeset($domain, 'UTF-8');
 
-    //$menu_left[] = array('name'=> dgettext($domain, "Dashboards"), 'path'=>$dashpath , 'session'=>$sess, 'order' => 4, 'dropdown'=>$listmenu);
-    $menu_left[] = array('name'=>  "<i class='icon-th-large icon-white' title='" . dgettext($domain, "Dashboards") . "'></i>", 'path'=>$dashpath , 'session'=>$sess, 'order' => 4, 'dropdown'=>$listmenu);
+    $menu_left[] = array('name'=> dgettext($domain, "Dashboards"), 'icon'=>'icon-th-large icon-white', 'path'=>$dashpath , 'session'=>$sess, 'order' => 1, 'dropdown'=>$listmenu);

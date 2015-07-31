@@ -1,8 +1,6 @@
-<html>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
- <?php
- /*
-    All Emoncms code is released under the GNU Affero General Public License.
+<?php
+/*
+    All Emoncms code is released under the GNU General Public License v3.
     See COPYRIGHT.txt and LICENSE.txt.
     ---------------------------------------------------------------------
     Emoncms - open source energy visualisation
@@ -10,9 +8,8 @@
 */
     global $path, $embed;
 ?>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-<!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 
+<!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>

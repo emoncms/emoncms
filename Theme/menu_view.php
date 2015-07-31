@@ -1,23 +1,21 @@
 <?php
-
-    /*
-        All Emoncms code is released under the GNU Affero General Public License.
-        See COPYRIGHT.txt and LICENSE.txt.
-
-        ---------------------------------------------------------------------
-        Emoncms - open source energy visualisation
-        Part of the OpenEnergyMonitor project:
-        http://openenergymonitor.org
-    */
+/*
+    All Emoncms code is released under the GNU General Public License v3.
+    See COPYRIGHT.txt and LICENSE.txt.
+    ---------------------------------------------------------------------
+    Emoncms - open source energy visualisation
+    Part of the OpenEnergyMonitor project: http://openenergymonitor.org
+*/
 
     global $path, $session, $menu;
     if (!isset($session['profile'])) $session['profile'] = 0;
 
-    //if ($session['write']) $menu['right'][] = array('name'=>"<b>Docs</b>", 'path'=>"site/docs", 'order' => 0 );
-    //if (!$session['write']) $menu['right'][] = array('name'=>"Log In", 'path'=>"user/login", 'order' => -1 );
-    if ($session['write']) $menu['dropdownconfig'][] = array('name'=>"<i class='icon-book'></i> " . "Documentation", 'path'=>"site/docs", 'divider' => true);
-    if (!$session['write']) $menu['right'][] = array('name'=>"<i class='icon-home icon-white' title='Log In'></i>", 'path'=>"user/login");
+    if ($session['write']) $menu['dropdownconfig'][] = array('name'=>'Documentation', 'icon'=>'icon-book', 'path'=>"site/docs", 'order' => 50,'divider' => true);
+    if (!$session['write']) $menu['right'][] = array('name'=>"Log In", 'icon'=>'icon-home icon-white', 'path'=>"user/login");
     
+    usort($menu['left'], "menu_sort");
+    usort($menu['dropdownconfig'], "menu_sort");
+
     function drawItem($item)
     {
         global $path,$session;
@@ -32,25 +30,46 @@
                             $i++;
                             if (isset($dropdownitem['divider']) && $dropdownitem['divider']) { $outdrop .= '<li class="divider"></li>'; }
                             // TODO: Remove dependency of index position on APPs module
-                            $outdrop .= '<li><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? $dropdownitem['name']:$dropdownitem['0']) . '</a></li>';
+                            $outdrop .= '<li><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : $dropdownitem['0']) . '</a></li>';
                         }
                     }
                 }
                 if ($i > 0) {
                     $out .= '<li class="dropdown">';
-                    $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">'. $item['name'] . '<b class="caret"></b></a>';
+                    $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . drawNameIcon($item,false) . '<b class="caret"></b></a>';
                     $out .= '<ul class="dropdown-menu">';
                     $out .= $outdrop;
                     $out .= '</ul></li>';
                 }   
                 else if (isset($item['path']) && isset($item['name'])) {
-                    $out .= "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+                    $out .= "<li><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
                 }
             }
         } else {
-            $out .=  "<li><a href=\"".$path.$item['path']."\">".$item['name']."</a></li>";
+            $out .=  "<li><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
         }
         return $out;
+    }
+    
+    function drawNameIcon($item, $showname=false){
+        if (isset($item['icon']) && isset($item['name'])) {
+            if ($showname) {
+                return "<i class='".$item['icon']."' title='".$item['name']."'></i> " . $item['name'];
+            } else {
+                return "<div style='display: inline'><i class='".$item['icon']."' title='".$item['name']."'></i> <span class='visible-desktop visible-phone hidden-tablet'>" . $item['name'] . "</span></div>";
+            }
+        } else if (isset($item['icon'])) {
+            return "<i class='".$item['icon']."'></i>";
+        } else if (isset($item['name'])) {
+            return $item['name'];
+        } else {
+            return 'unknown';
+        }
+    }
+    
+    // Menu sort by order
+    function menu_sort($a,$b) {
+        return $a['order']>$b['order'];
     }
 ?>
 
@@ -65,7 +84,8 @@
 <?php
     if (count($menu['dropdown']) && $session['read']) { 
         $extra = array();
-        $extra['name'] = '<i class="icon-plus icon-white" title="Extras"></i>';
+        $extra['name'] = 'Extras';
+        $extra['icon'] = 'icon-plus icon-white';
         $extra['session'] = 'read';
         $extra['dropdown'] = $menu['dropdown'];
         echo drawItem($extra);
@@ -73,7 +93,8 @@
 
     if (count($menu['dropdownconfig'])) { 
         $setup = array();
-        $setup['name'] = '<i class="icon-wrench icon-white" title="Setup"></i>';
+        $setup['name'] = 'Setup';
+        $setup['icon'] = 'icon-wrench icon-white';
         $setup['session'] = 'read';
         $setup['dropdown'] = $menu['dropdownconfig'];
         echo drawItem($setup);
