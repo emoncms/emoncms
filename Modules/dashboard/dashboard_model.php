@@ -186,13 +186,12 @@ class Dashboard
         foreach ($dashboards as $dashboard)
         {
             // Check show description
+            $desc = '';
             if ($dashboard['showdescription']) {
-                    $desc = ' title="'.$dashboard['description'].'"';
-            } else {
-                    $desc = '';
+                $desc = $dashboard['description'];
             }
 
-                // Set URL using alias or id
+            // Set URL using alias or id
             if ($dashboard['alias']) {
                 $aliasurl = "/".$dashboard['alias'];
             } else {
@@ -200,7 +199,7 @@ class Dashboard
             }
 
             // Build the menu item
-            $menu[] = array('name' => $dashboard['name'], 'path' => $dashpath.$aliasurl);
+            $menu[] = array('name' => $dashboard['name'], 'desc'=> $desc, 'published'=> $dashboard['published'], 'path' => $dashpath.$aliasurl, 'order' => "-1".$dashboard['name']);
         }
         return $menu;
     }

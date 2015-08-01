@@ -61,10 +61,13 @@
 
 //5 #### User Interface settings
     // Theme location
-    $theme = "basic";   
+    $theme = "basic";
 
-    // Use fullscreen width
-    $fullwidth = true;  
+    // Use full screen width
+    $fullwidth = true;
+    
+    // Main menu colapses on lower screen widths
+    $menucolapses = false;
 
     // Enable multi user emoncms.
     // If set to false, emoncms will automatically remove the register form and 
@@ -130,4 +133,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developper updates this when the config format changes
-    $config_file_version = "3";
+    $config_file_version = "4";

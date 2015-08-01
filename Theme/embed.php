@@ -21,7 +21,7 @@
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     </head>
     <body>
-        <div class="content">
+        <div>
             <?php print $content; ?>
         </div>
     </body>

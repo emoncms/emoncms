@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "8.6.0 beta | 2015.07.31 | for testers only";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "8.6.0 preview | 2015.08.01";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -124,7 +124,7 @@
     }
 
     // If no controller found or nothing is returned, give friendly error
-    if ($output['content'] == "#UNDEFINED#") {
+    if ($output['content'] === "#UNDEFINED#") {
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
         $output['content'] = "ERROR: URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
     }

@@ -1,96 +1,80 @@
 /*
-
   table.js is released under the GNU Affero General Public License.
   See COPYRIGHT.txt and LICENSE.txt.
 
-  Part of the OpenEnergyMonitor project:
-  http://openenergymonitor.org
- 
+  Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
-
 var customtablefields = {
+  'icon': {
+    'draw': function(row,field) {
+      if (table.data[row][field] == true) return "<i class='"+table.fields[field].trueicon+"' type='input' style='cursor:pointer'></i>";
+      if (table.data[row][field] == false) return "<i class='"+table.fields[field].falseicon+"' type='input' style='cursor:pointer'></i>";
+    },
 
-    'icon':
-    {
-        'draw': function(row,field)
-        {
-            if (table.data[row][field] == true) return "<i class='"+table.fields[field].trueicon+"' type='input' style='cursor:pointer'></i>";
-            if (table.data[row][field] == false) return "<i class='"+table.fields[field].falseicon+"' type='input' style='cursor:pointer'></i>";
-        },
+    'event': function() {
+      // Event code for clickable switch state icon's
+      $(table.element).on('click', 'i[type=input]', function() {
+        var row = $(this).parent().attr('row');
+        var field = $(this).parent().attr('field');
+        if (!table.data[row]['#READ_ONLY#']) {
+          table.data[row][field] = !table.data[row][field];
 
-        'event': function()
-        {
-            // Event code for clickable switch state icon's
-            $(table.element).on('click', 'i[type=input]', function() {
-                var row = $(this).parent().attr('row');
-                var field = $(this).parent().attr('field');
-                if (!table.data[row]['#READ_ONLY#']) {
-                    table.data[row][field] = !table.data[row][field];
+          var fields = {};
+          fields[field] = table.data[row][field];
 
-                    var fields = {};
-                    fields[field] = table.data[row][field];
-
-                    $(table.element).trigger("onSave",[table.data[row]['id'],fields]);
-                    if (table.data[row][field]) $(this).attr('class', table.fields[field].trueicon); else $(this).attr('class', table.fields[field].falseicon);
-                    table.draw();
-                }
-            });
+          $(table.element).trigger("onSave",[table.data[row]['id'],fields]);
+          if (table.data[row][field]) $(this).attr('class', table.fields[field].trueicon); else $(this).attr('class', table.fields[field].falseicon);
+          table.draw();
         }
-    },
+      });
+    }
+  },
 
-    'updated':
-    {
-        'draw': function (row,field) { return list_format_updated(table.data[row][field]) }
-    },
+  'updated': {
+    'draw': function (row,field) { return list_format_updated(table.data[row][field]) }
+  },
 
-    'value':
-    {
-        'draw': function (row,field) { return list_format_value(table.data[row][field]) }
-    },
+  'value': {
+    'draw': function (row,field) { return list_format_value(table.data[row][field]) }
+  },
 
-    'processlist':
-    {
-        'draw': function (row,field) { 
-          var processlist = table.data[row][field];
-          if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist);
-          else return "";
-        }
-    },
+  'processlist': {
+    'draw': function (row,field) { 
+      var processlist = table.data[row][field];
+      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist);
+      else return "";
+    }
+  },
 
-    'iconlink':
-    {
-        'draw': function (row,field) { 
-          var icon = 'icon-eye-open'; if (table.fields[field].icon) icon = table.fields[field].icon;
-          return "<a href='"+table.fields[field].link+table.data[row]['id']+"' ><i class='"+icon+"' ></i></a>" 
-        }
-    },
+  'iconlink': {
+    'draw': function (row,field) { 
+      var icon = 'icon-eye-open'; if (table.fields[field].icon) icon = table.fields[field].icon;
+      return "<a href='"+table.fields[field].link+table.data[row]['id']+"' ><i class='"+icon+"' ></i></a>" 
+    }
+  },
 
-    'iconbasic':
+  'iconbasic': {
+    'draw': function(row,field)
     {
-        'draw': function(row,field)
-        {
-            return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
-        }
-    },
-    
-    'hinteditable':
-    {
-        'draw': function (row,field) { return "…";},
-        'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
-        'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() }
-    },
+      return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
+    }
+  },
+  
+  'hinteditable': {
+    'draw': function (row,field) { return "…";},
+    'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
+    'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() }
+  },
 
-    'iconconfig':
+  'iconconfig': {
+    'draw': function(row,field)
     {
-        'draw': function(row,field)
-        {
-            return table.data[row]['#NO_CONFIG#'] ? "" : "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
-        }
-    },
-    'size':
-    {
-        'draw': function (row,field) { return list_format_size(table.data[row][field]); }
-    },
+      return table.data[row]['#NO_CONFIG#'] ? "" : "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
+    }
+  },
+  'size': {
+    'draw': function (row,field) { return list_format_size(table.data[row][field]); }
+  },
 }
 
 

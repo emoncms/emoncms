@@ -28,7 +28,6 @@ function dashboard_controller()
         if ($route->action == "list" && $session['write'])
         {
             $result = view("Modules/dashboard/Views/dashboard_list.php",array());
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('type'=>"list"));
         }
 
         else if ($route->action == "view")

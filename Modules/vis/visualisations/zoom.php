@@ -190,7 +190,7 @@
       var mdate = new Date(item.datapoint[0]);
       if (view==0) $("#out").html(" : "+mdate.format("yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh | "+(item.datapoint[1]/years.days[item.dataIndex]).toFixed(1)+" kWh/d");
       if (view==1) $("#out").html(" : "+mdate.format("mmm yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh | "+(item.datapoint[1]/months.days[item.dataIndex]).toFixed(1)+" kWh/d ");
-      if (view==2) $("#out").html(" : "+mdate.format("dS mmm yyyy")+" | "+item.datapoint[1].toFixed(1)+" kWh | "+add_currency(item.datapoint[1]*price, 2)+" | "+add_currency(item.datapoint[1]*price*365, 0)+"/y");
+      if (view==2) $("#out").html(" : "+mdate.format("dd mmm yyyy")+" | "+item.datapoint[1].toFixed(1)+" kWh | "+add_currency(item.datapoint[1]*price, 2)+" | "+add_currency(item.datapoint[1]*price*365, 0)+"/y");
       if (view==3) $("#out").html(" : "+item.datapoint[1].toFixed(0)+" W");
     }
   });

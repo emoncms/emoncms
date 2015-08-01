@@ -22,7 +22,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     $error_out = "";
 
-    if (!isset($config_file_version) || $config_file_version < 3) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
+    if (!isset($config_file_version) || $config_file_version < 4) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';
@@ -54,6 +54,9 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
     if (!isset($data_sampling)) $data_sampling = true; // default
+
+    if (!isset($fullwidth)) $fullwidth = false;
+    if (!isset($$menucolapses)) $$menucolapses = true;
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';

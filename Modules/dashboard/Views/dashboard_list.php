@@ -12,15 +12,18 @@
 </style>
 
 <div class="container">
-    <div id="localheading"><h2><?php echo _('Dashboard'); ?></h2></div>
-    <div id="table"></div>
+    <div id="localheading"><h2><?php echo _('Dashboards'); ?></h2></div>
 
     <div id="nodashboards" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No dashboards created'); ?></h4>
-        <p><?php echo _('Maybe you would like to add your first dashboard using the button') ?>
-        <a href="#" onclick="$.ajax({type: 'POST',url:'<?php echo $path; ?>dashboard/create.json',success: function(){update();} });"><i class="icon-plus-sign"></i></a>
+        <p><?php echo _('Maybe you would like to add your first dashboard using the button bellow.') ?></p>
     </div>
 
+    <div id="table"><div align='center'>loading...</div></div>
+
+    <div id="bottomtoolbar" class="hide"><hr>
+        <button id="addnewdashboard" class="btn btn-small"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _("New"); ?></button>
+    </div>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
@@ -41,79 +44,80 @@
 </div>
 
 <script>
+  var path = "<?php echo $path; ?>";
 
-    var path = "<?php echo $path; ?>";
+  // Extend table library field types
+  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
 
-    // Extend table library field types
-    for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
+  table.element = "#table";
 
-    table.element = "#table";
+  table.fields = {
+    'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
+    'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
+    'alias':{'title':"<?php echo _('Alias'); ?>", 'type':"text"},
+     // 'description':{'title':"<?php echo _('Description'); ?>", 'type':"text"},
+    'main':{'title':"<?php echo _('Main'); ?>", 'type':"icon", 'trueicon':"icon-star", 'falseicon':"icon-star-empty"},
+    'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
+    'published':{'title':"<?php echo _('Published'); ?>", 'type':"icon", 'trueicon':"icon-ok", 'falseicon':"icon-remove"},
 
-    table.fields = {
-        'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
-        'name':{'title':"<?php echo _('Name'); ?>", 'type':"text"},
-        'alias':{'title':"<?php echo _('Alias'); ?>", 'type':"text"},
-         // 'description':{'title':"<?php echo _('Description'); ?>", 'type':"text"},
-        'main':{'title':"<?php echo _('Main'); ?>", 'type':"icon", 'trueicon':"icon-star", 'falseicon':"icon-star-empty"},
-        'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
-        'published':{'title':"<?php echo _('Published'); ?>", 'type':"icon", 'trueicon':"icon-ok", 'falseicon':"icon-remove"},
+    // Actions
+    'clone-action':{'title':'', 'type':"iconbasic", 'icon':'icon-random'},
+    'edit-action':{'title':'', 'type':"edit"},
+    'delete-action':{'title':'', 'type':"delete"},
+    'draw-action':{'title':'', 'type':"iconlink", 'icon':"icon-edit", 'link':path+"dashboard/edit?id="},
+    'view-action':{'title':'', 'type':"iconlink", 'link':path+"dashboard/view?id="}
+  }
 
-        // Actions
-        'clone-action':{'title':'', 'type':"iconbasic", 'icon':'icon-random'},
-        'edit-action':{'title':'', 'type':"edit"},
-        'delete-action':{'title':'', 'type':"delete"},
-        'draw-action':{'title':'', 'type':"iconlink", 'icon':"icon-edit", 'link':path+"dashboard/edit?id="},
-        'view-action':{'title':'', 'type':"iconlink", 'link':path+"dashboard/view?id="}
+  table.deletedata = false;
 
-    }
+  update();
 
-    table.deletedata = false;
+  function update() {
+    table.data = dashboard.list();
+    table.draw();
+    if (table.data.length != 0) {
+      $("#nodashboards").hide();
+      $("#localheading").show();
+      $("#bottomtoolbar").show();
+    } else {
+      $("#nodashboards").show();
+      $("#localheading").hide();
+      $("#bottomtoolbar").show();
+    };
+  }
 
+  $("#table").bind("onEdit", function(e){});
+
+  $("#table").bind("onSave", function(e,id,fields_to_update){
+    dashboard.set(id,fields_to_update);
+    if (fields_to_update.main) update();
+  });
+
+  $("#table").bind("onDelete", function(e,id,row){
+    $('#myModal').modal('show');
+    $('#myModal').attr('feedid',id);
+    $('#myModal').attr('feedrow',row);
+  });
+
+  $("#confirmdelete").click(function(){
+    var id = $('#myModal').attr('feedid');
+    var row = $('#myModal').attr('feedrow');
+    dashboard.remove(id);
+    table.remove(row);
     update();
 
-    function update() {
-        table.data = dashboard.list();
-        table.draw();
-        if (table.data.length != 0) {
-            $("#nodashboards").hide();
-            $("#localheading").show();
-        } else {
-            $("#nodashboards").show();
-            $("#localheading").hide();
-        };
-    }
+    $('#myModal').modal('hide');
+  });
+  
+  $("#addnewdashboard").click(function(){
+    dashboard.add(); 
+    update();
+  });
 
-    $("#table").bind("onEdit", function(e){});
-
-    $("#table").bind("onSave", function(e,id,fields_to_update){
-        dashboard.set(id,fields_to_update);
-    });
-
-    $("#table").bind("onDelete", function(e,id,row){
-        $('#myModal').modal('show');
-        $('#myModal').attr('feedid',id);
-        $('#myModal').attr('feedrow',row);
-    });
-
-    $("#confirmdelete").click(function()
-    {
-        var id = $('#myModal').attr('feedid');
-        var row = $('#myModal').attr('feedrow');
-        dashboard.remove(id);
-        table.remove(row);
-        update();
-
-        $('#myModal').modal('hide');
-    });
-
-    
-//----------
-//  UI js
-//----------
-    $("#table").on('click', '.icon-random', function() {
-        var i = table.data[$(this).attr('row')];
-        var result = dashboard.clone(i['id']);
-        update();
-    });
-    
+  // UI js
+  $("#table").on('click', '.icon-random', function() {
+    var i = table.data[$(this).attr('row')];
+    var result = dashboard.clone(i['id']);
+    update();
+  });
 </script>

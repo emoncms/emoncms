@@ -13,9 +13,6 @@
          width: 88%;
 }
 
-#table td:nth-of-type(1) { width:5%;}
-#table td:nth-of-type(3) { width:20%;}
-
 #table td:nth-of-type(5) { width:14px; text-align: center; }
 #table th:nth-of-type(8), td:nth-of-type(8) { text-align: right; }
 #table th:nth-of-type(9), td:nth-of-type(9) { text-align: right; }
@@ -198,7 +195,7 @@
         $("#nofeeds").show();
         $("#localheading").hide();
         $("#apihelphead").hide();
-        $("#bottomtoolbar").hide();
+        $("#bottomtoolbar").show();
       } else {
         $("#nofeeds").hide();
         $("#localheading").show();

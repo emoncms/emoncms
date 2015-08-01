@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $ltime,$path,$fullwidth,$emoncms_version;
+  global $ltime,$path,$fullwidth,$menucolapses,$emoncms_version;
 ?>
 <html>
     <head>
@@ -32,14 +32,44 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
+<?php  if ($menucolapses) { ?>
+                    <style>
+                        /* this is menu colapsed */
+                        @media (max-width: 979px){
+                          .menu-description {
+                            display: inherit !important ;
+                          }
+                        }
+                        @media (min-width: 980px) and (max-width: 1200px){
+                          .menu-text {
+                            display: none !important;
+                          }
+                        }
+                    </style>
                     <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <img src="<?php echo $path; ?>Theme/favicon.png" style="width:28px;"/>
                     </button>
+
                     <div class="nav-collapse collapse">
-                      <?php if (!isset($runmenu)) $runmenu = '';
-                            echo $mainmenu.$runmenu;
-                      ?>
+<?php } else { ?>
+                        <style>
+                            @media (max-width: 1200px){
+                              .menu-text {
+                                display: none !important;
+                              }
+                            }
+                        </style>
+<?php } ?>
+                    <?php if (!isset($runmenu)) $runmenu = '';
+                        echo $mainmenu.$runmenu;
+                    ?>
+<?php
+    if ($menucolapses) {
+?>
                     </div>
+<?php
+    }
+?>
                 </div>
             </div>
         </div>
@@ -55,7 +85,6 @@
         <?php } ?>
 
         <?php
-          if (!isset($fullwidth)) $fullwidth = false;
           if ($fullwidth && $route->controller=="dashboard") {
         ?>
         <div>

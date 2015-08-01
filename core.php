@@ -131,10 +131,10 @@ function load_db_schema()
 
 function load_menu()
 {
-    $menu_left = array();
-    $menu_right = array();
-    $menu_dropdown = array();
-    $menu_dropdown_config = array();
+    $menu_left = array();  // Left
+    $menu_dropdown = array(); // Extra
+    $menu_dropdown_config = array(); //Setup
+    $menu_right = array(); // Right
 
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
@@ -148,6 +148,6 @@ function load_menu()
         }
     }
 
-    return array('left'=>$menu_left, 'right'=>$menu_right, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config);
+    return array('left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
 }
 

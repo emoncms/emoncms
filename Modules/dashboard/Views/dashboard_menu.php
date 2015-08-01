@@ -22,14 +22,11 @@
         $result .= "<a class='btn btn-mini' href='" . $path . "dashboard/view?id=" . $id . "'><span class='icon-eye-open' title='" . _("View mode") . "'></span></a>";
     }
 
-    if ($type=="list") {
-        $result .= "<a class='btn btn-mini' onclick=\"$.ajax({type : 'POST',url :  path + 'dashboard/create.json  ',data : '',dataType : 'json',success : location.reload()});\"><span class='icon-plus-sign' title='". _("New") . "' style='cursor:pointer'></span></a>";
-    }
-
-    if ($type!="list") {
-        $result .= "<a class='btn btn-mini' href='" . $path . "dashboard/list'><span class='icon-th-list' title='" . _('List view') ."'></span></a>";
-    }
+    //CHAVEIRO: Removed, dashboard list is accessible via setup menu now
+    //if ($type!="list") {
+    //    $result .= "<a class='btn btn-mini' href='" . $path . "dashboard/list'><span class='icon-th-list' title='" . _('List view') ."'></span></a>";
+    //}
 
     if ($result) {
         echo "<div class='btn-toolbar' style='padding:2px; margin: 0;' align='right'><div class='btn-group'>".$result."</div></div>";   
-}
+    }
