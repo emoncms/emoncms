@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $ltime,$path,$fullwidth,$menucolapses,$emoncms_version;
+  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version;
 ?>
 <html>
     <head>
@@ -32,7 +32,7 @@
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-<?php  if ($menucolapses) { ?>
+<?php  if ($menucollapses) { ?>
                     <style>
                         /* this is menu colapsed */
                         @media (max-width: 979px){
@@ -58,13 +58,24 @@
                                 display: none !important;
                               }
                             }
+                            @media (max-width: 480px){
+                              .menu-dashboard {
+                                display: none !important;
+                              }
+                            }
+
+                            @media (max-width: 320px){
+                              .menu-extra,.menu-right {
+                                display: none !important;
+                              }
+                            }
                         </style>
 <?php } ?>
                     <?php if (!isset($runmenu)) $runmenu = '';
                         echo $mainmenu.$runmenu;
                     ?>
 <?php
-    if ($menucolapses) {
+    if ($menucollapses) {
 ?>
                     </div>
 <?php

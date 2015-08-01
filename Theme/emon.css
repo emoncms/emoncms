@@ -93,15 +93,3 @@ input[type=text][class=variable-name-edit] {
 .menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
   display: inherit !important;
 }
-
-@media (max-width: 480px){
-  .menu-dashboard {
-    display: none !important;
-  }
-}
-
-@media (max-width: 320px){
-  .menu-extra,.menu-right {
-    display: none !important;
-  }
-}

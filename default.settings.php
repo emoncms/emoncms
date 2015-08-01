@@ -66,8 +66,8 @@
     // Use full screen width
     $fullwidth = true;
     
-    // Main menu colapses on lower screen widths
-    $menucolapses = false;
+    // Main menu collapses on lower screen widths
+    $menucollapses = false;
 
     // Enable multi user emoncms.
     // If set to false, emoncms will automatically remove the register form and 
