@@ -131,6 +131,7 @@ function load_db_schema()
 
 function load_menu()
 {
+    $menu_dashboard = array(); // Published Dashboards
     $menu_left = array();  // Left
     $menu_dropdown = array(); // Extra
     $menu_dropdown_config = array(); //Setup
@@ -148,6 +149,6 @@ function load_menu()
         }
     }
 
-    return array('left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
+    return array('dashboard'=>$menu_dashboard, 'left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
 }
 

@@ -34,23 +34,23 @@
                             if (is_active($dropdownitem)) { $subactive = true; }
                             if (isset($dropdownitem['divider']) && $dropdownitem['divider']) { $outdrop .= '<li class="divider"></li>'; }
                             // TODO: Remove dependency of index position on APPs module
-                            $outdrop .= '<li'. (is_active($dropdownitem) ? ' class="active"' : '') . '><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : $dropdownitem['0']) . '</a></li>';
+                            $outdrop .= '<li class="'. (is_active($dropdownitem) ? ' active' : '') . '"><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : $dropdownitem['0']) . '</a></li>';
                         }
                     }
                 }
                 if ($i > 0) {
-                    $out .= '<li class="dropdown' . ($subactive ? " active" : "") . '">';
+                    $out .= '<li class="dropdown' . ($subactive ? " active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . '">';
                     $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . drawNameIcon($item,false) . '<b class="caret"></b></a>';
                     $out .= '<ul class="dropdown-menu">';
                     $out .= $outdrop;
                     $out .= '</ul></li>';
                 }   
                 else if (isset($item['path']) && isset($item['name'])) {
-                    $out .= "<li" . (is_active($item) ? " class='active'" : "") . "><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
+                    $out .= "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . "'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
                 }
             }
         } else {
-            $out .=  "<li" . (is_active($item) ? " class='active'" : "") . "><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
+            $out .=  "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . "'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
         }
         return $out;
     }
@@ -100,7 +100,12 @@
 
 <ul class="nav">
 <?php
+    foreach ($menu['dashboard'] as $item) {
+        $item['class'] = 'menu-dashboard';
+        echo drawItem($item);
+    }
     foreach ($menu['left'] as $item) {
+        $item['class'] = 'menu-left';
         echo drawItem($item);
     }
 ?>
@@ -111,6 +116,7 @@
         $extra = array();
         $extra['name'] = 'Extra';
         $extra['icon'] = 'icon-plus icon-white';
+        $extra['class'] = 'menu-extra';
         $extra['session'] = 'read';
         $extra['dropdown'] = $menu['dropdown'];
         echo drawItem($extra);
@@ -120,12 +126,14 @@
         $setup = array();
         $setup['name'] = 'Setup';
         $setup['icon'] = 'icon-wrench icon-white';
+        $setup['class'] = 'menu-setup';
         $setup['session'] = 'read';
         $setup['dropdown'] = $menu['dropdownconfig'];
         echo drawItem($setup);
     }
 
     foreach ($menu['right'] as $item) {
+        $item['class'] = 'menu-right';
         echo drawItem($item);
     }
 ?>

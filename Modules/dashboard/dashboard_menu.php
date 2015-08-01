@@ -24,7 +24,7 @@
     // Show published dashboards as single items
     foreach ($listmenu as $dash){
         if ($dash['published']){
-            $menu_left[] = array('name'=> $dash['name'], 'desc'=> $dash['desc'],'icon'=>'icon-star icon-white', 'published'=>$dash['published'], 'path'=>$dash['path'] , 'session'=>$sess, 'order'=>$dash['order']);
+            $menu_dashboard[] = array('name'=> $dash['name'], 'desc'=> $dash['desc'],'icon'=>'icon-star icon-white', 'published'=>$dash['published'], 'path'=>$dash['path'] , 'session'=>$sess, 'order'=>$dash['order']);
             $publishedDashs++;
         }
     }
