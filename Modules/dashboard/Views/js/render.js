@@ -23,7 +23,7 @@ var assoc = [];
 var assoc_curve = [];
 var widgetcanvas = {};
 
-var dialrate = 0.2;
+var dialrate = 0.15;
 var browserVersion = 999;
 var fast_update_fps = 25;
 

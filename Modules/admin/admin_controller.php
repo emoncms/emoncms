@@ -15,7 +15,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 function admin_controller()
 {
     global $mysqli,$session,$route,$updatelogin,$allow_emonpi_update, $log_filename, $log_enabled, $redis;
-    $result = "<div style='position:absolute; top:0px; left:0px; background-color:rgba(240,240,240,0.5); width:100%; height:100%; text-align:center; padding-top:100px;'><h3>"._('Admin re-authentication required')."</h3></div>";
+    $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4>"._('Admin re-authentication required')."</h4></div>";
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
