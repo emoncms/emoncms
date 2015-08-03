@@ -16,7 +16,7 @@
 
             foreach ($update['operations'] as $operation)
             {
-            $out.="<tr><td>$operation</td></tr>";
+                $out.="<tr><td>$operation</td></tr>";
             }
 
             $out.="</table>";
@@ -36,14 +36,15 @@
 
 <a href="<?php echo $path; ?>admin/db?apply=true" class="btn btn-info"><?php echo _('Apply changes'); ?></a>
 
-<?php } elseif ($out && $applychanges) {
-    echo '<div class="alert alert-success"><p><b>Success:</b> - the following changes have been applied</b></p><br>'.$out.'</div>';
+<?php 
+    } elseif ($out && $applychanges) {
+        echo '<div class="alert alert-success"><p><b>Success:</b> - the following changes have been applied</b></p><br>'.$out.'</div>';
 
 ?>
 
 <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Check for further updates'); ?></a>
 
-<?
+<?php
     } else {
 ?>
 
@@ -51,4 +52,5 @@
     <b><?php echo _('Database is up to date '); ?></b> - <?php echo _('Nothing to do'); ?>
 </div>
 
-<?php }
+<?php 
+    }
