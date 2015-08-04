@@ -1,4 +1,7 @@
 <?php global $path, $session, $user; ?>
+<style>
+  a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}
+</style>
 
 <h2><?php echo _('Schedule API'); ?></h2>
 <h3><?php echo _('Apikey authentication'); ?></h3>
@@ -30,6 +33,7 @@
     <tr><td><?php echo _('Test the expression'); ?></td><td><a href="<?php echo $path; ?>schedule/test.json?id=1"><?php echo $path; ?>schedule/test.json?id=1</a></td></tr>
 </table>
 
+<a class="anchor" id="expression"></a> 
 <h3><?php echo _('Expression documentation'); ?></h3>
 <p><?php echo _('Expression is used to specify active range.'); ?></p>
 <p><?php echo _('Granularity is day light saving time, month, day, week day, hour and minute.'); ?></p>

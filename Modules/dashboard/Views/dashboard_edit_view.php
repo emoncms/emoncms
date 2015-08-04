@@ -1,5 +1,4 @@
 <?php
-
 /*
 All Emoncms code is released under the GNU Affero General Public License.
 See COPYRIGHT.txt and LICENSE.txt.
@@ -18,6 +17,7 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
     <link href="<?php echo $path; ?>Modules/dashboard/Views/js/widget.css" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/dashboard.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/widgetlist.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/render.js"></script>
 
@@ -42,8 +42,8 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 <div style="background-color:#ddd; padding:4px;">
     <span id="widget-buttons"></span>
     <span id="when-selected">
-        <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i><?php echo _('Configure'); ?></button>
-        <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete'); ?></button>
+        <button id="options-button" class="btn" data-toggle="modal" data-target="#widget_options"><i class="icon-wrench"></i> <?php echo _('Configure'); ?></button>
+        <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i> <?php echo _('Delete'); ?></button>
     </span>
     <span><button id="save-dashboard" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button></span>
 </div>
@@ -55,41 +55,25 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/dashboard/Views/js/designer.js"></script>
 <script type="application/javascript">
-
     var dashid = <?php echo $dashboard['id']; ?>;
     var path = "<?php echo $path; ?>";
     var apikey = "";
     var feedlist = feed.list();
     var userid = <?php echo $session['userid']; ?>;
-
-    $("#testo").hide();
-
     var widget = <?php echo json_encode($widgets); ?>;
-
-    for (z in widget)
-    {
-        var fname = widget[z]+"_widgetlist";
-        var fn = window[fname];
-        $.extend(widgets,fn());
-    }
-
     var redraw = 0;
-    var reloadiframe = 0;
+    var reloadiframe = -1; // force iframes url to recalculate for all vis widgets 
 
-    var grid_size = 20;
     $('#can').width($('#dashboardpage').width());
 
-    designer.canvas = "#can";
-    designer.grid_size = 20;
-    designer.widgets = widgets;
+    render_widgets_init(widget); // populate widgets variable 
 
+    designer.canvas = "#can";
+    designer.grid_size = 20; // change default here
+    designer.widgets = widgets;
     designer.init();
 
-    show_dashboard();
-
-    setInterval(function() { update(); }, 5000);
-    setInterval(function() { fast_update(); }, 100);
-
+    render_widgets_start(); // start widgets refresh
 
     $("#save-dashboard").click(function (){
         //recalculate the height so the page_height is shrunk to the minimum but still wrapping all components
@@ -97,16 +81,14 @@ if (!$dashboard['height']) $dashboard['height'] = 400;
         designer.page_height = 0;
         designer.scan();
         designer.draw();
-        $.ajax({
-            type: "POST",
-            url :  path+"dashboard/setcontent.json",
-            data : "&id="+dashid+'&content='+encodeURIComponent($("#page").html())+'&height='+designer.page_height,
-            dataType: 'json',
-            success : function(data) { console.log(data); if (data.success==true) $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>');
-            }
-        });
+        console.log("Dashboard HTML content: " + $("#page").html());
+        var result=dashboard.setcontent(dashid,$("#page").html(),designer.page_height)
+        if (result.success) {
+            $("#save-dashboard").attr('class','btn btn-success').text('<?php echo _("Saved") ?>'); 
+        } else {
+            alert('ERROR: Could not save Dashboard. '+result.message);
+        }
     });
-
 
     $(window).resize(function(){
         designer.draw();

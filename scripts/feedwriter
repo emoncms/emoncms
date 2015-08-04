@@ -1,0 +1,166 @@
+#!/bin/bash
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+#
+#  Script below thanks to https://github.com/myheathub/mhh
+#
+###
+
+### BEGIN INIT INFO
+# Provides:          feedwriter
+# Required-Start:    $remote_fs $syslog
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: feedwriter script daemon
+# Description:       feedwriter persists emoncms data to disk from a redis queue
+### END INIT INFO
+
+# RPI sync control
+########### SETTINGS ##########
+
+## the user that must be used to run the bot
+USER=root
+
+## where rpi is located
+RPI_BIN="/var/www/emoncms/run/feedwriter.php"
+RPI_SCRIPT="feedwriter.php"
+
+## where the binary is located
+RPI_EXEC=/usr/bin/php
+
+if [ "$2" = "log" ]; then
+  echo "Log is turned on"
+  LOG=1
+else
+  echo "Log is turned off"
+  LOG=0
+fi
+
+########### SETTINGS END ############
+
+
+
+
+set -e
+DEBUG=off
+RPI_PID_FILE="/run/feedwriter.pid"
+
+if [ ! -f "$RPI_BIN" ]; then
+ echo "ERROR: file not found : '$RPI_BIN'"
+ exit 1
+fi
+if [ ! -f "$RPI_EXEC" ]; then
+ echo "ERROR: file not found : '$RPI_EXEC'"
+ exit 1
+fi
+if [ ! -x "$RPI_EXEC" ]; then
+ echo "ERROR: cannot execute '$RPI_EXEC'"
+ exit 1
+fi
+
+if [ "$(whoami)" != "$USER" ]; then
+	echo "ERROR: you have to run that script as $USER"
+	exit 1
+fi
+
+function debug() {
+	if [ "$DEBUG" = "on" ]; then
+		echo DEBUG: $@
+	fi
+}
+
+function do_start {
+	cd $(dirname $RPI_BIN)
+        sleep 7
+
+  if [ "$LOG" = 1 ]; then
+	  $RPI_EXEC -f $RPI_BIN >> /var/log/feedwriter.log &
+	  echo $! > $RPI_PID_FILE
+  else
+  	$RPI_EXEC -f $RPI_BIN > /dev/null 2>&1 &
+	  echo $! > $RPI_PID_FILE
+  fi
+}
+
+function do_stop {
+	NB_PROCESS=`ps ax | grep $RPI_SCRIPT | grep -v grep | wc -l`
+	if [ $NB_PROCESS -gt 1 ]; then
+		echo "ERROR: multiple $RPI_SCRIPT processes found, you'd better kill those processes by hand."
+	elif [ $NB_PROCESS -eq 1 ]; then
+		if [ -f $RPI_PID_FILE ]; then
+			PID=$(cat $RPI_PID_FILE)
+			NB_PROCESS=`ps hax $PID | grep $RPI_SCRIPT | grep -v grep | wc -l`
+			if [ $NB_PROCESS -eq 1 ]; then
+				kill -15 $PID
+			else
+				echo "ERROR: process $PID does not seem to be $RPI_SCRIPT"
+				echo "kill $RPI_SCRIPT by hand"
+			fi
+		fi
+	else
+		echo " ($RPI_SCRIPT was not running...)"
+	fi
+}
+
+kill_script() {
+ PID=`ps hax | grep "$RPI_SCRIPT" | grep -v grep | cut -d' ' -f1 | head -n1`
+ echo "killing process [$PID]"
+ kill -9 $PID
+}
+
+case "$1" in
+	start)
+		echo "Starting RPI"
+		NB_PROCESS=`ps ax | grep $RPI_SCRIPT | grep -v grep | wc -l`
+		if [ $NB_PROCESS -eq 0 ]; then
+			do_start
+		else
+			echo "ERROR: feedwriter is already running"
+		fi
+	;;
+	stop)
+		echo -n "Stopping feedwriter: "
+		do_stop
+		echo "stopped"
+	;;
+
+	restart)
+ 		echo -n "Restarting feedwriter"
+		do_stop
+		sleep 1
+		do_start
+	;;
+	
+	status)
+		debug "status:"
+		NB_PROCESS=`ps ax | grep $RPI_SCRIPT | grep -v grep | wc -l`
+		debug "NB_PROCESS: $NB_PROCESS"
+		if [ $NB_PROCESS -gt 1 ]; then
+			echo "WARNING: multiple $RPI_SCRIPT processes found !"
+		elif [ $NB_PROCESS -eq 1 ]; then
+			echo "running"
+		else
+			echo "stopped"
+		fi
+	;;
+
+	kill)
+		kill_script
+	;;
+ *)
+	PROG_NAME=`basename $0`
+	echo "Usage: $PROG_NAME {start|stop|restart|status|kill}"
+	exit 1
+esac
+
+exit 0
+

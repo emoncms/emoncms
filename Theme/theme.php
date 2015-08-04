@@ -9,14 +9,13 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $path,$fullwidth,$emoncms_version;
+  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version;
 ?>
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Emoncms</title>
-
+        <title>Emoncms - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
         <link rel="shortcut icon" href="<?php echo $path; ?>Theme/favicon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -26,22 +25,62 @@
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Theme/emon.css" rel="stylesheet">
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     </head>
-
     <body>
         <div id="wrap">
         <div class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
+<?php  if ($menucollapses) { ?>
+                    <style>
+                        /* this is menu colapsed */
+                        @media (max-width: 979px){
+                          .menu-description {
+                            display: inherit !important ;
+                          }
+                        }
+                        @media (min-width: 980px) and (max-width: 1200px){
+                          .menu-text {
+                            display: none !important;
+                          }
+                        }
+                    </style>
                     <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <img src="<?php echo $path; ?>Theme/favicon.png" style="width:28px;"/>
                     </button>
+
                     <div class="nav-collapse collapse">
-                      <?php if (!isset($runmenu)) $runmenu = '';
-                            echo $mainmenu.$runmenu;
-                      ?>
+<?php } else { ?>
+                        <style>
+                            @media (max-width: 1200px){
+                              .menu-text {
+                                display: none !important;
+                              }
+                            }
+                            @media (max-width: 480px){
+                              .menu-dashboard {
+                                display: none !important;
+                              }
+                            }
+
+                            @media (max-width: 320px){
+                              .menu-extra {
+                                display: none !important;
+                              }
+                            }
+                        </style>
+<?php } ?>
+                    <?php if (!isset($runmenu)) $runmenu = '';
+                        echo $mainmenu.$runmenu;
+                    ?>
+<?php
+    if ($menucollapses) {
+?>
                     </div>
+<?php
+    }
+?>
                 </div>
             </div>
         </div>
@@ -57,18 +96,20 @@
         <?php } ?>
 
         <?php
-          if (!isset($fullwidth)) $fullwidth = false;
-          if (!$fullwidth) {
+          if ($fullwidth && $route->controller=="dashboard") {
         ?>
-
+        <div>
+            <?php echo $content; ?>
+        </div>
+        <?php } else if ($fullwidth) { ?>
+        <div class = "container-fluid"><div class="row-fluid"><div class="span12">
+            <?php echo $content; ?>
+        </div></div></div>
+        <?php } else { ?>
         <div class="container">
             <?php echo $content; ?>
         </div>
-
-        <?php } else { ?>
-            <?php echo $content; ?>
         <?php } ?>
-
 
         <div style="clear:both; height:60px;"></div>
         </div>
@@ -78,9 +119,7 @@
             <a href="http://openenergymonitor.org">openenergymonitor.org</a>
             <span> | <?php echo $emoncms_version; ?></span>
         </div>
-
-        <script src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+        <script type="text/javascript">(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-227875-4','auto');ga('require', 'linkid', 'linkid.js');ga(function(e){ga('set','screenName','<?php echo $route->controller.'/'.$route->action.'/'.$route->subaction;?>');ga('set','dimension1',e.get('clientId'));ga('set','dimension2','<?php echo $session['lang'];?>');ga('set','&uid',window.location.host+'|<?php echo $session['userid'].'|'.$session['username'];?>');ga('set','appName','EmonCMS');ga('set','appVersion','<?php echo $emoncms_version;?>');	ga('send','screenview');ga('send', 'timing', 'main', 'pageview', '<?php echo microtime(true)-$ltime;?>', 'LoadTime', {'page': '<?php echo $route->controller.'/'.$route->action.'/'.$route->subaction;?>'});});</script>
     </body>
-
 </html>

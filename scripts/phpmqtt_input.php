@@ -34,15 +34,15 @@
     
     chdir("/var/www/emoncms");
     
-    require "Modules/log/EmonLogger.php";
+    require "Lib/EmonLogger.php";
     
     require "process_settings.php";
     $mysqli = @new mysqli($server,$username,$password,$database);
     $redis = new Redis();
-    $redis->connect("127.0.0.1");
+    $redis->connect($redis_server);
     
     require("Lib/phpMQTT.php");
-    $mqtt = new phpMQTT("127.0.0.1", 1883, "Emoncms input subscriber");
+    $mqtt = new phpMQTT($mqtt_server, 1883, "Emoncms input subscriber");
     
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
@@ -53,7 +53,7 @@
     require "Modules/input/input_model.php"; // 295
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/input/process_model.php"; // 886
+    require "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed);
   
     if(!$mqtt->connect()){

@@ -45,8 +45,7 @@ function languagecode_to_name($langs) {
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
 
-<div class="row">
-
+<div class="row-fluid">
     <div class="span4">
         <h3><?php echo _('My account'); ?></h3>
 
@@ -109,12 +108,10 @@ function languagecode_to_name($langs) {
         </div>
         
     </div>
-
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
     </div>
-
 </div>
 
 <script>

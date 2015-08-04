@@ -16,6 +16,8 @@ class Histogram
         $this->mysqli = $mysqli;
     }
 
+// #### \/ Below are required methods
+
     /**
      * Creates a histogram type mysql table.
      *
@@ -31,6 +33,16 @@ class Histogram
 
         return true;
     }
+
+    public function get_meta($feedid)
+    {
+
+    }
+
+// #### /\ Above are required methods
+
+
+// #### \/ Below engine public specific methods
 
     /**
      * Get total kwh used at different powers over a time window
@@ -128,10 +140,6 @@ class Histogram
         return $out;
     }
 
-    public function get_meta($feedid)
-    {
-    
-    }
     
     public function csv_export($feedid,$start,$end,$outinterval)
     {

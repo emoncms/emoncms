@@ -9,9 +9,12 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine on
  
+  #RewriteBase /sites/emon/
+
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_FILENAME} !-s
   # Skip rewrites for known files, folders and 4xx/5xx errors so we know if something is wrong
   RewriteCond %{REQUEST_URI} !=/favicon.ico
   RewriteCond %{REQUEST_URI} !=/robots.txt
@@ -20,7 +23,7 @@ DirectoryIndex index.php
   RewriteCond %{REQUEST_URI} !^/?Modules.*$
   RewriteCond %{REQUEST_URI} !^/?scripts.*$
   RewriteCond %{REQUEST_URI} !^/?Theme.*$
-  RewriteCond %{ENV:REDIRECT_STATUS} !=[45]0[0-9]
+  RewriteCond %{ENV:REDIRECT_STATUS} ![45]0[0-9]
   RewriteRule ^(.*)$ index.php?q=$1 [L,QSA]
 </IfModule>
 
@@ -151,9 +154,9 @@ AddDefaultCharset utf-8
 # You should leave the following uncommented, as you shouldn't allow anyone to
 # surf through every directory on your server (which may includes rather private
 # places such as the CMS's directories).
-
+# CHAVEIRO: documentation needs this disabled
 <IfModule mod_autoindex.c>
-    Options -Indexes
+#    Options -Indexes
 </IfModule>
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

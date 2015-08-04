@@ -1,5 +1,4 @@
 <?php
-
     /*
 
     All Emoncms code is released under the GNU Affero General Public License.
@@ -12,10 +11,7 @@
 
     */
     
-    $emoncms_version = "XT 8.5.2 | 2015.07.06";
-    
     $ltime = microtime(true);
-
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
@@ -24,25 +20,26 @@
     require "route.php";
     require "locale.php";
 
-    $path = get_application_path();
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9 preview | 2015.08.03";
 
-    require "Modules/log/EmonLogger.php";
+    $path = get_application_path();
+    require "Lib/EmonLogger.php";
+
 
     // 2) Database
-    $mysqli = @new mysqli($server,$username,$password,$database);
-
-    if (class_exists('Redis') && $redis_enabled) {
+    if ($redis_enabled) {
         $redis = new Redis();
-        $connected = $redis->connect("127.0.0.1");
+        $connected = $redis->connect($redis_server);
         if (!$connected) {
-            echo "Can't connect to redis database, it may be that redis-server is not installed or started see readme for redis installation"; die;
+            echo "Can't connect to redis at $redis_server, it may be that redis-server is not installed or started see readme for redis installation"; die;
         }
     } else {
         $redis = false;
     }
     
     $mqtt = false;
-    
+
+    $mysqli = @new mysqli($server,$username,$password,$database);
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {
@@ -111,7 +108,7 @@
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if (!$output['content'] && $public_profile_enabled && $route->controller!='admin')
+    if ($output['content'] == "#UNDEFINED#" && $public_profile_enabled && $route->controller!='admin')
     {
         $userid = $user->get_id($route->controller);
         if ($userid) {
@@ -121,11 +118,19 @@
             $session['read'] = 1;
             $session['profile'] = 1;
             $route->action = $public_profile_action;
-            $output = controller($public_profile_controller);
+            $route->controller = $public_profile_controller;
+            $output = controller($route->controller);
         }
     }
 
-    // $mysqli->close();
+    // If no controller found or nothing is returned, give friendly error
+    if ($output['content'] === "#UNDEFINED#") {
+        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
+        $output['content'] = "ERROR: URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
+    }
+
+    $output['route'] = $route;
+    $output['session'] = $session;
 
     // 7) Output
     if ($route->format == 'json')
@@ -155,6 +160,10 @@
     {
         header('Content-Type: text');
         print $output['content'];
+    }
+    else {
+        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
+        print "ERROR: URI not acceptable. Unknown format '".$route->format."'.";
     }
 
     $ltime = microtime(true) - $ltime;

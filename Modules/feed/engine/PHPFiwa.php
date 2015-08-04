@@ -251,6 +251,7 @@ class PHPFiwa
      * @param integer $end The unix timestamp in ms of the end of the data range
      * @param integer $dp The number of data points to return (used by some engines)
     */
+    //CHAVEIRO: this method is deprecated
     public function get_data_basic($feedid,$start,$end,$dp)
     {
         $feedid = intval($feedid);
@@ -387,8 +388,9 @@ class PHPFiwa
                 }
             }
             
-            if ($value!==null) $data[] = array($time0*1000,$value);
-            if ($value===null && $skipmissing===0) $data[] = array($time0*1000,$value);
+            if ($value!==null || $skipmissing===0) {
+                $data[] = array($time0*1000,$value);
+            }
 
             $i++;
         }

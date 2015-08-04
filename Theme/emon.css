@@ -68,7 +68,7 @@ input[type=text][class=variable-name-edit] {
     }
 }
 /* Lastly, apply responsive CSS fixes as necessary */
- @media (max-width: 767px) {
+@media (max-width: 767px) {
     #submenu, #footer {
         margin-left: -20px;
         margin-right: -20px;
@@ -79,4 +79,17 @@ input[type=text][class=variable-name-edit] {
         margin-top:-20px;
         padding-top: 0px;
     }
+}
+
+.menu-text {
+  display: inherit !important;
+}
+
+.menu-description {
+  display: none !important;
+  margin-left: 10px;
+}
+
+.menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
+  display: inherit !important;
 }

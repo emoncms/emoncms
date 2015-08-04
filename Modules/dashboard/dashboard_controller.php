@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function dashboard_controller()
 {
-    global $mysqli, $path, $session, $route, $user;
+    global $mysqli, $session, $route;
 
     require "Modules/dashboard/dashboard_model.php";
     $dashboard = new Dashboard($mysqli);
@@ -28,7 +28,6 @@ function dashboard_controller()
         if ($route->action == "list" && $session['write'])
         {
             $result = view("Modules/dashboard/Views/dashboard_list.php",array());
-            $submenu = view("Modules/dashboard/Views/dashboard_menu.php", array('type'=>"list"));
         }
 
         else if ($route->action == "view")

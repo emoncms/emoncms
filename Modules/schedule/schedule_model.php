@@ -27,12 +27,20 @@ class Schedule
         $this->log = new EmonLogger(__FILE__);
         if (!($timezone === NULL)) $this->timezone = $timezone;
     }
-    
+
     public function exist($id)
     {
         $id = intval($id);
-        $result = $this->mysqli->query("SELECT id FROM schedule WHERE id = '$id'");
-        if ($result->num_rows>0) return true; else return false;
+        static $schedule_exists_cache = array(); // Array to hold the cache
+        if (isset($schedule_exists_cache[$id])) {
+            $scheduleexist = $schedule_exists_cache[$id]; // Retrieve from static cache
+        } else {
+            $result = $this->mysqli->query("SELECT id FROM schedule WHERE id = '$id'");
+            $scheduleexist = $result->num_rows>0;
+            $schedule_exists_cache[$id] = $scheduleexist; // Cache it
+            $this->log->info("exist() $id");
+        }
+        return $scheduleexist; 
     }
     
     public function get($id)
@@ -61,11 +69,17 @@ class Schedule
     
     public function get_expression($id)
     {
-        $id = (int) $id;
-
-        $result = $this->mysqli->query("SELECT `expression`, `timezone` FROM schedule WHERE id = '$id'");
-        $row = $result->fetch_array();
-        $get_expression = array('expression'=>$row['expression'], 'timezone'=>$row['timezone']);
+        $id = (int)$id;
+        static $schedule_exp_cache = array(); // Array to hold the cache
+        if (isset($schedule_exp_cache[$id])) {
+            $get_expression = $schedule_exp_cache[$id]; // Retrieve from static cache
+        } else {
+            $this->log->info("get_expression() $id");
+            $result = $this->mysqli->query("SELECT `expression`, `timezone` FROM schedule WHERE id = '$id'");
+            $row = $result->fetch_array();
+            $get_expression = array('expression'=>$row['expression'], 'timezone'=>$row['timezone']);
+            $schedule_exp_cache[$id] = $get_expression; // Cache it
+        }
         return $get_expression;        
     }
     
@@ -80,8 +94,10 @@ class Schedule
     {
         $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Schedule does not exist');
-        
         $result = $this->mysqli->query("DELETE FROM schedule WHERE `id` = '$id'");
+
+        if (isset($schedule_exists_cache[$id])) { unset($schedule_exists_cache[$id]); } // Clear static cache
+        if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
     }
     
     public function set_fields($id,$fields)
@@ -96,8 +112,11 @@ class Schedule
 
         // Repeat this line changing the field name to add fields that can be updated:
         if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-:]/','',$fields->name)."'";
-        if (isset($fields->expression)) $array[] = "`expression` = '".preg_replace('/[^\/\|\,\w\s-:]/','',$fields->expression)."'";
         if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
+        if (isset($fields->expression)) { 
+            $array[] = "`expression` = '".preg_replace('/[^\/\|\,\w\s-:]/','',$fields->expression)."'"; 
+            if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
+        }
         
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
@@ -121,6 +140,7 @@ class Schedule
     }
     
     public function match($scheduleid, $time) {
+        //$this->log->info("match() $scheduleid, $time");
         $get_expression = $this->get_expression($scheduleid);
         $expression = $get_expression["expression"];
         $exp_timezone = $get_expression["timezone"];
