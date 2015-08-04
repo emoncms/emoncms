@@ -35,6 +35,9 @@
     );
     
     // (OPTIONAL) Used by password reset feature
+    // - optional : 'encryption'=>'ssl'
+    // - optional : 'encryption'=>'tls'
+    // - optional : 'port'=>465 (default: 25)
     $smtp_email_settings = array(
       'host'=>"_SMTP_HOST_",
       'username'=>"_SMTP_USER_",

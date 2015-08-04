@@ -349,8 +349,11 @@ class User
                         return array('success'=>false, 'message'=>"Could not find SwiftMailer - cannot proceed");
                     }
 
-                    $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], 26)
-                    ->setUsername($smtp_email_settings['username'])->setPassword($smtp_email_settings['password']);
+                    $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'])
+                      ->setUsername($smtp_email_settings['username'])
+                      ->setPassword($smtp_email_settings['password']);
+                    if ( isset($smtp_email_settings['encryption']) ) { $transport->setEncryption($smtp_email_settings['encryption']); };
+                    if ( isset($smtp_email_settings['port']) ) { $transport->setPort($smtp_email_settings['port']); };
 
                     $mailer = Swift_Mailer::newInstance($transport);
                     $message = Swift_Message::newInstance()
