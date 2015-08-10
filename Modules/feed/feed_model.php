@@ -465,7 +465,7 @@ class Feed
         
         // Download limit
         $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
-        if ($downloadsize>($this->$settings['csvdownloadlimit_mb']*1048576)) {
+        if ($downloadsize>($this->settings['csvdownloadlimit_mb']*1048576)) {
             $this->log->warn("Feed model: csv download limit exeeded downloadsize=$downloadsize feedid=$feedid");
             return false;
         }
