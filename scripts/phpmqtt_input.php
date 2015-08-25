@@ -59,7 +59,7 @@
     $input = new Input($mysqli,$redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $this->process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
   
     if(!$mqtt->connect()){
         echo "Can't connect to MQTT.\n"; exit(1);
