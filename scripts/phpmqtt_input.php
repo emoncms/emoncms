@@ -37,7 +37,7 @@
     require "process_settings.php";
     
     if (!$mqtt_enabled) { echo "Error: setting must be true: mqtt_enabled\n"; die; }
-    if (!isset($mqtt_server)) echo "Error: mqtt server not configured, check setting: mqtt_server\n";
+    if (!isset($mqtt_server)) { echo "Error: mqtt server not configured, check setting: mqtt_server\n"; die; }
     
     $log = new EmonLogger(__FILE__);
     $log->info("Starting MQTT Input script");
