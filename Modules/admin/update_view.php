@@ -29,7 +29,7 @@
 		echo '<div class="alert alert-success"><p><b>Success:</b> The following changes have been applied</b></p><br>'.$out.'</div>';
 ?>
 <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Check for further updates'); ?></a>
-<?
+<?php
     } else {
 ?>
 <div class="alert alert-success">
