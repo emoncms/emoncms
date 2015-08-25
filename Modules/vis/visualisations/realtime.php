@@ -47,7 +47,7 @@
     var now = (new Date()).getTime();
     var start = now-timeWindow;        // start time
     var end = now;                     // end time
-    data = get_feed_data(feedid,(start-20),(end+20),1,1,1);
+    data = get_feed_data(feedid,(start-10000),(end+10000),1,1,1);
     
     timerget = setInterval(getdp,7500);
     gpu_fast();
@@ -86,7 +86,7 @@
           if (data.length==0 || data[data.length-1][0]!=result.time*1000) {
             data.push([result.time*1000,parseFloat(result.value)]);
           }
-          if (data[0][0]<(start-20)) data.splice(0, 1);
+          if (data.length>0 && data[1][0]<(start)) data.splice(0, 1);
           data.sort();
         }
      });
@@ -118,6 +118,6 @@
       timerget = setInterval(getdp,rate); // change refresh rate
       console.log("realtime timewindow " +timeWindow/1000 + "s get rate "+rate/1000 + "s");
 
-      data = get_feed_data(feedid,(start-20),(end+20),1,1,1);
+      data = get_feed_data(feedid,(start-10000),(end+10000),1,1,1);
     });
     </script>

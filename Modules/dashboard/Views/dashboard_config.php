@@ -19,7 +19,7 @@
     <div class="modal-body">
         <label><?php echo _('Dashboard name: '); ?></label>
         <input type="text" name="name" value="<?php echo $dashboard['name']; ?>" />
-        <label><?php echo _('Menu name: '); ?></label>
+        <label><?php echo _('Alias name: '); ?></label>
         <input type="text" name="alias" value="<?php echo $dashboard['alias']; ?>" />
         <label><?php echo _('Background color: '); ?></label>
         <input type="color" name="backgroundcolor" value="#<?php echo $dashboard['backgroundcolor']; ?>" />
