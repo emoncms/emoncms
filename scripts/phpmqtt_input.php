@@ -29,14 +29,19 @@
     
     define('EMONCMS_EXEC', 1);
 
-    $fp = fopen("runlock", "w");
+    $fp = fopen("/var/lock/phpmqtt_input.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
     
-    chdir("/var/www/emoncms");
-    
+    chdir(dirname(__FILE__)."/../");
     require "Lib/EmonLogger.php";
-    
     require "process_settings.php";
+    
+    if (!$mqtt_enabled) { echo "Error: setting must be true: mqtt_enabled\n"; die; }
+    if (!isset($mqtt_server)) { echo "Error: mqtt server not configured, check setting: mqtt_server\n"; die; }
+    
+    $log = new EmonLogger(__FILE__);
+    $log->info("Starting MQTT Input script");
+    
     $mysqli = @new mysqli($server,$username,$password,$database);
     $redis = new Redis();
     $redis->connect($redis_server);
@@ -46,22 +51,23 @@
     
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
-    
-    include "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis,$feed_settings);
 
-    require "Modules/input/input_model.php"; // 295
+    require_once "Modules/feed/feed_model.php";
+    $feed = new Feed($mysqli,$redis, $feed_settings);
+
+    require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
 
-    require "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed);
+    require_once "Modules/process/process_model.php";
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
   
     if(!$mqtt->connect()){
-	    exit(1);
+        echo "Can't connect to MQTT.\n"; exit(1);
     }
 
+
     $topic = $mqttsettings['basetopic']."/#";
-    print "Subscribing to: ".$topic."\n";
+    echo "Subscribing to: ".$topic."\n";
     
     $topics[$topic] = array("qos"=>0, "function"=>"procmsg");
     $mqtt->subscribe($topics,0);
@@ -71,7 +77,7 @@
     function procmsg($topic,$value)
     { 
         $time = time();
-        print $topic." ".$value."\n";
+        echo $topic." ".$value."\n";
         
         global $mqttsettings, $user, $input, $process, $feed;
         
@@ -119,7 +125,7 @@
                 $dbinputs[$nodeid][$name] = true;
                 $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                print "set_timevalue\n";
+                echo "set_timevalue\n";
             } else {
                 $inputid = $dbinputs[$nodeid][$name]['id'];
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);

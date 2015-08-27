@@ -5,7 +5,7 @@
     // Feed writer for buffered mode
     define('EMONCMS_EXEC', 1);
 
-    $fp = fopen("/var/lock/feedrunlock", "w");
+    $fp = fopen("/var/lock/feedwriter.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
 
     chdir(dirname(__FILE__)."/../");
@@ -17,7 +17,7 @@
     if (!$feed_settings['redisbuffer']['sleep'] || (int)$feed_settings['redisbuffer']['sleep'] < 1) { echo "Error: setting must be > 0 : feed_settings['redisbuffer']['sleep']\n"; die; }
 
     $log = new EmonLogger(__FILE__);
-    $log->info("Starting feedwriter");
+    $log->info("Starting feedwriter script");
 
     $mysqli = @new mysqli($server,$username,$password,$database);
     if ( $mysqli->connect_error ) {  $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }
