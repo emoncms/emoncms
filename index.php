@@ -29,10 +29,17 @@
     // 2) Database
     if ($redis_enabled) {
         $redis = new Redis();
-        $connected = $redis->connect($redis_server);
+        $connected = $redis->connect($redis_server['host'], $redis_server['port']);
         if (!$connected) {
-            echo "Can't connect to redis at $redis_server, it may be that redis-server is not installed or started see readme for redis installation"; die;
+            echo "Can't connect to redis at ".$redis_server['host'].", it may be that redis-server is not installed or started see readme for redis installation"; die;
         }
+        $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix'].':');
+        if ( ! empty( $redis_server['auth'] ) ) {
+    			$auth=$redis->auth( $redis_server['auth'] );
+          if (!$auth) {
+            echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
+          }
+    		}
     } else {
         $redis = false;
     }

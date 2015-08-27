@@ -22,8 +22,12 @@
     $mysqli = new mysqli($server,$username,$password,$database);
 
     $redis = new Redis();
-    $redis->connect("127.0.0.1");
-
+    $redis->connect($redis_server['host'], $redis_server['port']);
+    $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix'].':');
+    if ( ! empty( $redis_server['auth'] ) ) {
+      $redis->auth( $redis_server['auth'] );
+    }
+    
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
 

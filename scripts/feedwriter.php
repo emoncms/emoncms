@@ -24,7 +24,15 @@
 
     if ($redis_enabled) {
         $redis = new Redis();
-        if (!$redis->connect($redis_server)) { $log->error("Could not connect to redis at $redis_server");  die('Check log\n'); }
+        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
+          $log->error("Could not connect to redis at ".$redis_server['host']);  die('Check log\n'); 
+        }
+        $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix'].':');
+        if ( ! empty( $redis_server['auth'] ) ) {
+          if (!$redis->auth( $redis_server['auth'] )) {
+            $log->error("Could not connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
+          }
+    		}
     } else {
         $redis = false;
     }
