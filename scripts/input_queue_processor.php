@@ -13,19 +13,34 @@
 
     define('EMONCMS_EXEC', 1);
 
-    $fp = fopen("runlock", "w");
+    $fp = fopen("/var/lock/input_queue_processor.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
 
-    chdir("/var/www/emoncms");
-
+    chdir(dirname(__FILE__)."/../");
+    require "Lib/EmonLogger.php";
     require "process_settings.php";
-    $mysqli = new mysqli($server,$username,$password,$database);
 
-    $redis = new Redis();
-    $redis->connect($redis_server['host'], $redis_server['port']);
-    $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix'].':');
-    if ( ! empty( $redis_server['auth'] ) ) {
-      $redis->auth( $redis_server['auth'] );
+    if (!$redis_enabled) { echo "Error: setting must be true: redis_enabled\n"; die; }
+    
+    $log = new EmonLogger(__FILE__);
+    $log->info("Starting MQTT Input Queue Processor script");
+
+    $mysqli = @new mysqli($server,$username,$password,$database);
+    if ($mysqli->connect_error) { $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }
+
+    if ($redis_enabled) {
+        $redis = new Redis();
+        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
+            $log->error("Could not connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n'); 
+        }
+        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
+        if (!empty($redis_server['auth'])) {
+            if (!$redis->auth($redis_server['auth'])) { 
+                $log->error("Could not connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
+            }
+        }
+    } else {
+        $redis = false;
     }
     
     require("Modules/user/user_model.php");

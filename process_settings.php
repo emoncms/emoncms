@@ -22,7 +22,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     $error_out = "";
 
-    if (!isset($config_file_version) || $config_file_version < 4) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
+    if (!isset($config_file_version) || $config_file_version < 5) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';
@@ -34,7 +34,11 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($redis_enabled) ) $redis_enabled = false;
     if ($redis_enabled) {
         if (!class_exists('Redis')) $error_out .= "<p>redis enabled but not installed, check setting: redis_enabled</p>";
-        if (!isset($redis_server)) $error_out .= "<p>redis server not configured, check setting: redis_server</p>";
+        if (!isset($redis_server['host'])) $error_out .= "<p>redis server not configured, check setting: redis_server.host</p>";
+        if (!isset($redis_server['port'])) $error_out .= "<p>redis server not configured, check setting: redis_server.port</p>";
+        if (!isset($redis_server['auth'])) $error_out .= "<p>redis server not configured, check setting: redis_server.auth</p>";
+        if (!isset($redis_server['prefix'])) $error_out .= "<p>redis server not configured, check setting: redis_server.prefix</p>";
+        if (!empty($redis_server['prefix'])) $redis_server['prefix'] = $redis_server['prefix'] . ":";
         if (!isset($feed_settings['redisbuffer']['enabled'])) $feed_settings['redisbuffer'] = array('enabled'=>false);
         if (!$feed_settings['redisbuffer']['sleep']) $feed_settings['redisbuffer']['sleep'] = 60;
         if ((int)$feed_settings['redisbuffer']['sleep'] < 1) $error_out .= "<p>buffered writing sleep interval must be > 0, check settings: settings['redisbuffer']['sleep']";

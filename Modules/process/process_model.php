@@ -34,15 +34,15 @@ class Process
         $this->feed = $feed;
         $this->log = new EmonLogger(__FILE__);
         if (!($timezone === NULL)) $this->timezone = $timezone;
-     
+
         if (@include_once "Modules/schedule/schedule_model.php") { // false if not found
             $this->schedule = new Schedule($mysqli, $this->timezone);
         }
-        
+
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
         global $mqtt_enabled, $mqtt_server, $mqtt;
-        if (isset($mqtt_enabled) && $mqtt_enabled == true & $mqtt == false)
+        if ($mqtt_enabled == true && $mqtt == false)
         {
             require("Lib/phpMQTT.php");
             $mqtt = new phpMQTT($mqtt_server, 1883, "Emoncms Publisher");
