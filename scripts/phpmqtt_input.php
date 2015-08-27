@@ -44,7 +44,8 @@
     
     $mysqli = @new mysqli($server,$username,$password,$database);
     $redis = new Redis();
-    $redis->connect($redis_server);
+    $redis->connect($redis_server['host'], $redis_server['port']);
+    $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix'].':');
     
     require("Lib/phpMQTT.php");
     $mqtt = new phpMQTT($mqtt_server, 1883, "Emoncms input subscriber");
@@ -59,7 +60,7 @@
     $input = new Input($mysqli,$redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
+    $this->process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
   
     if(!$mqtt->connect()){
         echo "Can't connect to MQTT.\n"; exit(1);

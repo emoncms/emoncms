@@ -11,7 +11,10 @@
 
 //2 #### Redis
     $redis_enabled = false;
-    $redis_server = "127.0.0.1";
+    $redis_server = array( 'host'   => 'localhost',
+                           'port'   => 6379,
+                           'auth'   => '',
+                           'prefix' => 'emoncms');
 
 
 //3 #### MQTT

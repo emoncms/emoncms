@@ -24,7 +24,10 @@
 
     if ($redis_enabled) {
         $redis = new Redis();
-        if (!$redis->connect($redis_server)) { $log->error("Could not connect to redis at $redis_server");  die('Check log\n'); }
+        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
+          $log->error("Could not connect to redis at $redis_server");  die('Check log\n'); 
+        }
+        $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix'].':');
     } else {
         $redis = false;
     }
