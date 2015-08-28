@@ -26,8 +26,8 @@
                  'db_stat' => $mysqli->stat(),
                  'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
 
-                 'redis_server' => $redis_server,       
-                 'redis_ip' => gethostbyname($redis_server),
+                 'redis_server' => $redis_server['host'].":".$redis_server['port'],
+                 'redis_ip' => gethostbyname($redis_server['host']),
                  'feedwriter' => !empty($feedwriterproc),
 
                  'mqtt_server' => $mqtt_server,       

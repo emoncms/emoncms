@@ -43,8 +43,22 @@
     $log->info("Starting MQTT Input script");
     
     $mysqli = @new mysqli($server,$username,$password,$database);
-    $redis = new Redis();
-    $redis->connect($redis_server);
+    if ($mysqli->connect_error) { $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }
+
+    if ($redis_enabled) {
+        $redis = new Redis();
+        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
+            $log->error("Could not connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n'); 
+        }
+        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
+        if (!empty($redis_server['auth'])) {
+            if (!$redis->auth($redis_server['auth'])) { 
+                $log->error("Could not connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
+            }
+        }
+    } else {
+        $redis = false;
+    }
     
     require("Lib/phpMQTT.php");
     $mqtt = new phpMQTT($mqtt_server, 1883, "Emoncms input subscriber");

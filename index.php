@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9 RC | 2015.08.25";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9 RC | 2015.08.28";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -29,9 +29,13 @@
     // 2) Database
     if ($redis_enabled) {
         $redis = new Redis();
-        $connected = $redis->connect($redis_server);
-        if (!$connected) {
-            echo "Can't connect to redis at $redis_server, it may be that redis-server is not installed or started see readme for redis installation"; die;
+        $connected = $redis->connect($redis_server['host'], $redis_server['port']);
+        if (!$connected) { echo "Can't connect to redis at ".$redis_server['host'].":".$redis_server['port']." , it may be that redis-server is not installed or started see readme for redis installation"; die; }
+        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
+        if (!empty($redis_server['auth'])) {
+            if (!$redis->auth($redis_server['auth'])) {
+                echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
+            }
         }
     } else {
         $redis = false;
