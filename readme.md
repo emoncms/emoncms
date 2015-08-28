@@ -8,9 +8,11 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Branches
 
-* [New: v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focuses emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api has been improved and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module.
+* [v9.0](https://github.com/emoncms/emoncms/tree/9.0) - see [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* [New: low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The latest version of the low write version of emoncms designed for running on SD cards. v8.5 includes the new data request api and default data viewer as found in the main v8.5 version, It also supports the new app and nodes module. Low-write-v8.5 is the version of emoncms installed on the emonpi. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. Data is written to disk at spaced out intervals allowing datapoints to buffer and be written to disk in larger blocks.
+* [v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focused emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api was improved and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module.
+
+* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The current emonpi/emonbase emoncms version. Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set.
 
 **Optional modules**
 
@@ -42,6 +44,8 @@ There are many other modules such as the event module and openbem (open source b
 * [Backup](docs/Backup.md)
 
 ## Development
+
+**v9 Development [http://openenergymonitor.org/emon/node/11009](http://openenergymonitor.org/emon/node/11009)**
 
 **Development plan overview: [Github: Emoncms development overview](https://github.com/emoncms/emoncms/issues/244)** (Out of date but pre v8.5)
 
