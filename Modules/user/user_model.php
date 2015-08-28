@@ -54,10 +54,11 @@ class User
             $session['admin'] = 0;
             $session['editmode'] = TRUE;
             $session['lang'] = "en"; // API access is always in english
+            $session['username'] = "API"; // TBD
         }
         else
         {
-            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_write='$apikey_in'");
+            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_write='$apikey_in'");
             if ($result->num_rows == 1)
             {
                 $row = $result->fetch_array();
@@ -70,13 +71,13 @@ class User
                     $session['admin'] = 0;
                     $session['editmode'] = TRUE;
                     $session['lang'] = "en"; // API access is always in english
-
+                    $session['username'] = $row['username'];
                     if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$row['id']);
                 }
             }
             else
             {
-            $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
+            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_read='$apikey_in'");
             if ($result->num_rows == 1)
             {
                 $row = $result->fetch_array();
@@ -89,6 +90,7 @@ class User
                     $session['admin'] = 0;
                     $session['editmode'] = TRUE;
                     $session['lang'] = "en";  // API access is always in english
+                    $session['username'] = $row['username'];
                 }
             }
             }
@@ -578,7 +580,7 @@ class User
     public function get_number_of_users()
     {
         $result = $this->mysqli->query("SELECT COUNT(*) FROM users");
-	$row = $result->fetch_row();
+        $row = $result->fetch_row();
         return $row[0];
     }
 }
