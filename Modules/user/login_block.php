@@ -177,7 +177,7 @@ function login(){
 
     if (result.success)
     {
-        window.location.href = path+"user/view";
+        window.location.reload(true);
     }
     else
     {
