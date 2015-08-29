@@ -26,7 +26,7 @@ class Rememberme {
     const TOKEN_VALID    =  1,
           USER_NOT_FOUND =  0,
           TOKEN_INVALID  = -1,
-		  TOKEN_EXPIRED  = -2;
+          TOKEN_EXPIRED  = -2;
 
     public function __construct($mysqli)
     {
@@ -53,7 +53,7 @@ class Rememberme {
                 $loginResult = $cookieValues[0];
                 break;
             case self::TOKEN_INVALID:
-				// Invalid tokens are impossible on normal use, can be an hack attemp so remove all token for that user.
+                // Invalid tokens are impossible on normal use, can be an hack attemp so remove all token for that user.
                 setcookie($this->cookieName,"",time() - $this->expireTime,$this->path,$this->domain,$this->secure,$this->httpOnly);
                 $this->lastLoginTokenWasInvalid = true;
                 if($this->cleanStoredTokensOnInvalidResult) {
@@ -143,11 +143,11 @@ class Rememberme {
     private function findToken($userid, $token) {
         // We don't store the sha1 as binary values because otherwise we could not use
         // proper XML test data
-		$now = date("Y-m-d H:i:s", time());
+        $now = date("Y-m-d H:i:s", time());
         $sql = "SELECT IF(SHA1('$token') = token, 1, -1) AS token_match, " .
-		             " IF(expire < '$now', 1, -1) AS token_expired " .
-                     "FROM rememberme WHERE userid='$userid' LIMIT 1 ";
-					 
+               " IF(expire < '$now', 1, -1) AS token_expired " .
+               "FROM rememberme WHERE userid='$userid' LIMIT 1 ";
+                     
         $result = $this->mysqli->query($sql);
         $row = $result->fetch_array();
         if(count($result) != 1) {
@@ -156,9 +156,9 @@ class Rememberme {
         elseif ($row['token_match'] == 1 && $row['token_expired'] == -1) {
             return self::TOKEN_VALID;
         }
-		elseif ($row['token_expired'] == 1) {
-			return self::TOKEN_EXPIRED;
-		}
+        elseif ($row['token_expired'] == 1) {
+            return self::TOKEN_EXPIRED;
+        }
         else {
             return self::TOKEN_INVALID;
         }
@@ -168,16 +168,16 @@ class Rememberme {
             $date = date("Y-m-d H:i:s", $expire);
             $this->mysqli->query("INSERT INTO rememberme (userid, token, expire) VALUES ('$userid', SHA1('$token'), '$date')");
     }
-	
+
     private function updateTokenExpire($userid, $token, $expire) {
             $date = date("Y-m-d H:i:s", $expire);
             $this->mysqli->query("UPDATE rememberme SET expire='$date' WHERE userid='$userid' AND token=SHA1('$token')");
     }
     
-	private function deleteToken($userid,$token) {
+    private function deleteToken($userid,$token) {
             $this->mysqli->query("DELETE FROM rememberme WHERE userid='$userid' AND token=SHA1('$token')");
     }
-	
+
     private function deleteTokenUser($userid) {
             $this->mysqli->query("DELETE FROM rememberme WHERE userid='$userid'");
     }
