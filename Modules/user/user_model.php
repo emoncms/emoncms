@@ -75,20 +75,20 @@ class User
             }
             else
             {
-            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_read='$apikey_in'");
-            if ($result->num_rows == 1)
-            {
-                $row = $result->fetch_array();
-                if ($row['id'] != 0)
+                $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_read='$apikey_in'");
+                if ($result->num_rows == 1)
                 {
-                    $session['userid'] = $row['id'];
-                    $session['read'] = 1;
-                    $session['write'] = 0;
-                    $session['admin'] = 0;
-                    $session['lang'] = "en";  // API access is always in english
-                    $session['username'] = $row['username'];
+                    $row = $result->fetch_array();
+                    if ($row['id'] != 0)
+                    {
+                        $session['userid'] = $row['id'];
+                        $session['read'] = 1;
+                        $session['write'] = 0;
+                        $session['admin'] = 0;
+                        $session['lang'] = "en";  // API access is always in english
+                        $session['username'] = $row['username'];
+                    }
                 }
-            }
             }
         }
 
@@ -113,17 +113,29 @@ class User
                 if ($loginresult)
                 {
                     // Remember me login
-                    $_SESSION['userid'] = $loginresult;
-                    $_SESSION['read'] = 1;
-                    $_SESSION['write'] = 1;
-                    // There is a chance that an attacker has stolen the login token, so we store
-                    // the fact that the user was logged in via RememberMe (instead of login form)
-                    $_SESSION['cookielogin'] = true;
+                    $result = $this->mysqli->query("SELECT id,username,admin,language FROM users WHERE id = '$loginresult'");
+                    if ($result->num_rows < 1) {
+                        $this->logout(); // user id does not exist
+                    } else {
+						$userData = $result->fetch_object();
+                        if ($userData->id != 0)
+                        {
+                            $_SESSION['userid'] = $userData->id;
+                            $_SESSION['username'] = $userData->username;
+                            $_SESSION['read'] = 1;
+                            $_SESSION['write'] = 1;
+                            //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
+                            $_SESSION['lang'] = $userData->language;
+                            // There is a chance that an attacker has stolen the login token, so we store
+                            // the fact that the user was logged in via RememberMe (instead of login form)
+                            $_SESSION['cookielogin'] = true;
+                        }
+                    }
                 }
                 else
                 {
                     if($this->rememberme->loginTokenWasInvalid()) {
-                        // Stolen
+                        $this->logout(); // Stolen
                     }
                 }
             }
@@ -134,7 +146,7 @@ class User
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
-        if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = '';
+        if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
 
         return $session;

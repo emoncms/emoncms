@@ -60,7 +60,7 @@ function controller($controller_name)
             bind_textdomain_codeset($domain, 'UTF-8');
             textdomain($domain);
 
-            require $controllerScript;
+            require_once $controllerScript;
             $output = $controller();
         }
     }
