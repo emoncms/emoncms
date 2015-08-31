@@ -117,7 +117,7 @@ class User
                     if ($result->num_rows < 1) {
                         $this->logout(); // user id does not exist
                     } else {
-						$userData = $result->fetch_object();
+                        $userData = $result->fetch_object();
                         if ($userData->id != 0)
                         {
                             $_SESSION['userid'] = $userData->id;

@@ -19,7 +19,7 @@ function user_controller()
     global $user, $path, $session, $route , $enable_multi_user;
 
     $result = false;
-	
+
     $allowusersregister = true;
     // Disables further user creation after first admin user is created
     if ($enable_multi_user===false && $user->get_number_of_users()>0) {
