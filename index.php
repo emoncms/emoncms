@@ -78,7 +78,8 @@
         $session = $user->apikey_session($apikey);
         if (empty($session)) {
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
-              print "No access. Invalid API key.";
+              header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
+              print "Invalid API key";
               exit();
         }
     } else {
