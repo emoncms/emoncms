@@ -285,22 +285,31 @@ class MysqlTimeSeries
 
     public function csv_export($feedid,$start,$end,$outinterval)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator, $data_sampling;
 
-        //echo $feedid;
-        $outinterval = intval($outinterval);
+        $interval = intval($outinterval);
         $feedid = intval($feedid);
-        $start = round($start/1000);
-        $end = round($end/1000);
-        
-        if ($outinterval<1) $outinterval = 1;
-        $dp = ceil(($end - $start) / $outinterval);
-        $end = $start + ($dp * $outinterval);
-        if ($dp<1) return false;
+        $start = round($start);
+        $end = round($end);
+        $skipmissing = 0;
 
+        if ($interval<1) $interval = 1;
+        $dp = ceil(($end - $start) / $interval); // datapoints for desied range with set interval time gap
+        $end = $start + ($dp * $interval);
+        if ($dp<1) return false;
         if ($end == 0) $end = time();
+        
+        // Check if datatype is daily so that select over range is used rather than skip select approach
+        static $feed_datatype_cache = array(); // Array to hold the cache
+        if (isset($feed_datatype_cache[$feedid])) {
+            $datatype = $feed_datatype_cache[$feedid]; // Retrieve from static cache
+        } else {
+            $result = $this->mysqli->query("SELECT datatype FROM feeds WHERE `id` = '$feedid'");
+            $row = $result->fetch_array();
+            $datatype = $row['datatype'];
+            $feed_datatype_cache[$feedid] = $datatype; // Cache it
+        }
+        if ($datatype==2) $dp = 0;
 
         $feedname = "feed_".trim($feedid)."";
 
@@ -318,13 +327,11 @@ class MysqlTimeSeries
 
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
-
-        $data = array();
-        $range = $end - $start;
-        if ($range > 180000 && $dp > 0) // 50 hours
+        $range = $end - $start; // window duration in seconds
+        if ($data_sampling && $range > 180000 && $dp > 0) // 50 hours
         {
-            $td = $range / $dp;
-            $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? LIMIT 1");
+            $td = $range / $dp; // time duration for each datapoint
+            $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
             $t = $start; $tb = 0;
             $stmt->bind_param("ii", $t, $tb);
             $stmt->bind_result($dataTime, $dataValue);
@@ -333,18 +340,17 @@ class MysqlTimeSeries
                 $tb = $start + intval(($i+1)*$td);
                 $stmt->execute();
                 if ($stmt->fetch()) {
-                    if ($dataValue!=NULL) { // Remove this to show white space gaps in graph
-                        $time = $dataTime * 1000;
-                        fwrite($exportfh, $dataTime.$csv_field_separator.number_format($dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                    if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
+                        fwrite($exportfh, $dataTime.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                     }
                 }
                 $t = $tb;
             }
         } else {
-            if ($range > 5000 && $dp > 0)
+            if ($range > 5000 && $dp > 0) // 83.33 min
             {
                 $td = intval($range / $dp);
-                $sql = "SELECT FLOOR(time/$td) AS time, AVG(data) AS data".
+                $sql = "SELECT time DIV $td AS time, AVG(data) AS data".
                     " FROM $feedname WHERE time BETWEEN $start AND $end".
                     " GROUP BY 1 ORDER BY time ASC";
             } else {
@@ -352,19 +358,18 @@ class MysqlTimeSeries
                 $sql = "SELECT time, data FROM $feedname".
                     " WHERE time BETWEEN $start AND $end ORDER BY time ASC";
             }
-
             $result = $this->mysqli->query($sql);
             if($result) {
                 while($row = $result->fetch_array()) {
                     $dataValue = $row['data'];
-                    if ($dataValue!=NULL) { // Remove this to show white space gaps in graph
-                        $time = $row['time'] * 1000 * $td;
-                        fwrite($exportfh, $dataTime.$csv_field_separator.number_format($dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                    if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
+                        $time = $row['time'] * $td;
+                        fwrite($exportfh, $time.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                     }
                 }
             }
         }
-        
+
         fclose($exportfh);
         exit;
     }
