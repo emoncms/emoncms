@@ -77,7 +77,7 @@
     // ability to create further users after the first user has been created
     $enable_multi_user = false;
 
-    // Enable remember me feature - needs more testing
+    // Enable remember me feature
     $enable_rememberme = true;
 
     // Allow user to reset his password

@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $allowusersregister, $enable_rememberme, $enable_password_reset;
+global $path, $enable_rememberme, $enable_password_reset;
 
 ?>
 <style>
@@ -177,7 +177,7 @@ function login(){
 
     if (result.success)
     {
-        window.location.href = path+"user/view";
+        window.location.reload(true);
     }
     else
     {

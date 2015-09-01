@@ -14,21 +14,22 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
-
     private $mysqli;
     private $rememberme;
     private $enable_rememberme = false;
     private $redis;
     private $log;
 
-    public function __construct($mysqli,$redis,$rememberme)
+    public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
         global $enable_rememberme;
         $this->enable_rememberme = $enable_rememberme;
 
         $this->mysqli = $mysqli;
-        $this->rememberme = $rememberme;
+
+        require "Modules/user/rememberme_model.php";
+        $this->rememberme = new Rememberme($mysqli);
 
         $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
@@ -52,7 +53,6 @@ class User
             $session['read'] = 1;
             $session['write'] = 1;
             $session['admin'] = 0;
-            $session['editmode'] = TRUE;
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = "API"; // TBD
         }
@@ -64,12 +64,10 @@ class User
                 $row = $result->fetch_array();
                 if ($row['id'] != 0)
                 {
-                    //session_regenerate_id();
                     $session['userid'] = $row['id'];
                     $session['read'] = 1;
                     $session['write'] = 1;
                     $session['admin'] = 0;
-                    $session['editmode'] = TRUE;
                     $session['lang'] = "en"; // API access is always in english
                     $session['username'] = $row['username'];
                     if ($this->redis) $this->redis->set("writeapikey:$apikey_in",$row['id']);
@@ -77,22 +75,20 @@ class User
             }
             else
             {
-            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_read='$apikey_in'");
-            if ($result->num_rows == 1)
-            {
-                $row = $result->fetch_array();
-                if ($row['id'] != 0)
+                $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_read='$apikey_in'");
+                if ($result->num_rows == 1)
                 {
-                    //session_regenerate_id();
-                    $session['userid'] = $row['id'];
-                    $session['read'] = 1;
-                    $session['write'] = 0;
-                    $session['admin'] = 0;
-                    $session['editmode'] = TRUE;
-                    $session['lang'] = "en";  // API access is always in english
-                    $session['username'] = $row['username'];
+                    $row = $result->fetch_array();
+                    if ($row['id'] != 0)
+                    {
+                        $session['userid'] = $row['id'];
+                        $session['read'] = 1;
+                        $session['write'] = 0;
+                        $session['admin'] = 0;
+                        $session['lang'] = "en";  // API access is always in english
+                        $session['username'] = $row['username'];
+                    }
                 }
-            }
             }
         }
 
@@ -106,33 +102,41 @@ class User
 
         if ($this->enable_rememberme)
         {
-            // if php session exists
-            if (!empty($_SESSION['userid'])) {
-                // if rememberme emoncms cookie exists but is not valid then
-                // a valid cookie is a cookie who's userid, token and persistant token match a record in the db
-                if(!empty($_COOKIE[$this->rememberme->getCookieName()]) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
-                $this->logout();
+            if (isset($_SESSION['userid'])) {
+                // if session exists and was a remember me login and remember me cookie has expired
+                if ((isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) && !$this->rememberme->cookieIsValid($_SESSION['userid'])) {
+                    $this->logout();
                 }
-            }
-            else
-            {
-
+            } else {
+                // No session exists, try remember me login
                 $loginresult = $this->rememberme->login();
                 if ($loginresult)
                 {
-                // Remember me login
-                $_SESSION['userid'] = $loginresult;
-                $_SESSION['read'] = 1;
-                $_SESSION['write'] = 1;
-                // There is a chance that an attacker has stolen the login token, so we store
-                // the fact that the user was logged in via RememberMe (instead of login form)
-                $_SESSION['cookielogin'] = true;
+                    // Remember me login
+                    $result = $this->mysqli->query("SELECT id,username,admin,language FROM users WHERE id = '$loginresult'");
+                    if ($result->num_rows < 1) {
+                        $this->logout(); // user id does not exist
+                    } else {
+                        $userData = $result->fetch_object();
+                        if ($userData->id != 0)
+                        {
+                            $_SESSION['userid'] = $userData->id;
+                            $_SESSION['username'] = $userData->username;
+                            $_SESSION['read'] = 1;
+                            $_SESSION['write'] = 1;
+                            //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
+                            $_SESSION['lang'] = $userData->language;
+                            // There is a chance that an attacker has stolen the login token, so we store
+                            // the fact that the user was logged in via RememberMe (instead of login form)
+                            $_SESSION['cookielogin'] = true;
+                        }
+                    }
                 }
                 else
                 {
-                if($this->rememberme->loginTokenWasInvalid()) {
-                    // Stolen
-                }
+                    if($this->rememberme->loginTokenWasInvalid()) {
+                        $this->logout(); // Stolen
+                    }
                 }
             }
         }
@@ -142,7 +146,7 @@ class User
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
-        if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = '';
+        if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
 
         return $session;
@@ -168,14 +172,13 @@ class User
         // If we got here the username, password and email should all be valid
 
         $hash = hash('sha256', $password);
-        $string = md5(uniqid(mt_rand(), true));
-        $salt = substr($string, 0, 3);
-        $hash = hash('sha256', $salt . $hash);
+        $salt = md5(uniqid(mt_rand(), true));
+        $password = hash('sha256', $salt . $hash);
 
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$hash', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
+        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$password', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
             return array('success'=>false, 'message'=>_("Error creating user"));
         }
 
@@ -221,7 +224,6 @@ class User
             $_SESSION['write'] = 1;
             $_SESSION['admin'] = $userData->admin;
             $_SESSION['lang'] = $userData->language;
-            $_SESSION['editmode'] = TRUE;
 
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
@@ -268,11 +270,8 @@ class User
     public function logout()
     {
         if ($this->enable_rememberme) $this->rememberme->clearCookie(true);
-        $_SESSION['userid'] = 0;
-        $_SESSION['read'] = 0;
-        $_SESSION['write'] = 0;
-        $_SESSION['admin'] = 0;
-        session_regenerate_id(true);
+        session_unset();
+        //session_regenerate_id(true);
         session_destroy();
     }
 
@@ -294,10 +293,9 @@ class User
         {
             // 2) Save new password
             $hash = hash('sha256', $new);
-            $string = md5(uniqid(rand(), true));
-            $salt = substr($string, 0, 3);
-            $hash = hash('sha256', $salt . $hash);
-            $this->mysqli->query("UPDATE users SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
+            $salt = md5(uniqid(rand(), true));
+            $password = hash('sha256', $salt . $hash);
+            $this->mysqli->query("UPDATE users SET password = '$password', salt = '$salt' WHERE id = '$userid'");
             return array('success'=>true);
         }
         else
@@ -326,12 +324,11 @@ class User
 
                 // Hash and salt
                 $hash = hash('sha256', $newpass);
-                $string = md5(uniqid(rand(), true));
-                $salt = substr($string, 0, 3);
-                $hash = hash('sha256', $salt . $hash);
+                $salt = md5(uniqid(rand(), true));
+                $password = hash('sha256', $salt . $hash);
                 
-                // Save hash and salt
-                $this->mysqli->query("UPDATE users SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
+                // Save password and salt
+                $this->mysqli->query("UPDATE users SET password = '$password', salt = '$salt' WHERE id = '$userid'");
 
                 //------------------------------------------------------------------------------
                 global $enable_password_reset;
@@ -553,8 +550,9 @@ class User
         $name = preg_replace('/[^\w\s-.]/','',$data->name);
         $location = preg_replace('/[^\w\s-.]/','',$data->location);
         $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
-        $language = preg_replace('/[^\w\s-.]/','',$data->language); $_SESSION['lang'] = $language;
         $bio = preg_replace('/[^\w\s-.]/','',$data->bio);
+        $language = preg_replace('/[^\w\s-.]/','',$data->language); 
+        $_SESSION['lang'] = $language;
 
         $result = $this->mysqli->query("UPDATE users SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");
     }

@@ -310,8 +310,9 @@
     var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
     
     if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
-    
-    window.open(path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval);
+    url = path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval;
+    console.log(url);
+    window.open(url);
   });
 
   function parse_timepicker_time(timestr){
