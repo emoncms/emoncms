@@ -28,24 +28,24 @@ global $path, $enable_rememberme, $enable_password_reset;
   <div class="well">
     <img src="<?php echo $path; ?>Theme/emoncms_logo.png" alt="Emoncms" width="256" height="46" />
     <div class="login-container">
-        <form id="login-form" action="javascript:login()">
+        <form id="login-form" action="#" method="post">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Email'); ?>
                         <input type="text" name="email" tabindex="1"/>
                     </label>
                 </div>
-                
+
                 <div class="form-group">
                     <label><?php echo _('Username'); ?>
-                        <input type="text" tabindex="2" name="username"  />
+                        <input type="text" tabindex="2" autocomplete="on" name="username"  />
                     </label>
                 </div>
 
                 <div class="form-group">
                     <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
                     <label><?php echo _('Password'); ?>
-                        <input type="password" tabindex="3" name="password" />
+                        <input type="password" tabindex="3" autocomplete="on" name="password" />
                     </label>
                 </div>
 
@@ -78,7 +78,7 @@ global $path, $enable_rememberme, $enable_password_reset;
                 </div>
 
             </div>
-            
+
             <div id="passwordresetblock" class="collapse">
                 <div class="form-group">
                     <label>Existing account name
@@ -126,7 +126,7 @@ $("#passwordreset-link-cancel").on("click", function(){
 $("#passwordreset-submit").click(function(){
     var username = $("#passwordreset-username").val();
     var email = $("#passwordreset-email").val();
-    
+
     if (email==="" || username==="") {
         $("#passwordresetmessage").html("<div class='alert alert-error'>Please enter username and email address</div>");
     } else {
@@ -168,6 +168,10 @@ $('input[type=text]').on('keypress', function(e) {
     }
 });
 
+$('#login').click(function() {
+  login();
+});
+
 function login(){
     var username = $("input[name='username']").val();
     var password = $("input[name='password']").val();
@@ -177,6 +181,7 @@ function login(){
 
     if (result.success)
     {
+        $('#login-form').submit();
         window.location.reload(true);
     }
     else
