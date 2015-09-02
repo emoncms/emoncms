@@ -32,7 +32,7 @@ class Input
     {
         global $max_node_id_limit;
 
-        if (!ctype_digit($nodeid)) {
+        if (!ctype_digit((string)$nodeid)) {
             return false;
         }
 

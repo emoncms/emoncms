@@ -57,7 +57,7 @@ function dial_widgetlist(){
           [0, "No"]
         ]
 
-  addOption(widgets["dial"], "feed",        "feed",    _Tr("Feed"),        _Tr("Feed value"),                                                            []);
+  addOption(widgets["dial"], "feedid",      "feedid",  _Tr("Feed"),        _Tr("Feed value"),                                                            []);
   addOption(widgets["dial"], "max",         "value",   _Tr("Max value"),   _Tr("Max value to show"),                                                     []);
   addOption(widgets["dial"], "scale",       "value",   _Tr("Scale"),       _Tr("Value is multiplied by scale before display"),                           []);
   addOption(widgets["dial"], "units",       "value",   _Tr("Units"),       _Tr("Units to show"),                                                         []);
@@ -74,10 +74,11 @@ function dial_init(){
 
 function dial_draw(){
   $('.dial').each(function(index) {
-    var feed = $(this).attr("feed");
-    var val = curve_value(feed,dialrate);
+    var feedid = $(this).attr("feedid");
+    if (associd[feedid] === undefined) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
+    var val = curve_value(feedid,dialrate);
     // ONLY UPDATE ON CHANGE
-    if ((val * 1).toFixed(2) != (assoc[feed] * 1).toFixed(2) || redraw == 1)
+    if ((val * 1).toFixed(2) != (associd[feedid]['value'] * 1).toFixed(2) || redraw == 1)
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;

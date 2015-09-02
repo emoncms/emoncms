@@ -22,8 +22,8 @@ function jgauge_widgetlist()
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
       "menu":"Widgets",
-      "options":["feed", "scale", "max", "units"],
-      "optionstype":["feed","value","value","value"],
+      "options":["feedid", "scale", "max", "units"],
+      "optionstype":["feedid","value","value","value"],
       "optionsname":[_Tr("Feed"),_Tr("Scale"),_Tr("Max value"),_Tr("Units")],
       "optionshint":[_Tr("Feed"),_Tr("Scale applied to value"),_Tr("Max value to show"),_Tr("Units to show")]
 
@@ -49,10 +49,11 @@ function jgauge_draw()
 {
   $('.jgauge').each(function(index)
   {
-    var feed = $(this).attr("feed");
-    var val = curve_value(feed,dialrate);
+    var feedid = $(this).attr("feedid");
+    if (associd[feedid] === undefined) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
+    var val = curve_value(feedid,dialrate);
     // ONLY UPDATE ON CHANGE
-    if ((val * 1).toFixed(2) != (assoc[feed] * 1).toFixed(2) || redraw == 1)
+    if ((val * 1).toFixed(2) != (associd[feedid]['value'] * 1).toFixed(2) || redraw == 1)
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
