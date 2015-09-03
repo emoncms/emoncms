@@ -18,14 +18,16 @@
 
 <h2><?php echo _("Feed API");?></h2>
 
-<h3><?php echo _("Apikey authentication");?></h3>
-<p><?php echo _("If you want to call any of the following action's when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY.");?></p>
-<p><b><?php echo _("Read only:");?></b><br>
-<input type="text" style="width:230px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
+<h3><?php echo _('Apikey authentication'); ?></h3>
+<p><?php echo _('If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:'); ?></p>
+<ul><li><?php echo _('Append on the URL of your request: &apikey=APIKEY'); ?></li>
+<li><?php echo _('Use POST parameter: "apikey=APIKEY"'); ?></li>
+<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY"'); ?></li></ul>
+<p><b><?php echo _('Read only:'); ?></b><br>
+<input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
 </p>
-
-<p><b><?php echo _("Read & Write:");?></b><br>
-<input type="text" style="width:230px" readonly="readonly" value="<?php echo $user->get_apikey_write($session['userid']); ?>" />
+<p><b><?php echo _('Read & Write:'); ?></b><br>
+<input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_write($session['userid']); ?>" />
 </p>
 
 <h3><?php echo _("Html");?></h3>

@@ -193,20 +193,24 @@ var designer = {
             options_html += '<div class="input-prepend" style="margin-bottom: 0px;">';
             options_html += '<span class="add-on" style="width:80px; text-align: right;">'+options_name[z]+'</span>';
 
-            if (options_type && options_type[z] == "feed"){
-                //CHAVEIRO TODO: This is to be removed and use feedid only
-                options_html += "<select id='"+box_options[z]+"' class='options' >";
-                for (i in feedlist){
-                    var selected = "";
-                    if (val == feedlist[i]['name'].replace(/\s/g, '-'))
-                        selected = "selected";
-                    options_html += "<option value='"+feedlist[i]['name'].replace(/\s/g, '-')+"' "+selected+" >"+feedlist[i]['id']+": "+feedlist[i]['tag']+":"+feedlist[i]['name']+"</option>";
-                }
-                options_html += "</select>";
-            }
-
-            else if (options_type && options_type[z] == "feedid"){
+            // all feeds
+            if (options_type && options_type[z] == "feedid"){
                 options_html += designer.select_feed(box_options[z],feedlist,0,val);
+            }
+            
+            // realtime feeds only
+            else if (options_type && options_type[z] == "feedid_realtime"){
+                options_html += designer.select_feed(box_options[z],feedlist,1,val);
+            }
+            
+            // daily feeds only
+            else if (options_type && options_type[z] == "feedid_daily"){
+                options_html += designer.select_feed(box_options[z],feedlist,2,val);
+            }
+            
+            // histogram feeds only
+            else if (options_type && options_type[z] == "feedid_hist"){
+                options_html += designer.select_feed(box_options[z],feedlist,3,val);
             }
 
             else if (options_type && options_type[z] == "html"){
@@ -220,7 +224,7 @@ var designer = {
                 for (i in optionsdata[z])
                 {
                     var selected = "";
-                    if (val == optionsdata[z][i][0])
+                    if (val + "" === optionsdata[z][i][0] + "")
                         selected = "selected";
                     options_html += "<option "+selected+" value=\""+optionsdata[z][i][0]+"\">"+optionsdata[z][i][1]+"</option>";
                 }

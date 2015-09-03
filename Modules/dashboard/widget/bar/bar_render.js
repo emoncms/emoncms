@@ -47,7 +47,7 @@ function bar_widgetlist()
 					[0, "Off"]
 				];
 
-	addOption(widgets["bar"], "feed",        "feed",          _Tr("Feed"),            _Tr("Feed value"),                                                                  []);
+	addOption(widgets["bar"], "feedid",      "feedid",        _Tr("Feed"),            _Tr("Feed value"),                                                                  []);
 	addOption(widgets["bar"], "max",         "value",         _Tr("Max value"),       _Tr("Max value to show"),                                                           []);
 	addOption(widgets["bar"], "scale",       "value",         _Tr("Scale"),           _Tr("Value is multiplied by scale before display. Defaults to 1"),                  []);
 	addOption(widgets["bar"], "units",       "value",         _Tr("Units"),           _Tr("Unit type to show after value. Ex: <br>\"{Reading}{unit-string}\""),           []);
@@ -70,10 +70,11 @@ function bar_draw()
 {
 	$('.bar').each(function(index)
 	{
-		var feed = $(this).attr("feed");
-		var val = curve_value(feed,dialrate);
+		var feedid = $(this).attr("feedid");
+		if (associd[feedid] === undefined) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
+		var val = curve_value(feedid,dialrate);
 		// ONLY UPDATE ON CHANGE
-		if ((val * 1).toFixed(2) != (assoc[feed] * 1).toFixed(2) || redraw == 1)
+		if ((val * 1).toFixed(2) != (associd[feedid]['value'] * 1).toFixed(2) || redraw == 1)
 		{
 			var id = "can-"+$(this).attr("id");
 			var scale = 1*$(this).attr("scale") || 1;

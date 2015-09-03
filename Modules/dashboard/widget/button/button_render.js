@@ -16,8 +16,8 @@ function button_widgetlist()
     {
       "offsetx":-40,"offsety":-40,"width":80,"height":80,
       "menu":"Widgets",
-      "options":["feed","value"],
-      "optionstype":["feed","value"],
+      "options":["feedid","value"],
+      "optionstype":["feedid_realtime","value"],
       "optionsname":[_Tr("Feed"),_Tr("Value")],
       "optionshint":[_Tr("Feed to set, control with caution, make sure device being controlled can operate safely in event of emoncms failure."),_Tr("Starting value")]
     }
@@ -31,8 +31,7 @@ function button_widgetlist()
 function button_events()
 {
   $('.button').on("click", function(event) {
-    var feedname = $(this).attr("feed");
-    var feedid = feedids[feedname];
+    var feedid = $(this).attr("feedid");
 
     var invalue = $(this).attr("value");
     if (invalue == 0) outval = 1;
@@ -43,7 +42,7 @@ function button_events()
 
     var id = "can-"+$(this).attr("id");
     draw_button(widgetcanvas[id], outval);
-    assoc[feedname] = outval;
+    associd[feedid]['value'] = outval;
   });
 }
 
@@ -56,8 +55,9 @@ function button_draw()
 {
   $('.button').each(function(index)
   {
-    var feed = $(this).attr("feed");
-    var val = assoc[feed];
+    var feedid = $(this).attr("feedid");
+    if (associd[feedid] === undefined) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
+    var val = associd[feedid]['value']*1;
     var id = "can-"+$(this).attr("id");
     draw_button(widgetcanvas[id], val);
   });
