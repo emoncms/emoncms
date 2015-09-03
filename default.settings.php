@@ -19,7 +19,7 @@
 
 //3 #### MQTT
     // Enable this to try out the experimental MQTT Features:
-    // - updated to feeds are published to topic: emoncms/feed/feedid    
+    // - updated to feeds are published to topic: emoncms/feed/feedid
     $mqtt_enabled = false;
     $mqtt_server = "127.0.0.1";
 
@@ -30,13 +30,13 @@
         // Place a ',' as the first character on all uncommented engines lines but first.
         'engines_hidden'=>array(
             //Engine::MYSQL         // 0  Mysql traditional
-            //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown 
+            //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
             //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
         ),
 
-        // Redis Low-write mode 
+        // Redis Low-write mode
         'redisbuffer'=>array(
             'enabled' => false      // If enabled is true, requires redis enabled and feedwriter service running
             ,'sleep' => 60          // Number of seconds to wait before write buffer to disk
@@ -44,7 +44,7 @@
 
         'csvdownloadlimit_mb' => 10,     // Max csv download size in MB
 
-        // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries 
+        // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
         // On windows or shared hosting you will likely need to specify a different data directory--
         // Make sure that emoncms has write permission's to the datadirectory folders
         'phpfiwa'=>array(
@@ -57,23 +57,23 @@
             'datadir' => '/var/lib/phptimeseries/'
         )
     );
-    
+
     // Max number of allowed inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
 
 
 //5 #### User Interface settings
-    // Theme location
+    // Theme location (special keyword "basic" for the default one, otherwise, specify the theme path)
     $theme = "basic";
 
     // Use full screen width
     $fullwidth = true;
-    
+
     // Main menu collapses on lower screen widths
     $menucollapses = false;
 
     // Enable multi user emoncms.
-    // If set to false, emoncms will automatically remove the register form and 
+    // If set to false, emoncms will automatically remove the register form and
     // ability to create further users after the first user has been created
     $enable_multi_user = false;
 
@@ -107,18 +107,18 @@
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
 
-    
+
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
     $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
-    
+
     // If installed on Emonpi, allow update from admin menu
     $allow_emonpi_update = true;
 
     //experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     $data_sampling = false;
-    
+
     // Show all fatal PHP errors
     $display_errors = true;
 
