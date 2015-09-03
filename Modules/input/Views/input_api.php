@@ -2,7 +2,10 @@
 
 <h2><?php echo _('Input API'); ?></h2>
 <h3><?php echo _('Apikey authentication'); ?></h3>
-<p><?php echo _('If you want to call any of the following actions when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY.'); ?></p>
+<p><?php echo _('If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:'); ?></p>
+<ul><li><?php echo _('Append on the URL of your request: &apikey=APIKEY'); ?></li>
+<li><?php echo _('Use POST parameter: "apikey=APIKEY"'); ?></li>
+<li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY"'); ?></li></ul>
 <p><b><?php echo _('Read only:'); ?></b><br>
 <input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
 </p>
@@ -22,8 +25,8 @@
 
 <p><b><?php echo _('Post data'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('JSON format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?json={power:200}"><?php echo $path; ?>input/post.json?json={power:200}</a></td></tr>
-    <tr><td><?php echo _('CSV format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?csv=100,200,300"><?php echo $path; ?>input/post.json?csv=100,200,300</a></td></tr>
+    <tr><td><?php echo _('JSON format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power:200}"><?php echo $path; ?>input/post.json?<b>node=1</b>&json={power:200}</a></td></tr>
+    <tr><td><?php echo _('CSV format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
     <tr><td><?php echo _('Assign inputs to a node group'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
     <tr><td><?php echo _('Set the input entry time manually'); ?></td><td><a href="<?php echo $path; ?>input/post.json?time=<?php echo time(); ?>&node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>time=<?php echo time(); ?></b>&node=1&csv=100,200,300</a></td></tr>
 </table>
@@ -31,7 +34,7 @@
 <p><b><?php echo _('APIKEY'); ?></b><br>
 <?php echo _('To post data from a remote device you will need to include in the request url your write apikey. This give your device write access to your emoncms account, allowing it to post data.'); ?></p>
 <table class="table">
-    <tr><td><?php echo _('For example using the first json type request above just add the apikey to the end like this:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?json={power:200}&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>"><?php echo $path; ?>input/post.json?json={power:200}<b>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?></b></a></td></tr>
+    <tr><td><?php echo _('For example using the first json type request above just add the apikey to the end like this:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power:200}&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>"><?php echo $path; ?>input/post.json?node=1&json={power:200}<b>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?></b></a></td></tr>
 </table>
 
 <p><b><?php echo _('Bulk data'); ?></b></p>

@@ -19,9 +19,9 @@ function cylinder_widgetlist()
     {
       "offsetx":-80,"offsety":-165,"width":160,"height":330,
       "menu":"Widgets",
-      "options":["topfeed","botfeed"],
-      "optionstype":["feed","feed"],
-      "optionsname":[_Tr("Feed"),_Tr("Feed")],
+      "options":["topfeedid","botfeedid"],
+      "optionstype":["feedid","feedid"],
+      "optionsname":[_Tr("Feed Top"),_Tr("Feed Bottom")],
       "optionshint":[_Tr("Top feed value"),_Tr("Bottom feed value")]
     }
   }
@@ -37,8 +37,11 @@ function cylinder_draw()
 {
   $('.cylinder').each(function(index)
   {
-    var cyl_top = assoc[$(this).attr("topfeed")]*1;
-    var cyl_bot = assoc[$(this).attr("botfeed")]*1;
+    var feedid1 = $(this).attr("topfeedid");
+    var feedid2 = $(this).attr("botfeedid");
+    if ((associd[feedid1] === undefined) || (associd[feedid2] === undefined)) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
+    var cyl_top = associd[feedid1]['value']*1;
+    var cyl_bot = associd[feedid2]['value']*1;
 
     var id = "can-"+$(this).attr("id");
     draw_cylinder(widgetcanvas[id],cyl_bot,cyl_top,$(this).width(),$(this).height());

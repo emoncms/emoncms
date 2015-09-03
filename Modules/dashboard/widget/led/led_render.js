@@ -18,8 +18,8 @@ function led_widgetlist()
     {
       "offsetx":-40,"offsety":-40,"width":80,"height":80,
       "menu":"Widgets",
-      "options":["feed"],
-      "optionstype":["feed"],
+      "options":["feedid"],
+      "optionstype":["feedid"],
       "optionsname":[_Tr("Feed")],
       "optionshint":[_Tr("Feed value")]
     }
@@ -32,12 +32,12 @@ function led_init()
   setup_widget_canvas('led');
 }
 
-function led_draw()
-{
+function led_draw() {
   $('.led').each(function(index)
   {
-    var feed = $(this).attr("feed");
-    var val = assoc[feed];
+    var feedid = $(this).attr("feedid");
+    if (associd[feedid] === undefined) { console.log("Review config for feed id of " + $(this).attr("class")); return; }
+    var val = associd[feedid]['value'] * 1;
     var id = "can-"+$(this).attr("id");
     if (browserVersion < 9)
       draw_led_ie8(widgetcanvas[id], val);
@@ -46,68 +46,50 @@ function led_draw()
   });
 }
 
-function led_slowupdate()
-{
+function led_slowupdate() {
   led_draw();
 }
 
-function led_fastupdate()
-{
-}
+function led_fastupdate() {}
 
-  /*
-   All Emoncms code is released under the GNU Affero General Public License.
-   See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-  */
-
-function draw_led(circle,status)
-{
-    if (!circle) return;
+function draw_led(circle,status){
+  if (!circle) return;
   circle.clearRect(0,0,80,80);
 
   var radgrad = circle.createRadialGradient(40,40,0,40,40,20);
 
-if (status==0) {                   // red
-  radgrad.addColorStop(0, '#F75D59');
-  radgrad.addColorStop(0.9, '#C11B17');
-} else if (status>0 && status <=1) {            // green
-  radgrad.addColorStop(0, '#A7D30C');
-  radgrad.addColorStop(0.9, '#019F62');
-} else if (status>1 && status <=2) {           // grey
-  radgrad.addColorStop(0, '#736F6E');
-  radgrad.addColorStop(0.9, '#4A4344');
-} else if (status>2 && status <=3) { 		  //Blue
-  radgrad.addColorStop(0, '#00C9FF');
-  radgrad.addColorStop(0.9, '#00B5E2');
-} else if (status>3 && status <=4) {		  // Purple
-  radgrad.addColorStop(0, '#FF5F98');
-  radgrad.addColorStop(0.9, '#FF0188');
-} else if (status>4 && status <=5)   {         // yellow
-  radgrad.addColorStop(0, '#F4F201');
-  radgrad.addColorStop(0.9, '#E4C700');
-} else {					  // Black
-  radgrad.addColorStop(0, '#000000');
-  radgrad.addColorStop(0.9, '#000000');
-}
+  if (status==0) {                   // red
+    radgrad.addColorStop(0, '#F75D59');
+    radgrad.addColorStop(0.9, '#C11B17');
+  } else if (status>0 && status <=1) {            // green
+    radgrad.addColorStop(0, '#A7D30C');
+    radgrad.addColorStop(0.9, '#019F62');
+  } else if (status>1 && status <=2) {           // grey
+    radgrad.addColorStop(0, '#736F6E');
+    radgrad.addColorStop(0.9, '#4A4344');
+  } else if (status>2 && status <=3) { 		  //Blue
+    radgrad.addColorStop(0, '#00C9FF');
+    radgrad.addColorStop(0.9, '#00B5E2');
+  } else if (status>3 && status <=4) {		  // Purple
+    radgrad.addColorStop(0, '#FF5F98');
+    radgrad.addColorStop(0.9, '#FF0188');
+  } else if (status>4 && status <=5)   {         // yellow
+    radgrad.addColorStop(0, '#F4F201');
+    radgrad.addColorStop(0.9, '#E4C700');
+  } else {					  // Black
+    radgrad.addColorStop(0, '#000000');
+    radgrad.addColorStop(0.9, '#000000');
+  }
 
   radgrad.addColorStop(1, 'rgba(1,159,98,0)');
   // draw shapes
- circle.fillStyle = radgrad;
- circle.fillRect(20,20,60,60);
-
-
+  circle.fillStyle = radgrad;
+  circle.fillRect(20,20,60,60);
 }
 
 
-
-function draw_led_ie8(circle,status)
-{
-    if (!circle) return;
+function draw_led_ie8(circle,status){
+  if (!circle) return;
 
   if (status==0) {			// red
     circle.fillStyle = "#C11B17";
@@ -131,32 +113,28 @@ function draw_led_ie8(circle,status)
   circle.fill()
 }
 
-  function draw_binary_led(circle,status)
-  {
-    if (!circle) return;
-    circle.clearRect(0,0,80,80);
+function draw_binary_led(circle,status){
+  if (!circle) return;
+  circle.clearRect(0,0,80,80);
 
   var radgrad = circle.createRadialGradient(40,40,0,40,40,20);
 
-if (status==0) {                               // red
-  radgrad.addColorStop(0, '#F75D59');
-  radgrad.addColorStop(0.9, '#C11B17');
-} else {                                       // green
-  radgrad.addColorStop(0, '#A7D30C');
-  radgrad.addColorStop(0.9, '#019F62');
-}
+  if (status==0) {                               // red
+    radgrad.addColorStop(0, '#F75D59');
+    radgrad.addColorStop(0.9, '#C11B17');
+  } else {                                       // green
+    radgrad.addColorStop(0, '#A7D30C');
+    radgrad.addColorStop(0.9, '#019F62');
+  }
 
   radgrad.addColorStop(1, 'rgba(1,159,98,0)');
   // draw shapes
- circle.fillStyle = radgrad;
- circle.fillRect(20,20,60,60);
-
-
+  circle.fillStyle = radgrad;
+  circle.fillRect(20,20,60,60);
 }
 
-function draw_binary_led_ie8(circle,status)
-{
-    if (!circle) return;
+function draw_binary_led_ie8(circle,status){
+  if (!circle) return;
 
   if (status==0) {			// red
     circle.fillStyle = "#C11B17";

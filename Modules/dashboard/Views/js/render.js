@@ -15,12 +15,11 @@
 
 // Global page vars definition
 
-// Array that holds ID's of feeds of associative key
-var feedids = [];
-// Array for exact values
-var assoc = [];
+// Array for all feed details by feed id
+var associd = [];
 // Array for smooth change values - creation of smooth dial widget
 var assoc_curve = [];
+
 var widgetcanvas = {};
 
 var dialrate = 0.15;
@@ -48,6 +47,8 @@ function render_widgets_init(widget){
 
 //start dashboard init and update processes
 function render_widgets_start(){
+  update(true);
+
   browserVersion = Browser.Version();
   if (browserVersion < 9) dialrate = 0.4;
 
@@ -57,8 +58,7 @@ function render_widgets_start(){
     fn();
   }
 
-  update();
-  setInterval(function() { update(); }, 5000);
+  setInterval(function() { update(false); }, 5000);
   gpu_fast_update();
   //setInterval(function() { fast_update(); }, 100);
 }
@@ -67,35 +67,31 @@ function render_widgets_start(){
 function gpu_fast_update() { 
   setTimeout( 
    function() {
-	  window.requestAnimationFrame(gpu_fast_update);
-	  fast_update();
-	}
+      window.requestAnimationFrame(gpu_fast_update);
+      fast_update();
+    }
   , 1000/fast_update_fps);
 };
 
 // update function
-function update(){
+function update(first_time){
   var query = path + "feed/list.json?userid="+userid;
   $.ajax(
   {
     type: "GET",
     url : query,
     dataType : 'json',
-    async: true,
+    async: !first_time,
     success : function(data){ 
-
       for (z in data){
-        var newstr = data[z]['name'].replace(/\s/g, '-');
-        var value = parseFloat(data[z]['value']);
-        $("." + newstr).html(value);
-        assoc[newstr] = value * 1;
-        feedids[newstr] = data[z]['id'];
+        associd[data[z]['id']] = data[z];
       }
-
-      for (z in widget){
-        var fname = widget[z]+"_slowupdate";
-        var fn = window[fname];
-        fn();
+      if (!first_time){
+        for (z in widget){
+          var fname = widget[z]+"_slowupdate";
+          var fn = window[fname];
+          fn();
+        }
       }
     }
   });
@@ -121,8 +117,8 @@ function fast_update(){
 function curve_value(feed,rate){
   var val = 0;
   if (feed){
-    if (!assoc_curve[feed]) assoc_curve[feed] = 0;
-    assoc_curve[feed] = assoc_curve[feed] + ((parseFloat(assoc[feed]) - assoc_curve[feed]) * rate);
+    if (assoc_curve[feed] === undefined) assoc_curve[feed] = 0;
+    if (associd[feed] !== undefined) assoc_curve[feed] = assoc_curve[feed] + ((parseFloat(associd[feed]['value']) - assoc_curve[feed]) * rate);
     val = assoc_curve[feed] * 1;
   }
   return val;
