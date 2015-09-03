@@ -160,3 +160,4 @@ dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=d
 
 At this stage, close down your Raspberry Pi and connect your RFM69Pi add on board, ensuring that it's positioned correctly (see the photos in the OEM shop pages).
 
+**You should now have a fully working version of emoncms v9 installed & running on your Raspberry Pi, if at this stage you don't, then please check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
