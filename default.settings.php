@@ -63,7 +63,7 @@
 
 
 //5 #### User Interface settings
-    // Theme location (special keyword "basic" for the default one, otherwise, specify the theme path)
+    // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
 
     // Use full screen width

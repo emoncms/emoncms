@@ -169,12 +169,7 @@
     else if ($route->format == 'html')
     {
         // Select the theme
-        if($theme == "basic") {
-          $themeDir = "Theme/";
-        } else {
-          $themeDir = $theme . "/";
-        }
-
+        $themeDir = "Theme/" . $theme . "/";
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {

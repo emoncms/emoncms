@@ -16,3 +16,8 @@ Modules/*/
 !Modules/time/
 !Modules/user/
 !Modules/vis/
+
+# Ignore all themes except basic
+Theme/*
+Theme/*/
+!Theme/basic/
