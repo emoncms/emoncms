@@ -132,11 +132,19 @@ Update your database settings to use your new secure password:
     
 You will also want to modify SMTP settings and the password reset flag further down in the settings file. Save and exit.
 
+### In an internet browser, load emoncms:
+
+[http://localhost/emoncms](http://localhost/emoncms)
+
+The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen. 
+Create an account by entering your email and password and clicking register to complete.  
+At this stage, check the Administration page - 'Setup > Administration' and note any messages reported. Also make a note of your 'Write API Key' from the 'Setup > My Account' page.
+
 ### Install Emonhub
     
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
 
-Edit the emonhub configuration file, entering your emoncms write api key, and if necessary also your rfm2pi frequency, group & base id.
+Edit the emonhub configuration file, entering your emoncms 'Write API Key', and if necessary also your rfm2pi frequency, group & base id.
 
     nano /etc/emonhub/emonhub.conf
 
@@ -152,10 +160,3 @@ dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=d
 
 At this stage, close down your Raspberry Pi and connect your RFM69Pi add on board, ensuring that it's positioned correctly (see the photos in the OEM shop pages).
 
-### In an internet browser, load emoncms:
-
-[http://localhost/emoncms](http://localhost/emoncms)
-
-The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen. 
-
-Create an account by entering your email and password and clicking register to complete.
