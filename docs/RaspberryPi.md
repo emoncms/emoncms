@@ -1,7 +1,7 @@
 # Install Emoncms on Raspberry Pi (Raspbian)
 
-This guide will install the fully featured v9 emoncms onto a Raspberry Pi, bringing lots of new features including MQTT publish/subscribe, Schedule, Virtual & Memory feed engines, plus lots more.    
-Due to the number of read/writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and you may wish to consider eventually [moving the operating system partition (root) to an USB HDD](http://openenergymonitor.org/emon/node/2386#comment-12200).  
+This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian operating system.    
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](http://openenergymonitor.org/emon/node/2386#comment-12200) or to lower the write frequency to the SD card by using the low-write mode.  
 Before installing emoncms, it is essential that you have working version of Raspbian installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ## Preparation
@@ -65,7 +65,7 @@ First cd into the var directory:
 
 Set the permissions of the www directory to be owned by your username:
 
-    sudo chown USERNAME www
+    sudo chown $USER www
 
 Cd into www directory
 
