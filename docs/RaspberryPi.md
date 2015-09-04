@@ -6,7 +6,7 @@ Before installing emoncms, it is essential that you have working version of Rasp
 
 ## Preparation
 
-If your operating system was already installed, you may need to start by updating the system repositories
+If your operating system was already installed, you may need to start by updating the system repositories:
 
     sudo apt-get update
 
@@ -14,29 +14,31 @@ Install all dependencies:
 
     sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
 
-Configure PHP Timezone
+During the installation you will be prompted to select a password for the **'MYSQL "root" user'**, and again re-enter it. Make a note of the password - you will need it later
+
+Configure PHP Timezone:
 
     sudo nano /etc/php5/apache2/php.ini
 
-and search for "date.timezone" (possibly line 865)
+and search for "date.timezone" (possibly line 865):
 
     [Date]
     ; Defines the default timezone used by the date functions.
     ; http://php.net/date.timezone
     ;date.timezone =
 
-edit date.timezone to your appropriate timezone. PHP supported timezones are [listed here:](http://php.net/manual/en/timezones.php)
+edit date.timezone to your appropriate timezone. PHP supported timezones are [listed here:](http://php.net/manual/en/timezones.php). For example:
 
     date.timezone = "Europe/Amsterdam"
     
 Now save and exit
 
-Install pecl dependencies (serial, redis and swift mailer)
+Install pecl dependencies (serial, redis and swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
     
-Add pecl modules to php5 config
+Add pecl modules to php5 config:
     
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
@@ -67,7 +69,7 @@ Set the permissions of the www directory to be owned by your username:
 
     sudo chown $USER www
 
-Cd into www directory
+Cd into www directory:
 
     cd www
 
@@ -84,14 +86,16 @@ Once installed you can pull in updates with:
 
     mysql -u root -p
 
-Enter the mysql password that you set above.
+Enter the **'MYSQL "root" user'** password that you set above.
 Then enter the sql to create a database:
 
     CREATE DATABASE emoncms;
     
-Then add a user for emoncms and give it permissions on the new database (think of a nice long password):
+Then add a user for the emoncms database and set permissions.
+In the command below, we're creating the database 'user' called 'emoncms', and you should create a new secure password of your choice for that user.
+Make a note of both the database 'user' & 'password' as you will need them later for adding to the settings.php file:
 
-    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'YOUR_SECURE_PASSWORD_HERE';
+    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'NEW_SECURE_PASSWORD';
     GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
     flush privileges;
 
@@ -99,7 +103,7 @@ Exit mysql by:
 
     exit
     
-### Create data repositories for emoncms feed engines
+### Create data repositories for emoncms feed engines:
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
@@ -109,13 +113,13 @@ Exit mysql by:
     sudo chown www-data:root /var/lib/phpfina
     sudo chown www-data:root /var/lib/phptimeseries
 
-### Set emoncms database settings.
+### Set emoncms database settings
 
-cd into the emoncms directory where the settings file is located
+cd into the emoncms directory where the settings file is located:
 
     cd /var/www/emoncms/
 
-Make a copy of default.settings.php and call it settings.php
+Make a copy of default.settings.php and call it settings.php:
 
     cp default.settings.php settings.php
 
@@ -123,12 +127,12 @@ Open settings.php in an editor:
 
     nano settings.php
 
-Update your database settings to use your new secure password:
+Update your settings to use your Database 'user' & 'password', which will allow emoncms to access the database:
 
     $server   = "localhost";
     $database = "emoncms";
-    $username = "YOUR DB USERNAME";
-    $password = "YOUR DB PASSWORD";
+    $username = "Database user";
+    $password = "Database password";
     
 Save and exit.
 
@@ -144,12 +148,12 @@ At this stage, check the Administration page - 'Setup > Administration' and note
     
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
 
-Edit the emonhub configuration file, entering your emoncms 'Write API Key', and if necessary also your rfm2pi frequency, group & base id.
+Edit the emonhub configuration file, entering your emoncms 'Write API Key', and if necessary also your rfm2pi frequency, group & base id:
 
     nano /etc/emonhub/emonhub.conf
 
 Save & exit, then edit your inittab file by adding a '#' to the beginning of the last line, so it reads;  
-'# T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100' - (without the quotes)
+'# T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100' - (without the quotes):
 
     sudo nano /etc/inittab
    
