@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-01 00:36+0100\n"
-"PO-Revision-Date: 2013-05-01 00:37+0100\n"
+"POT-Creation-Date: 2015-09-03 17:32+0100\n"
+"PO-Revision-Date: 2015-09-03 17:32+0100\n"
 "Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -13,70 +13,70 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../dashboard_model.php:52
-msgid " clone"
-msgstr " clonar"
-
-#: ../../../Views/dashboard_config.php:20
+#: ../../../Views/dashboard_config.php:17
 msgid "Dashboard Configuration"
 msgstr "Configuración del panel"
 
-#: ../../../Views/dashboard_config.php:25
+#: ../../../Views/dashboard_config.php:20
 msgid "Dashboard name: "
 msgstr "Nombre del panel:"
 
-#: ../../../Views/dashboard_config.php:27
-msgid "Menu name: (lowercase a-z only)"
-msgstr "Nombre para el menu: (sólo letras de la \"a\" a la \"z\")"
+#: ../../../Views/dashboard_config.php:22
+msgid "Alias name: "
+msgstr "Alias:"
 
-#: ../../../Views/dashboard_config.php:29
+#: ../../../Views/dashboard_config.php:24
+msgid "Background color: "
+msgstr "Color de fondo:"
+
+#: ../../../Views/dashboard_config.php:26
 msgid "Description: "
 msgstr "Descripción"
 
-#: ../../../Views/dashboard_config.php:34
+#: ../../../Views/dashboard_config.php:31
 msgid "Make this dashboard the first shown"
 msgstr "Hacer este panel como el primero que se muestra"
 
-#: ../../../Views/dashboard_config.php:34 ../../../Views/dashboard_list.php:54
+#: ../../../Views/dashboard_config.php:31 ../../../Views/dashboard_list.php:59
 msgid "Main"
 msgstr "Principal"
 
-#: ../../../Views/dashboard_config.php:39
+#: ../../../Views/dashboard_config.php:36
 msgid "Activate this dashboard"
 msgstr "Activar este panel"
 
-#: ../../../Views/dashboard_config.php:39 ../../../Views/dashboard_list.php:56
+#: ../../../Views/dashboard_config.php:36 ../../../Views/dashboard_list.php:61
 msgid "Published"
 msgstr "Publicado"
 
-#: ../../../Views/dashboard_config.php:44
+#: ../../../Views/dashboard_config.php:41
 msgid "Anyone with the URL can see this dashboard"
 msgstr "Cualquiera con la dirección URL puede ver este panel"
 
-#: ../../../Views/dashboard_config.php:44 ../../../Views/dashboard_list.php:55
+#: ../../../Views/dashboard_config.php:41 ../../../Views/dashboard_list.php:60
 msgid "Public"
 msgstr "Público"
 
-#: ../../../Views/dashboard_config.php:49
+#: ../../../Views/dashboard_config.php:46
 msgid ""
 "Shows dashboard description on mouse over dashboard name in menu project"
 msgstr ""
 "Muestra la descripción del panel cuando se pasa el ratón sobre su nombre en "
 "el menú del proyecto"
 
-#: ../../../Views/dashboard_config.php:49
+#: ../../../Views/dashboard_config.php:46
 msgid "Show description"
 msgstr "Mostrar descripción"
 
-#: ../../../Views/dashboard_config.php:55
+#: ../../../Views/dashboard_config.php:51
 msgid "Close"
 msgstr "Cerrar"
 
-#: ../../../Views/dashboard_config.php:56
-#: ../../../Views/dashboard_edit_view.php:36
+#: ../../../Views/dashboard_config.php:52
+#: ../../../Views/dashboard_edit_view.php:37
 msgid "Save changes"
 msgstr "Guardar cambios"
 
@@ -84,90 +84,413 @@ msgstr "Guardar cambios"
 msgid "Configure element"
 msgstr "Configurar elemento"
 
-#: ../../../Views/dashboard_edit_view.php:35
-#: ../../../Views/dashboard_list.php:35
+#: ../../../Views/dashboard_edit_view.php:36
+#: ../../../Views/dashboard_list.php:41
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ../../../Views/dashboard_edit_view.php:44
+#: ../../../Views/dashboard_edit_view.php:45
 msgid "Configure"
 msgstr "Configuración"
 
-#: ../../../Views/dashboard_edit_view.php:45
+#: ../../../Views/dashboard_edit_view.php:46
 msgid "Delete"
 msgstr "Borrar"
 
-#: ../../../Views/dashboard_edit_view.php:47
+#: ../../../Views/dashboard_edit_view.php:48
 msgid "Not modified"
 msgstr "No modificado"
 
-#: ../../../Views/dashboard_edit_view.php:99
-msgid "Sauvegardé"
-msgstr ""
+#: ../../../Views/dashboard_edit_view.php:87
+msgid "Saved"
+msgstr "Guardar"
 
-#: ../../../Views/dashboard_list.php:15
-msgid "Dashboard"
-msgstr "Panel"
+#: ../../../Views/dashboard_list.php:15 ../../../dashboard_menu.php:37
+msgid "Dashboards"
+msgstr "Paneles"
 
-#: ../../../Views/dashboard_list.php:19
+#: ../../../Views/dashboard_list.php:18
 msgid "No dashboards created"
 msgstr "No existen paneles"
 
-#: ../../../Views/dashboard_list.php:20
-msgid "Maybe you would like to add your first dashboard using the button"
-msgstr "Quizás te gustaría añadir tu primer panel usando el botón"
+#: ../../../Views/dashboard_list.php:19
+msgid ""
+"Maybe you would like to add your first dashboard using the button bellow."
+msgstr "Quizás quieras añadir tu primer panel usando el botón inferior."
 
-#: ../../../Views/dashboard_list.php:29
-msgid "WARNING deleting a dashboard is permanent"
-msgstr "ATENCIÓN, el borrado será permanente"
-
-#: ../../../Views/dashboard_list.php:32
-msgid "Are you sure you want to delete this dashboard?"
-msgstr "¿Estás seguro de que quieres borrar este panel?"
-
-#: ../../../Views/dashboard_list.php:36
-msgid "Delete permanently"
-msgstr "Borrar permanentemente"
-
-#: ../../../Views/dashboard_list.php:50
-msgid "Id"
-msgstr "Id"
-
-#: ../../../Views/dashboard_list.php:51
-msgid "Name"
-msgstr "Nombre"
-
-#: ../../../Views/dashboard_list.php:52
-msgid "Alias"
-msgstr "Alias"
-
-#: ../../../Views/dashboard_list.php:53
-msgid "Description"
-msgstr "Descripción"
-
-#: ../../../Views/dashboard_menu.php:44
-msgid "Dashboards:"
-msgstr "Paneles:"
-
-#: ../../../Views/dashboard_menu.php:54
-msgid "Draw Editor"
-msgstr "Diseñador"
-
-#: ../../../Views/dashboard_menu.php:58
-msgid "View mode"
-msgstr "Vista"
-
-#: ../../../Views/dashboard_menu.php:59
-msgid "Configure dashboard"
-msgstr "Configurar panel"
-
-#: ../../../Views/dashboard_menu.php:62
+#: ../../../Views/dashboard_list.php:25
 msgid "New"
 msgstr "Nuevo"
 
-#: ../../../Views/dashboard_menu.php:64
-msgid "List view"
-msgstr "Formato lista"
+#: ../../../Views/dashboard_list.php:32
+msgid "Delete dashboard"
+msgstr "Borrar panel"
+
+#: ../../../Views/dashboard_list.php:35
+msgid "Deleting a dashboard is permanent."
+msgstr "Borrar un panel es permanente."
+
+#: ../../../Views/dashboard_list.php:37
+msgid "Are you sure you want to delete?"
+msgstr "¿Seguro que quieres borrarlo?"
+
+#: ../../../Views/dashboard_list.php:42
+msgid "Delete permanently"
+msgstr "Borrar permanentemente"
+
+#: ../../../Views/dashboard_list.php:55
+msgid "Id"
+msgstr "Id"
+
+#: ../../../Views/dashboard_list.php:56
+msgid "Name"
+msgstr "Nombre"
+
+#: ../../../Views/dashboard_list.php:57
+msgid "Alias"
+msgstr "Alias"
+
+#: ../../../Views/dashboard_list.php:58
+msgid "Description"
+msgstr "Descripción"
+
+#: ../../../Views/dashboard_menu.php:17
+msgid "Draw Editor"
+msgstr "Diseñador"
+
+#: ../../../Views/dashboard_menu.php:21
+msgid "Configure dashboard"
+msgstr "Configurar panel"
+
+#: ../../../Views/dashboard_menu.php:22
+msgid "View mode"
+msgstr "Vista"
+
+#: ../../../dashboard_langjs.php:29
+msgid "Changed, press to save"
+msgstr "Cambiado, presiona para guardar"
+
+#: ../../../dashboard_langjs.php:32 ../../../dashboard_langjs.php:99
+msgid "Colour"
+msgstr "Color"
+
+#: ../../../dashboard_langjs.php:33
+msgid "Colour to draw bar in"
+msgstr "Color de la barra"
+
+#: ../../../dashboard_langjs.php:34 ../../../dashboard_langjs.php:50
+#: ../../../dashboard_langjs.php:57 ../../../dashboard_langjs.php:61
+#: ../../../dashboard_langjs.php:79 ../../../dashboard_langjs.php:85
+#: ../../../dashboard_langjs.php:92 ../../../dashboard_langjs.php:108
+msgid "Feed"
+msgstr "Fuente"
+
+#: ../../../dashboard_langjs.php:35 ../../../dashboard_langjs.php:62
+#: ../../../dashboard_langjs.php:80 ../../../dashboard_langjs.php:93
+msgid "Feed value"
+msgstr "Valor de la fuente"
+
+#: ../../../dashboard_langjs.php:36 ../../../dashboard_langjs.php:63
+msgid "Graduations"
+msgstr "Graduaciones"
+
+#: ../../../dashboard_langjs.php:37
+msgid "How many graduation lines to draw (only relevant if graduations are on)"
+msgstr ""
+"Número de líneas de grtaduación a dibujar (sólo relevante si las "
+"graduaciones están funcionando)"
+
+#: ../../../dashboard_langjs.php:38 ../../../dashboard_langjs.php:64
+#: ../../../dashboard_langjs.php:86
+msgid "Max value"
+msgstr "Valor máximo"
+
+#: ../../../dashboard_langjs.php:39 ../../../dashboard_langjs.php:65
+#: ../../../dashboard_langjs.php:87
+msgid "Max value to show"
+msgstr "Valor máximo a enseñar"
+
+#: ../../../dashboard_langjs.php:40
+msgid "Num Graduations"
+msgstr "Número de graduaciones"
+
+#: ../../../dashboard_langjs.php:41 ../../../dashboard_langjs.php:66
+msgid "Offset"
+msgstr "Offset"
+
+#: ../../../dashboard_langjs.php:42 ../../../dashboard_langjs.php:67
+msgid "Scale"
+msgstr "Escala"
+
+#: ../../../dashboard_langjs.php:43
+msgid "Should the graduations be shown"
+msgstr "¿Se deberían mostrar las graduaciones?"
+
+#: ../../../dashboard_langjs.php:44
+msgid ""
+"Static offset. Subtracted from value before computing position (default 0)"
+msgstr ""
+"Offset estático. Restado del valor antes de calcular la posición (0 por "
+"defecto)"
+
+#: ../../../dashboard_langjs.php:45 ../../../dashboard_langjs.php:72
+#: ../../../dashboard_langjs.php:81 ../../../dashboard_langjs.php:88
+#: ../../../dashboard_langjs.php:136
+msgid "Units"
+msgstr "Unidades"
+
+#: ../../../dashboard_langjs.php:46
+msgid "Unit type to show after value. Ex: <br>\"{Reading}{unit-string}\""
+msgstr ""
+"Tipo de unidad a mostrar después del valor. Ej: <br>\"{Reading}{unit-"
+"string}\""
+
+#: ../../../dashboard_langjs.php:47
+msgid "Value is multiplied by scale before display. Defaults to 1"
+msgstr ""
+"El valor es multiplicado por la escala antes de mostrarlo. 1 por defecto"
+
+#: ../../../dashboard_langjs.php:51
+msgid ""
+"Feed to set, control with caution, make sure device being controlled can "
+"operate safely in event of emoncms failure."
+msgstr ""
+"Fuente a modificar, cuidado, asegúrese de que el dispositivo puede operar de "
+"forma segura en caso de que emoncms falle."
+
+#: ../../../dashboard_langjs.php:52
+msgid "Starting value"
+msgstr "Valor inicial"
+
+#: ../../../dashboard_langjs.php:53
+msgid "Value"
+msgstr "Valor"
+
+#: ../../../dashboard_langjs.php:56 ../../../dashboard_langjs.php:98
+msgid "Bottom feed value"
+msgstr "Valor de la última fuente"
+
+#: ../../../dashboard_langjs.php:58 ../../../dashboard_langjs.php:133
+msgid "Top feed value"
+msgstr "Valor de la primera fuente"
+
+#: ../../../dashboard_langjs.php:68
+msgid "Should the graduation limits be shown"
+msgstr "¿Deben mostrarse los límites de graduación?"
+
+#: ../../../dashboard_langjs.php:69
+msgid "Static offset. Subtracted from value before computing needle position"
+msgstr ""
+"Offset estático. Restado del valor antes de calcular la posición de la aguja"
+
+#: ../../../dashboard_langjs.php:70
+msgid "Type"
+msgstr "Tipo"
+
+#: ../../../dashboard_langjs.php:71
+msgid "Type to show"
+msgstr "Tipo a mostrar"
+
+#: ../../../dashboard_langjs.php:73 ../../../dashboard_langjs.php:82
+#: ../../../dashboard_langjs.php:89 ../../../dashboard_langjs.php:138
+msgid "Units to show"
+msgstr "Unidades a mostrar"
+
+#: ../../../dashboard_langjs.php:74
+msgid "Value is multiplied by scale before display"
+msgstr "El valor es multiplicado por la escala antes de mostrarlo"
+
+#: ../../../dashboard_langjs.php:77
+msgid "Decimals"
+msgstr "Decimales"
+
+#: ../../../dashboard_langjs.php:78
+msgid "Decimals to show"
+msgstr "Decimales a mostrar"
+
+#: ../../../dashboard_langjs.php:96
+msgid "0 = before value, 1 = after value"
+msgstr "0 = antes del valor, 1 = después del valor"
+
+#: ../../../dashboard_langjs.php:97
+msgid "Bottom"
+msgstr "Último"
+
+#: ../../../dashboard_langjs.php:100
+msgid "Consumption"
+msgstr "Consumo"
+
+#: ../../../dashboard_langjs.php:101
+msgid "Consumption feed value"
+msgstr "Valor de la fuente de consumo"
+
+#: ../../../dashboard_langjs.php:102
+msgid "Currency"
+msgstr "Corriente"
+
+#: ../../../dashboard_langjs.php:103
+msgid "Currency position"
+msgstr "Posición de la corriente"
+
+#: ../../../dashboard_langjs.php:104
+msgid "Currency to show"
+msgstr "Corriente a mostrar"
+
+#: ../../../dashboard_langjs.php:105
+msgid "Decimal points"
+msgstr "Puntos decimales"
+
+#: ../../../dashboard_langjs.php:106
+msgid "delta"
+msgstr "delta"
+
+#: ../../../dashboard_langjs.php:107
+msgid "dp"
+msgstr "dp"
+
+#: ../../../dashboard_langjs.php:109
+msgid "Feed source"
+msgstr "Origen de la fuente"
+
+#: ../../../dashboard_langjs.php:110
+msgid "Fill"
+msgstr "Rellenar"
+
+#: ../../../dashboard_langjs.php:111
+msgid "Fill value"
+msgstr "Rellene el valor"
+
+#: ../../../dashboard_langjs.php:112
+msgid "interval"
+msgstr "intervalo"
+
+#: ../../../dashboard_langjs.php:113
+msgid ""
+"Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for "
+"year"
+msgstr ""
+"Intervalo (segundos)-puedes poner \"d\" para días,  \"m\" para meses, o \"y"
+"\" para años"
+
+#: ../../../dashboard_langjs.php:114
+msgid "kwhd"
+msgstr "kwhd"
+
+#: ../../../dashboard_langjs.php:115
+msgid "kwhd source"
+msgstr "Fuente de los kwhd"
+
+#: ../../../dashboard_langjs.php:116
+msgid "Kwh price"
+msgstr "Precio del kwh"
+
+#: ../../../dashboard_langjs.php:117
+msgid "Line colour in hex. Blank is use default."
+msgstr "Color de línea en hexadecimal. Por defecto blanco"
+
+#: ../../../dashboard_langjs.php:118
+msgid "Mid"
+msgstr "Medio"
+
+#: ../../../dashboard_langjs.php:119
+msgid "Mid value"
+msgstr "Valor medio"
+
+#: ../../../dashboard_langjs.php:120
+msgid "Power"
+msgstr "Potencia"
+
+#: ../../../dashboard_langjs.php:121
+msgid "Power to show"
+msgstr "Potencia a mostrar"
+
+#: ../../../dashboard_langjs.php:122
+msgid "scale"
+msgstr "escala"
+
+#: ../../../dashboard_langjs.php:123
+msgid "Scale by"
+msgstr "Escalar por"
+
+#: ../../../dashboard_langjs.php:124
+msgid "Set kwh price"
+msgstr "Ponga el precio de los kwh"
+
+#: ../../../dashboard_langjs.php:125
+msgid "Solar"
+msgstr "Solar"
+
+#: ../../../dashboard_langjs.php:126
+msgid "Solar feed value"
+msgstr "Valor de la fuente solar"
+
+#: ../../../dashboard_langjs.php:127
+msgid ""
+"St to \"1\" to show diff between each bar. It displays an ever-increasing Wh "
+"feed as a daily\\/montly\\/yeayly kWh feed (set interval to \"d\", or \"m\", "
+"or \"y\" )"
+msgstr ""
+"Poner a \"1\" para mostrar la diferencia entre cad barra. Muestra una fuente "
+"incremenatal de Wh como un feed diario\\/mensual\\/anual de kWh (ponga el "
+"intervalo a \"d\", o \"m\", o \"y\" )"
+
+#: ../../../dashboard_langjs.php:128
+msgid "Threshold A"
+msgstr "Límite A"
+
+#: ../../../dashboard_langjs.php:129
+msgid "Threshold A used"
+msgstr "Límite A usado"
+
+#: ../../../dashboard_langjs.php:130
+msgid "Threshold B"
+msgstr "Límite B"
+
+#: ../../../dashboard_langjs.php:131
+msgid "Threshold B used"
+msgstr "Límite B usado"
+
+#: ../../../dashboard_langjs.php:132
+msgid "Top"
+msgstr "Primero"
+
+#: ../../../dashboard_langjs.php:134
+msgid "Ufac"
+msgstr "Ufac"
+
+#: ../../../dashboard_langjs.php:135
+msgid "Ufac value"
+msgstr "Valor del Ufac"
+
+#: ../../../dashboard_langjs.php:137
+msgid "units"
+msgstr "unidades"
+
+#: ../../../dashboard_menu.php:34
+msgid "Dashboard"
+msgstr "Panel"
+
+#: ../../../dashboard_model.php:52
+msgid " clone"
+msgstr " clonar"
+
+#~ msgid "Menu name: (lowercase a-z only)"
+#~ msgstr "Nombre para el menu: (sólo letras de la \"a\" a la \"z\")"
+
+#~ msgid "Maybe you would like to add your first dashboard using the button"
+#~ msgstr "Quizás te gustaría añadir tu primer panel usando el botón"
+
+#~ msgid "WARNING deleting a dashboard is permanent"
+#~ msgstr "ATENCIÓN, el borrado será permanente"
+
+#~ msgid "Are you sure you want to delete this dashboard?"
+#~ msgstr "¿Estás seguro de que quieres borrar este panel?"
+
+#~ msgid "Dashboards:"
+#~ msgstr "Paneles:"
+
+#~ msgid "List view"
+#~ msgstr "Formato lista"
 
 #~ msgid "Logout"
 #~ msgstr "Desconectar"
@@ -530,9 +853,6 @@ msgstr "Formato lista"
 #~ msgid "Feeds"
 #~ msgstr "Fuentes"
 
-#~ msgid "Dashboards"
-#~ msgstr "Paneles"
-
 #~ msgid "API"
 #~ msgstr "API"
 
@@ -662,9 +982,6 @@ msgstr "Formato lista"
 #~ msgid "Options"
 #~ msgstr "Opciones"
 
-#~ msgid "Saved"
-#~ msgstr "Guardar"
-
 #~ msgid "Select graph type:"
 #~ msgstr "Seleccione un tipo de gráfico:"
 
@@ -733,9 +1050,6 @@ msgstr "Formato lista"
 
 #~ msgid "Updated"
 #~ msgstr "Actualizado"
-
-#~ msgid "Value"
-#~ msgstr "Valor"
 
 #~ msgid "You have no feeds"
 #~ msgstr "No existen fuentes"
@@ -882,9 +1196,6 @@ msgstr "Formato lista"
 
 #~ msgid "Right"
 #~ msgstr "Derecha"
-
-#~ msgid "Fill"
-#~ msgstr "Rellenar"
 
 #~ msgid "Loading...  please wait about 5s"
 #~ msgstr "Cargando... por favor espere unos 5s"

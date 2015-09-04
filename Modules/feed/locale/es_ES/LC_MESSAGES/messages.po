@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-01 00:43+0100\n"
-"PO-Revision-Date: 2013-05-01 00:45+0100\n"
+"POT-Creation-Date: 2015-09-03 17:33+0100\n"
+"PO-Revision-Date: 2015-09-03 17:36+0100\n"
 "Last-Translator: Ildefonso Martínez Marchena <i.martinezmarchena@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/feedapi_view.php:19
@@ -21,175 +21,297 @@ msgid "Feed API"
 msgstr "API de fuentes de datos"
 
 #: ../../../Views/feedapi_view.php:21
-#, fuzzy
 msgid "Apikey authentication"
-msgstr "Identificación del nodo"
+msgstr "Identificación por apikey"
 
 #: ../../../Views/feedapi_view.php:22
 msgid ""
-"If you want to call any of the following actions when your not logged in, "
-"add an apikey to the URL of your request: &apikey=APIKEY."
+"If you want to call any of the following actions when your not logged in you "
+"have this options to authenticate with the API key:"
 msgstr ""
+"Si quiere hacer peticiones a alguna de las siguientes acciones sin estar "
+"logueado, tienes estas opciones para autenticarte con la API key:"
 
 #: ../../../Views/feedapi_view.php:23
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr "Añade a la url de la petición: &apikey=APIKEY"
+
+#: ../../../Views/feedapi_view.php:24
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr "Usa el parámetro POST: \"apikey=APIKEY\""
+
+#: ../../../Views/feedapi_view.php:25
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr "Añade la cabecera HTTP:\"Authorization: Bearer APIKEY\""
+
+#: ../../../Views/feedapi_view.php:26
 msgid "Read only:"
 msgstr "Acceso de solo lectura:"
 
-#: ../../../Views/feedapi_view.php:27
+#: ../../../Views/feedapi_view.php:29
 msgid "Read & Write:"
-msgstr ""
+msgstr "Lectura & Escritura"
 
-#: ../../../Views/feedapi_view.php:31
+#: ../../../Views/feedapi_view.php:33
 msgid "Html"
 msgstr "HTML"
 
-#: ../../../Views/feedapi_view.php:33
-msgid "The feed list view"
-msgstr ""
-
 #: ../../../Views/feedapi_view.php:34
+msgid "The feed list view"
+msgstr "Vista de la lista de fuentes"
+
+#: ../../../Views/feedapi_view.php:35
 msgid "This page"
-msgstr ""
+msgstr "Esta página"
 
 #: ../../../Views/feedapi_view.php:37
 msgid "JSON"
 msgstr "JSON"
 
 #: ../../../Views/feedapi_view.php:38
-msgid "To use the json api the request url needs to include <b>.json</b>"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:40
-msgid "Returns a list of public feeds made public by the given user:"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:41 ../../../Views/feedapi_view.php:42
-msgid "Returns the present value of a given feed:"
-msgstr ""
+msgid "To use the json api the request url needs to include .json"
+msgstr "Para usar la api json la URL de la request debe incluir .json"
 
 #: ../../../Views/feedapi_view.php:43
-msgid "Returns feed data:"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:44
-#, fuzzy
-msgid "Returns histogram data:"
-msgstr "Datos de histograma"
-
-#: ../../../Views/feedapi_view.php:45
-msgid "Returns kWh consumed in a given power band using histogram data type: "
-msgstr ""
+msgid "List feeds for autenticated user"
+msgstr "Listar las fuentes para un usuario autentificado"
 
 #: ../../../Views/feedapi_view.php:46
-msgid "Returns id of a feed given by name: "
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:47
-msgid "Empty feed bin:"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:48
-msgid "Set a feed field:"
-msgstr ""
+msgid "List public feeds for the given user"
+msgstr "Listar las fuentes publicas para el usuario seleccionado"
 
 #: ../../../Views/feedapi_view.php:49
-msgid "Insert a new datapoint:"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:50
-msgid "Update a datapoint:"
-msgstr ""
-
-#: ../../../Views/feedapi_view.php:51
-#, fuzzy
-msgid "Delete a datapoint:"
-msgstr "¿Borrar entrada?"
-
-#: ../../../Views/feedapi_view.php:52
-#, fuzzy
-msgid "Delete a feed:"
-msgstr "Borrar fuente:"
+msgid "Get feed id by name"
+msgstr "Seleccionar el id de una fuente por nombre"
 
 #: ../../../Views/feedapi_view.php:53
-#, fuzzy
-msgid "Restore a feed:"
-msgstr "Renombrar fuente"
+msgid "Get feed field"
+msgstr "Seleccionar campo de la fuente"
 
-#: ../../../Views/feedapi_view.php:54
-#, fuzzy
-msgid "Export a feed:"
-msgstr "fuente convertida:"
+#: ../../../Views/feedapi_view.php:56
+msgid "Get all feed fields"
+msgstr "Seleccionar todos los campos de la fuente"
 
-#: ../../../Views/feedlist_view.php:16
-#, fuzzy
+#: ../../../Views/feedapi_view.php:63
+msgid "Last updated time and value for feed"
+msgstr "Último tiempo actualizado y valor para la fuente"
+
+#: ../../../Views/feedapi_view.php:66
+msgid "Last value of a given feed"
+msgstr "Último valor de la fuente"
+
+#: ../../../Views/feedapi_view.php:69
+msgid "Last value for multiple feeds"
+msgstr "Último valor para varias fuentes"
+
+#: ../../../Views/feedapi_view.php:72
+msgid "Returns feed data"
+msgstr "Datos de la fuente"
+
+#: ../../../Views/feedapi_view.php:75
+msgid "Returns histogram data"
+msgstr "Histograma de datos"
+
+#: ../../../Views/feedapi_view.php:78
+msgid "Returns kwh consumed in a given power band using histogram data type"
+msgstr ""
+"kWh consumidos en una banda de potencia usando el tipo de datos histograma"
+
+#: ../../../Views/feedapi_view.php:107
+msgid "Return total engines size"
+msgstr "Tamaño total de los motores"
+
+#: ../../../Views/feedapi_view.php:110
+msgid "Return buffer points pending write"
+msgstr "Puntos del buffer a espera de escritura"
+
+#: ../../../Views/feedapi_view.php:115
+msgid "Virtual feed process actions"
+msgstr "Procesos para la fuente virtual"
+
+#: ../../../Views/feedapi_view.php:117
+msgid "Get feed process list"
+msgstr "Obtener lista de procesos de una fuente"
+
+#: ../../../Views/feedapi_view.php:118
+msgid "Set feed process list"
+msgstr "Modificar lista de procesos de una fuente"
+
+#: ../../../Views/feedapi_view.php:119
+msgid "Reset feed process list"
+msgstr "Resetear lista de procesos de una fuente"
+
+#: ../../../Views/feedlist_view.php:28
 msgid "Feed API Help"
 msgstr "Ayuda de la API para fuentes de datos"
 
-#: ../../../Views/feedlist_view.php:19
+#: ../../../Views/feedlist_view.php:29 ../../../feed_menu.php:7
 msgid "Feeds"
 msgstr "Fuentes"
 
-#: ../../../Views/feedlist_view.php:23
+#: ../../../Views/feedlist_view.php:32
 msgid "No feeds created"
 msgstr "No existen fuentes de datos"
 
-#: ../../../Views/feedlist_view.php:24
+#: ../../../Views/feedlist_view.php:33
 msgid ""
-"Feeds are where your monitoring data is stored. The recommended route for "
-"creating feeds is to start by creating inputs (see the inputs tab). Once you "
+"Feeds are where your monitoring data is stored. The route for creating "
+"storage feeds is to start by creating inputs (see the inputs tab). Once you "
 "have inputs you can either log them straight to feeds or if you want you can "
 "add various levels of input processing to your inputs to create things like "
-"daily average data or to calibrate inputs before storage. You may want to "
-"follow the link as a guide for generating your request."
+"daily average data or to calibrate inputs before storage. Alternatively you "
+"can create Virtual feeds, this is a special feed that allows you to do post "
+"processing on existing storage feeds data, the main advantage is that it "
+"will not use additional storage space and you may modify post processing "
+"list that gets applyed on old stored data. You may want to follow the link "
+"as a guide for generating your request."
 msgstr ""
+"Las fuentes son el lugar donde tus dato recogido son almacenados. La forma "
+"de crear fuentes de almacenado es empezar creando entradas (véase la tab "
+"Entradas). Una vez que tienes las entradas puedes o bien guardarlas "
+"directamente en las fuentes o añadir varios niveles de procesado de la "
+"entrada para crear cosas como la media diaria o calibrar las entradas antes "
+"del almacenamiento. Alternativamente, e pueden crear fuentes virtuales, un "
+"tipo especial que te permite hacer post-procesamiento en fuentes existentes. "
+"La principal ventaja de ésto es que no usa espacio extra de guardado y "
+"puedes modificar la lista de post-procesos que se aplica en datos "
+"antiguamente guardados. Quizás quieras seguir el enlace para guiarte en la "
+"generación de tus peticiones."
 
-#: ../../../Views/feedlist_view.php:24
+#: ../../../Views/feedlist_view.php:33
 msgid "Feed API helper"
 msgstr "Ayuda de la API para fuentes de datos"
 
-#: ../../../Views/feedlist_view.php:31
-msgid "WARNING deleting a feed is permanent"
-msgstr "Atención, el borrado de la fuente será permante"
+#: ../../../Views/feedlist_view.php:39
+msgid "Refresh feed size"
+msgstr "Refrescar tamaño de la fuente"
 
-#: ../../../Views/feedlist_view.php:34
-msgid "Are you sure you want to delete this feed?"
-msgstr "¿Estás seguro de que quieres borrar la fuente?"
+#: ../../../Views/feedlist_view.php:40
+msgid "New virtual feed"
+msgstr "Nueva fuente virtual"
 
-#: ../../../Views/feedlist_view.php:37
+#: ../../../Views/feedlist_view.php:47
+msgid "Delete feed"
+msgstr "Borrar fuente"
+
+#: ../../../Views/feedlist_view.php:50
+msgid "Deleting a feed is permanent."
+msgstr "Borrar una fuente es permanente"
+
+#: ../../../Views/feedlist_view.php:52
+msgid ""
+"If you have Input Processlist processors that use this feed, after deleting "
+"it, review that process lists or they will be in error, freezing other "
+"Inputs. Also make sure no Dashboards use the deleted feed."
+msgstr ""
+"Si en sus Entradas tiene procesos que usan esta fuente, después de borrarlo "
+"revise dicha lista de procesos u ocurrirá un error, paralizando otras "
+"entradas. Asegúrese también de que ningún panel usa dicha fuente."
+
+#: ../../../Views/feedlist_view.php:53
+msgid ""
+"This is a Virtual Feed, after deleting it, make sure no Dashboard continue "
+"to use the deleted feed."
+msgstr ""
+"Ésta es una fuente virtual. Después de borrarla asegúrese de que ningún "
+"panel lo sigue usando."
+
+#: ../../../Views/feedlist_view.php:55
+msgid "Are you sure you want to delete?"
+msgstr "¿Seguro que quieres borrar?"
+
+#: ../../../Views/feedlist_view.php:58 ../../../Views/feedlist_view.php:145
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: ../../../Views/feedlist_view.php:38
+#: ../../../Views/feedlist_view.php:59
 msgid "Delete permanently"
 msgstr "Borrado permanente"
 
-#: ../../../Views/feedlist_view.php:52
+#: ../../../Views/feedlist_view.php:124
+msgid "Close"
+msgstr "Cerrar"
+
+#: ../../../Views/feedlist_view.php:131
+msgid "New Virtual Feed"
+msgstr "Nueva Fuente Virtual"
+
+#: ../../../Views/feedlist_view.php:146
+msgid "Save"
+msgstr "Guardar"
+
+#: ../../../Views/feedlist_view.php:161
 msgid "Id"
 msgstr "Id"
 
-#: ../../../Views/feedlist_view.php:53
-msgid "Name"
-msgstr "Nombre"
-
-#: ../../../Views/feedlist_view.php:54
+#: ../../../Views/feedlist_view.php:162
 msgid "Tag"
 msgstr "Etiqueta"
 
-#: ../../../Views/feedlist_view.php:55
-msgid "Datatype"
-msgstr ""
+#: ../../../Views/feedlist_view.php:163
+msgid "Name"
+msgstr "Nombre"
 
-#: ../../../Views/feedlist_view.php:56
+#: ../../../Views/feedlist_view.php:164
+msgid "Process list"
+msgstr "Lista de procesos"
+
+#: ../../../Views/feedlist_view.php:165
 msgid "Public"
 msgstr "Público"
 
-#: ../../../Views/feedlist_view.php:57
+#: ../../../Views/feedlist_view.php:166
+msgid "Datatype"
+msgstr "Tipo de datos"
+
+#: ../../../Views/feedlist_view.php:167
+msgid "Engine"
+msgstr "Motor"
+
+#: ../../../Views/feedlist_view.php:168
+msgid "Size"
+msgstr "Tamaño"
+
+#: ../../../Views/feedlist_view.php:169
 msgid "Updated"
 msgstr "Actualizado"
 
-#: ../../../Views/feedlist_view.php:58
+#: ../../../Views/feedlist_view.php:170
 msgid "Value"
 msgstr "Valor"
+
+#~ msgid ""
+#~ "If you want to call any of the following action's when your not logged "
+#~ "in, add an apikey to the URL of your request: &apikey=APIKEY."
+#~ msgstr ""
+#~ "Si quiere realizar alguna de las siguientes acciones cuando no esté "
+#~ "logueado, añada un apikey a la URL: &apikey=APIKEY."
+
+#, fuzzy
+#~ msgid "Returns histogram data:"
+#~ msgstr "Datos de histograma"
+
+#, fuzzy
+#~ msgid "Delete a datapoint:"
+#~ msgstr "¿Borrar entrada?"
+
+#, fuzzy
+#~ msgid "Delete a feed:"
+#~ msgstr "Borrar fuente:"
+
+#, fuzzy
+#~ msgid "Restore a feed:"
+#~ msgstr "Renombrar fuente"
+
+#, fuzzy
+#~ msgid "Export a feed:"
+#~ msgstr "fuente convertida:"
+
+#~ msgid "WARNING deleting a feed is permanent"
+#~ msgstr "Atención, el borrado de la fuente será permante"
+
+#~ msgid "Are you sure you want to delete this feed?"
+#~ msgstr "¿Estás seguro de que quieres borrar la fuente?"
 
 #~ msgid "Feed "
 #~ msgstr "Fuente"
@@ -206,9 +328,6 @@ msgstr "Valor"
 
 #~ msgid "Deleted feeds"
 #~ msgstr "Fuentes borradas"
-
-#~ msgid "Size"
-#~ msgstr "Tamaño"
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -520,9 +639,6 @@ msgstr "Valor"
 #~ msgid "Notification recipiants (To): "
 #~ msgstr "Destinatarios de las notificaciones (To):"
 
-#~ msgid "Save"
-#~ msgstr "Guardar"
-
 #~ msgid "Notify "
 #~ msgstr "Notificar"
 
@@ -675,9 +791,6 @@ msgstr "Valor"
 
 #~ msgid "Show description"
 #~ msgstr "Mostrar descripción"
-
-#~ msgid "Close"
-#~ msgstr "Cerrar"
 
 #~ msgid "Save changes"
 #~ msgstr "Guardar cambios"

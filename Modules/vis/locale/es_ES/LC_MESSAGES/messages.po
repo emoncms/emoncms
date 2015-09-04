@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-10-18 18:43+0100\n"
-"PO-Revision-Date: 2012-10-18 18:43+0100\n"
+"POT-Creation-Date: 2015-09-03 17:56+0100\n"
+"PO-Revision-Date: 2015-09-03 17:56+0100\n"
 "Last-Translator: ilde <i.martinez@ismsolar.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -13,195 +13,605 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.7.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../api_view.php:29
-msgid "API Helper"
-msgstr "API Helper"
+#: ../../../Views/vis_main_view.php:22
+msgid "Visualisations"
+msgstr "Visualizaciones"
 
-#: ../../../api_view.php:31
+#: ../../../Views/vis_main_view.php:27
+msgid "Select visualisation:"
+msgstr "Selecciona una visualización:"
+
+#: ../../../Views/vis_main_view.php:32
+msgid "Set options:"
+msgstr "Establecer opciones:"
+
+#: ../../../Views/vis_main_view.php:34
+msgid "Note:"
+msgstr "Nota:"
+
+#: ../../../Views/vis_main_view.php:34
 msgid ""
-"API keys are used to give authenticated access without login in via a normal "
-"session."
+"If a feed does not appear in the selection box, check that the type has been "
+"set on the feeds page."
 msgstr ""
-"Las siguientes claves son usadas para permitir acceso autenticado sin "
-"necesidad de login."
+"Si una fuente no aparece en la caja de selección, compruebe que el tipo ha "
+"sido establecido en la página de las fuentes."
 
-#: ../../../api_view.php:34
-msgid "Read only access: "
-msgstr "Acceso de solo lectura:"
-
-#: ../../../api_view.php:36
-msgid "Allows to access in read only mode"
-msgstr "Permite el acceso en modo de sólo lectura"
-
-#: ../../../api_view.php:40 ../../../api_view.php:53
-msgid "new"
-msgstr "nuevo"
-
-#: ../../../api_view.php:47
-msgid "Write only access: "
-msgstr "Acceso en modo escritura:"
-
-#: ../../../api_view.php:49
-msgid "Keep secret. Write mode access"
-msgstr "Mentener en secreto. Acceso en modo escritura"
-
-#: ../../../api_view.php:59
-msgid "Post API"
-msgstr "Post API"
-
-#: ../../../api_view.php:70
-msgid ""
-"Example: Click or copy this to your web browser or send from your monitoring "
-"hardware"
-msgstr ""
-"Por ejemplo: Pulsa o copia la siguiente url en el navegador or mándala desde "
-"tu hardware de monitorización"
-
-#: ../../../api_view.php:77 ../../../api_view.php:90
-msgid "try me"
-msgstr "pruébame"
-
-#: ../../../api_view.php:82
-msgid "Using Node addressing"
-msgstr "Usando direccionamiento del nodo"
-
-#: ../../../api_view.php:87
-msgid "Change node_id from URL with the node identification"
-msgstr "Cambiar el node_id desde la URL con la identificación del nodo"
-
-#: ../../../api_view.php:95
-msgid "Visualisation API"
-msgstr "API para visualización"
-
-#: ../../../api_view.php:96
-msgid ""
-"These are all the visualisations that are available in emoncms3. To view a "
-"visualisation enter in a relevant feedid in the underlined boxes below and "
-"then click on the > button."
-msgstr ""
-"Estas son todas la formas de visualización disponibles en Emoncms3. Para "
-"ejecutar una vista introduce los datos apropiados en las cajas de texto y "
-"pulsa en el boton >."
-
-#: ../../../api_view.php:101
-msgid "Name"
-msgstr "Nombre"
-
-#: ../../../api_view.php:104
-msgid "URL"
-msgstr "Enlace"
-
-#: ../../../api_view.php:107
+#: ../../../Views/vis_main_view.php:39
 msgid "View"
 msgstr "Vista"
 
-#: ../../../api_view.php:113
-msgid "Real-time graph"
-msgstr "Gráfico en tiempo real"
+#: ../../../Views/vis_main_view.php:40
+msgid "Full screen"
+msgstr "Pantalla completa"
 
-#: ../../../api_view.php:128
-msgid "Raw data graph"
-msgstr "Gráfico de datos brutos"
+#: ../../../Views/vis_main_view.php:45
+msgid "Embed in your website:"
+msgstr "Insertar en tu página web:"
 
-#: ../../../api_view.php:143
-msgid "Bar graph"
+#: ../../../Views/vis_main_view.php:124
+msgid ""
+"Some of the feeds selected are not public, to embed a visualisation publicly "
+"first make the feeds that you want to use public."
+msgstr ""
+"Algunas de las fuentes seleccionadas no son públicas, y para insertar una "
+"visualización públicamente primero necesitará hacer las fuentes que quiere "
+"usar públicas."
+
+#: ../../../Views/vis_main_view.php:124
+msgid "To embed privately:"
+msgstr "Para insertar de forma privada:"
+
+#: ../../../vis_controller.php:11
+msgid "Restricted access"
+msgstr "Acceso restringido"
+
+#: ../../../vis_controller.php:119
+msgid "Not configured"
+msgstr "Sin configurar"
+
+#: ../../../vis_controller.php:119
+msgid "or"
+msgstr "o"
+
+#: ../../../vis_controller.php:119
+msgid "Authentication not valid"
+msgstr "Autentificación inválida"
+
+#: ../../../vis_menu.php:7
+msgid "Visualization"
+msgstr "Visualización"
+
+#: ../../../vis_object.php:19
+msgid "RealTime"
+msgstr "Tiempo Real"
+
+#: ../../../vis_object.php:20 ../../../vis_object.php:25
+#: ../../../vis_object.php:34 ../../../vis_object.php:44
+#: ../../../vis_object.php:49 ../../../vis_object.php:54
+#: ../../../vis_object.php:81 ../../../vis_object.php:92
+#: ../../../vis_object.php:96 ../../../vis_object.php:103
+#: ../../../vis_object.php:107 ../../../vis_object.php:120
+msgid "feed"
+msgstr "fuente"
+
+#: ../../../vis_object.php:24
+msgid "RawData"
+msgstr "Datos sin procesar"
+
+#: ../../../vis_object.php:26
+msgid "fill"
+msgstr "rellenar"
+
+#: ../../../vis_object.php:27 ../../../vis_object.php:35
+msgid "colour"
+msgstr "color"
+
+#: ../../../vis_object.php:28 ../../../vis_object.php:37
+#: ../../../vis_object.php:45
+msgid "units"
+msgstr "unidades"
+
+#: ../../../vis_object.php:29 ../../../vis_object.php:38
+msgid "dp"
+msgstr "dp"
+
+#: ../../../vis_object.php:30 ../../../vis_object.php:39
+msgid "scale"
+msgstr "escala"
+
+#: ../../../vis_object.php:33
+msgid "BarGraph"
 msgstr "Gráfico de barras"
 
-#: ../../../api_view.php:158
+#: ../../../vis_object.php:36
+msgid "interval"
+msgstr "Intervalo"
+
+#: ../../../vis_object.php:40
+msgid "delta"
+msgstr "delta"
+
+#: ../../../vis_object.php:43
+msgid "Daily from Multiple (BETA)"
+msgstr "Valores diarios de múltiples fuentes (BETA)"
+
+#: ../../../vis_object.php:48 ../../../visualisations/smoothie.php:15
 msgid "Smoothie"
 msgstr "Smoothie"
 
-#: ../../../api_view.php:173
-msgid "All time histogram"
-msgstr "Histograma completo"
+#: ../../../vis_object.php:50
+msgid "ufac"
+msgstr "ufac"
 
-#: ../../../api_view.php:188
-msgid "Daily histogram"
-msgstr "Histograma diario"
+#: ../../../vis_object.php:53
+msgid "Histgraph"
+msgstr "Histograma"
 
-#: ../../../api_view.php:207
+#: ../../../vis_object.php:55
+msgid "barwidth"
+msgstr "Ancho de las barras"
+
+#: ../../../vis_object.php:56
+msgid "start"
+msgstr "comienzo"
+
+#: ../../../vis_object.php:57
+msgid "end"
+msgstr "fin"
+
+#: ../../../vis_object.php:61
 msgid "Zoom"
 msgstr "Zoom"
 
-#: ../../../api_view.php:223
-msgid "kWh/d Comparison"
-msgstr "kWh/d Comparison"
+#: ../../../vis_object.php:62 ../../../vis_object.php:87
+#: ../../../vis_object.php:97
+msgid "power"
+msgstr "potencia"
 
-#: ../../../api_view.php:244
+#: ../../../vis_object.php:63 ../../../vis_object.php:88
+msgid "kwhd"
+msgstr "kwhd"
+
+#: ../../../vis_object.php:64
+msgid "currency"
+msgstr "moneda"
+
+#: ../../../vis_object.php:65
+msgid "currency_after_val"
+msgstr "currency_after_val"
+
+#: ../../../vis_object.php:66
+msgid "pricekwh"
+msgstr "pricekwh"
+
+#: ../../../vis_object.php:70 ../../../visualisations/stacked.php:22
+#: ../../../visualisations/stackedsolar.php:22
 msgid "Stacked"
 msgstr "Apliada"
 
-#: ../../../api_view.php:261
+#: ../../../vis_object.php:71
+msgid "bottom"
+msgstr "inferior"
+
+#: ../../../vis_object.php:72
+msgid "top"
+msgstr "superior"
+
+#: ../../../vis_object.php:75
+msgid "StackedSolar"
+msgstr "Solar Superpuestos"
+
+#: ../../../vis_object.php:76
+msgid "solar"
+msgstr "solar"
+
+#: ../../../vis_object.php:77
+msgid "consumption"
+msgstr "consumo"
+
+#: ../../../vis_object.php:80 ../../../visualisations/threshold.php:23
 msgid "Threshold"
 msgstr "Threshold"
 
-#: ../../../api_view.php:280
-msgid "Simple zoom"
-msgstr "Zoom sencillo"
+#: ../../../vis_object.php:82 ../../../vis_object.php:98
+msgid "thresholdA"
+msgstr "límiteA"
 
-#: ../../../api_view.php:297
-msgid "Bar graph (ordered by height)"
-msgstr "Bar graph (ordered by height)"
+#: ../../../vis_object.php:83 ../../../vis_object.php:99
+msgid "thresholdB"
+msgstr "límiteB"
 
-#: ../../../api_view.php:312
-msgid "Threshold ordered by height"
-msgstr "Threshold ordered by height"
+#: ../../../vis_object.php:86
+msgid "SimpleZoom"
+msgstr "Zoom simple"
 
-#: ../../../api_view.php:332
-msgid "Multigraph"
+#: ../../../vis_object.php:91
+msgid "OrderBars"
+msgstr "Barras ordenadas"
+
+#: ../../../vis_object.php:95
+msgid "OrderThreshold"
+msgstr "Límites Ordenados"
+
+#: ../../../vis_object.php:102
+msgid "EditRealtime"
+msgstr "Editar valores en tiempo real"
+
+#: ../../../vis_object.php:106
+msgid "EditDaily"
+msgstr "Editar valores diarios"
+
+#: ../../../vis_object.php:110
+msgid "MultiGraph"
 msgstr "Gráfico múltiple"
 
-#: ../../../api_view.php:346
-msgid "Datapoint Editor"
-msgstr "Editor de datos"
+#: ../../../vis_object.php:111
+msgid "mid"
+msgstr "mitad"
 
-#: ../../../api_view.php:360
-msgid "Other options:"
-msgstr "Otras opciones:"
+#: ../../../vis_object.php:114
+msgid "Compare"
+msgstr "Comparar"
 
-#: ../../../api_view.php:365
-msgid "Hide menu"
-msgstr "Ocultar menu"
+#: ../../../vis_object.php:115
+msgid "Feed A"
+msgstr "Feed A"
 
-#: ../../../api_view.php:367
+#: ../../../vis_object.php:116
+msgid "Feed B"
+msgstr "Feed B"
+
+#: ../../../vis_object.php:119
+msgid "Graph (BETA)"
+msgstr "Gráfico (BETA)"
+
+#: ../../../visualisations/bargraph.php:125
+msgid "Bar graph:"
+msgstr "Gráfico de barras:"
+
+#: ../../../visualisations/compare.php:26
+msgid "Feed calibration and comparison tool"
+msgstr "Calibración de fuentes y herramienta de comparación"
+
+#: ../../../visualisations/compare.php:27
 msgid ""
-"Hide the top menu and footer by adding the attribute &embed=1 to the URL."
+"Use this tool to compare two feeds: FeedA and FeedB. Enter feed ids for "
+"comparison below. If there is a difference between feed values adjust the "
+"calibration to see if the difference can be removed."
 msgstr ""
-"Puedes ocultar el menu superior y el pié añadiendo el atributo &embed=1 en "
-"la URL. "
+"Utiliza esta herramienta para comparar dos fuentes: FuenteA y FuenteB. "
+"Introduzca los ids de las fuentes para compararlas abajo. Si hay diferencias "
+"entre los valores de las fuentes ajuste la calibración para ver si la "
+"diferencia puede ser eliminada."
 
-#: ../../../api_view.php:372
-msgid "Share"
-msgstr "Compartir"
+#: ../../../visualisations/compare.php:30
+msgid "Feed A ID"
+msgstr "ID del Feed A"
 
-#: ../../../api_view.php:374
-msgid "To share a visualisation use your read apikey. Add the attribute "
+#: ../../../visualisations/compare.php:35
+msgid "Feed B ID"
+msgstr "ID del Feed B"
+
+#: ../../../visualisations/compare.php:37
+msgid "Load"
+msgstr "Cargar"
+
+#: ../../../visualisations/compare.php:41
+msgid "Feed B Calibration"
+msgstr "Calibración Fuente B"
+
+#: ../../../visualisations/compare.php:43
+msgid "Update"
+msgstr "Actualizar"
+
+#: ../../../visualisations/compare.php:69
+msgid "Difference between feeds (FeedB calibration applied - FeedA)"
 msgstr ""
-"Para compartir una vista utiliza tu clave de lectura. Añade el atributo "
+"Diferencia entre fuentes (calibración de la FuenteB aplicada - FuenteA) "
 
-#: ../../../api_view.php:374
-msgid " to the URL"
-msgstr " en la URL"
+#: ../../../visualisations/compare.php:72
+msgid "FeedA vs FeedB"
+msgstr "FeedA vs FeedB"
 
-#: ../../../api_view.php:379
-msgid "Embed"
-msgstr "Incrustar"
+#: ../../../visualisations/compare.php:73
+msgid "Relationship should be linear if measurements are the same"
+msgstr "La relación debe ser lineal si las medidas son iguales"
 
-#: ../../../api_view.php:386
-msgid "Reset Multigraph"
-msgstr "Inicializar Multigráfico"
+#: ../../../visualisations/editdaily.php:25
+#: ../../../visualisations/editrealtime.php:26
+msgid "Datapoint editor:"
+msgstr "Editor punto a punto:"
 
-#: ../../../api_view.php:388
-msgid "The multigraph can be reset using the &clear=1 attribute."
+#: ../../../visualisations/editdaily.php:26
+#: ../../../visualisations/editrealtime.php:27
+msgid ""
+"Click on a datapoint to select, then in the edit box below the graph enter "
+"in the new value. You can also add another datapoint by changing the time to "
+"a point in time that does not yet have a datapoint."
 msgstr ""
-"El multigráfico puede ser inicializado usando el atributo &clear=1 en la URL."
+"Haga click en un punto para seleccionarlo, y entonces edite la caja debajo "
+"del gráfico para introducir un nuevo valor. También puede añadir un nuevo "
+"punto cambiando la fecha hasta un punto que no tenga aún datos."
 
-#: ../../../vis_controller.php:24
-msgid "Restricted access"
-msgstr "Acceso restringido"
+#: ../../../visualisations/editdaily.php:52
+#: ../../../visualisations/editrealtime.php:52
+msgid "Edit feed_"
+msgstr "Editar fuente_"
+
+#: ../../../visualisations/editdaily.php:52
+#: ../../../visualisations/editrealtime.php:52
+msgid "@ time:"
+msgstr "@ instante:"
+
+#: ../../../visualisations/editdaily.php:52
+#: ../../../visualisations/editrealtime.php:52
+msgid "new value:"
+msgstr "nuevo valor:"
+
+#: ../../../visualisations/editdaily.php:54
+#: ../../../visualisations/editrealtime.php:54
+#: ../../../visualisations/editrealtime.php:60
+msgid "Save"
+msgstr "Guardar"
+
+#: ../../../visualisations/editdaily.php:55
+msgid "Delete"
+msgstr "Borrar"
+
+#: ../../../visualisations/editrealtime.php:55
+msgid "Delete data in window"
+msgstr "Borrar datos en ventana"
+
+#: ../../../visualisations/editrealtime.php:59
+msgid "Multiply data in window by:"
+msgstr "Multiplicar los datos en la ventana por:"
+
+#: ../../../visualisations/editrealtime.php:66
+msgid "Delete feed data"
+msgstr "Borrar datos de la fuente"
+
+#: ../../../visualisations/editrealtime.php:69
+msgid "Deleting feed data in this window is permanent."
+msgstr "Borrar valores de la fuente en esta ventana es permanente."
+
+#: ../../../visualisations/editrealtime.php:71
+msgid "Are you sure you want to delete?"
+msgstr "¿Está seguro que quiere borrarlo?"
+
+#: ../../../visualisations/editrealtime.php:75
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../../../visualisations/editrealtime.php:76
+msgid "Delete permanently"
+msgstr "Borrar permanentemente"
+
+#: ../../../visualisations/histgraph.php:33
+msgid "Histogram:"
+msgstr "Histograma:"
+
+#: ../../../visualisations/multigraph.php:46
+msgid "Multigraph:"
+msgstr "Gráfico múltiple:"
+
+#: ../../../visualisations/orderbars.php:20
+msgid "Bar graph (ordered by height):"
+msgstr "Gráfico de barras (ordenado por altura):"
+
+#: ../../../visualisations/orderthreshold.php:25
+msgid "Threshold Order"
+msgstr "Orden de los valores límite"
+
+#: ../../../visualisations/orderthreshold.php:32
+msgid "Reload"
+msgstr "Recargar"
+
+#: ../../../visualisations/rawdata.php:51
+msgid "Mean:"
+msgstr "Media:"
+
+#: ../../../visualisations/rawdata.php:52
+msgid "Min:"
+msgstr "Mín:"
+
+#: ../../../visualisations/rawdata.php:53
+msgid "Max:"
+msgstr "Máx:"
+
+#: ../../../visualisations/rawdata.php:54
+msgid "Standard deviation:"
+msgstr "Desviación estándar:"
+
+#: ../../../visualisations/rawdata.php:55
+msgid "Datapoints in view:"
+msgstr "Número de puntos en la vista:"
+
+#: ../../../visualisations/rawdata.php:111
+msgid "Raw:"
+msgstr "Sin procesar:"
+
+#: ../../../visualisations/realtime.php:18
+msgid "Realtime data:"
+msgstr "Datos en tiempo real:"
+
+#: ../../../visualisations/realtime.php:24
+msgid "hour"
+msgstr "hora"
+
+#: ../../../visualisations/realtime.php:25
+#: ../../../visualisations/realtime.php:26
+#: ../../../visualisations/realtime.php:27
+#: ../../../visualisations/realtime.php:28
+msgid "min"
+msgstr "min"
+
+#: ../../../visualisations/simplezoom.php:24
+msgid "Simpler kWh/d zoomer"
+msgstr "Zoom kWh/d simple"
+
+#: ../../../visualisations/timestoredaily.php:88
+msgid "Timestore Daily:"
+msgstr "Diario (Timestore):"
+
+#: ../../../visualisations/zoom.php:28
+msgid "kWh/d Zoomer"
+msgstr "Zoom kWh/d"
+
+#: ../../../visualisations/zoom.php:109
+msgid "Total:"
+msgstr "Total:"
+
+#: ../../../visualisations/zoom.php:109 ../../../visualisations/zoom.php:157
+msgid "kWh"
+msgstr "kWh"
+
+#: ../../../visualisations/zoom.php:109 ../../../visualisations/zoom.php:157
+msgid "Average:"
+msgstr "Media:"
+
+#: ../../../visualisations/zoom.php:109
+msgid "a week"
+msgstr "por semana"
+
+#: ../../../visualisations/zoom.php:109
+msgid "a year"
+msgstr "por año"
+
+#: ../../../visualisations/zoom.php:109
+msgid "Unit price:"
+msgstr "Precio por unidad:"
+
+#~ msgid "API Helper"
+#~ msgstr "API Helper"
+
+#~ msgid ""
+#~ "API keys are used to give authenticated access without login in via a "
+#~ "normal session."
+#~ msgstr ""
+#~ "Las siguientes claves son usadas para permitir acceso autenticado sin "
+#~ "necesidad de login."
+
+#~ msgid "Read only access: "
+#~ msgstr "Acceso de solo lectura:"
+
+#~ msgid "Allows to access in read only mode"
+#~ msgstr "Permite el acceso en modo de sólo lectura"
+
+#~ msgid "new"
+#~ msgstr "nuevo"
+
+#~ msgid "Write only access: "
+#~ msgstr "Acceso en modo escritura:"
+
+#~ msgid "Keep secret. Write mode access"
+#~ msgstr "Mentener en secreto. Acceso en modo escritura"
+
+#~ msgid "Post API"
+#~ msgstr "Post API"
+
+#~ msgid ""
+#~ "Example: Click or copy this to your web browser or send from your "
+#~ "monitoring hardware"
+#~ msgstr ""
+#~ "Por ejemplo: Pulsa o copia la siguiente url en el navegador or mándala "
+#~ "desde tu hardware de monitorización"
+
+#~ msgid "try me"
+#~ msgstr "pruébame"
+
+#~ msgid "Using Node addressing"
+#~ msgstr "Usando direccionamiento del nodo"
+
+#~ msgid "Change node_id from URL with the node identification"
+#~ msgstr "Cambiar el node_id desde la URL con la identificación del nodo"
+
+#~ msgid "Visualisation API"
+#~ msgstr "API para visualización"
+
+#~ msgid ""
+#~ "These are all the visualisations that are available in emoncms3. To view "
+#~ "a visualisation enter in a relevant feedid in the underlined boxes below "
+#~ "and then click on the > button."
+#~ msgstr ""
+#~ "Estas son todas la formas de visualización disponibles en Emoncms3. Para "
+#~ "ejecutar una vista introduce los datos apropiados en las cajas de texto y "
+#~ "pulsa en el boton >."
+
+#~ msgid "Name"
+#~ msgstr "Nombre"
+
+#~ msgid "URL"
+#~ msgstr "Enlace"
+
+#~ msgid "Real-time graph"
+#~ msgstr "Gráfico en tiempo real"
+
+#~ msgid "Raw data graph"
+#~ msgstr "Gráfico de datos brutos"
+
+#~ msgid "Bar graph"
+#~ msgstr "Gráfico de barras"
+
+#~ msgid "All time histogram"
+#~ msgstr "Histograma completo"
+
+#~ msgid "Daily histogram"
+#~ msgstr "Histograma diario"
+
+#~ msgid "kWh/d Comparison"
+#~ msgstr "kWh/d Comparison"
+
+#~ msgid "Simple zoom"
+#~ msgstr "Zoom sencillo"
+
+#~ msgid "Bar graph (ordered by height)"
+#~ msgstr "Bar graph (ordered by height)"
+
+#~ msgid "Threshold ordered by height"
+#~ msgstr "Threshold ordered by height"
+
+#~ msgid "Multigraph"
+#~ msgstr "Gráfico múltiple"
+
+#~ msgid "Datapoint Editor"
+#~ msgstr "Editor de datos"
+
+#~ msgid "Other options:"
+#~ msgstr "Otras opciones:"
+
+#~ msgid "Hide menu"
+#~ msgstr "Ocultar menu"
+
+#~ msgid ""
+#~ "Hide the top menu and footer by adding the attribute &embed=1 to the URL."
+#~ msgstr ""
+#~ "Puedes ocultar el menu superior y el pié añadiendo el atributo &embed=1 "
+#~ "en la URL. "
+
+#~ msgid "Share"
+#~ msgstr "Compartir"
+
+#~ msgid "To share a visualisation use your read apikey. Add the attribute "
+#~ msgstr ""
+#~ "Para compartir una vista utiliza tu clave de lectura. Añade el atributo "
+
+#~ msgid " to the URL"
+#~ msgstr " en la URL"
+
+#~ msgid "Embed"
+#~ msgstr "Incrustar"
+
+#~ msgid "Reset Multigraph"
+#~ msgstr "Inicializar Multigráfico"
+
+#~ msgid "The multigraph can be reset using the &clear=1 attribute."
+#~ msgstr ""
+#~ "El multigráfico puede ser inicializado usando el atributo &clear=1 en la "
+#~ "URL."
 
 #~ msgid "Emoncms database setup script"
 #~ msgstr "Script de creación de la base de datos de Emoncms"
@@ -391,9 +801,6 @@ msgstr "Acceso restringido"
 #~ msgid "Notification recipiants (To): "
 #~ msgstr "Destinatarios de las notificaciones (To):"
 
-#~ msgid "Save"
-#~ msgstr "Guardar"
-
 #~ msgid "Notify "
 #~ msgstr "Notificar"
 
@@ -561,9 +968,6 @@ msgstr "Acceso restringido"
 
 #~ msgid "Options"
 #~ msgstr "Opciones"
-
-#~ msgid "Delete"
-#~ msgstr "Borrar"
 
 #~ msgid "Saved"
 #~ msgstr "Guardar"
