@@ -87,19 +87,19 @@ Once installed you can pull in updates with:
 Enter the mysql password that you set above.
 Then enter the sql to create a database:
 
-    mysql> CREATE DATABASE emoncms;
+    CREATE DATABASE emoncms;
     
 Then add a user for emoncms and give it permissions on the new database (think of a nice long password):
 
-    mysql> CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'YOUR_SECURE_PASSWORD_HERE';
-    mysql> GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
-    mysql> flush privileges;
+    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'YOUR_SECURE_PASSWORD_HERE';
+    GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
+    flush privileges;
 
 Exit mysql by:
 
-    mysql> exit
+    exit
     
-### Create data repositories for emoncms feed engine's
+### Create data repositories for emoncms feed engines
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
@@ -130,7 +130,7 @@ Update your database settings to use your new secure password:
     $username = "YOUR DB USERNAME";
     $password = "YOUR DB PASSWORD";
     
-You will also want to modify SMTP settings and the password reset flag further down in the settings file. Save and exit.
+Save and exit.
 
 ### In an internet browser, load emoncms:
 
