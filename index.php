@@ -51,6 +51,8 @@
         }
         die();
     }
+    // Set charset to utf8
+    $mysqli->set_charset("utf8");
 
     if (!$mysqli->connect_error && $dbtest==true) {
         require "Lib/dbschemasetup.php";

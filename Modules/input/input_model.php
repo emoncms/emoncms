@@ -55,8 +55,8 @@ class Input
     {
         global $max_node_id_limit;
         $userid = (int) $userid;
-        $nodeid = preg_replace('/[^\w\s-.]/','',$nodeid);
-        $name = preg_replace('/[^\w\s-.]/','',$name);
+        $nodeid = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$nodeid);
+        $name = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$name);
         $this->mysqli->query("INSERT INTO input (userid,name,nodeid,description,processList) VALUES ('$userid','$name','$nodeid','','')");
         $id = $this->mysqli->insert_id;
 
@@ -109,8 +109,8 @@ class Input
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\w\s-]/','',$fields->description)."'";
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\w\s-.]/','',$fields->name)."'";
+        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}\p{N}\s-]/u','',$fields->description)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}\p{N}\s-.]/u','',$fields->name)."'";
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
         $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE `id` = '$id'");
@@ -155,7 +155,7 @@ class Input
 
         return $dbinputs;
     }
-    
+
     private function mysql_get_inputs($userid)
     {
         $userid = (int) $userid;
@@ -174,7 +174,7 @@ class Input
     // This public function gets a users input list, its used to create the input/list page
     //-----------------------------------------------------------------------------------------------
     // USES: redis input & user & lastvalue
-    
+
     public function getlist($userid)
     {
         if ($this->redis) {
@@ -183,7 +183,7 @@ class Input
             return $this->mysql_getlist($userid);
         }
     }
-    
+
     private function redis_getlist($userid)
     {
         $userid = (int) $userid;
@@ -201,12 +201,12 @@ class Input
         }
         return $inputs;
     }
-    
+
     private function mysql_getlist($userid)
     {
         $userid = (int) $userid;
         $inputs = array();
-        
+
         $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
@@ -235,7 +235,7 @@ class Input
     public function get_last_value($id)
     {
         $id = (int) $id;
-        
+
         if ($this->redis) {
             return $this->redis->hget("input:lastvalue:$id",'value');
         } else {
@@ -245,7 +245,7 @@ class Input
         }
     }
 
-    
+
     // USES: redis input & user
     public function delete($userid, $inputid)
     {
@@ -254,7 +254,7 @@ class Input
         // Inputs are deleted permanentely straight away rather than a soft delete
         // as in feeds - as no actual feed data will be lost
         $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-        
+
         if ($this->redis) {
             $this->redis->del("input:$inputid");
             $this->redis->srem("user:inputs:$userid",$inputid);
@@ -271,7 +271,7 @@ class Input
             if ($row['processList']==NULL || $row['processList']=='')
             {
                 $result = $this->mysqli->query("DELETE FROM input WHERE userid = '$userid' AND id = '$inputid'");
-                
+
                 if ($this->redis) {
                     $this->redis->del("input:$inputid");
                     $this->redis->srem("user:inputs:$userid",$inputid);
@@ -290,7 +290,7 @@ class Input
     {
         // LOAD REDIS
         $id = (int) $id;
-        
+
         if ($this->redis) {
             if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
             return $this->redis->hget("input:$id",'processList');

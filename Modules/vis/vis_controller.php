@@ -89,7 +89,7 @@
                             if (get($key)==true || get($key)==false)
                                 $array[$key] = get($key); else $array[$key] = $default;
                         else if ($type==5)
-                            $array[$key] = preg_replace('/[^\w\s£$€¥]/','',get($key))?get($key):$default;
+                            $array[$key] = preg_replace('/[^\p{L}\p{N}\s£$€¥]/u','',get($key))?get($key):$default;
                         else if ($type==6)
                             $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
                         else if ($type==7)
@@ -104,7 +104,7 @@
                               $array['valid'] = false;
                             }
                         }
-                        
+
                         # we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
                         # we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
                         if ($key == "colour")
@@ -115,7 +115,7 @@
                 $array['apikey'] = $read_apikey;
                 $array['write_apikey'] = $write_apikey;
 
-                if ($array['valid'] == false) { 
+                if ($array['valid'] == false) {
                     $result .= "<div style='position:absolute; top:0px; left:0px; width:100%; height:100%; display: table;'><div class='alert-error' style='text-align:center; display:table-cell; vertical-align:middle;'><h4>"._('Not configured')."<br>"._('or')."<br>"._('Authentication not valid')."</h4></div></div>";
                 } else {
                     $result .= view("Modules/".$visdir.$viskey.".php", $array);
@@ -133,7 +133,7 @@
     {
         if ($route->subaction == 'get') $result = $multigraph->get(get('id'),$session['userid']);
         else if ($route->subaction == 'getlist') $result = $multigraph->getlist($session['userid']);
-        
+
         else if ($session['write']) {
             if ($route->subaction == 'new') $result = $multigraph->create($session['userid']);
             else if ($route->subaction == 'delete') $result = $multigraph->delete(get('id'),$session['userid']);
