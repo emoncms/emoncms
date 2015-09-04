@@ -45,7 +45,7 @@ function input_controller()
     if ($route->format == 'json')
     {
         /*
-        
+
         input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
 
         The first number of each node is the time offset (see below).
@@ -64,7 +64,7 @@ function input_controller()
         (number of seconds since 1970-01-01 00:00:00 UTC)
 
         Examples:
-        
+
         // legacy mode: 4 is 0, 2 is -2 and 0 is -4 seconds to now.
           input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
         // offset mode: -6 is -16 seconds to now.
@@ -81,12 +81,12 @@ function input_controller()
         if ($route->action == 'bulk')
         {
             $valid = true;
-            
+
             if (!isset($_GET['data']) && isset($_POST['data']))
             {
                 $data = json_decode(post('data'));
             }
-            else 
+            else
             {
                 $data = json_decode(get('data'));
             }
@@ -94,7 +94,7 @@ function input_controller()
             $userid = $session['userid'];
 
             $dropped = 0; $droppednegative = 0;
-            
+
             $len = count($data);
             if ($len>0)
             {
@@ -105,7 +105,7 @@ function input_controller()
                         $time_ref = time() - (int) $_GET['sentat'];
                     }  elseif (isset($_POST['sentat'])) {
                         $time_ref = time() - (int) $_POST['sentat'];
-                    } 
+                    }
                     // Offset mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
                     elseif (isset($_GET['offset'])) {
                         $time_ref = time() - (int) $_GET['offset'];
@@ -117,12 +117,12 @@ function input_controller()
                         $time_ref = (int) $_GET['time'];
                     } elseif (isset($_POST['time'])) {
                         $time_ref = (int) $_POST['time'];
-                    } 
+                    }
                     // Legacy mode: input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
                     else {
                         $time_ref = time() - (int) $data[$len-1][0];
                     }
-                    
+
                     foreach ($data as $item)
                     {
                         if (count($item)>2)
@@ -154,7 +154,7 @@ function input_controller()
                             if ($redis->exists("limiter:$userid:$nodeid")) {
                                 $lasttime = $redis->get("limiter:$userid:$nodeid");
                             }
-                            
+
                             if (($time-$lasttime)>=1)
                             {
                                 $redis->set("limiter:$userid:$nodeid",$time);
@@ -163,12 +163,12 @@ function input_controller()
                                 if ($redis->llen('buffer')<10000) {
                                     $redis->rpush('buffer',$str);
                                 } else {
-                                    $valid = false; 
+                                    $valid = false;
                                     $error = "Too many connections, input queue is full";
                                 }
-                            } else { 
+                            } else {
                                 if (($time-$lasttime)<0) $droppednegative ++;
-                                $dropped ++; 
+                                $dropped ++;
                             }
                         } else { $valid = false; $error = "Format error, bulk item needs at least 3 values"; }
                     }
@@ -176,15 +176,15 @@ function input_controller()
             } else { $valid = false; $error = "Format error, json string supplied is not valid"; }
 
             if ($dropped) {
-                $valid = false; 
+                $valid = false;
                 $error = "Request exceed's max node update rate of 1 per second: $dropped $droppednegative times";
             }
-            
+
             // $valid = true;
-            
+
             if ($valid) {
                 $result = 'ok';
-            } else { 
+            } else {
                 $result = "Error: $error\n";
             }
         }
@@ -214,7 +214,7 @@ function input_controller()
 
             if ($datain!="")
             {
-                $json = preg_replace('/[^\w\s-.:,]/','',$datain);
+                $json = preg_replace('/[^\p{L}\p{N}\s-.:,]/u','',$datain);
                 $datapairs = explode(',', $json);
 
                 $csvi = 0;
@@ -263,7 +263,7 @@ function input_controller()
         if ($route->action == "list") $result = $input->getlist($session['userid']);
         if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
         if ($route->action == "getallprocesses") $result = $process->get_process_list();
-        
+
         if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
             if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
@@ -277,7 +277,7 @@ function input_controller()
                 if ($route->subaction == "delete") $result = $input->delete_process(get("inputid"),get('processid'));
                 if ($route->subaction == "move") $result = $input->move_process(get("inputid"),get('processid'),get('moveby'));
                 if ($route->subaction == "reset") $result = $input->reset_process(get("inputid"));
-            }           
+            }
         }
     }
 

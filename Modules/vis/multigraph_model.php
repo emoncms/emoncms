@@ -25,7 +25,7 @@ class Multigraph
     {
         $userid = intval($userid);
         $this->mysqli->query("INSERT INTO multigraph (`userid`,`feedlist`, `name`) VALUES ('$userid','', 'New Multigraph')");
-        return $this->mysqli->insert_id;  
+        return $this->mysqli->insert_id;
     }
 
     public function delete($id,$userid)
@@ -38,8 +38,8 @@ class Multigraph
     {
         $id = intval($id);
         $userid = intval($userid);
-        $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
-        $name = preg_replace('/[^\w\s-.]/','',$name);
+        $feedlist = preg_replace('/[^\p{L}\p{N}\s-.",:{}\[\]]/u','',$feedlist);
+        $name = preg_replace('/[^\p{L}\p{N}\s-.]/u','',$name);
         $this->mysqli->query("UPDATE multigraph SET `name` = '$name', `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
         if ($this->mysqli->affected_rows>0){
             return array('success'=>true, 'message'=>'Multigraph updated');
