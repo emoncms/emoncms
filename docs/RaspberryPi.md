@@ -14,7 +14,7 @@ Install all dependencies:
 
     sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
 
-During the installation you will be prompted to select a password for the **'MYSQL "root" user'**, and again re-enter it. Make a note of the password - you will need it later
+During the installation you will be prompted to select a password for the 'MYSQL "root" user', and again re-enter it. Make a note of the password - you will need it later
 
 Configure PHP Timezone:
 
@@ -86,7 +86,7 @@ Once installed you can pull in updates with:
 
     mysql -u root -p
 
-Enter the **'MYSQL "root" user'** password that you set above.
+When prompted, enter the 'MYSQL "root" user' password that you set above.
 Then enter the sql to create a database:
 
     CREATE DATABASE emoncms;
