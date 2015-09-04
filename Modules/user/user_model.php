@@ -197,7 +197,7 @@ class User
 
         // filter out all except for alphanumeric white space and dash
         //if (!ctype_alnum($username))
-        $username_out = preg_replace('/[^\w\s-]/','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}\s-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
@@ -236,14 +236,14 @@ class User
             return array('success'=>true, 'message'=>_("Login successful"));
         }
     }
-    
+
     // Authorization API. returns user write and read apikey on correct username + password
     // This is useful for using emoncms with 3rd party applications
 
-    public function get_apikeys_from_login($username, $password) 
+    public function get_apikeys_from_login($username, $password)
     {
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
-        $username_out = preg_replace('/[^\w\s-]/','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}\s-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
@@ -253,7 +253,7 @@ class User
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language, apikey_write,apikey_read FROM users WHERE username = '$username'");
 
         if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Incorrect authentication"));
-     
+
         $userData = $result->fetch_object();
         $hash = hash('sha256', $userData->salt . hash('sha256', $password));
 
@@ -303,10 +303,10 @@ class User
             return array('success'=>false, 'message'=>_("Old password incorect"));
         }
     }
-    
+
     public function passwordreset($username,$email)
     {
-        $username_out = preg_replace('/[^\w\s-]/','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}\s-]/u','',$username);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$email'");
@@ -326,7 +326,7 @@ class User
                 $hash = hash('sha256', $newpass);
                 $salt = md5(uniqid(rand(), true));
                 $password = hash('sha256', $salt . $hash);
-                
+
                 // Save password and salt
                 $this->mysqli->query("UPDATE users SET password = '$password', salt = '$salt' WHERE id = '$userid'");
 
@@ -338,7 +338,7 @@ class User
 
                     // include SwiftMailer. One is the path from a PEAR install,
                     // the other from libphp-swiftmailer.
-                    $have_swift = @include_once ("Swift/swift_required.php"); 
+                    $have_swift = @include_once ("Swift/swift_required.php");
                     if (!$have_swift) {
                        $have_swift = @include_once ("swift_required.php");
                     }
@@ -372,7 +372,7 @@ class User
 
     public function change_username($userid, $username)
     {
-        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As your using a cookie based remember me login, please logout and log back in to change username"));
+        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As you are using a cookie based remember me login, please logout and log back in to change username"));
 
         $userid = intval($userid);
         if (strlen($username) < 4 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
@@ -394,7 +394,7 @@ class User
 
     public function change_email($userid, $email)
     {
-        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As your using a cookie based remember me login, please logout and log back in to change email"));
+        if (isset($_SESSION['cookielogin']) && $_SESSION['cookielogin']==true) return array('success'=>false, 'message'=>_("As you are using a cookie based remember me login, please logout and log back in to change email"));
 
         $userid = intval($userid);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
@@ -464,7 +464,7 @@ class User
         $row = $result->fetch_array();
         return $row['timezone'];
     }
-    
+
     // List supported PHP timezones
     public function get_timezones()
     {
@@ -485,7 +485,7 @@ class User
         }
         return $timezones;
     }
-    
+
     public function get_salt($userid)
     {
         $userid = intval($userid);
@@ -526,7 +526,7 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = intval($userid);
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$timezone);
+        $timezone = preg_replace('/[^\p{N}\p{L}-.\\/_]/u','',$timezone);
         $this->mysqli->query("UPDATE users SET timezone = '$timezone' WHERE id='$userid'");
     }
 
@@ -546,12 +546,12 @@ class User
     {
         // Validation
         $userid = intval($userid);
-        $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
-        $name = preg_replace('/[^\w\s-.]/','',$data->name);
-        $location = preg_replace('/[^\w\s-.]/','',$data->location);
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
-        $bio = preg_replace('/[^\w\s-.]/','',$data->bio);
-        $language = preg_replace('/[^\w\s-.]/','',$data->language); 
+        $gravatar = preg_replace('/[^\p{N}\p{L}\s-.@]/u','',$data->gravatar);
+        $name = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->name);
+        $location = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->location);
+        $timezone = preg_replace('/[^\p{N}\p{L}-.\\/_]/u','',$data->timezone);
+        $bio = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->bio);
+        $language = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->language);
         $_SESSION['lang'] = $language;
 
         $result = $this->mysqli->query("UPDATE users SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");

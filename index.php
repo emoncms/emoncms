@@ -10,7 +10,7 @@
     http://openenergymonitor.org
 
     */
-    
+
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 
@@ -40,7 +40,7 @@
     } else {
         $redis = false;
     }
-    
+
     $mqtt = false;
 
     $mysqli = @new mysqli($server,$username,$password,$database);
@@ -51,6 +51,8 @@
         }
         die();
     }
+    // Set charset to utf8
+    $mysqli->set_charset("utf8");
 
     if (!$mysqli->connect_error && $dbtest==true) {
         require "Lib/dbschemasetup.php";
@@ -73,7 +75,7 @@
         //      Authorization: Bearer THE_API_KEY_HERE
         $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
     }
-    
+
     if ($apikey) {
         $session = $user->apikey_session($apikey);
         if (empty($session)) {
@@ -137,7 +139,7 @@
 
     // If no controller found or nothing is returned, give friendly error
     if ($output['content'] === "#UNDEFINED#") {
-        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
+        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         $output['content'] = "URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
     }
 
@@ -148,7 +150,7 @@
         $route->subaction = "";
         $output = controller($route->controller);
     }
-    
+
     $output['route'] = $route;
     $output['session'] = $session;
 
@@ -168,12 +170,14 @@
     }
     else if ($route->format == 'html')
     {
+        // Select the theme
+        $themeDir = "Theme/" . $theme . "/";
         if ($embed == 1) {
-            print view("Theme/embed.php", $output);
+            print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-            $output['mainmenu'] = view("Theme/menu_view.php", array());
-            print view("Theme/theme.php", $output);
+            $output['mainmenu'] = view($themeDir . "menu_view.php", array());
+            print view($themeDir . "theme.php", $output);
         }
     }
     else if ($route->format == 'text')
@@ -182,7 +186,7 @@
         print $output['content'];
     }
     else {
-        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable"); 
+        header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         print "URI not acceptable. Unknown format '".$route->format."'.";
     }
 

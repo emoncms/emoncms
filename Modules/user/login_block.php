@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $enable_rememberme, $enable_password_reset;
+global $path, $enable_rememberme, $enable_password_reset, $theme;
 
 ?>
 <style>
@@ -26,9 +26,9 @@ global $path, $enable_rememberme, $enable_password_reset;
 
 <div class="main">
   <div class="well">
-    <img src="<?php echo $path; ?>Theme/emoncms_logo.png" alt="Emoncms" width="256" height="46" />
+    <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emoncms_logo.png" alt="Emoncms" width="256" height="46" />
     <div class="login-container">
-        <form id="login-form" action="#" method="post">
+        <form id="login-form" method="post">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Email'); ?>
@@ -163,13 +163,13 @@ $('input[type=text]').on('keypress', function(e) {
         if ( register_open ) {
             register();
         } else {
-            login();
+            return login();
         }
     }
 });
 
 $('#login').click(function() {
-  login();
+  return login();
 });
 
 function login(){
@@ -182,11 +182,12 @@ function login(){
     if (result.success)
     {
         $('#login-form').submit();
-        window.location.reload(true);
+        return true;
     }
     else
     {
         $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+        return false;
     }
 }
 

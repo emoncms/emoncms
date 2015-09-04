@@ -1,0 +1,243 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-03 18:11+0100\n"
+"PO-Revision-Date: 2015-09-03 18:14+0100\n"
+"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"Language-Team: \n"
+"Language: en_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.7.5\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../Views/schedule_api.php:6
+msgid "Schedule API"
+msgstr "API de programación horaria"
+
+#: ../../../Views/schedule_api.php:7
+msgid "Apikey authentication"
+msgstr "Clave de autenticación"
+
+#: ../../../Views/schedule_api.php:8
+msgid ""
+"If you want to call any of the following actions when your not logged in you "
+"have this options to authenticate with the API key:"
+msgstr ""
+"Si quiere hacer peticiones a alguna de las siguientes acciones sin estar "
+"logueado, tienes estas opciones para autenticarte con la API key:"
+
+#: ../../../Views/schedule_api.php:9
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr "Añade a la url de la petición: &apikey=APIKEY"
+
+#: ../../../Views/schedule_api.php:10
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr "Usa el parámetro POST: \"apikey=APIKEY\""
+
+#: ../../../Views/schedule_api.php:11
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr "Añade la cabecera HTTP:\"Authorization: Bearer APIKEY\""
+
+#: ../../../Views/schedule_api.php:12
+msgid "Read only:"
+msgstr "Sólo lectura:"
+
+#: ../../../Views/schedule_api.php:15
+msgid "Read & Write:"
+msgstr "Sólo lectura:"
+
+#: ../../../Views/schedule_api.php:19
+msgid "Available HTML URLs"
+msgstr "Rutas HTML disponibles"
+
+#: ../../../Views/schedule_api.php:21
+msgid "The schedule list view"
+msgstr "Vista de lista de la programación horaria"
+
+#: ../../../Views/schedule_api.php:22
+msgid "This page"
+msgstr "Esta página"
+
+#: ../../../Views/schedule_api.php:25
+msgid "Available JSON commands"
+msgstr "Comandos JSON disponibles"
+
+#: ../../../Views/schedule_api.php:26
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr "Para utilizar la api json la petición debe contener <b>.json</b>"
+
+#: ../../../Views/schedule_api.php:28
+msgid "Schedule process actions"
+msgstr "Programar acciones"
+
+#: ../../../Views/schedule_api.php:30
+msgid "List schedules"
+msgstr "Lista de programaciones horarias"
+
+#: ../../../Views/schedule_api.php:31
+msgid "Get schedule details"
+msgstr "Obtener detalles de la programación horaria"
+
+#: ../../../Views/schedule_api.php:32
+msgid "Get only the expression"
+msgstr "Obtener únicamente la expresión"
+
+#: ../../../Views/schedule_api.php:33
+msgid "Add a schedule"
+msgstr "Añadir una programación horaria"
+
+#: ../../../Views/schedule_api.php:34 ../../../Views/schedule_view.php:37
+msgid "Delete schedule"
+msgstr "Borrar programación horaria"
+
+#: ../../../Views/schedule_api.php:35
+msgid "Update schedule"
+msgstr "Actualizar programación horaria"
+
+#: ../../../Views/schedule_api.php:36
+msgid "Test the expression"
+msgstr "Probar la expresión"
+
+#: ../../../Views/schedule_api.php:40
+msgid "Expression documentation"
+msgstr "Documentación de las expresiones"
+
+#: ../../../Views/schedule_api.php:41
+msgid "Expression is used to specify active range."
+msgstr "La expresión es utilizada para especificar el intervalo activo."
+
+#: ../../../Views/schedule_api.php:42
+msgid ""
+"Granularity is day light saving time, month, day, week day, hour and minute."
+msgstr ""
+"La granularidad disponible es horario diario de ahorro, mes, día, día de la "
+"semana, hora y minuto."
+
+#: ../../../Views/schedule_api.php:43
+msgid ""
+"Expression is built mixing basic blocks with operation characters. An hour "
+"is always required. All other basic blocks are optional and can be mixed on "
+"the same expression to build complex schedule rules. Ranges must be ordered "
+"older-newer. White spaces are ignored and can be ommited."
+msgstr ""
+"La expresión se construye mezclando bloques básicos con caracteres de "
+"operaciones. Se requiere siempre una hora. Todos los otros bloques básicos "
+"son opcionales y pueden ser mezclados en la misma expresión para construir "
+"reglas de programación horaria complejas. Los intervalos deben estar "
+"ordenados de más antiguos a más nuevos. Los espacios en blanco son ignorados "
+"y pueden ser omitidos."
+
+#: ../../../Views/schedule_api.php:44
+msgid ""
+"Timezone of expression is the same of the user account that created or "
+"edited it. If the expression is public, timezones conversions are automatic "
+"taken in account between owner and user."
+msgstr ""
+"La zona horaria de la expresión es la misma que la del usuario que creó o "
+"editó la misma. Si la expresión es pública, las conversiones entre zonas "
+"horarias se tienen en cuenta automáticamente entre el propietario y el "
+"usuario."
+
+#: ../../../Views/schedule_api.php:45
+msgid "Basic blocks:"
+msgstr "Bloques básicos:"
+
+#: ../../../Views/schedule_api.php:52
+msgid "Operation characters:"
+msgstr "Caracteres de operaciones:"
+
+#: ../../../Views/schedule_api.php:59
+msgid "Expression examples:"
+msgstr "Ejemplo de expresiones:"
+
+#: ../../../Views/schedule_view.php:16
+msgid "Schedule Help"
+msgstr "Ayuda de las programaciones horarias"
+
+#: ../../../Views/schedule_view.php:17
+msgid "Schedules"
+msgstr "Programaciones horarias"
+
+#: ../../../Views/schedule_view.php:22
+msgid "No schedules"
+msgstr "Sin programaciones horarias"
+
+#: ../../../Views/schedule_view.php:23
+msgid ""
+"There are no public schedules and you have not created your own yet. Please "
+"add a new schedule.<br><br>For help and examples on how to configure a "
+"schedule, read the <a href=\"api#expression\">Expression documentation</a>."
+msgstr ""
+"No hay programaciones horarias públicas y no ha creado ninguna aún. Por "
+"favor añada una nueva programación horaria.<br><br>Para ayuda y ejemplos de "
+"como configurar una programación horaria, lea la <a href=\"api#expression"
+"\">Documentación de expresiones</a>."
+
+#: ../../../Views/schedule_view.php:30
+msgid "New schedule"
+msgstr "Nueva programación horaria"
+
+#: ../../../Views/schedule_view.php:40
+msgid "Deleting a schedule is permanent."
+msgstr "Borrar una programación horaria es permanente."
+
+#: ../../../Views/schedule_view.php:42
+msgid ""
+"If you have an Input or Feed Processlist that use this schedule, after "
+"deleting it, review that process list or it will be in error freezing other "
+"process lists."
+msgstr ""
+"Si tiene una entrada o lista de procesos de una fuente que utiliza esta "
+"programación horaria, tras borrarla, revise la lista de procesos o será "
+"errónea, congelando otras listas de procesos"
+
+#: ../../../Views/schedule_view.php:44
+msgid "Are you sure you want to delete?"
+msgstr "¿Estás seguro de que quieres borrarlo?"
+
+#: ../../../Views/schedule_view.php:48
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../../../Views/schedule_view.php:49
+msgid "Delete permanently"
+msgstr "Borrar permanentemente"
+
+#: ../../../Views/schedule_view.php:63
+msgid "Name"
+msgstr "Nombre"
+
+#: ../../../Views/schedule_view.php:64
+msgid "Expression"
+msgstr "Expresión"
+
+#: ../../../Views/schedule_view.php:65
+msgid "Public"
+msgstr "Público"
+
+#: ../../../schedule_menu.php:7
+msgid "Schedule"
+msgstr "Programación horaria"
+
+#~ msgid "en_EN"
+#~ msgstr "English"
+
+#~ msgid "es_ES"
+#~ msgstr "Spanish"
+
+#~ msgid "nl_BE"
+#~ msgstr "Dutch (Belgium)"
+
+#~ msgid "nl_NL"
+#~ msgstr "Dutch (Netherlands)"
+
+#~ msgid "fr_FR"
+#~ msgstr "French"
+
+#~ msgid "AUTODETECTLANGUAGE"
+#~ msgstr "Use language browser"
