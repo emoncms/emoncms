@@ -167,7 +167,7 @@ class User
 
         $hash = hash('sha256', $password);
         $string = md5(uniqid(mt_rand(), true));
-        $salt = substr($string, 0, 3);
+        $salt = substr($string, 0, 16);
         $hash = hash('sha256', $salt . $hash);
 
         $apikey_write = md5(uniqid(mt_rand(), true));
@@ -293,7 +293,7 @@ class User
             // 2) Save new password
             $hash = hash('sha256', $new);
             $string = md5(uniqid(rand(), true));
-            $salt = substr($string, 0, 3);
+            $salt = substr($string, 0, 16);
             $hash = hash('sha256', $salt . $hash);
             $this->mysqli->query("UPDATE users SET password = '$hash', salt = '$salt' WHERE id = '$userid'");
             return array('success'=>true);
@@ -325,7 +325,7 @@ class User
                 // Hash and salt
                 $hash = hash('sha256', $newpass);
                 $string = md5(uniqid(rand(), true));
-                $salt = substr($string, 0, 3);
+                $salt = substr($string, 0, 16);
                 $hash = hash('sha256', $salt . $hash);
                 
                 // Save hash and salt
