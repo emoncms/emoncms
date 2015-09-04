@@ -89,7 +89,7 @@
                             if (get($key)==true || get($key)==false)
                                 $array[$key] = get($key); else $array[$key] = $default;
                         else if ($type==5)
-                            $array[$key] = preg_replace('/[^\p{L}\p{N}\s£$€¥]/u','',get($key))?get($key):$default;
+                            $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥]/u','',get($key))?get($key):$default;
                         else if ($type==6)
                             $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
                         else if ($type==7)
