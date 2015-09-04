@@ -95,7 +95,7 @@ Then add a user for the emoncms database and set permissions.
 In the command below, we're creating the database 'user' called 'emoncms', and you should create a new secure password of your choice for that user.
 Make a note of both the database 'user' & 'password' as you will need them later for adding to the settings.php file:
 
-    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'NEW_SECURE_PASSWORD';
+    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password';
     GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
     flush privileges;
 
@@ -131,8 +131,8 @@ Update your settings to use your Database 'user' & 'password', which will allow 
 
     $server   = "localhost";
     $database = "emoncms";
-    $username = "Database user";
-    $password = "Database password";
+    $username = "emoncms";
+    $password = "new_secure_password";
     
 Save and exit.
 
@@ -162,6 +162,10 @@ dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=d
 
     sudo nano /boot/cmdline.txt
 
-At this stage, close down your Raspberry Pi and connect your RFM69Pi add on board, ensuring that it's positioned correctly (see the photos in the OEM shop pages).
+At this stage, close down your Raspberry Pi:
 
-**You should now have a fully working version of emoncms v9 installed & running on your Raspberry Pi, if at this stage you don't, then please check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
+    sudo halt
+
+...and connect your RFM69Pi add on board, ensuring that it's positioned correctly (see the photos in the OEM shop pages).
+
+**You should now have a fully working version of emoncms v9 installed & running on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
