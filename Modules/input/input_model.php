@@ -55,8 +55,8 @@ class Input
     {
         global $max_node_id_limit;
         $userid = (int) $userid;
-        $nodeid = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$nodeid);
-        $name = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$name);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
         $this->mysqli->query("INSERT INTO input (userid,name,nodeid,description,processList) VALUES ('$userid','$name','$nodeid','','')");
         $id = $this->mysqli->insert_id;
 
@@ -109,8 +109,8 @@ class Input
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}\p{N}\s-]/u','',$fields->description)."'";
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}\p{N}\s-.]/u','',$fields->name)."'";
+        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}_\p{N}\s-]/u','',$fields->description)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}_\p{N}\s-.]/u','',$fields->name)."'";
         // Convert to a comma seperated string for the mysql query
         $fieldstr = implode(",",$array);
         $this->mysqli->query("UPDATE input SET ".$fieldstr." WHERE `id` = '$id'");

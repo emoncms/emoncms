@@ -197,7 +197,7 @@ class User
 
         // filter out all except for alphanumeric white space and dash
         //if (!ctype_alnum($username))
-        $username_out = preg_replace('/[^\p{N}\p{L}\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
@@ -243,7 +243,7 @@ class User
     public function get_apikeys_from_login($username, $password)
     {
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
-        $username_out = preg_replace('/[^\p{N}\p{L}\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
@@ -306,7 +306,7 @@ class User
 
     public function passwordreset($username,$email)
     {
-        $username_out = preg_replace('/[^\p{N}\p{L}\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$email'");
@@ -526,7 +526,7 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = intval($userid);
-        $timezone = preg_replace('/[^\p{N}\p{L}-.\\/_]/u','',$timezone);
+        $timezone = preg_replace('/[^\p{N}\p{L}_-.\\/_]/u','',$timezone);
         $this->mysqli->query("UPDATE users SET timezone = '$timezone' WHERE id='$userid'");
     }
 
@@ -546,12 +546,12 @@ class User
     {
         // Validation
         $userid = intval($userid);
-        $gravatar = preg_replace('/[^\p{N}\p{L}\s-.@]/u','',$data->gravatar);
-        $name = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->name);
-        $location = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->location);
-        $timezone = preg_replace('/[^\p{N}\p{L}-.\\/_]/u','',$data->timezone);
-        $bio = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->bio);
-        $language = preg_replace('/[^\p{N}\p{L}\s-.]/u','',$data->language);
+        $gravatar = preg_replace('/[^\p{N}\p{L}_\s-.@]/u','',$data->gravatar);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
+        $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
+        $timezone = preg_replace('/[^\p{N}\p{L}_-.\\/_]/u','',$data->timezone);
+        $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
+        $language = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->language);
         $_SESSION['lang'] = $language;
 
         $result = $this->mysqli->query("UPDATE users SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");

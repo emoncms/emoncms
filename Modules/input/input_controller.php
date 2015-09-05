@@ -202,7 +202,7 @@ function input_controller()
         {
             $valid = true; $error = "";
 
-            $nodeid = preg_replace('/[^\p{N}\p{L}\s-.]/u','',get('node'));
+            $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',get('node'));
 
             $error = " old".$max_node_id_limit;
 
@@ -237,7 +237,7 @@ function input_controller()
 
             if ($datain!="")
             {
-                $json = preg_replace('/[^\p{N}\p{L}\s-.:,]/u','',$datain);
+                $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);
                 $datapairs = explode(',', $json);
 
                 $csvi = 0;
