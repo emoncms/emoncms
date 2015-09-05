@@ -1,7 +1,7 @@
 # Install Emoncms on Raspberry Pi (Raspbian)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian operating system.    
-Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](http://openenergymonitor.org/emon/node/2386#comment-12200) or use the low-write version of emoncms.  
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](http://openenergymonitor.org/emon/node/2386#comment-12200) or to lower the write frequency to the SD card by using the low-write mode.  
 Before installing emoncms, it is essential you have a working version of Raspbian installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ## Preparation
@@ -20,7 +20,7 @@ Configure PHP Timezone:
 
     sudo nano /etc/php5/apache2/php.ini
 
-and search for "date.timezone":
+and search for "date.timezone" (possibly line 865):
 
     [Date]
     ; Defines the default timezone used by the date functions.
@@ -142,7 +142,10 @@ Save and exit.
 
 The first time you run emoncms it will automatically set up the database and you will be taken to the register/login screen. 
 Create an account by entering your email and password and clicking register.  
-At this stage, check the Administration page - 'Setup > Administration' and note any messages reported. Also make a note of your 'Write API Key' from the 'Setup > My Account' page.
+Once you are logged in;  
+* Check the Administration page - 'Setup > Administration' and note any messages reported.
+* Update your database - 'Setup > Administration > Update database'.
+* Also make a note of your 'Write API Key' from the 'Setup > My Account' page.
 
 ### Install Emonhub
     
@@ -164,8 +167,8 @@ dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=d
 
 At this stage, power off down your Raspberry Pi:
 
-    poweroff
+    sudo poweroff
 
 Once your Pi is fully powered off, connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
 
-**You should now have a fully working version of emoncms v9 installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
+**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
