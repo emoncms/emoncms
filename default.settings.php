@@ -135,5 +135,5 @@
     // field separator
     $csv_field_separator = ",";
 
-    // Dont change - developper updates this when the config format changes
+    // Dont change - developer updates this when the config format changes
     $config_file_version = "5";

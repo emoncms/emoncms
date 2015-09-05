@@ -112,13 +112,13 @@ class Dashboard
         // Repeat this line changing the field name to add fields that can be updated:
 
         if (isset($fields->height)) $array[] = "`height` = '".intval($fields->height)."'";
-        if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\p{L}\p\{N}\s-.#<>?",;:=&\/%~]/u','',$fields->content)."'";
+        if (isset($fields->content)) $array[] = "`content` = '".preg_replace('/[^\p{L}_\p\{N}\s-.#<>?",;:=&\/%~]/u','',$fields->content)."'";
 
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}\p{N}\s-]/u','',$fields->name)."'";
-        if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\p{L}\p{N}\s-]/u','',$fields->alias)."'";
-        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}\p{N}\s-]/u','',$fields->description)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}_\p{N}\s-]/u','',$fields->name)."'";
+        if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\p{L}_\p{N}\s-]/u','',$fields->alias)."'";
+        if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}_\p{N}\s-]/u','',$fields->description)."'";
 
-        if (isset($fields->backgroundcolor)) $array[] = "`backgroundcolor` = '".preg_replace('/[^[0-9a-fA-F]]/','', strtolower($fields->backgroundcolor))."'";
+        if (isset($fields->backgroundcolor)) $array[] = "`backgroundcolor` = '".preg_replace('/[^[0-9A-F]]/','', strtolower($fields->backgroundcolor))."'";
 
         if (isset($fields->main))
         {
@@ -161,7 +161,7 @@ class Dashboard
     public function get_from_alias($userid, $alias)
     {
         $userid = (int) $userid;
-        $alias = preg_replace('/[^\p{L}\p{N}\s-]/u','',$alias);
+        $alias = preg_replace('/[^\p{L}_\p{N}\s-]/u','',$alias);
         $result = $this->mysqli->query("SELECT * FROM dashboard WHERE userid='$userid' and alias='$alias'");
         return $result->fetch_array();
     }

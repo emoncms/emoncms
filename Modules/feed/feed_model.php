@@ -83,8 +83,8 @@ class Feed
     public function create($userid,$tag,$name,$datatype,$engine,$options_in)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\p{N}\p{L}\s-:]/u','',$name);
-        $tag = preg_replace('/[^\p{N}\p{L}\s-:]/u','',$tag);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
+        $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
         $datatype = (int) $datatype;
         $engine = (int) $engine;
 
@@ -253,7 +253,7 @@ class Feed
     public function get_id($userid,$name)
     {
         $userid = intval($userid);
-        $name = preg_replace('/[^\p{N}\p{L}\s-:]/u','',$name);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
@@ -368,7 +368,7 @@ class Feed
 
         if ($field!=NULL) // if the feed exists
         {
-            $field = preg_replace('/[^\p{N}\p{L}\s-]/u','',$field);
+            $field = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$field);
 
             if ($field=='time' || $field=='value') {
                 $lastvalue = $this->get_timevalue($id);
@@ -491,8 +491,8 @@ class Feed
         $array = array();
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{N}\p{L}\s-:]/u','',$fields->name)."'";
-        if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\p{N}\p{L}\s-:]/u','',$fields->tag)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)."'";
+        if (isset($fields->tag)) $array[] = "`tag` = '".preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->tag)."'";
         if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
 
         // Convert to a comma separated string for the mysql query

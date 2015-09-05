@@ -111,10 +111,10 @@ class Schedule
         $array[] = "`timezone` = '".$this->timezone."'";
 
         // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}\p{N}\s-:]/u','',$fields->name)."'";
+        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->name)."'";
         if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
         if (isset($fields->expression)) {
-            $array[] = "`expression` = '".preg_replace('/[^\/\|\,\p{L}\p{N}\s-:]/u','',$fields->expression)."'";
+            $array[] = "`expression` = '".preg_replace('/[^\/\|\,\w\s-:]/','',$fields->expression)."'"; 
             if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
         }
 
