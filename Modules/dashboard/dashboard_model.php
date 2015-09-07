@@ -118,7 +118,7 @@ class Dashboard
         if (isset($fields->alias)) $array[] = "`alias` = '".preg_replace('/[^\p{L}_\p{N}\s-]/u','',$fields->alias)."'";
         if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}_\p{N}\s-]/u','',$fields->description)."'";
 
-        if (isset($fields->backgroundcolor)) $array[] = "`backgroundcolor` = '".preg_replace('/[^[0-9A-F]]/','', strtolower($fields->backgroundcolor))."'";
+        if (isset($fields->backgroundcolor)) $array[] = "`backgroundcolor` = '".preg_replace('/[^0-9a-f]/','', strtolower($fields->backgroundcolor))."'";
 
         if (isset($fields->main))
         {
