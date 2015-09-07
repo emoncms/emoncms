@@ -526,7 +526,7 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = intval($userid);
-        $timezone = preg_replace('/[^\p{N}\p{L}_-.\\/_]/u','',$timezone);
+        $timezone = preg_replace('/[^\w-.\\/_]/','',$timezone);
         $this->mysqli->query("UPDATE users SET timezone = '$timezone' WHERE id='$userid'");
     }
 
@@ -546,12 +546,12 @@ class User
     {
         // Validation
         $userid = intval($userid);
-        $gravatar = preg_replace('/[^\p{N}\p{L}_\s-.@]/u','',$data->gravatar);
+        $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
         $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
-        $timezone = preg_replace('/[^\p{N}\p{L}_-.\\/_]/u','',$data->timezone);
+        $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
-        $language = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->language);
+        $language = preg_replace('/[^\w\s-.]/','',$data->language); 
         $_SESSION['lang'] = $language;
 
         $result = $this->mysqli->query("UPDATE users SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");

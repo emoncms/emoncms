@@ -571,7 +571,7 @@ class PHPFina
             // if data is in past, its not supported, could call update here to fix on file before continuing
             // but really this should not happen for past data has process_feed_buffer uses update for that.
             // so this must be data posted in less time of the feed interval and can be ignored
-            $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting to fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
+            $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
         }
         
         return $value;
