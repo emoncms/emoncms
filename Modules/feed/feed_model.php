@@ -368,8 +368,8 @@ class Feed
 
         if ($field!=NULL) // if the feed exists
         {
-            $field = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$field);
-
+            $field = preg_replace('/[^\w\s-]/','',$field);
+         
             if ($field=='time' || $field=='value') {
                 $lastvalue = $this->get_timevalue($id);
                 $val = $lastvalue[$field];

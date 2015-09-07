@@ -188,7 +188,7 @@ function load_events(){
   // Event for every change event in the lineColour input for each line in the plot.
   $(baseElement).on("input","#lineColour",function(event){
     var z = $(this).attr('listid');
-    multigraph_feedlist[z]["lineColour"] = $(this)[0].value;
+    multigraph_feedlist[z]["lineColour"] = $(this)[0].value.replace('#','');
     modified();
   });
   // This only fires when the user either deselects the lineColour text-box, or hits enter

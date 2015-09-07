@@ -31,7 +31,7 @@
 USER=root
 
 ## where rpi is located
-RPI_BIN="/var/www/emoncms/run/feedwriter.php"
+RPI_BIN="/var/www/emoncms/scripts/feedwriter.php"
 RPI_SCRIPT="feedwriter.php"
 
 ## where the binary is located
