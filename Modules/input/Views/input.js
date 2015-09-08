@@ -36,7 +36,7 @@ var input = {
     'set_process':function(inputid,processlist)
     {
         var result = {};
-        $.ajax({ url: path+"input/process/set.json", data: "inputid="+inputid+"&processlist="+processlist, async: false, success: function(data){result = data;} });
+        $.ajax({ url: path+"input/process/set.json?inputid="+inputid, method: "POST", data: "processlist="+processlist, async: false, success: function(data){result = data;} });
         return result;
     },
 

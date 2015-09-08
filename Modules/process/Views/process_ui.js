@@ -1,8 +1,8 @@
 var processlist_ui =
 {
-  contexttype: 0,      // Editor type (0:input, 1:feed/virtual)
-  contextid: 0,      // The current inputid or virtual feed id being edited
-  contextprocesslist: [],  // The current process list being edited
+  contexttype: 0,         // Editor type (0:input, 1:feed/virtual)
+  contextid: 0,           // The current inputid or virtual feed id being edited
+  contextprocesslist: [], // The current process list being edited
 
   processlist: [], // Cache this lists
   feedlist:[],
@@ -39,14 +39,14 @@ var processlist_ui =
         out += '</td>';
 
         // Process name and argument
-        var processid = parseInt(this.contextprocesslist[z][0]);
+        var processkey = this.contextprocesslist[z][0];
         var arg = "";
         var lastvalue = "";
 
         var processname = "";
         // Check ProcessArg Type
-        if (this.processlist[processid] != undefined) {
-          switch(this.processlist[processid][1]) {
+        if (this.processlist[processkey] != undefined) {
+          switch(this.processlist[processkey][1]) {
             case 0: // VALUE
               arg += "<span class='label label-info' title='Value'>";
               arg += "<i class='icon-edit icon-white'></i> ";
@@ -104,11 +104,11 @@ var processlist_ui =
               }
               break;
           }
-          processname = this.processlist[processid][0];
+          processname = this.processlist[processkey][0];
         }
         else {
           processname = "UNSUPPORTED";
-          arg += "<span class='label label-important' title='Value'>Process '"+processid+"' not available. Module missing?</span>";
+          arg += "<span class='label label-important' title='Value'>Process '"+processkey+"' not available. Module missing?</span>";
         }
         out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
      
@@ -134,14 +134,14 @@ var processlist_ui =
       {
         for (z in localprocesslist) {
           // Process name and argument
-          var processid = parseInt(localprocesslist[z][0]);
+          var processkey = localprocesslist[z][0];
           var key = "";
 
           // Check ProcessArg Type
-          if (this.processlist[processid] != undefined) {
+          if (this.processlist[processkey] != undefined) {
             value = localprocesslist[z][1];
-            key = "<small>"+this.processlist[processid][0]+"</small>"; // name
-            switch(this.processlist[processid][1]) {
+            key = "<small>"+this.processlist[processkey][0]+"</small>"; // name
+            switch(this.processlist[processkey][1]) {
               case 0: // VALUE
                 title = "Value " + value;
                 color = 'info';
@@ -192,7 +192,7 @@ var processlist_ui =
                 break;
             }
           } else {
-              out += "<span class='badge badge-important' title='Process '"+processid+"' not available. Module missing?'>UNSUPPORTED</span>"
+              out += "<span class='badge badge-important' title='Process '"+processkey+"' not available. Module missing?'>UNSUPPORTED</span>"
           }
         }
       } else {
@@ -322,10 +322,10 @@ var processlist_ui =
           $("#type-schedule").show();
           break;
       }
-      if (process_info[processid] === undefined) {
-        $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\process\\Views\\processinfo.js array.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and past the text above to ask a developer to include a process description.</b>");  
+      if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
+        $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and past the text above to ask a developer to include a process description.</b>");  
       } else {
-        $("#description").html(process_info[processid]);
+        $("#description").html(processlist_ui.processlist[processid]['desc']);
       }
       
     });
@@ -628,12 +628,12 @@ var processlist_ui =
     $("#new-feed-tag").val(newfeedtag);
     this.draw();
     $("#save-processlist").attr('class','btn btn-success').text("Not modified");
-    $("#processlist-ui #process-select").change();  // Force a refresh
-    $("#processlistModal").modal('show');       // Show
-    this.ajustmodal();
+    $("#processlist-ui #process-select").change(); // Force a refresh
+    $("#processlistModal").modal('show');          // Show
+    this.adjustmodal();
   },
 
-  'ajustmodal':function() {
+  'adjustmodal':function() {
     if ($("#processlistModal").length) {
       var h = $(window).height() - $("#processlistModal").position().top - 180;
       $("#processlist-ui").height(h);

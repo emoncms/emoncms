@@ -28,7 +28,7 @@ function process_controller()
 
     require_once "Modules/input/input_model.php"; 
     $input = new Input($mysqli,$redis, $feed);
-	
+
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
     
@@ -36,7 +36,7 @@ function process_controller()
     {
         if ($route->action == 'api') $result = view("Modules/process/Views/process_api.php", array());
     }
-	
+
     else if ($route->format == 'json')
     {
         if ($route->action == "list") $result = $process->get_process_list();

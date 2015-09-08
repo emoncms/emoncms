@@ -73,7 +73,7 @@ class Route
         
         $this->method = "GET";
         if ($_SERVER["REQUEST_METHOD"]=="POST") $this->method = "POST";
-        if ($_SERVER["REQUEST_METHOD"]=="DELETE") $this->method = "DELETE";
-        if ($_SERVER["REQUEST_METHOD"]=="PUT") $this->method = "PUT";
+        else if ($_SERVER["REQUEST_METHOD"]=="DELETE") $this->method = "DELETE";
+        else if ($_SERVER["REQUEST_METHOD"]=="PUT") $this->method = "PUT";
     }
 }
