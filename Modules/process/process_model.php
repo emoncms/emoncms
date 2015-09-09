@@ -12,17 +12,16 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Process
 {
-    private $mysqli;
-    private $input;
-    private $feed;
-    private $timezone = 'UTC';
+    public $mysqli;
+    public $input;
+    public $feed;
+    public $timezone = 'UTC';
+
+    public $proc_initialvalue;  // save the input value at beginning of the processes list execution
+    public $proc_skip_next;     // skip execution of next process in process list
+    public $proc_goto;          // goto step in process list
 
     private $log;
-
-    private $proc_initialvalue;  // save the input value at beginning of the processes list execution
-    private $proc_skip_next;     // skip execution of next process in process list
-    private $proc_goto;          // goto step in process list
-
     private $modules_functions = array();
 
     public function __construct($mysqli,$input,$feed,$timezone)
@@ -130,7 +129,7 @@ class Process
         if(file_exists($module_file)){
             require($module_file);
             $module_class_name = ucfirst(strtolower($module_name)."_ProcessList");
-            $module_class = new $module_class_name($this->mysqli,$this->input,$this->feed,$this->timezone);
+            $module_class = new $module_class_name($this); // passes this class as reference
             $module_class_functions = get_class_methods($module_class);
             foreach($module_class_functions as $key => $function_name){
                 if (substr($function_name, 0, 2) == "__" || $function_name == "process_list") continue;

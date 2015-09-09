@@ -18,17 +18,24 @@ class Process_ProcessList
     private $feed;
     private $timezone;
 
+    private $proc_initialvalue;  // save the input value at beginning of the processes list execution
+    private $proc_skip_next;     // skip execution of next process in process list
+    private $proc_goto;          // goto step in process list
+
     private $log;
     private $mqtt = false;
 
-    // Module required constructor
-    public function __construct($mysqli,$input,$feed,$timezone)
+    // Module required constructor, receives parent as reference
+    public function __construct(&$parent)
     {
-        $this->mysqli = $mysqli;
-        $this->input = $input;
-        $this->feed = $feed;
-        $this->timezone = $timezone;
-        
+        $this->mysqli = &$parent->mysqli;
+        $this->input = &$parent->input;
+        $this->feed = &$parent->feed;
+        $this->timezone = &$parent->timezone;
+        $this->proc_initialvalue = &$parent->proc_initialvalue;
+        $this->proc_skip_next = &$parent->proc_skip_next;
+        $this->proc_goto = &$parent->proc_goto;
+
         $this->log = new EmonLogger(__FILE__);
 
         // Load MQTT if enabled

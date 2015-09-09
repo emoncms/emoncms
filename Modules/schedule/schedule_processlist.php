@@ -16,13 +16,13 @@ class Schedule_ProcessList
     private $log;
     private $schedule;
 
-    // Module required constructor
-    public function __construct($mysqli,$input,$feed,$timezone)
+    // Module required constructor, receives parent as reference
+    public function __construct(&$parent)
     {
         $this->log = new EmonLogger(__FILE__);
 
         include_once "Modules/schedule/schedule_model.php";
-        $this->schedule = new Schedule($mysqli, $timezone);
+        $this->schedule = new Schedule($parent->mysqli, $parent->timezone);
     }
 
     // Module required process configuration, $list array index position is not used, function name is used instead
