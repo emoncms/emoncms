@@ -14,13 +14,12 @@
    }
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_info.js"></script>
 
 <script>
   processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
  
   $(window).resize(function(){
-    processlist_ui.ajustmodal() 
+    processlist_ui.adjustmodal() 
   });
 </script>
 

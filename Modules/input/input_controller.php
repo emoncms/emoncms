@@ -300,7 +300,7 @@ function input_controller()
             else if ($route->action == "process")
             {
                 if ($route->subaction == "get") $result = $input->get_processlist(get("inputid"));
-                else if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), get('processlist'));
+                else if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), post('processlist'));
                 else if ($route->subaction == "reset") $result = $input->reset_processlist(get("inputid"));
             }
         }

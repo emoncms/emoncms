@@ -101,7 +101,7 @@ function feed_controller()
                     {
                         if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }
                         else if ($route->subaction == "get") $result = $feed->get_processlist($feedid);
-                        else if ($route->subaction == "set") $result = $feed->set_processlist($feedid, get('processlist'));
+                        else if ($route->subaction == "set") $result = $feed->set_processlist($feedid, post('processlist'));
                         else if ($route->subaction == "reset") $result = $feed->reset_processlist($feedid);
                     }
 

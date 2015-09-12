@@ -115,7 +115,7 @@ var feed = {
   // Virtual feed process
   'set_process':function(feedid,processlist){
     var result = {};
-    $.ajax({ url: path+"feed/process/set.json", data: "id="+feedid+"&processlist="+processlist, async: false, success: function(data){result = data;} });
+    $.ajax({ url: path+"feed/process/set.json?id="+feedid, method: "POST", data: "processlist="+processlist, async: false, success: function(data){result = data;} });
     return result;
   },
 
