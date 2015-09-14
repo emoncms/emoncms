@@ -91,10 +91,6 @@ class Feed
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
-        // If feed of given name by the user already exists
-        $feedid = $this->get_id($userid,$name);
-        if ($feedid!=0) return array('success'=>false, 'message'=>'feed already exists');
-
         $result = $this->mysqli->query("INSERT INTO feeds (userid,tag,name,datatype,public,engine) VALUES ('$userid','$tag','$name','$datatype',false,'$engine')");
         $feedid = $this->mysqli->insert_id;
 
@@ -245,19 +241,10 @@ class Feed
 
     /*
     Get operations by user
-    get_id                 : feed id by name
     get_user_feeds         : all the feeds table data
     get_user_public_feeds  : all the public feeds table data
     get_user_feed_ids      : only the feeds id's
     */
-    public function get_id($userid,$name)
-    {
-        $userid = intval($userid);
-        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
-        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
-        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
-    }
-
     public function get_user_feeds($userid)
     {
         $userid = (int) $userid;

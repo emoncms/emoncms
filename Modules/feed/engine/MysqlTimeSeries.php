@@ -99,11 +99,11 @@ class MysqlTimeSeries
         $feedid = (int) $feedid;
         if ($this->writebuffer_update_time($feedid,(int)$time,$value)) {
             $this->post_bulk_save();// if data is on buffer, update it and flush buffer now
-            $this->log->info("update() $feedid with buffer");
+            $this->log->info("update() feedid=$feedid with buffer");
         }
         else 
         {
-            $this->log->info("update() $feedid");
+            //$this->log->info("update() feedid=$feedid");
             // else, update or insert data value in feed table
             $feedname = "feed_".trim($feedid)."";
             $result = $this->mysqli->query("SELECT * FROM $feedname WHERE time = '$time'");
