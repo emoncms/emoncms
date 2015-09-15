@@ -106,7 +106,7 @@ class Process
                         unset ($list[$k]);
                         $processkey = strtolower($dir[$i].".".$v[2]);
                         $list[$processkey] = $v; // set list key as "module.function"
-                        $this->log->info("load_modules() module=$dir[$i] function=$v[2]");
+                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
                     }
                 }
             }

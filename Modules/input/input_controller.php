@@ -192,6 +192,8 @@ function input_controller()
                 $result = 'ok';
             } else {
                 $result = "Error: $error\n";
+                $log = new EmonLogger(__FILE__);
+                $log->error($error);
             }
         }
 
@@ -284,8 +286,11 @@ function input_controller()
 
             if ($valid)
                 $result = 'ok';
-            else
+            else {
                 $result = "Error: $error\n";
+                $log = new EmonLogger(__FILE__);
+                $log->error($error);
+            }
         }
 
 

@@ -40,8 +40,6 @@ function feed_controller()
             }
             else if (isset($_GET['userid'])) $result = $feed->get_user_public_feeds(get('userid'));
 
-        } elseif ($route->action == "getid" && $session['read']) {
-            $result = $feed->get_id($session['userid'],get('name'));
         } elseif ($route->action == "create" && $session['write']) {
             $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {

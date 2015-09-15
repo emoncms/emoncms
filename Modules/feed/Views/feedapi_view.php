@@ -46,10 +46,6 @@
     <tr><td><?php echo _("List public feeds for the given user"); ?></td><td>
 		<a href="<?php echo $path; ?>feed/list.json?userid=0"><?php echo $path; ?>feed/list.json?userid=0</a>
 	</td></tr>
-    <tr><td><?php echo _("Get feed id by name");?></td><td>
-		<a href="<?php echo $path; ?>feed/getid.json?name="><?php echo $path; ?>feed/getid.json?name=</a>
-	</td></tr>
-	
     <tr><td><?php echo _("Get feed field");?></td><td>
 		<a href="<?php echo $path; ?>feed/get.json?id=1&field=name"><?php echo $path; ?>feed/get.json?id=1&field=name</a>
 	</td></tr>

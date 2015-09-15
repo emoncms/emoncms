@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9 RC2 | 2015.09.09";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9 RC2 | 2015.09.15";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -82,6 +82,8 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
               print "Invalid API key";
+              $log = new EmonLogger(__FILE__);
+              $log->error("Invalid API key '" . $apikey. "'");
               exit();
         }
     } else {
