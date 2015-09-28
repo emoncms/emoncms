@@ -1,7 +1,7 @@
 # Install Emoncms on Raspberry Pi (Raspbian)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian operating system.    
-Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](http://openenergymonitor.org/emon/node/2386#comment-12200) or to lower the write frequency to the SD card by using the low-write mode.  
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](docs/RasberryPi/USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](docs/RaspberryPi/Low-write-mode.md)  
 Before installing emoncms, it is essential you have a working version of Raspbian installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ## Preparation
@@ -144,3 +144,8 @@ At this stage, power off your Raspberry Pi:
 Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
 
 **You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
+
+###System Options
+* [Move the operating system partition (root) to an USB HDD](docs/RasberryPi/USB_HDD.md)
+* [Enabling low-write mode](docs/RaspberryPi/Low-write-mode.md)
+* [Enabling MQTT](docs/RaspberryPi/MQTT.md)
