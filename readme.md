@@ -32,7 +32,7 @@ There are many other modules such as the event module and openbem (open source b
 ## Install
 
 * Recommended: [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
-* [Raspberry Pi](docs/RaspberryPi/RaspberryPi.md)
+* [Raspberry Pi](docs/RaspberryPi/readme.md)
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md)
 
