@@ -28,5 +28,5 @@ Save & exit, then reboot
 
     sudo reboot
 
-In your browser, open `emoncms -> Setup -> Administration`, and you should see under `Server Information` that the `Emoncms` section will be now extended to show the number of feed data points currently committed to the cache before writin to disk.  
+In your browser, open `emoncms -> Setup -> Administration`, and you should see under `Server Information` that the `Emoncms` section will be now extended to show the number of feed data points currently committed to the cache before being written to disk.  
 _NOTE: this data does not browser auto-update, it's necessary to refresh your browser to see the current data_ 
