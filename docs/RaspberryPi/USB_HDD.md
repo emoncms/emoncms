@@ -1,5 +1,5 @@
 ##Move Operating System (Root) to External HDD
-Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually move the operating system partition (root) to an USB HDD or to lower the write frequency to the SD card by using the low-write mode.
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually move the operating system partition (root) to an USB HDD or to lower the write frequency to the SD card by using the [low-write mode](Low-write-mode.md).
 ####Preparation
 Before following this guide, it is essential that you have a git installed, working version of emoncms installed on your Raspberry Pi.  
 Update emoncms to current version
