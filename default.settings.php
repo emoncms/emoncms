@@ -18,9 +18,9 @@
 
 
 //3 #### MQTT
-    // Enable this to try out the experimental MQTT Features:
-    // - updated to feeds are published to topic: emoncms/feed/feedid
-    $mqtt_enabled = false;
+    // The 'subscriber' topic format is rx/* - where * is the emoncms input node number.
+    // The 'publisher' topic format is user selectable from the 'Publish to MQTT' input process, for example power/solar
+    $mqtt_enabled = false;          // Activate MQTT by changing to true
     $mqtt_server = "127.0.0.1";
 
 
@@ -28,6 +28,7 @@
     $feed_settings = array(
         // Supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds with a hidden engine still work.
         // Place a ',' as the first character on all uncommented engines lines but first.
+        // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
         'engines_hidden'=>array(
             //Engine::MYSQL         // 0  Mysql traditional
             //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
@@ -39,7 +40,7 @@
         // Redis Low-write mode
         'redisbuffer'=>array(
             'enabled' => false      // If enabled is true, requires redis enabled and feedwriter service running
-            ,'sleep' => 60          // Number of seconds to wait before write buffer to disk
+            ,'sleep' => 60          // Number of seconds to wait before write buffer to disk - user selectable option
         ),
 
         'csvdownloadlimit_mb' => 10,     // Max csv download size in MB
