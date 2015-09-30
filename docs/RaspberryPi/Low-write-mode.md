@@ -4,11 +4,11 @@ Due to the number of writes that the full version of emoncms makes, the lifespan
 
 Before following this guide, it is essential that you have a git installed, working version of emoncms installed on your Raspberry Pi, and because the low-write mode **is not compatible with PHPFIWA feeds**, it's important that any existing PHPFIWA feeds are deleted, otherwise the system will become unstable.
 
-Update emoncms to current version
+Update emoncms to current version:
 
     cd /var/www/emoncms && git pull
 
-Create a symlink to run feedwriter as a daemon and set permissions
+Create a symlink to run feedwriter as a daemon and set permissions:
 
     cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/feedwriter
     sudo chown root:root /var/www/emoncms/scripts/feedwriter
