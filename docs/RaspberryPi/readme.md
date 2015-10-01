@@ -1,37 +1,20 @@
 # Install Emoncms on Raspberry Pi (Raspbian)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian operating system.    
-Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](http://openenergymonitor.org/emon/node/2386#comment-12200) or to lower the write frequency to the SD card by using the low-write mode.  
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
 Before installing emoncms, it is essential you have a working version of Raspbian installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ## Preparation
 
-Start by updating the system repositories:
+Start by updating the system repositories and packages:
 
-    sudo apt-get update
+    sudo apt-get update && sudo apt-get upgrade
 
 Install the dependencies:
 
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-common git-core redis-server build-essential ufw ntp
 
 During the installation, you will be prompted to select a password for the 'MYSQL "root" user', and to confirm it by entering it a second time. Make a note of the password - you will need it later
-
-Configure PHP Timezone:
-
-    sudo nano /etc/php5/apache2/php.ini
-
-and search for "date.timezone" (possibly line 865):
-
-    [Date]
-    ; Defines the default timezone used by the date functions.
-    ; http://php.net/date.timezone
-    ;date.timezone =
-
-edit date.timezone to your appropriate timezone. PHP supported timezones are [listed here:](http://php.net/manual/en/timezones.php). For example:
-
-    date.timezone = "Europe/Amsterdam"
-    
-Save and exit
 
 Install the pecl dependencies (serial, redis and swift mailer):
 
@@ -61,26 +44,17 @@ Save & exit, then restart Apache:
 
 Git is a source code management and revision control system but at this stage we use it to just download and update the emoncms application.
 
-First, cd into the var directory:
+First, set the permissions for the www directory:
 
-    cd /var
+    sudo chown $USER /var/www
 
-Set the owner of the www directory:
+Cd into the www directory and git clone emoncms:
 
-    sudo chown $USER www
+    cd /var/www && git clone https://github.com/emoncms/emoncms.git
 
-Cd into the www directory:
-
-    cd www
-
-Download emoncms:
-
-    git clone https://github.com/emoncms/emoncms.git
-    
 Once installed, you can update emoncms with:
 
-    cd /var/www/emoncms
-    git pull
+    cd /var/www/emoncms && git pull
     
 ### Create a MYSQL database
 
@@ -105,13 +79,11 @@ Exit mysql:
     
 ### Create data repositories for emoncms feed engines:
 
-    sudo mkdir /var/lib/phpfiwa
-    sudo mkdir /var/lib/phpfina
-    sudo mkdir /var/lib/phptimeseries
+    sudo mkdir /var/lib/{phpfiwa,phpfina,phptimeseries}
+    
+and set their permissions
 
-    sudo chown www-data:root /var/lib/phpfiwa
-    sudo chown www-data:root /var/lib/phpfina
-    sudo chown www-data:root /var/lib/phptimeseries
+    sudo chown www-data:root /var/lib/{phpfiwa,phpfina,phptimeseries}
 
 ### Configure emoncms database settings
 
@@ -156,19 +128,24 @@ Edit the emonhub configuration file, entering your emoncms 'Write API Key', and 
     nano /etc/emonhub/emonhub.conf
 
 Save & exit. Edit /etc/inittab by adding a '#' to the beginning of the last line, so it reads;  
-'# T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100' - (without the quotes):
+`# T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100`:
 
     sudo nano /etc/inittab
    
 Save & exit. Edit /boot/cmdline.txt file by changing the line to;  
-dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
+`dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait`
 
     sudo nano /boot/cmdline.txt
 
-At this stage, power off down your Raspberry Pi:
+At this stage, power off your Raspberry Pi:
 
     sudo poweroff
 
-Once your Pi is fully powered off, connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
+Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
 
 **You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
+
+###System Options
+* [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
+* [Enabling low-write mode](Low-write-mode.md)
+* [Enabling MQTT](MQTT.md)
