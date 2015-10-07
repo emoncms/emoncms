@@ -117,7 +117,7 @@ Create an account by entering your email and password and clicking register.
 Once you are logged in;  
 * Check the Administration page - 'Setup > Administration' and note any messages reported.
 * Update your database - 'Setup > Administration > Update database'.
-* Also make a note of your 'Write API Key' from the 'Setup > My Account' page.
+* Make a note of your 'Write API Key' from the 'Setup > My Account' page, and also ensure that the correct timezone is selected & saved.
 
 ### Install Emonhub
     
