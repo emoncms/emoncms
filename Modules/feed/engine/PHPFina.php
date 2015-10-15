@@ -8,6 +8,7 @@ class PHPFina
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
+    private $lastvalue_cache = array();
 
     /**
      * Constructor.
@@ -548,24 +549,23 @@ class PHPFina
             if ($npadding>0) {
                 $padding_value = NAN;
                 if ($padding_mode!=null) {
-                    static $lastvalue_static_cache = array(); // Array to hold the cache
-                    if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
-                        $lastvalue_static_cache[$feedid] = $this->lastvalue($feedid)['value'];
+                    if (!isset($this->lastvalue_cache[$feedid])) {
+                        $this->lastvalue_cache[$feedid] = (float) $this->lastvalue($feedid)['value'];
                     }
-                    $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
-                    $padding_value = $lastvalue_static_cache[$feedid];
-                    $lastvalue_static_cache[$feedid] = $value; // Set static cache last value
+                    $div = ($value - $this->lastvalue_cache[$feedid]) / ($npadding+1);
+                    $padding_value = $this->lastvalue_cache[$feedid];
                 }
                 
                 for ($n=0; $n<$npadding; $n++)
                 {
-                    if ($padding_mode=="join") $padding_value += $div; 
+                    if ($padding_mode!=null) $padding_value += $div; 
                     $this->writebuffer[$feedid] .= pack("f",$padding_value);
                     //$this->log->info("post_bulk_prepare() ##### paddings ". ((4*$meta->npoints) + (4*$n)) ." $n $padding_mode $padding_value");
                 }
             }
             
             $this->writebuffer[$feedid] .= pack("f",$value);
+            $this->lastvalue_cache[$feedid] = $value;
             //$this->log->info("post_bulk_prepare() ##### value saved $value");
         } else {
             // if data is in past, its not supported, could call update here to fix on file before continuing
