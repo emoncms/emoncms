@@ -1,4 +1,4 @@
-# Install Emoncms on Raspberry Pi (Raspbian)
+# Install Emoncms on Raspberry Pi (Raspbian Wheezy)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian operating system.    
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
