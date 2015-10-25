@@ -52,10 +52,6 @@ Cd into the www directory and git clone emoncms:
 
     cd /var/www && git clone https://github.com/emoncms/emoncms.git
 
-Once installed, you can update emoncms with:
-
-    cd /var/www/emoncms && git pull
-    
 ### Create a MYSQL database
 
     mysql -u root -p
