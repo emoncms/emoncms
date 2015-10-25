@@ -1,10 +1,10 @@
-# Install Emoncms on Raspberry Pi (Raspbian Jessie)
+## Install Emoncms on Raspberry Pi (Raspbian Jessie)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.    
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
 Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
-## Preparation
+### Preparation
 
 Start by updating the system repositories and packages:
 
@@ -148,3 +148,5 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
+* [Installing emoncms Apps](general.md#install-emoncms-apps)
+* [Updating emoncms](general.md#updating-emoncms-via-git)
