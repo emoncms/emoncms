@@ -1,7 +1,15 @@
 ##Move Operating System (Root) to External HDD
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually move the operating system partition (root) to an USB HDD or to lower the write frequency to the SD card by using the [low-write mode](Low-write-mode.md).
 ####Preparation
-Before following this guide, it is essential that you have a git installed, working version of emoncms installed on your Raspberry Pi.  
+Ensure that your Raspbian operating system boots into command console, and not into the desktop environment. This is because the desktop will automatically mount any attached USB drive, and prevent the script's operation.  
+Open the Raspbian configuration tool:
+
+`sudo raspi-config`
+
+Select 'Boot Options' (this may be worded slightly different depending upon the system version) and set 'Text Console' as your prefered boot option.  
+Select 'OK' & 'Finish', and when prompted re-boot your system.
+
+It is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or by git-cloning the emoncms github repository.  
 Update emoncms to the current version:
 
     cd /var/www/emoncms && git pull
@@ -30,9 +38,9 @@ The script will ask for confirmation twice, and then;
 + Stop fstab from mounting the SD card root partition
 
 ..which will take a long time - possibly 20 minutes or more, so **please be patient!**  
-After a reboot, you can check if your operating system is now running from your USB HDD:
+After a reboot, you can check if your 'root' operating system is now running from your USB HDD:
 
-    readlink /dev/root
+    ls -l /dev/disk/by-label
 
 ####Problems?    
 Your Raspberry Pi should now be running from your attached drive, but if you do encounter problems, the script has created a backup of your original /boot/cmdline.txt file, which can be restored by editing the first partition of your SD card on another computer (Windows or OS X work fine).  
