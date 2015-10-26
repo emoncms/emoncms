@@ -62,8 +62,8 @@ Create the emoncms database:
     CREATE DATABASE emoncms;
     
 Add an emoncms database user and set that user's permissions.
-In the command below, we're creating the database 'user' called 'emoncms', and you should create a new secure password of your choice for that user.
-Make a note of both the database 'username' & 'password'. They will be inserted into the settings.php file in a later step:
+In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user.
+Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
 
     CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password';
     GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
@@ -115,7 +115,7 @@ Create a symlink to reference emoncms within the web root folder:
 The first time you run emoncms it will automatically set up the database and you will be taken to the register/login screen. 
 Create an account by entering your email and password and clicking register.  
 Once you are logged in;  
-* Check the Administration page - 'Setup > Administration' and note any messages reported.
+* Check the Administration page - 'Setup > Administration' noting and acting upon any messages reported.
 * Update your database - 'Setup > Administration > Update database'.
 * Make a note of your 'Write API Key' from the 'Setup > My Account' page, and also ensure that the correct timezone is selected & saved.
 
