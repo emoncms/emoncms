@@ -9,7 +9,7 @@ Open the Raspbian configuration tool:
 Select 'Boot Options' (this may be worded slightly different depending upon the system version) and set 'Text Console' as your prefered boot option.  
 Select 'OK' & 'Finish', and when prompted re-boot your system.
 
-It is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or by git-cloning the emoncms github repository.  
+It is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or you have used git to install a working version of emoncms on your Raspberry Pi.  
 Update emoncms to the current version:
 
     cd /var/www/emoncms && git pull
