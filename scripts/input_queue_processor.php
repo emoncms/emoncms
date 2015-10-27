@@ -1,14 +1,10 @@
 <?php
     /*
-
     All Emoncms code is released under the GNU Affero General Public License.
     See COPYRIGHT.txt and LICENSE.txt.
-
     ---------------------------------------------------------------------
     Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
+    Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     */
 
     define('EMONCMS_EXEC', 1);
@@ -115,17 +111,18 @@
             // Load current user input meta data
             // It would be good to avoid repeated calls to this
             $dbinputs = $input->get_inputs($userid);
+            
+            if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
+                $log->error("Reached the maximal allowed number of diferent NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.");
+            } else {
 
-            $tmp = array();
-
-            foreach ($data as $name => $value)
-            {
-                if ($input->check_node_id_valid($nodeid))
+                $tmp = array();
+                foreach ($data as $name => $value)
                 {
                     if (!isset($dbinputs[$nodeid][$name])) {
                         $inputid = $input->create_input($userid, $nodeid, $name);
                         $dbinputs[$nodeid][$name] = true;
-                        $dbinputs[$nodeid][$name] = array('id'=>$inputid);
+                        $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
                         $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                     } else {
                         $inputid = $dbinputs[$nodeid][$name]['id'];
@@ -134,9 +131,9 @@
                         if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
                     }
                 }
-            }
 
-            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+                foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+            }
         }
         usleep($usleep);
     }

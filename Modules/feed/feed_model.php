@@ -221,13 +221,13 @@ class Feed
     // Get REDISBUFFER date value elements pending save to a feed
     public function get_buffer_size()
     {
-		$total = 0;
-		if ($this->redis) {
-			$feedids = $this->redis->sMembers("feed:bufferactive");
-			foreach ($feedids as $feedid) {
-				$total += $this->EngineClass(Engine::REDISBUFFER)->get_feed_size($feedid);
-			}
-		}
+        $total = 0;
+        if ($this->redis) {
+            $feedids = $this->redis->sMembers("feed:bufferactive");
+            foreach ($feedids as $feedid) {
+                $total += $this->EngineClass(Engine::REDISBUFFER)->get_feed_size($feedid);
+            }
+        }
         return $total;
     }
 
@@ -297,8 +297,6 @@ class Feed
                 $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
                 $row['time'] = $lastvirtual['time'];
                 $row['value'] = $lastvirtual['value'];
-            } else {
-                $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
             }
             $feeds[] = $row;
         }
@@ -376,9 +374,12 @@ class Feed
     public function get_timevalue($id)
     {
         $id = (int) $id;
-        $engine = $this->get_engine($id);
-
         //$this->log->info("get_timevalue() $id");
+        if (!$this->exist($id)) {
+            $this->log->error("get_timevalue() Feed '".$id."' does not exist.");
+            return null;
+        }
+        $engine = $this->get_engine($id);
 
         if ($engine == Engine::VIRTUALFEED) { //if virtual get it now
             $this->log->info("get_timevalue() calling VIRTUAL lastvalue $id");
@@ -402,11 +403,7 @@ class Feed
             $result = $this->mysqli->query("SELECT time,value FROM feeds WHERE `id` = '$id'");
             $row = $result->fetch_array();
             if ($row) {
-                $row['time'] = strtotime($row['time']); // feeds table is date time, convert it to epoh
                 $lastvalue = array('time'=>$row['time'], 'value'=>$row['value']);
-            } else {
-                $this->log->error("get_timevalue() Feed '".$id."' does not exist.");
-                throw new Exception("ABORTED: Feed '".$id."' does not exist.");
             }
         }
         return $lastvalue;
@@ -504,7 +501,6 @@ class Feed
         if ($this->redis) {
             $this->redis->hMset("feed:$id", array('value' => $value, 'time' => $time));
         } else {
-            $time = date("Y-n-j H:i:s", $time); // feeds table time is datetime, convert it
             $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = $value WHERE `id`= '$id'");
         }
     }

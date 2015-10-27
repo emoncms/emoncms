@@ -25,35 +25,10 @@ class Input
 
         $this->redis = $redis;
     }
-    // Check a nodeID against the current node-ID limits to see if it's valid
-    // True = Valid
-    // False = not valid
-    public function check_node_id_valid($nodeid)
-    {
-        global $max_node_id_limit;
 
-        if (!ctype_digit((string)$nodeid)) {
-            return false;
-        }
-
-        $nodeid = (int) $nodeid;
-
-        if (!isset($max_node_id_limit)) {
-            $max_node_id_limit = 32;    // Default to 32 if not overridden
-        }
-
-        if ($nodeid<$max_node_id_limit) {
-            return true;
-        } else {
-            return false;
-        }
-        return true;
-
-    }
     // USES: redis input & user
     public function create_input($userid, $nodeid, $name)
     {
-        global $max_node_id_limit;
         $userid = (int) $userid;
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
@@ -75,6 +50,26 @@ class Input
         if ($result->num_rows == 1) return true; else return false;
     }
 
+    public function validate_access($dbinputs, $nodeid)
+    {
+        global $session, $max_node_id_limit;
+        $success=true;
+        $message = "";
+        if (isset($session['deviceid']) && isset($session['nodeid'])) {
+            if (!isset($dbinputs[$nodeid])) {
+                $success = false;
+                $message = "Device not initialized.";
+            } else if ($nodeid != $session['nodeid']) {
+                $success = false;
+                $message = "Node '$nodeid' does not belong to device.";
+            }
+        } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
+            $success = false;
+            $message = "Reached the maximal allowed number of diferent NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
+        }
+        return array('success'=>$success, 'message'=>$message);
+    }
+    
     // USES: redis input
     public function set_timevalue($id, $time, $value)
     {
@@ -85,7 +80,6 @@ class Input
         if ($this->redis) {
             $this->redis->hMset("input:lastvalue:$id", array('value' => $value, 'time' => $time));
         } else {
-            $time = date("Y-n-j H:i:s", $time);
             $this->mysqli->query("UPDATE input SET time='$time', value = '$value' WHERE id = '$id'");
         }
     }
@@ -160,7 +154,7 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
@@ -207,10 +201,9 @@ class Input
         $userid = (int) $userid;
         $inputs = array();
 
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object())
         {
-            $row['time'] = strtotime($row['time']);
             $inputs[] = $row;
         }
         return $inputs;
@@ -326,7 +319,7 @@ class Input
     // Redis cache loaders
     private function load_input_to_redis($inputid)
     {
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid'");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
         $row = $result->fetch_object();
 
         $this->redis->sAdd("user:inputs:$userid", $row->id);
@@ -341,7 +334,7 @@ class Input
 
     private function load_to_redis($userid)
     {
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:inputs:$userid", $row->id);

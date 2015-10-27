@@ -48,7 +48,7 @@ class Rememberme {
                 $expire = time() + $this->expireTime;
                 // update expire date
                 $this->updateTokenExpire($cookieValues[0], $cookieValues[1].$this->salt, $expire);
-                setcookie($this->cookieName,implode("|",array($cookieValues[0],$cookieValues[1])),$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
+                setcookie($this->cookieName,implode("|",array($cookieValues[0],$cookieValues[1].$this->salt)),$expire,$this->path,$this->domain,$this->secure,$this->httpOnly);
 
                 $loginResult = $cookieValues[0];
                 break;
