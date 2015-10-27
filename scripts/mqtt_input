@@ -1,0 +1,80 @@
+#! /bin/sh
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+#
+#  Prepared by Paul Reed
+#
+###
+# Installation
+# 1) Move this to /etc/init.d/ folder
+# 2) sudo chown root:root /etc/init.d/mqtt_input
+# 3) sudo chmod +x /etc/init.d/mqtt_input
+# 4) sudo update-rc.d mqtt_input defaults
+#
+# Starting and stopping
+# - Start: `sudo service mqtt_input start` or `sudo /etc/init.d/mqtt_input start`
+# - Stop: `sudo service mqtt_input stop` or `sudo /etc/init.d/mqtt_input stop`
+###
+
+### BEGIN INIT INFO
+# Provides: mqtt_input
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Should-Start: $all
+# Should-Stop: $all
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Starts phpmqtt_input agent daemon at boot time
+# Description: Starts phpmqtt_input agent daemon at boot time
+### END INIT INFO
+
+NAME=mqtt_input
+DESC="Daemon for the emoncms MQTT script"
+PIDFILE="/var/run/${NAME}.pid"
+LOGFILE="/var/log/${NAME}.log"
+
+DAEMON="/usr/bin/php"
+DAEMON_OPTS="/var/www/emoncms/scripts/phpmqtt_input.php"
+
+START_OPTS="--start --background --make-pidfile --pidfile ${PIDFILE} --exec ${DAEMON} ${DAEMON_OPTS}"
+STOP_OPTS="--stop --pidfile ${PIDFILE}"
+
+test -x $DAEMON || exit 0
+
+set -e
+
+case "$1" in
+    start)
+        echo -n "Starting ${DESC}: "
+        start-stop-daemon $START_OPTS >> $LOGFILE
+        echo "$NAME."
+        ;;
+    stop)
+        echo -n "Stopping $DESC: "
+        start-stop-daemon $STOP_OPTS
+        echo "$NAME."
+        rm -f $PIDFILE
+        ;;
+    restart|force-reload)
+        echo -n "Restarting $DESC: "
+        start-stop-daemon $STOP_OPTS
+        sleep 1
+        start-stop-daemon $START_OPTS >> $LOGFILE
+        echo "$NAME."
+        ;;
+    *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|force-reload}" >&2
+        exit 1
+        ;;
+esac
+
+exit 0
