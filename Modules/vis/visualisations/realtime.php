@@ -47,7 +47,8 @@
     var now = (new Date()).getTime();
     var start = now-timeWindow;        // start time
     var end = now;                     // end time
-    data = get_feed_data(feedid,(start-10000),(end+10000),1,1,1);
+    var interval = parseInt(((end*0.001+10) - (start*0.001-10)) / 800);
+    data = get_feed_data(feedid,(start-10000),(end+10000),interval,1,1);
     
     timerget = setInterval(getdp,7500);
     gpu_fast();
@@ -118,6 +119,7 @@
       timerget = setInterval(getdp,rate); // change refresh rate
       console.log("realtime timewindow " +timeWindow/1000 + "s get rate "+rate/1000 + "s");
 
-      data = get_feed_data(feedid,(start-10000),(end+10000),1,1,1);
+      interval = parseInt(((end*0.001+10) - (start*0.001-10)) / 800);
+      data = get_feed_data(feedid,(start-10000),(end+10000),interval,1,1);
     });
     </script>
