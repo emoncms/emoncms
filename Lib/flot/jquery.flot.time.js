@@ -204,7 +204,7 @@ API.txt for details.
 					axis.tickGenerator = function(axis) {
 
 						var ticks = [];
-						var d = dateGenerator(axis.min, opts);
+						var d = makeUtcWrapper(new Date(axis.min));
 						var minSize = 0;
 
 						// make quarter use a possibility if quarters are

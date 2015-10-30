@@ -26,7 +26,7 @@
                 $i = 0;
                 $subactive = false;
                 if (isset($item['dropdown']) && count($item['dropdown']) > 0) {
-                    //usort($item['dropdown'], "menu_sort"); //TODO: activate after APPs module supports it
+                    usort($item['dropdown'], "menu_sort");
                     $outdrop="";
                     foreach ($item['dropdown'] as $dropdownitem) {
                         if (!isset($dropdownitem['session']) || (isset($dropdownitem['session']) && $session[$dropdownitem['session']]==1)) {
