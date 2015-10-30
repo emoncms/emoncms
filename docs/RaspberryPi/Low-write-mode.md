@@ -2,7 +2,7 @@
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened. and it is therefore recommended that you eventually move the operating system partition (root) to an USB HDD or to lower the write frequency to the SD card by using the low-write mode.
 ###Preparation
 
-Before following this guide, it is essential that you have a git installed, working version of emoncms installed on your Raspberry Pi, and because the low-write mode **is not compatible with PHPFIWA feeds**, it's important that any existing PHPFIWA feeds are deleted, otherwise the system will become unstable.
+Before following this guide, it is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or you have used git to install a working version of emoncms on your Raspberry Pi, and because the low-write mode **is not compatible with PHPFIWA feeds**, it's important that any existing PHPFIWA feeds are deleted, otherwise the system will become unstable.
 
 Update emoncms to current version:
 

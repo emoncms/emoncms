@@ -1,10 +1,10 @@
-# Install Emoncms on Raspberry Pi (Raspbian Wheezy)
+## Install Emoncms on Raspberry Pi (Raspbian Jessie)
 
-This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Wheezy operating system.    
+This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.    
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
-Before installing emoncms, it is essential you have a working version of Raspbian installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
+Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
-## Preparation
+### Preparation
 
 Start by updating the system repositories and packages:
 
@@ -32,9 +32,9 @@ Issue the command:
 
     sudo a2enmod rewrite
     
-For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on lines 7 and 11 of `/etc/apache2/sites-available/default`
+For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on lines 155 and 166 of `/etc/apache2/apache2.conf`
     
-    sudo nano /etc/apache2/sites-available/default
+    sudo nano /etc/apache2/apache2.conf
 
 Save & exit, then restart Apache:
 
@@ -104,6 +104,10 @@ Update your settings to use your Database 'user' & 'password', which will enable
     
 Save and exit.
 
+Create a symlink to reference emoncms within the web root folder:
+
+    cd /var/www/html && sudo ln -s /var/www/emoncms
+
 ### In an internet browser, load emoncms:
 
 [http://localhost/emoncms](http://localhost/emoncms)
@@ -123,13 +127,8 @@ Edit the emonhub configuration file, entering your emoncms 'Write API Key', and 
 
     nano /etc/emonhub/emonhub.conf
 
-Save & exit. Edit /etc/inittab by adding a '#' to the beginning of the last line, so it reads;  
-`# T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100`:
-
-    sudo nano /etc/inittab
-   
 Save & exit. Edit /boot/cmdline.txt file by changing the line to;  
-`dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait`
+`dwc_otg.lpm_enable=0 console=tty1 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`
 
     sudo nano /boot/cmdline.txt
 
