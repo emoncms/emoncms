@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9 RC2 | 2015.09.15";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.1 | 2015.10.30";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -64,10 +64,15 @@
     $user = new User($mysqli,$redis);
 
     $apikey = false;
+    $devicekey = false;
     if (isset($_GET['apikey'])) {
         $apikey = $_GET['apikey'];
     } else if (isset($_POST['apikey'])) {
         $apikey = $_POST['apikey'];
+    } else if (isset($_GET['devicekey'])) {
+        $devicekey = $_GET['devicekey'];
+    } else if (isset($_POST['devicekey'])) {
+        $devicekey = $_POST['devicekey'];
     } else if (isset($_SERVER["HTTP_AUTHORIZATION"])) {
         // Support passing apikey on Authorization header per rfc6750, like example:
         //      GET /resource HTTP/1.1
@@ -84,6 +89,17 @@
               print "Invalid API key";
               $log = new EmonLogger(__FILE__);
               $log->error("Invalid API key '" . $apikey. "'");
+              exit();
+        }
+    } else if ($devicekey && (@include "Modules/device/device_model.php")) {
+        $device = new Device($mysqli,$redis);
+        $session = $device->devicekey_session($devicekey);
+        if (empty($session)) {
+              header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
+              header('WWW-Authenticate: Bearer realm="Device KEY", error="invalid_devicekey", error_description="Invalid device key"');
+              print "Invalid device key";
+              $log = new EmonLogger(__FILE__);
+              $log->error("Invalid device key '" . $devicekey. "'");
               exit();
         }
     } else {
@@ -113,6 +129,14 @@
             $route->action = $default_action_auth;
             $route->subaction = "";
         }
+    }
+
+    if ($devicekey && !($route->controller == 'input' && ($route->action == 'bulk' || $route->action == 'post'))) {
+        header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
+        print "Unauthorized. Device key autentication only permits input post or bulk actions";
+        $log = new EmonLogger(__FILE__);
+        $log->error("Unauthorized. Device key autentication only permits input post or bulk actions");
+        exit();
     }
 
     if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json';

@@ -59,7 +59,7 @@
         )
     );
 
-    // Max number of allowed inputs per user. For limiting garbage rf data
+    // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
 
 
@@ -84,12 +84,15 @@
     // Allow user to reset his password
     $enable_password_reset = false;
 
-    // (OPTIONAL) Email SMTP, used for password reset
+    // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
-      'host'=>"_SMTP_HOST_",
-      'username'=>"_SMTP_USER_",
-      'password'=>"_SMTP_PASSWORD_",
-      'from'=>array('_SMTP_EMAIL_ADDR_' => '_SMTP_EMAIL_NAME_')
+      'host'=>"smtp.gmail.com",
+      'port'=>"465",  // 22, 465, 587
+      'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
+      // comment lines below that dont apply
+      'encryption'=>"ssl", // ssl, tls
+      'username'=>"yourusername@gmail.com",
+      'password'=>"yourpassword"
     );
 
     // Default controller and action if none are specified and user is anonymous
@@ -137,4 +140,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "5";
+    $config_file_version = "6";

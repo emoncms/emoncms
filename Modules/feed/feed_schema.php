@@ -5,7 +5,7 @@ $schema['feeds'] = array(
     'name' => array('type' => 'text'),
     'userid' => array('type' => 'int(11)'),
     'tag' => array('type' => 'text'),
-    'time' => array('type' => 'datetime'),
+    'time' => array('type' => 'int(10)'),
     'value' => array('type' => 'float'),
     'datatype' => array('type' => 'int(11)', 'Null'=>'NO'),
     'public' => array('type' => 'tinyint(1)', 'default'=>0),
