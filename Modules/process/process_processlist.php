@@ -75,7 +75,7 @@ class Process_ProcessList
 
         // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description
         
-        // ATENTION: Next list elemets have fixed numeric keys and are here just for backward compatibility.
+        // ATENTION: Next list elements have fixed numeric keys and are here just for backward compatibility.
         // NEW PROCESSES SHOULD BE ADDED AS MODULES IN /Module/modulename/modulename_processlist.php process_list() function
         
         $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"<p><b>Log to feed:</b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b> The fixed interval with averaging (PHPFIWA) feed engine is the recommended engine to use for logging power, temperature, humidity, voltage and current data. In addition to storing the full resolution data it produces a series of downsampled averaged layers which gives a more accurate representation of the data when viewing the data over a large time range.</p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>");
@@ -147,10 +147,14 @@ class Process_ProcessList
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         //Virtual Feed specific processors (WARNING: all virtual feed specific processors must be on the "Virtual" group because there is logic in the UI to hide it on input context)
-        $list[53] = array(_("Source Feed"),ProcessArg::FEEDID,"source_feed_data_time",1,DataType::REALTIME,"Virtual", 'desc'=>"<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations request that use this virtual feed.</p>");
+        $list[53] = array(_("Source Feed"),ProcessArg::FEEDID,"source_feed_data_time",1,DataType::REALTIME,"Virtual", 'desc'=>"<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations requests that use this virtual feed.</p>");
         //$list[54] = array(_("Source Daily (TBD)"),ProcessArg::FEEDID,"get_feed_data_day",1,DataType::DAILY,"Virtual", 'desc'=>"");
 
-
+        $list[55] = array(_(" + source feed"),ProcessArg::FEEDID,"add_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
+        $list[56] = array(_(" - source feed"),ProcessArg::FEEDID,"sub_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
+        $list[57] = array(_(" * source feed"),ProcessArg::FEEDID,"multiply_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
+        $list[58] = array(_(" / source feed"),ProcessArg::FEEDID,"divide_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
+        $list[59] = array(_("1/ source feed"),ProcessArg::FEEDID,"reciprocal_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         return $list;
     }
 
@@ -277,10 +281,9 @@ class Process_ProcessList
         // only update if last datapoint was less than 2 hour old
         // this is to reduce the effect of monitor down time on creating
         // often large kwh readings.
-        if ($last_time && (time()-$last_time)<7200)
-        {
+        $time_elapsed = ($time_now - $last_time);   
+        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
             // kWh calculation
-            $time_elapsed = ($time_now - $last_time);
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
             $new_kwh = $last_kwh + $kwh_inc;
         } else {
@@ -490,8 +493,8 @@ class Process_ProcessList
         $last_time = $lastvalue['time'];
 
         // kWh calculation
-        if ((time()-$last_time)<7200) {
-            $time_elapsed = ($time_now - $last_time);
+        $time_elapsed = ($time_now - $last_time);   
+        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
             $kwh_inc = ($time_elapsed * $value) / 3600000;
         } else {
             $kwh_inc = 0;
@@ -805,6 +808,51 @@ class Process_ProcessList
             $this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval cnt=$cnt value=$value took=$timediff ");
         }
         return $value;
+    }
+
+    public function add_source_feed($feedid, $time, $value, $options)
+    {
+        $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        $value = $last + $value;
+        return $value;
+    }
+    
+    public function sub_source_feed($feedid, $time, $value, $options)
+    {
+        $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        $myvar = $last*1;
+        return $value - $myvar;
+    }
+    
+    public function multiply_by_source_feed($feedid, $time, $value, $options)
+    {
+        $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        $value = $last * $value;
+        return $value;
+    }
+    
+    public function divide_by_source_feed($feedid, $time, $value, $options)
+    {
+        $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        $myvar = $last*1;
+
+        if ($myvar!=0) {
+            return $value / $myvar;
+        } else {
+            return 0;
+        }
+    }
+    
+    public function reciprocal_by_source_feed($feedid, $time, $value, $options)
+    {
+        $last = $this->source_feed_data_time($feedid, $time, $value, $options);
+        $myvar = $last*1;
+
+        if ($myvar!=0) {
+            return 1 / $myvar;
+        } else {
+            return 0;
+        }
     }
 
 

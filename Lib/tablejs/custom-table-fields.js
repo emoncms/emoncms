@@ -89,8 +89,9 @@ function list_format_updated(time){
   var hour = secs/3600;
   var day = hour/24;
 
-  var updated = secs.toFixed(0)+"s";
-  if (secs< 0) updated = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
+  var updated = secs.toFixed(0) + "s";
+  if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+  else if (secs< 0) updated = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
   else if (secs.toFixed(0) == 0) updated = "now";
   else if (day>7) updated = "inactive";
   else if (day>2) updated = day.toFixed(1)+" days";
@@ -120,7 +121,9 @@ function list_format_value(value){
 }
 
 function list_format_size(bytes){
-  if (bytes<1024) {
+  if (!$.isNumeric(bytes)) {
+    return "n/a";
+  } else if (bytes<1024) {
     return bytes+"B";
   } else if (bytes<1024*100) {
     return (bytes/1024).toFixed(1)+"KB";
