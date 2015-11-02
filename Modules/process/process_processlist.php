@@ -281,10 +281,9 @@ class Process_ProcessList
         // only update if last datapoint was less than 2 hour old
         // this is to reduce the effect of monitor down time on creating
         // often large kwh readings.
-        if ($last_time && (time()-$last_time)<7200)
-        {
+        $time_elapsed = ($time_now - $last_time);   
+        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
             // kWh calculation
-            $time_elapsed = ($time_now - $last_time);
             $kwh_inc = ($time_elapsed * $value) / 3600000.0;
             $new_kwh = $last_kwh + $kwh_inc;
         } else {
@@ -494,8 +493,8 @@ class Process_ProcessList
         $last_time = $lastvalue['time'];
 
         // kWh calculation
-        if ((time()-$last_time)<7200) {
-            $time_elapsed = ($time_now - $last_time);
+        $time_elapsed = ($time_now - $last_time);   
+        if ($time_elapsed>0 && $time_elapsed<7200) { // 2hrs
             $kwh_inc = ($time_elapsed * $value) / 3600000;
         } else {
             $kwh_inc = 0;
