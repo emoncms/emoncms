@@ -30,7 +30,7 @@
         // Place a ',' as the first character on all uncommented engines lines but first.
         // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
         'engines_hidden'=>array(
-            Engine::MYSQL         // 0  Mysql traditional
+            Engine::MYSQL,         // 0  Mysql traditional
             //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
             //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
