@@ -55,6 +55,7 @@
         <p><?php echo _('Are you sure you want to delete?'); ?></p>
     </div>
     <div class="modal-footer">
+        <button id="emptyfeed" class="btn"><?php echo _('Empty feed data'); ?></button>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
@@ -248,6 +249,19 @@
 
     $('#myModal').modal('hide');
     updaterStart(update, 5000);
+  });
+  
+  $("#emptyfeed").click(function(){
+    var id = $('#myModal').attr('the_id');
+    var row = $('#myModal').attr('the_row');
+    feed.emptyfeed(id);
+    
+    $('#myModal').modal('hide');
+    updaterStart(update, 5000);
+    
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ 
+      update();
+    }});
   });
 
   $("#refreshfeedsize").click(function(){

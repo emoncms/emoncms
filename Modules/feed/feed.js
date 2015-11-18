@@ -70,6 +70,10 @@ var feed = {
   'remove':function(id){
     $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
   },
+  
+  'emptyfeed':function(id){
+    $.ajax({ url: path+"feed/empty.json", data: "id="+id, async: false, success: function(data){} });
+  },
 
   'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){
     var feedIn = [];

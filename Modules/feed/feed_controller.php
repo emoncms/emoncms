@@ -92,6 +92,7 @@ function feed_controller()
                     else if ($route->action == "insert") $result = $feed->insert_data($feedid,time(),get("time"),get("value"));
                     else if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
                     else if ($route->action == "delete") $result = $feed->delete($feedid);
+                    else if ($route->action == "empty") $result = $feed->emptydata($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
                     else if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'));
 
