@@ -15,6 +15,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/vis.helper.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/zoom/view.js"></script>
@@ -183,16 +184,36 @@
   });
 
   // Info label
-  $("#placeholder").bind("plothover", function (event, pos, item){
-    if (item!=null) {
-      var d = new Date();
-      d.setTime(item.datapoint[0]);
-      var mdate = new Date(item.datapoint[0]);
-      if (view==0) $("#out").html(" : "+mdate.format("yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh | "+(item.datapoint[1]/years.days[item.dataIndex]).toFixed(1)+" kWh/d");
-      if (view==1) $("#out").html(" : "+mdate.format("mmm yyyy")+" | "+item.datapoint[1].toFixed(0)+" kWh | "+(item.datapoint[1]/months.days[item.dataIndex]).toFixed(1)+" kWh/d ");
-      if (view==2) $("#out").html(" : "+mdate.format("dd mmm yyyy")+" | "+item.datapoint[1].toFixed(1)+" kWh | "+add_currency(item.datapoint[1]*price, 2)+" | "+add_currency(item.datapoint[1]*price*365, 0)+"/y");
-      if (view==3) $("#out").html(" : "+item.datapoint[1].toFixed(0)+" W");
-    }
+  $("#placeholder").bind("plothover", function (event, pos, item)
+  {
+      if (item) {
+          //var datestr = (new Date(item.datapoint[0])).format("ddd, mmm dS, yyyy");
+          //$("#stats").html(datestr);
+          if (previousPoint != item.datapoint)
+          {
+              previousPoint = item.datapoint;
+
+              $("#tooltip").remove();
+              var itemTime = item.datapoint[0];
+              var itemVal = item.datapoint[1];
+              var d = new Date();
+              d.setTime(item.datapoint[0]);
+
+              var ttValue = "";
+              var mdate = new Date(item.datapoint[0]);
+              if (view==0) ttValue = item.datapoint[1].toFixed(0)+" kWh | "+mdate.format("yyyy")+" | "+(item.datapoint[1]/years.days[item.dataIndex]).toFixed(1)+" kWh/d";
+              if (view==1) ttValue = item.datapoint[1].toFixed(0)+" kWh | "+mdate.format("mmm yyyy")+" | "+(item.datapoint[1]/months.days[item.dataIndex]).toFixed(1)+" kWh/d ";
+              if (view==2) ttValue = item.datapoint[1].toFixed(1)+" kWh | "+add_currency(item.datapoint[1]*price, 2)+" | "+add_currency(item.datapoint[1]*price*365, 0)+"/y | "+mdate.format("dS mmm yyyy");
+              if (view==3) ttValue = item.datapoint[1].toFixed(0)+" W";
+
+              tooltip(item.pageX, item.pageY, ttValue, "#DDDDDD");
+          }
+      }
+      else
+      {
+          $("#tooltip").remove();
+          previousPoint = null;
+      }
   });
 
 
