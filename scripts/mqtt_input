@@ -26,7 +26,7 @@
 
 ### BEGIN INIT INFO
 # Provides: mqtt_input
-# Required-Start: $remote_fs $syslog
+# Required-Start: $remote_fs $syslog mysql
 # Required-Stop: $remote_fs $syslog
 # Should-Start: $all
 # Should-Stop: $all
