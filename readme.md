@@ -8,11 +8,13 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Branches
 
-* [v9.0](https://github.com/emoncms/emoncms/tree/9.0) - see [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
+**Note:** We are currently reorganising the emoncms branches. The master branch is now the same as 9.x. 
 
-* [v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focused emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api was improved and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module.
+* [master](https://github.com/emoncms/emoncms) - see [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The current emonpi/emonbase emoncms version. Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set.
+* [v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focused emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api was improved and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module. **In the process of being removed**
+
+* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The current emonpi/emonbase emoncms version. Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **In the process of being removed**
 
 **Optional modules**
 
