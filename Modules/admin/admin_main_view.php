@@ -67,7 +67,7 @@ table tr td.subinfo { border-color:transparent;}
         </td>
     </tr>
 <?php
-if ($log_enabled) {
+if ($log_enabled and !$allow_emonpi_update) {
 ?>
     <tr>
         <td>
@@ -98,13 +98,13 @@ if ($allow_emonpi_update) {
     <tr>
         <td>
             <h3><?php echo _('Update emonPi'); ?></h3>
-            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/Atmega328/emonPi_RFM69CW_RF12Demo_DiscreteSampling/compiled/CHANGE%20LOG.md">emonPi firmware change log.</a></p>
+            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/Atmega328/emonPi_RFM69CW_RF12Demo_DiscreteSampling/compiled/CHANGE%20LOG.md">emonPi firmware change log.</a> When update is running hit 'Refresh Log' repeatedly to display update progress log</p>
             <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
             <div id="emonpireply" style="display:none"></div>
         </td>
         <td class="buttons"><br>
             <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button><br><br>
-            <button id="emonpiupdatelog" class="btn btn-info"><?php echo _('Show Log'); ?></button>
+            <button id="emonpiupdatelog" class="btn btn-info"><?php echo _('Refresh Log'); ?></button>
         </td>
     </tr>
 <?php 
