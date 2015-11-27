@@ -79,7 +79,7 @@ function admin_controller()
                 if ($route->subaction == 'getupdatelog') { 
                     $route->format = "text";
                     ob_start();
-                    passthru("cat /var/log/emonpiupdate.log");
+                    passthru("cat /home/pi/data/emonpiupdate.log");
                     $result = trim(ob_get_clean());
                 }
             }

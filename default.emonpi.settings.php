@@ -30,11 +30,11 @@
         // Place a ',' as the first character on all uncommented engines lines but first.
         // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
         'engines_hidden'=>array(
-            Engine::MYSQL,         // 0  Mysql traditional
-            //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
-            //Engine::PHPTIMESERIES // 2
-            //,Engine::PHPFINA      // 5
-               Engine::PHPFIWA      // 6  PHPFIWA disabled for compatibility with Low-write mode
+            Engine::MYSQL,           // 0  Mysql traditional
+            //Engine::MYSQLMEMORY,   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
+            //Engine::PHPTIMESERIES, // 2
+            //Engine::PHPFINA,       // 5
+            Engine::PHPFIWA          // 6  PHPFIWA disabled for compatibility with Low-write mode
         ),
 
         // Redis Low-write mode
@@ -59,7 +59,7 @@
         )
     );
 
-    // Max number of allowed inputs per user. For limiting garbage rf data
+    // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
 
 
@@ -68,7 +68,7 @@
     $theme = "basic";
 
     // Use full screen width
-    $fullwidth = false;
+    $fullwidth = true;
 
     // Main menu collapses on lower screen widths
     $menucollapses = false;
@@ -84,12 +84,15 @@
     // Allow user to reset his password
     $enable_password_reset = false;
 
-    // (OPTIONAL) Email SMTP, used for password reset
+    // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
-      'host'=>"_SMTP_HOST_",
-      'username'=>"_SMTP_USER_",
-      'password'=>"_SMTP_PASSWORD_",
-      'from'=>array('_SMTP_EMAIL_ADDR_' => '_SMTP_EMAIL_NAME_')
+      'host'=>"smtp.gmail.com",
+      'port'=>"465",  // 22, 465, 587
+      'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
+      // comment lines below that dont apply
+      'encryption'=>"ssl", // ssl, tls
+      'username'=>"yourusername@gmail.com",
+      'password'=>"yourpassword"
     );
 
     // Default controller and action if none are specified and user is anonymous
@@ -137,4 +140,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "5";
+    $config_file_version = "6";
