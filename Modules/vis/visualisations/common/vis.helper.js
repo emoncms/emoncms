@@ -100,7 +100,6 @@ var urlParams;
 
 function tooltip(x, y, contents, bgColour)
 {
-
     var offset = 15; // use higher values for a little spacing between `x,y` and tooltip
     var elem = $('<div id="tooltip">' + contents + '</div>').css({
         position: 'absolute',
@@ -111,10 +110,13 @@ function tooltip(x, y, contents, bgColour)
         'background-color': bgColour,
         opacity: '0.8'
     }).appendTo("body").fadeIn(200);
-    //x = x - elem.width();
-    //x = x - elem.width();
+
+    var elemY = y - elem.height() - offset;
+    var elemX = x - elem.width()  - offset;
+    if (elemY < 0) { elemY = 0; } 
+    if (elemX < 0) { elemX = 0; } 
     elem.css({
-        top: y - elem.height() - offset,
-        left: x - elem.width() - offset,
+        top: elemY,
+        left: elemX
     });
 };
