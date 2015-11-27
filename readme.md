@@ -57,9 +57,6 @@ There are many other modules such as the event module and openbem (open source b
 * [EmonTx v3: Quick start guide - an example of configuring the inputs of the standard (non watt hour calculating) firmware for the EmonTx v3 including My Electric dashboard configuration](http://openenergymonitor.org/emon/modules/emonTxV3)
 * [EmonTH: Quick start guide - an example of configuring emoncms EmonTH inputs and creating temperature and humidity feeds](http://openenergymonitor.org/emon/modules/emonTH)
 * [Blog post: An Example of configuring the new emoncms bargraph visualisation that uses accumulating watt hour data - part of the Monitoring SolarPV, Heatpump and house electric, EmonTx v2 system upgrade example](http://openenergymonitor.blogspot.co.uk/2014/08/monitoring-solarpv-heatpump-and-house.html)
-* [An Example of more advanced custom dashboard setup](http://emoncms.org/site/docs/dashboards)
-* [A list with screenshots of available visualisations](http://emoncms.org/site/docs/visualisations)
-
 
 #### Design
 
@@ -93,6 +90,8 @@ Emoncms is developed and has had contributions from the following people.
 
 - Trystan Lea           https://github.com/trystanlea (principal maintainer)
 - Chaveiro              https://github.com/chaveiro (principal developer of v9)
+- Paul Reed             https://github.com/Paul-Reed
+
 - Ildefonso Martínez    https://github.com/ildemartinez
 - Matthew Wire          https://github.com/mattwire
 - Baptiste Gaultier     https://github.com/bgaultier
