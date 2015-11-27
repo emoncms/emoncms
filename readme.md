@@ -91,7 +91,6 @@ Emoncms is developed and has had contributions from the following people.
 - Trystan Lea           https://github.com/trystanlea (principal maintainer)
 - Chaveiro              https://github.com/chaveiro (principal developer of v9)
 - Paul Reed             https://github.com/Paul-Reed
-
 - Ildefonso Martínez    https://github.com/ildemartinez
 - Matthew Wire          https://github.com/mattwire
 - Baptiste Gaultier     https://github.com/bgaultier
