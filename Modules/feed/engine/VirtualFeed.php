@@ -75,13 +75,14 @@ class VirtualFeed
         }
         $now = time();
         if ($datatype==2) { //daily
-            $start=$this->process->getstartday($now); // start of day
+            $start=$this->process->process__getstartday($now); // start of day
             $endslot = $start + 86400; // one day range
             $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400);
             $dataValue = $this->process->input($start, null, $processList, $opt_timearray); // execute processlist 
         } else {
             $dataValue = $this->process->input($now, null, $processList); // execute processlist 
         }
+        //$this->log->info("lastvalue() feedid=$feedid dataValue=$dataValue");
         return array('time'=>$now, 'value'=>$dataValue);
     }
 
@@ -141,8 +142,8 @@ class VirtualFeed
         }
         else {
             //daily virtual feed
-             $startslot=$this->process->getstartday($start); // start of day for user timezone
-             $endslot=$this->process->getstartday($end); // end of day for user timezone
+             $startslot=$this->process->process__getstartday($start); // start of day for user timezone
+             $endslot=$this->process->process__getstartday($end); // end of day for user timezone
             
              if ($endslot < $startslot) $endslot = $endslot + 86400; // one day range
              while ($startslot<$endslot)
