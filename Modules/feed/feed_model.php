@@ -169,6 +169,34 @@ class Feed
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
         $this->log->info("delete() feedid=$feedid");
     }
+    
+    public function emptydata($feedid)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine delete method
+        $this->EngineClass($engine)->emptydata($feedid);
+
+        // $this->mysqli->query("DELETE FROM feeds WHERE `id` = '$feedid'");
+
+        if ($this->redis) {
+            $userid = $this->redis->hget("feed:$feedid",'userid');
+            // $this->redis->del("feed:$feedid");
+            // $this->redis->srem("user:feeds:$userid",$feedid);
+        }
+
+        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
+        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
+        $this->log->info("emptydata() feedid=$feedid");
+    }
 
     public function exist($feedid)
     {

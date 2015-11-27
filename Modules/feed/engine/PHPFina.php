@@ -83,6 +83,29 @@ class PHPFina
         unlink($this->dir.$feedid.".dat");
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
+    
+    public function emptydata($feedid)
+    {
+        $feedid = (int) $feedid;
+        $meta = $this->get_meta($feedid);
+        if (!$meta) return false;
+        unlink($this->dir.$feedid.".meta");
+        unlink($this->dir.$feedid.".dat");
+        
+        $meta->start_time = 0; 
+        $meta->npoints = 0;
+        $this->create_meta($feedid,$meta);
+        
+        $fh = @fopen($this->dir.$feedid.".dat", 'c+');
+        if (!$fh) {
+            $msg = "could not create meta data file " . error_get_last()['message'];
+            $this->log->error("create() ".$msg);
+            return $msg;
+        }
+        fclose($fh);
+        
+        $metadata_cache[$feedid] = $meta;
+    }
 
     /**
      * Gets engine metadata
