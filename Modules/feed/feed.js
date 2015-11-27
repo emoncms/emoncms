@@ -119,9 +119,9 @@ var feed = {
     return result;
   },
 
-  'processlist':function(feedid){
+  'get_process':function(feedid){
     var result = {};
-    $.ajax({ url: path+"feed/process/list.json", data: "id="+feedid, async: false, dataType: 'json', success: function(data){result = data;} });
+    $.ajax({ url: path+"feed/process/get.json", data: "id="+feedid, async: false, dataType: 'json', success: function(data){result = data;} });
     var processlist = [];
     if (result!="")
     {

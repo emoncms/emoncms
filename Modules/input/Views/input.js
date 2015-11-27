@@ -40,10 +40,10 @@ var input = {
         return result;
     },
 
-    'processlist':function(inputid)
+    'get_process':function(inputid)
     {
         var result = {};
-        $.ajax({ url: path+"input/process/list.json", data: "inputid="+inputid, async: false, dataType: 'json', success: function(data){result = data;} });
+        $.ajax({ url: path+"input/process/get.json", data: "inputid="+inputid, async: false, dataType: 'json', success: function(data){result = data;} });
         var processlist = [];
         if (result!="")
         {
