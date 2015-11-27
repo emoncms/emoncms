@@ -147,7 +147,7 @@ class Process_ProcessList
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
         //Virtual Feed specific processors (WARNING: all virtual feed specific processors must be on the "Virtual" group because there is logic in the UI to hide it on input context)
-        $list[53] = array(_("Source Feed"),ProcessArg::FEEDID,"source_feed_data_time",1,DataType::REALTIME,"Virtual", 'desc'=>"<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations requests that use this virtual feed.</p>");
+        $list[53] = array(_("Source Feed"),ProcessArg::FEEDID,"source_feed_data_time",1,DataType::UNDEFINED,"Virtual", 'desc'=>"<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.</p><p>Note: This virtual feed process list is executed on visualizations requests that use this virtual feed.</p>");
         //$list[54] = array(_("Source Daily (TBD)"),ProcessArg::FEEDID,"get_feed_data_day",1,DataType::DAILY,"Virtual", 'desc'=>"");
 
         $list[55] = array(_(" + source feed"),ProcessArg::FEEDID,"add_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
@@ -777,17 +777,19 @@ class Process_ProcessList
                     $interval = 1;
                 }
             }
+            $start*=1000; // convert to miliseconds for engine
+            $end*=1000;
+            $data = $this->feed->get_data($feedid,$start,$end,$interval,1,1); // get data from feed engine with skipmissing and limit interval options
         } else {
+            
+            $data = $this->feed->get_timevalue($feedid); // get last data from feed engine 
+            $data = array(array($data['time'], $data['value'])); // convert last data
             $end = $time; 
-            $start = $end - 10; // else search past 10 secs 
-            $interval = 1;
+            $start = $end;
+            $interval = ($end - $start);
         }
-        
-        //$this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=$start end=$end len=".(($end - $start))." int=$interval - BEFORE GETDATA");
 
-        $start*=1000; // convert to miliseconds for engine
-        $end*=1000;
-        $data = $this->feed->get_data($feedid,$start,$end,$interval,1,1); // get data from feed engine with skipmissing and limit interval options
+        //$this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=$start end=$end len=".(($end - $start))." int=$interval - BEFORE GETDATA");
 
         if ($data) {
             $cnt=count($data);
@@ -806,6 +808,8 @@ class Process_ProcessList
             $endtime = microtime(true);
             $timediff = $endtime - $starttime;
             $this->log->info("source_feed_data_time() ". ($data_sampling ? "SAMPLING ":"") ."feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval cnt=$cnt value=$value took=$timediff ");
+        } else {
+            $this->log->info("source_feed_data_time() NODATA feedid=$feedid start=".($start/1000)." end=".($end/1000)." len=".(($end - $start)/1000)." int=$interval value=$value ");
         }
         return $value;
     }

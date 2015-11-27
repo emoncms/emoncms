@@ -15,11 +15,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class Input
 {
     private $mysqli;
+    private $feed;
     private $redis;
 
     public function __construct($mysqli,$redis,$feed)
     {
         $this->mysqli = $mysqli;
+        $this->feed = $feed;
+
         $this->redis = $redis;
     }
 
