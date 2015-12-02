@@ -67,7 +67,7 @@ table tr td.subinfo { border-color:transparent;}
         </td>
     </tr>
 <?php
-if ($log_enabled) {
+if ($log_enabled && !$allow_emonpi_update) {
 ?>
     <tr>
         <td>
