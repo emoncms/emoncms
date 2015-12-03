@@ -242,6 +242,15 @@ class PHPTimeSeries
         $time = 0; $i = 0;
         $atime = 0;
 
+        // Try to find the first valid data entry within the given timeframe and set $start to that time
+        $pos = $this->binarysearch($fh,$time,$filesize);
+        fseek($fh,$pos);
+        $d = fread($fh,9);
+        $array = unpack("x/Itime/fvalue",$d);
+        if ($array['time']!=null) {
+            $start = $array['time'];
+        }
+
         while ($time<=$end)
         {
             $time = $start + ($interval * $i);
