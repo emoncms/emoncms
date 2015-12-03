@@ -114,7 +114,7 @@
 
 //6 #### Other settings
     // Log file configuration
-    $log_enabled = true;
+    $log_enabled = false;
     $log_filename = '/var/log/emoncms.log';
 
     // If installed on Emonpi, allow update from admin menu
