@@ -158,11 +158,11 @@ function input_controller()
                                 else
                                 {
                                     $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => "INPUT",'sourceid'=>$dbinputs[$nodeid][$name]['id']));
                                 }
                             }
 
-                            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+                            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList'],$i['opt']);
 
                         }
                         else
@@ -249,11 +249,11 @@ function input_controller()
                             $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                         } else {
                             $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => "INPUT",'sourceid'=>$dbinputs[$nodeid][$name]['id']));
                         }
                     }
 
-                    foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+                    foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList'],$i['opt']);
                 }
                 else
                 {

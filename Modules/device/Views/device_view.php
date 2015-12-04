@@ -122,11 +122,9 @@
       if (table.data.length != 0) {
         $("#nodevices").hide();
         $("#localheading").show();
-        $("#apihelphead").show();
       } else {
         $("#nodevices").show();
         $("#localheading").hide();
-        $("#apihelphead").hide();
       }
     }});
   }
