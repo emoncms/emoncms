@@ -1,6 +1,6 @@
 ﻿<?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $feed_settings;
+    global $path, $feed_settings, $redis_enabled;
 ?>
 <style>
   .modal-processlist {
@@ -17,7 +17,8 @@
 
 <script>
   processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
- 
+  <?php if ($redis_enabled) echo "processlist_ui.has_redis = 1;"; ?>
+
   $(window).resize(function(){
     processlist_ui.adjustmodal() 
   });

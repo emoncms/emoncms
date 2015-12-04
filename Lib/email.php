@@ -10,7 +10,7 @@ class Email {
     function __construct(){
         global $smtp_email_settings;
         $this->log = new EmonLogger(__FILE__);
-        
+
         $this->message = null;
         // include SwiftMailer. path from a PEAR install,
         $this->have_swift = @include_once ("Swift/swift_required.php");
@@ -23,7 +23,7 @@ class Email {
             $this->message->setFrom($smtp_email_settings['from']);
         }
     }
-    
+
     function check(){
         if (!$this->have_swift){
             $this->log->error("check() Could not find SwiftMailer, email functions are ignored.");

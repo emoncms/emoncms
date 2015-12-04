@@ -358,7 +358,9 @@
     var i = table.data[$(this).attr('row')];
     console.log(i);
     var contextid = i.id; // Feed ID
-    var contextname = i.tag + " : " + i.name;
+    var contextname = "";
+    if (i.name != "") contextname = i.tag + " : " + i.name;
+    else contextname = i.tag + " : " + i.id;    
     var processlist = processlist_ui.decode(i.processList); // Feed process list
     processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
    });

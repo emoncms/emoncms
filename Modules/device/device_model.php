@@ -28,22 +28,22 @@ class Device
     {
         $devicekey_in = $this->mysqli->real_escape_string($devicekey_in);
         $session = array();
-		$time = time();
+        $time = time();
 
         //----------------------------------------------------
         // Check for devicekey login
         //----------------------------------------------------
-        if($this->redis && $this->redis->exists("devicekey:$devicekey_in"))
+        if($this->redis && $this->redis->exists("device:key:$devicekey_in"))
         {
-            $session['userid'] = $this->redis->get("devicekey:$devicekey_in:user");
+            $session['userid'] = $this->redis->get("device:key:$devicekey_in:user");
             $session['read'] = 0;
             $session['write'] = 1;
             $session['admin'] = 0;
             $session['lang'] = "en"; // API access is always in english
             $session['username'] = "API";
-			$session['deviceid'] = $this->redis->get("devicekey:$devicekey_in:device");
-			$session['nodeid'] = $this->redis->get("devicekey:$devicekey_in:node");
-		    $this->redis->hMset("device:lastvalue:".$session['device'], $time);
+            $session['deviceid'] = $this->redis->get("device:key:$devicekey_in:device");
+            $session['nodeid'] = $this->redis->get("device:key:$devicekey_in:node");
+            $this->redis->hMset("device:lastvalue:".$session['device'], array('time' => $time));
         }
         else
         {
@@ -59,19 +59,18 @@ class Device
                     $session['admin'] = 0;
                     $session['lang'] = "en"; // API access is always in english
                     $session['username'] = "API";
-					$session['deviceid'] = $row['id'];
-					$session['nodeid'] = $row['nodeid'];
-					
-					if ($this->redis) {
-						$this->redis->set("devicekey:$devicekey_in:user",$row['userid']);
-						$this->redis->set("devicekey:$devicekey_in:device",$row['id']);
-						$this->redis->set("devicekey:$devicekey_in:node",$row['nodeid']);
-						$this->redis->hMset("device:lastvalue:".$row['id'], $time);
-					} else {
-						//$time = date("Y-n-j H:i:s", $time);
-						$this->mysqli->query("UPDATE device SET time='$time' WHERE id = '".$row['id']."'");
-					}
-		
+                    $session['deviceid'] = $row['id'];
+                    $session['nodeid'] = $row['nodeid'];
+                    
+                    if ($this->redis) {
+                        $this->redis->set("device:key:$devicekey_in:user",$row['userid']);
+                        $this->redis->set("device:key:$devicekey_in:device",$row['id']);
+                        $this->redis->set("device:key:$devicekey_in:node",$row['nodeid']);
+                        $this->redis->hMset("device:lastvalue:".$row['id'], array('time' => $time));
+                    } else {
+                        //$time = date("Y-n-j H:i:s", $time);
+                        $this->mysqli->query("UPDATE device SET time='$time' WHERE id = '".$row['id']."'");
+                    }
                 }
             }
         }
@@ -117,14 +116,14 @@ class Device
     private function redis_getlist($userid)
     {
         $userid = (int) $userid;
-        if (!$this->redis->exists("user:devices:$userid")) $this->load_to_redis($userid);
+        if (!$this->redis->exists("user:device:$userid")) $this->load_to_redis($userid);
 
         $devices = array();
-        $deviceids = $this->redis->sMembers("user:devices:$userid");
+        $deviceids = $this->redis->sMembers("user:device:$userid");
         foreach ($deviceids as $id)
         {
             $row = $this->redis->hGetAll("device:$id");
-            $lastvalue = $this->redis->hmget("device:lastvalue:$id",array('time'));
+            $lastvalue = $this->redis->hmget("device:lastvalue".$id,array('time'));
             $row['time'] = $lastvalue['time'];
             $devices[] = $row;
         }
@@ -146,25 +145,28 @@ class Device
 
     private function load_to_redis($userid)
     {
+        $this->redis->delete("user:device:$userid");
         $result = $this->mysqli->query("SELECT `id`, `name`, `description`, `type`, `nodeid`, `devicekey` FROM device WHERE userid = '$userid'");
         while ($row = $result->fetch_object())
         {
-            $this->redis->sAdd("user:devices:$userid", $row->id);
-            $this->redis->hMSet("device:$row->id",array(
+            $this->redis->sAdd("user:device:$userid", $row->id);
+            $this->redis->hMSet("device:".$row->id,array(
                 'id'=>$row->id,
                 'name'=>$row->name,
                 'description'=>$row->description,
-				'type'=>$row->type,
-                'nodeid'=>$row->nodeid
+                'type'=>$row->type,
+                'nodeid'=>$row->nodeid,
+                'devicekey'=>$row->devicekey
             ));
         }
     }
-	
+    
     public function create($userid)
     {
         $userid = intval($userid);
         $devicekey = md5(uniqid(mt_rand(), true));
         $this->mysqli->query("INSERT INTO device (`userid`, `name`, `description`, `nodeid`, `devicekey`) VALUES ('$userid','New Device','','New Node','$devicekey')");
+        if ($this->redis) $this->load_to_redis($userid);
         return $this->mysqli->insert_id;
     }
 
@@ -172,9 +174,21 @@ class Device
     {
         $id = (int) $id;
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
-        $result = $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
 
+        if ($this->redis) {
+            $result = $this->mysqli->query("SELECT userid FROM device WHERE `id` = '$id'");
+            $row = (array) $result->fetch_object();
+        }
+
+        $result = $this->mysqli->query("DELETE FROM device WHERE `id` = '$id'");
         if (isset($device_exists_cache[$id])) { unset($device_exists_cache[$id]); } // Clear static cache
+        
+        if ($this->redis) {
+            if (isset($row['userid']) && $row['userid']) {
+                $this->redis->delete("device:".$id);
+                $this->load_to_redis($row['userid']);
+            }
+        }
     }
 
     public function set_fields($id,$fields)
@@ -191,14 +205,14 @@ class Device
         if (isset($fields->description)) $array[] = "`description` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->description)."'";
         if (isset($fields->nodeid)) $array[] = "`nodeid` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->nodeid)."'";
         if (isset($fields->devicekey)) {
-			$devicekey = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->devicekey);
-			$result = $this->mysqli->query("SELECT devicekey FROM device WHERE devicekey='$devicekey'");
+            $devicekey = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->devicekey);
+            $result = $this->mysqli->query("SELECT devicekey FROM device WHERE devicekey='$devicekey'");
             if ($result->num_rows > 0)
             {
-				return array('success'=>false, 'message'=>'Field devicekey is invalid'); // is duplicate
-			}
-			$array[] = "`devicekey` = '".$devicekey."'";
-		}
+                return array('success'=>false, 'message'=>'Field devicekey is invalid'); // is duplicate
+            }
+            $array[] = "`devicekey` = '".$devicekey."'";
+        }
         if (isset($fields->type)) $array[] = "`type` = '".preg_replace('/[^\/\|\,\w\s-:]/','',$fields->type)."'";
 
         // Convert to a comma seperated string for the mysql query
@@ -206,6 +220,13 @@ class Device
         $this->mysqli->query("UPDATE device SET ".$fieldstr." WHERE `id` = '$id'");
 
         if ($this->mysqli->affected_rows>0){
+            if ($this->redis) {
+                $result = $this->mysqli->query("SELECT userid FROM device WHERE id='$id'");
+                $row = (array) $result->fetch_object();
+                if (isset($row['userid']) && $row['userid']) {
+                    $this->load_to_redis($row['userid']);
+                }
+            }
             return array('success'=>true, 'message'=>'Field updated');
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');

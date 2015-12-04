@@ -77,10 +77,11 @@ class VirtualFeed
         if ($datatype==2) { //daily
             $start=$this->process->process__getstartday($now); // start of day
             $endslot = $start + 86400; // one day range
-            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400);
+            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400, 'sourcetype' => "VIRTUALFEED", 'sourceid' => $feedid);
             $dataValue = $this->process->input($start, null, $processList, $opt_timearray); // execute processlist 
         } else {
-            $dataValue = $this->process->input($now, null, $processList); // execute processlist 
+            $opt_timearray = array('sourcetype' => "VIRTUALFEED", 'sourceid' => $feedid);
+            $dataValue = $this->process->input($now, null, $processList, $opt_timearray); // execute processlist 
         }
         //$this->log->info("lastvalue() feedid=$feedid dataValue=$dataValue");
         return array('time'=>$now, 'value'=>$dataValue);

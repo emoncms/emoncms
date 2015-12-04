@@ -12,6 +12,7 @@ var processlist_ui =
   init_done: -1, // when 0 all lists are loaded
   
   engines_hidden:[],
+  has_redis: 0,
 
   'draw':function(){
     var i = 0;
@@ -42,73 +43,75 @@ var processlist_ui =
         var processkey = this.contextprocesslist[z][0];
         var arg = "";
         var lastvalue = "";
-
         var processname = "";
-        // Check ProcessArg Type
-        if (this.processlist[processkey] != undefined) {
-          switch(this.processlist[processkey][1]) {
-            case 0: // VALUE
-              arg += "<span class='label label-info' title='Value'>";
-              arg += "<i class='icon-edit icon-white'></i> ";
-              arg += this.contextprocesslist[z][1];
-              arg += "</span>";
-              break;
 
-            case 1: //INPUTID
-              var inpid = this.contextprocesslist[z][1];
-              if (this.inputlist[inpid]!=undefined) {
+        if (this.processlist[processkey] != undefined) {
+          var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
+          if (procneedredis) {
+            arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
+          } else {
+            // Check ProcessArg Type
+            switch(this.processlist[processkey][1]) {
+              case 0: // VALUE
+                arg += "<span class='label label-info' title='Value'>";
+                arg += "<i class='icon-edit icon-white'></i> ";
+                arg += this.contextprocesslist[z][1];
+                arg += "</span>";
+                break;
+
+              case 1: //INPUTID
+                var inpid = this.contextprocesslist[z][1];
+                if (this.inputlist[inpid]!=undefined) {
                 arg += "<span class='label label-info' title='Input "+inpid+"'>";
                 arg += "<i class='icon-signal icon-white'></i> ";
                 arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
                 if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
                 arg += "</span>";
                 lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
-              } else {
-                arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
-                // does not exist or was deleted
-              }
-              break;
+                } else {
+                  arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
+                }
+                break;
 
-            case 2: //FEEDID
-              var feedid = this.contextprocesslist[z][1];
-              if (this.feedlist[feedid]!=undefined) {
+              case 2: //FEEDID
+                var feedid = this.contextprocesslist[z][1];
+                if (this.feedlist[feedid]!=undefined) {
                 arg += "<a class='label label-info' title='Feed "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
                 arg += "<i class='icon-list-alt icon-white'></i> ";
                 if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
                 arg += this.feedlist[feedid].name;
                 arg += "</a>";
                 lastvalue = "<span style='color:#888; font-size:12px'>(feed last value:"+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
-              } else {
-                arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
-                // does not exist or was deleted
-              }
-              break;
+                } else {
+                  arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
+                }
+                break;
 
-            case 4: // TEXT
-              arg += "<span class='label label-info' title='Text'>";
-              arg += "<i class='icon-edit icon-white'></i> ";
-              arg += this.contextprocesslist[z][1];
-              arg += "</span>";
-              break;
+              case 4: // TEXT
+                arg += "<span class='label label-info' title='Text'>";
+                arg += "<i class='icon-edit icon-white'></i> ";
+                arg += this.contextprocesslist[z][1];
+                arg += "</span>";
+                break;
 
-            case 5: // SCHEDULEID
-              var schid = this.contextprocesslist[z][1];
-              if (this.schedulelist[schid]!=undefined) {
+              case 5: // SCHEDULEID
+                var schid = this.contextprocesslist[z][1];
+                if (this.schedulelist[schid]!=undefined) {
                 arg += "<span class='label label-info' title='Schedule "+schid+"' >";
                 arg += "<i class='icon-time icon-white'></i> ";
                 arg += this.schedulelist[schid].name;
                 arg += "</span>";
-              } else {
-                arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
-                // does not exist or was deleted
-              }
-              break;
+                } else {
+                  arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
+                }
+                break;
+            }
           }
           processname = this.processlist[processkey][0];
         }
         else {
           processname = "UNSUPPORTED";
-          arg += "<span class='label label-important' title='Value'>Process '"+processkey+"' not available. Module missing?</span>";
+          arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Module missing?</span>";
         }
         out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
      
@@ -137,18 +140,22 @@ var processlist_ui =
           var processkey = localprocesslist[z][0];
           var key = "";
 
-          // Check ProcessArg Type
           if (this.processlist[processkey] != undefined) {
-            value = localprocesslist[z][1];
-            key = "<small>"+this.processlist[processkey][0]+"</small>"; // name
-            switch(this.processlist[processkey][1]) {
-              case 0: // VALUE
+            var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
+            if (procneedredis) {
+                out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Redis not installed.'>NO REDIS</span> "
+            } else {
+              // Check ProcessArg Type
+              value = localprocesslist[z][1];
+              key = "<small>"+this.processlist[processkey][0]+"</small>"; // name
+              switch(this.processlist[processkey][1]) {
+                case 0: // VALUE
                 title = "Value " + value;
                 color = 'info';
                 out += "<span class='label label-"+color+"' title='"+title+"' style='cursor:default'>"+key+"</span> ";
                 break;
 
-              case 1: //INPUTID
+                case 1: //INPUTID
                 var inpid = localprocesslist[z][1];
                 if (this.inputlist[value]!=undefined) {
                   title = "Input " +value+ " (Node "+this.inputlist[value].nodeid+":"+this.inputlist[value].name + (this.inputlist[value].description!="" ? " "+this.inputlist[value].description : "") +")";
@@ -159,7 +166,7 @@ var processlist_ui =
                 }
                 break;
 
-              case 2: //FEEDID
+                case 2: //FEEDID
                 if (this.feedlist[value]!=undefined) {
                   title = "Feed " + value + " (" + (this.feedlist[value].tag ? this.feedlist[value].tag+": " : "") + this.feedlist[value].name +")";
                   color = 'info';
@@ -169,13 +176,13 @@ var processlist_ui =
                 }
                 break;
 
-              case 4: // TEXT
+                case 4: // TEXT
                 title = "Text " + value;
                 color = 'info';
                 out += "<span class='label label-"+color+"' title='"+title+"' style='cursor:default'>"+key+"</span> ";
                 break;
 
-              case 5: // SCHEDULEID
+                case 5: // SCHEDULEID
                 if (this.schedulelist[value]!=undefined) {
                   title = "Schedule " +value + " (" + this.schedulelist[value].name + ")";
                   color = 'info';
@@ -185,14 +192,15 @@ var processlist_ui =
                 }
                 break;
 
-              default:
+                default:
                 title = value;
                 color = 'info';
                 out += "<span class='label label-"+color+"' title='"+title+"' style='cursor:default'>"+key+"</span> ";
                 break;
+              }
             }
           } else {
-              out += "<span class='badge badge-important' title='Process '"+processkey+"' not available. Module missing?'>UNSUPPORTED</span>"
+              out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Module missing?'>UNSUPPORTED</span> "
           }
         }
       } else {
@@ -485,12 +493,13 @@ var processlist_ui =
 
     // Processors Select List
     $.ajax({ url: path+"process/list.json", dataType: 'json', async: true, success: function(result){
-      if (processlist_ui.engines_hidden.length > 0) {
-        for (p in result)  // for each processor
-        {
-          result[p]['feedwrite']=false;
-          if (result[p][6]!=undefined) {  // processor has supported engines?
-            result[p]['feedwrite']=true; // If has an engine so assume process writes to feed 
+      
+      for (p in result)  // for each processor
+      {
+        result[p]['feedwrite']=false;
+        if (result[p][6]!=undefined) { // processor has supported engines?
+          result[p]['feedwrite']=true; // If has an engine so assume process writes to feed 
+          if (processlist_ui.engines_hidden.length > 0) {
             for (var e=result[p][6].length-1; e > -1; e--) {  // for each processor engine
               for (h in processlist_ui.engines_hidden) {
                 if (result[p][6][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
@@ -498,9 +507,9 @@ var processlist_ui =
                 }
               }
             }
-            if (result[p][6].length == 0) {
-              result[p][6] = undefined;  // if processor now has no engines, undefine its array
-            }
+          }
+          if (result[p][6].length == 0) {
+            result[p][6] = undefined;  // if processor now has no engines, undefine its array
           }
         }
       }
@@ -527,7 +536,13 @@ var processlist_ui =
         out += "<optgroup label='"+z+"'>";
         for (p in processgroups[z])
         {
-          out += "<option value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+"</option>";
+          var procdisabled = "";
+          var procneedredis = "";
+          if (processlist_ui.has_redis == 0 && processgroups[z][p]['requireredis'] != undefined && processgroups[z][p]['requireredis'] == true) { 
+            procdisabled = 'disabled=""';
+            procneedredis = " (needs REDIS)";
+          }
+          out += "<option "+procdisabled+" value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+procneedredis+"</option>";
         }
         out += "</optgroup>";
       }
