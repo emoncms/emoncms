@@ -27,10 +27,10 @@ function jgauge2_widgetlist()
     {
       "offsetx":-80,"offsety":-80,"width":160,"height":160,
       "menu":"Widgets",
-      "options":["feedid", "feedid2", "scale", "max", "units"],
+      "options":["feedid", "feedid2", "scale", "max", "min", "units"],
       "optionstype":["feedid","feedid","value","value","value"],
-      "optionsname":[_Tr("Feed 1"),_Tr("Feed 2"),_Tr("Scale"),_Tr("Max value"),_Tr("Units")],
-      "optionshint":[_Tr("Feed 1"),_Tr("Feed 2 (Min/Max for example)"),_Tr("Scale applied to value"),_Tr("Max value to show"),_Tr("Units to show")]
+      "optionsname":[_Tr("Feed 1"),_Tr("Feed 2"),_Tr("Scale"),_Tr("Max value"),_Tr("Min value"),_Tr("Units")],
+      "optionshint":[_Tr("Feed 1"),_Tr("Feed 2 (Min/Max for example)"),_Tr("Scale applied to value"),_Tr("Max value to show"),_Tr("Min value to show"),_Tr("Units to show")]
 
     }
   }
@@ -70,7 +70,7 @@ function jgauge2_draw()
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
-      draw_jgauge2(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val*scale,val2*scale,$(this).attr("max"),$(this).attr("units"));
+      draw_jgauge2(widgetcanvas[id],0,0,$(this).width(),$(this).height(),val*scale,val2*scale,$(this).attr("max"),$(this).attr("min"),$(this).attr("units"));
     }
   });
 }
@@ -85,20 +85,32 @@ function jgauge2_fastupdate()
   jgauge2_draw();
 }
 
-function draw_jgauge2(ctx,x,y,width,height,value,value2,max,units)
+function draw_jgauge2(ctx,x,y,width,height,value,value2,max,min,units)
 {
   if (!max) max = 1000;
+  if (!min || min > max) min = 0;
+  min = Number(min);
+  max = Number(max);
   if (!value) value = 0;
+  if (!value2) value2 = 0;
   if (!units) units = " ";
   var offset = 45;
-  var position = ((value*270)/max);
-    if (position > 270) {
+  var position = (((value-min)*270)/(max - min));
+  if (position > 270) {
     position = 270;
   }
-  var position2 = ((value2*270)/max);
-    if (position2 > 270) {
+  if (position < 0) {
+    position = 0;
+  }
+
+  var position2 = (((value2-min)*270)/(max - min));
+  if (position2 > 270) {
     position2 = 270;
   }
+  if (position2 < 0) {
+    position2 = 0;
+  }
+
   var size = 0;
   if (width>height) {
     size = height;
@@ -109,8 +121,8 @@ function draw_jgauge2(ctx,x,y,width,height,value,value2,max,units)
   if (size<120) size=120;
 
   decimalPlaces = 0;
-  if (max <= 1.2)  decimalPlaces = 2;
-  else if (max <= 12)  decimalPlaces = 1;
+  if ((max - min) <= 1.2)  decimalPlaces = 2;
+  else if ((max - min) <= 12)  decimalPlaces = 1;
   
   ctx.clearRect(0,0,width,height);
 
@@ -118,19 +130,19 @@ function draw_jgauge2(ctx,x,y,width,height,value,value2,max,units)
   ctx.drawImage(img_jgauge2, 0, 0, size, size);
 
   //ticks labels
-  max = max/6;
+  var step = ((max - min)/6);
   ctx.textAlign="center"; 
   ctx.font = "8pt Arial";
   ctx.fillStyle = "rgb(34,198,252)";
-  ctx.fillText(0, 30*(size/100), 72*(size/100)); // first tick
-  ctx.fillText(Number((max*1).toFixed(decimalPlaces)), 25*(size/100), 52*(size/100)); // second tick
-  ctx.fillText(Number((max*2).toFixed(decimalPlaces)), 30*(size/100), 32*(size/100)); // third tick
-  ctx.fillText(Number((max*3).toFixed(decimalPlaces)), 50*(size/100), 27*(size/100)); // 4th tick
-  ctx.fillText(Number((max*4).toFixed(decimalPlaces)), 70*(size/100), 32*(size/100)); // 5th tick
+  ctx.fillText((Number(min + (step*0)).toFixed(decimalPlaces)), 30*(size/100), 72*(size/100)); // first tick
+  ctx.fillText((Number(min + (step*1)).toFixed(decimalPlaces)), 25*(size/100), 52*(size/100)); // second tick
+  ctx.fillText((Number(min + (step*2)).toFixed(decimalPlaces)), 30*(size/100), 32*(size/100)); // third tick
+  ctx.fillText((Number(min + (step*3)).toFixed(decimalPlaces)), 50*(size/100), 27*(size/100)); // 4th tick
+  ctx.fillText((Number(min + (step*4)).toFixed(decimalPlaces)), 70*(size/100), 32*(size/100)); // 5th tick
   ctx.fillStyle = "rgb(245,144,0)";
-  ctx.fillText(Number((max*5).toFixed(decimalPlaces)), 75*(size/100), 52*(size/100)); // 6th tick
+  ctx.fillText((Number(min + (step*5)).toFixed(decimalPlaces)), 75*(size/100), 52*(size/100)); // 6th tick
   ctx.fillStyle = "rgb(255,0,0)";
-  ctx.fillText(Number((max*6).toFixed(decimalPlaces)), 70*(size/100), 72*(size/100)); // 7th tick
+  ctx.fillText((Number(min + (step*6)).toFixed(decimalPlaces)), 70*(size/100), 72*(size/100)); // 7th tick
 
   // main label
   ctx.font = "14pt Calibri,Geneva,Arial";
