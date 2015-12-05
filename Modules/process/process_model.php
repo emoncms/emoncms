@@ -102,9 +102,8 @@ class Process
             if (filetype("Modules/".$dir[$i])=='dir') {
                 $class = $this->get_module_class($dir[$i]);
                 if ($class != null) {
-                    $list = $class->process_list();
-                    foreach($list as $k => $v) {
-                        unset ($list[$k]);
+                    $mod_process_list = $class->process_list();
+                    foreach($mod_process_list as $k => $v) {
                         $processkey = strtolower($dir[$i]."__".$v[2]);
                         $list[$processkey] = $v; // set list key as "module__function"
                         //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");

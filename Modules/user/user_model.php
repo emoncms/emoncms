@@ -304,12 +304,12 @@ class User
         }
     }
 
-    public function passwordreset($username,$email)
+    public function passwordreset($username,$emailto)
     {
         $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
+        if (!filter_var($emailto, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
-        $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$email'");
+        $result = $this->mysqli->query("SELECT * FROM users WHERE `username`='$username_out' AND `email`='$emailto'");
 
         if ($result->num_rows==1)
         {
@@ -334,31 +334,18 @@ class User
                 global $enable_password_reset;
                 if ($enable_password_reset==true)
                 {
-                    global $smtp_email_settings;
-
-                    // include SwiftMailer. One is the path from a PEAR install,
-                    // the other from libphp-swiftmailer.
-                    $have_swift = @include_once ("Swift/swift_required.php");
-                    if (!$have_swift) {
-                       $have_swift = @include_once ("swift_required.php");
+                    require "Lib/email.php";
+                    $email = new Email();
+                    //$email->from(from);
+                    $email->to($emailto);
+                    $email->subject('Emoncms password reset');
+                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>");
+                    $result = $email->send();
+                    if (!$result['success']) {
+                        $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
+                    } else {
+                        $this->log->info("Email sent to $emailto");
                     }
-
-                    if (!$have_swift){
-                        $this->log->info("Could not include SwiftMailer from either possible path!");
-                        return array('success'=>false, 'message'=>"Could not find SwiftMailer - cannot proceed");
-                    }
-
-                    $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], 26)
-                    ->setUsername($smtp_email_settings['username'])->setPassword($smtp_email_settings['password']);
-
-                    $mailer = Swift_Mailer::newInstance($transport);
-                    $message = Swift_Message::newInstance()
-                      ->setSubject('Emoncms password reset')
-                      ->setFrom($smtp_email_settings['from'])
-                      ->setTo(array($email))
-                      ->setBody("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>", 'text/html');
-                    $result = $mailer->send($message);
-                    $this->log->info("Sent ".$result." email(s)");
                 }
                 //------------------------------------------------------------------------------
 
@@ -421,6 +408,14 @@ class User
         $result = $this->mysqli->query("SELECT username FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
         return $row['username'];
+    }
+
+    public function get_email($userid)
+    {
+        $userid = intval($userid);
+        $result = $this->mysqli->query("SELECT email FROM users WHERE id = '$userid';");
+        $row = $result->fetch_array();
+        return $row['email'];
     }
 
     public function get_apikey_read($userid)

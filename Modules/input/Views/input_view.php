@@ -149,10 +149,16 @@
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
-    if (i.description != "") newfeedname = i.description;
-    else newfeedname = "node:" + i.nodeid+":" + i.name;
+    var contextname = "";
+    if (i.description != "") { 
+        newfeedname = i.description;
+        contextname = "Node" + i.nodeid + " : " + newfeedname;
+    }
+    else { 
+        newfeedname = "node:" + i.nodeid+":" + i.name;
+        contextname = "Node" + i.nodeid + " : " + i.name;
+    }
     var newfeedtag = "Node " + i.nodeid;
-    var contextname = "Node" + i.nodeid + " : " + newfeedname;
     var processlist = processlist_ui.decode(i.processList); // Input process list
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
    });

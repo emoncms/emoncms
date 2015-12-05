@@ -11,6 +11,7 @@ Modules/*/
 !Modules/dashboard/
 !Modules/device/
 !Modules/feed/
+!Modules/eventp/
 !Modules/input/
 !Modules/process/
 !Modules/schedule/
