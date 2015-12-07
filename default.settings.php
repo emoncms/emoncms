@@ -67,6 +67,9 @@
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
 
+    // Favicon filenme in Theme/$theme
+    $favicon = "favicon.png";
+
     // Use full screen width
     $fullwidth = true;
 

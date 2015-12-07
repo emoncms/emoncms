@@ -61,6 +61,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($fullwidth)) $fullwidth = false;
     if (!isset($menucollapses)) $menucollapses = true;
+    if (!isset($favicon)) $favicon = "favicon.png";
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';

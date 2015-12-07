@@ -9,14 +9,14 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme;
+  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$favicon;
 ?>
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Emoncms - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
-        <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/favicon.png" />
+        <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/<?php echo $favicon; ?>" />
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/ios_load.png">
