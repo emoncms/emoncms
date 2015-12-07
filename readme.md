@@ -48,7 +48,7 @@ There are many other modules such as the event module and openbem (open source b
 
 **v9 Development [http://openenergymonitor.org/emon/node/11009](http://openenergymonitor.org/emon/node/11009)**
 
-**EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/emoncms/emonview](https://github.com/emoncms/emonview)
+**EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/trystanlea/emonview](https://github.com/trystanlea/emonview)
 
 
 ## Using emoncms
