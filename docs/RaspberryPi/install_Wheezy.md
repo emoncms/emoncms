@@ -1,10 +1,11 @@
-## Install Emoncms on Raspberry Pi (Raspbian Jessie)
+# Install Emoncms on Raspberry Pi (Raspbian Wheezy)
 
-This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.    
+This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Wheezy operating system.  
+An alternative installation guide is [avaliable for Raspbian Jessie](readme.md) - they are different, so ensure that you use the correct guide!  
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
-Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
+Before installing emoncms, it is essential you have a working version of Raspbian installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
-### Preparation
+## Preparation
 
 Start by updating the system repositories and packages:
 
@@ -20,9 +21,9 @@ Install the pecl dependencies (serial, redis and swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
-    
+
 Add the pecl modules to php5 config:
-    
+
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
@@ -31,15 +32,15 @@ Add the pecl modules to php5 config:
 Issue the command:
 
     sudo a2enmod rewrite
-    
-For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on lines 155 and 166 of `/etc/apache2/apache2.conf`
-    
-    sudo nano /etc/apache2/apache2.conf
+
+For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on lines 7 and 11 of `/etc/apache2/sites-available/default`
+
+    sudo nano /etc/apache2/sites-available/default
 
 Save & exit, then restart Apache:
 
     sudo /etc/init.d/apache2 restart
-    
+
 ### Install the emoncms application via git
 
 Git is a source code management and revision control system but at this stage we use it to just download and update the emoncms application.
@@ -60,7 +61,7 @@ When prompted, enter the 'MYSQL "root" user' password you were prompted for earl
 Create the emoncms database:
 
     CREATE DATABASE emoncms;
-    
+
 Add an emoncms database user and set that user's permissions.
 In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user.
 Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
@@ -72,24 +73,20 @@ Make a note of both the database 'username' ('emoncms') & the 'new_secure_passwo
 Exit mysql:
 
     exit
-    
+
 ### Create data repositories for emoncms feed engines:
 
     sudo mkdir /var/lib/{phpfiwa,phpfina,phptimeseries}
-    
+
 and set their permissions
 
     sudo chown www-data:root /var/lib/{phpfiwa,phpfina,phptimeseries}
 
 ### Configure emoncms database settings
 
-cd into the emoncms directory:
-
-    cd /var/www/emoncms/
-
 Make a copy of default.settings.php and call it settings.php:
 
-    cp default.settings.php settings.php
+    cd /var/www/emoncms && cp default.settings.php settings.php
 
 Open settings.php in an editor:
 
@@ -101,18 +98,17 @@ Update your settings to use your Database 'user' & 'password', which will enable
     $database = "emoncms";
     $username = "emoncms";
     $password = "new_secure_password";
-    
-Save and exit.
 
-Create a symlink to reference emoncms within the web root folder:
+Save and exit.  
+Set write permissions for the emoncms logfile:
 
-    cd /var/www/html && sudo ln -s /var/www/emoncms
+`touch /var/www/emoncms/emoncms.log` followed by `chmod 666 /var/www/emoncms/emoncms.log`
 
 ### In an internet browser, load emoncms:
 
 [http://localhost/emoncms](http://localhost/emoncms)
 
-The first time you run emoncms it will automatically set up the database and you will be taken to the register/login screen. 
+The first time you run emoncms it will automatically set up the database and you will be taken to the register/login screen.
 Create an account by entering your email and password and clicking register.  
 Once you are logged in;  
 * Check the Administration page - 'Setup > Administration' noting and acting upon any messages reported.
@@ -120,18 +116,23 @@ Once you are logged in;
 * Make a note of your 'Write API Key' from the 'Setup > My Account' page, and also ensure that the correct timezone is selected & saved.
 
 ### Install Emonhub
-    
+
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
 
 Edit the emonhub configuration file, entering your emoncms 'Write API Key', and if necessary, also your rfm2pi frequency, group & base id:
 
     nano /etc/emonhub/emonhub.conf
 
-Save & exit. Edit /boot/cmdline.txt file by changing the line to;  
-`dwc_otg.lpm_enable=0 console=tty1 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`
+Save & exit, then edit inittab by adding a '#' to the beginning of the last line:
+
+    sudo nano /etc/inittab
+
+so that it reads - `# T0:23:respawn:/sbin/getty -L ttyAMA0 115200 vt100` then save & exit.  
+Edit the cmdline.txt file:
 
     sudo nano /boot/cmdline.txt
 
+by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait`  
 At this stage, power off your Raspberry Pi:
 
     sudo poweroff
@@ -142,6 +143,7 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 
 ###System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
+* [Disabling Apache, Redis & emoncms logs](general.md#Disabling-System-Logs)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
 * [Installing emoncms Apps](general.md#install-emoncms-apps)

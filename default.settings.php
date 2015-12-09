@@ -40,7 +40,7 @@
         // Redis Low-write mode
         'redisbuffer'=>array(
             'enabled' => false      // If enabled is true, requires redis enabled and feedwriter service running
-            ,'sleep' => 60          // Number of seconds to wait before write buffer to disk - user selectable option
+            ,'sleep' => 600          // Number of seconds to wait before write buffer to disk - user selectable option
         ),
 
         'csvdownloadlimit_mb' => 10,     // Max csv download size in MB
@@ -121,7 +121,7 @@
     $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
 
     // If installed on Emonpi, allow update from admin menu
-    $allow_emonpi_update = true;
+    $allow_emonpi_update = false;
 
     //experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     $data_sampling = false;
