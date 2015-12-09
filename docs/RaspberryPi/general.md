@@ -81,7 +81,8 @@ In emoncms settings.php change `log_enabled = true;` to `log_enabled = false;`
 
 Save & exit
 
-####Disable MYSQL log **(Jessie only)**
+#####Disable MYSQL log
+You are only required to disable the MYSQL log in Raspbian Jessie, it **does not apply** to Raspbian Wheezy.
 
 `sudo nano /etc/mysql/my.cnf`
 

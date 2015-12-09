@@ -3,16 +3,16 @@ Due to the number of writes that the full version of emoncms makes, the lifespan
 
 As a general guide;
 * A default installation of emoncms writes on average over 7kB of data to the disk per second.
-* [Disabling Apache, Redis & emoncms logs](general.md#Disabling-System-Logs) reduces this to about 5kB per second.
+* [Disabling Apache, Redis & emoncms logs](general.md#disabling-system-logs) reduces this to about 5kB per second.
 * This guide will reduce the average amount of data written to less approximately 100Bytes per second or less.
 * A further optional stage to protect the SD card is making the filesystem read-only. This is the best option when emoncms is deployed in a location where the electricity supply regularly fails or is interrupted (Guide to follow).
 
 ###Preparation
 
 Before following this guide;
-1. It is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or you have used git to install a working version of emoncms on your Raspberry Pi
+1. It is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of emoncms on your Raspberry Pi
 1. Because the low-write mode **is not compatible with PHPFIWA feeds**, it's important that any existing PHPFIWA feeds are deleted, otherwise the system will become unstable.  
-1. If you have not already done so, ensure that you have [disabled your Apache, Redis & emoncms logs.](general.md#Disabling-System-Logs)
+1. If you have not already done so, ensure that you have [disabled your Apache, Redis & emoncms logs.](general.md#disabling-system-logs)
 
 Update emoncms to current version:
 

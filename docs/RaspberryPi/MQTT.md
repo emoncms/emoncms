@@ -3,8 +3,7 @@ MQTT is a "lightweight" messaging protocol, which enables the publishing of data
 other connected devices.
 ###Preparation
 
-Before following this guide, it is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or you have used git to install a working version of emoncms on your Raspberry Pi,
-as well as a MQTT message broker such as [mosquitto](http://mosquitto.org/) installed and running.
+Before following this guide, it is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of emoncms on your Raspberry Pi, as well as a MQTT message broker such as [mosquitto](http://mosquitto.org/) installed and running.
 
 Update emoncms to current version
 
