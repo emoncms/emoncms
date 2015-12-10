@@ -51,8 +51,8 @@ function windrose_draw()
     var val2 = curve_value(feedid2, dialrate);
     // ONLY UPDATE ON CHANGE
     if ((val * 1).toFixed(2) != (associd[feedid]['value'] * 1).toFixed(2) || 
-      (val2 * 1).toFixed(2) != (associd[feedid2]['value'] * 1).toFixed(2) ||
-       redraw == 1)
+        (val2 * 1).toFixed(2) != (associd[feedid2]['value'] * 1).toFixed(2) ||
+        redraw == 1)
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;

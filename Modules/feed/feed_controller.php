@@ -93,7 +93,7 @@ function feed_controller()
                     else if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
                     else if ($route->action == "delete") $result = $feed->delete($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
-                    else if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'));
+                    else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
 
                     else if ($route->action == "process")
                     {
