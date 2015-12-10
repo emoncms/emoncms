@@ -225,6 +225,19 @@ class Input
         }
     }
 
+    public function get_details($id)
+    {
+        // LOAD REDIS
+        $id = (int) $id;
+        if ($this->redis) {
+            if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
+            return $this->redis->hGetAll("input:$id");
+        } else {
+            $result = $this->mysqli->query("SELECT nodeid,name,description FROM input WHERE `id` = '$id'");
+            return $result->fetch_array();
+        }
+    }
+
     public function get_last_value($id)
     {
         $id = (int) $id;

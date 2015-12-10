@@ -441,7 +441,7 @@ class Feed
         return $data;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
@@ -451,12 +451,18 @@ class Feed
         // Download limit
         $downloadsize = (($end - $start) / $outinterval) * 17; // 17 bytes per dp
         if ($downloadsize>($this->settings['csvdownloadlimit_mb']*1048576)) {
-            $this->log->warn("Feed model: csv download limit exeeded downloadsize=$downloadsize feedid=$feedid");
-            return false;
+            $this->log->warn("csv_export() CSV download limit exeeded downloadsize=$downloadsize feedid=$feedid");
+            return array('success'=>false, 'message'=>"CSV download limit exeeded downloadsize=$downloadsize");
         }
 
-        // Call to engine get_average method
-        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$outinterval);
+        if ($datetimeformat == 1) {
+            global $user,$session;
+            $usertimezone = $user->get_timezone($session['userid']);
+        } else {
+            $usertimezone = false;
+        }
+        // Call to engine csv_export method
+        return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$outinterval,$usertimezone);
     }
 
 
