@@ -1,10 +1,9 @@
 ##Enabling MQTT
-MQTT is a "lightweight" messaging protocol, which enables the publishing of data from emoncms, as well as subscribing to data from 
+MQTT is a "lightweight" messaging protocol, which enables the publishing of data from emoncms, as well as subscribing to data from
 other connected devices.
 ###Preparation
 
-Before following this guide, it is essential that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or you have used git to install a working version of emoncms on your Raspberry Pi, 
-as well as a MQTT message broker such as [mosquitto](http://mosquitto.org/) installed and running.
+Before following this guide, it is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of emoncms on your Raspberry Pi, as well as a MQTT message broker such as [mosquitto](http://mosquitto.org/) installed and running.
 
 Update emoncms to current version
 
@@ -21,7 +20,7 @@ Create a symlink to run phpmqtt_input as a daemon and set permissions
 
     nano /var/www/emoncms/settings.php
 
-In the section **MQTT**, change `$mqtt_enabled` from `false` to `true`, and also change the `$mqtt_server` IP address to that of your mqtt 
+In the section **MQTT**, change `$mqtt_enabled` from `false` to `true`, and also change the `$mqtt_server` IP address to that of your mqtt
 server.
 Save & exit, then reboot
 
@@ -32,4 +31,5 @@ Save & exit, then reboot
 Data from within emoncms can be published by adding the `Publish to MQTT` input process to one or more of the node inputs.
 In the process 'Text' box add the topic, for example; emoncms/solar
 ####emoncms as a subscriber
-Unlike the above, the subscriber topic is hardcoded within emoncms, and takes the format `rx/*` - where `*` is the emoncms node number. For example, if data is published to topic rx/20 then emoncms will subscribe to that data, creating and updating node 20 in your inputs page
+Unlike the above, the subscriber topic is hardcoded within emoncms, and takes the format `rx/*` - where `*` is the emoncms node number. For example, if data is published to topic rx/20 then emoncms will subscribe to that data, creating and updating node 20 in your inputs page.  
+Emoncms will also decode data in comma-delimited format, so for example; publishing values 657,899,5,776 to rx/20 will create Node 20, with 4 Key inputs which correspond with the 4 published comma-delimited values. Name labels can then be added to the key inputs in emoncms.

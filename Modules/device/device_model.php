@@ -123,7 +123,7 @@ class Device
         foreach ($deviceids as $id)
         {
             $row = $this->redis->hGetAll("device:$id");
-            $lastvalue = $this->redis->hmget("device:lastvalue".$id,array('time'));
+            $lastvalue = $this->redis->hMget("device:lastvalue:".$id,array('time'));
             $row['time'] = $lastvalue['time'];
             $devices[] = $row;
         }

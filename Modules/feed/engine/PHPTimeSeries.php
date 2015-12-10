@@ -327,11 +327,12 @@ class PHPTimeSeries
         exit;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
 
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -391,10 +392,10 @@ class PHPTimeSeries
 
             $last_time = $time;
             $time = $array['time'];
-
+            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // $last_time = 0 only occur in the first run
             if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $time.$csv_field_separator.number_format($array['value'],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                fwrite($exportfh, $timenew.$csv_field_separator.number_format($array['value'],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
             }
         }
         fclose($exportfh);

@@ -757,11 +757,12 @@ class PHPFiwa
         return $meta;
     }
     
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
 
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -826,7 +827,7 @@ class PHPFiwa
         $exportfh = @fopen( 'php://output', 'w' );
 
         $data = array();
-        $time = 0; $i = 0;
+        $i = 0;
      
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
@@ -855,11 +856,11 @@ class PHPFiwa
 
             // If there was a value in the block then add to data array
             if ($points_in_sum) {
-                $timestamp = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
+                $time = $start_time_avl + ($meta->interval[$layer] * ($startpos+$i-1));
                 $average = $point_sum / $points_in_sum;
-                //$data[] = array($timestamp*1000,$average);
-                
-                fwrite($exportfh, $timestamp.$csv_field_separator.number_format($average,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                //$data[] = array($time*1000,$average);
+                $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
+                fwrite($exportfh, $timenew.$csv_field_separator.number_format($average,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
             }
         }
         

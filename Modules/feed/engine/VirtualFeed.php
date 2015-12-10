@@ -169,9 +169,35 @@ class VirtualFeed
         return false; // TBD
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        return false; // TBD
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
+        
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+
+        $data = get_data($feedid,$start,$end,$interval,0,0);
+        foreach ($data as $time=>$value) {
+            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
+            fwrite($exportfh, $timenew.$csv_field_separator.number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+        }
+        fclose($exportfh);
+        exit;
     }
 
 }

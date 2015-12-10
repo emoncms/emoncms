@@ -1,24 +1,13 @@
 /*
    All emon_widgets code is released under the GNU General Public License v3.
    See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
-    Author: Trystan Lea: trystan.lea@googlemail.com
-    If you have any questions please get in touch, try the forums here:
-    http://openenergymonitor.org/emon/forum
-    
-    Addition of 2nd needle to allow for max value visualization - done by Andreas Messerli - firefox7518@gmail.com
-    Fully configurable via normal widget settings
+   Part of the OpenEnergyMonitor project:  http://openenergymonitor.org
  */
 
 // Global variables
 var img = null,
   needle = null,
   needle2 = null;
-
 
 function jgauge2_widgetlist()
 {
@@ -65,8 +54,8 @@ function jgauge2_draw()
     var val2 = curve_value(feedid2, dialrate);
     // ONLY UPDATE ON CHANGE
     if ((val * 1).toFixed(2) != (associd[feedid]['value'] * 1).toFixed(2) || 
-      (val2 * 1).toFixed(2) != (associd[feedid2]['value'] * 1).toFixed(2) ||
-       redraw == 1)
+        (val2 * 1).toFixed(2) != (associd[feedid2]['value'] * 1).toFixed(2) ||
+        redraw == 1)
     {
       var id = "can-"+$(this).attr("id");
       var scale = 1*$(this).attr("scale") || 1;
@@ -88,7 +77,7 @@ function jgauge2_fastupdate()
 function draw_jgauge2(ctx,x,y,width,height,value,value2,max,min,units)
 {
   if (!max) max = 1000;
-  if (!min || min > max) min = 0;
+  if (!min) min = 0;
   min = Number(min);
   max = Number(max);
   if (!value) value = 0;
@@ -121,8 +110,13 @@ function draw_jgauge2(ctx,x,y,width,height,value,value2,max,min,units)
   if (size<120) size=120;
 
   decimalPlaces = 0;
-  if ((max - min) <= 1.2)  decimalPlaces = 2;
-  else if ((max - min) <= 12)  decimalPlaces = 1;
+  if (max > min) {
+    if ((max - min) <= 1.2)  decimalPlaces = 2;
+    else if ((max - min) <= 12)  decimalPlaces = 1;
+  } else {
+    if ((min - max) <= 1.2)  decimalPlaces = 2;
+    else if ((min - max) <= 12)  decimalPlaces = 1;
+  }
   
   ctx.clearRect(0,0,width,height);
 
@@ -134,9 +128,9 @@ function draw_jgauge2(ctx,x,y,width,height,value,value2,max,min,units)
   ctx.textAlign="center"; 
   ctx.font = "8pt Arial";
   ctx.fillStyle = "rgb(34,198,252)";
-  ctx.fillText((Number(min + (step*0)).toFixed(decimalPlaces)), 30*(size/100), 72*(size/100)); // first tick
-  ctx.fillText((Number(min + (step*1)).toFixed(decimalPlaces)), 25*(size/100), 52*(size/100)); // second tick
-  ctx.fillText((Number(min + (step*2)).toFixed(decimalPlaces)), 30*(size/100), 32*(size/100)); // third tick
+  ctx.fillText((Number(min + (step*0)).toFixed(decimalPlaces)), 30*(size/100), 72*(size/100)); // 1st tick
+  ctx.fillText((Number(min + (step*1)).toFixed(decimalPlaces)), 25*(size/100), 52*(size/100)); // 2nd tick
+  ctx.fillText((Number(min + (step*2)).toFixed(decimalPlaces)), 30*(size/100), 32*(size/100)); // 3rd tick
   ctx.fillText((Number(min + (step*3)).toFixed(decimalPlaces)), 50*(size/100), 27*(size/100)); // 4th tick
   ctx.fillText((Number(min + (step*4)).toFixed(decimalPlaces)), 70*(size/100), 32*(size/100)); // 5th tick
   ctx.fillStyle = "rgb(245,144,0)";

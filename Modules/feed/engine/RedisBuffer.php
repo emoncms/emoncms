@@ -158,7 +158,7 @@ class RedisBuffer
         return false; // Not supported
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
         return false; // Not supported
     }

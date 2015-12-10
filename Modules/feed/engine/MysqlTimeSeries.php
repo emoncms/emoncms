@@ -283,9 +283,12 @@ class MysqlTimeSeries
         exit;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
         global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator, $data_sampling;
+
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
 
         $interval = intval($outinterval);
         $feedid = intval($feedid);
@@ -334,14 +337,15 @@ class MysqlTimeSeries
             $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
             $t = $start; $tb = 0;
             $stmt->bind_param("ii", $t, $tb);
-            $stmt->bind_result($dataTime, $dataValue);
+            $stmt->bind_result($time, $dataValue);
             for ($i=0; $i<$dp; $i++)
             {
                 $tb = $start + intval(($i+1)*$td);
                 $stmt->execute();
                 if ($stmt->fetch()) {
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
-                        fwrite($exportfh, $dataTime.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                        $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
+                        fwrite($exportfh, $timenew.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                     }
                 }
                 $t = $tb;
@@ -364,7 +368,8 @@ class MysqlTimeSeries
                     $dataValue = $row['data'];
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * $td;
-                        fwrite($exportfh, $time.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                        $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
+                        fwrite($exportfh, $timenew.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
                     }
                 }
             }

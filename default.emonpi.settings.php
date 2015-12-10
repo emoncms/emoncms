@@ -90,7 +90,7 @@
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
-      'port'=>"465",  // 22, 465, 587
+      'port'=>"465",  // 25, 465, 587
       'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
       // comment lines below that dont apply
       'encryption'=>"ssl", // ssl, tls

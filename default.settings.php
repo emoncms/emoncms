@@ -40,10 +40,10 @@
         // Redis Low-write mode
         'redisbuffer'=>array(
             'enabled' => false      // If enabled is true, requires redis enabled and feedwriter service running
-            ,'sleep' => 60          // Number of seconds to wait before write buffer to disk - user selectable option
+            ,'sleep' => 600          // Number of seconds to wait before write buffer to disk - user selectable option
         ),
 
-        'csvdownloadlimit_mb' => 10,     // Max csv download size in MB
+        'csvdownloadlimit_mb' => 25,     // Max csv download size in MB
 
         // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
         // On windows or shared hosting you will likely need to specify a different data directory--
@@ -90,7 +90,7 @@
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
-      'port'=>"465",  // 22, 465, 587
+      'port'=>"465",  // 25, 465, 587
       'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
       // comment lines below that dont apply
       'encryption'=>"ssl", // ssl, tls
@@ -121,7 +121,7 @@
     $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
 
     // If installed on Emonpi, allow update from admin menu
-    $allow_emonpi_update = true;
+    $allow_emonpi_update = false;
 
     //experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     $data_sampling = false;

@@ -403,11 +403,13 @@ class PHPFina
 
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
+
         $feedid = intval($feedid);
         $start = intval($start);
         $end = intval($end);
@@ -478,9 +480,9 @@ class PHPFina
 
             // calculate the datapoint time
             $time = $meta->start_time + $pos * $meta->interval;
-
+            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $time.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
 
             $i++;
         }

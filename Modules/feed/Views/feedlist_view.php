@@ -60,15 +60,13 @@
     </div>
 </div>
 
-<div id="ExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="ExportModalLabel" aria-hidden="true" data-backdrop="false">
+<div id="ExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="ExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="ExportModalLabel">CSV export: </h3>
+        <h3 id="ExportModalLabel"><b><span id="SelectedExportFeed"></span></b> CSV export</h3>
     </div>
     <div class="modal-body">
-    <p>Selected feed: <b><span id="SelectedExportFeed"></span></b></p>
     <p>Select the time range and interval that you wish to export: </p>
-    
         <table class="table">
         <tr>
             <td>
@@ -90,7 +88,7 @@
             <td>
                 <p><b>Interval</b></p>
                 <select id="export-interval" >
-                    <option value="">Select interval</option>
+                    <option value=1>Auto</option>
                     <option value=5>5s</option>
                     <option value=10>10s</option>
                     <option value=30>30s</option>
@@ -109,19 +107,23 @@
                 </select>
             </td>
             <td>
-                <p><b>Timezone offset (for day export):</b></p>
-                <input id="export-timezone-offset" type="text" />
+                <p><b>Date time format</b></p>
+                <div class="checkbox">
+                  <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
+                </div>
+                <label>Offset secs (for daily)&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled=""></label>
             </td>
         </tr>
-        <tr>
-            <td><br><button class="btn" id="export">Export</button></td><td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
-        </tr>
         </table>
-        <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
-        <p>Averages are only returned for feed engines with built in averaging.</p>
+            <div class="alert alert-info">
+                <p>Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.</p>
+                <p>Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.</p>
+            </div>
     </div>
     <div class="modal-footer">
+        <div id="downloadsizeplaceholder" style="float: left">Estimated download size: <span id="downloadsize">0</span>kB</div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
+        <button class="btn" id="export">Export</button>
     </div>
 </div>
 
@@ -267,6 +269,7 @@
       if (timezoneoffset==null) timezoneoffset = 0;
       $("#export-timezone-offset").val(parseInt(timezoneoffset));
     }
+    calculate_download_size();
     $('#ExportModal').modal('show');
   });
 
@@ -278,23 +281,15 @@
     language: 'en-EN'
   });
 
-  $('#export-interval').on('change', function(e) 
+  $('#export-interval, #export-timeformat').on('change', function(e) 
   {
-    var export_start = parse_timepicker_time($("#export-start").val());
-    var export_end = parse_timepicker_time($("#export-end").val());
-    var export_interval = $("#export-interval").val();
-    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-    console.log(downloadsize);
-    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+    calculate_download_size();
+    $("#export-timezone-offset").prop("disabled", $("#export-timeformat").prop('checked'));
   });
 
   $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) 
   {
-    var export_start = parse_timepicker_time($("#export-start").val());
-    var export_end = parse_timepicker_time($("#export-end").val());
-    var export_interval = $("#export-interval").val();
-    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+    calculate_download_size();
   });
   
   $("#export").click(function()
@@ -304,18 +299,35 @@
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
     var export_timezone_offset = parseInt($("#export-timezone-offset").val());
+    var export_timeformat = ($("#export-timeformat").prop('checked', true) ? 1 : 0);
+    if (export_timeformat) { export_timezone_offset = 0; }
     
     if (!export_start) {alert("Please enter a valid start date"); return false; }
     if (!export_end) {alert("Please enter a valid end date"); return false; }
     if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
     if (export_interval=="") {alert("Please select interval to download"); return false; }
-    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-    
-    if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
-    url = path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval;
+    var downloadsize = calculate_download_size(); 
+    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    if (downloadsize>(downloadlimit*1048576)) {alert("Download file size to large.\nLimit is "+downloadlimit+"MB.\n\nTry increasing interval value."); return false; }
+    url = path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat;
     console.log(url);
     window.open(url);
   });
+
+  function calculate_download_size(){
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var export_timeformat_size = ($("#export-timeformat").prop('checked') ? 26 : 17);// bytes per dp
+    var downloadsize = 0;
+    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
+      downloadsize=((export_end - export_start) / export_interval) * export_timeformat_size; 
+    }
+    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
+    return downloadsize;
+  }
 
   function parse_timepicker_time(timestr){
     var tmp = timestr.split(" ");
