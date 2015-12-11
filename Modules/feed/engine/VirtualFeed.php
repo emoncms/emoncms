@@ -136,7 +136,7 @@ class VirtualFeed
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $t * 1000;
-                    $data[] = array($time, (float)$dataValue);
+                    $data[] = array($time, $dataValue);
                 }
                 $t = $tb; // next start time
             }
@@ -154,7 +154,7 @@ class VirtualFeed
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $startslot * 1000;
-                    $data[] = array($time, (float)$dataValue);
+                    $data[] = array($time, $dataValue);
                 }
                 $startslot +=86400; // inc a day
              }
@@ -191,10 +191,13 @@ class VirtualFeed
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
 
-        $data = get_data($feedid,$start,$end,$interval,0,0);
-        foreach ($data as $time=>$value) {
-            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-            fwrite($exportfh, $timenew.$csv_field_separator.number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+        $data = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,0);
+        $max = sizeof($data);
+        for ($i=0; $i<$max; $i++){
+            $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);
+            $value = $data[$i][1];
+            if ($value != null) $value = number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'');
+            fwrite($exportfh, $timenew.$csv_field_separator.$value."\n");
         }
         fclose($exportfh);
         exit;

@@ -201,6 +201,10 @@ class MysqlTimeSeries
                 $sql = "SELECT time DIV $td AS time, AVG(data) AS data".
                     " FROM $feedname WHERE time BETWEEN $start AND $end".
                     " GROUP BY 1 ORDER BY time ASC";
+            } else if ($range == 1){
+                $td = 1;
+                $sql = "SELECT time, data FROM $feedname".
+                    " WHERE time = $start LIMIT 1";
             } else {
                 $td = 1;
                 $sql = "SELECT time, data FROM $feedname".
