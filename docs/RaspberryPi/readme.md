@@ -51,7 +51,7 @@ First, set the permissions for the www directory:
 
 Cd into the www directory and git clone emoncms:
 
-    cd /var/www && git clone https://github.com/emoncms/emoncms.git
+    cd /var/www && git clone -b stable https://github.com/emoncms/emoncms.git
 
 ### Create a MYSQL database
 
