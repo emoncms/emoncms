@@ -61,7 +61,7 @@
     }
     
     require("Lib/phpMQTT.php");
-    $mqtt = new phpMQTT($mqtt_server, $port, "Emoncms input subscriber");
+    $mqtt = new phpMQTT($mqtt_server, $mqtt_port, "Emoncms input subscriber");
     
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
