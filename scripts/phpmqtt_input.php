@@ -76,7 +76,7 @@
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
   
     if(!$mqtt->connect(true,NULL,$mqtt_user, $mqtt_password)){
-        $log->error "Cannot connect to MQTT Server"; 
+        $log->error ("Cannot connect to MQTT Server"); 
         exit(1);
     }
 
