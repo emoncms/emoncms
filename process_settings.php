@@ -30,6 +30,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if ($enable_password_reset && !isset($smtp_email_settings)) $error_out .= '<p>missing setting: $smtp_email_settings</p>';
 
     if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
+    if (!isset($log_level)) $log_level=2;  //default to warning log level
 
     if (!isset($redis_enabled) ) $redis_enabled = false;
     if ($redis_enabled) {
@@ -49,8 +50,8 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($mqtt_enabled) ) $mqtt_enabled = false;
     if ($mqtt_enabled && !isset($mqtt_server)) $error_out .= "<p>mqtt server not configured, check setting: mqtt_server</p>";
     if (!isset($mqtt_port)) $mqtt_port=1883;
-    if (!isset($mqtt_user)) $mqtt_user='';
-    if (!isset($mqtt_password)) $mqtt_password='';
+    if (!isset($mqtt_user)) $mqtt_user=NULL;
+    if (!isset($mqtt_password)) $mqtt_password=NULL;
 
     if (!isset($feed_settings)) $feed_settings = array();
     if (!isset($feed_settings['phpfiwa'])) $error_out .= "<p>feed setting for phpfiwa is not configured, check settings: settings['phpfiwa']";
