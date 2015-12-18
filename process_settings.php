@@ -48,6 +48,9 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($mqtt_enabled) ) $mqtt_enabled = false;
     if ($mqtt_enabled && !isset($mqtt_server)) $error_out .= "<p>mqtt server not configured, check setting: mqtt_server</p>";
+    if (!isset($mqtt_port)) $mqtt_port=1883;
+    if (!isset($mqtt_user)) $mqtt_user='';
+    if (!isset($mqtt_password)) $mqtt_passwrd='';
 
     if (!isset($feed_settings)) $feed_settings = array();
     if (!isset($feed_settings['phpfiwa'])) $error_out .= "<p>feed setting for phpfiwa is not configured, check settings: settings['phpfiwa']";
