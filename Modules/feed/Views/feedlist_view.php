@@ -299,7 +299,7 @@
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
     var export_timezone_offset = parseInt($("#export-timezone-offset").val());
-    var export_timeformat = ($("#export-timeformat").prop('checked', true) ? 1 : 0);
+    var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
     if (export_timeformat) { export_timezone_offset = 0; }
     
     if (!export_start) {alert("Please enter a valid start date"); return false; }

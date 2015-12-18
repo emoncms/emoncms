@@ -119,7 +119,7 @@ Once you are logged in;
 
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
 
-Edit the emonhub configuration file, entering your emoncms 'Write API Key', and if necessary, also your rfm2pi frequency, group & base id:
+Edit the emonhub configuration file, entering your emoncms 'Write API Key' and set the "local" emoncms address `url = http://localhost/emoncms` (emonhub sends to http://emoncms.org by default). Also set your RFM2Pi frequency, group & base id if necessary:
 
     nano /etc/emonhub/emonhub.conf
 
