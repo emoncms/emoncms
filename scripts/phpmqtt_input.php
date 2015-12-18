@@ -75,10 +75,10 @@
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
   
-    if(!$mqtt->connect()){
-        echo "Can't connect to MQTT.\n"; exit(1);
+    if(!$mqtt->connect(true,NULL,$mqtt_user, $mqtt_password)){
+        $log->error "Cannot connect to MQTT Server"; 
+        exit(1);
     }
-
 
     $topic = $mqttsettings['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
