@@ -1,4 +1,4 @@
-####Updating emoncms via Git
+###Updating emoncms via Git
 Emoncms is regularly updated to add new functions and general improvements, and updating your emoncms installation can be achieved quickly and easily using Git.
 
 It is however important, that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or by git-cloning the emoncms github repository.
@@ -38,7 +38,9 @@ Save and exit.
 
 ***
 
-####Install emoncms Apps
+###Module installation
+
+####Install emoncms Apps module
 Installing 'Apps' to emoncms adds a number of pre-formatted templates, enabling data to be displayed across a wide range of devices such as desktops, tablets and smartphones.
 
 To install Apps, cd to the Modules folder, and git clone 'apps':
@@ -67,9 +69,18 @@ The command 'git pull' will compare your installed version of 'Apps' with the 'A
 
 Carefully note the message displayed after running the command, as it will tell you if the update was successful or not.
 
+####Install emoncms device module
+The device setup will allow the creation of inputs and feeds automatically from a device template, and use a devicekey per device that is user configured, instead of an apikey.
+
+To install 'device', cd to the Modules folder, and git clone 'device':
+
+`cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/device.git`
+
+The 'device' module needs to save it's configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
+
 ***
 
-####Disabling System Logs
+###Disabling System Logs
 Once you are satisfied that your emoncms installation is running smoothly, and you have no log errors reported, it's advisable to disable system logs, and if you intend to run emoncms in the low-write mode ***this is a requirement***. Disabling the logs will reduce disk activity & usage, and help improve performance.
 
 If at any stage you experience problems with your system, restoring your logs may help you resolve the problem, and can be achieved by reversing these instructions.
