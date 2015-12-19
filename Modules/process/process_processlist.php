@@ -24,6 +24,8 @@ class Process_ProcessList
 
     private $log;
     private $mqtt = false;
+    private $mqtt_user = NULL;
+    private $mqtt_password = NULL;
 
     // Module required constructor, receives parent as reference
     public function __construct(&$parent)
@@ -40,12 +42,14 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $mqtt_server, $mqtt;
+        global $mqtt_enabled, $mqtt_server, $mqtt_port, $mqtt_user, $mqtt_password, $mqtt;
         if ($mqtt_enabled == true && $mqtt == false)
         {
             require("Lib/phpMQTT.php");
-            $mqtt = new phpMQTT($mqtt_server, 1883, "Emoncms Publisher");
+            $mqtt = new phpMQTT($mqtt_server, $mqtt_port, "Emoncms Publisher");
             $this->mqtt = $mqtt;
+            $this->mqtt_user = $mqtt_user;
+            $this->mqtt_password = $mqtt_password;
         }
     }
     
@@ -673,7 +677,7 @@ class Process_ProcessList
     public function publish_to_mqtt($topic, $time, $value)
     {
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        if ($this->mqtt && $this->mqtt->connect()) {
+        if ($this->mqtt && $this->mqtt->connect(true,NULL,$this->mqtt_user, $this->mqtt_password)) {
             $this->mqtt->publish($topic,$value,0);
             $this->mqtt->close();
         }
