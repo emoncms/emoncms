@@ -167,7 +167,7 @@ class User
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
-        if (strlen($password) < 4 || strlen($password) > 30) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($password) < 10 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password must be at least ten characters"));
 
         // If we got here the username, password and email should all be valid
 
@@ -281,8 +281,8 @@ class User
         $old = $this->mysqli->real_escape_string($old);
         $new = $this->mysqli->real_escape_string($new);
 
-        if (strlen($old) < 4 || strlen($old) > 30) return array('success'=>false, 'message'=>_("Password length error"));
-        if (strlen($new) < 4 || strlen($new) > 30) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($old) < 4 || strlen($old) > 250) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($new) < 10 || strlen($new) > 250) return array('success'=>false, 'message'=>_("Password must be at least ten characters"));
 
         // 1) check that old password is correct
         $result = $this->mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
