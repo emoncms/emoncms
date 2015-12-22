@@ -180,7 +180,7 @@ class User
         $apikey_read = md5(uniqid(mt_rand(), true));
 
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES (?,?,?,?,?,?,0)");
-        $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
+        $stmt->bind_param("ssssss", $username, $hash, $email, $salt, $apikey_read, $apikey_write);
         if (!$stmt->execute()) {
             return array('success'=>false, 'message'=>_("Error creating user"));
         }
