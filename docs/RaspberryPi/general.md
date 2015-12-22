@@ -40,7 +40,11 @@ Save and exit.
 
 ###Module installation
 
-####Install emoncms Apps module
+[Apps Module](general.md#install-emoncms-apps-module)  
+[Device Module](general.md#install-emoncms-device-module)  
+[Dashboard Module](general.md#install-emoncms-dashboard-module)
+
+####Install emoncms Apps Module
 Installing 'Apps' to emoncms adds a number of pre-formatted templates, enabling data to be displayed across a wide range of devices such as desktops, tablets and smartphones.
 
 To install Apps, cd to the Modules folder, and git clone 'apps':
@@ -69,7 +73,7 @@ The command 'git pull' will compare your installed version of 'Apps' with the 'A
 
 Carefully note the message displayed after running the command, as it will tell you if the update was successful or not.
 
-####Install emoncms device module
+####Install emoncms Device Module
 The device setup will allow the creation of inputs and feeds automatically from a device template, and use a devicekey per device that is user configured, instead of an apikey.
 
 To install 'device', cd to the Modules folder, and git clone 'device':
@@ -77,6 +81,13 @@ To install 'device', cd to the Modules folder, and git clone 'device':
 `cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/device.git`
 
 The 'device' module needs to save it's configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
+
+####Install emoncms Dashboard Module
+The dashboard module enables users to create customisable workspaces, by dragging and dropping widgets, visualisations and other custom objects.
+
+`cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/dashboard.git`
+
+The 'dashboard' module needs to save it's configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
 
 ***
 
