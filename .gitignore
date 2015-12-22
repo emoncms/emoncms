@@ -8,8 +8,6 @@ emoncms.log
 Modules/*
 Modules/*/
 !Modules/admin/
-!Modules/dashboard/
-!Modules/device/
 !Modules/feed/
 !Modules/eventp/
 !Modules/input/
