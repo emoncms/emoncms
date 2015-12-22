@@ -179,7 +179,9 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$password', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES (?,?,?,?,?,?,0)");
+        $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
+        if (!$stmt->execute()) {
             return array('success'=>false, 'message'=>_("Error creating user"));
         }
 
@@ -387,7 +389,10 @@ class User
         $userid = intval($userid);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
-        $this->mysqli->query("UPDATE users SET email = '$email' WHERE id = '$userid'");
+        $stmt = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
+        $stmt->bind_param("si", $email, $userid);
+        $stmt->execute();
+        
         return array('success'=>true, 'message'=>_("Email updated"));
     }
 
