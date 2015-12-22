@@ -159,13 +159,14 @@ class User
         if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
 
         if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
+        
         $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
+        // $password = $this->mysqli->real_escape_string($password);
 
         if ($this->get_id($username) != 0) return array('success'=>false, 'message'=>_("Username already exists"));
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
-
+ 
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
         if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
 
@@ -202,7 +203,7 @@ class User
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
         $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
+        //$password = $this->mysqli->real_escape_string($password);
 
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language FROM users WHERE username = '$username'");
 
@@ -248,7 +249,7 @@ class User
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
         $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
+        //$password = $this->mysqli->real_escape_string($password);
 
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language, apikey_write,apikey_read FROM users WHERE username = '$username'");
 
