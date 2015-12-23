@@ -342,7 +342,7 @@ class User
                     //$email->from(from);
                     $email->to($emailto);
                     $email->subject('Emoncms password reset');
-                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>");
+                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>You can now login with password: $newpass </p>");
                     $result = $email->send();
                     if (!$result['success']) {
                         $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
