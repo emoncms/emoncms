@@ -281,8 +281,6 @@ class User
     public function change_password($userid, $old, $new)
     {
         $userid = intval($userid);
-        $old = $this->mysqli->real_escape_string($old);
-        $new = $this->mysqli->real_escape_string($new);
 
         if (strlen($old) < 4 || strlen($old) > 250) return array('success'=>false, 'message'=>_("Password length error"));
         if (strlen($new) < 4 || strlen($new) > 250) return array('success'=>false, 'message'=>_("Password length error"));
