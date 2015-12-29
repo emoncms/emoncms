@@ -159,15 +159,16 @@ class User
         if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
 
         if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
+        
         $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
+        // $password = $this->mysqli->real_escape_string($password);
 
         if ($this->get_id($username) != 0) return array('success'=>false, 'message'=>_("Username already exists"));
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
-
+ 
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
-        if (strlen($password) < 4 || strlen($password) > 30) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
 
         // If we got here the username, password and email should all be valid
 
@@ -178,7 +179,9 @@ class User
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
 
-        if (!$this->mysqli->query("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES ( '$username' , '$password', '$email', '$salt', '$apikey_read', '$apikey_write', 0 );")) {
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin ) VALUES (?,?,?,?,?,?,0)");
+        $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
+        if (!$stmt->execute()) {
             return array('success'=>false, 'message'=>_("Error creating user"));
         }
 
@@ -202,7 +205,7 @@ class User
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
         $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
+        //$password = $this->mysqli->real_escape_string($password);
 
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language FROM users WHERE username = '$username'");
 
@@ -248,7 +251,7 @@ class User
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
         $username = $this->mysqli->real_escape_string($username);
-        $password = $this->mysqli->real_escape_string($password);
+        //$password = $this->mysqli->real_escape_string($password);
 
         $result = $this->mysqli->query("SELECT id,password,admin,salt,language, apikey_write,apikey_read FROM users WHERE username = '$username'");
 
@@ -278,11 +281,9 @@ class User
     public function change_password($userid, $old, $new)
     {
         $userid = intval($userid);
-        $old = $this->mysqli->real_escape_string($old);
-        $new = $this->mysqli->real_escape_string($new);
 
-        if (strlen($old) < 4 || strlen($old) > 30) return array('success'=>false, 'message'=>_("Password length error"));
-        if (strlen($new) < 4 || strlen($new) > 30) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($old) < 4 || strlen($old) > 250) return array('success'=>false, 'message'=>_("Password length error"));
+        if (strlen($new) < 4 || strlen($new) > 250) return array('success'=>false, 'message'=>_("Password length error"));
 
         // 1) check that old password is correct
         $result = $this->mysqli->query("SELECT password, salt FROM users WHERE id = '$userid'");
@@ -339,7 +340,7 @@ class User
                     //$email->from(from);
                     $email->to($emailto);
                     $email->subject('Emoncms password reset');
-                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>");
+                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>You can now login with password: $newpass </p>");
                     $result = $email->send();
                     if (!$result['success']) {
                         $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
@@ -386,7 +387,10 @@ class User
         $userid = intval($userid);
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
-        $this->mysqli->query("UPDATE users SET email = '$email' WHERE id = '$userid'");
+        $stmt = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
+        $stmt->bind_param("si", $email, $userid);
+        $stmt->execute();
+        
         return array('success'=>true, 'message'=>_("Email updated"));
     }
 

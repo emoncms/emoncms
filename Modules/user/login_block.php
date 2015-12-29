@@ -128,14 +128,14 @@ $("#passwordreset-submit").click(function(){
     var email = $("#passwordreset-email").val();
 
     if (email==="" || username==="") {
-        $("#passwordresetmessage").html("<div class='alert alert-error'>Please enter username and email address</div>");
+        $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-error'>Please enter username and email address</div>");
     } else {
         var result = user.passwordreset(username,email);
         if (result.success===true) {
-            $("#passwordresetmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
+            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-success'>"+result.message+"</div>");
             $("#passwordresetblock").hide();
         } else {
-            $("#passwordresetmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            $("#passwordresetmessage").html("<div>&nbsp;</div><div class='alert alert-error'>"+result.message+"</div>");
         }
     }
 });
@@ -222,4 +222,3 @@ function register(){
 
 $("#register").click(register);
 </script>
-

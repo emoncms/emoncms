@@ -98,7 +98,7 @@ if ($allow_emonpi_update) {
     <tr>
         <td>
             <h3><?php echo _('Update emonPi'); ?></h3>
-            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/Atmega328/emonPi_RFM69CW_RF12Demo_DiscreteSampling/compiled/CHANGE%20LOG.md">emonPi firmware change log.</a> When update is running hit 'Refresh Log' repeatedly to display update progress log</p>
+            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/CHANGE%20LOG.md">emonPi firmware change log.</a> When update is running hit 'Refresh Log' repeatedly to display update progress log</p>
             <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
             <div id="emonpireply" style="display:none"></div>
         </td>
@@ -110,6 +110,23 @@ if ($allow_emonpi_update) {
 <?php 
 }   
 ?>
+
+    <tr>
+        <td>
+            <h3><?php echo _('Create backup'); ?></h3>
+            <p>Create a compressed archive containing the emoncms mysql database, phpfina, phptimeseries data files, emonhub.conf and emoncms.conf.<br>This can be used to migrate data to another emonpi or emonbase.<br>Depending on your data size it may take a while to prepare the backup file. Once ready a link will appear here from which the backup can then be downloaded. Refresh the page to see the link.</p>
+            <div id="emonpi-backup-reply" style="display:none"></div>
+        </td>
+        <td class="buttons"><br>
+            <button id="emonpi-backup" class="btn btn-info"><?php echo _('Create backup'); ?></button>
+            <?php 
+            if (file_exists("/home/pi/data/backup.tar.gz") && !file_exists("/tmp/backuplock")) {
+                echo '<br><br><b>Download ready:</b><br><a href="'.$path.'/admin/emonpi/downloadbackup">backup.tar.gz</a>';
+            }
+            ?>
+        </td>
+    </tr>
+
     <tr colspan=2>
         <td colspan=2>
             <h3><?php echo _('Server Information'); ?></h3>
@@ -201,6 +218,15 @@ $("#emonpiupdate").click(function() {
     {
       $("#emonpireply").html('<pre class="alert alert-info"><small>'+result+'<small></pre>');
       $("#emonpireply").show();
+    }
+  });
+});
+
+$("#emonpi-backup").click(function() {
+  $.ajax({ url: path+"admin/emonpi/backup", async: true, dataType: "text", success: function(result)
+    {
+      $("#emonpi-backup-reply").html('<pre class="alert alert-info"><small>'+result+'<small></pre>');
+      $("#emonpi-backup-reply").show();
     }
   });
 });

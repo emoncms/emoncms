@@ -51,7 +51,7 @@ First, set the permissions for the www directory:
 
 Cd into the www directory and git clone emoncms:
 
-    cd /var/www && git clone https://github.com/emoncms/emoncms.git
+    cd /var/www && git clone -b stable https://github.com/emoncms/emoncms.git
 
 ### Create a MYSQL database
 
@@ -119,7 +119,7 @@ Once you are logged in;
 
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
 
-Edit the emonhub configuration file, entering your emoncms 'Write API Key', and if necessary, also your rfm2pi frequency, group & base id:
+Edit the emonhub configuration file, entering your emoncms 'Write API Key' and set the "local" emoncms address `url = http://localhost/emoncms` (emonhub sends to http://emoncms.org by default). Also set your RFM2Pi frequency, group & base id if necessary:
 
     nano /etc/emonhub/emonhub.conf
 
@@ -146,5 +146,5 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 * [Disabling Apache, Redis & emoncms logs](general.md#disabling-system-logs)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
-* [Installing emoncms Apps](general.md#install-emoncms-apps)
+* [Installing emoncms Modules](general.md#module-installation)
 * [Updating emoncms](general.md#updating-emoncms-via-git)

@@ -22,6 +22,9 @@
     // The 'publisher' topic format is user selectable from the 'Publish to MQTT' input process, for example power/solar
     $mqtt_enabled = true;          // Activate MQTT by changing to true
     $mqtt_server = "127.0.0.1";
+    $mqtt_port = 1883;
+    $mqtt_user = "emonpi";
+    $mqtt_password= "emonpimqtt2016";
 
 
 //4 #### Engine settings
@@ -103,7 +106,7 @@
     $default_action = "login";
 
     // Default controller and action if none are specified and user is logged in
-    $default_controller_auth = "user";
+    $default_controller_auth = "nodes";
     $default_action_auth = "view";
 
     // Public profile functionality
@@ -117,8 +120,10 @@
 
 //6 #### Other settings
     // Log file configuration
-    $log_enabled = false;
+    $log_enabled = true;
     $log_filename = '/var/log/emoncms.log';
+    // Log Level: 0=CRITICAL, 1=ERROR, 2=WARN, 3=INFO
+    $log_level = 1;
 
     // If installed on Emonpi, allow update from admin menu
     $allow_emonpi_update = true;
