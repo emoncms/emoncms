@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_update, $log_filename, $log_enabled, $redis;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis;
     $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4>"._('Admin re-authentication required')."</h4></div>";
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
@@ -66,23 +66,21 @@ function admin_controller()
                 }
             }
 
-            else if ($route->action == 'emonpi') {
-                if ($allow_emonpi_update) {
-                    if ($route->subaction == 'update' && $session['write'] && $session['admin']) { 
-                        $route->format = "text";
-                        $file = "/tmp/emonpiupdate";
-                        $fh = @fopen($file,"w");
-                        if (!$fh) $result = "ERROR: Can't write the flag $file.";
-                        else $result = "Update flag file $file created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
-                        @fclose($fh);
-                    }
-                    
-                    if ($route->subaction == 'getupdatelog') { 
-                        $route->format = "text";
-                        ob_start();
-                        passthru("cat /home/pi/data/emonpiupdate.log");
-                        $result = trim(ob_get_clean());
-                    }
+            else if ($allow_emonpi_admin && $route->action == 'emonpi') {
+                if ($route->subaction == 'update' && $session['write'] && $session['admin']) { 
+                    $route->format = "text";
+                    $file = "/tmp/emonpiupdate";
+                    $fh = @fopen($file,"w");
+                    if (!$fh) $result = "ERROR: Can't write the flag $file.";
+                    else $result = "Update flag file $file created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
+                    @fclose($fh);
+                }
+                
+                if ($route->subaction == 'getupdatelog') { 
+                    $route->format = "text";
+                    ob_start();
+                    passthru("cat /home/pi/data/emonpiupdate.log");
+                    $result = trim(ob_get_clean());
                 }
                 
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) { 

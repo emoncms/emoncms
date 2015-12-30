@@ -37,7 +37,6 @@
     require "process_settings.php";
     
     if (!$mqtt_enabled) { echo "Error: setting must be true: mqtt_enabled\n"; die; }
-    if (!isset($mqtt_server)) { echo "Error: mqtt server not configured, check setting: mqtt_server\n"; die; }
     
     $log = new EmonLogger(__FILE__);
     $log->info("Starting MQTT Input script");
@@ -61,7 +60,7 @@
     }
     
     require("Lib/phpMQTT.php");
-    $mqtt = new phpMQTT($mqtt_server, $mqtt_port, "Emoncms input subscriber");
+    $mqtt = new phpMQTT($mqtt_server['host'], $mqtt_server['port'], "Emoncms input subscriber");
     
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
@@ -75,9 +74,9 @@
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
   
-    if(!$mqtt->connect(true,NULL,$mqtt_user, $mqtt_password)){
+    if(!$mqtt->connect(true,NULL,$mqtt_server['user'], $mqtt_server['password'])){
         $log->error ("Cannot connect to MQTT Server"); 
-        exit(1);
+        die('Check log\n');
     }
 
     $topic = $mqttsettings['basetopic']."/#";
