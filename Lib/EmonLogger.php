@@ -17,18 +17,17 @@ class EmonLogger
     private $logfile = "";
     private $caller = "";
     private $logenabled = false;
-    private $log_level = 2;
+    private $log_level = 3;
 
     public function __construct($clientFileName)
     {
         global $log_filename, $log_enabled, $log_level;
 
-        $this->log_level = $log_level;
-
-		if (!$log_enabled) {
-			$this->logenabled = false;
-		}
+        if (!$log_enabled) {
+            $this->logenabled = false;
+        }
         else if ($log_filename) {
+            if ($log_level) $this->log_level = $log_level;
             $this->logfile = $log_filename;
             $this->caller = basename($clientFileName);
             if (!file_exists($this->logfile))
@@ -41,15 +40,15 @@ class EmonLogger
     }
 
     public function info ($message){
-        if ($this->log_level >= 3) $this->write("INFO",$message);
+        if ($this->log_level <= 3) $this->write("INFO",$message);
     }
 
     public function warn ($message){
-        if ($this->log_level >= 2) $this->write("WARN",$message);
+        if ($this->log_level <= 2) $this->write("WARN",$message);
     }
     
     public function error ($message){
-        if ($this->log_level >= 1) $this->write("ERROR",$message);
+        if ($this->log_level <= 1) $this->write("ERROR",$message);
     }
     
     private function write($type,$message){

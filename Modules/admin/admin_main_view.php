@@ -1,4 +1,4 @@
-<?php global $path, $emoncms_version, $allow_emonpi_update, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings;
+<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings;
 
   // Retrieve server information
   $system = system_information();
@@ -30,8 +30,9 @@
                  'redis_ip' => gethostbyname($redis_server['host']),
                  'feedwriter' => !empty($feedwriterproc),
 
-                 'mqtt_server' => $mqtt_server,       
-                 'mqtt_ip' => gethostbyname($mqtt_server),
+                 'mqtt_server' => $mqtt_server['host'],
+                 'mqtt_ip' => gethostbyname($mqtt_server['host']),
+                 'mqtt_port' => $mqtt_server['port'],
 
                  'hostbyaddress' => gethostbyaddr(gethostbyname($host)),
                  'http_proto' => $_SERVER['SERVER_PROTOCOL'],
@@ -93,8 +94,23 @@ if(is_writable($log_filename)) {
     </tr>
 <?php
 }
-if ($allow_emonpi_update) {
+if ($allow_emonpi_admin) {
 ?>
+    <tr>
+        <td>
+            <h3><?php echo _('Backup emonPi'); ?></h3>
+            <p>Create a compressed archive containing the emoncms mysql database, phpfina, phptimeseries data files, emonhub.conf and emoncms.conf.<br>This can be used to migrate data to another emonpi or emonbase.<br>Depending on your data size it may take a while to prepare the backup file. Once ready a link will appear here from which the backup can then be downloaded. Refresh the page to see the link.</p>
+            <div id="emonpi-backup-reply" style="display:none"></div>
+        </td>
+        <td class="buttons"><br>
+            <button id="emonpi-backup" class="btn btn-info"><?php echo _('Create backup'); ?></button>
+            <?php 
+            if (file_exists("/home/pi/data/backup.tar.gz") && !file_exists("/tmp/backuplock")) {
+                echo '<br><br><b>Download ready:</b><br><a href="'.$path.'/admin/emonpi/downloadbackup">backup.tar.gz</a>';
+            }
+            ?>
+        </td>
+    </tr>
     <tr>
         <td>
             <h3><?php echo _('Update emonPi'); ?></h3>
@@ -110,23 +126,6 @@ if ($allow_emonpi_update) {
 <?php 
 }   
 ?>
-
-    <tr>
-        <td>
-            <h3><?php echo _('Create backup'); ?></h3>
-            <p>Create a compressed archive containing the emoncms mysql database, phpfina, phptimeseries data files, emonhub.conf and emoncms.conf.<br>This can be used to migrate data to another emonpi or emonbase.<br>Depending on your data size it may take a while to prepare the backup file. Once ready a link will appear here from which the backup can then be downloaded. Refresh the page to see the link.</p>
-            <div id="emonpi-backup-reply" style="display:none"></div>
-        </td>
-        <td class="buttons"><br>
-            <button id="emonpi-backup" class="btn btn-info"><?php echo _('Create backup'); ?></button>
-            <?php 
-            if (file_exists("/home/pi/data/backup.tar.gz") && !file_exists("/tmp/backuplock")) {
-                echo '<br><br><b>Download ready:</b><br><a href="'.$path.'/admin/emonpi/downloadbackup">backup.tar.gz</a>';
-            }
-            ?>
-        </td>
-    </tr>
-
     <tr colspan=2>
         <td colspan=2>
             <h3><?php echo _('Server Information'); ?></h3>
@@ -163,7 +162,7 @@ if ($redis_enabled) {
 if ($mqtt_enabled) {
 ?>
               <tr><td><b>MQTT</b></td><td>Version</td><td><?php echo "n/a"; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
 <?php
 }
 ?>
