@@ -9,7 +9,9 @@ As a general guide;
 ####Preparation
 
 Before following this guide;
+
 1. It is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of emoncms on your Raspberry Pi
+
 1. Because the low-write mode **is not compatible with PHPFIWA feeds**, it's important that any existing PHPFIWA feeds are deleted, otherwise the system will become unstable.  
 
 Update emoncms to current version:
