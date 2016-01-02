@@ -8,6 +8,7 @@
   - Renames existing logrotate.conf to logrotate.old
   - Sets permissions for, and symlinks the new logrotate.conf file.
   - Removes the existing logrotate file, and symlinks the new logrotate file to run hourly by Cron.
+
 ####Installation:
 Update your emoncms installation to ensure that the necessary files are downloaded:
 
