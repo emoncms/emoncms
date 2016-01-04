@@ -143,7 +143,6 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 
 ###System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
-* [Disabling Apache, Redis & emoncms logs](general.md#disabling-system-logs)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
 * [Installing emoncms Modules](general.md#module-installation)
