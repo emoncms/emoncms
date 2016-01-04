@@ -233,7 +233,7 @@ class PHPTimeSeries
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>3000) return array("success"=>false, "message"=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp>8928) return array("success"=>false, "message"=>"request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
         
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
@@ -248,7 +248,7 @@ class PHPTimeSeries
             $pos = $this->binarysearch($fh,$time,$filesize);
             fseek($fh,$pos);
             $d = fread($fh,9);
-            $array = unpack("x/Itime/fvalue",$d);
+            $array = @unpack("x/Itime/fvalue",$d);
             $dptime = $array['time'];
 
             $value = null;
@@ -538,7 +538,7 @@ class PHPTimeSeries
             $mid = $start + round(($end-$start)/18)*9;
             fseek($fh,$mid);
             $d = fread($fh,9);
-            $array = unpack("x/Itime/fvalue",$d);
+            $array = @unpack("x/Itime/fvalue",$d);
 
             // echo "S:$start E:$end M:$mid $time ".$array['time']." ".($time-$array['time'])."\n";
 

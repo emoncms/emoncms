@@ -75,6 +75,13 @@ var customtablefields = {
   'size': {
     'draw': function (row,field) { return list_format_size(table.data[row][field]); }
   },
+
+  'group-iconbasic': {
+    'draw': function(group,rows,field)
+    {
+      return "<i class='"+table.groupfields[field].icon+"' type='icon' group='"+group+"' rows='"+rows+"' style='cursor:pointer'></i>";
+    }
+  }
 }
 
 

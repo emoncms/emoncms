@@ -159,14 +159,13 @@ class User
         if (!$username || !$password || !$email) return array('success'=>false, 'message'=>_("Missing username, password or email parameter"));
 
         if (!ctype_alnum($username)) return array('success'=>false, 'message'=>_("Username must only contain a-z and 0-9 characters"));
-        
         $username = $this->mysqli->real_escape_string($username);
         // $password = $this->mysqli->real_escape_string($password);
 
         if ($this->get_id($username) != 0) return array('success'=>false, 'message'=>_("Username already exists"));
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
- 
+
         if (strlen($username) < 3 || strlen($username) > 30) return array('success'=>false, 'message'=>_("Username length error"));
         if (strlen($password) < 4 || strlen($password) > 250) return array('success'=>false, 'message'=>_("Password length error"));
 
@@ -281,8 +280,6 @@ class User
     public function change_password($userid, $old, $new)
     {
         $userid = intval($userid);
-        $old = $this->mysqli->real_escape_string($old);
-        $new = $this->mysqli->real_escape_string($new);
 
         if (strlen($old) < 4 || strlen($old) > 250) return array('success'=>false, 'message'=>_("Password length error"));
         if (strlen($new) < 4 || strlen($new) > 250) return array('success'=>false, 'message'=>_("Password length error"));
@@ -342,7 +339,7 @@ class User
                     //$email->from(from);
                     $email->to($emailto);
                     $email->subject('Emoncms password reset');
-                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>Your can now login with password: $newpass </p>");
+                    $email->body("<p>A password reset was requested for your emoncms account.</p><p>You can now login with password: $newpass </p>");
                     $result = $email->send();
                     if (!$result['success']) {
                         $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
