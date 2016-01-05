@@ -40,15 +40,15 @@ class EmonLogger
     }
 
     public function info ($message){
-        if ($this->log_level <= 3) $this->write("INFO",$message);
+        if ($this->log_level >= 3) $this->write("INFO",$message);
     }
 
     public function warn ($message){
-        if ($this->log_level <= 2) $this->write("WARN",$message);
+        if ($this->log_level >= 2) $this->write("WARN",$message);
     }
     
     public function error ($message){
-        if ($this->log_level <= 1) $this->write("ERROR",$message);
+        if ($this->log_level >= 1) $this->write("ERROR",$message);
     }
     
     private function write($type,$message){
