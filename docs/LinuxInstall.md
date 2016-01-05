@@ -62,7 +62,7 @@ Download emoncms using git:
 
 **You may want to install one of the other branches of emoncms here, perhaps to try out a new feature set not yet available in the master branch. See the branch list and descriptions on the [start page](https://github.com/emoncms/emoncms)**
 
-    $ git clone https://github.com/emoncms/emoncms.git
+    $ git clone -b stable https://github.com/emoncms/emoncms.git
     
 Once installed you can pull in updates with:
 

@@ -21,10 +21,10 @@
     // The 'subscriber' topic format is rx/* - where * is the emoncms input node number.
     // The 'publisher' topic format is user selectable from the 'Publish to MQTT' input process, for example power/solar
     $mqtt_enabled = false;          // Activate MQTT by changing to true
-    $mqtt_server = "127.0.0.1";
-    $mqtt_port = 1883;
-    $mqtt_user = "";
-    $mqtt_password= "";
+    $mqtt_server = array( 'host'     => 'localhost',
+                          'port'     => 1883,
+                          'user'     => '',
+                          'password' => '');
 
 
 //4 #### Engine settings
@@ -121,12 +121,12 @@
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
-    $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
-    // Log Level: 0=CRITICAL, 1=ERROR, 2=WARN, 3=INFO
+    $log_filename = '/var/log/emoncms.log';
+    // Log Level: 0=ALL, 1=ERROR, 2=WARN, 3=INFO
     $log_level = 2;
 
-    // If installed on Emonpi, allow update from admin menu
-    $allow_emonpi_update = false;
+    // If installed on Emonpi, allow admin menu tools
+    $allow_emonpi_admin = false;
 
     //experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     $data_sampling = false;
@@ -148,4 +148,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "6";
+    $config_file_version = "8";

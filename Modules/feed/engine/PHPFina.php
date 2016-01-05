@@ -299,7 +299,7 @@ class PHPFina
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>3000) return array('success'=>false, 'message'=>"Request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");

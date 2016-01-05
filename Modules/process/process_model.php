@@ -39,7 +39,7 @@ class Process
         if (strpos($method, '__') === FALSE) {
             $module = "process";              // default to core module 'process'
         } else {
-            $mod_fun = explode('__',$method);  // if method contains a '__', assume the format is module.function
+            $mod_fun = explode('__',$method);  // if method contains a '__', assume the format is module__function
             $module = $mod_fun[0];
             $method = $mod_fun[1];
         }

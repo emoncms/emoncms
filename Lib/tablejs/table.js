@@ -68,23 +68,30 @@ var table = {
     for (row in table.data) {
       var group = table.data[row][table.groupby];
       if (!group) group = 'NoGroup';
-      if (!groups[group]) {groups[group] = ""; group_num++;}
-      groups[group] += table.draw_row(row);
+      if (!groups[group]) {groups[group] = {}; groups[group]['ui_rows'] = ""; groups[group]['rows_id'] = []; group_num++;}
+      groups[group]['ui_rows'] += table.draw_row(row);
+      groups[group]['rows_id'].push(row);
     }
 
     var html = "";
     for (group in groups) {
-      // Minimized group persistance, see lines: 4,92,93
+      // Minimized group persistance
       var visible = '', symbol ='<i class="icon-minus-sign"></i>'; 
       if (table.groupshow[group]==undefined) table.groupshow[group]=true;
       if (table.groupshow[group]==false) {symbol = '<i class="icon-plus-sign"></i>'; visible = "display:none";}
 
+      htmlg = "";
       if (group_num>1) {
-        html += "<tr><th colspan='3'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
-        var count = 0; for (field in table.fields) count++;   // Calculate amount of padding required
-        for (i=2; i<count-1; i++) html += "<th></th>";      // Add th padding
-        html += "</tr>";
+        htmlg += "<tr><th colspan='3'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
+        var countFields = 0; for (field in table.fields) countFields++; // Calculate amount of padding required
+        if (table.groupfields == undefined) {
+          for (i=2; i<countFields-1; i++) htmlg += "<th></th>"; // Add th padding
+        } else {
+          for (fieldg in table.groupfields) htmlg += "<th group='"+group+"' fieldg='"+fieldg+"' >"+table.fieldtypes[table.groupfields[fieldg].type].draw(group,groups[group]['rows_id'],fieldg)+"</th>";
+        }
+        htmlg += "</tr>";
       }
+      html += htmlg;
 
       html += "<tbody id='"+group+"' style='"+visible+"'><tr>";
       for (field in table.fields)
@@ -93,7 +100,7 @@ var table = {
         html += "<th><a type='sort' field='"+field+"'>"+title+"</a></th>";
       }
       html += "</tr>";
-      html += groups[group];
+      html += groups[group]['ui_rows'];
       html += "</tbody>";
     }
 
@@ -267,6 +274,10 @@ var table = {
 
     'edit': {
       'draw': function (row,field) { return table.data[row]['#READ_ONLY#'] ? "" : "<a type='edit' row='"+row+"' uid='"+table.data[row]['id']+"' mode='edit'><i class='icon-pencil' style='cursor:pointer'></i></a>"; },
+    },
+
+    'blank': {
+      'draw': function (row,field) { return ""; }
     }
   }
 }

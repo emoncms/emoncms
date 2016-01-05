@@ -760,7 +760,6 @@ class PHPFiwa
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
         global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
-
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
 
