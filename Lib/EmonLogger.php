@@ -17,7 +17,7 @@ class EmonLogger
     private $logfile = "";
     private $caller = "";
     private $logenabled = false;
-    private $log_level = 3;
+    private $log_level = 2;
 
     public function __construct($clientFileName)
     {
