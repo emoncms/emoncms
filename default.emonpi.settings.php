@@ -148,4 +148,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "7";
+    $config_file_version = "8";
