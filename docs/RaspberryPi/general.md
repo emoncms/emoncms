@@ -42,7 +42,8 @@ Save and exit.
 
 [Apps Module](general.md#install-emoncms-apps-module)  
 [Device Module](general.md#install-emoncms-device-module)  
-[Dashboard Module](general.md#install-emoncms-dashboard-module)
+[Dashboard Module](general.md#install-emoncms-dashboard-module)  
+[OpenBEM Module](general.md#install-openbem-module)
 
 ####Install emoncms Apps Module
 Installing 'Apps' to emoncms adds a number of pre-formatted templates, enabling data to be displayed across a wide range of devices such as desktops, tablets and smartphones.
@@ -88,5 +89,65 @@ The dashboard module enables users to create customisable workspaces, by draggin
 `cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/dashboard.git`
 
 The 'dashboard' module needs to save it's configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
+
+####Install OpenBEM Module
+OpenBEM is an open source energy assessment tool to help you explore how you can achieve this level of performance improvement in your own home.
+
+`cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/openbem.git`
+
+***
+
+###System Logs
+System logs provide a valuable insight into the health of your system, however once you are satisfied that your emoncms installation is running smoothly, and you have no log errors reported, you may wish to disable your system logs.
+
+This is purely optional, and a personal preference.
+
+If at any stage you experience problems with your system, restoring your logs may help you resolve the problem, and can be achieved by reversing these instructions.
+
+#####Disable emoncms log
+In emoncms settings.php change `log_enabled = true;` to `log_enabled = false;`
+
+Alternatively, you can specify the level of logging activity by changing `log_level = 2;` to any of the values shown in the settings.php file.
+
+`cd /var/www/emoncms && nano settings.php`
+
+Save & exit
+
+#####Disable MYSQL log
+You are only required to disable the MYSQL log in Raspbian Jessie, it **does not apply** to Raspbian Wheezy.
+
+`sudo nano /etc/mysql/my.cnf`
+
+Comment out the line `# log_error = /var/log/mysql/error.log` with a # - as shown.
+
+#####Disable Apache log
+Edit the apache configuration file (according to your operating system):
+
+`sudo nano /etc/apache2/sites-available/000-default.conf` **(Raspbian Jessie)** OR
+`sudo nano /etc/apache2/sites-available/default` **(Raspbian Wheezy)**
+
+Comment out the line - `# CustomLog ${APACHE_LOG_DIR}/access.log combined`
+
+Save & exit, then disable the log to other-vhosts:
+
+`sudo nano /etc/apache2/conf-available/other-vhosts-access-log.conf` **(Raspbian Jessie)** OR
+`sudo nano /etc/apache2/conf.d/other-vhosts-access-log` **(Raspbian Wheezy)**
+
+Comment out the line - `# CustomLog ${APACHE_LOG_DIR}/other_vhosts_access.log vhost_combined`
+
+Save & exit:
+
+#####Disable Redis log
+Configure redis to run without logging:
+
+`sudo nano /etc/redis/redis.conf`
+
+Comment out the line - `# logfile /var/log/redis/redis-server.log`
+
+Save & exit:
+
+That completes the log reconfiguration, now reboot to effect the changes:
+
+`sudo reboot`
 
 ***
