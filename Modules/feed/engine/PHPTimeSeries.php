@@ -259,7 +259,7 @@ class PHPTimeSeries
             if ($limitinterval)
             {
                 $diff = abs($dptime-$time);
-                if ($diff<($interval)) {
+                if ($diff<$interval) {
                     $value = $array['value'];
                 } 
             } else {
