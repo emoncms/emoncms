@@ -14,7 +14,7 @@
     $redis_server = array( 'host'   => 'localhost',
                            'port'   => 6379,
                            'auth'   => '',
-                           'prefix' => 'emoncms');
+                           'prefix' => '');
 
 
 //3 #### MQTT
