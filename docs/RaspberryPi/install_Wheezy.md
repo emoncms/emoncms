@@ -146,4 +146,5 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
 * [Installing emoncms Modules](general.md#module-installation)
-* [Updating emoncms](general.md#updating-emoncms-via-git)
+* [Updating emoncms](general.md#updating-emoncms-via-git)  
+* [System Logs](general.md#system-logs)
