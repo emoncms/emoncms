@@ -121,7 +121,7 @@
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
-    $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
+    $log_filename = '/var/log/emoncms.log';
     // Log Level: 0=ALL, 1=ERROR, 2=WARN, 3=INFO
     $log_level = 2;
 
@@ -148,4 +148,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "7";
+    $config_file_version = "8";

@@ -1,6 +1,7 @@
 .project
 debian/emoncms*
 settings.php
+old.settings.php
 emoncms.log
 .idea
 

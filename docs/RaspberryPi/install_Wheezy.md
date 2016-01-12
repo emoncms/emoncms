@@ -117,7 +117,7 @@ Once you are logged in;
 
 ### Install Emonhub
 
-    git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
+    git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/upgrade
 
 Edit the emonhub configuration file, entering your emoncms 'Write API Key' and set the "local" emoncms address `url = http://localhost/emoncms` (emonhub sends to http://emoncms.org by default). Also set your RFM2Pi frequency, group & base id if necessary:
 
@@ -143,8 +143,8 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 
 ###System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
-* [Disabling Apache, Redis & emoncms logs](general.md#disabling-system-logs)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
 * [Installing emoncms Modules](general.md#module-installation)
-* [Updating emoncms](general.md#updating-emoncms-via-git)
+* [Updating emoncms](general.md#updating-emoncms-via-git)  
+* [System Logs](general.md#system-logs)
