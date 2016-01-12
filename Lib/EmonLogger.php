@@ -40,20 +40,24 @@ class EmonLogger
     }
 
     public function info ($message){
-        if ($this->log_level >= 3) $this->write("INFO",$message);
+        if ($this->log_level <= 1) $this->write("INFO",$message);
     }
 
     public function warn ($message){
-        if ($this->log_level >= 2) $this->write("WARN",$message);
+        if ($this->log_level <= 2) $this->write("WARN",$message);
     }
-    
+
     public function error ($message){
-        if ($this->log_level >= 1) $this->write("ERROR",$message);
+        if ($this->log_level <= 3) $this->write("ERROR",$message);
     }
-    
+
+    public function critical ($message){
+        if ($this->log_level <= 4) $this->write("CRITICAL",$message);
+    }
+
     private function write($type,$message){
         if (!$this->logenabled) return;
-        
+
         $now = microtime(true);
         $micro = sprintf("%03d",($now - ($now >> 0)) * 1000);
         $now = DateTime::createFromFormat('U', (int)$now); // Only use UTC for logs
