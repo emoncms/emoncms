@@ -132,6 +132,13 @@ $(function() {
                 plotdata[z][0] = plotdata[z][0] - 3600000*offset;
             }
         }
+		// If last data point corresponds to today, then it's not a full day and needs adjustment
+		var now=new Date();
+		var last=plotdata.length-1;
+		if ((now-plotdata[last][0])<(24*60*60*1000)) {
+			var hourstoday=(now-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/(60*60*1000);
+			plotdata[last][1]=(plotdata[last][1]/0.024)*(hourstoday/1000);
+		}
 
         stats.calc(plotdata);
         //console.log(stats.mean);
