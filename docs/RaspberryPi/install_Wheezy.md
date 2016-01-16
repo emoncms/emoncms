@@ -102,7 +102,8 @@ Update your settings to use your Database 'user' & 'password', which will enable
 Save and exit.  
 Set write permissions for the emoncms logfile:
 
-`touch /var/www/emoncms/emoncms.log` followed by `chmod 666 /var/www/emoncms/emoncms.log`
+`sudo touch /var/log/emoncms.log` followed by  
+`sudo chmod 666 /var/log/emoncms.log`
 
 ### In an internet browser, load emoncms:
 
