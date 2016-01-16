@@ -31,6 +31,14 @@
 <script id="source" language="javascript" type="text/javascript">
   var kwhdA = <?php echo $bottom; ?>;
   var kwhdB = <?php echo $top; ?>;
+  var colourb = "<?php echo $colourb; ?>";
+  if (colourb.indexOf("#") == -1) {
+	  colourb = "#" + colourb;
+  }
+  var colourt = "<?php echo $colourt; ?>";
+  if (colourt.indexOf("#") == -1) {
+	  colourt = "#" + colourt;
+  }
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey?>";
 
@@ -110,7 +118,7 @@
   });
 
   function bargraph(dataA,dataB,barwidth, mode){
-    $.plot($("#graph"), [ {color: "#0096ff", data:dataA}, {color: "#7cc9ff", data:dataB}],
+    $.plot($("#graph"), [ {color: colourb, data:dataA}, {color: colourt, data:dataB}],
     {
       series: {
         stack: true,

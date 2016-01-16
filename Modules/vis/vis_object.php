@@ -69,7 +69,9 @@
         //'comparison'=> array('options'=>array(array('feedid',3))),
         'stacked'=> array('label'=>_("Stacked"), 'options'=>array(
             array('bottom',_("bottom"),2),
-            array('top',_("top"),2))
+            array('top',_("top"),2),
+            array('colourb',_("colourb"),5,'0096ff'),
+            array('colourt',_("colourt"),5,'7cc9ff'))
         ),
         
         'stackedsolar'=> array('label'=>_("StackedSolar"), 'options'=>array(

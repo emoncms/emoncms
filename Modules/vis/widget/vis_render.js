@@ -127,10 +127,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["bottom","top"],
-      "optionstype":["feedid","feedid"],
-      "optionsname":[_Tr("Bottom"),_Tr("Top")],
-      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value")],
+      "options":["bottom","top","colourb","colourt"],
+      "optionstype":["feedid","feedid","colour_picker","colour_picker"],
+      "optionsname":[_Tr("Bottom"),_Tr("Top"),_Tr("Bottom colour"),_Tr("Top colour")],
+      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value"),_Tr("Bottom colour"),_Tr("Top colour")],
       "html":""
     },
 
