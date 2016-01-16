@@ -389,7 +389,6 @@ class User
         $stmt = $this->mysqli->prepare("UPDATE users SET email = ? WHERE id = ?");
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
-        
         return array('success'=>true, 'message'=>_("Email updated"));
     }
 

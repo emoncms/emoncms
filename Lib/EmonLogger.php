@@ -51,10 +51,6 @@ class EmonLogger
         if ($this->log_level <= 3) $this->write("ERROR",$message);
     }
 
-    public function critical ($message){
-        if ($this->log_level <= 4) $this->write("CRITICAL",$message);
-    }
-
     private function write($type,$message){
         if (!$this->logenabled) return;
 

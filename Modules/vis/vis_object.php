@@ -10,6 +10,7 @@
       6 - float value
       7 - int value
       8 - multigraph id
+      9 - colour
     */
 
     //CHAVEIRO TODO: only used in vis_main_view.php, should be php source for vis/widget/vis_render.js vis_widgetlist variable data
@@ -24,7 +25,7 @@
         'rawdata'=> array('label'=>_("RawData"), 'options'=>array(
             array('feedid',_("feed"),1),
             array('fill',_("fill"),7,0),
-            array('colour',_("colour"),5,'EDC240'),
+            array('colour',_("colour"),9,'EDC240'),
             array('units',_("units"),5,''),
             array('dp',_("dp"),7,'2'),
             array('scale',_("scale"),6,'1'))
@@ -32,7 +33,7 @@
         
         'bargraph'=> array('label'=>_("BarGraph"), 'options'=>array(
             array('feedid',_("feed"),0),
-            array('colour',_("colour"),5,'EDC240'),
+            array('colour',_("colour"),9,'EDC240'),
             array('interval',_("interval"),7,'86400'),
             array('units',_("units"),5,''),
             array('dp',_("dp"),7,'1'),
@@ -70,8 +71,8 @@
         'stacked'=> array('label'=>_("Stacked"), 'options'=>array(
             array('bottom',_("bottom"),2),
             array('top',_("top"),2),
-            array('colourb',_("colourb"),5,'0096ff'),
-            array('colourt',_("colourt"),5,'7cc9ff'))
+            array('colourt',_("colourt"),9,'7CC9FF'),
+            array('colourb',_("colourb"),9,'0096FF'))
         ),
         
         'stackedsolar'=> array('label'=>_("StackedSolar"), 'options'=>array(

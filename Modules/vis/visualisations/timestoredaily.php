@@ -132,20 +132,20 @@ $(function() {
                 plotdata[z][0] = plotdata[z][0] - 3600000*offset;
             }
         }
-		// If last data point corresponds to today, then it's not a full day and needs adjustment
-		var now=new Date();
-		var last=plotdata.length-1;
-		if ((now-plotdata[last][0])<(24*60*60*1000)) {
-			var hourstoday=(now-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/(60*60*1000);
-			plotdata[last][1]=(plotdata[last][1]/0.024)*(hourstoday/1000);
-		}
+        // If last data point corresponds to today, then it's not a full day and needs adjustment
+        var now=new Date();
+        var last=plotdata.length-1;
+        if ((now-plotdata[last][0])<(24*60*60*1000)) {
+            var hourstoday=(now-new Date(now.getFullYear(),now.getMonth(),now.getDate()))/(60*60*1000);
+            plotdata[last][1]=(plotdata[last][1]/0.024)*(hourstoday/1000);
+        }
 
         stats.calc(plotdata);
         //console.log(stats.mean);
 
         plot();
     }
-	
+    
     function plot()
     {
         var plot = $.plot(placeholder, [plotdata], {
@@ -154,44 +154,44 @@ $(function() {
             xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
             grid: {hoverable: true, clickable: true},
             selection: { mode: "x" },
-			touch: { pan: "x", scale: "x" }
+            touch: { pan: "x", scale: "x" }
         });
     }
-	
-	// Graph buttons and navigation efects for mouse and touch
-	placeholder.mouseenter(function(){
-		$("#graph-navbar").show();
-		$("#graph-buttons").stop().fadeIn();
-		$("#stats").stop().fadeIn();
-	});
-	placeholder_bound.mouseleave(function(){
-		$("#graph-buttons").stop().fadeOut();
-		$("#stats").stop().fadeOut();
-	});
-	placeholder.bind("touchstarted", function (event, pos)
-	{
-		$("#graph-navbar").hide();
-		$("#graph-buttons").stop().fadeOut();
-		$("#stats").stop().fadeOut();
-	});
-	
+    
+    // Graph buttons and navigation efects for mouse and touch
+    placeholder.mouseenter(function(){
+        $("#graph-navbar").show();
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+    });
+    placeholder_bound.mouseleave(function(){
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    placeholder.bind("touchstarted", function (event, pos)
+    {
+        $("#graph-navbar").hide();
+        $("#graph-buttons").stop().fadeOut();
+        $("#stats").stop().fadeOut();
+    });
+    
 
-	placeholder.bind("touchended", function (event, ranges)
-	{
-		$("#graph-buttons").stop().fadeIn();
-		$("#stats").stop().fadeIn();
-		view.start = ranges.xaxis.from;
-		view.end = ranges.xaxis.to;
-		draw();
-	});
-		
+    placeholder.bind("touchended", function (event, ranges)
+    {
+        $("#graph-buttons").stop().fadeIn();
+        $("#stats").stop().fadeIn();
+        view.start = ranges.xaxis.from;
+        view.end = ranges.xaxis.to;
+        draw();
+    });
+        
 
-	$(window).resize(function(){
-		placeholder.width(placeholder_bound.width());
-		if (embed) placeholder.height($(window).height()-top_offset);
+    $(window).resize(function(){
+        placeholder.width(placeholder_bound.width());
+        if (embed) placeholder.height($(window).height()-top_offset);
 
-		plot();
-	});
+        plot();
+    });
 });
 
 </script>
