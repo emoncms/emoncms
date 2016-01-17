@@ -159,7 +159,8 @@ function plot(){
     selection: { mode: "x" },
     legend: { position: "nw",
       labelFormatter: function(label, plot){
-        return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color=black>'+label+'</font></a>';
+        var colour = plot.idx in hidden_lines ? "gray" : "black";
+        return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color='+colour+'>'+label+'</font></a>';
       }
     },
     touch: { pan: "x", scale: "x"}
