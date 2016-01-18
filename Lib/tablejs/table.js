@@ -75,13 +75,12 @@ var table = {
 
     var html = "";
     for (group in groups) {
-      // Minimized group persistance
-      var visible = '', symbol ='<i class="icon-minus-sign"></i>'; 
-      if (table.groupshow[group]==undefined) table.groupshow[group]=false; // default is collapsed
-      if (table.groupshow[group]==false) {symbol = '<i class="icon-plus-sign"></i>'; visible = "display:none";}
-
+      var visible = '';
       htmlg = "";
       if (group_num>1) {
+        var symbol ='<i class="icon-minus-sign"></i>'; 
+        if (table.groupshow[group]==undefined) table.groupshow[group]=false; // default is collapsed
+        if (table.groupshow[group]==false) {symbol = '<i class="icon-plus-sign"></i>'; visible = "display:none";}
         htmlg += "<tr><th colspan='3'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
         var countFields = 0; for (field in table.fields) countFields++; // Calculate amount of padding required
         if (table.groupfields == undefined) {
