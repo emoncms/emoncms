@@ -142,7 +142,6 @@
     $.plot($("#graph"), plotdata, {
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
-      yaxis: { min: 0},
       selection: { mode: "x" },
       legend: { position: "nw",
         labelFormatter: function(label, plot){

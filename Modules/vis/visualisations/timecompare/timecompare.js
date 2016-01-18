@@ -155,7 +155,6 @@ function plot(){
   $.plot($("#graph"), plotdata, {
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
-    yaxis: { min: 0},
     selection: { mode: "x" },
     legend: { position: "nw",
       labelFormatter: function(label, plot){
