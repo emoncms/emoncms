@@ -40,7 +40,7 @@ or
 
 Restart the lamp server:
 
-    $ sudo /etc/init.d/apache2 restart
+    $ sudo service apache2 restart
     
 ### Install the emoncms application via git
 
@@ -127,14 +127,8 @@ Save (Ctrl-X), type Y and exit
     
     cd /var/www/emoncms/Modules
     
-    git clone https://github.com/emoncms/raspberrypi.git
-    git clone https://github.com/emoncms/event.git
-    git clone https://github.com/emoncms/openbem.git
-    git clone https://github.com/emoncms/energy.git
-    git clone https://github.com/emoncms/notify.git
-    git clone https://github.com/emoncms/report.git
-    git clone https://github.com/emoncms/packetgen.git
-    git clone https://github.com/elyobelyob/mqtt.git
+    git clone https://github.com/emoncms/dashboard.git
+    git clone https://github.com/emoncms/app.git
  
 See individual module readme's for further information on individual module installation.
 
@@ -148,7 +142,7 @@ Create an account by entering your email and password and clicking register to c
 
 #### Note: Browser Compatibility
 
-**Chrome Ubuntu 23.0.1271.97** - developed with, works great.
+**Chrome Ubuntu 48.0.2564.81** - developed with, works great.
 
 **Chrome Windows 25.0.1364.172** - quick check revealed no browser specific bugs.
 
@@ -194,13 +188,8 @@ PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 
 Now save and close and restart your apache.
 
-    sudo /etc/init.d/apache2 restart
+    sudo service apache2 restart
     
 ## Install Logger
 
-    sudo pear channel-discover pear.apache.org/log4php
-    sudo pear install log4php/Apache_log4php
-    
-ensure that log file has write permissions for www-data, pi and root.
-    
-    sudo chmod 660 emoncms.log 
+   See: https://github.com/emoncms/usefulscripts/logger
