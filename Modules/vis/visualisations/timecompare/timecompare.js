@@ -155,11 +155,11 @@ function plot(){
   $.plot($("#graph"), plotdata, {
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
-    yaxis: { min: 0},
     selection: { mode: "x" },
     legend: { position: "nw",
       labelFormatter: function(label, plot){
-        return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color=black>'+label+'</font></a>';
+        var colour = plot.idx in hidden_lines ? "gray" : "black";
+        return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color='+colour+'>'+label+'</font></a>';
       }
     },
     touch: { pan: "x", scale: "x"}

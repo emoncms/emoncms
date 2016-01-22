@@ -135,7 +135,7 @@ var list = {
  
         'gravatar':
         {
-          'draw':function(value) { return "<img style='border: 1px solid #ccc; padding:2px;' src='http://www.gravatar.com/avatar/"+CryptoJS.MD5(value)+"'/ >" },
+          'draw':function(value) { return "<img style='border: 1px solid #ccc; padding:2px;' src='//www.gravatar.com/avatar/"+CryptoJS.MD5(value)+"'/ >" },
           'edit':function(field,value) { return "<input type='text' value='"+value+"' / >" },
           'save':function(field) { return $(list.element+' tr[field='+field+'] td[type=value] input').val();}
         }
