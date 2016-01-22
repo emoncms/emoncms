@@ -8,7 +8,7 @@
     $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
     $db = $result->fetch_array();
 
-    @list($system, $host, $kernel) = preg_split('/[\s,]+/', @exec('uname -a'), 5);
+    @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
 
     return array('date' => date('Y-m-d H:i:s T'),
