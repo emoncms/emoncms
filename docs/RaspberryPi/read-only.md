@@ -44,39 +44,12 @@ Then run these commands to make changes to filesystem
     sudo mv /etc/mtab /etc/mtab.orig
     sudo ln -s /proc/self/mounts /etc/mtab
     
-The Pi will now run in Read-Only mode from the next restart.
+The Pi will now run in Read-Only mode from the next restart. Before restarting create two scripts to switch between read-only and write access modes. These scripts are in the emonPi git repo and can be installed with:
 
-Before restarting create two shortcut commands to switch between read-only and write access modes.
+Firstly “ rpi-rw “ will be the command to unlock the filesystem for editing, and "rpi-ro" will put the system back to read-only mode:
 
-Firstly “ rpi-rw “ will be the command to unlock the filesystem for editing, run
-
-    sudo nano /usr/bin/rpi-rw
-
-and add the following to the blank file that opens
-
-    #!/bin/sh
-    sudo mount -o remount,rw /dev/mmcblk0p2  /
-    echo "Filesystem is unlocked - Write access"
-    echo "type ' rpi-ro ' to lock"
-
-save and exit using ctrl-x -> y -> enter and then to make this executable run
-
-    sudo chmod +x  /usr/bin/rpi-rw
-
-Next “ rpi-ro “ will be the command to lock the filesytem down again, run
-
-    sudo nano /usr/bin/rpi-ro
-
-and add the following to the blank file that opens
-
-    #!/bin/sh
-    sudo mount -o remount,ro /dev/mmcblk0p2  /
-    echo "Filesystem is locked - Read Only access"
-    echo "type ' rpi-rw ' to unlock"
-
-save and exit using ctrl-x -> y -> enter and then to make this executable run
-
-    sudo chmod +x  /usr/bin/rpi-ro
+    sudo ln -s /home/pi/emonpi/rpi-ro /usr/bin/rpi-ro
+    sudo ln -s /home/pi/emonpi/rpi-rw /usr/bin/rpi-rw
         
 Lastly reboot for changes to take effect
 
