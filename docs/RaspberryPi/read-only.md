@@ -67,4 +67,44 @@ Add message at shell login to alert users to RO mode:
 
 Add the line:
 
-	The file system is in Read Only (RO) mode. If you need to make changes, use the command rpi-rw to put the file system in Read Write (RW) mode. Use rpi-ro to return to RO mode. The /home/pi/data directory is always in RW mode 
+	The file system is in Read Only (RO) mode. If you need to make changes, use the command rpi-rw to put the file system in Read Write (RW) mode. Use rpi-ro to return to RO mode. The /home/pi/data directory is always in RW mode
+
+## Tweak's to make system work with RO root FS
+
+### DNS Resolve fix
+
+**Issue:** Linux needs to write to /etc/resolv.conf and /etc/resolv.conf.dhclient-new to save network DNS settings 
+
+**Solution:** move files to ~/data RW partition and symlink, this also required a modd to /etc/dhcpclient-script to write to the files instead of moving
+
+#### Move resolv.conf to RW partition 
+	cp /etc/resolv.conf /home/pi/data/
+	sudo rm /etc/resolv.conf 
+	sudo ln -s /home/pi/data/resolv.conf /etc/resolv.conf
+
+#### Create resolv.conf.dhclient-new file in RW partition and symlink to /etc
+	touch /home/pi/data/resolv.conf.dhclient-new
+	sudo chmod 777 /home/pi/data/resolv.conf.dhclient-new 
+	sudo rm /etc/resolv.conf.dhclient-new
+	sudo ln -s /home/pi/data/resolv.conf.dhclient-new /etc/resolv.conf.dhclient-new
+
+#### Use modded dhclient-script 
+    sudo mv /sbin/dhclient-script /sbin/dhclient-script_original
+	sudo ln -s /home/pi/emonpi/dhclient-script_raspbian_jessielite /sbin/dhclient-script
+
+### NTP time fix
+
+Enables NTP and fake-hwclock to function on a Pi with a read-only file system
+
+1) move the fake-hwclock back to it's original location if used on OEM SD card image
+2) comment out the existing fake-hwclocks cron entry and create a ntp-backup cron entry
+3) add an init script to "backup" current time & drift value at shutdown and by cron
+4) remove these ntp-backup setup files once installation is done
+5) get correct time from ntp servers
+6) backup the current time to fake-hwclock
+
+Install with:
+
+	git clone https://github.com/openenergymonitor/ntp-backup.git ~/ntp-backup && ~/ntp-backup/install
+
+[Discussion Thread](http://openenergymonitor.org/emon/node/5877)
