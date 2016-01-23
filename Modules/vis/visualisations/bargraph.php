@@ -218,7 +218,7 @@
                 else if (intervalcode=='d')
                    datestr = new Date(item.datapoint[0]).format("ddd, mmm dS, yyyy");
                 else
-                    datestr = (new Date(item.datapoint[0]))./*toLocaleDateString()+","+(new Date(item.datapoint[0])).toLocaleTimeString();*/format("ddd, mmm dS, yyyy, hh:MM:ss");
+                    datestr = (new Date(item.datapoint[0]))./*toLocaleDateString()+","+(new Date(item.datapoint[0])).toLocaleTimeString();*/format("ddd, mmm dS, yyyy, HH:MM:ss");
 
                 $("#stats").html(item.datapoint[1].toFixed(dp)+units+" | "+datestr);
             }
