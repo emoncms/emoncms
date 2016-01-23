@@ -59,10 +59,17 @@ class phpMQTT {
 		$this->clientid = $clientid;		
 	}
 
+	function connect_auto($clean = true, $will = NULL, $username = NULL, $password = NULL){
+		while($this->connect($clean, $will, $username, $password)==false){
+			sleep(10);
+		}
+		return true;
+	}
+
 	/* connects to the broker 
 		inputs: $clean: should the client send a clean session flag */
 	function connect($clean = true, $will = NULL, $username = NULL, $password = NULL){
-
+		
 		if($will) $this->will = $will;
 		if($username) $this->username = $username;
 		if($password) $this->password = $password;
@@ -71,7 +78,7 @@ class phpMQTT {
 		$this->socket = fsockopen($address, $this->port, $errno, $errstr, 60);
 
 		if (!$this->socket ) {
-		    error_log("fsockopen() $errno, $errstr \n");
+		    if($this->debug) error_log("fsockopen() $errno, $errstr \n");
 			return false;
 		}
 
@@ -155,7 +162,7 @@ class phpMQTT {
 		if($nb){
 			return fread($this->socket, $togo);
 		}
-		
+			
 		while (!feof($this->socket) && $togo>0) {
 			$fread = fread($this->socket, $togo);
 			$string .= $fread;
@@ -266,7 +273,7 @@ class phpMQTT {
 							str_replace("/","\/",
 								str_replace("$",'\$',
 									$key))))."$/",$topic) ){
-					if(function_exists($top['function'])){
+					if(is_callable($top['function'])){
 						call_user_func($top['function'],$topic,$msg);
 						$found = 1;
 					}
@@ -289,7 +296,7 @@ class phpMQTT {
 			if(feof($this->socket)){
 				if($this->debug) echo "eof receive going to reconnect for good measure\n";
 				fclose($this->socket);
-				$this->connect(false);
+				$this->connect_auto(false);
 				if(count($this->topics))
 					$this->subscribe($this->topics);	
 			}
@@ -339,7 +346,7 @@ class phpMQTT {
 			if($this->timesinceping<(time()-($this->keepalive*2))){
 				if($this->debug) echo "not seen a package in a while, disconnecting\n";
 				fclose($this->socket);
-				$this->connect(false);
+				$this->connect_auto(false);
 				if(count($this->topics))
 					$this->subscribe($this->topics);
 			}
