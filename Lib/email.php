@@ -48,6 +48,10 @@ class Email {
         if ($this->check()) $this->message->setBody($body, $type);
     }
 
+    function attach($filepath, $contentType = null) {
+        if ($this->check()) $this->message->attach(Swift_Attachment::fromPath($filepath,$contentType));
+    }
+
     function send(){
         global $smtp_email_settings;
         if ($this->check()) {

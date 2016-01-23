@@ -17,6 +17,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
 <?php if (!$embed) { ?>
 <h2><?php echo _("Stacked"); ?></h2>
@@ -31,6 +32,20 @@
 <script id="source" language="javascript" type="text/javascript">
   var kwhdA = <?php echo $bottom; ?>;
   var kwhdB = <?php echo $top; ?>;
+  var colourb = urlParams.colourb;
+  if (colourb==undefined || colourb=='') colourb = "0096ff";
+  var colourt = urlParams.colourt;
+  if (colourt==undefined || colourt=='') colourt = "7cc9ff";
+
+  // Some browsers want the colour codes to be prepended with a "#". Therefore, we
+  // add one if it's not already there
+  if (colourb.indexOf("#") == -1) {
+    colourb = "#" + colourb;
+  }
+  if (colourt.indexOf("#") == -1) {
+    colourt = "#" + colourt;
+  }
+
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey?>";
 
@@ -110,7 +125,7 @@
   });
 
   function bargraph(dataA,dataB,barwidth, mode){
-    $.plot($("#graph"), [ {color: "#0096ff", data:dataA}, {color: "#7cc9ff", data:dataB}],
+    $.plot($("#graph"), [ {color: colourb, data:dataA}, {color: colourt, data:dataB}],
     {
       series: {
         stack: true,

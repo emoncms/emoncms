@@ -127,10 +127,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["bottom","top"],
-      "optionstype":["feedid","feedid"],
-      "optionsname":[_Tr("Bottom"),_Tr("Top")],
-      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value")],
+      "options":["bottom","top","colourt","colourb"],
+      "optionstype":["feedid","feedid","colour_picker","colour_picker"],
+      "optionsname":[_Tr("Bottom"),_Tr("Top"),_Tr("Top colour"),_Tr("Bottom colour")],
+      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value"),_Tr("Top colour"),_Tr("Bottom colour")],
       "html":""
     },
 
@@ -165,6 +165,17 @@ function vis_widgetlist(){
       "optionsname":[_Tr("Multigraph")],
       "optionshint":[_Tr("Managed on Visualization module")],
       "optionsdata":[multigraphsDropBoxOptions], // Gets multigraphs from vis_widget.php multigraphsDropBoxOptions variable
+      "html":""
+    },
+
+    "timecompare":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",  
+      "options":["feedid","fill","depth"],
+      "optionstype":["feedid","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Depth")],
+      "optionshint":[_Tr("Feed source"),_Tr("Fill under line"),_Tr("Number of lines")],
       "html":""
     }
   }

@@ -81,6 +81,35 @@ var customtablefields = {
     {
       return "<i class='"+table.groupfields[field].icon+"' type='icon' group='"+group+"' rows='"+rows+"' style='cursor:pointer'></i>";
     }
+  },
+    
+  'group-size': {
+    'draw': function(group,rows,field)
+    {
+      var sum = 0;
+      for (i in rows) {
+        var row=rows[i];
+        if ($.isNumeric(table.data[row][field])) {  
+          sum = sum + (1*table.data[row][field]); 
+        }
+      }
+      return list_format_size(sum);
+    }
+  },
+  
+  'group-updated': {
+    'draw': function(group,rows,field)
+    {
+      var lastupdate = 0;
+      for (i in rows) {
+        var row=rows[i];
+        if ($.isNumeric(table.data[row][field])) {
+          var update = (1*table.data[row][field]);
+          if (update > lastupdate) lastupdate = update;
+        }
+      }
+      return list_format_updated(lastupdate);
+    }
   }
 }
 

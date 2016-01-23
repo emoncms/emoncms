@@ -2,7 +2,7 @@
 
 Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
 
-**Version 9 of emoncms has been developed by [Chaveiro](https://github.com/chaveiro/) with a significant list of improvements, the EmonCMS 9.0 RC forum thread with full change log can be found here [http://openenergymonitor.org/emon/node/11009](http://openenergymonitor.org/emon/node/11009)**
+**Version 9 of emoncms has been developed by [Chaveiro](https://github.com/chaveiro/) with a significant list of improvements, see [forum thread with full change log](http://openenergymonitor.org/emon/node/11009)**
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
@@ -10,17 +10,23 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 **Note:** We are currently reorganising the emoncms branches. The master branch is now the same as 9.x. 
 
-* [master](https://github.com/emoncms/emoncms) - see [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
+* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The current emonpi/emonbase emoncms version. Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **In the process of being removed**
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch (as of Jan 16 ready-to-go SD card image), regularly merged from master. Slightly more tried and tested. 
+
+* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The old emonpi/emonbase emoncms version (July 15 ready-to-go SD card image). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
 
 **Optional modules**
 
-Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. New for version v8.5 are:
+Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to update check for database updates in Administration menu after installing new modules:
 
-- App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump. git clone https://github.com/emoncms/app.git
+- Dashboards module, required for creating, viewing and publishing dashboards: 
+https://github.com/emoncms/dashboard
 
-- Nodes provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration. git clone https://github.com/emoncms/nodes.git
+- App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump https://github.com/emoncms/app.git
+
+- Nodes provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration. 
+https://github.com/emoncms/nodes.git
     
 - Config provides an in-browser emonhub.conf editor and emonhub.log log viewer. git clone https://github.com/emoncms/config.git
     

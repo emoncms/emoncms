@@ -106,7 +106,8 @@ Create a symlink to reference emoncms within the web root folder:
 
 Set write permissions for the emoncms logfile:
 
-`touch /var/www/emoncms/emoncms.log` followed by `chmod 666 /var/www/emoncms/emoncms.log`
+`sudo touch /var/log/emoncms.log` followed by  
+`sudo chmod 666 /var/log/emoncms.log`
 
 ### In an internet browser, load emoncms:
 
@@ -121,7 +122,7 @@ Once you are logged in;
 
 ### Install Emonhub
 
-    git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/install
+    git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/upgrade
 
 Edit the emonhub configuration file, entering your emoncms 'Write API Key' and set the "local" emoncms address `url = http://localhost/emoncms` (emonhub sends to http://emoncms.org by default). Also set your RFM2Pi frequency, group & base id if necessary:
 
