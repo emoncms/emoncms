@@ -10,6 +10,7 @@ var multigraph_feedlist = [];
 var multigraphs=[];
 var multigraphs_name=[];
 var movingtime = false;
+var showtag = true;
 
 var baseElement = "#box-options";
 
@@ -48,6 +49,11 @@ function draw_multigraph_feedlist_editor(){
     movingtime=false;
   else
     movingtime=true;
+
+  if (typeof multigraph_feedlist[0] !== 'undefined' && typeof multigraph_feedlist[0]['showtag'] !== 'undefined')
+    showtag = multigraph_feedlist[0]['showtag'];
+  else
+    showtag = true;
 
   var out = "";
   out += '<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">';
@@ -96,6 +102,12 @@ function draw_multigraph_feedlist_editor(){
   out += "<tr><td>Floating time</strong></td>";
   var checked = ""; if (movingtime) checked = "checked";
   out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
+  out += "<td></td>";
+  out += "<td></td>";
+  out += "<td></td></tr>";
+  out += "<tr><td>Show tag name</strong></td>";
+  var checked = ""; if (showtag) checked = "checked";
+  out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
@@ -182,6 +194,12 @@ function load_events(){
 
   $(baseElement).on("click","#movingtime",function(event){
     movingtime = $(this)[0].checked;
+    vis_feed_data();
+    modified();
+  });
+  $(baseElement).on("click","#showtag",function(event){
+    showtag = $(this)[0].checked;
+    multigraph_feedlist[0]['showtag'] = showtag;
     vis_feed_data();
     modified();
   });
