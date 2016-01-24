@@ -6,8 +6,9 @@
   
   function convert_to_plotlist(multigraph_feedlist){
    var plotlist = [];
+   var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
    for (z in multigraph_feedlist){
-    var tag = (multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag'] !="" ? multigraph_feedlist[z]['tag']+": " : "");
+    var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
     if (multigraph_feedlist[z]['datatype']==1){
       plotlist[z] = {
         id: multigraph_feedlist[z]['id'],
