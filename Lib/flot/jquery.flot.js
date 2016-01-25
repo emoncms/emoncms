@@ -4,7 +4,7 @@ Copyright (c) 2007-2014 IOLA and Ole Laursen.
 Licensed under the MIT license.
 
 Changes:
-    2016/01/24 chaveiro - Added Support for jquery.flot.togglelegend 0.2
+    2016/01/24 chaveiro - Added Support for jquery.flot.togglelegend 0.3
 
 */
 
@@ -2826,7 +2826,6 @@ Changes:
                     var div = legend.children();
                     $('<div style="position:absolute;width:' + div.width() + 'px;height:' + div.height() + 'px;' + pos +'background-color:' + c + ';"> </div>').prependTo(legend).css('opacity', options.legend.backgroundOpacity);
                 }
-                executeHooks(hooks.legendInserted, [legend]);
             }
             executeHooks(hooks.legendInserted, [legend]);
         }

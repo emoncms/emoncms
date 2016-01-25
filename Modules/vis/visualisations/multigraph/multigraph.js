@@ -221,7 +221,6 @@ function multigraph_init(element){
       $("#graph-buttons").stop().fadeOut();
       $("#stats").stop().fadeOut();
   });
-
   $("#graph").bind("touchended", function (event, ranges){
       $("#graph-buttons").stop().fadeIn();
       $("#stats").stop().fadeIn();
