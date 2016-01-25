@@ -85,7 +85,8 @@
         $log->info("    Processing '$tag' tag with feeds: " . implode(",",$ids) . "\n");
 
         // Write to output stream
-        $filename = $exportpath . "/". $startText."_".$endText."_".$tag."_".implode("_",$ids).".csv";
+        //$filename = $exportpath . "/". $startText."_".$endText."_".$tag."_".implode("_",$ids).".csv";
+        $filename = $exportpath . "/". $startText."_".$endText."_".$tag.".csv";
         $fh = @fopen( $filename, 'w' );
         if (!$fh) {
             echo "ERROR: Cant create file '$filename'.\n";

@@ -12,6 +12,10 @@
      max-height: none; 
      overflow-y: auto;
    }
+
+   #process-table th:nth-of-type(6), td:nth-of-type(6) {
+    text-align: right;
+   }
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
 
@@ -41,14 +45,15 @@
                     <th><?php echo _('Process'); ?></th>
                     <th><?php echo _('Arg'); ?></th>
                     <th></th>
-                    <th><?php echo _('Actions'); ?></th>
+                    <th colspan='2'><?php echo _('Actions'); ?></th>
                 </tr>
                 <tbody id="process-table-elements"></tbody>
             </table>
 
             <table class="table">
             <tr><th>
-                <span><?php echo _('Add process'); ?>:</span>
+                <span id="process-header-add"><?php echo _('Add process'); ?>:</span>
+                <span id="process-header-edit"><?php echo _('Edit process'); ?>:</span>
             </th></tr>
             <tr>
                 <td>
@@ -140,9 +145,19 @@
                                 </div>
                             </div>
                         </span>
-                        <div class="input-prepend">
-                            <button id="process-add" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Add'); ?></button>
-                        </div>
+                        <span id="type-btn-add">
+                            <div class="input-prepend">
+                                <button id="process-add" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Add'); ?></button>
+                            </div>
+                        </span>
+                        <span id="type-btn-edit" style="display:none">
+                            <div class="input-prepend">
+                                <button id="process-edit" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Edit'); ?></button>
+                            </div>
+                            <div class="input-prepend">
+                                <button id="process-cancel" class="btn" style="border-radius: 4px;"><?php echo _('Cancel'); ?></button>
+                            </div>
+                        </span>
                 </td>
             </tr>
             <tr>

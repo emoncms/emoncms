@@ -2,7 +2,6 @@
   var timeWindowChanged = 0;
   var ajaxAsyncXdr = [];
   var event_vis_feed_data;
-  var hidden_lines = {};
   
   function convert_to_plotlist(multigraph_feedlist){
    var plotlist = [];
@@ -15,10 +14,13 @@
         selected: 1,
         plot:
         {
-          idx: z,
           data: null,
-          temp_data: null,
           label: tag + multigraph_feedlist[z]['name'],
+          points: { show: true,
+                    radius: 0,
+                    lineWidth: 1, // in pixels
+                    fill: false
+          },
           lines:
           {
             show: true,
@@ -112,30 +114,10 @@
   //load feed data to multigraph plot
   function vis_feed_data_callback(context,data){
     var i = context['index'];
-
-    if(i in hidden_lines) {
-      context['plotlist'].plot.temp_data = data;
-      context['plotlist'].plot.data = [];
-      context['plotlist'].plot.lines.show = false;
-    } else {
-      context['plotlist'].plot.data = data;
+    context['plotlist'].plot.data = data;
+    if (context['plotlist'].plot.data) {
+      plotdata[i] = context['plotlist'].plot;
     }
-      
-    plotdata[i] = context['plotlist'].plot;
-    plot();
-  }
-
-  function toggle_line(idx){
-    plotdata[idx].lines.show = !plotdata[idx].lines.show;
-    if(!plotdata[idx].lines.show){
-      plotdata[idx].temp_data = plotdata[idx].data;
-      plotdata[idx].data = [];
-      hidden_lines[idx] = true;
-    } else {
-      plotdata[idx].data = plotdata[idx].temp_data;
-      delete hidden_lines[idx];
-    }
-
     plot();
   }
 
@@ -144,12 +126,7 @@
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
-      legend: { position: "nw",
-        labelFormatter: function(label, plot){
-          var colour = plot.idx in hidden_lines ? "gray" : "black";
-          return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color='+colour+'>'+label+'</font></a>';
-        }
-      },
+      legend: { position: "nw", toggle: true},
       touch: { pan: "x", scale: "x"}
     });
   }
