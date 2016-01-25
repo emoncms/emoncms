@@ -6,7 +6,7 @@ Assuming creating 300Mb data partition and starting with SD card image expanded 
 
 # Reduce size of root partition using Gparted
 
-Using Gparted on Ubuntu reduce size of root partition by 300Mb to make space for data partition. Reccomend leaving 10Mb free space at end of SD card 
+Using Gparted on Ubuntu reduce size of root partition by 300Mb to make space for data partition. Recommend leaving 10Mb free space at end of SD card 
 
 
 
