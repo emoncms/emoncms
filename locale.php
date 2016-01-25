@@ -77,13 +77,13 @@ function set_lang($language)
         $lang=$language[0];
 
         switch($lang) {
-            case 'cy': $lang='cy_GB'; break;
-            case 'da': $lang='da_DK'; break;
-            case 'en': $lang='en_EN'; break;
-            case 'es': $lang='es_ES'; break;
-            case 'fr': $lang='fr_FR'; break;
-            case 'it': $lang='it_IT'; break;
-            case 'nl': $lang='nl_NL'; break;
+            case 'cy_GB': $lang='cy_GB'; break;
+            case 'da_DK': $lang='da_DK'; break;
+            case 'en_EN': $lang='en_EN'; break;
+            case 'es_ES': $lang='es_ES'; break;
+            case 'fr_FR': $lang='fr_FR'; break;
+            case 'it_IT': $lang='it_IT'; break;
+            case 'nl_NL': $lang='nl_NL'; break;
             //case 'nl': $lang='nl_BE'; break; //to do??
             default  : $lang='en_EN';
         }
