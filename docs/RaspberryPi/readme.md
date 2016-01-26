@@ -13,7 +13,7 @@ Start by updating the system repositories and packages:
 
 Install the dependencies:
 
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-common git-core redis-server build-essential ufw ntp
+    sudo apt-get install -y apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-common git-core redis-server build-essential ufw ntp
 
 During the installation, you will be prompted to select a password for the 'MYSQL "root" user', and to confirm it by entering it a second time. Make a note of the password - you will need it later
 
