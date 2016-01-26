@@ -143,7 +143,9 @@ var table = {
 
    'add_events':function() {
     // Event: minimise or maximise group
-    $(table.element).on('click', '.MINMAX', function() {
+    $(table.element).on('click touchend', '.MINMAX', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
       var $me=$(this);
       if ($me.data('clicked')){
         $me.data('clicked', false); // reset
@@ -153,8 +155,6 @@ var table = {
         var group = $(this).attr('group');
         var state = table.groupshow[group];
         for (gs in table.groupshow) { table.groupshow[gs] = !state; }
-        //if (state == true) { $("#"+group).hide(); $(this).html('<i class="icon-plus-sign"></i>'); table.groupshow[group] = false; }
-        //if (state == false) { $("#"+group).show(); $(this).html('<i class="icon-minus-sign"></i>'); table.groupshow[group] = true; }
         table.draw();
       } else {
         $me.data('clicked', true);
@@ -164,8 +164,7 @@ var table = {
           // Do what needs to happen on single click. Use $me instead of $(this) because $(this) is  no longer the element
           var group = $me.attr('group');
           var state = table.groupshow[group];
-          if (state == true) { $("#"+group).hide(); $me.html('<i class="icon-plus-sign"></i>'); table.groupshow[group] = false; }
-          if (state == false) { $("#"+group).show(); $me.html('<i class="icon-minus-sign"></i>'); table.groupshow[group] = true; }
+          table.groupshow[group] = !state;
           table.draw();
         },250); // dblclick tolerance
         $me.data('alreadyclickedTimeout', alreadyclickedTimeout); // store this id to clear if necessary
