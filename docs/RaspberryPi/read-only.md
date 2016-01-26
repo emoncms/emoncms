@@ -1,6 +1,9 @@
 # Enable root filesystem read-only mode
 
+
 ## Setup Data partition
+
+An alternative to following this guide would be to use Paul Reed's script to setup the SD card partitions. See [forum thread](http://openenergymonitor.org/emon/node/12080).
 
 Assuming creating 300Mb data partition and starting with SD card image expanded to fill SD card (4GB in this example).
 
