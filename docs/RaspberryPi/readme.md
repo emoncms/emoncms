@@ -104,6 +104,7 @@ Create a symlink to reference emoncms within the web root folder:
 
     cd /var/www/html && sudo ln -s /var/www/emoncms
 
+
 Set write permissions for the emoncms logfile:
 
 `sudo touch /var/log/emoncms.log` followed by  
@@ -113,8 +114,16 @@ Set write permissions for the emoncms logfile:
 
 [http://localhost/emoncms](http://localhost/emoncms)
 
+If you want Emoncms to redirect from web root i.e load Emoncms with `http://localhost` add reference in `index.php` and remove the default apache `index.html` test page:
+
+	sudo su
+	echo "<?php header('Location: ../emoncms'); ?>" > /var/www/html/index.php
+	rm /var/www/html/index.html
+	exit
+
 The first time you run emoncms it will automatically set up the database and you will be taken to the register/login screen.
 Create an account by entering your email and password and clicking register.  
+
 Once you are logged in;  
 * Check the Administration page - 'Setup > Administration' noting and acting upon any messages reported.
 * Update your database - 'Setup > Administration > Update database'.
