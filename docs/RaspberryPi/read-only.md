@@ -126,3 +126,16 @@ Install with:
 	git clone https://github.com/openenergymonitor/ntp-backup.git ~/ntp-backup && ~/ntp-backup/install
 
 [Discussion Thread](http://openenergymonitor.org/emon/node/5877)
+
+## Move MYSQL database
+
+After MYSQL has been installed (see Raspberry Pi Emoncms install) we will need to move the MYSQL database location to the RW data partition:
+
+Move the database:
+
+	mkdir /home/pi/data/mysql
+	sudo cp -rp /var/lib/mysql/. /home/pi/data/mysql
+
+Change MYSQL config to use database in new RW location change line `datadir` to `/home/pi/data/mysql`
+
+	sudo nano /etc/mysql/my.cnf
