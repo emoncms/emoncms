@@ -52,6 +52,7 @@ function create_plotlist(feedid, fill, depth){
       plot:
       {
         idx: i,
+        adj: compare_unit * cur_depth,
         data: null,
         label: label,
         yaxis: 1,
