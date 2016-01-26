@@ -1139,6 +1139,8 @@ Changes:
                     s.datapoints.format = format;
                 }
 
+                if (!s.visible) continue; // data will not be displayed
+
                 if (s.datapoints.pointsize != null)
                     continue; // already filled in
 

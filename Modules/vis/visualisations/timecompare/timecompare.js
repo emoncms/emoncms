@@ -2,6 +2,7 @@ var plotdata = [];
 var event_vis_feed_data;
 var ajaxAsyncXdr = [];
 var compare_unit = 0;
+var hidden_lines = {};
 var xaxis_format = "";
   
 function create_plotlist(feedid, fill, depth){
@@ -50,6 +51,7 @@ function create_plotlist(feedid, fill, depth){
       depth: cur_depth,
       plot:
       {
+        idx: i,
         data: null,
         label: label,
         yaxis: 1,
@@ -113,12 +115,30 @@ function vis_feed_data_callback(context, data){
     data[d][0] = data[d][0] + (compare_unit * depth); // Adjust the old data to be visible on the current graph
   }
 
+  if(i in hidden_lines) {
+     context['plotlist'].plot.visible = false;
+  } else {
+     context['plotlist'].plot.visible = true;
+  }
+     
   context['plotlist'].plot.data = data;
   if (context['plotlist'].plot.data) {
     plotdata[i] = context['plotlist'].plot;
   }
   plot();
 }
+
+  function toggle_line(idx){
+    //plotdata[idx].lines.show = !plotdata[idx].lines.show;
+    plotdata[idx].visible = !plotdata[idx].visible;
+    if(!plotdata[idx].visible){
+      hidden_lines[idx] = true;
+    } else {
+      delete hidden_lines[idx];
+    }
+
+    plot();
+  }
 
 /*
  Graphing Functions
@@ -129,7 +149,12 @@ function plot(){
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
     selection: { mode: "x" },
-    legend: { position: "nw", toggle: true},
+    legend: { position: "nw",
+      labelFormatter: function(label, plot){
+        var colour = plot.idx in hidden_lines ? "gray" : "black";
+        return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color='+colour+'>'+label+'</font></a>';
+      }
+    },
     touch: { pan: "x", scale: "x"}
   });
 }

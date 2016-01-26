@@ -2,6 +2,7 @@
   var timeWindowChanged = 0;
   var ajaxAsyncXdr = [];
   var event_vis_feed_data;
+  var hidden_lines = {};
   
   function convert_to_plotlist(multigraph_feedlist){
    var plotlist = [];
@@ -14,6 +15,7 @@
         selected: 1,
         plot:
         {
+          idx: z,
           data: null,
           label: tag + multigraph_feedlist[z]['name'],
           points: { show: true,
@@ -114,10 +116,27 @@
   //load feed data to multigraph plot
   function vis_feed_data_callback(context,data){
     var i = context['index'];
+    if(i in hidden_lines) {
+       context['plotlist'].plot.visible = false;
+    } else {
+       context['plotlist'].plot.visible = true;
+    }
     context['plotlist'].plot.data = data;
     if (context['plotlist'].plot.data) {
       plotdata[i] = context['plotlist'].plot;
     }
+    plot();
+  }
+
+  function toggle_line(idx){
+    //plotdata[idx].lines.show = !plotdata[idx].lines.show;
+    plotdata[idx].visible = !plotdata[idx].visible;
+    if(!plotdata[idx].visible){
+      hidden_lines[idx] = true;
+    } else {
+      delete hidden_lines[idx];
+    }
+
     plot();
   }
 
@@ -126,7 +145,12 @@
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
       selection: { mode: "x" },
-      legend: { position: "nw", toggle: true},
+      legend: { position: "nw",
+        labelFormatter: function(label, plot){
+          var colour = plot.idx in hidden_lines ? "gray" : "black";
+          return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color='+colour+'>'+label+'</font></a>';
+        }
+      },
       touch: { pan: "x", scale: "x"}
     });
   }
