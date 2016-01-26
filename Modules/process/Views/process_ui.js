@@ -116,8 +116,8 @@ var processlist_ui =
         out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
      
         // Delete process button (icon)
-        out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash"></i></a></td>';
-
+        out += '<td><a class="edit-process" title="Edit" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
+        out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
         out += '</tr>';
         
         i++; // process id
@@ -204,7 +204,58 @@ var processlist_ui =
           }
         }
       } else {
-        return "<p class='muted'>wait…</p>"
+        return "<div class='muted'>wait…</div>"
+      }
+      return out;
+    }
+  },
+  
+  'group_drawerror':function(processlist){
+    if (!processlist) return "";
+    var localprocesslist = processlist_ui.decode(processlist);
+    if (localprocesslist.length==0) {
+      return ""
+    } else {
+      var out = "";
+      if (this.init_done === 0)
+      {
+        for (z in localprocesslist) {
+          // Process name and argument
+          var processkey = localprocesslist[z][0];
+
+          if (this.processlist[processkey] != undefined) {
+            var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
+            if (procneedredis) {
+                out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Redis not installed.'>NO REDIS</span> "
+            } else {
+              // Check ProcessArg Type
+              value = localprocesslist[z][1];
+              switch(this.processlist[processkey][1]) {
+                case 1: //INPUTID
+                var inpid = localprocesslist[z][1];
+                if (this.inputlist[value]==undefined) {
+                  out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
+                }
+                break;
+
+                case 2: //FEEDID
+                if (this.feedlist[value]==undefined) {
+                  out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
+                }
+                break;
+
+                case 5: // SCHEDULEID
+                if (this.schedulelist[value]==undefined) {
+                  out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
+                }
+                break;
+              }
+            }
+          } else {
+              out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Module missing?'>UNSUPPORTED</span> "
+          }
+		  if (out != "") return out; // return first error
+        }
       }
       return out;
     }
@@ -232,7 +283,7 @@ var processlist_ui =
       } 
     });
 
-    $('#processlist-ui #process-add').click(function(){
+    $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
       var processid = $('#process-select').val();
       var process = processlist_ui.processlist[processid];
       var arg = '';
@@ -295,8 +346,18 @@ var processlist_ui =
           arg = $("#schedule-select").val();
           break;
       }
-      
-      processlist_ui.contextprocesslist.push([processid,""+arg]);
+
+      if ($(this).attr("id") == "process-edit") {
+        processlist_ui.contextprocesslist[$("#type-btn-edit").attr('curpos')] = ([processid,""+arg]);
+        $("#process-header-add").show();
+        $("#process-header-edit").hide();
+        $("#type-btn-add").show();
+        $("#type-btn-edit").hide();
+        processlist_ui.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
+      } else {
+        processlist_ui.contextprocesslist.push([processid,""+arg]);  
+      }
+
       processlist_ui.draw();
       processlist_ui.modified();
     });
@@ -374,6 +435,59 @@ var processlist_ui =
         processlist_ui.draw();
         processlist_ui.modified();
       }
+    });
+
+    $('#processlist-ui .table').on('click', '.edit-process', function(){
+      var process = processlist_ui.contextprocesslist[$(this).attr('processid')];
+      var processid = process[0];
+      var processval = process[1];
+      var curpos = parseInt($(this).attr('processid'));
+
+      $("#process-header-add").hide();
+      $("#process-header-edit").show();
+      $("#type-btn-add").hide();
+      $("#type-btn-edit").show();
+      $("#type-btn-edit").attr('curpos', curpos);
+
+      if (processlist_ui.processlist[processid] == undefined) {
+        if (processlist_ui.contexttype == 0) {
+          $("#process-select").val(1); // default process for input context
+        } else {
+          $("#process-select").val(53); // default process for feed context
+        }
+        $("#processlist-ui #process-select").change();  // Force a refresh
+      } else {
+        $("#process-select").val( processlist_ui.processlist[processid]['id']);
+        $("#processlist-ui #process-select").change(); // Force a refresh
+        // Check ProcessArg Type
+        switch(processlist_ui.processlist[processid][1]) {
+          case 0: // VALUE
+            $("#value-input").val(processval);
+            break;
+          case 1: //INPUTID
+            $("#input-select").val(processval);
+            break;
+          case 2: //FEEDID
+            $("#feed-select").val(processval);
+            $('#processlist-ui #feed-select').change();  // refresh feed select
+            break;
+          case 4: // TEXT
+            $("#text-input").val(processval);
+            break;
+          case 5: // SCHEDULEID
+            $("#schedule-select").val(processval);
+            break;
+        }
+      }
+      processlist_ui.scrollto($('#process-header-edit'));
+    });
+
+    $('#processlist-ui #process-cancel').click(function(){
+      $("#process-header-add").show();
+      $("#process-header-edit").hide();
+      $("#type-btn-add").show();
+      $("#type-btn-edit").hide();
+      processlist_ui.scrollto($("a.edit-process[processid='"+$("#type-btn-edit").attr('curpos')+"']"));
     });
 
     $("#processlistModal").on('click', '#close', function(){
@@ -485,6 +599,13 @@ var processlist_ui =
     }
     array.splice(new_index, 0, array.splice(old_index, 1)[0]);
     return array; 
+  },
+
+  'scrollto':function(scrollTo){
+    var container = $('#processlist-ui');
+    container.animate({
+      scrollTop: scrollTo.offset().top - container.offset().top + container.scrollTop()
+    });
   },
 
   'init':function(contexttype){
@@ -641,6 +762,11 @@ var processlist_ui =
     $("#contextname").html(contextname);
     $("#new-feed-name").val(newfeedname);
     $("#new-feed-tag").val(newfeedtag);
+    $("#process-header-add").show();
+    $("#process-header-edit").hide();
+    $("#type-btn-add").show();
+    $("#type-btn-edit").hide();
+    processlist_ui.scrollto($('#processlist-ui'));
     this.draw();
     $("#save-processlist").attr('class','btn btn-success').text("Not modified");
     $("#processlist-ui #process-select").change(); // Force a refresh

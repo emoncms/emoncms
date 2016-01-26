@@ -125,7 +125,7 @@
         
         'timecompare'=> array('label'=>_("Time Comparison"), 'options'=>array(
             array('feedid',_("feed"),1),
-            array('fill',_("fill"),7,1),
+            array('fill',_("fill"),7,0),
             array('depth',_("depth"),7,3)
         ))
     );

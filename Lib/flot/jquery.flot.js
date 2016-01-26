@@ -3,6 +3,9 @@
 Copyright (c) 2007-2014 IOLA and Ole Laursen.
 Licensed under the MIT license.
 
+Changes:
+    2016/01/24 chaveiro - Added Support for jquery.flot.togglelegend 0.3
+
 */
 
 // first an inline dependency, jquery.colorhelpers.js, we inline it here
@@ -586,7 +589,8 @@ Licensed under the MIT license.
                         zero: true
                     },
                     shadowSize: 3,
-                    highlightColor: null
+                    highlightColor: null,
+                    visible: true
                 },
                 grid: {
                     show: true,
@@ -631,6 +635,7 @@ Licensed under the MIT license.
             draw: [],
             bindEvents: [],
             drawOverlay: [],
+            legendInserted: [],
             shutdown: []
         },
         plot = this;
@@ -1134,6 +1139,8 @@ Licensed under the MIT license.
                     s.datapoints.format = format;
                 }
 
+                if (!s.visible) continue; // data will not be displayed
+
                 if (s.datapoints.pointsize != null)
                     continue; // already filled in
 
@@ -1348,7 +1355,9 @@ Licensed under the MIT license.
 
             if (options.grid.clickable)
                 eventHolder.click(onClick);
-
+	    
+	    eventHolder.dblclick(onDblClick)
+	    
             executeHooks(hooks.bindEvents, [eventHolder]);
         }
 
@@ -1359,6 +1368,7 @@ Licensed under the MIT license.
             eventHolder.unbind("mousemove", onMouseMove);
             eventHolder.unbind("mouseleave", onMouseLeave);
             eventHolder.unbind("click", onClick);
+            eventHolder.unbind("dblclick", onDblClick);
 
             executeHooks(hooks.shutdown, [eventHolder]);
         }
@@ -1879,8 +1889,10 @@ Licensed under the MIT license.
             }
 
             for (var i = 0; i < series.length; ++i) {
-                executeHooks(hooks.drawSeries, [ctx, series[i]]);
-                drawSeries(series[i]);
+                if (series[i].visible) {
+                    executeHooks(hooks.drawSeries, [ctx, series[i]]);
+                    drawSeries(series[i]);
+                }
             }
 
             executeHooks(hooks.draw, [ctx]);
@@ -2783,7 +2795,7 @@ Licensed under the MIT license.
 
             var table = '<table style="font-size:smaller;color:' + options.grid.color + '">' + fragments.join("") + '</table>';
             if (options.legend.container != null)
-                $(options.legend.container).html(table);
+                var legend = $(options.legend.container).html(table);
             else {
                 var pos = "",
                     p = options.legend.position,
@@ -2817,6 +2829,7 @@ Licensed under the MIT license.
                     $('<div style="position:absolute;width:' + div.width() + 'px;height:' + div.height() + 'px;' + pos +'background-color:' + c + ';"> </div>').prependTo(legend).css('opacity', options.legend.backgroundOpacity);
                 }
             }
+            executeHooks(hooks.legendInserted, [legend]);
         }
 
 
@@ -2929,7 +2942,7 @@ Licensed under the MIT license.
         function onMouseMove(e) {
             if (options.grid.hoverable)
                 triggerClickHoverEvent("plothover", e,
-                                       function (s) { return s["hoverable"] != false; });
+                                       function (s) { return s["hoverable"] != false && s["visible"] != false; ; });
         }
 
         function onMouseLeave(e) {
@@ -2943,6 +2956,10 @@ Licensed under the MIT license.
                                    function (s) { return s["clickable"] != false; });
         }
 
+        function onDblClick(e) {
+            triggerClickHoverEvent("plotdblclick", e,
+                                   function (s) { return s["clickable"] != false; });
+        }
         // trigger click or hover event (they send the same parameters
         // so we share their code)
         function triggerClickHoverEvent(eventname, event, seriesFilter) {

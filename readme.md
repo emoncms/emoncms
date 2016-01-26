@@ -10,7 +10,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 **Note:** We are currently reorganising the emoncms branches. The master branch is now the same as 9.x. 
 
-* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
+* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
 * [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch (as of Jan 16 ready-to-go SD card image), regularly merged from master. Slightly more tried and tested. 
 

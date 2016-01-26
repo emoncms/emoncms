@@ -59,7 +59,7 @@ var customtablefields = {
       return "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
     }
   },
-  
+
   'hinteditable': {
     'draw': function (row,field) { return "…";},
     'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
@@ -72,6 +72,7 @@ var customtablefields = {
       return table.data[row]['#NO_CONFIG#'] ? "" : "<i class='"+table.fields[field].icon+"' type='icon' row='"+row+"' style='cursor:pointer'></i>";
     }
   },
+
   'size': {
     'draw': function (row,field) { return list_format_size(table.data[row][field]); }
   },
@@ -82,7 +83,7 @@ var customtablefields = {
       return "<i class='"+table.groupfields[field].icon+"' type='icon' group='"+group+"' rows='"+rows+"' style='cursor:pointer'></i>";
     }
   },
-    
+
   'group-size': {
     'draw': function(group,rows,field)
     {
@@ -96,7 +97,7 @@ var customtablefields = {
       return list_format_size(sum);
     }
   },
-  
+
   'group-updated': {
     'draw': function(group,rows,field)
     {
@@ -109,6 +110,20 @@ var customtablefields = {
         }
       }
       return list_format_updated(lastupdate);
+    }
+  },
+
+  'group-processlist': {
+    'draw': function(group,rows,field)
+    {
+      var out = "";
+      for (i in rows) {
+        var row=rows[i];
+        var processlist = table.data[row][field];
+        if (processlist_ui != undefined) out+= processlist_ui.group_drawerror(processlist);
+        if (out != "") return out;
+      }
+      return out;
     }
   }
 }

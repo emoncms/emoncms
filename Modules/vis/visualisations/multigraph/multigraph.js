@@ -17,8 +17,12 @@
         {
           idx: z,
           data: null,
-          temp_data: null,
           label: tag + multigraph_feedlist[z]['name'],
+          points: { show: true,
+                    radius: 0,
+                    lineWidth: 1, // in pixels
+                    fill: false
+          },
           lines:
           {
             show: true,
@@ -112,27 +116,24 @@
   //load feed data to multigraph plot
   function vis_feed_data_callback(context,data){
     var i = context['index'];
-
     if(i in hidden_lines) {
-      context['plotlist'].plot.temp_data = data;
-      context['plotlist'].plot.data = [];
-      context['plotlist'].plot.lines.show = false;
+       context['plotlist'].plot.visible = false;
     } else {
-      context['plotlist'].plot.data = data;
+       context['plotlist'].plot.visible = true;
     }
-      
-    plotdata[i] = context['plotlist'].plot;
+    context['plotlist'].plot.data = data;
+    if (context['plotlist'].plot.data) {
+      plotdata[i] = context['plotlist'].plot;
+    }
     plot();
   }
 
   function toggle_line(idx){
-    plotdata[idx].lines.show = !plotdata[idx].lines.show;
-    if(!plotdata[idx].lines.show){
-      plotdata[idx].temp_data = plotdata[idx].data;
-      plotdata[idx].data = [];
+    //plotdata[idx].lines.show = !plotdata[idx].lines.show;
+    plotdata[idx].visible = !plotdata[idx].visible;
+    if(!plotdata[idx].visible){
       hidden_lines[idx] = true;
     } else {
-      plotdata[idx].data = plotdata[idx].temp_data;
       delete hidden_lines[idx];
     }
 
@@ -244,7 +245,6 @@ function multigraph_init(element){
       $("#graph-buttons").stop().fadeOut();
       $("#stats").stop().fadeOut();
   });
-
   $("#graph").bind("touchended", function (event, ranges){
       $("#graph-buttons").stop().fadeIn();
       $("#stats").stop().fadeIn();

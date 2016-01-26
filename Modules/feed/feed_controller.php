@@ -56,6 +56,10 @@ function feed_controller()
                    $result[$i] = $feed->get_value($feedid); // null is a valid response
                 } else { $result[$i] = false; } // false means feed not found
             }
+        } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
+            // Export multiple feeds on the same csv
+            // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
+            $result = $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
@@ -93,7 +97,7 @@ function feed_controller()
                     else if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
                     else if ($route->action == "delete") $result = $feed->delete($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
-                    else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
+                    else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
 
                     else if ($route->action == "process")
                     {

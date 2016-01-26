@@ -441,7 +441,7 @@ class Feed
         return $data;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat)
+    public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat,$name)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
@@ -465,6 +465,102 @@ class Feed
         return $this->EngineClass($engine)->csv_export($feedid,$start,$end,$outinterval,$usertimezone);
     }
 
+    // Prepare export multi data
+    public function csv_export_multi_prepare($feedids,$start,$end,$outinterval)
+    {
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        $exportdata = array();
+        for ($i=0; $i<count($feedids); $i++) {
+            $feedid = (int) $feedids[$i];
+            $feedname = $this->get_field($feedid,'name');
+            if (isset($feedname['success']) && !$feedname['success']) return $feedname;
+            $feeddata = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,0);
+            if (isset($feeddata['success']) && !$feeddata['success']) return $feeddata;
+
+            if (isset($exportdata['Timestamp'])) {
+               $exportdata['Timestamp'] = $exportdata['Timestamp'] + array($feedid => $feedname);
+            } else {
+               $exportdata['Timestamp'] = array($feedid => $feedname);
+            }
+            for ($d=0;$d<count($feeddata); $d++) {
+                if (isset($feeddata[$d]['0'])) {
+                    $time = (int)($feeddata[$d]['0']/1000);
+                    $value = $feeddata[$d]['1'];
+                    if (isset($exportdata[$time])) {
+                       $exportdata[$time] = $exportdata[$time] + array($feedid => $value);
+                    } else {
+                        $exportdata[$time] = array($feedid => $value);
+                    }
+                }
+            }
+            $feeddata = null; // free memory
+        }
+        ksort($exportdata); // Sort timestamps
+        return $exportdata;
+    }
+    
+    // Generate export multi file
+    public function csv_export_multi($feedids,$start,$end,$outinterval,$datetimeformat,$name)
+    {
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        $feedids = (array) (explode(",",$feedids));
+        $exportdata = $this->csv_export_multi_prepare($feedids,$start,$end,$outinterval);
+        if (isset($exportdata['success']) && !$exportdata['success']) return $exportdata;
+
+        if ($datetimeformat == 1) {
+            global $user,$session;
+            $usertimezone = $user->get_timezone($session['userid']);
+        } else {
+            $usertimezone = false;
+        }
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
+
+        $start = DateTime::createFromFormat("U", $start);
+        if ($usertimezone) $start->setTimezone(new DateTimeZone($usertimezone));
+        $startText= $start->format("YmdHis");
+        $end = DateTime::createFromFormat("U", $end);
+        if ($usertimezone) $end->setTimezone(new DateTimeZone($usertimezone));
+        $endText= $end->format("YmdHis");
+        if ($name != "") {
+            $filename = $startText."_".$endText."_".$name.".csv";
+        } else {
+            $filename = $startText."_".$endText."_".implode("_",$feedids).".csv";
+        }
+
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        header("Content-Disposition: attachment; filename={$filename}");
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $fh = @fopen( 'php://output', 'w' );
+
+        $firstline=true;
+        foreach ($exportdata as $time => $data) {
+            $dataline = array();
+            foreach ($exportdata['Timestamp'] as $feedid => $name) {
+                if ($firstline) {
+                    $dataline[$feedid] = $data[$feedid];
+                } else if (isset($data[$feedid])) {
+                    $dataline[$feedid] = number_format((float)$data[$feedid],$csv_decimal_places,$csv_decimal_place_separator,'');
+                } else {
+                    $dataline[$feedid] = "";
+                }
+            }
+            if (!$firstline) {
+                $time = $helperclass->getTimeZoneFormated($time,$usertimezone);
+            }
+            fputcsv($fh, array($time)+$dataline,$csv_field_separator);
+            $firstline = false;
+        }
+        fclose($fh);
+        exit;
+    }
 
     /*
     Write operations
