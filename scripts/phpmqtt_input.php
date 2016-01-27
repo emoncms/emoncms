@@ -11,10 +11,10 @@
     
     Topics:
 
-    emoncms/input/10            100,200,300
-    emoncms/input/10/1          100
-    emoncms/input/10/power      250
-    emoncms/input/house/power   2500
+    rx/10            100,200,300
+    rx/10/1          100
+    rx/power         250
+    tx/house/power   2500
     
     * userid has to be set in script, no method of setting timestamp
     
