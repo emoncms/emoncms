@@ -27,9 +27,22 @@ Save & exit, then reboot
     sudo reboot
 
 ###Node format
+
 ####emoncms as a publisher
+
 Data from within emoncms can be published by adding the `Publish to MQTT` input process to one or more of the node inputs.
-In the process 'Text' box add the topic, for example; emoncms/solar
+In the process 'Text' box add the topic, for example; `emoncms/solar`
+
 ####emoncms as a subscriber
-Unlike the above, the subscriber topic is hardcoded within emoncms, and takes the format `rx/*` - where `*` is the emoncms node number. For example, if data is published to topic rx/20 then emoncms will subscribe to that data, creating and updating node 20 in your inputs page.  
-Emoncms will also decode data in comma-delimited format, so for example; publishing values 657,899,5,776 to rx/20 will create Node 20, with 4 Key inputs which correspond with the 4 published comma-delimited values. Name labels can then be added to the key inputs in emoncms.
+
+Data posted to `nodes/[nodeID/name]/[keyname (optional)]` is posted to Emoncms inputs where it can be logged to feeds e.g:
+
+* `nodes/emontx/power 10` 
+    * create an input from emonTx node called `power` with value `10`  
+* `nodes/10/power 10` 
+    * create an input from `node 10` called `power` with value `10`
+* `nodes/emontx 10` 
+    * create input from `emontx` with `key 0` of value `10`
+* `nodes/emontx 10,11,12`
+    * create input from `emontx` with `key 0` of value `10`, `key 1` of value `11` and `key 2` of value `11`
+
