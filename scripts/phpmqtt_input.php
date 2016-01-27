@@ -2,7 +2,7 @@
 
     $mqttsettings = array(
         'userid' => 1,
-        'basetopic' => "rx"
+        'basetopic' => "nodes"
     );
 
     /*
