@@ -30,7 +30,7 @@
 </style>
 
 <div id="vis-title"></div>
-<div id="#stats"></div>
+<div id="\#stats"></div>
 
 
 <div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
