@@ -75,9 +75,11 @@
 
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqtt_server['userid']));
-  
+
     $mqtt_client = new Mosquitto\Client();
     $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
+    
+    $connected = false;
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
@@ -87,9 +89,32 @@
     $topic = $mqtt_server['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
     $mqtt_client->subscribe($topic,2);
-    
-    while($mqtt_client->loop()){ }
-    
+
+    while(true){
+        $mqtt_client->loop();
+        
+    }
+
+    function connect($r, $message) {
+        global $connected;
+        $connected = true;
+    	echo "I got code {$r} and message {$message}\n";
+    }
+
+    function subscribe() {
+	echo "Subscribed to a topic\n";
+    }
+
+    function unsubscribe() {
+	echo "Unsubscribed from a topic\n";
+    }
+
+    function disconnect() {
+        global $connected;
+        $connected = false;
+	echo "Disconnected cleanly\n";
+    }
+
     function message($message)
     { 
         $topic = $message->topic;
