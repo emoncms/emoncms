@@ -15,6 +15,7 @@ Create a symlink to run phpmqtt_input as a daemon and set permissions
     sudo chown root:root /var/www/emoncms/scripts/mqtt_input
     sudo chmod 755 /var/www/emoncms/scripts/mqtt_input
     sudo update-rc.d mqtt_input defaults
+    sudo service mqtt_input start
 
 ###Enable MQTT in emoncms
 
