@@ -1,10 +1,4 @@
 <?php
-
-    $mqttsettings = array(
-        'userid' => 1,
-        'basetopic' => "nodes"
-    );
-
     /*
     
     **MQTT input interface script**
@@ -70,9 +64,6 @@
         $redis = false;
     }
     
-    require("Lib/phpMQTT.php");
-    $mqtt = new phpMQTT($mqtt_server['host'], $mqtt_server['port'], "Emoncms input subscriber");
-    
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
 
@@ -83,35 +74,39 @@
     $input = new Input($mysqli,$redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqtt_server['userid']));
   
-    if(!$mqtt->connect(true,NULL,$mqtt_server['user'], $mqtt_server['password'])){
-        $log->error ("Cannot connect to MQTT Server"); 
-        die('Check log\n');
-    }
+    $mqtt_client = new Mosquitto\Client();
+    $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
+    $mqtt_client->onConnect('connect');
+    $mqtt_client->onDisconnect('disconnect');
+    $mqtt_client->onSubscribe('subscribe');
+    $mqtt_client->onMessage('message');
+    $mqtt_client->connect("localhost", 1883, 5);
 
-    $topic = $mqttsettings['basetopic']."/#";
+    $topic = $mqtt_server['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
+    $mqtt_client->subscribe($topic,2);
     
-    $topics[$topic] = array("qos"=>0, "function"=>"procmsg");
-    $mqtt->subscribe($topics,0);
-    while($mqtt->proc()){ }
-    $mqtt->close();
+    while($mqtt_client->loop()){ }
     
-    function procmsg($topic,$value)
+    function message($message)
     { 
+        $topic = $message->topic;
+        $value = $message->payload;
+        
         $time = time();
         echo $topic." ".$value."\n";
         
-        global $mqttsettings, $user, $input, $process, $feed;
+        global $mqtt_server, $user, $input, $process, $feed;
         
-        $userid = $mqttsettings['userid'];
+        $userid = $mqtt_server['userid'];
         
         $inputs = array();
         
         $route = explode("/",$topic);
 
-        if ($route[0]==$mqttsettings['basetopic'])
+        if ($route[0]==$mqtt_server['basetopic'])
         {
             // nodeid defined in topic:  emoncms/input/10
             if (isset($route[1]))

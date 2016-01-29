@@ -53,6 +53,8 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (!isset($mqtt_server['port'])) $mqtt_server['port'] = 1883;
         if (!isset($mqtt_server['user'])) $mqtt_server['user'] = null;
         if (!isset($mqtt_server['password'])) $mqtt_server['password'] = null;
+        if (!isset($mqtt_server['user'])) $mqtt_server['user'] = 1;
+        if (!isset($mqtt_server['basetopic'])) $mqtt_server['basetopic'] = "rx";
     }
 
     if (!isset($feed_settings)) $feed_settings = array();

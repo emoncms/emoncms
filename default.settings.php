@@ -24,7 +24,11 @@
     $mqtt_server = array( 'host'     => 'localhost',
                           'port'     => 1883,
                           'user'     => '',
-                          'password' => '');
+                          'password' => '',
+                          // Used with scripts/phpmqtt_input.php
+                          'user'=>1,
+                          'basetopic'=> 'nodes'
+                          );
 
 
 //4 #### Engine settings
