@@ -26,7 +26,7 @@
                           'user'     => '',
                           'password' => '',
                           // Used with scripts/phpmqtt_input.php
-                          'user'=>1,
+                          'userid'=>1,
                           'basetopic'=> 'nodes'
                           );
 
