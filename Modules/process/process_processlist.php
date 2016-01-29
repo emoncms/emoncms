@@ -124,7 +124,7 @@ class Process_ProcessList
 
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"To be used in conjunction with an emontx sending total watt hours elapsed to emoncms. This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW.<br><br><b>Visualisation tip:</b> This accumulating Wh timeseries can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br><br><b>Requires redis installed to work</b>");
 
-        $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main", 'desc'=>"Publish to the specified MQTT topic");
+        $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main", 'desc'=>"Enter MQTT topic e.g. home/power/kitchen");
 
         $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc", 'desc'=>"A NULL value is passed back for further processing by the next processor in the processing list.<br>Usefull for conditional process to work on.");
         $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc", 'desc'=>"The original value, unchanged by any process, is passed back for further processing by the next processor in the processing list.");
