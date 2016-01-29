@@ -93,7 +93,7 @@
     $topic = $mqttsettings['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
     
-    $topics[$topic] = array("qos"=>2, "function"=>"procmsg");
+    $topics[$topic] = array("qos"=>0, "function"=>"procmsg");
     $mqtt->subscribe($topics,0);
     while($mqtt->proc()){ }
     $mqtt->close();
