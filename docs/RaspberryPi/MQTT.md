@@ -35,14 +35,16 @@ In the process 'Text' box add the topic, for example; `emoncms/solar`
 
 ####emoncms as a subscriber
 
+[basetopic] and user ID of the target Emocnms account can be set in settings.php. **Default basetopic = `emoncms`'**
+
 Data posted to `nodes/[nodeID/name]/[keyname (optional)]` is posted to Emoncms inputs where it can be logged to feeds e.g:
 
-* `nodes/emontx/power 10` 
+* `[basetopioc]/emontx/power 10` 
     * create an input from emonTx node called `power` with value `10`  
-* `nodes/10/power 10` 
+* `[basetopioc]/10/power 10` 
     * create an input from `node 10` called `power` with value `10`
-* `nodes/emontx 10` 
+* `[basetopioc]/emontx 10` 
     * create input from `emontx` with `key 0` of value `10`
-* `nodes/emontx 10,11,12`
+* `[basetopioc]/emontx 10,11,12`
     * create input from `emontx` with `key 0` of value `10`, `key 1` of value `11` and `key 2` of value `11`
 

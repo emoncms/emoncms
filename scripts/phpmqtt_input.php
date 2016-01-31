@@ -9,19 +9,18 @@
     EXAMPLES: 
     
     create an input from emonTx node called power with value 10:
-        nodes/emontx/power 10
+        [basetopic]/emontx/power 10
     
     create an input from node 10 called power with value 10 :       
-        nodes/10/power 10
+        [basetopic]/10/power 10
         
     create input from emontx with key 0 of value 10
-        nodes/emontx 10
+        [basetopic]/emontx 10
         
     create input from emontx with key 0 of value 10, key 1 of value 11 and key 2 of value 11
-        nodes/emontx 10,11,12
+        [basetopic]/emontx 10,11,12
 
-    
-    * userid has to be set in script (1 default emonPi), no method of setting timestamp
+    * [basetopic] and user ID of target Emoncms account can be set in settings.php
     
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.
@@ -133,7 +132,7 @@
 
         if ($route[0]==$mqtt_server['basetopic'])
         {
-            // nodeid defined in topic:  emoncms/input/10
+            // nodeid defined in topic:  [bsaetopic]/input/10
             if (isset($route[1]))
             {
                 $nodeid = $route[1];
