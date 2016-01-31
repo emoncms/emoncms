@@ -31,11 +31,11 @@ Save & exit, then reboot
 ####emoncms as a publisher
 
 Data from within emoncms can be published by adding the `Publish to MQTT` input process to one or more of the node inputs.
-In the process 'Text' box add the topic, for example; `emoncms/solar`
+In the process 'Text' box add the topic, for example; `house/power/solar`
 
 ####emoncms as a subscriber
 
-[basetopic] and user ID of the target Emocnms account can be set in settings.php. **Default basetopic = `emoncms`'**
+[basetopic] and user ID of the target Emocnms account can be set in settings.php. **Default basetopic = `emon`**
 
 Data posted to `nodes/[nodeID/name]/[keyname (optional)]` is posted to Emoncms inputs where it can be logged to feeds e.g:
 

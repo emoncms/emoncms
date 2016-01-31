@@ -27,7 +27,7 @@
                           'password' => 'emonpimqtt2016',
                           // Used with scripts/phpmqtt_input.php
                           'userid'=>1,
-                          'basetopic'=> 'nodes'                          
+                          'basetopic'=> 'emon'                          
                           );
 
 

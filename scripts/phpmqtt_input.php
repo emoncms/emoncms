@@ -4,7 +4,7 @@
     **MQTT input interface script**
     
     SERVICE INSTALL INSTRUCTIONS:
-    https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+    https://github.com/emoncms/blob/master/docs/RaspberryPi/MQTT.md
     
     EXAMPLES: 
     
