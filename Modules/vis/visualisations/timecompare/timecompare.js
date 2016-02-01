@@ -2,10 +2,9 @@ var plotdata = [];
 var event_vis_feed_data;
 var ajaxAsyncXdr = [];
 var compare_unit = 0;
-var hidden_lines = {};
 var xaxis_format = "";
   
-function create_plotlist(feedid, fill, depth){
+function create_plotlist(feedid, fill, depth) {
   var plotlist = [];
   var unit = "";
   var unit_plural = "s";
@@ -49,50 +48,49 @@ function create_plotlist(feedid, fill, depth){
       id: feedid,
       selected: 1,
       depth: cur_depth,
-      plot:
-      {
-        idx: i,
+      plot: {
         adj: compare_unit * cur_depth,
         data: null,
         label: label,
         yaxis: 1,
-        lines:
-        {
+        lines: {
           show: true,
           fill: fill
         }
       }
+
     };
   }
 
   return plotlist;
 }
-  /*
-  Handle_feeds
-  */
-  //ignore multiple fast load feed requests
-function vis_feed_data(){
-   clearTimeout(event_vis_feed_data); // cancel pending event
-   event_vis_feed_data = setTimeout(function(){ vis_feed_data_delayed(); }, 500);
-   plot();
+
+/*
+ Handle Feeds
+*/
+
+// Ignore load request spurts
+function vis_feed_data() {
+  clearTimeout(event_vis_feed_data); // Cancel any pending events
+  event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
+  plot();
 }
   
 // Load relevant feed data asynchronously
-function vis_feed_data_delayed(){
-  compare_unit = view.end - view.start;
+function vis_feed_data_delayed() {
+  var plotlist;
   fill = fill > 0 ? true : false;
   if (depth <= 0) depth = 3;
+  if (npoints <= 0) npoints = 800;
 	
- var plotlist = create_plotlist(feedid, fill, depth);
+  plotlist = create_plotlist(feedid, fill, depth);
   for(var i in plotlist) {
     if (plotlist[i].selected) {
-      if (!plotlist[i].plot.data)
-      {
-        var npoints = 800;
+      if (!plotlist[i].plot.data) {
+        var skipmissing = false;
         var plot_start = view.start - (compare_unit * plotlist[i].depth); // Need to take into account leapyear
         var plot_end = view.end - (compare_unit * plotlist[i].depth);
         interval = Math.round((view.end - view.start)/(npoints * 1000));
-        var skipmissing = 0;
 
         if (plotdata[i] === undefined) plotdata[i] = [];
 
@@ -108,7 +106,7 @@ function vis_feed_data_delayed(){
 }
   
 // Asynchronous callback for loading data
-function vis_feed_data_callback(context, data){
+function vis_feed_data_callback(context, data) {
   var i = context['index'];
   var depth = context['plotlist'].depth;
 
@@ -116,12 +114,6 @@ function vis_feed_data_callback(context, data){
     data[d][0] = data[d][0] + (compare_unit * depth); // Adjust the old data to be visible on the current graph
   }
 
-  if(i in hidden_lines) {
-     context['plotlist'].plot.visible = false;
-  } else {
-     context['plotlist'].plot.visible = true;
-  }
-     
   context['plotlist'].plot.data = data;
   if (context['plotlist'].plot.data) {
     plotdata[i] = context['plotlist'].plot;
@@ -129,42 +121,27 @@ function vis_feed_data_callback(context, data){
   plot();
 }
 
-  function toggle_line(idx){
-    //plotdata[idx].lines.show = !plotdata[idx].lines.show;
-    plotdata[idx].visible = !plotdata[idx].visible;
-    if(!plotdata[idx].visible){
-      hidden_lines[idx] = true;
-    } else {
-      delete hidden_lines[idx];
-    }
-
-    plot();
-  }
-
 /*
  Graphing Functions
 */
 
-function plot(){
+function plot() {
   $.plot($("#graph"), plotdata, {
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
     selection: { mode: "x" },
-    legend: { position: "nw",
-      labelFormatter: function(label, plot){
-        var colour = plot.idx in hidden_lines ? "gray" : "black";
-        return '<a href="#" onClick="toggle_line(\''+plot.idx+'\'); return false;"><font color='+colour+'>'+label+'</font></a>';
-      }
-    },
-    touch: { pan: "x", scale: "x"}
+    legend: { position: "nw", toggle: true },
+    toggle: { rescale: true },
+    touch: { pan: "x", scale: "x" }
   });
 }
 
-function timecompare_init(element){
+function timecompare_init(element) {
   // Get start and end time of view based on default scale and current time
+  var now = new Date().getTime();
+
   plotdata = [];
   compare_unit = (1000*60*60*24.0*7); // One week in milliseconds 
-  var now = new Date().getTime();
   view.start = now - compare_unit;
   view.end = now;
 
@@ -193,58 +170,83 @@ function timecompare_init(element){
   ;
   $(element).html(out);
 
+  // Tool tip
+  var previousPoint = null;
+  $(element).bind("plothover", function (event, pos, item) {
+    //$("#x").text(pos.x.toFixed(2));
+    //$("#y").text(pos.y.toFixed(2));
+
+    if ($("#enableTooltip:checked").length > 0) {
+      if (item) {
+        if (previousPoint != item.dataIndex) {
+          previousPoint = item.dataIndex;
+
+          $("#tooltip").remove();
+          var x = item.datapoint[0].toFixed(2);
+          var y = item.datapoint[1].toFixed(2);
+
+          var pointDate = new Date(parseInt(x) - parseInt(item.series.adj));
+          var tipText = $.plot.formatDate(pointDate, y + "<br>%a %b %d %Y<br>%H:%M:%S");
+
+          tooltip(item.pageX, item.pageY, tipText, "#DDDDDD");
+        }
+      } else {
+        $("#tooltip").remove();
+        previousPoint = null;
+      }
+    }
+  });
+
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
 
-  $(window).resize(function(){
+  $(window).resize(function() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
     plot();
   });
 
- 
-  //-----------------
-  // Graph zooming
-  //-----------------
-  $("#graph").bind("plotselected", function (event, ranges){
+  // Graph selections
+  $("#graph").bind("plotselected", function (event, ranges) {
      view.start = ranges.xaxis.from; 
      view.end = ranges.xaxis.to;
      vis_feed_data();
   });
 
-  //-----------------
-  // Operate buttons
-  //-----------------
+  // Navigation actions
   $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
   $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
   $('#right').click(function () {view.panright(); vis_feed_data();});
   $('#left').click(function () {view.panleft(); vis_feed_data();});
-  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
-  //-----------------
+  $('.graph-time').click(function () {
+    view.timewindow($(this).attr("time"));
+    compare_unit = view.end - view.start;
+    vis_feed_data();
+  });
 
-  // Graph buttons and navigation efects for mouse and touch
-  $("#graph").mouseenter(function(){
-      $("#graph-navbar").show();
-      $("#graph-tooltip").show();
-      $("#graph-buttons").stop().fadeIn();
-      $("#stats").stop().fadeIn();
+  // Navigation and zooming buttons for mouse and touch
+  $("#graph").mouseenter(function() {
+    $("#graph-navbar").show();
+    $("#graph-tooltip").show();
+    $("#graph-buttons").stop().fadeIn();
+    $("#stats").stop().fadeIn();
   });
-  $("#graph_bound").mouseleave(function(){
-      $("#graph-buttons").stop().fadeOut();
-      $("#stats").stop().fadeOut();
+  $("#graph_bound").mouseleave(function() {
+    $("#graph-buttons").stop().fadeOut();
+    $("#stats").stop().fadeOut();
   });
-  $("#graph").bind("touchstarted", function (event, pos){
-      $("#graph-navbar").hide();
-      $("#graph-tooltip").hide();
-      $("#graph-buttons").stop().fadeOut();
-      $("#stats").stop().fadeOut();
+  $("#graph").bind("touchstarted", function (event, pos) {
+    $("#graph-navbar").hide();
+    $("#graph-tooltip").hide();
+    $("#graph-buttons").stop().fadeOut();
+    $("#stats").stop().fadeOut();
   });
-  $("#graph").bind("touchended", function (event, ranges){
-      $("#graph-buttons").stop().fadeIn();
-      $("#stats").stop().fadeIn();
-      view.start = ranges.xaxis.from; 
-      view.end = ranges.xaxis.to;
-      vis_feed_data();
+  $("#graph").bind("touchended", function (event, ranges) {
+    $("#graph-buttons").stop().fadeIn();
+    $("#stats").stop().fadeIn();
+    view.start = ranges.xaxis.from; 
+    view.end = ranges.xaxis.to;
+    vis_feed_data();
   });
 }

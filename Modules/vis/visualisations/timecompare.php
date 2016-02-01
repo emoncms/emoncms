@@ -12,6 +12,7 @@
     $feedid = intval(get("feedid"));
     $fill = intval(get("fill"));
     $depth = intval(get("depth"));
+    $npoints = intval(get("npoints"));
 
     if (!isset($feedidname)) $feedidname = "";
 ?>
@@ -20,7 +21,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
-<!--<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>-->
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -41,36 +42,11 @@
     var feedid = "<?php echo $feedid; ?>";
     var fill = "<?php echo $fill; ?>";
     var depth = "<?php echo $depth; ?>";
+    var npoints = "<?php echo $npoints; ?>";
 
     $("#timecompare_title").replaceWith('<?php echo _("Time Compare: " . $feedidname); ?>');
     timecompare_init("#timecompare");
     vis_feed_data();
-    
-    var previousPoint = null;
-    $("#timecompare").bind("plothover", function (event, pos, item) {
-        //$("#x").text(pos.x.toFixed(2));
-        //$("#y").text(pos.y.toFixed(2));
-
-        if ($("#enableTooltip:checked").length > 0) {
-            if (item) {
-                if (previousPoint != item.dataIndex) {
-                    previousPoint = item.dataIndex;
-
-                    $("#tooltip").remove();
-                    var x = item.datapoint[0].toFixed(2);
-                    var y = item.datapoint[1].toFixed(2);
-
-                    var pointDate = new Date(parseInt(x) - parseInt(item.series.adj));
-                    var tipText = $.plot.formatDate(pointDate, y + "<br>%a %b %d %Y<br>%H:%M:%S");
-
-                    tooltip(item.pageX, item.pageY, tipText, "#DDDDDD");
-                }
-            } else {
-                $("#tooltip").remove();
-                previousPoint = null;
-            }
-        }
-    });
 
 </script>
 
