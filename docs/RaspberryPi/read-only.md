@@ -1,12 +1,15 @@
 # Enable root filesystem read-only mode
 
+
 ## Setup Data partition
+
+An alternative to following this guide would be to use Paul Reed's script to setup the SD card partitions. See [forum thread](http://openenergymonitor.org/emon/node/12080).
 
 Assuming creating 300Mb data partition and starting with SD card image expanded to fill SD card (4GB in this example).
 
 # Reduce size of root partition using Gparted
 
-Using Gparted on Ubuntu reduce size of root partition by 300Mb to make space for data partition. Reccomend leaving 10Mb free space at end of SD card 
+Using Gparted on Ubuntu reduce size of root partition by 300Mb to make space for data partition. Recommend leaving 10Mb free space at end of SD card 
 
 
 
@@ -44,7 +47,25 @@ Then run these commands to make changes to filesystem
     sudo mv /etc/mtab /etc/mtab.orig
     sudo ln -s /proc/self/mounts /etc/mtab
     
-The Pi will now run in Read-Only mode from the next restart. Before restarting create two scripts to switch between read-only and write access modes. These scripts are in the emonPi git repo and can be installed with:
+The Pi will now run in Read-Only mode from the next restart. The following fstab is installed:
+
+```
+tmpfs           /tmp            tmpfs   nodev,nosuid,size=30M,mode=1777 0  0
+tmpfs           /var/log        tmpfs   nodev,nosuid,size=50M,mode=1777 0  0
+tmpfs           /var/lib/dhcp   tmpfs   nodev,nosuid,size=1M,mode=1777 0  0
+tmpfs           /var/lib/openhab tmpfs  nodev,nosuid,size=40M,mode=1777 0  0
+proc            /proc           proc    defaults 0 0
+/dev/mmcblk0p1  /boot           vfat    defaults,noatime,nodiratime 0 2
+/dev/mmcblk0p2  /               ext4    defaults,ro,noatime,nodiratime,errors=remount-ro 0 1
+/dev/mmcblk0p3  /home/pi/data   ext2    defaults,rw,noatime,nodiratime,errors=remount-ro,commit=180  0 2
+```
+The line:
+
+	/dev/mmcblk0p3  /home/pi/data   ext2 defaults,rw,noatime,nodiratime,errors=remount-ro,commit=180
+
+Set the ext2 partition we created earlier to be mounted RO with the file and dir and file access time recording turned off and commit=180 sets the frequency in seconds that data can be written to disk (default 5s). Better explanation is given [here](http://unix.stackexchange.com/questions/155784/advantages-disadvantages-of-increasing-commit-in-fstab) and [here](http://superuser.com/questions/479379/how-long-can-file-system-writes-be-cached-with-ext4/479384#479384). [Forum topic discussion](http://openenergymonitor.org/emon/node/11695). 
+
+Before restarting create two scripts to switch between read-only and write access modes. These scripts are in the emonPi git repo and can be installed with:
 
 Firstly “ rpi-rw “ will be the command to unlock the filesystem for editing, and "rpi-ro" will put the system back to read-only mode:
 
@@ -108,3 +129,16 @@ Install with:
 	git clone https://github.com/openenergymonitor/ntp-backup.git ~/ntp-backup && ~/ntp-backup/install
 
 [Discussion Thread](http://openenergymonitor.org/emon/node/5877)
+
+## Move MYSQL database
+
+After MYSQL has been installed (see Raspberry Pi Emoncms install) we will need to move the MYSQL database location to the RW data partition:
+
+Move the database:
+
+	mkdir /home/pi/data/mysql
+	sudo cp -rp /var/lib/mysql/. /home/pi/data/mysql
+
+Change MYSQL config to use database in new RW location change line `datadir` to `/home/pi/data/mysql`
+
+	sudo nano /etc/mysql/my.cnf

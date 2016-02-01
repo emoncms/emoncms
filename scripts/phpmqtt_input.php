@@ -2,21 +2,32 @@
 
     $mqttsettings = array(
         'userid' => 1,
-        'basetopic' => "rx"
+        'basetopic' => "nodes"
     );
 
     /*
     
-    MQTT input interface script, subscribes to topic emoncms/input
+    **MQTT input interface script**
     
-    Topics:
+    SERVICE INSTALL INSTRUCTIONS:
+    https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+    
+    EXAMPLES: 
+    
+    create an input from emonTx node called power with value 10:
+        nodes/emontx/power 10
+    
+    create an input from node 10 called power with value 10 :       
+        nodes/10/power 10
+        
+    create input from emontx with key 0 of value 10
+        nodes/emontx 10
+        
+    create input from emontx with key 0 of value 10, key 1 of value 11 and key 2 of value 11
+        nodes/emontx 10,11,12
 
-    emoncms/input/10            100,200,300
-    emoncms/input/10/1          100
-    emoncms/input/10/power      250
-    emoncms/input/house/power   2500
     
-    * userid has to be set in script, no method of setting timestamp
+    * userid has to be set in script (1 default emonPi), no method of setting timestamp
     
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.

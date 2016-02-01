@@ -3,8 +3,8 @@
 //1 #### Mysql database settings
     $server   = "localhost";
     $database = "emoncms";
-    $username = "root";
-    $password = "raspberry";
+    $username = "emoncms";
+    $password = "emonpiemoncmsmysql2016";
     // Skip database setup test - set to false once database has been setup.
     $dbtest = true;
 

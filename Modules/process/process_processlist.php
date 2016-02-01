@@ -67,10 +67,10 @@ class Process_ProcessList
         // The engines listed against each process must be the supported engines for each process - and are only used in the input and node config GUI dropdown selectors
         // By using the create feed api and input set processlist its possible to create any feed type with any process list combination.
         // Only feeds capable of using a particular processor are displayed to the user and can be selected from the gui.
-        // Daily datatype automaticaly adjust feed interval to 1d and user cant change it from gui.
+        // Daily datatype automatically adjust feed interval to 1d and user can't change it from gui.
         // If there is only one engine available for a processor, it is selected and user cant change it from gui.
         // The default selected engine is the first in the array of the supported engines for each processor.
-        // Virtual feeds are feeds that are calculed in realtime when queried and use a processlist as post processor. 
+        // Virtual feeds are feeds that are calculated in realtime when queried and use a processlist as post processor.
         // Processors that write or update a feed are not supported and hidden from the gui on the context of virtual feeds.
 
         // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true
@@ -85,7 +85,7 @@ class Process_ProcessList
         $list[5] = array(_("Power to kWh/d"),ProcessArg::FEEDID,"power_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Convert a power value in Watts to a feed that contains an entry for the total energy used each day (kWh/d)");
         $list[6] = array(_("x input"),ProcessArg::INPUTID,"times_input",0,DataType::UNDEFINED,"Input", 'desc'=>"Multiplies the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.");
         $list[7] = array(_("Input on-time"),ProcessArg::FEEDID,"input_ontime",1,DataType::DAILY,"Input",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Counts the amount of time that an input is high in each day and logs the result to a feed. Created for counting the number of hours a solar hot water pump is on each day");
-        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"kwhinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"");
+        $list[8] = array(_("Wh increments to kWh/d"),ProcessArg::FEEDID,"whinc_to_kwhd",1,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Accumulate Wh measurements into kWh/d.<p><b>Input</b>: energy increments in Wh.</p><p><b>Output</b>: original value is passed through untouched.</p>");
         $list[9] = array(_("kWh to kWh/d (OLD)"),ProcessArg::FEEDID,"kwh_to_kwhd_old",1,DataType::DAILY,"Deleted",array(Engine::PHPTIMESERIES), 'desc'=>"");
         $list[10] = array(_("Upsert feed at day"),ProcessArg::FEEDID,"update_feed_data",1,DataType::DAILY,"Input",array(Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Updates or inserts daily value on the specified time (given by the JSON time parameter from the API) of the specified feed");
         $list[11] = array(_("+ input"),ProcessArg::INPUTID,"add_input",0,DataType::UNDEFINED,"Input", 'desc'=>"Adds the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.");
@@ -93,7 +93,7 @@ class Process_ProcessList
         $list[13] = array(_("Phaseshift"),ProcessArg::VALUE,"phaseshift",0,DataType::UNDEFINED,"Deleted", 'desc'=>"");
         $list[14] = array(_("Accumulator"),ProcessArg::FEEDID,"accumulator",1,DataType::REALTIME,"Misc",array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Output feed accumulates by input value");
         $list[15] = array(_("Rate of change"),ProcessArg::FEEDID,"ratechange",1,DataType::REALTIME,"Misc",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"Output feed is the difference between the current value and the last");
-        $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"");
+        $list[16] = array(_("Histogram"),ProcessArg::FEEDID,"histogram",2,DataType::HISTOGRAM,"Power",array(Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Creates a histogram of energy binned by power ranges. For each power range on the x-axis, this processor will aggregate the total energy of the stream while it was in that power range.<p><b>Input</b>: power in Watts.</p><p><b>Output</b>: original value is passed through untouched.</p>");
         $list[17] = array(_("Daily Average"),ProcessArg::FEEDID,"average",2,DataType::HISTOGRAM,"Deleted",array(Engine::PHPTIMESERIES), 'desc'=>"");
 
         // to be reintroduced in post-processing
@@ -108,23 +108,23 @@ class Process_ProcessList
         // fixed works now with redis - look into state implementation without feed
         $list[21] = array(_("kWh to Power"),ProcessArg::FEEDID,"kwh_to_power",1,DataType::REALTIME,"Power",array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"Convert accumulating kWh to instantaneous power");
 
-        $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED,"Input", 'desc'=>"");
+        $list[22] = array(_("- input"),ProcessArg::INPUTID,"subtract_input",0,DataType::UNDEFINED,"Input", 'desc'=>"Subtracts from the current value the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.");
         $list[23] = array(_("kWh to kWh/d"),ProcessArg::FEEDID,"kwh_to_kwhd",2,DataType::DAILY,"Power",array(Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"Subtracts the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.");
         $list[24] = array(_("Allow positive"),ProcessArg::NONE,"allowpositive",0,DataType::UNDEFINED,"Limits", 'desc'=>"Negative values are zeroed for further processing by the next processor in the processing list");
         $list[25] = array(_("Allow negative"),ProcessArg::NONE,"allownegative",0,DataType::UNDEFINED,"Limits", 'desc'=>"Positive values are zeroed for further processing by the next processor in the processing list");
-        $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc", 'desc'=>"");
+        $list[26] = array(_("Signed to unsigned"),ProcessArg::NONE,"signed2unsigned",0,DataType::UNDEFINED,"Misc", 'desc'=>"Convert a number that was interpreted as a 16 bit signed number to an unsigned number.");
         $list[27] = array(_("Max daily value"),ProcessArg::FEEDID,"max_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Maximal daily value. Upserts on the selected daily feed the highest value reached each day");
         $list[28] = array(_("Min daily value"),ProcessArg::FEEDID,"min_value",1,DataType::DAILY,"Misc",array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"Minimal daily value. Upserts on the selected daily feed the lowest value reached each day");
 
-        $list[29] = array(_(" + feed"),ProcessArg::FEEDID,"add_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"");
-        $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"");
-        $list[31] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"");
-        $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"");
+        $list[29] = array(_(" + feed"),ProcessArg::FEEDID,"add_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"Adds the current value with the last value from a feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.");
+        $list[30] = array(_(" - feed"),ProcessArg::FEEDID,"sub_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"Subtracts from the current value the last value from a feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.");
+        $list[31] = array(_(" * feed"),ProcessArg::FEEDID,"multiply_by_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"Multiplies the current value with the last value from a feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.");
+        $list[32] = array(_(" / feed"),ProcessArg::FEEDID,"divide_by_feed",0,DataType::UNDEFINED,"Feed", 'desc'=>"Divides the current value by the last value from a feed as selected from the feed list. The result is passed back for further processing by the next processor in the processing list.");
         $list[33] = array(_("Reset to ZERO"),ProcessArg::NONE,"reset2zero",0,DataType::UNDEFINED,"Misc", 'desc'=>"The value '0' is passed back for further processing by the next processor in the processing list.");
 
         $list[34] = array(_("Wh Accumulator"),ProcessArg::FEEDID,"wh_accumulator",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPTIMESERIES), 'requireredis'=>true, 'desc'=>"To be used in conjunction with an emontx sending total watt hours elapsed to emoncms. This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW.<br><br><b>Visualisation tip:</b> This accumulating Wh timeseries can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br><br><b>Requires redis installed to work</b>");
 
-        $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main", 'desc'=>"Publish to the specified MQTT topic");
+        $list[35] = array(_("Publish to MQTT"),ProcessArg::TEXT,"publish_to_mqtt",1,DataType::UNDEFINED,"Main", 'desc'=>"Enter MQTT topic e.g. home/power/kitchen");
 
         $list[36] = array(_("Reset to NULL"),ProcessArg::NONE,"reset2null",0,DataType::UNDEFINED,"Misc", 'desc'=>"A NULL value is passed back for further processing by the next processor in the processing list.<br>Usefull for conditional process to work on.");
         $list[37] = array(_("Reset to Original"),ProcessArg::NONE,"reset2original",0,DataType::UNDEFINED,"Misc", 'desc'=>"The original value, unchanged by any process, is passed back for further processing by the next processor in the processing list.");
@@ -142,7 +142,7 @@ class Process_ProcessList
         $list[51] = array(_("If !=, skip next"),ProcessArg::VALUE,"if_not_equal_skip",0,DataType::UNDEFINED,"Conditional - User value", 'desc'=>"If value from last process is NOT equal to the specified value, process execution will skip execution of next process in list");
 
         // A bit or warning: if user goto's in loop, the php will lock until the server defined timesout with an error
-        $list[52] = array(_("GOTO"),ProcessArg::VALUE,"goto_process",0,DataType::UNDEFINED,"Misc", 'desc'=>"<p>Jumps the process execution to the specified position.</p><p><b>Warning</b><br>If you're not carefull you can create a goto loop on the process list.<br>When a loop occours, the API will appear to lock until the server php times out with an error.</p>");
+        $list[52] = array(_("GOTO"),ProcessArg::VALUE,"goto_process",0,DataType::UNDEFINED,"Misc", 'desc'=>"<p>Jumps the process execution to the specified position.</p><p><b>Warning</b><br>If you're not careful you can create a goto loop on the process list.<br>When a loop occurs, the API will appear to lock until the server php times out with an error.</p>");
         
         // $list[29] = array(_("save to input"),ProcessArg::INPUTID,"save_to_input",1,DataType::UNDEFINED);
 
@@ -428,7 +428,7 @@ class Process_ProcessList
         return $value;
     }
 
-    public function kwhinc_to_kwhd($feedid, $time_now, $value)
+    public function whinc_to_kwhd($feedid, $time_now, $value)
     {
         $last = $this->feed->get_timevalue($feedid);
         $last_time = $last['time'];
@@ -779,7 +779,7 @@ class Process_ProcessList
                     $interval = 1;
                 }
             }
-            $start*=1000; // convert to miliseconds for engine
+            $start*=1000; // convert to milliseconds for engine
             $end*=1000;
             $data = $this->feed->get_data($feedid,$start,$end,$interval,1,1); // get data from feed engine with skipmissing and limit interval options
         } else {
