@@ -110,8 +110,8 @@
     $default_action = "login";
 
     // Default controller and action if none are specified and user is logged in
-    $default_controller_auth = "nodes";
-    $default_action_auth = "view";
+    $default_controller_auth = "feed";
+    $default_action_auth = "list";
 
     // Public profile functionality
     // Allows http://yourdomain.com/[username]/[dash alias] or ?id=[dash id]
