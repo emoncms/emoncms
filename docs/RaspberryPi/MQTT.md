@@ -10,7 +10,7 @@ Before following this guide, it is essential that emoncms was initially installe
 In addition to Mosquitto MQTT server we will need:
 
     sudo apt-get install libmosquitto-dev​
-    pecl install Mosquitto-alpha
+    sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
 
 If PHP extension config files `/etc/php5/cli/conf.d/20-mosquitto.ini` and `/etc/php5/apache2/conf.d/20-mosquitto.ini` don't exist then create with:
