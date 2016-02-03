@@ -45,7 +45,7 @@ Ensure you have the latest settings file (backup your settings first!):
 
 or if using an emonPi:
 
-    cp /var/www/emoncms/default.settings.php /var/www/emoncms/settings.php
+    cp /var/www/emoncms/default.emonpi.settings.php /var/www/emoncms/settings.php
 
 Edit the settings file:
 
