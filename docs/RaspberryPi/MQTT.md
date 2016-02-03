@@ -9,7 +9,7 @@ Before following this guide, it is essential that emoncms was initially installe
 
 In addition to Mosquitto MQTT server we will need:
 
-    sudo apt-get install libmosquitto-dev​
+    sudo apt-get install libmosquitto-dev
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
 
