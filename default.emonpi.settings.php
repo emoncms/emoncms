@@ -24,7 +24,11 @@
     $mqtt_server = array( 'host'     => 'localhost',
                           'port'     => 1883,
                           'user'     => 'emonpi',
-                          'password' => 'emonpimqtt2016');
+                          'password' => 'emonpimqtt2016',
+                          // Used with scripts/phpmqtt_input.php
+                          'userid'=>1,
+                          'basetopic'=> 'emon'                          
+                          );
 
 
 //4 #### Engine settings
@@ -106,8 +110,8 @@
     $default_action = "login";
 
     // Default controller and action if none are specified and user is logged in
-    $default_controller_auth = "nodes";
-    $default_action_auth = "view";
+    $default_controller_auth = "feed";
+    $default_action_auth = "list";
 
     // Public profile functionality
     // Allows http://yourdomain.com/[username]/[dash alias] or ?id=[dash id]

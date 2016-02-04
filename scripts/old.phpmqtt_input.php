@@ -1,26 +1,33 @@
 <?php
+
+    $mqttsettings = array(
+        'userid' => 1,
+        'basetopic' => "nodes"
+    );
+
     /*
     
     **MQTT input interface script**
     
     SERVICE INSTALL INSTRUCTIONS:
-    https://github.com/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+    https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
     
     EXAMPLES: 
     
     create an input from emonTx node called power with value 10:
-        [basetopic]/emontx/power 10
+        nodes/emontx/power 10
     
     create an input from node 10 called power with value 10 :       
-        [basetopic]/10/power 10
+        nodes/10/power 10
         
     create input from emontx with key 0 of value 10
-        [basetopic]/emontx 10
+        nodes/emontx 10
         
     create input from emontx with key 0 of value 10, key 1 of value 11 and key 2 of value 11
-        [basetopic]/emontx 10,11,12
+        nodes/emontx 10,11,12
 
-    * [basetopic] and user ID of target Emoncms account can be set in settings.php
+    
+    * userid has to be set in script (1 default emonPi), no method of setting timestamp
     
     Emoncms then processes these inputs in the same way as they would be
     if sent to the HTTP Api.
@@ -63,6 +70,9 @@
         $redis = false;
     }
     
+    require("Lib/phpMQTT.php");
+    $mqtt = new phpMQTT($mqtt_server['host'], $mqtt_server['port'], "Emoncms input subscriber");
+    
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
 
@@ -73,66 +83,37 @@
     $input = new Input($mysqli,$redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqtt_server['userid']));
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
+  
+    if(!$mqtt->connect(true,NULL,$mqtt_server['user'], $mqtt_server['password'])){
+        $log->error ("Cannot connect to MQTT Server"); 
+        die('Check log\n');
+    }
 
-    $mqtt_client = new Mosquitto\Client();
-    $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
-    
-    $connected = false;
-    $mqtt_client->onConnect('connect');
-    $mqtt_client->onDisconnect('disconnect');
-    $mqtt_client->onSubscribe('subscribe');
-    $mqtt_client->onMessage('message');
-    $mqtt_client->connect("localhost", 1883, 5);
-
-    $topic = $mqtt_server['basetopic']."/#";
+    $topic = $mqttsettings['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
-    $mqtt_client->subscribe($topic,2);
-
-    while(true){
-        $mqtt_client->loop();
-        
-    }
-
-    function connect($r, $message) {
-        global $connected;
-        $connected = true;
-    	echo "I got code {$r} and message {$message}\n";
-    }
-
-    function subscribe() {
-	echo "Subscribed to a topic\n";
-    }
-
-    function unsubscribe() {
-	echo "Unsubscribed from a topic\n";
-    }
-
-    function disconnect() {
-        global $connected;
-        $connected = false;
-	echo "Disconnected cleanly\n";
-    }
-
-    function message($message)
+    
+    $topics[$topic] = array("qos"=>0, "function"=>"procmsg");
+    $mqtt->subscribe($topics,0);
+    while($mqtt->proc()){ }
+    $mqtt->close();
+    
+    function procmsg($topic,$value)
     { 
-        $topic = $message->topic;
-        $value = $message->payload;
-        
         $time = time();
         echo $topic." ".$value."\n";
         
-        global $mqtt_server, $user, $input, $process, $feed;
+        global $mqttsettings, $user, $input, $process, $feed;
         
-        $userid = $mqtt_server['userid'];
+        $userid = $mqttsettings['userid'];
         
         $inputs = array();
         
         $route = explode("/",$topic);
 
-        if ($route[0]==$mqtt_server['basetopic'])
+        if ($route[0]==$mqttsettings['basetopic'])
         {
-            // nodeid defined in topic:  [bsaetopic]/input/10
+            // nodeid defined in topic:  emoncms/input/10
             if (isset($route[1]))
             {
                 $nodeid = $route[1];
