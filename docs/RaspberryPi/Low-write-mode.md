@@ -85,6 +85,10 @@ Comment out all redis saves:
 
 Save & exit:
 
+    sudo service redis-server reboot
+
+**Ensure all redis databases have been removed from `/var/lib/redis`**
+
 #### Configure Feedwriter
 
 Create a symlink to run feedwriter as a daemon and set permissions:
