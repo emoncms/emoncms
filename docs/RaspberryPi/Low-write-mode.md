@@ -87,7 +87,9 @@ Save & exit:
 
     sudo service redis-server reboot
 
-**Ensure all redis databases have been removed from `/var/lib/redis`**
+Ensure all redis databases have been removed from `/var/lib/redis` with: 
+    
+    sudo rm -rf /var/lib/redis/
 
 #### Configure Feedwriter
 
