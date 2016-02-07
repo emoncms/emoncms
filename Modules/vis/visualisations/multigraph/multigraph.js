@@ -123,7 +123,7 @@ function plot() {
     xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
     selection: { mode: "x" },
     legend: { position: "nw", toggle: true },
-    toggle: { rescale: true },
+    toggle: { scale: "visible" },
     touch: { pan: "x", scale: "x" }
   });
 }

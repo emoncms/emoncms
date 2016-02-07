@@ -131,7 +131,7 @@ function plot() {
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
     selection: { mode: "x" },
     legend: { position: "nw", toggle: true },
-    toggle: { rescale: true },
+    toggle: { scale: "visible" },
     touch: { pan: "x", scale: "x" }
   });
 }

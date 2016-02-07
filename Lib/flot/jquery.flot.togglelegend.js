@@ -18,29 +18,34 @@
                 toggle: false // set to true in plot options to enable
             },
             toggle: {
-                rescale: true // rescale y-axis after toggle
+                scale: "visible" // scale y-axis to only "visible" series or "all" series
             }
         },
         toggle = function ( el, plot, datasets ) {
             var cell,
                 row,
                 index,
-                isCell = el.is("td");
+                isCell = el.is("td"),
+                toggleState = $(plot.getPlaceholder()).data("togglestate");
             if ( isCell || (el.parents("td").length) ) {
                 cell = ( isCell ? el : el.parents("td") );
                 row = cell.parent();
                 index = row.index();
 
                 // Check if the line is already hidden and toggle accordingly
-		if ( datasets[index].hiddenData === undefined ) {
-                    datasets[index].hiddenData = datasets[index].data;
-                    datasets[index].data = [];
-                    hideLegendEntry(row);
-                } else {
+		if ( toggleState.has(index) ) {
                     datasets[index].data = datasets[index].hiddenData;
                     delete datasets[index].hiddenData;
+                    toggleState['delete'](index); // workaround for https://github.com/yui/yuicompressor/issues/122
                     restoreLegendEntry(row);
+                } else {
+                    datasets[index].hiddenData = datasets[index].data;
+                    datasets[index].data = [];
+                    toggleState.add(index);
+                    hideLegendEntry(row);
                 }
+
+                $(plot.getPlaceholder()).data("togglestate", toggleState);
 
                 redraw(plot, datasets);
             }
@@ -54,19 +59,39 @@
         },
         redraw = function ( plot, datasets ) {
             plot.setData(datasets);
-            if ( plot.getOptions().toggle.rescale ) {
+            if ( plot.getOptions().toggle.scale == "visible" ) {
                 plot.setupGrid();
             }
             plot.draw();
         },
-        setupLegend = function ( plot ) {
+        setupToggle = function ( plot ) {
+            plot.hooks.drawSeries.push(function ( plot, canvascontext, series ) {
+                var datasets = plot.getData(),
+                    toggleState = $(plot.getPlaceholder()).data("togglestate"),
+                    changed = false;
+
+                for ( var i = 0; i < datasets.length; i++ ) {
+                    // Keep hidden series hidden when graph is redrawn (e.g. from zooming)
+                    if ( toggleState.has(i) && datasets[i].hiddenData === undefined ) {
+                        datasets[i].hiddenData = datasets[i].data;
+                        datasets[i].data = [];
+                        changed = true;
+                    }
+                }
+
+                if ( changed ) {
+                    redraw(plot, datasets);
+                }
+            });
+
             plot.hooks.legendInserted.push(function ( plot, legend ) {
                 var cells = legend.find("td"),
-                    datasets = plot.getData();
+                    datasets = plot.getData(),
+                    toggleState = $(plot.getPlaceholder()).data("togglestate");
 
                 // Update the legend if there are hidden series
                 for ( var i = 0; i < cells.length; i += 2 ) {
-		    if ( datasets[i / 2].hiddenData !== undefined ) {
+                    if ( toggleState.has(i / 2) ) {
                         hideLegendEntry($(cells[i]).parent());
                     }
                 }
@@ -86,9 +111,16 @@
             });
         },
         init = function ( plot ) {
+            var toggleState = $(plot.getPlaceholder()).data("togglestate");
+
+            if ( typeof toggleState === 'undefined' ) {
+                toggleState = new Set();
+                $(plot.getPlaceholder()).data("togglestate", toggleState);
+            }
+
             plot.hooks.processOptions.push(function ( plot, options ) {
                 if ( options.legend.toggle ) {
-                    setupLegend(plot);
+                    setupToggle(plot);
                 }
             });
         };
