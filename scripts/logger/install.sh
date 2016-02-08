@@ -16,6 +16,11 @@ sudo chmod a+x /var/www/emoncms/scripts/logger/logrotate
 sudo ln -s /var/www/emoncms/scripts/logger/logrotate /etc/cron.hourly/logrotate
 sudo rm /etc/cron.daily/logrotate
 sudo touch /etc/cron.daily/logrotate
+
+echo "setup logrotate state & logfile in /var/log/logrotate"
+sudo mkdir /var/log/logrotate
+chown -R pi:pi /var/log/logrotate
+
 echo ""
 echo "Completed"
 echo ""
