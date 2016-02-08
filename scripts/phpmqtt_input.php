@@ -83,7 +83,7 @@
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
     $mqtt_client->onMessage('message');
-    $mqtt_client->connect("localhost", 1883, 5);
+    $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
 
     $topic = $mqtt_server['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
