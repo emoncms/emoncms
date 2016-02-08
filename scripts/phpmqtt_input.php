@@ -6,12 +6,12 @@
     SERVICE INSTALL INSTRUCTIONS:
     https://github.com/emoncms/blob/master/docs/RaspberryPi/MQTT.md
     
-    EXAMPLES: 
+    EXAMPLES:
     
     create an input from emonTx node called power with value 10:
         [basetopic]/emontx/power 10
     
-    create an input from node 10 called power with value 10 :       
+    create an input from node 10 called power with value 10 :
         [basetopic]/10/power 10
         
     create input from emontx with key 0 of value 10
@@ -40,23 +40,27 @@
     require "Lib/EmonLogger.php";
     require "process_settings.php";
     
-    if (!$mqtt_enabled) { echo "Error: setting must be true: mqtt_enabled\n"; die; }
-    
     $log = new EmonLogger(__FILE__);
-    $log->info("Starting MQTT Input script");
+    $log->warn("Starting MQTT Input script");
+    
+    if (!$mqtt_enabled) {
+        echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
+        $log->error("MQTT must be enabled in settings.php");
+        die;
+    }
     
     $mysqli = @new mysqli($server,$username,$password,$database);
-    if ($mysqli->connect_error) { $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }
+    if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
 
     if ($redis_enabled) {
         $redis = new Redis();
-        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
-            $log->error("Could not connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n'); 
+        if (!$redis->connect($redis_server['host'], $redis_server['port'])) {
+            $log->error("Cannot connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n');
         }
         if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
         if (!empty($redis_server['auth'])) {
-            if (!$redis->auth($redis_server['auth'])) { 
-                $log->error("Could not connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
+            if (!$redis->auth($redis_server['auth'])) {
+                $log->error("Cannot connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
             }
         }
     } else {
@@ -83,10 +87,11 @@
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
     $mqtt_client->onMessage('message');
-    $mqtt_client->connect("localhost", 1883, 5);
+    $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
 
     $topic = $mqtt_server['basetopic']."/#";
     echo "Subscribing to: ".$topic."\n";
+    $log->warn("Subscribing to: ".$topic);
     $mqtt_client->subscribe($topic,2);
 
     while(true){
@@ -95,35 +100,44 @@
     }
 
     function connect($r, $message) {
-        global $connected;
+        global $connected, $log;
         $connected = true;
-    	echo "I got code {$r} and message {$message}\n";
+    	echo "Connected to MQTT server with code {$r} and message {$message}\n";
+    	global $log;
+    	$log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
-	echo "Subscribed to a topic\n";
+        global $log, $topic;
+	    echo "Subscribed to topic: ".$topic."\n";
+	    $log->warn("Subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
-	echo "Unsubscribed from a topic\n";
+        global $log, $topic;
+	    echo "Unsubscribed from topic:".$topic."\n";
+	    $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
-        global $connected;
+        global $connected, $log;
         $connected = false;
 	echo "Disconnected cleanly\n";
+	$log->warn("Disconnected cleanly");
     }
 
     function message($message)
-    { 
+    {
         $topic = $message->topic;
         $value = $message->payload;
         
         $time = time();
         echo $topic." ".$value."\n";
         
-        global $mqtt_server, $user, $input, $process, $feed;
+        global $mqtt_server, $user, $input, $process, $feed, $log;
+        $log->info($topic." ".$value);
         
+        #Emoncms user ID
         $userid = $mqtt_server['userid'];
         
         $inputs = array();
@@ -132,18 +146,17 @@
 
         if ($route[0]==$mqtt_server['basetopic'])
         {
-            // nodeid defined in topic:  [bsaetopic]/input/10
+ 
             if (isset($route[1]))
             {
                 $nodeid = $route[1];
                 $dbinputs = $input->get_inputs($userid);
             
-                // input id defined in topic:  emoncms/input/10/1
                 if (isset($route[2]))
                 {
                     $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[2], "value"=>$value);
                 }
-                else 
+                else
                 {
                     $values = explode(",",$value);
                     $name = 0;
@@ -168,7 +181,6 @@
                 $dbinputs[$nodeid][$name] = true;
                 $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                echo "set_timevalue\n";
             } else {
                 $inputid = $dbinputs[$nodeid][$name]['id'];
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
