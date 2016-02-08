@@ -16,6 +16,8 @@ In addition to Mosquitto MQTT server we will need:
     sudo apt-get install libmosquitto-dev
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
+    
+If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the mosquitto install guide here: http://mosquitto.org/2013/01/mosquitto-debian-repository. 
 
 If PHP extension config files `/etc/php5/cli/conf.d/20-mosquitto.ini` and `/etc/php5/apache2/conf.d/20-mosquitto.ini` don't exist then create with:
 
