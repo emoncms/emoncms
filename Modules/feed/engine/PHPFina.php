@@ -573,7 +573,10 @@ class PHPFina
             // if data is in past, its not supported, could call update here to fix on file before continuing
             // but really this should not happen for past data has process_feed_buffer uses update for that.
             // so this must be data posted in less time of the feed interval and can be ignored
-            $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
+            
+            // This error crouds out the log's but is behaviour expected if data is coming in at a quicker interval than the feed interval
+            // EmonPi posts at 5s where feed engine default size is 10s which means a log entry for every datapoint with this uncommented
+            // $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
         }
         
         return $value;
