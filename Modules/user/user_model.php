@@ -439,7 +439,7 @@ class User
     public function get_lang($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT languagelanguage FROM users WHERE id = '$userid';");
+        $result = $this->mysqli->query("SELECT language FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
         return $row['language'];
     }
