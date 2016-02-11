@@ -439,9 +439,9 @@ class User
     public function get_lang($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT lang FROM users WHERE id = '$userid';");
+        $result = $this->mysqli->query("SELECT languagelanguage FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
-        return $row['lang'];
+        return $row['language'];
     }
 
     public function get_timezone_offset($userid)
@@ -517,7 +517,7 @@ class User
 
     public function set_user_lang($userid, $lang)
     {
-        $this->mysqli->query("UPDATE users SET lang = '$lang' WHERE id='$userid'");
+        $this->mysqli->query("UPDATE users SET language = '$lang' WHERE id='$userid'");
     }
 
     public function set_timezone($userid,$timezone)
