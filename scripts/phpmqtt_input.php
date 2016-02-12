@@ -80,50 +80,65 @@
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqtt_server['userid']));
 
     $mqtt_client = new Mosquitto\Client();
-    $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
     
     $connected = false;
+    $last_retry = 0;
+    
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
     $mqtt_client->onSubscribe('subscribe');
     $mqtt_client->onMessage('message');
-    $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
 
-    $topic = $mqtt_server['basetopic']."/#";
-    echo "Subscribing to: ".$topic."\n";
-    $log->warn("Subscribing to: ".$topic);
-    $mqtt_client->subscribe($topic,2);
-
-    while(true){
-        $mqtt_client->loop();
+    // Option 1: extend on this:
+     while(true){
+        try { 
+            $mqtt_client->loop(); 
+        } catch (Exception $e) {
         
+        }
+        
+        if (!$connected && (time()-$last_retry)>5.0) {
+            $last_retry = time();
+            try {
+                $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
+                $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
+                $topic = $mqtt_server['basetopic']."/#";
+                echo "Subscribing to: ".$topic."\n";
+                $log->warn("Subscribing to: ".$topic);
+                $mqtt_client->subscribe($topic,2);
+            } catch (Exception $e) {
+            
+            }
+            echo "Not connected, retrying connection\n";
+            $log->warn("Not connected, retrying connection");
+        }
     }
+    
 
     function connect($r, $message) {
-        global $connected, $log;
+        global $log, $connected;
         $connected = true;
-    	echo "Connected to MQTT server with code {$r} and message {$message}\n";
-    	global $log;
-    	$log->warn("Connecting to MQTT server: {$message}: code: {$r}");
+        echo "Connected to MQTT server with code {$r} and message {$message}\n";
+        $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
         global $log, $topic;
-	    echo "Subscribed to topic: ".$topic."\n";
-	    $log->warn("Subscribed to topic: ".$topic);
+        echo "Subscribed to topic: ".$topic."\n";
+        $log->warn("Subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
         global $log, $topic;
-	    echo "Unsubscribed from topic:".$topic."\n";
-	    $log->error("Unsubscribed from topic: ".$topic);
+        echo "Unsubscribed from topic:".$topic."\n";
+        $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
         global $connected, $log;
         $connected = false;
-	echo "Disconnected cleanly\n";
-	$log->warn("Disconnected cleanly");
+        echo "Disconnected cleanly\n";
+        $log->warn("Disconnected cleanly");
     }
 
     function message($message)
