@@ -57,9 +57,9 @@ class Email {
         if ($this->check()) {
             try {
                 $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], $smtp_email_settings['port']);
-                if ($smtp_email_settings['encryption']) $transport->setEncryption($smtp_email_settings['encryption']);
-                if ($smtp_email_settings['username']) $transport->setUsername($smtp_email_settings['username']);
-                if ($smtp_email_settings['password']) $transport->setPassword($smtp_email_settings['password']);
+                if (isset($smtp_email_settings['encryption'])) $transport->setEncryption($smtp_email_settings['encryption']);
+                if (isset($smtp_email_settings['username'])) $transport->setUsername($smtp_email_settings['username']);
+                if (isset($smtp_email_settings['password'])) $transport->setPassword($smtp_email_settings['password']);
 
                 $mailer = Swift_Mailer::newInstance($transport);
                 $mailer->send($this->message);

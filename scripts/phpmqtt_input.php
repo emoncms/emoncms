@@ -1,4 +1,11 @@
 <?php
+
+    // TBD: support user target in message schema
+    $mqttsettings = array(
+        'userid' => 1
+    );
+
+
     /*
     
     **MQTT input interface script**
@@ -77,7 +84,7 @@
     $input = new Input($mysqli,$redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqtt_server['userid']));
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
 
     $mqtt_client = new Mosquitto\Client();
     
@@ -152,8 +159,9 @@
         global $mqtt_server, $user, $input, $process, $feed, $log;
         $log->info($topic." ".$value);
         
-        #Emoncms user ID
-        $userid = $mqtt_server['userid'];
+        #Emoncms user ID TBD: incorporate on message via authentication mechanism
+       global $mqttsettings;
+        $userid = $mqttsettings['userid'];
         
         $inputs = array();
         

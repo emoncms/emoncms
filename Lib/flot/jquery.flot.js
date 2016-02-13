@@ -3,9 +3,6 @@
 Copyright (c) 2007-2014 IOLA and Ole Laursen.
 Licensed under the MIT license.
 
-Changes:
-    2016/01/24 chaveiro - Added Support for jquery.flot.togglelegend 0.3
-
 */
 
 // first an inline dependency, jquery.colorhelpers.js, we inline it here
@@ -589,8 +586,7 @@ Changes:
                         zero: true
                     },
                     shadowSize: 3,
-                    highlightColor: null,
-                    visible: true
+                    highlightColor: null
                 },
                 grid: {
                     show: true,
@@ -1139,8 +1135,6 @@ Changes:
                     s.datapoints.format = format;
                 }
 
-                if (!s.visible) continue; // data will not be displayed
-
                 if (s.datapoints.pointsize != null)
                     continue; // already filled in
 
@@ -1355,9 +1349,7 @@ Changes:
 
             if (options.grid.clickable)
                 eventHolder.click(onClick);
-	    
-	    eventHolder.dblclick(onDblClick)
-	    
+
             executeHooks(hooks.bindEvents, [eventHolder]);
         }
 
@@ -1368,7 +1360,6 @@ Changes:
             eventHolder.unbind("mousemove", onMouseMove);
             eventHolder.unbind("mouseleave", onMouseLeave);
             eventHolder.unbind("click", onClick);
-            eventHolder.unbind("dblclick", onDblClick);
 
             executeHooks(hooks.shutdown, [eventHolder]);
         }
@@ -1889,10 +1880,8 @@ Changes:
             }
 
             for (var i = 0; i < series.length; ++i) {
-                if (series[i].visible) {
-                    executeHooks(hooks.drawSeries, [ctx, series[i]]);
-                    drawSeries(series[i]);
-                }
+                executeHooks(hooks.drawSeries, [ctx, series[i]]);
+                drawSeries(series[i]);
             }
 
             executeHooks(hooks.draw, [ctx]);
@@ -2942,7 +2931,7 @@ Changes:
         function onMouseMove(e) {
             if (options.grid.hoverable)
                 triggerClickHoverEvent("plothover", e,
-                                       function (s) { return s["hoverable"] != false && s["visible"] != false; ; });
+                                       function (s) { return s["hoverable"] != false; });
         }
 
         function onMouseLeave(e) {
@@ -2956,10 +2945,6 @@ Changes:
                                    function (s) { return s["clickable"] != false; });
         }
 
-        function onDblClick(e) {
-            triggerClickHoverEvent("plotdblclick", e,
-                                   function (s) { return s["clickable"] != false; });
-        }
         // trigger click or hover event (they send the same parameters
         // so we share their code)
         function triggerClickHoverEvent(eventname, event, seriesFilter) {

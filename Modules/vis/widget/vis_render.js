@@ -172,10 +172,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",  
-      "options":["feedid","fill","depth"],
-      "optionstype":["feedid","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Depth")],
-      "optionshint":[_Tr("Feed source"),_Tr("Fill under line"),_Tr("Number of lines")],
+      "options":["feedid","fill","depth","npoints"],
+      "optionstype":["feedid","value","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Depth"),_Tr("Data points")],
+      "optionshint":[_Tr("Feed source"),_Tr("Fill under line"),_Tr("Number of lines"),_Tr("Default: 800")],
       "html":""
     }
   }
