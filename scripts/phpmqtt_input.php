@@ -159,7 +159,8 @@
         global $mqtt_server, $user, $input, $process, $feed, $log;
         $log->info($topic." ".$value);
         
-        #Emoncms user ID
+        #Emoncms user ID TBD: incorporate on message via authentication mechanism
+       global $mqttsettings;
         $userid = $mqttsettings['userid'];
         
         $inputs = array();
