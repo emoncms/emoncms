@@ -16,7 +16,7 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
-<!--<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>-->
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -47,49 +47,6 @@
             $("#multigraph_name").replaceWith('<?php echo _("Multigraph:"); ?>' + ' ' + data['name']);
             multigraph_init("#multigraph");
             vis_feed_data();
-        }
-    });
-    
-    var previousPoint = null;
-    $("#multigraph").bind("plothover", function (event, pos, item) {
-        //$("#x").text(pos.x.toFixed(2));
-        //$("#y").text(pos.y.toFixed(2));
-
-        if ($("#enableTooltip:checked").length > 0) {
-            if (item) {
-                if (previousPoint != item.dataIndex) {
-                    previousPoint = item.dataIndex;
-
-                    $("#tooltip").remove();
-                    var x = item.datapoint[0].toFixed(2),
-                    y = item.datapoint[1].toFixed(2);
-
-                    // create a new javascript Date object based on the timestamp
-                    // This implementation is clumsy, but the js native date.toTimeString() returns
-                    // strings like "08:53:35 GMT-0800", and there is no easy way to turn off the "GMT-xxxx" segment
-                    // blargh
-                    var date = new Date(parseInt(x));
-                    var hours = date.getHours();
-                    var minutes = date.getMinutes();
-                    var seconds = date.getSeconds();
-                    if (hours < 10)
-                            hours = "0"+hours;
-                    if (minutes < 10)
-                            minutes = "0"+minutes;
-                    if (seconds < 10)
-                            seconds = "0"+seconds;
-
-                    // will display time in 10:30:23 format
-                    var formattedTime = hours + ':' + minutes + ':' + seconds;
-
-                    // I'd like to eventually add colour hinting to the background of the tooltop.
-                    // This is why showTooltip has the bgColour parameter.
-                    tooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y, "#DDDDDD");
-                }
-            } else {
-                $("#tooltip").remove();
-                previousPoint = null;
-            }
         }
     });
 

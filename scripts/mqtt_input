@@ -14,10 +14,11 @@
 #
 ###
 # Installation
-# 1) Move this to /etc/init.d/ folder
-# 2) sudo chown root:root /etc/init.d/mqtt_input
-# 3) sudo chmod +x /etc/init.d/mqtt_input
-# 4) sudo update-rc.d mqtt_input defaults
+# Ensure that emoncms is up to date - $ cd /var/www/emoncms && git pull
+# cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/mqtt_input
+# sudo chown root:root /var/www/emoncms/scripts/mqtt_input
+# sudo chmod 755 /var/www/emoncms/scripts/mqtt_input
+# sudo update-rc.d mqtt_input defaults
 #
 # Starting and stopping
 # - Start: `sudo service mqtt_input start` or `sudo /etc/init.d/mqtt_input start`
