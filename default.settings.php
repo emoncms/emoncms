@@ -25,8 +25,6 @@
                           'port'     => 1883,
                           'user'     => '',
                           'password' => '',
-                          // Used with scripts/phpmqtt_input.php
-                          'userid'=>1,
                           'basetopic'=> 'emon'
                           );
 

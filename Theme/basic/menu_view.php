@@ -10,6 +10,9 @@
     global $path, $session, $menu;
     if (!isset($session['profile'])) $session['profile'] = 0;
 
+    // Example how to add a fixed menu item:
+    //$menu['dropdownconfig'][] = array('name'=>'Documentation', 'icon'=>'icon-book', 'path'=>"docs", 'session'=>"write", 'order' => 60,'divider' => true);
+
     usort($menu['left'], "menu_sort");
     usort($menu['dropdown'], "menu_sort");
     usort($menu['dropdownconfig'], "menu_sort");

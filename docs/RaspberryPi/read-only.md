@@ -43,10 +43,10 @@ Then run these commands to make changes to filesystem
     sudo sh -c "echo 'RAMTMP=yes' >> /etc/default/rcS"
     sudo mv /etc/fstab /etc/fstab.orig
     sudo ln -s /home/pi/emonpi/fstab /etc/fstab
-	sudo chmod a+x /etc/fstab
+    sudo chmod a+x /etc/fstab
     sudo mv /etc/mtab /etc/mtab.orig
     sudo ln -s /proc/self/mounts /etc/mtab
-	sudo mkdir /var/lib/openhab
+    sudo mkdir /var/lib/openhab
     
 The Pi will now run in Read-Only mode from the next restart. The following fstab is installed:
 

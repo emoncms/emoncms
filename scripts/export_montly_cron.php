@@ -82,7 +82,7 @@
     // Get feed ids grouped by tags
     foreach($groups as $tag => $ids){
         echo "    Processing '$tag' tag with feeds: " . implode(",",$ids) . "\n";
-        $log->info("    Processing '$tag' tag with feeds: " . implode(",",$ids) . "\n");
+        $log->info("    Processing '$tag' tag with feeds: " . implode(",",$ids));
 
         // Write to output stream
         //$filename = $exportpath . "/". $startText."_".$endText."_".$tag."_".implode("_",$ids).".csv";
@@ -118,6 +118,8 @@
             fclose($fh);
             
             if ($firstline == false) {
+                echo "Sending Email to $emailto ...\n";
+                $log->info("Sending Email to $emailto ...");
                 $emailbody = "Attached is CSV for '". $tag . "' tag.";
                 $emailbody .= "\nTime range: ".$startText." to ".$endText;
                 require_once "Lib/email.php";
@@ -129,7 +131,7 @@
                 $email->attach($filename);
                 $result = $email->send();
                 if (!$result['success']) {
-                    echo "Email send returned error. message='" . $result['message'] . "'";
+                    echo "Email send returned error. message='" . $result['message'] . "'\n";
                     $log->error("Email send returned error. message='" . $result['message'] . "'");
                 } else {
                     $log->info("Email sent to $emailto");
