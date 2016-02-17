@@ -111,12 +111,19 @@ if(is_writable($log_filename)) {
 ?>
             </p>
             
-            <pre id="logreply-bound" style="display:none"><div id="logreply"></div></pre>
+            <pre id="logreply-bound"><div id="logreply"></div></pre>
         </td>
         <td class="buttons">
 <?php if(is_writable($log_filename)) { ?>
-            <br><button id="getlog" class="btn btn-info"><?php echo _('Last Log'); ?></button>
-<?php } ?>          
+
+            <br>
+            <div class="input-prepend input-append">
+                <span class="add-on"><?php echo _('Auto refresh'); ?></span>
+                <button class="btn autorefresh-toggle">OFF</button>
+            </div>
+            
+            <?php } ?>
+          
         </td>
     </tr>
 <?php
@@ -126,7 +133,7 @@ if ($allow_emonpi_admin) {
     <tr>
         <td>
             <h3><?php echo _('Update emonPi'); ?></h3>
-            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/CHANGE%20LOG.md">emonPi firmware change log.</a> When update is running hit 'Refresh Log' repeatedly to display update progress log</p>
+            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/CHANGE%20LOG.md">emonPi firmware change log.</a></p>
             <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
             
             <pre id="update-log-bound"><div id="update-log"></div></pre>
@@ -212,6 +219,7 @@ function updaterStart(func, interval){
   if (interval > 0) updater = setInterval(func, interval);
 }
 
+getLog();
 function getLog() {
   $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: function(result)
     {
@@ -220,10 +228,14 @@ function getLog() {
   });
 }
 
-$("#getlog").click(function() {
-  logrunning = !logrunning;
-  if (logrunning) { updaterStart(getLog, 500); $("#logreply-bound").show(); }
-  else { updaterStart(getLog, 0); $("#logreply-bound").hide(); }
+$(".autorefresh-toggle").click(function() {
+  if ($(this).html()=="ON") {
+      $(this).html("OFF");
+      updaterStart(getLog, 0);
+  } else {
+      $(this).html("ON");
+      updaterStart(getLog, 500);
+  }
 });
 
 
