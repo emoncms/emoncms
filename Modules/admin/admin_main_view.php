@@ -224,6 +224,7 @@ function getLog() {
   $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: function(result)
     {
       $("#logreply").html(result);
+      document.getElementById("logreply-bound").scrollTop = document.getElementById("logreply-bound").scrollHeight
     }
   });
 }
