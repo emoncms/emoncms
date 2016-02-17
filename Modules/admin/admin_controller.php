@@ -69,10 +69,18 @@ function admin_controller()
             else if ($allow_emonpi_admin && $route->action == 'emonpi') {
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) { 
                     $route->format = "text";
-                    $file = "/tmp/emonpiupdate";
-                    $fh = @fopen($file,"w");
-                    if (!$fh) $result = "ERROR: Can't write the flag $file.";
-                    else $result = "Update flag file $file created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
+                    
+                    $update_flag = "/tmp/emoncms-flag-update";
+                    $update_script = "/home/pi/emonpi/service-runner-update.sh";
+                    $update_logfile = "/home/pi/data/emonpiupdate.log";
+                    
+                    $fh = @fopen($update_flag,"w");
+                    if (!$fh) {
+                        $result = "ERROR: Can't write the flag $update_flag.";
+                    } else {
+                        fwrite($fh,"$update_script>$update_logfile");
+                        $result = "Update flag set";
+                    }
                     @fclose($fh);
                 }
                 
