@@ -1,3 +1,5 @@
+
+
 <?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings;
 
   // Retrieve server information
@@ -43,6 +45,30 @@
 
  ?>
 <style>
+pre {
+    width:100%;
+    height:300px;
+
+
+    margin:0px;
+    padding:0px;
+    font-size:16px;
+    color:#fff;
+    background-color:#300a24;
+    overflow: scroll;
+    overflow-x: hidden;
+
+    font-size:16px;
+}
+#export-log {
+    padding-left:20px;
+    padding-top:20px;
+}
+#import-log {
+    padding-left:20px;
+    padding-top:20px;
+}
+
 table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
@@ -84,12 +110,20 @@ if(is_writable($log_filename)) {
 }
 ?>
             </p>
-            <div id="logreply" style="display:none"></div>
+            
+            <pre id="logreply-bound"><div id="logreply"></div></pre>
         </td>
         <td class="buttons">
 <?php if(is_writable($log_filename)) { ?>
-            <br><button id="getlog" class="btn btn-info"><?php echo _('Last Log'); ?></button>
-<?php } ?>          
+
+            <br>
+            <div class="input-prepend input-append">
+                <span class="add-on"><?php echo _('Auto refresh'); ?></span>
+                <button class="btn autorefresh-toggle">OFF</button>
+            </div>
+            
+            <?php } ?>
+          
         </td>
     </tr>
 <?php
@@ -99,13 +133,13 @@ if ($allow_emonpi_admin) {
     <tr>
         <td>
             <h3><?php echo _('Update emonPi'); ?></h3>
-            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/CHANGE%20LOG.md">emonPi firmware change log.</a> When update is running hit 'Refresh Log' repeatedly to display update progress log</p>
+            <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/Atmega328/emonPi_RFM69CW_RF12Demo_DiscreteSampling/compiled/CHANGE%20LOG.md">emonPi firmware change log.</a></p>
             <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
-            <div id="emonpireply" style="display:none"></div>
+            
+            <pre id="update-log-bound"><div id="update-log"></div></pre>
         </td>
         <td class="buttons"><br>
             <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button><br><br>
-            <button id="emonpiupdatelog" class="btn btn-info"><?php echo _('Refresh Log'); ?></button>
         </td>
     </tr>
 <?php 
@@ -162,6 +196,9 @@ if ($mqtt_enabled) {
 <script>
 var path = "<?php echo $path; ?>";
 var logrunning = false;
+backup_log_update();
+var backup_updater = false;
+backup_updater = setInterval(backup_log_update,1000);
 
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
@@ -182,35 +219,34 @@ function updaterStart(func, interval){
   if (interval > 0) updater = setInterval(func, interval);
 }
 
+getLog();
 function getLog() {
   $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: function(result)
     {
-      $("#logreply").html('<pre class="alert alert-info"><small>'+result+'<small></pre>');
+      $("#logreply").html(result);
+      document.getElementById("logreply-bound").scrollTop = document.getElementById("logreply-bound").scrollHeight
     }
   });
 }
 
-$("#getlog").click(function() {
-  logrunning = !logrunning;
-  if (logrunning) { updaterStart(getLog, 500); $("#logreply").show(); }
-  else { updaterStart(getLog, 0); $("#logreply").hide(); }
+$(".autorefresh-toggle").click(function() {
+  if ($(this).html()=="ON") {
+      $(this).html("OFF");
+      updaterStart(getLog, 0);
+  } else {
+      $(this).html("ON");
+      updaterStart(getLog, 500);
+  }
 });
 
 
 $("#emonpiupdate").click(function() {
   $.ajax({ url: path+"admin/emonpi/update", async: true, dataType: "text", success: function(result)
     {
-      $("#emonpireply").html('<pre class="alert alert-info"><small>'+result+'<small></pre>');
-      $("#emonpireply").show();
-    }
-  });
-});
-
-$("#emonpiupdatelog").click(function() {
-  $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
-    {
-      $("#emonpireply").html('<pre class="alert alert-info"><small>'+result+'<small></pre>');
-      $("#emonpireply").show();
+      $("#update-log").html(result);
+      document.getElementById("update-log-bound").scrollTop = document.getElementById("update-log-bound").scrollHeight
+      backup_updater = setInterval(backup_log_update,1000);
+      
     }
   });
 });
@@ -223,4 +259,17 @@ $("#redisflush").click(function() {
     }
   });
 });
+
+function backup_log_update() {
+  $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
+    {
+      $("#update-log").html(result);
+      document.getElementById("update-log-bound").scrollTop = document.getElementById("update-log-bound").scrollHeight
+
+      if (result.indexOf("emonPi update done")!=-1) {
+          clearInterval(backup_updater);
+      }
+    }
+  });
+}
 </script>

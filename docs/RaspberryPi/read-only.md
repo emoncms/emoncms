@@ -3,17 +3,17 @@
 
 ## Setup Data partition
 
-An alternative to following this guide would be to use Paul Reed's script to setup the SD card partitions. See [forum thread](http://openenergymonitor.org/emon/node/12080).
+An alternative to following section is to use the [sdpart script](https://github.com/emoncms/usefulscripts) which will create & format the SD card partitions as necessary.
 
 Assuming creating 300Mb data partition and starting with SD card image expanded to fill SD card (4GB in this example).
 
-# Reduce size of root partition using Gparted
+### Reduce size of root partition using Gparted
 
 Using Gparted on Ubuntu reduce size of root partition by 300Mb to make space for data partition. Recommend leaving 10Mb free space at end of SD card 
 
 
 
-# Creating 3rd partition:
+### Creating 3rd partition:
 
     sudo fdisk -l
     Note end of last partition (assume 7391231)
