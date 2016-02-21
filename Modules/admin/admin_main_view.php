@@ -52,13 +52,12 @@ pre {
 
     margin:0px;
     padding:0px;
-    font-size:16px;
+    font-size:14px;
     color:#fff;
     background-color:#300a24;
     overflow: scroll;
     overflow-x: hidden;
 
-    font-size:16px;
 }
 #export-log {
     padding-left:20px;
@@ -118,7 +117,7 @@ if(is_writable($log_filename)) {
 
             <br>
             <div class="input-prepend input-append">
-                <span class="add-on"><?php echo _('Auto refresh'); ?></span>
+                <span class="btn btn-info"><?php echo _('Auto refresh'); ?></span>
                 <button class="btn autorefresh-toggle">OFF</button>
             </div>
             
