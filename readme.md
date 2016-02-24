@@ -12,7 +12,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 * [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch (as of Jan 16 ready-to-go SD card image), regularly merged from master. Slightly more tried and tested. 
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. 
 
 * [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The old emonpi/emonbase emoncms version (July 15 ready-to-go SD card image). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
 
@@ -24,9 +24,6 @@ Optional modules can be installed by downloading or git cloning into the emoncms
 https://github.com/emoncms/dashboard
 
 - App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump https://github.com/emoncms/app.git
-
-- Nodes provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration. 
-https://github.com/emoncms/nodes.git
     
 - Config provides an in-browser emonhub.conf editor and emonhub.log log viewer. git clone https://github.com/emoncms/config.git
     
@@ -85,14 +82,13 @@ Documentation hosted on openenergymonitor documentation github:
 - [OpenEnergyMonitor Forums](http://openenergymonitor.org/emon/forum)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
 
-## IRC
-You can also join us on our IRC channel #emon on irc.freenode.net.
     
 ## Developers
 Emoncms is developed and has had contributions from the following people.
 
 - Trystan Lea           https://github.com/trystanlea (principal maintainer)
 - Chaveiro              https://github.com/chaveiro (principal developer of v9)
+- Glyn Hudson           https://github.com/glynhudson
 - Paul Reed             https://github.com/Paul-Reed
 - Ildefonso Martínez    https://github.com/ildemartinez
 - Matthew Wire          https://github.com/mattwire
