@@ -155,6 +155,8 @@ class Process_ProcessList
         $list[57] = array(_(" * source feed"),ProcessArg::FEEDID,"multiply_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         $list[58] = array(_(" / source feed"),ProcessArg::FEEDID,"divide_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         $list[59] = array(_("1/ source feed"),ProcessArg::FEEDID,"reciprocal_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
+        
+        $list[60] = array(_("Reset to ONE"),ProcessArg::NONE,"reset2one",0,DataType::UNDEFINED,"Misc", 'desc'=>"The value '1' is passed back for further processing by the next processor in the processing list.");
         return $list;
     }
 
@@ -191,6 +193,12 @@ class Process_ProcessList
     public function reset2zero($arg, $time, $value)
     {
          $value = 0;
+         return $value;
+    }
+    
+    public function reset2one($arg, $time, $value)
+    {
+         $value = 1;
          return $value;
     }
 
