@@ -114,9 +114,10 @@
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
 
+    var updatetime = 0;
     $.ajax({
       url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue,
+      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue+"&updatetime="+updatetime,
       dataType: 'json',
       async: false,
       success: function() {}
