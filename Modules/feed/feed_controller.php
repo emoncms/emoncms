@@ -94,8 +94,10 @@ function feed_controller()
                     // Storage engine agnostic
                     if ($route->action == 'set') $result = $feed->set_feed_fields($feedid,get('fields'));
                     else if ($route->action == "insert") $result = $feed->insert_data($feedid,time(),get("time"),get("value"));
-                    else if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
-                    else if ($route->action == "delete") $result = $feed->delete($feedid);
+                    if ($route->action == "update") {
+                        if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
+                        $result = $feed->update_data($feedid,$updatetime,get("time"),get('value'));
+                    }                    else if ($route->action == "delete") $result = $feed->delete($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
                     else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
 
