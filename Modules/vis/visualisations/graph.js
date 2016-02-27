@@ -15,6 +15,8 @@ var app_graph = {
     stdev: 0,
     minval: 0,
     maxval: 0,
+    
+    applysmoothing: 0,
 
     // Include required javascript libraries
     include: [
@@ -69,6 +71,16 @@ var app_graph = {
                 app_graph.showcsv = 0;
                 $("#csv").hide();
                 $("#showcsv").html("Show CSV Output");
+            }
+        });
+        
+        $("#applysmoothing").click(function() {
+            if ($(this)[0].checked) {
+                app_graph.applysmoothing = 1;
+                app_graph.draw();
+            } else {
+                app_graph.applysmoothing = 0;
+                app_graph.draw();
             }
         });
     },
@@ -134,7 +146,7 @@ var app_graph = {
                 else
                 { 
                     var options = {
-                        lines: { fill: true },
+                        lines: { fill: false },
                         xaxis: { 
                             mode: "time", timezone: "browser", 
                             min: app_graph.start, max: app_graph.end
@@ -143,7 +155,25 @@ var app_graph = {
                         selection: { mode: "x" }
                     }
                     
-                    $.plot($('#placeholder'), [{data:app_graph.data}], options);
+                    if (app_graph.applysmoothing==1) {
+                      var outputdata = [];
+                      for (var i=0; i<app_graph.data.length; i++) {
+                        var sum = 0; var nsum = 0;
+                        for (var x=-3; x<=3; x++) {
+                          if (app_graph.data[i+x]!=undefined) {
+                            if (app_graph.data[i+x][1]!=null) {
+                              sum += app_graph.data[i+x][1]*1.0;
+                              nsum++;
+                            }
+                          }
+                        }
+                        outputdata[i] = [app_graph.data[i][0],sum/nsum];
+                      }
+                    } else {
+                      var outputdata = JSON.parse(JSON.stringify(app_graph.data));
+                    }
+                    
+                    $.plot($('#placeholder'), [{data:outputdata}], options);
                     
                     if (app_graph.showcsv) app_graph.printcsv();
                     
@@ -153,6 +183,7 @@ var app_graph = {
                     $("#stats-mean").html(app_graph.mean.toFixed(dp)+units);
                     $("#stats-max").html(app_graph.maxval.toFixed(dp)+units);
                     $("#stats-min").html(app_graph.minval.toFixed(dp)+units);
+                    $("#stats-diff").html((app_graph.maxval-app_graph.minval).toFixed(dp)+units);
                     $("#stats-stdev").html(app_graph.stdev.toFixed(dp)+units);
                     $("#stats-npoints").html(app_graph.data.length);                 
                 }
