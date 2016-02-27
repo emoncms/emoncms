@@ -16,7 +16,7 @@ var app_graph = {
     minval: 0,
     maxval: 0,
     
-    applysmoothing: 0,
+    smoothing: 0,
 
     // Include required javascript libraries
     include: [
@@ -74,15 +74,12 @@ var app_graph = {
             }
         });
         
-        $("#applysmoothing").click(function() {
-            if ($(this)[0].checked) {
-                app_graph.applysmoothing = 1;
-                app_graph.draw();
-            } else {
-                app_graph.applysmoothing = 0;
-                app_graph.draw();
-            }
+        $("#smoothing").change(function() {
+            app_graph.smoothing = $(this).val();
+            app_graph.draw();
         });
+        
+        $("#smoothing").val(0);
     },
     
     show: function() 
@@ -155,11 +152,11 @@ var app_graph = {
                         selection: { mode: "x" }
                     }
                     
-                    if (app_graph.applysmoothing==1) {
+                    if (app_graph.smoothing>0) {
                       var outputdata = [];
                       for (var i=0; i<app_graph.data.length; i++) {
                         var sum = 0; var nsum = 0;
-                        for (var x=-3; x<=3; x++) {
+                        for (var x=-1*parseInt(app_graph.smoothing); x<=parseInt(app_graph.smoothing); x++) {
                           if (app_graph.data[i+x]!=undefined) {
                             if (app_graph.data[i+x][1]!=null) {
                               sum += app_graph.data[i+x][1]*1.0;

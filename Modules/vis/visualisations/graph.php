@@ -56,7 +56,16 @@
     </table>
     
     <p><b>Advanced</b></p>
-    <div>Apply smoothing: <input id="applysmoothing" type="checkbox"></div>
+    <div>Apply smoothing (number of points):
+      <select id="smoothing" style="width:50px">
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+      </select>
+    </div>
     <br>
 
     <p><b>API Request</b></p>
