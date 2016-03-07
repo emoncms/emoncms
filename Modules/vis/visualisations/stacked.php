@@ -32,6 +32,8 @@
 <script id="source" language="javascript" type="text/javascript">
   var kwhdA = <?php echo $bottom; ?>;
   var kwhdB = <?php echo $top; ?>;
+  var delta = <?php echo $delta; ?>;
+  
   var colourb = urlParams.colourb;
   if (colourb==undefined || colourb=='') colourb = "0096ff";
   var colourt = urlParams.colourt;
@@ -47,21 +49,37 @@
   }
 
   var path = "<?php echo $path; ?>";
-  var apikey = "<?php echo $apikey?>";
+  var apikey = "<?php echo $apikey; ?>";
 
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
   var end = +new Date; 
   
+  var d = new Date()
+  var n = d.getTimezoneOffset();
+  var offset = n / -60;
   start = Math.floor(start / 86400000) * 86400000;
   end = Math.floor(end / 86400000) * 86400000;
+  start -= offset * 3600000;
+  end -= offset * 3600000;
   
-  var dataA = get_feed_data(kwhdA,start,end,3600*24,1,1);
-  var dataB = get_feed_data(kwhdB,start,end,3600*24,1,1);
+  var dataA = get_feed_data(kwhdA,start,end,3600*24,1,0);
+  var dataB = get_feed_data(kwhdB,start,end,3600*24,1,0);
+  
+  if (delta==1) {
+      var tmpA = [];
+      var tmpB = [];
+      for (var n=1; n<dataA.length; n++) {
+          tmpA.push([dataA[n-1][0], dataA[n][1]-dataA[n-1][1]]);
+          tmpB.push([dataB[n-1][0], dataB[n][1]-dataB[n-1][1]]);
+      }
+      dataA = tmpA;
+      dataB = tmpB;
+  }
 
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+  $('#graph').height($('#graph_bound').width()*0.5);
   if (embed) $('#graph').height($(window).height());
 
   $('#loading').hide();
@@ -109,9 +127,6 @@
       d.setTime(item.datapoint[0]);
       var mdate = new Date(item.datapoint[0]);
 
-      console.log(item);
-      console.log(daysA);
-      console.log(daysB);
       var type = "", value = 0;
       if (item.seriesIndex == 0 && view==0) {value = monthsA.data[item.dataIndex][1];};
       if (item.seriesIndex == 1 && view==0) {value = monthsB.data[item.dataIndex][1];};
