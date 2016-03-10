@@ -43,7 +43,7 @@
 
     $mqtt = false;
 
-    $mysqli = @new mysqli($server,$username,$password,$database);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {
