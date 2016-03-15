@@ -1,5 +1,6 @@
 <?php
-    global $path;
+    global $path, $feedviewpath;
+    if (!isset($feedviewpath)) $feedviewpath = "vis/auto?feedid=";
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
@@ -155,6 +156,7 @@
 
 <script>
   var path = "<?php echo $path; ?>";
+  var feedviewpath = "<?php echo $feedviewpath; ?>;
 
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
@@ -190,7 +192,7 @@
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
-    'view-action':{'title':'', 'type':"iconlink", 'link':path+"graph/"},
+    'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
     'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
     'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
   }
@@ -334,22 +336,22 @@
   picker1.setEndDate(today);
   picker2.setStartDate(today);
 
-  $('#export-interval, #export-timeformat').on('change', function(e)
+  $('#export-interval, #export-timeformat').on('change', function(e) 
   {
     $("#export-timezone-offset").prop("disabled", $("#export-timeformat").prop('checked'));
     if ($("#export").attr('export-type') == 'group') {
-      var downloadsize = calculate_download_size($("#export").attr('feedcount'));
+      var downloadsize = calculate_download_size($("#export").attr('feedcount')); 
     } else {
-      calculate_download_size(1);
+      calculate_download_size(1); 
     }
   });
 
-  $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e)
+  $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) 
   {
     if ($("#export").attr('export-type') == 'group') {
-      var downloadsize = calculate_download_size($("#export").attr('feedcount'));
+      var downloadsize = calculate_download_size($("#export").attr('feedcount')); 
     } else {
-      calculate_download_size(1);
+      calculate_download_size(1); 
     }
   });
   
@@ -369,11 +371,11 @@
 
     if ($(this).attr('export-type') == 'group') {
       var feedids = $(this).attr('feedids');
-      var downloadsize = calculate_download_size($(this).attr('feedcount'));
+      var downloadsize = calculate_download_size($(this).attr('feedcount')); 
       url = path+"feed/csvexport.json?ids="+feedids+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
     } else {
       var feedid = $(this).attr('feedid');
-      var downloadsize = calculate_download_size(1);
+      var downloadsize = calculate_download_size(1); 
       url = path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('name');
     }
     console.log(url);
@@ -390,7 +392,7 @@
     var export_interval = $("#export-interval").val();
     var export_timeformat_size = ($("#export-timeformat").prop('checked') ? 20 : 11);// bytes per timestamp
     var downloadsize = 0;
-    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) {
+    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
       downloadsize=((export_end - export_start) / export_interval) * (export_timeformat_size + (feedcount*7)); // avg bytes per data
     }
     $("#downloadsize").html((downloadsize/1024/1024).toFixed(2));
@@ -428,7 +430,7 @@
       alert('ERROR: Feed could not be created. '+result.message);
       return false;
     } else {
-      update();
+      update(); 
       $('#newFeedNameModal').modal('hide');
     }
   });
@@ -443,7 +445,7 @@
     var contextid = i.id; // Feed ID
     var contextname = "";
     if (i.name != "") contextname = i.tag + " : " + i.name;
-    else contextname = i.tag + " : " + i.id;
+    else contextname = i.tag + " : " + i.id;    
     var processlist = processlist_ui.decode(i.processList); // Feed process list
     processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
    });
@@ -451,5 +453,5 @@
   $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(); } else { alert('ERROR: Could not save processlist. '+result.message); }
-  });
+  }); 
 </script>
