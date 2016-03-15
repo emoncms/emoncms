@@ -5,6 +5,7 @@
     $database = "emoncms";
     $username = "_DB_USER_";
     $password = "_DB_PASSWORD_";
+    $port     = "3306";
     // Skip database setup test - set to false once database has been setup.
     $dbtest = true;
 

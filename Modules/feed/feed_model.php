@@ -653,7 +653,7 @@ class Feed
             $this->EngineClass($engine)->update($feedid,$feedtime,$value);
         }
 
-        $this->set_timevalue($feedid, $value, $updatetime);
+        if ($updatetime!=false) $this->set_timevalue($feedid, $value, $updatetime);
 
         return $value;
     }

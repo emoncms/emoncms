@@ -53,7 +53,7 @@
   var embed = <?php echo $embed; ?>;
 
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+  $('#graph').height($('#graph_bound').width()*0.5);
   if (embed) $('#graph').height($(window).height());
 
   var path = "<?php echo $path; ?>";
@@ -61,7 +61,8 @@
 
   var power = "<?php echo $power; ?>";
   var kwhd = "<?php echo $kwhd; ?>";
-
+  var delta = "<?php echo $delta; ?>";
+  
   var timeWindow = (3600000*24.0*30);         //Initial time window
   var start = ((new Date()).getTime())-timeWindow;    //Get start time
   var end = (new Date()).getTime();       //Get end time
@@ -75,10 +76,11 @@
 
   var feedlist = [];
   feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
-  feedlist[1] = {id: kwhd, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+  feedlist[1] = {id: kwhd, delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
+    $('#graph').height($('#graph_bound').width()*0.5);
     if (embed) $('#graph').height($(window).height());
     plot();
   });
@@ -126,6 +128,15 @@
           }
 
           feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,interval,1,1);
+          
+          if (feedlist[i].delta==1 && i==1) {
+              var tmp = [];
+              for (var n=1; n<feedlist[i].plot.data.length; n++) {
+                  var delta = feedlist[i].plot.data[n][1] - feedlist[i].plot.data[n-1][1];
+                  tmp.push([feedlist[i].plot.data[n-1][0],delta]);
+              }
+              feedlist[i].plot.data = tmp;
+          }
         }
         
         if ( feedlist[i].plot.data) plotdata.push(feedlist[i].plot);

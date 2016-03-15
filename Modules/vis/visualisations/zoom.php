@@ -67,6 +67,7 @@
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var embed = <?php echo $embed; ?>;
+  var delta = <?php echo $delta; ?>;
   
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
@@ -96,10 +97,26 @@
 
   var bot_kwhd_text = "";
 
+  var d = new Date()
+  var n = d.getTimezoneOffset();
+  var offset = n / -60;
+  start = Math.floor(start / 86400000) * 86400000;
+  end = Math.floor(end / 86400000) * 86400000;
+  start -= offset * 3600000;
+  end -= offset * 3600000;
   get_feed_data_async(vis_feed_kwh_data_callback,null,kwhd,start,end,3600*24,1,1); // get 5 years of daily kw_data
   
   //load feed kwh_data
   function vis_feed_kwh_data_callback(context,data){
+  
+    if (window.delta==1) {
+        var tmp = [];
+        for (var n=1; n<data.length; n++) {
+            tmp.push([data[n-1][0], data[n][1]-data[n-1][1]]);
+        }
+        data = tmp;
+    }
+  
     kwh_data = data;
     var total = 0, ndays=0;
     for (z in kwh_data) {
