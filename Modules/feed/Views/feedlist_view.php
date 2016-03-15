@@ -156,7 +156,7 @@
 
 <script>
   var path = "<?php echo $path; ?>";
-  var feedviewpath = "<?php echo $feedviewpath; ?>;
+  var feedviewpath = "<?php echo $feedviewpath; ?>";
 
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
