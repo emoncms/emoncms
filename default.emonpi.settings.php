@@ -26,7 +26,7 @@
                           'port'     => 1883,
                           'user'     => 'emonpi',
                           'password' => 'emonpimqtt2016',
-                          'basetopic'=> 'emon'                          
+                          'basetopic'=> 'emon'
                           );
 
 
@@ -119,6 +119,9 @@
     $public_profile_enabled = true;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
+    
+    // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
+    $feedviewpath = "graph/";
 
 
 //6 #### Other settings
