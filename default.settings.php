@@ -119,6 +119,9 @@
     $public_profile_enabled = true;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
+    
+    // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
+    $feedviewpath = "vis/auto?feedid=";
 
 
 //6 #### Other settings

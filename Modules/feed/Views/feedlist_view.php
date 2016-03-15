@@ -1,5 +1,6 @@
 <?php
-    global $path;
+    global $path, $feedviewpath;
+    if (!isset($feedviewpath)) $feedviewpath = "vis/auto?feedid=";
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
@@ -155,6 +156,7 @@
 
 <script>
   var path = "<?php echo $path; ?>";
+  var feedviewpath = "<?php echo $feedviewpath; ?>";
 
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
@@ -190,7 +192,7 @@
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
-    'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="},
+    'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
     'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
     'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
   }
