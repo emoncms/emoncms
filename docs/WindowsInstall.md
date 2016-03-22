@@ -81,7 +81,7 @@ On Windows '\' must be escaped with another '\' hence the '\\'
 
 In the 'Other settings' section, change the $log_filename location to:
 
-    $log_filename = dirname(__FILE__).'/' . 'emoncms.log';
+    $log_filename = dirname(FILE).'\' . 'emoncms.log';
 
 #### 9) Thats it! Open emoncms in your browser
 
