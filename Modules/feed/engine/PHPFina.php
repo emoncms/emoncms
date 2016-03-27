@@ -656,7 +656,7 @@ class PHPFina
         return true;
     }
     
-    private function get_npoints($feedid)
+    public function get_npoints($feedid)
     {
         $bytesize = 0;
         
