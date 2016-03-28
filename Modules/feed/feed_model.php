@@ -455,6 +455,24 @@ class Feed
 
         return $data;
     }
+    
+    public function get_data_DMY($feedid,$start,$end,$mode,$timezone)
+    {
+        $feedid = (int) $feedid;
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        if ($engine != Engine::PHPFINA) return array('success'=>false, 'message'=>"This request is only supported by PHPFina");
+
+        // Call to engine get_data
+        global $session;
+        $userid = $session['userid'];
+        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+        $row = $result->fetch_object();
+        
+        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$row->timezone);
+        return $data;
+    }
 
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat,$name)
     {
