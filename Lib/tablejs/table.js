@@ -68,32 +68,38 @@ var table = {
     for (row in table.data) {
       var group = table.data[row][table.groupby];
       if (!group) group = 'NoGroup';
-      if (!groups[group]) {groups[group] = ""; group_num++;}
-      groups[group] += table.draw_row(row);
+      if (!groups[group]) {groups[group] = {}; groups[group]['ui_rows'] = ""; groups[group]['rows_id'] = []; group_num++;}
+      groups[group]['ui_rows'] += table.draw_row(row);
+      groups[group]['rows_id'].push(row);
     }
 
     var html = "";
     for (group in groups) {
-      // Minimized group persistance, see lines: 4,92,93
-      var visible = '', symbol ='<i class="icon-minus-sign"></i>'; 
-      if (table.groupshow[group]==undefined) table.groupshow[group]=true;
-      if (table.groupshow[group]==false) {symbol = '<i class="icon-plus-sign"></i>'; visible = "display:none";}
-
+      var visible = '';
+      htmlg = "";
       if (group_num>1) {
-        html += "<tr><th colspan='3'><a class='MINMAX' group='"+group+"' >"+symbol+"</a> "+table.groupprefix+group+"</th>";
-        var count = 0; for (field in table.fields) count++;   // Calculate amount of padding required
-        for (i=2; i<count-1; i++) html += "<th></th>";      // Add th padding
-        html += "</tr>";
+        var symbol ='<i class="MINMAX icon-minus-sign" group="'+group+'" style="cursor:pointer"></i>'; 
+        if (table.groupshow[group]==undefined) table.groupshow[group]=false; // default is collapsed
+        if (table.groupshow[group]==false) {symbol = '<i class="MINMAX icon-plus-sign" group="'+group+'" style="cursor:pointer"></i>'; visible = "display:none";}
+        htmlg += "<tr><th colspan='3'>"+symbol+" <a class='MINMAX' group='"+group+"' style='cursor:pointer'>"+table.groupprefix+group+"</a></th>";
+        var countFields = 0; for (field in table.fields) countFields++; // Calculate amount of padding required
+        if (table.groupfields == undefined) {
+          for (i=2; i<countFields-1; i++) htmlg += "<th></th>"; // Add th padding
+        } else {
+          for (fieldg in table.groupfields) htmlg += "<th group='"+group+"' fieldg='"+fieldg+"' >"+table.fieldtypes[table.groupfields[fieldg].type].draw(group,groups[group]['rows_id'],fieldg)+"</th>";
+        }
+        htmlg += "</tr>";
       }
+      html += htmlg;
 
       html += "<tbody id='"+group+"' style='"+visible+"'><tr>";
       for (field in table.fields)
       {
         var title = field; if (table.fields[field].title!=undefined) title = table.fields[field].title;
-        html += "<th><a type='sort' field='"+field+"'>"+title+"</a></th>";
+        html += "<th><a type='sort' field='"+field+"' style='cursor:pointer'>"+title+"</a></th>";
       }
       html += "</tr>";
-      html += groups[group];
+      html += groups[group]['ui_rows'];
       html += "</tbody>";
     }
 
@@ -137,7 +143,9 @@ var table = {
 
    'add_events':function() {
     // Event: minimise or maximise group
-    $(table.element).on('click', '.MINMAX', function() {
+    $(table.element).on('click touchend', '.MINMAX', function(e) {
+      e.stopPropagation();
+      e.preventDefault();
       var $me=$(this);
       if ($me.data('clicked')){
         $me.data('clicked', false); // reset
@@ -146,9 +154,7 @@ var table = {
         // Do what needs to happen on double click. 
         var group = $(this).attr('group');
         var state = table.groupshow[group];
-        for (gs in table.groupshow) { table.groupshow[gs] = false; }
-        if (state == true) { $("#"+group).hide(); $(this).html('<i class="icon-plus-sign"></i>'); table.groupshow[group] = false; }
-        if (state == false) { $("#"+group).show(); $(this).html('<i class="icon-minus-sign"></i>'); table.groupshow[group] = true; }
+        for (gs in table.groupshow) { table.groupshow[gs] = !state; }
         table.draw();
       } else {
         $me.data('clicked', true);
@@ -158,8 +164,7 @@ var table = {
           // Do what needs to happen on single click. Use $me instead of $(this) because $(this) is  no longer the element
           var group = $me.attr('group');
           var state = table.groupshow[group];
-          if (state == true) { $("#"+group).hide(); $me.html('<i class="icon-plus-sign"></i>'); table.groupshow[group] = false; }
-          if (state == false) { $("#"+group).show(); $me.html('<i class="icon-minus-sign"></i>'); table.groupshow[group] = true; }
+          table.groupshow[group] = !state;
           table.draw();
         },250); // dblclick tolerance
         $me.data('alreadyclickedTimeout', alreadyclickedTimeout); // store this id to clear if necessary
@@ -267,6 +272,10 @@ var table = {
 
     'edit': {
       'draw': function (row,field) { return table.data[row]['#READ_ONLY#'] ? "" : "<a type='edit' row='"+row+"' uid='"+table.data[row]['id']+"' mode='edit'><i class='icon-pencil' style='cursor:pointer'></i></a>"; },
+    },
+
+    'blank': {
+      'draw': function (row,field) { return ""; }
     }
   }
 }

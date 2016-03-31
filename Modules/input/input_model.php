@@ -15,11 +15,14 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class Input
 {
     private $mysqli;
+    private $feed;
     private $redis;
 
     public function __construct($mysqli,$redis,$feed)
     {
         $this->mysqli = $mysqli;
+        $this->feed = $feed;
+
         $this->redis = $redis;
     }
 
@@ -219,6 +222,19 @@ class Input
             $result = $this->mysqli->query("SELECT name FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();
             return $row['name'];
+        }
+    }
+
+    public function get_details($id)
+    {
+        // LOAD REDIS
+        $id = (int) $id;
+        if ($this->redis) {
+            if (!$this->redis->exists("input:$id")) $this->load_input_to_redis($id);
+            return $this->redis->hGetAll("input:$id");
+        } else {
+            $result = $this->mysqli->query("SELECT nodeid,name,description FROM input WHERE `id` = '$id'");
+            return $result->fetch_array();
         }
     }
 

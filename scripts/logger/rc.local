@@ -1,0 +1,25 @@
+#!/bin/sh -e
+#
+# rc.local
+#
+# This script is executed at the end of each multiuser runlevel.
+# It's function is to create and set the permissions
+# for log files to be written to tmpfs.
+
+# Will only run if /var/log is mounted in tmpfs
+if ( mount | grep "on /var/log "| grep -q "^tmpfs " )
+then
+for i in "redis" "apache2" "mysql" "logrotate" ; do mkdir /var/log/"$i"; done
+for i in "emoncms.log" "mysql.log" "redis/redis-server.log" "mysql/error.log" ; do touch /var/log/"$i"; done
+for i in "emoncms.log" "mysql.log" "redis/redis-server.log" "mysql/error.log" "apache2" ; do ""chmod 666"" /var/log/"$i"; done
+chown root:adm /var/log/apache2
+chown -R redis:redis /var/log/redis
+chown -R mysql:adm /var/log/mysql
+chown -R pi:pi /var/log/logrotate
+fi
+# Restart Apache & Redis, now the directories are defined
+service apache2 restart
+/etc/init.d/redis-server restart
+
+
+exit 0

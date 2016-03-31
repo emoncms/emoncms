@@ -2,25 +2,28 @@
 
 Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
 
-**Version 9 of emoncms has been developed by [Chaveiro](https://github.com/chaveiro/) with a significant list of improvements, the EmonCMS 9.0 RC forum thread with full change log can be found here [http://openenergymonitor.org/emon/node/11009](http://openenergymonitor.org/emon/node/11009)**
+**Version 9 of emoncms has been developed by [Chaveiro](https://github.com/chaveiro/) with a significant list of improvements, see [forum thread with full change log](http://openenergymonitor.org/emon/node/11009)**
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
 ## Branches
 
-* [v9.0](https://github.com/emoncms/emoncms/tree/9.0) - see [EmonCMS 9.0 RC forum thread](http://openenergymonitor.org/emon/node/11009)
+**Note:** We are currently reorganising the emoncms branches. The master branch is now the same as 9.x. 
 
-* [v8.5](https://github.com/emoncms/emoncms/tree/v8.5) - Version 8.5 focused emoncms around a core set of timeseries storage engines: phpfina, phpfiwa and phptimeseries. The data request api was improved and the way data requests are made make it easier to make cross feed comparisons. The myelectric and node modules have been removed, replaced with new optional modules that improve on the functionality of these modules called the app module and nodes module.
+* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The current emonpi/emonbase emoncms version. Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set.
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. 
+
+* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The old emonpi/emonbase emoncms version (July 15 ready-to-go SD card image). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
 
 **Optional modules**
 
-Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. New for version v8.5 are:
+Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to update check for database updates in Administration menu after installing new modules:
 
-- App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump. git clone https://github.com/emoncms/app.git
+- Dashboards module, required for creating, viewing and publishing dashboards: 
+https://github.com/emoncms/dashboard
 
-- Nodes provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration. git clone https://github.com/emoncms/nodes.git
+- App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump https://github.com/emoncms/app.git
     
 - Config provides an in-browser emonhub.conf editor and emonhub.log log viewer. git clone https://github.com/emoncms/config.git
     
@@ -48,20 +51,12 @@ There are many other modules such as the event module and openbem (open source b
 
 **v9 Development [http://openenergymonitor.org/emon/node/11009](http://openenergymonitor.org/emon/node/11009)**
 
-**Development plan overview: [Github: Emoncms development overview](https://github.com/emoncms/emoncms/issues/244)** (Out of date but pre v8.5)
-
-**EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/emoncms/emonview](https://github.com/emoncms/emonview)
+**EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/trystanlea/emonview](https://github.com/trystanlea/emonview)
 
 
 ## Using emoncms
 
-* [Github: Home Energy Monitor - Second half gives an example of how to configure emoncms to show an electric use dashboard](https://github.com/openenergymonitor/documentation/blob/master/Applications/HomeEnergyMonitor/HomeEnergyMonitor.md)
-* [EmonTx v3: Quick start guide - an example of configuring the inputs of the standard (non watt hour calculating) firmware for the EmonTx v3 including My Electric dashboard configuration](http://openenergymonitor.org/emon/modules/emonTxV3)
-* [EmonTH: Quick start guide - an example of configuring emoncms EmonTH inputs and creating temperature and humidity feeds](http://openenergymonitor.org/emon/modules/emonTH)
 * [Blog post: An Example of configuring the new emoncms bargraph visualisation that uses accumulating watt hour data - part of the Monitoring SolarPV, Heatpump and house electric, EmonTx v2 system upgrade example](http://openenergymonitor.blogspot.co.uk/2014/08/monitoring-solarpv-heatpump-and-house.html)
-* [An Example of more advanced custom dashboard setup](http://emoncms.org/site/docs/dashboards)
-* [A list with screenshots of available visualisations](http://emoncms.org/site/docs/visualisations)
-
 
 #### Design
 
@@ -87,14 +82,14 @@ Documentation hosted on openenergymonitor documentation github:
 - [OpenEnergyMonitor Forums](http://openenergymonitor.org/emon/forum)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
 
-## IRC
-You can also join us on our IRC channel #emon on irc.freenode.net.
     
 ## Developers
 Emoncms is developed and has had contributions from the following people.
 
 - Trystan Lea           https://github.com/trystanlea (principal maintainer)
 - Chaveiro              https://github.com/chaveiro (principal developer of v9)
+- Glyn Hudson           https://github.com/glynhudson
+- Paul Reed             https://github.com/Paul-Reed
 - Ildefonso Martínez    https://github.com/ildemartinez
 - Matthew Wire          https://github.com/mattwire
 - Baptiste Gaultier     https://github.com/bgaultier

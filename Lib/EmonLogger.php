@@ -17,14 +17,17 @@ class EmonLogger
     private $logfile = "";
     private $caller = "";
     private $logenabled = false;
+    private $log_level = 2;
 
     public function __construct($clientFileName)
     {
-        global $log_filename, $log_enabled;
-		if (!$log_enabled) {
-			$this->logenabled = false;
-		}
+        global $log_filename, $log_enabled, $log_level;
+
+        if (!$log_enabled) {
+            $this->logenabled = false;
+        }
         else if ($log_filename) {
+            if ($log_level) $this->log_level = $log_level;
             $this->logfile = $log_filename;
             $this->caller = basename($clientFileName);
             if (!file_exists($this->logfile))
@@ -37,20 +40,20 @@ class EmonLogger
     }
 
     public function info ($message){
-        $this->write("INFO",$message);
+        if ($this->log_level <= 1) $this->write("INFO",$message);
     }
 
     public function warn ($message){
-        $this->write("WARN",$message);
+        if ($this->log_level <= 2) $this->write("WARN",$message);
     }
-    
+
     public function error ($message){
-        $this->write("ERROR",$message);
+        if ($this->log_level <= 3) $this->write("ERROR",$message);
     }
-    
+
     private function write($type,$message){
         if (!$this->logenabled) return;
-        
+
         $now = microtime(true);
         $micro = sprintf("%03d",($now - ($now >> 0)) * 1000);
         $now = DateTime::createFromFormat('U', (int)$now); // Only use UTC for logs

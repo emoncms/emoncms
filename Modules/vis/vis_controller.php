@@ -107,8 +107,8 @@
 
                         # we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
                         # we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
-                        if ($key == "colour")
-                            $array[$key] = preg_replace('/[^\dA-Za-z]/','',$array[$key]);
+                        else if ($type==9)
+                            $array[$key] = preg_replace('/[^\dA-Za-z]/','',get($key))?get($key):$default;
                     }
                 }
 

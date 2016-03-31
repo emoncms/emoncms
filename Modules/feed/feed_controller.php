@@ -56,6 +56,10 @@ function feed_controller()
                    $result[$i] = $feed->get_value($feedid); // null is a valid response
                 } else { $result[$i] = false; } // false means feed not found
             }
+        } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
+            // Export multiple feeds on the same csv
+            // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
+            $result = $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
@@ -73,7 +77,12 @@ function feed_controller()
                         $limitinterval = 1;
                         if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
                         if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
-                        $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                        
+                        if (isset($_GET['interval'])) {
+                            $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                        } else if (isset($_GET['mode'])) {
+                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'),get('timezone'));
+                        }
                     }
                     else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
@@ -90,10 +99,12 @@ function feed_controller()
                     // Storage engine agnostic
                     if ($route->action == 'set') $result = $feed->set_feed_fields($feedid,get('fields'));
                     else if ($route->action == "insert") $result = $feed->insert_data($feedid,time(),get("time"),get("value"));
-                    else if ($route->action == "update") $result = $feed->update_data($feedid,time(),get("time"),get('value'));
-                    else if ($route->action == "delete") $result = $feed->delete($feedid);
+                    else if ($route->action == "update") {
+                        if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
+                        $result = $feed->update_data($feedid,$updatetime,get("time"),get('value'));
+                    } else if ($route->action == "delete") $result = $feed->delete($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
-                    else if ($route->action == "csvexport") $feed->csv_export($feedid,get('start'),get('end'),get('interval'));
+                    else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
 
                     else if ($route->action == "process")
                     {

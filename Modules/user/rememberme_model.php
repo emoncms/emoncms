@@ -24,9 +24,8 @@ class Rememberme {
     private $salt = "";
 
     const TOKEN_VALID    =  1,
-          USER_NOT_FOUND =  0,
-          TOKEN_INVALID  = -1,
-          TOKEN_EXPIRED  = -2;
+          TOKEN_INVALID  =  0,
+          TOKEN_EXPIRED  = -1;
 
     public function __construct($mysqli)
     {
@@ -144,23 +143,19 @@ class Rememberme {
         // We don't store the sha1 as binary values because otherwise we could not use
         // proper XML test data
         $now = date("Y-m-d H:i:s", time());
-        $sql = "SELECT IF(SHA1('$token') = token, 1, -1) AS token_match, " .
-               " IF(expire < '$now', 1, -1) AS token_expired " .
-               "FROM rememberme WHERE userid='$userid' LIMIT 1 ";
+        $sql = "SELECT IF('$now' > expire, 1, -1) AS token_expired " .
+               "FROM rememberme WHERE userid='$userid' and SHA1('$token') = token";
                      
         $result = $this->mysqli->query($sql);
         $row = $result->fetch_array();
         if(count($result) != 1) {
-            return self::USER_NOT_FOUND;
-        }
-        elseif ($row['token_match'] == 1 && $row['token_expired'] == -1) {
-            return self::TOKEN_VALID;
+            return self::TOKEN_INVALID;
         }
         elseif ($row['token_expired'] == 1) {
             return self::TOKEN_EXPIRED;
         }
         else {
-            return self::TOKEN_INVALID;
+            return self::TOKEN_VALID;
         }
     }
 

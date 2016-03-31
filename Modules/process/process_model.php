@@ -31,14 +31,15 @@ class Process
         $this->feed = $feed;
         if (!($timezone === NULL)) $this->timezone = $timezone;
         $this->log = new EmonLogger(__FILE__);
+        $this->get_process_list(); // Load modules modules
     }
 
     // Triggered when invoking inaccessible methods in this class context, it must be a module function then
     public function __call($method, $args){
-        if (strpos($method, '.') === FALSE) {
+        if (strpos($method, '__') === FALSE) {
             $module = "process";              // default to core module 'process'
         } else {
-            $mod_fun = explode('.',$method);  // if method contains a '.', assume the format is module.function
+            $mod_fun = explode('__',$method);  // if method contains a '__', assume the format is module__function
             $module = $mod_fun[0];
             $method = $mod_fun[1];
         }
@@ -82,7 +83,7 @@ class Process
             if (isset($inputprocess[1])) $arg = $inputprocess[1];          // Can be value or feed id
 
             $process_function = $processkey;                               // get process key 'module.function'
-            if (strpos($processkey, '.') === FALSE)
+            if (strpos($processkey, '__') === FALSE)
                 $process_function = $process_list[$processkey][2];         // for backward compatibility -> get process function name
             $value = $this->$process_function($arg,$time,$value,$options); // execute process function
 
@@ -101,18 +102,17 @@ class Process
             if (filetype("Modules/".$dir[$i])=='dir') {
                 $class = $this->get_module_class($dir[$i]);
                 if ($class != null) {
-                    $list = $class->process_list();
-                    foreach($list as $k => $v) {
-                        unset ($list[$k]);
-                        $processkey = strtolower($dir[$i].".".$v[2]);
-                        $list[$processkey] = $v; // set list key as "module.function"
+                    $mod_process_list = $class->process_list();
+                    foreach($mod_process_list as $k => $v) {
+                        $processkey = strtolower($dir[$i]."__".$v[2]);
+                        $list[$processkey] = $v; // set list key as "module__function"
                         //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
                     }
                 }
             }
         }
         // Loads core process list from process module (with integer key for backward_compatibility)
-        $backward_compatible_list = "process.core_process_list"; 
+        $backward_compatible_list = "process__core_process_list"; 
         $list+=$this->$backward_compatible_list();
         return $list;
     }

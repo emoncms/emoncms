@@ -1,6 +1,7 @@
 .project
 debian/emoncms*
 settings.php
+old.settings.php
 emoncms.log
 .idea
 
@@ -8,8 +9,8 @@ emoncms.log
 Modules/*
 Modules/*/
 !Modules/admin/
-!Modules/dashboard/
 !Modules/feed/
+!Modules/eventp/
 !Modules/input/
 !Modules/process/
 !Modules/schedule/

@@ -75,13 +75,15 @@ class VirtualFeed
         }
         $now = time();
         if ($datatype==2) { //daily
-            $start=$this->process->getstartday($now); // start of day
+            $start=$this->process->process__getstartday($now); // start of day
             $endslot = $start + 86400; // one day range
-            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400);
+            $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400, 'sourcetype' => "VIRTUALFEED", 'sourceid' => $feedid);
             $dataValue = $this->process->input($start, null, $processList, $opt_timearray); // execute processlist 
         } else {
-            $dataValue = $this->process->input($now, null, $processList); // execute processlist 
+            $opt_timearray = array('sourcetype' => "VIRTUALFEED", 'sourceid' => $feedid);
+            $dataValue = $this->process->input($now, null, $processList, $opt_timearray); // execute processlist 
         }
+        //$this->log->info("lastvalue() feedid=$feedid dataValue=$dataValue");
         return array('time'=>$now, 'value'=>$dataValue);
     }
 
@@ -134,15 +136,15 @@ class VirtualFeed
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $t * 1000;
-                    $data[] = array($time, (float)$dataValue);
+                    $data[] = array($time, $dataValue);
                 }
                 $t = $tb; // next start time
             }
         }
         else {
             //daily virtual feed
-             $startslot=$this->process->getstartday($start); // start of day for user timezone
-             $endslot=$this->process->getstartday($end); // end of day for user timezone
+             $startslot=$this->process->process__getstartday($start); // start of day for user timezone
+             $endslot=$this->process->process__getstartday($end); // end of day for user timezone
             
              if ($endslot < $startslot) $endslot = $endslot + 86400; // one day range
              while ($startslot<$endslot)
@@ -152,7 +154,7 @@ class VirtualFeed
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $startslot * 1000;
-                    $data[] = array($time, (float)$dataValue);
+                    $data[] = array($time, $dataValue);
                 }
                 $startslot +=86400; // inc a day
              }
@@ -167,9 +169,38 @@ class VirtualFeed
         return false; // TBD
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        return false; // TBD
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
+        
+        // There is no need for the browser to cache the output
+        header("Cache-Control: no-cache, no-store, must-revalidate");
+
+        // Tell the browser to handle output as a csv file to be downloaded
+        header('Content-Description: File Transfer');
+        header("Content-type: application/octet-stream");
+        $filename = $feedid.".csv";
+        header("Content-Disposition: attachment; filename={$filename}");
+
+        header("Expires: 0");
+        header("Pragma: no-cache");
+
+        // Write to output stream
+        $exportfh = @fopen( 'php://output', 'w' );
+
+        $data = $this->get_data($feedid,$start*1000,$end*1000,$outinterval,0,0);
+        $max = sizeof($data);
+        for ($i=0; $i<$max; $i++){
+            $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);
+            $value = $data[$i][1];
+            if ($value != null) $value = number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'');
+            fwrite($exportfh, $timenew.$csv_field_separator.$value."\n");
+        }
+        fclose($exportfh);
+        exit;
     }
 
 }

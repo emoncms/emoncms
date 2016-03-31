@@ -31,7 +31,7 @@ The easiest way to do this via a GUI is through a program called phpmyadmin. The
 
 To create a database in phpmyadmin, click on Databases at the top, then enter 'emoncms' in the text input box and click create.
 
-When, in phpmyadmin, the database has been created, a new user must also be created on host "localhost" (not "%") and have a password set.  When the user has been created, the user needs to have "all" privileges over the new database that has just been created (scroll down for Database-specific privileges). Those 4 items - the new user name, password, "localhost" and database name are the values that go into the settings.php file. 
+When, in phpmyadmin, the database has been created, a new user must also be created on host "localhost" (not "%") and have a password set.  When the user has been created, the user needs to have "all" privileges over the new database that has just been created (scroll down for Database-specific privileges). Those 4 items - the new user name, password, "localhost" and database name are the values that go into the settings.php file.
 
 **Note:** this user isn't necessarily the same as one of the users who are allowed to register in emoncms once it's running.
 
@@ -39,12 +39,12 @@ When, in phpmyadmin, the database has been created, a new user must also be crea
 
 **You may want to install one of the other branches of emoncms here, perhaps to try out a new feature set not yet available in the master branch. See the branch list and descriptions on the [start page](https://github.com/emoncms/emoncms)**
 
-[https://github.com/emoncms/emoncms/archive/master.zip](https://github.com/emoncms/emoncms/archive/master.zip)
+[https://github.com/emoncms/emoncms/archive/stable.zip](https://github.com/emoncms/emoncms/archive/stable.zip)
 
-    
+
 #### 6) Place emoncms in your WAMP public html / www directory
 
-Left-click on your Wamp icon, in the list you should see a link to: www directory (or possibly public html on older installations). 
+Left-click on your Wamp icon, in the list you should see a link to: www directory (or possibly public html on older installations).
 
 Open the www directory from the wamp menu link.
 
@@ -63,10 +63,10 @@ Inside this folder create 3 other folders: phpfiwa, phpfina and phptimeseries, t
 
 #### 8) Set emoncms settings.php
 
-Copy default.settings.php and rename to settings.php. Enter your database username, password, server and database name. 
+Copy default.settings.php and rename to settings.php. Enter your database username, password, server and database name.
 
 In the feedsettings section uncomment the datadir defenitions and set them to the location of each of the feed engine data folders on your system:
-    
+
     'phpfiwa'=>array(
         'datadir'=>"C:\\Users\\Username\\emoncmsdata\\phpfiwa\\"
     ),
@@ -79,10 +79,14 @@ In the feedsettings section uncomment the datadir defenitions and set them to th
 
 On Windows '\' must be escaped with another '\' hence the '\\'
 
+In the 'Other settings' section, change the $log_filename location to:
+
+    $log_filename = dirname(FILE).'\\' . 'emoncms.log';
+
 #### 9) Thats it! Open emoncms in your browser
 
 [http://localhost/emoncms](http://localhost/emoncms)
-    
+
 Click on register and create a new user. It should now log you in and you will see the accounts page.
 
 #### 10) Sending some data to emoncms
@@ -92,10 +96,10 @@ Click on the input tab and then *Input API Help*
 Click on the example *Assign inputs to a node group* which will send 3 input values and assign them to node 1:
 
 [http://localhost/emoncms/input/post.json?node=1&csv=100,200,300](http://localhost/emoncms/input/post.json?node=1&csv=100,200,300)
-    
+
 You should see 'ok' printed to the screen.
 
-Navigate back to the inputs page and you will see 3 inputs listed under node 1. 
+Navigate back to the inputs page and you will see 3 inputs listed under node 1.
 
 Click on the wrench icon to bring up the input processing configuration page for a particular input.
 
@@ -104,7 +108,7 @@ Create a new *Log to feed* process and enter a name for the feed you'd like to c
 If you now repeat sending data via:
 
 [http://localhost/emoncms/input/post.json?node=1&csv=100,200,300](http://localhost/emoncms/input/post.json?node=1&csv=100,200,300)
-    
+
 The data will now be being stored in a feed table.
 
 After sending say 5-10 values. Navigate to *Feeds* and click on the eye button and zoom in to the last few minutes. You should see a line being drawn. If you dont see anything yet, keep sending data over a period of a couple of minutes and vary the input values.
@@ -141,6 +145,3 @@ For a more complete python gateway see the Jerome's oem_gateway here which can a
 <p><b>IE 8, 7</b> - not recommended, widgets and dashboard editor <b>do not work</b> due to no html5 canvas fix implemented but visualisations do work as these have a fix applied.</p>
 
 </div>
-
-
-

@@ -8,7 +8,6 @@ class PHPFina
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
-    private $lastvalue_cache = array();
 
     /**
      * Constructor.
@@ -300,7 +299,7 @@ class PHPFina
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>3000) return array('success'=>false, 'message'=>"Request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
@@ -343,6 +342,58 @@ class PHPFina
 
             $i++;
         }
+        return $data;
+    }
+    
+    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+    {
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+               
+        // If meta data file does not exist exit
+        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        $meta->npoints = $this->get_npoints($id);
+        
+        $data = array();
+        
+        $fh = fopen($this->dir.$id.".dat", 'rb');
+        
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        $date->modify("+1 day");
+        
+        $n = 0;
+        while($n<10000) // max itterations
+        {
+            $time = $date->getTimestamp();
+            if ($time>$end) break;
+            
+            $pos = round(($time - $meta->start_time) / $meta->interval);
+            $value = null;
+            
+            if ($pos>=0 && $pos < $meta->npoints)
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $val = unpack("f",fread($fh,4));
+                
+                // add to the data array if its not a nan value
+                if (!is_nan($val[1])) {
+                    $value = $val[1];
+                } else {
+                    $value = null;
+                }
+            }
+            $data[] = array($time*1000,$value);
+            
+            $date->modify("+1 day");
+            $n++;
+        }
+        
+        fclose($fh);
+        
         return $data;
     }
 
@@ -404,11 +455,13 @@ class PHPFina
 
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
+
         $feedid = intval($feedid);
         $start = intval($start);
         $end = intval($end);
@@ -479,9 +532,9 @@ class PHPFina
 
             // calculate the datapoint time
             $time = $meta->start_time + $pos * $meta->interval;
-
+            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $time.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
 
             $i++;
         }
@@ -549,11 +602,13 @@ class PHPFina
             if ($npadding>0) {
                 $padding_value = NAN;
                 if ($padding_mode!=null) {
-                    if (!isset($this->lastvalue_cache[$feedid])) {
-                        $this->lastvalue_cache[$feedid] = (float) $this->lastvalue($feedid)['value'];
+                    static $lastvalue_static_cache = array(); // Array to hold the cache
+                    if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
+                        $lastvalue_static_cache[$feedid] = $this->lastvalue($feedid)['value'];
                     }
-                    $div = ($value - $this->lastvalue_cache[$feedid]) / ($npadding+1);
-                    $padding_value = $this->lastvalue_cache[$feedid];
+                    $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
+                    $padding_value = $lastvalue_static_cache[$feedid];
+                    $lastvalue_static_cache[$feedid] = $value; // Set static cache last value
                 }
                 
                 for ($n=0; $n<$npadding; $n++)
@@ -565,13 +620,15 @@ class PHPFina
             }
             
             $this->writebuffer[$feedid] .= pack("f",$value);
-            $this->lastvalue_cache[$feedid] = $value;
             //$this->log->info("post_bulk_prepare() ##### value saved $value");
         } else {
             // if data is in past, its not supported, could call update here to fix on file before continuing
             // but really this should not happen for past data has process_feed_buffer uses update for that.
             // so this must be data posted in less time of the feed interval and can be ignored
-            $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
+            
+            // This error crouds out the log's but is behaviour expected if data is coming in at a quicker interval than the feed interval
+            // EmonPi posts at 5s where feed engine default size is 10s which means a log entry for every datapoint with this uncommented
+            // $this->log->warn("post_bulk_prepare() data in past or before next interval, nothing saved. Posting too fast? slot=$meta->interval feedid=$feedid timestamp=$timestamp pos=$pos last_pos=$last_pos value=$value");
         }
         
         return $value;
@@ -651,7 +708,7 @@ class PHPFina
         return true;
     }
     
-    private function get_npoints($feedid)
+    public function get_npoints($feedid)
     {
         $bytesize = 0;
         

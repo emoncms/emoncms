@@ -17,6 +17,8 @@
 #table td:nth-of-type(3) { width:20%;}
 #table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
 #table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
+#table th[fieldg="time"] { font-weight:normal; text-align: right; }
+#table th[fieldg="processList"] { font-weight:normal; text-align: left; }
 #table td:nth-of-type(7) { width:14px; text-align: center; }
 #table td:nth-of-type(8) { width:14px; text-align: center; }
 #table td:nth-of-type(9) { width:14px; text-align: center; }
@@ -62,6 +64,15 @@
   table.element = "#table";
   table.groupprefix = "Node ";
   table.groupby = 'nodeid';
+  table.groupfields = {
+    'processList':{'title':'<?php echo _("Process list"); ?>','type':"group-processlist"},
+    'time':{'title':"<?php echo _('Updated'); ?>", 'type':"group-updated"},
+    'dummy-6':{'title':'', 'type':"blank"},
+    'dummy-7':{'title':'', 'type':"blank"},
+    'dummy-8':{'title':'', 'type':"blank"},
+    'dummy-9':{'title':'', 'type':"blank"}
+  }
+
   table.deletedata = false;
   table.fields = {
     //'id':{'type':"fixed"},
@@ -149,10 +160,16 @@
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
-    if (i.description != "") newfeedname = i.description;
-    else newfeedname = "node:" + i.nodeid+":" + i.name;
+    var contextname = "";
+    if (i.description != "") { 
+        newfeedname = i.description;
+        contextname = "Node" + i.nodeid + " : " + newfeedname;
+    }
+    else { 
+        newfeedname = "node:" + i.nodeid+":" + i.name;
+        contextname = "Node" + i.nodeid + " : " + i.name;
+    }
     var newfeedtag = "Node " + i.nodeid;
-    var contextname = "Node" + i.nodeid + " : " + newfeedname;
     var processlist = processlist_ui.decode(i.processList); // Input process list
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
    });

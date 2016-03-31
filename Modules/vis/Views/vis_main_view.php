@@ -11,6 +11,8 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 ?>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -101,7 +103,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     var options = [];
     $(".options").each(function() {
       if ($(this).val()) {
-        if ($(this).attr("id")=="colour") {
+        if ($(this).attr("type")=="color") {
           // Since colour values are generally prefixed with "#", and "#" isn't valid in URLs, we strip out the "#".
           // It will be replaced by the value-checking in the actual plot function, so this won't cause issues.
           var colour = $(this).val();
@@ -138,7 +140,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
       var options = [];
       $(".options").each(function() {
         if ($(this).val()) {
-          if ($(this).attr("id")=="colour") {
+          if ($(this).attr("type")=="color") {
             // Since colour values are generally prefixed with "#", and "#" isn't valid in URLs, we strip out the "#".
             // It will be replaced by the value-checking in the actual plot function, so this won't cause issues.
             var colour = $(this).val();
@@ -167,12 +169,10 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 
       if (type == 0 || type == 1 || type == 2 || type == 3) {
         options_html += select_feed(box_options[z][0], feedlist, type);
+      } else if (type == 9)  { // colour
+        options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
       } else {
-        if (box_options[z][0] == "colour")  {
-          options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
-        } else {
-          options_html += "<input type='text' class='options' id='"+box_options[z][0]+"' value='"+box_options[z][3]+"'>";
-        }
+        options_html += "<input type='text' class='options' id='"+box_options[z][0]+"' value='"+box_options[z][3]+"'>";
       }
       options_html += "</div>";
     }

@@ -631,6 +631,7 @@ Licensed under the MIT license.
             draw: [],
             bindEvents: [],
             drawOverlay: [],
+            legendInserted: [],
             shutdown: []
         },
         plot = this;
@@ -2783,7 +2784,7 @@ Licensed under the MIT license.
 
             var table = '<table style="font-size:smaller;color:' + options.grid.color + '">' + fragments.join("") + '</table>';
             if (options.legend.container != null)
-                $(options.legend.container).html(table);
+                var legend = $(options.legend.container).html(table);
             else {
                 var pos = "",
                     p = options.legend.position,
@@ -2817,6 +2818,7 @@ Licensed under the MIT license.
                     $('<div style="position:absolute;width:' + div.width() + 'px;height:' + div.height() + 'px;' + pos +'background-color:' + c + ';"> </div>').prependTo(legend).css('opacity', options.legend.backgroundOpacity);
                 }
             }
+            executeHooks(hooks.legendInserted, [legend]);
         }
 
 

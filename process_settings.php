@@ -22,7 +22,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     $error_out = "";
 
-    if (!isset($config_file_version) || $config_file_version < 6) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
+    if (!isset($config_file_version) || $config_file_version < 8) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';
@@ -30,8 +30,9 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if ($enable_password_reset && !isset($smtp_email_settings)) $error_out .= '<p>missing setting: $smtp_email_settings</p>';
 
     if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
+    if (!isset($log_level)) $log_level=2;  //default to warning log level
 
-    if (!isset($redis_enabled) ) $redis_enabled = false;
+    if (!isset($redis_enabled)) $redis_enabled = false;
     if ($redis_enabled) {
         if (!class_exists('Redis')) $error_out .= "<p>redis enabled but not installed, check setting: redis_enabled</p>";
         if (!isset($redis_server['host'])) $error_out .= "<p>redis server not configured, check setting: redis_server.host</p>";
@@ -46,8 +47,14 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if ($feed_settings['redisbuffer']['enabled']) $error_out .= "<p>buffered writing requires redis but its disabled, check settings: settings['redisbuffer']['enabled'], redis_enabled";
     }
 
-    if (!isset($mqtt_enabled) ) $mqtt_enabled = false;
-    if ($mqtt_enabled && !isset($mqtt_server)) $error_out .= "<p>mqtt server not configured, check setting: mqtt_server</p>";
+    if (!isset($mqtt_enabled)) $mqtt_enabled = false;
+    if ($mqtt_enabled) {
+        if (!isset($mqtt_server['host'])) $error_out .= "<p>mqtt server not configured, check setting: mqtt_server</p>";
+        if (!isset($mqtt_server['port'])) $mqtt_server['port'] = 1883;
+        if (!isset($mqtt_server['user'])) $mqtt_server['user'] = null;
+        if (!isset($mqtt_server['password'])) $mqtt_server['password'] = null;
+        if (!isset($mqtt_server['basetopic'])) $mqtt_server['basetopic'] = "nodes";
+    }
 
     if (!isset($feed_settings)) $feed_settings = array();
     if (!isset($feed_settings['phpfiwa'])) $error_out .= "<p>feed setting for phpfiwa is not configured, check settings: settings['phpfiwa']";
@@ -61,6 +68,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($fullwidth)) $fullwidth = false;
     if (!isset($menucollapses)) $menucollapses = true;
+    if (!isset($favicon)) $favicon = "favicon.png";
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';

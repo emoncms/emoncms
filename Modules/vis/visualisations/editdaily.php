@@ -14,7 +14,7 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
@@ -48,7 +48,7 @@
 </div>
 
 
-<div style="width:100% height:50px; background-color:#ddd; padding:10px; margin:10px;">
+<div style="width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
     <?php echo _("Edit feed_"); ?><?php echo $feedid; ?> <?php echo _("@ time:"); ?> <input type="text" id="time" style="width:150px;" value="" /> <?php echo _("new value:"); ?>
     <input type="text" id="newvalue" style="width:150px;" value="" />
     <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
@@ -72,6 +72,8 @@
   vis_feed_data();
 
   function vis_feed_data() {
+    start = Math.floor(start / 86400000) * 86400000;
+    end = Math.ceil(end / 86400000) * 86400000;
     var graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
     //var stats = power_stats(graph_data);
     //$("#stats").html("Average: "+stats['average'].toFixed(0)+"W | "+stats['kwh'].toFixed(2)+" kWh");
@@ -114,9 +116,10 @@
     var time = $("#time").val();
     var newvalue = $("#newvalue").val();
 
+    var updatetime = 0;
     $.ajax({
       url: path+'feed/update.json',
-      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue,
+      data: "&apikey="+apikey+"&id="+feedid+"&time="+time+"&value="+newvalue+"&updatetime="+updatetime,
       dataType: 'json',
       async: false,
       success: function() {}

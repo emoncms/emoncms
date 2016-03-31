@@ -233,7 +233,7 @@ class PHPTimeSeries
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>3000) return array("success"=>false, "message"=>"request datapoint limit reached (3000), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp>8928) return array("success"=>false, "message"=>"request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
         
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
@@ -248,7 +248,7 @@ class PHPTimeSeries
             $pos = $this->binarysearch($fh,$time,$filesize);
             fseek($fh,$pos);
             $d = fread($fh,9);
-            $array = unpack("x/Itime/fvalue",$d);
+            $array = @unpack("x/Itime/fvalue",$d);
             $dptime = $array['time'];
 
             $value = null;
@@ -259,7 +259,7 @@ class PHPTimeSeries
             if ($limitinterval)
             {
                 $diff = abs($dptime-$time);
-                if ($diff<($interval/2)) {
+                if ($diff<$interval) {
                     $value = $array['value'];
                 } 
             } else {
@@ -327,11 +327,12 @@ class PHPTimeSeries
         exit;
     }
 
-    public function csv_export($feedid,$start,$end,$outinterval)
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places;
-        global $csv_decimal_place_separator;
-        global $csv_field_separator;
+        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+
+        require_once "Modules/feed/engine/shared_helper.php";
+        $helperclass = new SharedHelper();
 
         $feedid = (int) $feedid;
         $start = (int) $start;
@@ -391,10 +392,10 @@ class PHPTimeSeries
 
             $last_time = $time;
             $time = $array['time'];
-
+            $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // $last_time = 0 only occur in the first run
             if (($time!=$last_time && $time>$last_time) || $last_time==0) {
-                fwrite($exportfh, $time.$csv_field_separator.number_format($array['value'],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                fwrite($exportfh, $timenew.$csv_field_separator.number_format($array['value'],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
             }
         }
         fclose($exportfh);
@@ -537,7 +538,7 @@ class PHPTimeSeries
             $mid = $start + round(($end-$start)/18)*9;
             fseek($fh,$mid);
             $d = fread($fh,9);
-            $array = unpack("x/Itime/fvalue",$d);
+            $array = @unpack("x/Itime/fvalue",$d);
 
             // echo "S:$start E:$end M:$mid $time ".$array['time']." ".($time-$array['time'])."\n";
 

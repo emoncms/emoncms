@@ -3,8 +3,9 @@
 //1 #### Mysql database settings
     $server   = "localhost";
     $database = "emoncms";
-    $username = "root";
-    $password = "raspberry";
+    $username = "emoncms";
+    $password = "emonpiemoncmsmysql2016";
+    $port     = "3306";
     // Skip database setup test - set to false once database has been setup.
     $dbtest = true;
 
@@ -20,8 +21,13 @@
 //3 #### MQTT
     // The 'subscriber' topic format is rx/* - where * is the emoncms input node number.
     // The 'publisher' topic format is user selectable from the 'Publish to MQTT' input process, for example power/solar
-    $mqtt_enabled = true;          // Activate MQTT by changing to true
-    $mqtt_server = "127.0.0.1";
+    $mqtt_enabled = true;            // Activate MQTT by changing to true
+    $mqtt_server = array( 'host'     => 'localhost',
+                          'port'     => 1883,
+                          'user'     => 'emonpi',
+                          'password' => 'emonpimqtt2016',
+                          'basetopic'=> 'emon'
+                          );
 
 
 //4 #### Engine settings
@@ -30,11 +36,11 @@
         // Place a ',' as the first character on all uncommented engines lines but first.
         // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
         'engines_hidden'=>array(
-              Engine::MYSQL         // 0  Mysql traditional
-            //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
-            //Engine::PHPTIMESERIES // 2
-            //,Engine::PHPFINA      // 5
-              ,Engine::PHPFIWA      // 6  PHPFIWA disabled for compatibility with Low-write mode
+            Engine::MYSQL,           // 0  Mysql traditional
+            //Engine::MYSQLMEMORY,   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
+            //Engine::PHPTIMESERIES, // 2
+            //Engine::PHPFINA,       // 5
+            Engine::PHPFIWA          // 6  PHPFIWA disabled for compatibility with Low-write mode
         ),
 
         // Redis Low-write mode
@@ -43,7 +49,7 @@
             ,'sleep' => 60          // Number of seconds to wait before write buffer to disk - user selectable option
         ),
 
-        'csvdownloadlimit_mb' => 10,     // Max csv download size in MB
+        'csvdownloadlimit_mb' => 25,     // Max csv download size in MB
 
         // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
         // On windows or shared hosting you will likely need to specify a different data directory--
@@ -67,6 +73,9 @@
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
 
+    // Favicon filenme in Theme/$theme
+    $favicon = "favicon_emonpi.png";
+
     // Use full screen width
     $fullwidth = true;
 
@@ -87,7 +96,7 @@
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
-      'port'=>"465",  // 22, 465, 587
+      'port'=>"465",  // 25, 465, 587
       'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
       // comment lines below that dont apply
       'encryption'=>"ssl", // ssl, tls
@@ -100,8 +109,8 @@
     $default_action = "login";
 
     // Default controller and action if none are specified and user is logged in
-    $default_controller_auth = "user";
-    $default_action_auth = "view";
+    $default_controller_auth = "feed";
+    $default_action_auth = "list";
 
     // Public profile functionality
     // Allows http://yourdomain.com/[username]/[dash alias] or ?id=[dash id]
@@ -110,15 +119,20 @@
     $public_profile_enabled = true;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
+    
+    // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
+    $feedviewpath = "graph/";
 
 
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
     $log_filename = '/var/log/emoncms.log';
+    // Log Level: 1=INFO, 2=WARN, 3=ERROR
+    $log_level = 2;
 
-    // If installed on Emonpi, allow update from admin menu
-    $allow_emonpi_update = true;
+    // If installed on Emonpi, allow admin menu tools
+    $allow_emonpi_admin = true;
 
     //experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     $data_sampling = false;
@@ -140,4 +154,4 @@
     $csv_field_separator = ",";
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "6";
+    $config_file_version = "8";

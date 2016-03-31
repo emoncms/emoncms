@@ -1,5 +1,6 @@
 <?php
-    global $path;
+    global $path, $feedviewpath;
+    if (!isset($feedviewpath)) $feedviewpath = "vis/auto?feedid=";
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
@@ -17,6 +18,8 @@
 #table th:nth-of-type(8), td:nth-of-type(8) { text-align: right; }
 #table th:nth-of-type(9), td:nth-of-type(9) { text-align: right; }
 #table th:nth-of-type(10), td:nth-of-type(10) { text-align: right; }
+#table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; text-align: right; }
+#table th[fieldg="processList"] { font-weight:normal; text-align: left; }
 #table td:nth-of-type(11) { width:14px; text-align: center; }
 #table td:nth-of-type(12) { width:14px; text-align: center; }
 #table td:nth-of-type(13) { width:14px; text-align: center; }
@@ -60,15 +63,13 @@
     </div>
 </div>
 
-<div id="ExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="ExportModalLabel" aria-hidden="true" data-backdrop="false">
+<div id="ExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="ExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="ExportModalLabel">CSV export: </h3>
+        <h3 id="ExportModalLabel"><b><span id="SelectedExport"></span></b> CSV export</h3>
     </div>
     <div class="modal-body">
-    <p>Selected feed: <b><span id="SelectedExportFeed"></span></b></p>
     <p>Select the time range and interval that you wish to export: </p>
-    
         <table class="table">
         <tr>
             <td>
@@ -90,7 +91,7 @@
             <td>
                 <p><b>Interval</b></p>
                 <select id="export-interval" >
-                    <option value="">Select interval</option>
+                    <option value=1>Auto</option>
                     <option value=5>5s</option>
                     <option value=10>10s</option>
                     <option value=30>30s</option>
@@ -109,19 +110,23 @@
                 </select>
             </td>
             <td>
-                <p><b>Timezone offset (for day export):</b></p>
-                <input id="export-timezone-offset" type="text" />
+                <p><b>Date time format</b></p>
+                <div class="checkbox">
+                  <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
+                </div>
+                <label>Offset secs (for daily)&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled=""></label>
             </td>
         </tr>
-        <tr>
-            <td><br><button class="btn" id="export">Export</button></td><td><br>Estimated download size: <span id="downloadsize">0</span>kB</td>
-        </tr>
         </table>
-        <p>Feed intervals: if the selected interval is shorter than the feed interval the feed interval will be used instead</p>
-        <p>Averages are only returned for feed engines with built in averaging.</p>
+            <div class="alert alert-info">
+                <p>Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.</p>
+                <p>Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.</p>
+            </div>
     </div>
     <div class="modal-footer">
+        <div id="downloadsizeplaceholder" style="float: left">Estimated download size: <span id="downloadsize">0</span>MB</div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
+        <button class="btn" id="export">Export</button>
     </div>
 </div>
 
@@ -151,11 +156,27 @@
 
 <script>
   var path = "<?php echo $path; ?>";
+  var feedviewpath = "<?php echo $feedviewpath; ?>";
 
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
   table.element = "#table";
   table.groupby = 'tag';
+  table.groupfields = {
+    'processList':{'title':'<?php echo _("Process list"); ?>','type':"group-processlist"},
+    'dummy-4':{'title':'', 'type':"blank"},
+    'dummy-5':{'title':'', 'type':"blank"},
+    'dummy-6':{'title':'', 'type':"blank"},
+    'size':{'title':"<?php echo _('Size'); ?>", 'type':"group-size"},
+    'time':{'title':"<?php echo _('Updated'); ?>", 'type':"group-updated"},
+    'dummy-9':{'title':'', 'type':"blank"},
+    'dummy-10':{'title':'', 'type':"blank"},
+    'dummy-11':{'title':'', 'type':"blank"},
+    'dummy-12':{'title':'', 'type':"blank"},
+    'dummy-13':{'title':'', 'type':"blank"},
+    'exportall-action':{'title':'', 'type':"group-iconbasic", 'icon':'icon-circle-arrow-down'}
+  }
+
   table.deletedata = false;
   table.fields = {
     'id':{'title':"<?php echo _('Id'); ?>", 'type':"fixed"},
@@ -171,14 +192,14 @@
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
-    'view-action':{'title':'', 'type':"iconlink", 'link':path+"vis/auto?feedid="},
+    'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
     'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
-    'icon-basic':{'title':'', 'type':"iconbasic", 'icon':'icon-circle-arrow-down'}
+    'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
   }
 
   update();
 
-  function update(){   
+  function update() {
     var apikeystr = ""; if (feed.apikey!="") apikeystr = "?apikey="+feed.apikey;
 
     var requestTime = (new Date()).getTime();
@@ -186,7 +207,7 @@
       table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
       table.data = data;
       for (z in table.data){
-        if (data[z]['engine'] != 7){ 
+        if (data[z]['engine'] != 7){
           data[z]['#NO_CONFIG#'] = true;  // if the data field #NO_CONFIG# is true, the field type: iconconfig will be ommited from the table row
         }
       }
@@ -256,12 +277,31 @@
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
   });
 
-  // Feed Export feature
-  $("#table").on("click",".icon-circle-arrow-down", function(){
-    var row = $(this).attr('row');
-    $("#SelectedExportFeed").html(table.data[row].tag+": "+table.data[row].name);
-    $("#export").attr('feedid',table.data[row].id);
 
+  // Export feature
+  $("#table").on("click",".icon-circle-arrow-down,.icon-download", function(){
+    var row = $(this).attr('row');
+    if (row == undefined) {
+      // is tag group
+      $("#export").attr('export-type',"group");
+      var group = $(this).attr('group');
+      $("#export").attr('group',group);
+      var rows = $(this).attr('rows').split(",");
+      var feedids = [];
+      for (i in rows) { feedids.push(table.data[rows[i]].id); } // get feedids from rowids
+      $("#export").attr('feedids',feedids);
+      $("#export").attr('feedcount',rows.length);
+      $("#SelectedExport").html(group + " tag ("+rows.length+" feeds)");
+      calculate_download_size(rows.length);
+    } else {
+      // is feed
+      $("#export").attr('export-type',"feed");
+      $("#export").attr('feedid',table.data[row].id);
+      var name = table.data[row].tag+": "+table.data[row].name;
+      $("#export").attr('name',name);
+      $("#SelectedExport").html(name);
+      calculate_download_size(1);
+    }
     if ($("#export-timezone-offset").val()=="") {
       var timezoneoffset = user.timezoneoffset();
       if (timezoneoffset==null) timezoneoffset = 0;
@@ -275,47 +315,91 @@
   });
 
   $('#datetimepicker2').datetimepicker({
-    language: 'en-EN'
+    language: 'en-EN',
+    useCurrent: false //Important! See issue #1075
   });
 
-  $('#export-interval').on('change', function(e) 
+  $('#datetimepicker1').on("changeDate", function (e) {
+    $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);
+  });
+
+  $('#datetimepicker2').on("changeDate", function (e) {
+    $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
+  });
+
+  now = new Date();
+  today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 00, 00);
+  var picker1 = $('#datetimepicker1').data('datetimepicker');
+  var picker2 = $('#datetimepicker2').data('datetimepicker');
+  picker1.setLocalDate(today);
+  picker2.setLocalDate(today);
+  picker1.setEndDate(today);
+  picker2.setStartDate(today);
+
+  $('#export-interval, #export-timeformat').on('change', function(e) 
   {
-    var export_start = parse_timepicker_time($("#export-start").val());
-    var export_end = parse_timepicker_time($("#export-end").val());
-    var export_interval = $("#export-interval").val();
-    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-    console.log(downloadsize);
-    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+    $("#export-timezone-offset").prop("disabled", $("#export-timeformat").prop('checked'));
+    if ($("#export").attr('export-type') == 'group') {
+      var downloadsize = calculate_download_size($("#export").attr('feedcount')); 
+    } else {
+      calculate_download_size(1); 
+    }
   });
 
   $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) 
   {
-    var export_start = parse_timepicker_time($("#export-start").val());
-    var export_end = parse_timepicker_time($("#export-end").val());
-    var export_interval = $("#export-interval").val();
-    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-    $("#downloadsize").html((downloadsize/1024).toFixed(0));
+    if ($("#export").attr('export-type') == 'group') {
+      var downloadsize = calculate_download_size($("#export").attr('feedcount')); 
+    } else {
+      calculate_download_size(1); 
+    }
   });
   
   $("#export").click(function()
   {
-    var feedid = $(this).attr('feedid');
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
     var export_timezone_offset = parseInt($("#export-timezone-offset").val());
-    
-    if (!export_start) {alert("Please enter a valid start date"); return false; }
-    if (!export_end) {alert("Please enter a valid end date"); return false; }
-    if (export_start>=export_end) {alert("Start date must be further back in time than end date"); return false; }
-    if (export_interval=="") {alert("Please select interval to download"); return false; }
-    var downloadsize = ((export_end - export_start) / export_interval) * 17; // 17 bytes per dp
-    
-    if (downloadsize>(10*1048576)) {alert("Download file size to large (download limit: 10Mb)"); return false; }
-    url = path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval;
+    var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
+    if (export_timeformat) { export_timezone_offset = 0; }
+    if (!export_start) {alert("Please enter a valid start date."); return false; }
+    if (!export_end) {alert("Please enter a valid end date."); return false; }
+    if (export_start>=export_end) {alert("Start date must be further back in time than end date."); return false; }
+    if (export_interval=="") {alert("Please select interval to download."); return false; }
+    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+
+    if ($(this).attr('export-type') == 'group') {
+      var feedids = $(this).attr('feedids');
+      var downloadsize = calculate_download_size($(this).attr('feedcount')); 
+      url = path+"feed/csvexport.json?ids="+feedids+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
+    } else {
+      var feedid = $(this).attr('feedid');
+      var downloadsize = calculate_download_size(1); 
+      url = path+"feed/csvexport.json?id="+feedid+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('name');
+    }
     console.log(url);
+    if (downloadsize>(downloadlimit*1048576)) {
+      var r = confirm("Estimated download file size is large.\nServer could take a long time or abort depending on stored data size.\Limit is "+downloadlimit+"MB.\n\nTry exporting anyway?");
+      if (!r) return false;
+    }
     window.open(url);
   });
+
+  function calculate_download_size(feedcount){
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var export_timeformat_size = ($("#export-timeformat").prop('checked') ? 20 : 11);// bytes per timestamp
+    var downloadsize = 0;
+    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
+      downloadsize=((export_end - export_start) / export_interval) * (export_timeformat_size + (feedcount*7)); // avg bytes per data
+    }
+    $("#downloadsize").html((downloadsize/1024/1024).toFixed(2));
+    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
+    return downloadsize;
+  }
 
   function parse_timepicker_time(timestr){
     var tmp = timestr.split(" ");
@@ -351,6 +435,7 @@
     }
   });
 
+
   // Process list UI js
   processlist_ui.init(1); // is virtual feed
 
@@ -358,7 +443,9 @@
     var i = table.data[$(this).attr('row')];
     console.log(i);
     var contextid = i.id; // Feed ID
-    var contextname = i.tag + " : " + i.name;
+    var contextname = "";
+    if (i.name != "") contextname = i.tag + " : " + i.name;
+    else contextname = i.tag + " : " + i.id;    
     var processlist = processlist_ui.decode(i.processList); // Feed process list
     processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
    });

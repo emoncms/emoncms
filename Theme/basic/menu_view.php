@@ -10,7 +10,8 @@
     global $path, $session, $menu;
     if (!isset($session['profile'])) $session['profile'] = 0;
 
-    $menu['dropdownconfig'][] = array('name'=>'Documentation', 'icon'=>'icon-book', 'path'=>"docs", 'session'=>"write", 'order' => 60,'divider' => true);
+    // Example how to add a fixed menu item:
+    //$menu['dropdownconfig'][] = array('name'=>'Documentation', 'icon'=>'icon-book', 'path'=>"docs", 'session'=>"write", 'order' => 60,'divider' => true);
 
     usort($menu['left'], "menu_sort");
     usort($menu['dropdown'], "menu_sort");
@@ -44,7 +45,7 @@
                     $out .= '<ul class="dropdown-menu">';
                     $out .= $outdrop;
                     $out .= '</ul></li>';
-                }   
+                }
                 else if (isset($item['path']) && isset($item['name'])) {
                     $out .= "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . "'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
                 }
@@ -54,7 +55,7 @@
         }
         return $out;
     }
-    
+
     function drawNameIcon($item, $alwaysshowname=false) {
         $out = "";
         $name = false;
@@ -68,11 +69,11 @@
 
         $title = ($desc ? $desc : $name);
         if($name && $published) $name = "<b>".$name."</b>";
-        
+
         $out = "<div style='display: inline'>";
         if ($icon) $out .= "<i class='".$icon."'" . ($title ? " title='".$title."'" : "") . "></i>";
         if ($name) {
-            if ($alwaysshowname || !$icon) { 
+            if ($alwaysshowname || !$icon) {
                 $out .= " " . $name;
             } else {
                 $out .= " <span class='menu-text'>" . $name . "</span>";
@@ -84,14 +85,14 @@
         $out .= "</div>";
         return $out;
     }
-    
+
     function is_active($item) {
         global $route;
         if (isset($item['path']) && ($item['path'] == $route->controller."/".$route->action || $item['path'] == $route->controller."/".$route->action."/".$route->subaction || $item['path'] == $route->controller."/".$route->action."&id=".get('id')))
             return true;
         return false;
     }
-    
+
     // Menu sort by order
     function menu_sort($a,$b) {
         return $a['order']>$b['order'];
@@ -112,7 +113,7 @@
 </ul>
 <ul class="nav pull-right">
 <?php
-    if (count($menu['dropdown']) && $session['read']) { 
+    if (count($menu['dropdown']) && $session['read']) {
         $extra = array();
         $extra['name'] = 'Extra';
         $extra['icon'] = 'icon-plus icon-white';
@@ -122,7 +123,7 @@
         echo drawItem($extra);
     }
 
-    if (count($menu['dropdownconfig'])) { 
+    if (count($menu['dropdownconfig'])) {
         $setup = array();
         $setup['name'] = 'Setup';
         $setup['icon'] = 'icon-wrench icon-white';
