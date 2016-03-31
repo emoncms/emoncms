@@ -26,6 +26,21 @@ function get_feed_data(feedID,start,end,interval,skipmissing,limitinterval){
   return feedIn;
 }
 
+// Get feed data
+function get_feed_data_DMY(feedID,start,end,mode){
+  var feedIn = [];
+  var query = "id="+feedID+"&start="+parseInt(start)+"&end="+parseInt(end)+"&mode="+mode;
+  if (apikey!="") query+= "&apikey="+apikey;
+  $.ajax({                  
+    url: path+'feed/data.json',             
+    data: query,  
+    dataType: 'json',               
+    async: false,
+    success: function(dt) { feedIn = dt; }
+  });
+  return feedIn;
+}
+
 // Get feed data async with callback
 function get_feed_data_async(callback,context,feedID,start,end,interval,skipmissing,limitinterval){
   var query = "id="+feedID+"&start="+start+"&end="+end+"&interval="+interval+"&skipmissing="+skipmissing+"&limitinterval="+limitinterval;
