@@ -38,7 +38,9 @@
             array('units',_("units"),5,''),
             array('dp',_("dp"),7,'1'),
             array('scale',_("scale"),6,'1'),
-            array('delta',_("delta"),7,'0'))
+            array('delta',_("delta"),7,'0'),
+            array('mode',_("mode"),7,'0')
+            )
         ),
         
         'timestoredaily'=> array('label'=>_("Daily from Multiple (BETA)"), 'options'=>array(
