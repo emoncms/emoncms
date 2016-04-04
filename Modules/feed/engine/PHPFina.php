@@ -35,8 +35,8 @@ class PHPFina
         if ($interval<5) $interval = 5;
         
         // Check to ensure we dont overwrite an existing feed
-        if (!$meta = $this->get_meta($feedid))
-        {
+        
+        if (!file_exists($this->dir.$feedid.".meta")) {
             // Set initial feed meta data
             $meta = new stdClass();
             $meta->interval = $interval;
