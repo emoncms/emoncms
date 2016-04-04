@@ -155,6 +155,7 @@ class Process_ProcessList
         $list[57] = array(_(" * source feed"),ProcessArg::FEEDID,"multiply_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         $list[58] = array(_(" / source feed"),ProcessArg::FEEDID,"divide_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         $list[59] = array(_("1/ source feed"),ProcessArg::FEEDID,"reciprocal_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
+        
         return $list;
     }
 
@@ -193,7 +194,7 @@ class Process_ProcessList
          $value = 0;
          return $value;
     }
-
+    
     public function reset2original($arg, $time, $value)
     {
          return $this->proc_initialvalue;

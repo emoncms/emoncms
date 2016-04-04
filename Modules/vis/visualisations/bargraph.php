@@ -76,6 +76,9 @@
     var delta = urlParams.delta;
     if (delta==undefined || delta=='') delta = 0;
 
+    var mode = urlParams.mode;
+    if (mode==undefined || mode=='') mode = false;
+    
     document.getElementById("textunitD").innerHTML=units;
     document.getElementById("textunitM").innerHTML=units;
     document.getElementById("textunitY").innerHTML=units;
@@ -236,8 +239,12 @@
             dataend -= offset * 3600000;
      
             //TODO: need to be fixed, when the interval is a day, it returns the kwh elapsed in 24h from an eratic time (9:08 by example). It should returns the kwh elapsed in 24h from midnight to midnight.
-            data = get_feed_data(feedid,datastart,dataend,interval,0,1);
-     
+            if (mode==0) {
+                data = get_feed_data(feedid,datastart,dataend,interval,0,1);
+            } else {
+                data = get_feed_data_DMY(feedid,datastart,dataend,mode);
+            }
+            
             var out = [];
             
             if (delta==1) {

@@ -77,7 +77,12 @@ function feed_controller()
                         $limitinterval = 1;
                         if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
                         if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
-                        $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                        
+                        if (isset($_GET['interval'])) {
+                            $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                        } else if (isset($_GET['mode'])) {
+                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'),get('timezone'));
+                        }
                     }
                     else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'

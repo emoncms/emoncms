@@ -35,8 +35,8 @@ class PHPFina
         if ($interval<5) $interval = 5;
         
         // Check to ensure we dont overwrite an existing feed
-        if (!$meta = $this->get_meta($feedid))
-        {
+        
+        if (!file_exists($this->dir.$feedid.".meta")) {
             // Set initial feed meta data
             $meta = new stdClass();
             $meta->interval = $interval;
@@ -342,6 +342,58 @@ class PHPFina
 
             $i++;
         }
+        return $data;
+    }
+    
+    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+    {
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+               
+        // If meta data file does not exist exit
+        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        $meta->npoints = $this->get_npoints($id);
+        
+        $data = array();
+        
+        $fh = fopen($this->dir.$id.".dat", 'rb');
+        
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        $date->modify("+1 day");
+        
+        $n = 0;
+        while($n<10000) // max itterations
+        {
+            $time = $date->getTimestamp();
+            if ($time>$end) break;
+            
+            $pos = round(($time - $meta->start_time) / $meta->interval);
+            $value = null;
+            
+            if ($pos>=0 && $pos < $meta->npoints)
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $val = unpack("f",fread($fh,4));
+                
+                // add to the data array if its not a nan value
+                if (!is_nan($val[1])) {
+                    $value = $val[1];
+                } else {
+                    $value = null;
+                }
+            }
+            $data[] = array($time*1000,$value);
+            
+            $date->modify("+1 day");
+            $n++;
+        }
+        
+        fclose($fh);
+        
         return $data;
     }
 
@@ -656,7 +708,7 @@ class PHPFina
         return true;
     }
     
-    private function get_npoints($feedid)
+    public function get_npoints($feedid)
     {
         $bytesize = 0;
         

@@ -36,7 +36,7 @@
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
                  'mqtt_port' => $mqtt_server['port'],
 
-                 'hostbyaddress' => gethostbyaddr(gethostbyname($host)),
+                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
                  'http_proto' => $_SERVER['SERVER_PROTOCOL'],
                  'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
                  'http_port' => $_SERVER['SERVER_PORT'],
@@ -195,9 +195,10 @@ if ($mqtt_enabled) {
 <script>
 var path = "<?php echo $path; ?>";
 var logrunning = false;
-backup_log_update();
 var backup_updater = false;
-backup_updater = setInterval(backup_log_update,1000);
+<?php
+if ($allow_emonpi_admin) { echo ("backup_updater = setInterval(backup_log_update,1000);"); }
+?>
 
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
@@ -223,7 +224,7 @@ function getLog() {
   $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: function(result)
     {
       $("#logreply").html(result);
-      document.getElementById("logreply-bound").scrollTop = document.getElementById("logreply-bound").scrollHeight
+      document.getElementById("logreply-bound").scrollTop = document.getElementById("logreply-bound").scrollHeight;
     }
   });
 }
@@ -243,7 +244,7 @@ $("#emonpiupdate").click(function() {
   $.ajax({ url: path+"admin/emonpi/update", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      document.getElementById("update-log-bound").scrollTop = document.getElementById("update-log-bound").scrollHeight
+      document.getElementById("update-log-bound").scrollTop = document.getElementById("update-log-bound").scrollHeight;
       backup_updater = setInterval(backup_log_update,1000);
       
     }
@@ -263,7 +264,7 @@ function backup_log_update() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      document.getElementById("update-log-bound").scrollTop = document.getElementById("update-log-bound").scrollHeight
+      document.getElementById("update-log-bound").scrollTop = document.getElementById("update-log-bound").scrollHeight;
 
       if (result.indexOf("emonPi update done")!=-1) {
           clearInterval(backup_updater);

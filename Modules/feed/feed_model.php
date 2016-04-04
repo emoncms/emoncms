@@ -195,6 +195,14 @@ class Feed
         }
         return $feedexist;
     }
+    
+    public function get_id($userid,$name)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\w\s-:]/','',$name);
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+    }
 
     // Update feed size and return total
     public function update_user_feeds_size($userid)
@@ -236,6 +244,13 @@ class Feed
         $feedid = (int) $feedid;
         $engine = $this->get_engine($feedid);
         return $this->EngineClass($engine)->get_meta($feedid);
+    }
+
+    public function get_npoints($feedid) {
+        $feedid = (int) $feedid;
+        $engine = $this->get_engine($feedid);
+        if ($engine!=5) return false;
+        return $this->EngineClass($engine)->get_npoints($feedid);
     }
 
 
@@ -438,6 +453,24 @@ class Feed
             }
         }
 
+        return $data;
+    }
+    
+    public function get_data_DMY($feedid,$start,$end,$mode,$timezone)
+    {
+        $feedid = (int) $feedid;
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        if ($engine != Engine::PHPFINA) return array('success'=>false, 'message'=>"This request is only supported by PHPFina");
+
+        // Call to engine get_data
+        global $session;
+        $userid = $session['userid'];
+        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+        $row = $result->fetch_object();
+        
+        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$row->timezone);
         return $data;
     }
 
