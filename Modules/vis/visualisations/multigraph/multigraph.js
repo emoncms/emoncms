@@ -90,8 +90,7 @@ function vis_feed_data_delayed() {
   for(var i in plotlist) {
     if (plotlist[i].selected) {
       if (!plotlist[i].plot.data) {
-        var npoints = 800;
-        interval = Math.round(((view.end - view.start)/npoints)/1000);
+      
         var skipmissing = 0; if (multigraph_feedlist[i]['skipmissing']) skipmissing = 1;
 
         if (plotdata[i] === undefined) plotdata[i] = [];
@@ -101,6 +100,18 @@ function vis_feed_data_delayed() {
           ajaxAsyncXdr[i]=undefined;
         }
         var context = {index:i, plotlist:plotlist[i]}; 
+        
+        
+        var npoints = 800;
+        interval = Math.round(((view.end - view.start)/npoints)/1000);
+          
+        // Round to more common and useful intervals:
+        interval = view.round_interval(interval);
+         
+        var intervalms = interval*1000;
+        view.start = Math.round(view.start/intervalms)*intervalms;
+        view.end = Math.round(view.end/intervalms)*intervalms;
+        
         ajaxAsyncXdr[i] = get_feed_data_async(vis_feed_data_callback,context,plotlist[i].id,view.start,view.end,interval,skipmissing,1);
       }
     }
