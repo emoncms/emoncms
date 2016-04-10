@@ -385,8 +385,9 @@ class PHPFina
                 } else {
                     $value = null;
                 }
+                $data[] = array($time*1000,$value);
             }
-            $data[] = array($time*1000,$value);
+            
             
             $date->modify("+1 day");
             $n++;
