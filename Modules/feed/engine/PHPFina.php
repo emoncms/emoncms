@@ -724,4 +724,222 @@ class PHPFina
         return floor($bytesize / 4.0);
     }   
 
+    // -----------------------------------------------------------------------------------
+    // Post processed average layer
+    // -----------------------------------------------------------------------------------
+    
+    /*
+    
+    Averaging (mean)
+    
+    The standard data request method returns the value of the data point at the specified timestamp 
+    this works well for most data requests and is the required method for extracting accumulating kWh data
+    
+    However its useful for many applicaitons to be able to extract the average value for a given period
+    An example would be requesting hourly temperature over number of days and wanting to see the average temperature for each hour
+    rather than the temperature at the start of each hour.
+    
+    Emoncms initially did this with a dedicated feed engine called PHPFiwa the implementation of that engine calculated the average 
+    values on the fly as the data came in which is not a particularly write efficient method as each average layer is opened for every
+    update and only one 4 byte float is appended.
+    
+    A better approach is to post process the average layers when the data request is made and to cache the calculated averages at this 
+    point. This significantly reduces the write load and converts the averaged layers into a recompilable cached property rather than
+    and integral part of the core engine.
+    
+    */
+        
+    public function get_average($id,$start,$end,$interval)
+    {   
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $interval= (int) $interval;
+        
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        
+        
+        $layer_interval = 0;
+        //if ($interval>=600) $layer_interval = 600;
+        //if ($interval>=3600) $layer_interval = 3600;
+        
+        // Only return an average if the $interval is more than a layer interval
+        // and check that the interval is an integer number of layer intervals
+        if ($layer_interval>0 && $interval%$layer_interval==0) {
+            //if (!$this->calculate_average($id,$layer_interval)) {
+                // return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
+            //    return array('success'=>false);
+            //}
+        }
+        
+        $dir = $this->dir;
+        //if ($layer_interval>0) $dir = $dir."averages/$layer_interval/";
+        
+        $meta = new stdClass();
+        $metafile = fopen($dir.$id.".meta", 'rb');
+        fseek($metafile,8);
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->interval = $tmp[1];
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->start_time = $tmp[1];
+        fclose($metafile);
+        $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
+        
+        if ((($end-$start) / $meta->interval)>69120) {
+            return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
+        }
+        
+        if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
+        
+        $dp_to_read = $interval / $meta->interval;
+        
+        $data = array();
+        $time = 0; $i = 0;
+        $numdp = 0;
+        // The datapoints are selected within a loop that runs until we reach a
+        // datapoint that is beyond the end of our query range
+        $fh = fopen($dir.$id.".dat", 'rb');
+        while($time<=$end)
+        {
+            $time = $start + ($interval * $i);
+            $pos = round(($time - $meta->start_time) / $meta->interval);
+            $average = null;
+
+            if ($pos>=0 && $pos < $meta->npoints)
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $s = fread($fh,4*$dp_to_read);
+                if (strlen($s)!=4*$dp_to_read) break;
+                
+                $tmp = unpack("f*",$s);
+                $sum = 0; $n = 0;
+                
+                for ($x=0; $x<$dp_to_read; $x++) {
+                  if (!is_nan($tmp[$x+1])) {
+                      $sum += 1*$tmp[$x+1];
+                      $n++;
+                  }
+                }
+                $average = null;
+                if ($n>0) $average = $sum / $n;
+            }
+            
+            $data[] = array($time*1000,$average);
+
+            $i++;
+        }
+        
+        return $data;        
+    }
+
+    private function calculate_average($id,$layer_interval)
+    {
+        $idir = $this->dir;
+        $odir = $this->dir."averages/$layer_interval/";
+        
+        // Open PHPFina meta file, get start time and interval       
+        $base_meta = $this->get_meta($id);
+        $base_meta->npoints = floor(filesize($idir.$id.".dat") / 4.0);
+        
+        // Calculate start time of average layer
+        $start_time = ceil($base_meta->start_time / $layer_interval) * $layer_interval;
+
+        // Check if the average layer already exists
+        // if it does load its meta file and check that the base layer calculated start_time matches
+        $layer_npoints = 0;
+
+        if (file_exists($odir.$id.".meta")) {
+            $layer_meta = new stdClass();
+            $metafile = fopen($odir.$id.".meta", 'rb');
+            fseek($metafile,8);
+            $tmp = unpack("I",fread($metafile,4)); 
+            $layer_meta->interval = $tmp[1];
+            $tmp = unpack("I",fread($metafile,4)); 
+            $layer_meta->start_time = $tmp[1];
+            fclose($metafile);
+            
+            if ($layer_meta->start_time != $start_time) {
+                echo "ERROR: average layer start time does not match base layer\n";
+                return false;
+            }
+            
+            if ($layer_meta->interval != $layer_interval) {
+                echo "ERROR: average layer interval does not match base layer\n";
+                return false;
+            }
+            
+            if (file_exists($odir.$id.".dat")) {
+                $layer_npoints = floor(filesize($odir.$id.".dat") / 4.0);
+            }
+        } else {
+            $layer_meta = clone $base_meta;
+            $layer_meta->start_time = $start_time;
+            $layer_meta->interval = $layer_interval;
+            
+            $metafile = fopen($odir.$id.".meta", 'wb');
+            fwrite($metafile,pack("I",0));
+            fwrite($metafile,pack("I",0)); 
+            fwrite($metafile,pack("I",$layer_meta->interval));
+            fwrite($metafile,pack("I",$layer_meta->start_time)); 
+            fclose($metafile);
+        }
+
+        if (!$if = @fopen($idir.$id.".dat", 'rb')) {
+            echo "ERROR: could not open $idir $id.dat\n";
+            return false;
+        }
+
+        if (!$of = @fopen($odir.$id.".dat", 'c+')) {
+            echo "ERROR: could not open $odir $id.dat\n";
+            return false;
+        }
+
+        $dp_to_read = $layer_meta->interval / $base_meta->interval;
+
+        $start_time = $layer_meta->start_time + ($layer_npoints*$layer_meta->interval);
+        $base_start_pos = ($start_time - $base_meta->start_time) / $base_meta->interval;
+        
+        // If amount to process is more than 1 week of 10 second data or 86400*7 / 10 = 60480 datapoints.
+        // return false as this will take too long in a http request and needs to be processed in the background.
+        
+        $npoints_to_process = $base_meta->npoints - $base_start_pos;
+        if ($npoints_to_process>60480) {
+            echo "ERROR: amount to process is too much $npoints_to_process \n";
+            return false;
+        }
+        
+        fseek($if,$base_start_pos*4);
+        fseek($of,$layer_npoints*4);
+
+        $buffer = "";
+
+        while (true) 
+        {
+            $s = fread($if,4*$dp_to_read);
+            if (strlen($s)!=4*$dp_to_read) break;
+            
+            $tmp = unpack("f*",$s);
+            $sum = 0; $n = 0;
+            for ($i=0; $i<$dp_to_read; $i++) {
+              if (!is_nan($tmp[$i+1])) {
+                  $sum += 1*$tmp[$i+1];
+                  $n++;
+              }
+            }
+            $average = NAN;
+            if ($n>0) $average = $sum / $n;
+            $buffer .= pack("f",$average);
+        }
+        
+        // Final stage write buffer and close files
+        fwrite($of,$buffer);
+        fclose($of);
+        fclose($if);
+        
+        return true;
+    }
 }

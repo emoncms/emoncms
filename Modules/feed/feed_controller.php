@@ -84,6 +84,9 @@ function feed_controller()
                             $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'),get('timezone'));
                         }
                     }
+                    else if ($route->action == 'average') {
+                        $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                    }
                     else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);

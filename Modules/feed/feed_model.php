@@ -478,6 +478,17 @@ class Feed
         
         return $data;
     }
+    
+    public function get_average($feedid,$start,$end,$outinterval)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $engine = $this->get_engine($feedid);
+        if ($engine!=Engine::PHPFINA) return false;
+        
+        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
+    }
 
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat,$name)
     {
