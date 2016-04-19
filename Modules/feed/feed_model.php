@@ -462,16 +462,32 @@ class Feed
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
-        if ($engine != Engine::PHPFINA) return array('success'=>false, 'message'=>"This request is only supported by PHPFina");
-
-        // Call to engine get_data
-        global $session;
-        $userid = $session['userid'];
-        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-        $row = $result->fetch_object();
         
-        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$row->timezone);
+        if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+            // Call to engine get_data
+            global $session;
+            $userid = $session['userid'];
+            $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+            $row = $result->fetch_object();
+            
+            $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$row->timezone);
+        } else {
+            // Fall back to normal get_data method for engines without this method
+            $data = $this->get_data($feedid,$start,$end,86400,0,0);
+        }
+        
         return $data;
+    }
+    
+    public function get_average($feedid,$start,$end,$outinterval)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $engine = $this->get_engine($feedid);
+        if ($engine!=Engine::PHPFINA) return false;
+        
+        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
     }
 
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat,$name)

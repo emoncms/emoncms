@@ -76,7 +76,7 @@
 
   var feedlist = [];
   feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
-  feedlist[1] = {id: kwhd, delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+  feedlist[1] = {id: kwhd, mode:"day", delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
@@ -126,8 +126,11 @@
             dataend = end;
             interval = Math.round(((end-start)/500)*0.001);
           }
-
-          feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,interval,1,1);
+          if (feedlist[i].mode==undefined) {
+              feedlist[i].plot.data = get_feed_data(feedlist[i].id,datastart,dataend,interval,1,1);
+          } else {
+              feedlist[i].plot.data = get_feed_data_DMY(feedlist[i].id,datastart,dataend,feedlist[i].mode);
+          }
           
           if (feedlist[i].delta==1 && i==1) {
               var tmp = [];

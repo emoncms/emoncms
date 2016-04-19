@@ -58,6 +58,23 @@ function get_feed_data_async(callback,context,feedID,start,end,interval,skipmiss
   });
 }
 
+// Get feed data async with callback
+function get_feed_data_DMY_async(callback,context,feedID,start,end,mode){
+  var query = "id="+feedID+"&start="+start+"&end="+end+"&mode="+mode;
+  if (apikey!="") query+= "&apikey="+apikey;
+  return $.ajax({                  
+    url: path+'feed/data.json',             
+    data: query,
+    dataType: 'json',   
+    async: true,  
+    success: function(dt) { 
+      if ( typeof callback === "function" ) {
+        callback(context,dt);
+      }
+    }
+  });
+}
+
 // Get histogram data
 function get_histogram_data(feedID,start,end){
   var feedIn = [];

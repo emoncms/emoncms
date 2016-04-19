@@ -41,7 +41,38 @@ var view =
   {
     this.start = ((new Date()).getTime())-(3600000*24*time);	//Get start time
     this.end = (new Date()).getTime();	//Get end time
+  },
+  
+  'round_interval':function(interval)
+  {
+      var outinterval = 5;
+      if (interval>10) outinterval = 10;
+      if (interval>15) outinterval = 15;
+      if (interval>20) outinterval = 20;
+      if (interval>30) outinterval = 30;
+      if (interval>60) outinterval = 60;
+      if (interval>120) outinterval = 120;
+      if (interval>180) outinterval = 180;
+      if (interval>300) outinterval = 300;
+      if (interval>600) outinterval = 600;
+      if (interval>900) outinterval = 900;
+      if (interval>1200) outinterval = 1200;
+      if (interval>1800) outinterval = 1800;
+      if (interval>3600*1) outinterval = 3600*1;
+      if (interval>3600*2) outinterval = 3600*2;
+      if (interval>3600*3) outinterval = 3600*3;
+      if (interval>3600*4) outinterval = 3600*4;
+      if (interval>3600*5) outinterval = 3600*5;
+      if (interval>3600*6) outinterval = 3600*6;
+      if (interval>3600*12) outinterval = 3600*12;
+      if (interval>3600*24) outinterval = 3600*24;
+      if (interval>3600*36) outinterval = 3600*36;
+      if (interval>3600*48) outinterval = 3600*48;
+      if (interval>3600*72) outinterval = 3600*72;
+      
+      return outinterval;
   }
+  
 }
 
 var stats = {

@@ -276,6 +276,49 @@ class PHPTimeSeries
 
         return $data;
     }
+    
+    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+    {
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        
+        $data = array();
+        
+        $date = new DateTime();
+        if ($timezone===0) $timezone = "UTC";
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        $date->modify("+1 day");
+
+        $fh = fopen($this->dir."feed_$id.MYD", 'rb');
+        $filesize = filesize($this->dir."feed_$id.MYD");
+
+        $n = 0;
+        $array = array("time"=>0, "value"=>0);
+        while($n<10000) // max itterations
+        {
+            $time = $date->getTimestamp();
+            if ($time>$end) break;
+            
+            $pos = $this->binarysearch($fh,$time,$filesize);
+            fseek($fh,$pos);
+            $d = fread($fh,9);
+            
+            $lastarray = $array;
+            $array = unpack("x/Itime/fvalue",$d);
+            
+            if ($array['time']!=$lastarray['time']) {
+                $data[] = array($array['time']*1000,$array['value']);
+            }
+            $date->modify("+1 day");
+            $n++;
+        }
+        
+        fclose($fh);
+        
+        return $data;
+    }
 
 
     public function export($feedid,$start)
