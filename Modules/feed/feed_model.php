@@ -463,19 +463,13 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
         
-        if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
-            // Call to engine get_data
-            global $session;
-            $userid = $session['userid'];
-            $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-            $row = $result->fetch_object();
-            
-            $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$row->timezone);
-        } else {
-            // Fall back to normal get_data method for engines without this method
-            $data = $this->get_data($feedid,$start,$end,86400,0,0);
-        }
+        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
         
+        // Call to engine get_data
+        global $session;
+        $timezone = $this->get_user_timezone($session['userid']);
+            
+        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
         return $data;
     }
     
@@ -851,6 +845,21 @@ class Feed
             $feed_engine_cache[$feedid] = $engine; // Cache it
         }
         return $engine;
+    }
+    
+    public function get_user_timezone($userid) 
+    {
+        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+        $row = $result->fetch_object();
+
+        $now = new DateTime();
+        try {
+            $now->setTimezone(new DateTimeZone($row->timezone));
+            $timezone = $row->timezone;
+        } catch (Exception $e) {
+            $timezone = "UTC";
+        }
+        return $timezone;
     }
 }
 
