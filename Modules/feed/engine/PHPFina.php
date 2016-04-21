@@ -359,6 +359,7 @@ class PHPFina
         $fh = fopen($this->dir.$id.".dat", 'rb');
         
         $date = new DateTime();
+        if ($timezone===0) $timezone = "UTC";
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
         $date->modify("midnight");
@@ -385,9 +386,8 @@ class PHPFina
                 } else {
                     $value = null;
                 }
-                $data[] = array($time*1000,$value);
             }
-            
+            $data[] = array($time*1000,$value);
             
             $date->modify("+1 day");
             $n++;
