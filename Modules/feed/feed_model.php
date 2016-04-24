@@ -445,18 +445,39 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled']) {
             // Add redisbuffer cache if available
-            $bufferstart=end($data)[0];
-            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+            // $bufferstart=end($data)[0];
+            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+            
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
-                $data = array_merge($data, $bufferdata);
+                
+                // Merge buffered data into base data timeslots (over-writing null values where they exist)
+                if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                    $outintervalms = $outinterval * 1000;
+                    
+                    // Convert buffered data to associative array - by timestamp
+                    $bufferdata_assoc = array();
+                    for ($z=0; $z<count($bufferdata); $z++) {
+                        $time = floor($bufferdata[$z][0]/$outintervalms)*$outintervalms;
+                        $bufferdata_assoc[$time] = $bufferdata[$z][1];
+                    }
+                    
+                    // Merge data into base data
+                    for ($z=0; $z<count($data); $z++) {
+                        $time = $data[$z][0];
+                        if (isset($bufferdata_assoc[$time]) && $data[$z][1]==null) $data[$z][1] = $bufferdata_assoc[$time];
+                    }
+                } else {
+                    $data = array_merge($data, $bufferdata);
+                }
             }
+            
         }
 
         return $data;
     }
     
-    public function get_data_DMY($feedid,$start,$end,$mode,$timezone)
+    public function get_data_DMY($feedid,$start,$end,$mode)
     {
         $feedid = (int) $feedid;
         if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
@@ -482,6 +503,21 @@ class Feed
         if ($engine!=Engine::PHPFINA) return false;
         
         return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
+    }
+    
+    public function get_average_DMY($feedid,$start,$end,$mode)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $engine = $this->get_engine($feedid);
+        if ($engine!=Engine::PHPFINA) return false;
+
+        // Call to engine get_data
+        global $session;
+        $timezone = $this->get_user_timezone($session['userid']);
+        
+        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
 
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat,$name)

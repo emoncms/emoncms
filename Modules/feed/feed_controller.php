@@ -81,11 +81,15 @@ function feed_controller()
                         if (isset($_GET['interval'])) {
                             $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                         } else if (isset($_GET['mode'])) {
-                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'),get('timezone'));
+                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
                         }
                     }
                     else if ($route->action == 'average') {
-                        $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                        if (isset($_GET['interval'])) {
+                            $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                        } else if (isset($_GET['mode'])) {
+                            $result = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
+                        }
                     }
                     else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'

@@ -206,7 +206,7 @@
             print view($themeDir . "theme.php", $output);
         }
     }
-    else if ($route->format == 'text')
+    else if ($route->format == 'text' || $route->format == 'text/plain')
     {
         header('Content-Type: text');
         print $output['content'];
