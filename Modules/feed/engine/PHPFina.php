@@ -336,9 +336,10 @@ class PHPFina
             }
             
             if ($value!==null || $skipmissing===0) {
-                if ($time>=$start && $time<$end) {
+                // Re-enable see https://openenergymonitor.org/emon/node/11260
+                // if ($time>=$start && $time<$end) {
                     $data[] = array($time*1000,$value);
-                }
+                // }
             }
 
             $i++;
