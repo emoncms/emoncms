@@ -293,7 +293,6 @@ class PHPFina
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
-        
 
         // Minimum interval
         if ($interval<1) $interval = 1;
@@ -337,7 +336,10 @@ class PHPFina
             }
             
             if ($value!==null || $skipmissing===0) {
-                $data[] = array($time*1000,$value);
+                // Re-enable see https://openenergymonitor.org/emon/node/11260
+                // if ($time>=$start && $time<$end) {
+                    $data[] = array($time*1000,$value);
+                // }
             }
 
             $i++;
@@ -347,6 +349,8 @@ class PHPFina
     
     public function get_data_DMY($id,$start,$end,$mode,$timezone) 
     {
+        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
+        
         $start = intval($start/1000);
         $end = intval($end/1000);
                
@@ -363,7 +367,8 @@ class PHPFina
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
         $date->modify("midnight");
-        $date->modify("+1 day");
+        if ($mode=="weekly") $date->modify("this monday");
+        if ($mode=="monthly") $date->modify("first day of this month");
         
         $n = 0;
         while($n<10000) // max itterations
@@ -387,9 +392,13 @@ class PHPFina
                     $value = null;
                 }
             }
-            $data[] = array($time*1000,$value);
+            if ($time>=$start && $time<$end) {
+                $data[] = array($time*1000,$value);
+            }
             
-            $date->modify("+1 day");
+            if ($mode=="daily") $date->modify("+1 day");
+            if ($mode=="weekly") $date->modify("+1 week");
+            if ($mode=="monthly") $date->modify("+1 month");
             $n++;
         }
         
@@ -816,25 +825,162 @@ class PHPFina
                 if (strlen($s)!=4*$dp_to_read) break;
                 
                 $tmp = unpack("f*",$s);
-                $sum = 0; $n = 0;
+                $sum = 0.0; $n = 0;
                 
+                /*
                 for ($x=0; $x<$dp_to_read; $x++) {
                   if (!is_nan($tmp[$x+1])) {
-                      $sum += 1*$tmp[$x+1];
+                      $sum += 1.0*$tmp[$x+1];
                       $n++;
                   }
+                }*/
+                
+                $val = NAN;
+                for ($x=0; $x<$dp_to_read; $x++) {
+                  if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
+                  if (!is_nan($val)) {
+                    $sum += $val;
+                    $n++;
+                  }
                 }
+                
                 $average = null;
                 if ($n>0) $average = $sum / $n;
             }
-            
-            $data[] = array($time*1000,$average);
+
+            if ($time>=$start && $time<$end) {
+                $data[] = array($time*1000,$average);
+            }
 
             $i++;
         }
         
         return $data;        
     }
+
+    public function get_average_DMY($id,$start,$end,$mode,$timezone)
+    {   
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        
+        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
+        
+        if ($mode=="daily") $interval = 86400;
+        if ($mode=="weekly") $interval = 86400*7;
+        if ($mode=="monthly") $interval = 86400*30;
+        
+        $layer_interval = 0;
+        //if ($interval>=600) $layer_interval = 600;
+        //if ($interval>=3600) $layer_interval = 3600;
+        
+        // Only return an average if the $interval is more than a layer interval
+        // and check that the interval is an integer number of layer intervals
+        if ($layer_interval>0 && $interval%$layer_interval==0) {
+            //if (!$this->calculate_average($id,$layer_interval)) {
+                // return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
+            //    return array('success'=>false);
+            //}
+        }
+        
+        $dir = $this->dir;
+        //if ($layer_interval>0) $dir = $dir."averages/$layer_interval/";
+        
+        $meta = new stdClass();
+        $metafile = fopen($dir.$id.".meta", 'rb');
+        fseek($metafile,8);
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->interval = $tmp[1];
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->start_time = $tmp[1];
+        fclose($metafile);
+        $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
+        
+        if ((($end-$start) / $meta->interval)>69120) {
+            return array('success'=>false, 'message'=>"Range to long");
+        }
+        
+        if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
+        
+        $dp_to_read = $interval / $meta->interval;
+        
+        $data = array();
+        $time = 0; $i = 0;
+        $numdp = 0;
+        // The datapoints are selected within a loop that runs until we reach a
+        // datapoint that is beyond the end of our query range
+        
+        $fh = fopen($dir.$id.".dat", 'rb');
+        
+        $date = new DateTime();
+        if ($timezone===0) $timezone = "UTC";
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        if ($mode=="weekly") $date->modify("this monday");
+        if ($mode=="monthly") $date->modify("first day of this month");
+        
+        $itterations = 0;
+        while($itterations<10000) // max itterations
+        {
+            $time = $date->getTimestamp();
+            if ($mode=="daily") $date->modify("+1 day");
+            if ($mode=="weekly") $date->modify("+1 week");
+            if ($mode=="monthly") $date->modify("+1 month");
+            $nexttime = $date->getTimestamp();
+            
+            if ($time>$end) break;
+            
+            $pos = round(($time - $meta->start_time) / $meta->interval);
+            $nextpos = round(($nexttime - $meta->start_time) / $meta->interval);
+            $dp_to_read = $nextpos - $pos;
+            $value = null;
+            $average = null;
+            
+            if ($pos>=0 && $pos < $meta->npoints)
+            {
+                // read from the file
+                fseek($fh,$pos*4);
+                $s = fread($fh,4*$dp_to_read);
+                if (strlen($s)!=4*$dp_to_read) break;
+
+                $tmp = unpack("f*",$s);
+                $sum = 0; $n = 0;
+                
+                /*
+                for ($x=0; $x<$dp_to_read; $x++) {
+                  if (!is_nan($tmp[$x+1])) {
+                      $sum += 1*$tmp[$x+1];
+                      $n++;
+                  }
+                }*/
+                
+                $val = NAN;
+                for ($x=0; $x<$dp_to_read; $x++) {
+                  if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
+                  if (!is_nan($val)) {
+                    $sum += $val;
+                    $n++;
+                  }
+                }
+                
+                $average = null;
+                if ($n>0) $average = $sum / $n;
+
+            }
+            
+            if ($time>=$start && $time<$end) {
+                $data[] = array($time*1000,$average);
+            }
+            
+            $itterations++;
+        }
+        
+        fclose($fh);
+
+        
+        return $data;        
+    }
+
 
     private function calculate_average($id,$layer_interval)
     {

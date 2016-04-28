@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.5 | 2016.04.19";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.5.1 | 2016.04.28";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -206,7 +206,7 @@
             print view($themeDir . "theme.php", $output);
         }
     }
-    else if ($route->format == 'text')
+    else if ($route->format == 'text' || $route->format == 'text/plain')
     {
         header('Content-Type: text');
         print $output['content'];
