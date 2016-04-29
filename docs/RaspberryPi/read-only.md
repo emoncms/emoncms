@@ -58,7 +58,7 @@ tmpfs           /var/lib/openhab tmpfs  nodev,nosuid,size=40M,mode=1777 0  0
 proc            /proc           proc    defaults 0 0
 /dev/mmcblk0p1  /boot           vfat    defaults,noatime,nodiratime 0 2
 /dev/mmcblk0p2  /               ext4    defaults,ro,noatime,nodiratime,errors=remount-ro 0 1
-/dev/mmcblk0p3  /home/pi/data   ext2    defaults,rw,noatime,nodiratime,errors=remount-ro,commit=180  0 2
+/dev/mmcblk0p3  /home/pi/data   ext2    defaults,rw,noatime,nodiratime,errors=remount-ro 0 2
 ```
 The line:
 
