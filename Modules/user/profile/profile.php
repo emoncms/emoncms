@@ -105,6 +105,10 @@ function languagecode_to_name($langs) {
             <!--<a id="newapikeyread" >new</a>-->
             <span class="readapikey"></span>
         </div>
+        <div class="account-item">
+            <span class="muted"><?php echo _('Read API QR Code'); ?></span>
+            <img class="readapikeyqr" align="left">
+        </div>
         </div>
         
     </div>
@@ -124,6 +128,7 @@ function languagecode_to_name($langs) {
 
     $(".writeapikey").html(list.data.apikey_write);
     $(".readapikey").html(list.data.apikey_read);
+    $(".readapikeyqr").attr("src", "https://chart.googleapis.com/chart?chs=177x177&cht=qr&chl=" + list.data.apikey_read + "&choe=UTF-8");
     
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});
