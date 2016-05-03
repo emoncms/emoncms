@@ -42,6 +42,7 @@ function languagecode_to_name($langs) {
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/qrcode.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
 
@@ -107,7 +108,7 @@ function languagecode_to_name($langs) {
         </div>
         <div class="account-item">
             <span class="muted"><?php echo _('Read API QR Code'); ?></span>
-            <img class="readapikeyqr" align="left">
+            <div id="qr_readapikey"></div>
         </div>
         </div>
         
@@ -128,7 +129,15 @@ function languagecode_to_name($langs) {
 
     $(".writeapikey").html(list.data.apikey_write);
     $(".readapikey").html(list.data.apikey_read);
-    $(".readapikeyqr").attr("src", "https://chart.googleapis.com/chart?chs=177x177&cht=qr&chl=" + list.data.apikey_read + "&choe=UTF-8");
+
+    var qrcode = new QRCode(document.getElementById("qr_readapikey"), {
+        text: list.data.apikey_read,
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    }); //Re-designed on-board QR generation using javascript
     
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});
