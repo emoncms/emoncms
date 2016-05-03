@@ -62,7 +62,7 @@ proc            /proc           proc    defaults 0 0
 ```
 The line:
 
-	/dev/mmcblk0p3  /home/pi/data   ext2 defaults,rw,noatime,nodiratime,errors=remount-ro,commit=180
+	/dev/mmcblk0p3  /home/pi/data   ext2    defaults,rw,noatime,nodiratime,errors=remount-ro 0 2
 
 Set the ext2 partition we created earlier to be mounted RO with the file and dir and file access time recording turned off and commit=180 sets the frequency in seconds that data can be written to disk (default 5s). Better explanation is given [here](http://unix.stackexchange.com/questions/155784/advantages-disadvantages-of-increasing-commit-in-fstab) and [here](http://superuser.com/questions/479379/how-long-can-file-system-writes-be-cached-with-ext4/479384#479384). [Forum topic discussion](http://openenergymonitor.org/emon/node/11695). 
 
