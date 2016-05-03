@@ -43,6 +43,7 @@ function languagecode_to_name($langs) {
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/qrcode.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/clipboard.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
 
@@ -102,9 +103,10 @@ function languagecode_to_name($langs) {
             <span class="writeapikey"></span>
         </div>
         <div class="account-item">
-            <span class="muted"><?php echo _('Read API Key'); ?></span>
+            <span class="muted"><?php echo _('Read API Key'); ?></span> <button id="copyapireadbtn">Copy to Clipboard</button>
             <!--<a id="newapikeyread" >new</a>-->
-            <span class="readapikey"></span>
+            <span class="readapikey" id="copyapiread"></span>
+            <span id="msg"></span>
         </div>
         <div class="account-item">
             <span class="muted"><?php echo _('Read API QR Code'); ?></span>
@@ -142,6 +144,11 @@ function languagecode_to_name($langs) {
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});
     // $("#newapikeywrite").click(function(){user.newapikeywrite()});
+    
+    // Clipboard code
+    document.getElementById("copyapireadbtn").addEventListener("click", function() {
+    copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
+    });
     
     var currentlanguage = list.data.language;
 
