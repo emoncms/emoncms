@@ -98,9 +98,9 @@ function languagecode_to_name($langs) {
         <br>
         <div id="account">
         <div class="account-item">
-            <span class="muted"><?php echo _('Write API Key'); ?></span>
+            <span class="muted"><?php echo _('Write API Key'); ?></span> <button id="copyapiwritebtn">Copy to Clipboard</button>
             <!--<a id="newapikeywrite" >new</a>-->
-            <span class="writeapikey"></span>
+            <span class="writeapikey" id="copyapiwrite"></span>
         </div>
         <div class="account-item">
             <span class="muted"><?php echo _('Read API Key'); ?></span> <button id="copyapireadbtn">Copy to Clipboard</button>
@@ -146,6 +146,9 @@ function languagecode_to_name($langs) {
     // $("#newapikeywrite").click(function(){user.newapikeywrite()});
     
     // Clipboard code
+    document.getElementById("copyapiwritebtn").addEventListener("click", function() {
+    copyToClipboardMsg(document.getElementById("copyapiwrite"), "msg");
+    });
     document.getElementById("copyapireadbtn").addEventListener("click", function() {
     copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
     });
