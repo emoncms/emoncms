@@ -109,11 +109,10 @@ function languagecode_to_name($langs) {
             <span id="msg"></span>
         </div>
         <div class="account-item">
-            <span class="muted"><?php echo _('Read API QR Code'); ?></span>
-            <div id="qr_readapikey"></div>
+            <span class="muted"><?php echo _('QR Code'); ?></span>
+            <div id="qr_apikey"></div>
         </div>
         </div>
-        
     </div>
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
@@ -132,8 +131,10 @@ function languagecode_to_name($langs) {
     $(".writeapikey").html(list.data.apikey_write);
     $(".readapikey").html(list.data.apikey_read);
 
-    var qrcode = new QRCode(document.getElementById("qr_readapikey"), {
-        text: list.data.apikey_read,
+    //QR COde Generation
+    var urlCleaned = window.location.href.replace("user/view" ,"");
+    var qrcode = new QRCode(document.getElementById("qr_apikey"), {
+        text: text: urlCleaned + "app?apikey=" + list.data.apikey_write + "#myelectric",
         width: 128,
         height: 128,
         colorDark : "#000000",
