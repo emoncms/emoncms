@@ -42,6 +42,8 @@ function languagecode_to_name($langs) {
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/qrcode.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/clipboard.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
 
@@ -96,17 +98,21 @@ function languagecode_to_name($langs) {
         <br>
         <div id="account">
         <div class="account-item">
-            <span class="muted"><?php echo _('Write API Key'); ?></span>
+            <span class="muted"><?php echo _('Write API Key'); ?></span> <button id="copyapiwritebtn">Copy to Clipboard</button>
             <!--<a id="newapikeywrite" >new</a>-->
-            <span class="writeapikey"></span>
+            <span class="writeapikey" id="copyapiwrite"></span>
         </div>
         <div class="account-item">
-            <span class="muted"><?php echo _('Read API Key'); ?></span>
+            <span class="muted"><?php echo _('Read API Key'); ?></span> <button id="copyapireadbtn">Copy to Clipboard</button>
             <!--<a id="newapikeyread" >new</a>-->
-            <span class="readapikey"></span>
+            <span class="readapikey" id="copyapiread"></span>
+            <span id="msg"></span>
+        </div>
+        <div class="account-item">
+            <span class="muted"><?php echo _('QR Code'); ?></span>
+            <div id="qr_apikey"></div>
         </div>
         </div>
-        
     </div>
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
@@ -124,10 +130,29 @@ function languagecode_to_name($langs) {
 
     $(".writeapikey").html(list.data.apikey_write);
     $(".readapikey").html(list.data.apikey_read);
+
+    //QR COde Generation
+    var urlCleaned = window.location.href.replace("user/view" ,"");
+    var qrcode = new QRCode(document.getElementById("qr_apikey"), {
+        text: urlCleaned + "app?readkey=" + list.data.apikey_read  + "#myelectric",
+        width: 128,
+        height: 128,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    }); //Re-designed on-board QR generation using javascript
     
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});
     // $("#newapikeywrite").click(function(){user.newapikeywrite()});
+    
+    // Clipboard code
+    document.getElementById("copyapiwritebtn").addEventListener("click", function() {
+    copyToClipboardMsg(document.getElementById("copyapiwrite"), "msg");
+    });
+    document.getElementById("copyapireadbtn").addEventListener("click", function() {
+    copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
+    });
     
     var currentlanguage = list.data.language;
 
