@@ -134,7 +134,7 @@ function languagecode_to_name($langs) {
     //QR COde Generation
     var urlCleaned = window.location.href.replace("user/view" ,"");
     var qrcode = new QRCode(document.getElementById("qr_apikey"), {
-        text: text: urlCleaned + "app?apikey=" + list.data.apikey_write + "#myelectric",
+        text: urlCleaned + "app?readkey=" + list.data.apikey_read  + "#myelectric",
         width: 128,
         height: 128,
         colorDark : "#000000",
