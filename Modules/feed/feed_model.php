@@ -453,6 +453,7 @@ class Feed
                 
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                    if ( $outinterval < 1 ) { $outinterval = (int) 1; } //Fix div by zero errors
                     $outintervalms = $outinterval * 1000;
                     
                     // Convert buffered data to associative array - by timestamp
