@@ -141,8 +141,8 @@ function languagecode_to_name($langs) {
     var urlCleaned = window.location.href.replace("user/view" ,"");
     var qrcode = new QRCode(document.getElementById("qr_apikey"), {
         text: urlCleaned + "app?readkey=" + list.data.apikey_read  + "#myelectric",
-        width: 128,
-        height: 128,
+        width: 192,
+        height: 192,
         colorDark : "#000000",
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
