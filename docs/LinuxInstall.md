@@ -26,21 +26,21 @@ Add pecl modules to php5 config
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
-    $ sudo a2enmod rewrite
+    sudo a2enmod rewrite
     
 For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This may be on lines 7 and 11 of `/etc/apache2/sites-available/default`. Modern versions of Ubuntu store these in the main config file: `/etc/apache2/apache2.conf`.
     
-    $ sudo nano /etc/apache2/sites-available/default
+    sudo nano /etc/apache2/sites-available/default
     
 or
 
-    $ sudo nano /etc/apache2/apache2.conf
+    sudo nano /etc/apache2/apache2.conf
 
 [Ctrl + X ] then [Y] then [Enter] to Save and exit.
 
 Restart the lamp server:
 
-    $ sudo service apache2 restart
+    sudo service apache2 restart
     
 ### Install the emoncms application via git
 
@@ -48,30 +48,30 @@ Git is a source code management and revision control system but at this stage we
 
 First cd into the /var/www directory:
 
-    $ cd /var/www/
+    cd /var/www/
 
 Set the permissions of the html directory to be owned by your username:
 
-    $ sudo chown $USER html
+    sudo chown $USER html
 
-Cd into www directory
+Cd into html directory
 
-    $ cd html
+    cd html
 
 Download emoncms using git:
 
 **You may want to install one of the other branches of emoncms here, perhaps to try out a new feature set not yet available in the master branch. See the branch list and descriptions on the [start page](https://github.com/emoncms/emoncms)**
 
-    $ git clone -b stable https://github.com/emoncms/emoncms.git
+    git clone -b stable https://github.com/emoncms/emoncms.git
     
 Once installed you can pull in updates with:
 
-    $ cd /var/www/html/emoncms
-    $ git pull
+    cd /var/www/html/emoncms
+    git pull
     
 ### Create a MYSQL database
 
-    $ mysql -u root -p
+    mysql -u root -p
 
 Enter the mysql password that you set above.
 Then enter the sql to create a database:
@@ -102,15 +102,15 @@ Exit mysql by:
 
 cd into the emoncms directory where the settings file is located
 
-    $ cd /var/www/html/emoncms/
+    cd /var/www/html/emoncms/
 
 Make a copy of default.settings.php and call it settings.php
 
-    $ cp default.settings.php settings.php
+    cp default.settings.php settings.php
 
 Open settings.php in an editor:
 
-    $ nano settings.php
+    nano settings.php
 
 Update your database settings to use your new secure password:
 
