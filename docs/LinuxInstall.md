@@ -46,17 +46,17 @@ Restart the lamp server:
 
 Git is a source code management and revision control system but at this stage we use it to just download and update the emoncms application.
 
-First cd into the var directory:
+First cd into the /var/www directory:
 
-    $ cd /var/
+    $ cd /var/www/
 
-Set the permissions of the www directory to be owned by your username:
+Set the permissions of the html directory to be owned by your username:
 
-    $ sudo chown $USER www
+    $ sudo chown $USER html
 
 Cd into www directory
 
-    $ cd www
+    $ cd html
 
 Download emoncms using git:
 
@@ -66,7 +66,7 @@ Download emoncms using git:
     
 Once installed you can pull in updates with:
 
-    $ cd /var/www/emoncms
+    $ cd /var/www/html/emoncms
     $ git pull
     
 ### Create a MYSQL database
@@ -102,7 +102,7 @@ Exit mysql by:
 
 cd into the emoncms directory where the settings file is located
 
-    $ cd /var/www/emoncms/
+    $ cd /var/www/html/emoncms/
 
 Make a copy of default.settings.php and call it settings.php
 
@@ -125,7 +125,7 @@ Save (Ctrl-X), type Y and exit
 
 ### Install add-on emoncms modules
     
-    cd /var/www/emoncms/Modules
+    cd /var/www/html/emoncms/Modules
     
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
