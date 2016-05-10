@@ -79,7 +79,7 @@ Documentation hosted on openenergymonitor documentation github:
 ## More information
 
 - Official site - http://emoncms.org
-- [OpenEnergyMonitor Forums](http://openenergymonitor.org/emon/forum)
+- [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
 
     
