@@ -487,8 +487,8 @@ class Feed
         if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
         
         // Call to engine get_data
-        global $session;
-        $timezone = $this->get_user_timezone($session['userid']);
+        $userid = $this->get_field($feedid,"userid");
+        $timezone = $this->get_user_timezone($userid);
             
         $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
         return $data;
@@ -514,8 +514,8 @@ class Feed
         if ($engine!=Engine::PHPFINA) return false;
 
         // Call to engine get_data
-        global $session;
-        $timezone = $this->get_user_timezone($session['userid']);
+        $userid = $this->get_field($feedid,"userid");
+        $timezone = $this->get_user_timezone($userid);
         
         return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
