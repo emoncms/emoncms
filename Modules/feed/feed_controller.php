@@ -48,12 +48,15 @@ function feed_controller()
             $result = $feed->get_buffer_size();
         // To "fetch" multiple feed values in a single request
         // http://emoncms.org/feed/fetch.json?ids=123,567,890
-        } elseif ($route->action == "fetch" && $session['read']) {
+        } elseif ($route->action == "fetch") {
             $feedids = (array) (explode(",",(get('ids'))));
             for ($i=0; $i<count($feedids); $i++) {
                 $feedid = (int) $feedids[$i];
-                if ($feed->exist($feedid)) { // if the feed exists
-                   $result[$i] = $feed->get_value($feedid); // null is a valid response
+                if ($feed->exist($feedid)) {  // if the feed exists
+                   $f = $feed->get($feedid);
+                   if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read'])) {
+                       $result[$i] = 1*$feed->get_value($feedid); // null is a valid response
+                   } else { $result[$i] = false; }
                 } else { $result[$i] = false; } // false means feed not found
             }
         } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
