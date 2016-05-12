@@ -11,13 +11,13 @@ Before following this guide, it is essential that emoncms was initially installe
 
 #### Ensure packages are installed
 
-In addition to Mosquitto MQTT server we will need:
+In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-repository]( http://mosquitto.org/2013/01/mosquitto-debian-repository) and [Mosquitto-PHP library](https://github.com/mgdm/Mosquitto-PHP):
 
     sudo apt-get install libmosquitto-dev
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
     
-If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the mosquitto install guide here: http://mosquitto.org/2013/01/mosquitto-debian-repository. 
+If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository). 
 
 If PHP extension config files `/etc/php5/cli/conf.d/20-mosquitto.ini` and `/etc/php5/apache2/conf.d/20-mosquitto.ini` don't exist then create with:
 
