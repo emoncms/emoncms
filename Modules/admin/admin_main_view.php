@@ -109,8 +109,6 @@ if(is_writable($log_filename)) {
 }
 ?>
             </p>
-            
-            <pre id="logreply-bound"><div id="logreply"></div></pre>
         </td>
         <td class="buttons">
 <?php if(is_writable($log_filename)) { ?>
@@ -125,6 +123,7 @@ if(is_writable($log_filename)) {
           
         </td>
     </tr>
+    <tr><td colspan="2"><pre id="logreply-bound"><div id="logreply"></div></pre></td></tr>
 <?php
 }
 if ($allow_emonpi_admin) {
@@ -134,13 +133,12 @@ if ($allow_emonpi_admin) {
             <h3><?php echo _('Update emonPi'); ?></h3>
             <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">emonPi firmware change log.</a></p>
             <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
-            
-            <pre id="update-log-bound"><div id="update-log"></div></pre>
         </td>
         <td class="buttons"><br>
             <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button><br><br>
         </td>
     </tr>
+    <tr><td colspan="2"><pre id="update-log-bound"><div id="update-log"></div></pre></td></tr>
 <?php 
 }   
 ?>
@@ -181,6 +179,12 @@ if ($mqtt_enabled) {
 ?>
               <tr><td><b>MQTT</b></td><td>Version</td><td><?php echo "n/a"; ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
+<?php
+} // Raspberry Pi Detection and additions.
+if ( exec('ifconfig | grep b8:27:eb:') ) { ?>
+              <tr><td><b>EmonPi</b></td><td>CPU Temp</td><td><?php echo number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC"; ?></td></tr>
+              <tr><td class="subinfo"></td><td>/</td><td><?php echo number_format(disk_free_space("/")/(1024*1024), 2, '.', '')." MB free" ; ?></td></tr>
+              <tr><td class="subinfo"></td><td>/home/pi/data</td><td><?php echo number_format(disk_free_space("/home/pi/data")/(1024*1024), 2, '.', '')." MB free" ; ?></td></tr>
 <?php
 }
 ?>
