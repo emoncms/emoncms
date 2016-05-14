@@ -98,12 +98,12 @@ function languagecode_to_name($langs) {
         <br>
         <div id="account">
         <div class="account-item">
-            <span class="muted"><?php echo _('Write API Key'); ?></span> <button id="copyapiwritebtn">Copy to Clipboard</button>
+            <span class="muted"><?php echo _('Write API Key'); ?></span> <button class="btn btn-info" id="copyapiwritebtn">Copy API Key</button>
             <!--<a id="newapikeywrite" >new</a>-->
             <span class="writeapikey" id="copyapiwrite"></span>
         </div>
         <div class="account-item">
-            <span class="muted"><?php echo _('Read API Key'); ?></span> <button id="copyapireadbtn">Copy to Clipboard</button>
+            <span class="muted"><?php echo _('Read API Key'); ?></span> <button class="btn btn-info" id="copyapireadbtn">Copy API Key</button>
             <!--<a id="newapikeyread" >new</a>-->
             <span class="readapikey" id="copyapiread"></span>
             <span id="msg"></span>
