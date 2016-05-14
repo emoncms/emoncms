@@ -183,8 +183,13 @@ if ($mqtt_enabled) {
 } // Raspberry Pi Detection and additions.
 if ( exec('ifconfig | grep b8:27:eb:') ) { ?>
               <tr><td><b>EmonPi</b></td><td>CPU Temp</td><td><?php echo number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC"; ?></td></tr>
-              <tr><td class="subinfo"></td><td>/</td><td><?php echo number_format(disk_free_space("/")/(1024*1024), 2, '.', '')." MB free" ; ?></td></tr>
-              <tr><td class="subinfo"></td><td>/home/pi/data</td><td><?php echo number_format(disk_free_space("/home/pi/data")/(1024*1024), 2, '.', '')." MB free" ; ?></td></tr>
+              <?php $fileSysems = explode("\n", shell_exec('lsblk -n -o MOUNTPOINT | grep /'));
+                foreach($fileSysems as $fs) {
+                  if ($fs != "") {
+                    echo "<tr><td class=\"subinfo\"></td><td>".$fs."</td><td>".number_format(disk_total_space($fs)/(1024*1024), 2, '.', '')." MB total,
+                    with ".number_format(disk_free_space($fs)/(1024*1024), 2, '.', '')." MB free</td></tr>\n"; 
+                  }
+                }?>
 <?php
 }
 ?>
