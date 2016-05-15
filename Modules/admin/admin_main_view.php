@@ -181,16 +181,26 @@ if ($mqtt_enabled) {
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
 <?php
 } // Raspberry Pi Detection and additions.
-if ( exec('ifconfig | grep b8:27:eb:') ) { ?>
-              <tr><td><b>EmonPi</b></td><td>CPU Temp</td><td><?php echo number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC"; ?></td></tr>
-              <?php $fileSysems = explode("\n", shell_exec('lsblk -n -o MOUNTPOINT | grep /'));
+if ( exec('ifconfig | grep b8:27:eb:') ) {
+              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC</td></tr>\n";
+}
+// Filesystem Information
+              echo "              <tr><td><b>Filesystems</b></td><td>Mount Point</td><td>Disk Stats</td></tr>\n";
+              $fileSysems = explode("\n", shell_exec('lsblk -n -o MOUNTPOINT | grep /'));
                 foreach($fileSysems as $fs) {
                   if ($fs != "") {
-                    echo "<tr><td class=\"subinfo\"></td><td>".$fs."</td><td>".number_format(disk_total_space($fs)/(1024*1024), 2, '.', '')." MB total,
-                    with ".number_format(disk_free_space($fs)/(1024*1024), 2, '.', '')." MB free</td></tr>\n"; 
+                    $diskFree = disk_free_space($fs);
+                    $diskTotal = disk_total_space($fs);
+                    $diskUsed = $diskTotal - $diskFree;
+                    $diskPercent = sprintf('%.2f',($diskUsed / $diskTotal) * 100);
+                    $diskInvPercent = 100 - $diskPercent;
+
+                    echo "              <tr><td class=\"subinfo\"></td><td>".$fs."</td><td>";
+                    echo "<table width=\"100%\"><tr>";
+                    echo "<td style=\"border-top-left-radius: 10px; border-bottom-left-radius: 10px;\" bgcolor=\"#300a24\" height=\"10px\" width=\"".$diskPercent."%\"></td>";
+                    echo "<td style=\"border-top-right-radius: 10px; border-bottom-right-radius: 10px;\" bgcolor=\"#d0d0d0\" height=\"10px\" width=\"".$diskInvPercent."%\"></td></tr></table>\n";
+                    echo "<b>Size:</b> ".formatSize($diskTotal)." <b>Used:</b> ".formatSize($diskUsed)." <b>Avail:</b> ".formatSize($diskFree)." <b>Use%</b> ".$diskPercent."%</td></tr>\n";
                   }
-                }?>
-<?php
 }
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
@@ -282,3 +292,11 @@ function backup_log_update() {
   });
 }
 </script>
+<?php //Disk Size function
+function formatSize( $bytes )
+{
+        $types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
+        for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+                return( round( $bytes, 2 ) . " " . $types[$i] );
+}
+?>
