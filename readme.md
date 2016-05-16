@@ -41,10 +41,10 @@ There are many other modules such as the event module and openbem (open source b
 
 * [Upgrading emoncms](docs/Upgrading.md)
 
-## Backing up emoncms data
+## Data Backup
 
 * [Backup](docs/Backup.md)
-* [Raspberry Pi Backup Module](https://github.com/emoncms/backup) (emonPi / emonBase)
+* [Raspberry Pi Backup / Restore Module](https://github.com/emoncms/backup) (emonPi / emonBase)
 
 ## Development
 
@@ -52,10 +52,10 @@ There are many other modules such as the event module and openbem (open source b
 * [V9 Development thread](http://openenergymonitor.org/emon/node/11009)
 
 
-## Using emoncms
+## Using Emoncms
 
 * [Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy)
-( [Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/)
+* [Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/)
 
 #### Design
 
