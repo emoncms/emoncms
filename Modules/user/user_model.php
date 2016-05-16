@@ -14,13 +14,32 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
+    /**
+     * @var mysqli
+     */
     private $mysqli;
+
+    /**
+     * @var Rememberme
+     */
     private $rememberme;
+
+    /**
+     * @var bool
+     */
     private $enable_rememberme = false;
+
+    /**
+     * @var Redis
+     */
     private $redis;
+
+    /**
+     * @var EmonLogger
+     */
     private $log;
 
-    public function __construct($mysqli,$redis)
+    public function __construct(mysqli $mysqli, Redis $redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
         global $enable_rememberme;
@@ -342,7 +361,7 @@ class User
                     $email->body("<p>A password reset was requested for your emoncms account.</p><p>You can now login with password: $newpass </p>");
                     $result = $email->send();
                     if (!$result['success']) {
-                        $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
+                        $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
                     } else {
                         $this->log->info("Email sent to $emailto");
                     }

@@ -12,22 +12,32 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-// Return all locale directory from all modules.
-// If one module has a language it will be detected
+
+
+/**
+ * Return all locale directory from all modules.
+ * If one module has a language it will be detected.
+ * 
+ * @param string $dir
+ * @return array
+ */
 function directoryLocaleScan($dir) {
+    $dirList = [];
     if (isset($dir) && is_readable($dir)) {
-        $dlist = Array();
+
         $dir = realpath($dir);
 
         $objects = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST);
 
         foreach($objects as $entry => $object){
             $entry = str_replace($dir, '', $entry);
-            if (basename(dirname($entry))=='locale' && basename($entry)!='.' && basename($entry)!='..') $dlist[] = basename($entry);
+            if (basename(dirname($entry))=='locale' && basename($entry)!='.' && basename($entry)!='..') $dirList[] = basename($entry);
         }
 
-        return array_unique($dlist);
+         $dirList = array_unique($dirList);
     }
+    
+    return $dirList;
 }
 
 function get_available_languages()
