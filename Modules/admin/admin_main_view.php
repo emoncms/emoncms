@@ -183,8 +183,23 @@ if ($mqtt_enabled) {
 } // Raspberry Pi Detection and additions.
 if ( exec('ifconfig | grep b8:27:eb:') ) {
               echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC</td></tr>\n";
+              echo "              <tr><td class=\"subinfo\"></td><td>System Load</td><td>".get_server_load()."</td></tr>\n";
+                define("ramTotal", "ramTotal");
+                define("ramUsed", "ramUsed");
+                $sysRamTotal = get_server_memory_usage(ramTotal);
+                $sysRamUsed = get_server_memory_usage(ramUsed);
+                $sysRamRemaining = $sysRamTotal - $sysRamUsed;;
+                $sysRamPercent = sprintf('%.2f',($sysRamUsed / $sysRamTotal) * 100);
+                $sysRamInvPercent = 100 - $sysRamPercent;
+
+                echo "              <tr><td class=\"subinfo\"></td><td>RAM Use</td><td>";
+                echo "<table width=\"100%\"><tr>";
+                echo "<td style=\"border-top-left-radius: 10px; border-bottom-left-radius: 10px;\" bgcolor=\"#300a24\" height=\"10px\" width=\"".$sysRamPercent."%\"></td>";
+                echo "<td style=\"border-top-right-radius: 10px; border-bottom-right-radius: 10px;\" bgcolor=\"#d0d0d0\" height=\"10px\" width=\"".$sysRamInvPercent."%\"></td></tr></table>\n";
+                echo "<b>RAM Total:</b> ".$sysRamTotal."MB <b>RAM Used:</b> ".$sysRamUsed."MB <b>RAM Free:</b> ".$sysRamRemaining."MB <b>Used %</b> ".$sysRamPercent."%</td></tr>\n";
 }
 // Filesystem Information
+if (is_file('/bin/lsblk')){ // Make sure we can actually do this
               echo "              <tr><td><b>Filesystems</b></td><td>Mount Point</td><td>Disk Stats</td></tr>\n";
               $fileSysems = explode("\n", shell_exec('lsblk -n -o MOUNTPOINT | grep /'));
                 foreach($fileSysems as $fs) {
@@ -201,8 +216,8 @@ if ( exec('ifconfig | grep b8:27:eb:') ) {
                     echo "<td style=\"border-top-right-radius: 10px; border-bottom-right-radius: 10px;\" bgcolor=\"#d0d0d0\" height=\"10px\" width=\"".$diskInvPercent."%\"></td></tr></table>\n";
                     echo "<b>Size:</b> ".formatSize($diskTotal)." <b>Used:</b> ".formatSize($diskUsed)." <b>Avail:</b> ".formatSize($diskFree)." <b>Use%</b> ".$diskPercent."%</td></tr>\n";
                   }
-}
-?>
+} //End Filesystem Info
+}?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>
             </table>
@@ -293,10 +308,25 @@ function backup_log_update() {
 }
 </script>
 <?php //Disk Size function
-function formatSize( $bytes )
-{
-        $types = array( 'B', 'KB', 'MB', 'GB', 'TB' );
-        for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
-                return( round( $bytes, 2 ) . " " . $types[$i] );
+function formatSize( $bytes ){
+  $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
+  for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+  return( round( $bytes, 2 ) . " " . $types[$i] );
+}
+
+//Memory Information function
+function get_server_memory_usage($field){
+  $memory_usage = preg_split('#\s+#',shell_exec("free -m | grep Mem:"));
+  $memory_bufcache = preg_split('#\s+#',shell_exec("free -m | grep ache:"));
+  if ($field == 'ramTotal') { return $memory_usage[1]; }
+  if ($field == 'ramUsed') { return $memory_bufcache[2]; }
+  if (!isset($field)) { return "Total: ".$memory_usage[1]." MB, In use: ".$memory_bufcache[2]." MB"; }
+}
+
+//Server Load function
+function get_server_load(){
+  $loadCmd = substr(strrchr(shell_exec("uptime"),":"),1); 
+  $load = array_map("trim",explode(",",$loadCmd));
+  return $load[0]." ".$load[1]." ".$load[2];
 }
 ?>
