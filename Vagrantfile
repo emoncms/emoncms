@@ -34,7 +34,7 @@ $script = <<SCRIPT
 
     cd /etc/apache2
 
-    sed -i 's/AllowOverride None/AllowOverride All/g' apache2.conf
+    sudo sed -i 's/AllowOverride None/AllowOverride All/g' apache2.conf
 
     sudo service apache2 restart
 
