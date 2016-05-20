@@ -24,7 +24,7 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
     
 - [Config]( https://github.com/emoncms/config.git) - In-browser emonhub.conf editor and emonhub.log log viewer. git clone
     
-- [Wifi Module]( https://github.com/emoncms/wifi.git) - Wifi configuration interface designed for use on the emonpi. git clone
+- [Wifi Module]( https://github.com/emoncms/wifi.git) - [Wifi configuration interface designed for use on the emonPi](https://guide.openenergymonitor.org/setup/connect/)
 
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the emoncms repo list: https://github.com/emoncms
 
