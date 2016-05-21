@@ -182,9 +182,8 @@ if ($mqtt_enabled) {
 <?php
 } // Raspberry Pi Detection and additions.
 if ( exec('ifconfig | grep b8:27:eb:') ) {
-              if (isset($rebootPi)) { shell_exec('sudo shutdown -r now'); }
-              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC
-                <button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button></td></tr>\n";
+              if (isset($rebootPi)) { shell_exec('sudo shutdown -r now 2>&1'); }
+              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
                 define("ramTotal", "ramTotal");
                 define("ramUsed", "ramUsed");
                 $sysRamTotal = get_server_memory_usage(ramTotal);
@@ -199,6 +198,7 @@ if ( exec('ifconfig | grep b8:27:eb:') ) {
                 echo "<td style=\"border-top-right-radius: 10px; border-bottom-right-radius: 10px;\" bgcolor=\"#d0d0d0\" height=\"10px\" width=\"".$sysRamInvPercent."%\"></td></tr></table>\n";
                 echo "<b>RAM Total:</b> ".$sysRamTotal."MB <b>RAM Used:</b> ".$sysRamUsed."MB <b>RAM Free:</b> ".$sysRamRemaining."MB <b>Used %</b> ".$sysRamPercent."%</td></tr>\n";
 }
+
 // Filesystem Information
 if (is_file('/bin/lsblk')){ // Make sure we can actually do this
               echo "              <tr><td><b>Filesystems</b></td><td>Mount Point</td><td>Disk Stats</td></tr>\n";
@@ -328,5 +328,12 @@ function get_server_memory_usage($field){
   if ($field == 'ramTotal') { return $memory_usage[1]; }
   if ($field == 'ramUsed') { return $memory_bufcache[2]; }
   if (!isset($field)) { return "Total: ".$memory_usage[1]." MB, In use: ".$memory_bufcache[2]." MB"; }
+}
+//Shutdown Command Check
+function chkRebootBtn(){
+  $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1');
+  if (stripos($chkReboot, "scheduled ") > 0) {
+    return "<button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
+  }
 }
 ?>
