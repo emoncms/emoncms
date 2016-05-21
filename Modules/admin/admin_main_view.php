@@ -1,6 +1,6 @@
 
 
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings;
+<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $rebootPi;
 
   // Retrieve server information
   $system = system_information();
@@ -182,8 +182,9 @@ if ($mqtt_enabled) {
 <?php
 } // Raspberry Pi Detection and additions.
 if ( exec('ifconfig | grep b8:27:eb:') ) {
-              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC</td></tr>\n";
-              echo "              <tr><td class=\"subinfo\"></td><td>System Load</td><td>".get_server_load()."</td></tr>\n";
+              if (isset($rebootPi)) { shell_exec('sudo shutdown -r now'); }
+              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC
+                <button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button></td></tr>\n";
                 define("ramTotal", "ramTotal");
                 define("ramUsed", "ramUsed");
                 $sysRamTotal = get_server_memory_usage(ramTotal);
@@ -202,6 +203,7 @@ if ( exec('ifconfig | grep b8:27:eb:') ) {
 if (is_file('/bin/lsblk')){ // Make sure we can actually do this
               echo "              <tr><td><b>Filesystems</b></td><td>Mount Point</td><td>Disk Stats</td></tr>\n";
               $fileSysems = explode("\n", shell_exec('lsblk -n -o MOUNTPOINT | grep /'));
+              if (strpos(shell_exec('cat /proc/mounts'), "tmpfs /var/log tmpfs") !== false) { array_push($fileSysems, "/var/log"); }
                 foreach($fileSysems as $fs) {
                   if ($fs != "") {
                     $diskFree = disk_free_space($fs);
@@ -306,6 +308,11 @@ function backup_log_update() {
     }
   });
 }
+$("#rebootPi").click(function() {
+  if(confirm('Please confirm you wish to reboot your Pi, this will take approximately 30 secs to complete...')) {
+    $.post( location.href, { rebootPi: "1" } );
+  }
+});
 </script>
 <?php //Disk Size function
 function formatSize( $bytes ){
@@ -321,12 +328,5 @@ function get_server_memory_usage($field){
   if ($field == 'ramTotal') { return $memory_usage[1]; }
   if ($field == 'ramUsed') { return $memory_bufcache[2]; }
   if (!isset($field)) { return "Total: ".$memory_usage[1]." MB, In use: ".$memory_bufcache[2]." MB"; }
-}
-
-//Server Load function
-function get_server_load(){
-  $loadCmd = substr(strrchr(shell_exec("uptime"),":"),1); 
-  $load = array_map("trim",explode(",",$loadCmd));
-  return $load[0]." ".$load[1]." ".$load[2];
 }
 ?>
