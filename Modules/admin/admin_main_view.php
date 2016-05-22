@@ -1,6 +1,6 @@
 
 
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $rebootPi;
+<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
 
   // Retrieve server information
   $system = system_information();
@@ -182,7 +182,7 @@ if ($mqtt_enabled) {
 <?php
 } // Raspberry Pi Detection and additions.
 if ( exec('ifconfig | grep b8:27:eb:') ) {
-              if (isset($rebootPi)) { shell_exec('sudo shutdown -r now 2>&1'); }
+              if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
               echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
                 define("ramTotal", "ramTotal");
                 define("ramUsed", "ramUsed");
@@ -308,10 +308,20 @@ function backup_log_update() {
     }
   });
 }
+$("#haltPi").click(function() {
+  if(confirm('Please confirm you wish to shutdown your Pi, please wait 30 secs before disconnecting the power...')) {
+    $.post( location.href, { shutdownPi: "halt" } );
+  }
+});
+
 $("#rebootPi").click(function() {
   if(confirm('Please confirm you wish to reboot your Pi, this will take approximately 30 secs to complete...')) {
-    $.post( location.href, { rebootPi: "1" } );
+    $.post( location.href, { shutdownPi: "reboot" } );
   }
+});
+
+$("#noshut").click(function() {
+  alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
 });
 </script>
 <?php //Disk Size function
@@ -334,7 +344,11 @@ function chkRebootBtn(){
   $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
   if (stripos($chkReboot, "scheduled ") > 0) {
     shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
-    return "<button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
+    return "<button id=\"haltPi\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
+  }
+  else {
+    return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
   }
 }
+
 ?>
