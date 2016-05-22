@@ -331,8 +331,9 @@ function get_server_memory_usage($field){
 }
 //Shutdown Command Check
 function chkRebootBtn(){
-  $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1');
+  $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
   if (stripos($chkReboot, "scheduled ") > 0) {
+    shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
     return "<button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
   }
 }
