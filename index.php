@@ -106,9 +106,11 @@
         $session = $user->emon_session_start();
     }
 
-    // Reboot Code Handler
-    if (isset($_POST['rebootPi'])) {
-      $rebootPi = "TRUE";
+    // Shutdown / Reboot Code Handler
+    if (isset($_POST['shutdownPi'])) { 
+      $shutdownPi = trim($_POST['shutdownPi']);
+      $shutdownPi = stripslashes($shutdownPi);
+      $shutdownPi = htmlspecialchars($shutdownPi);
     }
 
     // 4) Language
