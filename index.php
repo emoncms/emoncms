@@ -106,6 +106,13 @@
         $session = $user->emon_session_start();
     }
 
+    // Shutdown / Reboot Code Handler
+    if (isset($_POST['shutdownPi'])) { 
+      $shutdownPi = trim($_POST['shutdownPi']);
+      $shutdownPi = stripslashes($shutdownPi);
+      $shutdownPi = htmlspecialchars($shutdownPi);
+    }
+
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);

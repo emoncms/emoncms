@@ -1,6 +1,6 @@
 
 
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings;
+<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
 
   // Retrieve server information
   $system = system_information();
@@ -182,8 +182,8 @@ if ($mqtt_enabled) {
 <?php
 } // Raspberry Pi Detection and additions.
 if ( exec('ifconfig | grep b8:27:eb:') ) {
-              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC</td></tr>\n";
-              echo "              <tr><td class=\"subinfo\"></td><td>System Load</td><td>".get_server_load()."</td></tr>\n";
+              if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
+              echo "              <tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
                 define("ramTotal", "ramTotal");
                 define("ramUsed", "ramUsed");
                 $sysRamTotal = get_server_memory_usage(ramTotal);
@@ -198,10 +198,12 @@ if ( exec('ifconfig | grep b8:27:eb:') ) {
                 echo "<td style=\"border-top-right-radius: 10px; border-bottom-right-radius: 10px;\" bgcolor=\"#d0d0d0\" height=\"10px\" width=\"".$sysRamInvPercent."%\"></td></tr></table>\n";
                 echo "<b>RAM Total:</b> ".$sysRamTotal."MB <b>RAM Used:</b> ".$sysRamUsed."MB <b>RAM Free:</b> ".$sysRamRemaining."MB <b>Used %</b> ".$sysRamPercent."%</td></tr>\n";
 }
+
 // Filesystem Information
 if (is_file('/bin/lsblk')){ // Make sure we can actually do this
               echo "              <tr><td><b>Filesystems</b></td><td>Mount Point</td><td>Disk Stats</td></tr>\n";
               $fileSysems = explode("\n", shell_exec('lsblk -n -o MOUNTPOINT | grep /'));
+              if (strpos(shell_exec('cat /proc/mounts'), "tmpfs /var/log tmpfs") !== false) { array_push($fileSysems, "/var/log"); }
                 foreach($fileSysems as $fs) {
                   if ($fs != "") {
                     $diskFree = disk_free_space($fs);
@@ -306,6 +308,21 @@ function backup_log_update() {
     }
   });
 }
+$("#haltPi").click(function() {
+  if(confirm('Please confirm you wish to shutdown your Pi, please wait 30 secs before disconnecting the power...')) {
+    $.post( location.href, { shutdownPi: "halt" } );
+  }
+});
+
+$("#rebootPi").click(function() {
+  if(confirm('Please confirm you wish to reboot your Pi, this will take approximately 30 secs to complete...')) {
+    $.post( location.href, { shutdownPi: "reboot" } );
+  }
+});
+
+$("#noshut").click(function() {
+  alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
+});
 </script>
 <?php //Disk Size function
 function formatSize( $bytes ){
@@ -322,11 +339,16 @@ function get_server_memory_usage($field){
   if ($field == 'ramUsed') { return $memory_bufcache[2]; }
   if (!isset($field)) { return "Total: ".$memory_usage[1]." MB, In use: ".$memory_bufcache[2]." MB"; }
 }
-
-//Server Load function
-function get_server_load(){
-  $loadCmd = substr(strrchr(shell_exec("uptime"),":"),1); 
-  $load = array_map("trim",explode(",",$loadCmd));
-  return $load[0]." ".$load[1]." ".$load[2];
+//Shutdown Command Check
+function chkRebootBtn(){
+  $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
+  if (stripos($chkReboot, "scheduled ") > 0) {
+    shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
+    return "<button id=\"haltPi\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
+  }
+  else {
+    return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
+  }
 }
+
 ?>
