@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.6 | 2016.05.11";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7 | 2016.05.25";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -104,6 +104,13 @@
         }
     } else {
         $session = $user->emon_session_start();
+    }
+
+    // Shutdown / Reboot Code Handler
+    if (isset($_POST['shutdownPi'])) { 
+      $shutdownPi = trim($_POST['shutdownPi']);
+      $shutdownPi = stripslashes($shutdownPi);
+      $shutdownPi = htmlspecialchars($shutdownPi);
     }
 
     // 4) Language

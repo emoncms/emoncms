@@ -4,6 +4,7 @@ settings.php
 old.settings.php
 emoncms.log
 .idea
+.vagrant/
 
 # Ignore all modules except core ones
 Modules/*
