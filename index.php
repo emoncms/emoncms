@@ -118,12 +118,12 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
-    $route = new Route(get('q'));
+    $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
-    if (!$route->controller && !$route->action)
+    if (!$route->isRouteDefined())
     {
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults

@@ -17,17 +17,47 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Route
 {
+    /**
+     * @var string
+     */
     public $controller = '';
-    public $action = '';
-    public $subaction = '';
-    public $format = "html";
 
-    public function __construct($q)
+    /**
+     * @var string
+     */
+    public $action = '';
+
+    /**
+     * @var string
+     */
+    public $subaction = '';
+
+    /**
+     * @var string
+     */
+    public $method = 'GET';
+
+    /**
+     * @var string
+     */
+    public $format = 'html';
+
+    /**
+     * @param string $q
+     * @param string $documentRoot
+     * @param string $requestMethod
+     */
+    public function __construct($q, $documentRoot, $requestMethod)
     {
-        $this->decode($q);
+        $this->decode($q, $documentRoot, $requestMethod);
     }
 
-    public function decode($q)
+    /**
+     * @param  string $q
+     * @param string $documentRoot
+     * @param string $requestMethod
+     */
+    public function decode($q, $documentRoot, $requestMethod)
     {
         // filter out the applications relative root
 
@@ -43,12 +73,12 @@ class Route
         // for example this will perform the following:
         // Running at root: str_replace('/var/www', '', '/var/www') => ''
         // Running at subdirectory: str_replace('/var/www', '', '/var/www/emoncms') => '/emoncms'
-        $relativeApplicationPath = str_replace($_SERVER['DOCUMENT_ROOT'], '', $absolutePath);
+        $relativeApplicationPath = str_replace($documentRoot, '', $absolutePath);
 
         // Next up we will need to remove the '/emoncms' from the route path '/emoncms/user/view'
         // str_replace('/emoncms', '', '/emoncms/user/view') => '/user/view'
         // running at root path it will just perform nothing: str_replace('', '', '/emoncms/user/view') so it can be skipped
-        if ( !empty($relativeApplicationPath) ) {
+        if (!empty($relativeApplicationPath)) {
             $q = str_replace($relativeApplicationPath, '', $q);
         }
 
@@ -62,18 +92,33 @@ class Route
         $args = preg_split('/[\/]/', $q);
 
         // get format (part of last argument after . i.e view.json)
-        $lastarg = sizeof($args) - 1;
-        $lastarg_split = preg_split('/[.]/', $args[$lastarg]);
-        if (count($lastarg_split) > 1) { $this->format = $lastarg_split[1]; }
-        $args[$lastarg] = $lastarg_split[0];
+        $lastArgIndex = sizeof($args) - 1;
+        $lastArgSplit = preg_split('/[.]/', $args[$lastArgIndex]);
+        if (count($lastArgSplit) > 1) {
+            $this->format = $lastArgSplit[1];
+        }
+        $args[$lastArgIndex] = $lastArgSplit[0];
 
-        if (count($args) > 0) { $this->controller = $args[0]; }
-        if (count($args) > 1) { $this->action = $args[1]; }
-        if (count($args) > 2) { $this->subaction = $args[2]; }
-        
-        $this->method = "GET";
-        if ($_SERVER["REQUEST_METHOD"]=="POST") $this->method = "POST";
-        else if ($_SERVER["REQUEST_METHOD"]=="DELETE") $this->method = "DELETE";
-        else if ($_SERVER["REQUEST_METHOD"]=="PUT") $this->method = "PUT";
+        if (count($args) > 0) {
+            $this->controller = $args[0];
+        }
+        if (count($args) > 1) {
+            $this->action = $args[1];
+        }
+        if (count($args) > 2) {
+            $this->subaction = $args[2];
+        }
+
+        if (in_array($requestMethod, ['POST', 'DELETE', 'PUT'])) {
+            $this->method = $requestMethod;
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRouteDefined()
+    {
+        return !empty($this->controller) && !empty($this->action);
     }
 }
