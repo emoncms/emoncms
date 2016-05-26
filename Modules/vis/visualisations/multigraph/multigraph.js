@@ -8,9 +8,9 @@ function convert_to_plotlist(multigraph_feedlist) {
   var plotlist = [];
   var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
   showlegend = (multigraph_feedlist[0]['showlegend']==undefined || multigraph_feedlist[0]['showlegend']);
-  var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
   for (z in multigraph_feedlist) {
     var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
+    var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
     if (multigraph_feedlist[z]['datatype']==1) {
       plotlist[z] = {
         id: multigraph_feedlist[z]['id'],
