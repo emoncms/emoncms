@@ -47,7 +47,7 @@ There are many other modules such as the event module and openbem (open source b
 ## Development
 
 * [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms])
-* [V9 Development thread (archive)](http://openenergymonitor.org/emon/node/11009)
+* [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
 
 ## Using Emoncms
@@ -57,7 +57,7 @@ There are many other modules such as the event module and openbem (open source b
 
 #### Design
 
-*Note: due to ongoing development some docs may now be outated*
+*Note: due to ongoing development some docs may now be outdated*
 
 - [Emoncms architecture](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/architecture.md)
 - [Input processing](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/developinputproc.md)
