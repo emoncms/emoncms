@@ -107,7 +107,7 @@
     }
 
     // Shutdown / Reboot Code Handler
-    if (isset($_POST['shutdownPi'])) { 
+    if (isset($_POST['shutdownPi'])) {
       $shutdownPi = trim($_POST['shutdownPi']);
       $shutdownPi = stripslashes($shutdownPi);
       $shutdownPi = htmlspecialchars($shutdownPi);
