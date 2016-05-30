@@ -1,12 +1,10 @@
 # Emoncms 9
 
-Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
+Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org).
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
 ## Branches
-
-**Note:** We are currently reorganising the emoncms branches. The master branch is now the same as 9.x. 
 
 * [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
@@ -16,7 +14,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Modules
 
-Modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to update check for database updates in Administration menu after installing new modules:
+Modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to check for database updates in Administration menu after installing new modules:
 
 - [Dashboards module](https://github.com/emoncms/dashboard), required for creating, viewing and publishing dashboards: 
 
@@ -26,14 +24,14 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
     
 - [Wifi Module]( https://github.com/emoncms/wifi.git) - [Wifi configuration interface designed for use on the emonPi](https://guide.openenergymonitor.org/setup/connect/)
 
-There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the emoncms repo list: https://github.com/emoncms
+There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
 
 
 ## Install
 
 * Recommended: [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Raspberry Pi](docs/RaspberryPi/readme.md)
-  * [Pre built emonSD SD-card Image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
+  * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md)
 
@@ -48,8 +46,8 @@ There are many other modules such as the event module and openbem (open source b
 
 ## Development
 
-* [Community Forum](https://community.openenergymonitor.org/c/emoncms])
-* [V9 Development thread](http://openenergymonitor.org/emon/node/11009)
+* [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms])
+* [V9 Development thread (archive)](http://openenergymonitor.org/emon/node/11009)
 
 
 ## Using Emoncms
@@ -59,7 +57,7 @@ There are many other modules such as the event module and openbem (open source b
 
 #### Design
 
-Documentation hosted on openenergymonitor documentation github:
+*Note: due to ongoing development some docs may now be outated*
 
 - [Emoncms architecture](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/architecture.md)
 - [Input processing](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/developinputproc.md)
@@ -71,7 +69,9 @@ Documentation hosted on openenergymonitor documentation github:
 
 #### Android App
 
-[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB)
+[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB
+
+[GitHub Repo](https://github.com/emoncms/AndroidApp)
 
 [Development Forum](https://community.openenergymonitor.org/c/emoncms/mobile-app)
 
