@@ -28,26 +28,33 @@
 <script id="source" language="javascript" type="text/javascript">
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
+  $('#graph').height($('#graph_bound').width()*0.5);
   if (embed) $('#graph').height($(window).height());
 
   var feedid = "<?php echo $feedid; ?>";
   var feedname = "<?php echo $feedidname; ?>";
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
+  var delta = <?php echo $delta; ?>;
   
   var timeWindow = (3600000*24.0*365*5);   //Initial time window
   var start = +new Date - timeWindow;  //Get start time
   var end = +new Date; 
 
+  var d = new Date()
+  var n = d.getTimezoneOffset();
+  var offset = n / -60;
   start = Math.floor(start / 86400000) * 86400000;
   end = Math.floor(end / 86400000) * 86400000;
+  start -= offset * 3600000;
+  end -= offset * 3600000;
   
   var graph_data = [];
   vis_feed_data();
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
+    $('#graph').height($('#graph_bound').width()*0.5);
     if (embed) $('#graph').height($(window).height());
     plot();
   });
@@ -55,6 +62,14 @@
   function vis_feed_data()
   {
     graph_data = get_feed_data(feedid,start,end,3600*24,1,1);
+    
+    if (window.delta==1) {
+        var tmp = [];
+        for (var n=1; n<graph_data.length; n++) {
+            tmp.push([graph_data[n-1][0], graph_data[n][1]-graph_data[n-1][1]]);
+        }
+        graph_data = tmp;
+    }
 
     for(x = 0; x < graph_data.length; x++) {
       for(y = 0; y < (graph_data.length-1); y++) {

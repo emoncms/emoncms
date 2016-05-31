@@ -1,0 +1,175 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 9.x - Feed\n"
+"POT-Creation-Date: 2015-02-04 02:34+0100\n"
+"PO-Revision-Date: 2016-03-31 11:44+0300\n"
+"Last-Translator: Kristo Kaasan <kristo@kaasan.ee>\n"
+"Language-Team: Environ <kristo@kaasan.ee>\n"
+"Language: et\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../Views/feedapi_view.php:19
+msgid "Feed API"
+msgstr "Voo API"
+
+#: ../../../Views/feedapi_view.php:21
+msgid "Apikey authentication"
+msgstr "API võtmega tuvastus"
+
+#: ../../../Views/feedapi_view.php:22
+msgid ""
+"If you want to call any of the following action's when your not logged in, "
+"add an apikey to the URL of your request: &apikey=APIKEY."
+msgstr ""
+"Kui te soovite kasutada järgmisi funktsioone ilma tuvastamiseta, siis lisage "
+"api võti aadressi järele: &apikey=API VÕTI."
+
+#: ../../../Views/feedapi_view.php:23
+msgid "Read only:"
+msgstr "Lugemisõigus:"
+
+#: ../../../Views/feedapi_view.php:27
+msgid "Read & Write:"
+msgstr "Kirjutamis- ja lugemisõigus:"
+
+#: ../../../Views/feedapi_view.php:31
+msgid "Html"
+msgstr "Html"
+
+#: ../../../Views/feedapi_view.php:32
+msgid "The feed list view"
+msgstr "Voo nimekirja vaade"
+
+#: ../../../Views/feedapi_view.php:33
+msgid "This page"
+msgstr "See lehekülg"
+
+#: ../../../Views/feedapi_view.php:35
+msgid "JSON"
+msgstr "JSON"
+
+#: ../../../Views/feedapi_view.php:36
+msgid "To use the json api the request url needs to include .json"
+msgstr "Et kasutada json api’t, peab päring sisaldama .json kirjet"
+
+#: ../../../Views/feedapi_view.php:37
+msgid "returns a list of public feeds made public by the given user."
+msgstr ""
+"tagastab nimekirja avalikest voogudest, mis on tehtud antud kasutaja piolt "
+"avalikuks."
+
+#: ../../../Views/feedapi_view.php:38 ../../../Views/feedapi_view.php:39
+msgid "returns the present value of a given feed"
+msgstr "tagastab valitud voo hetke väärtuse"
+
+#: ../../../Views/feedapi_view.php:40
+msgid "returns feed data"
+msgstr "tagastab voo andmed"
+
+#: ../../../Views/feedapi_view.php:41
+msgid "returns histogram data"
+msgstr "tagastab histogrammi andmed"
+
+#: ../../../Views/feedapi_view.php:42
+msgid "returns kwh consumed in a given power band using histogram data type"
+msgstr ""
+"tagastab tarbitud kwh väärtuse soovitud võimsuse juures kasutades "
+"histogrammi andmete tüübi"
+
+#: ../../../Views/feedapi_view.php:44
+msgid "returns id of a feed given by name"
+msgstr "tagastab nime järgi voo id"
+
+#: ../../../Views/feedlist_view.php:23
+msgid "Feed API Help"
+msgstr "Voo API abi"
+
+#: ../../../Views/feedlist_view.php:26 ../../../feed_menu.php:7
+msgid "Feeds"
+msgstr "Vood"
+
+#: ../../../Views/feedlist_view.php:31
+msgid "No feeds created"
+msgstr "Ühtegi voogu pole tehtud"
+
+#: ../../../Views/feedlist_view.php:32
+msgid ""
+"Feeds are where your monitoring data is stored. The recommended route for "
+"creating feeds is to start by creating inputs (see the inputs tab). Once you "
+"have inputs you can either log them straight to feeds or if you want you can "
+"add various levels of input processing to your inputs to create things like "
+"daily average data or to calibrate inputs before storage. You may want to "
+"follow the link as a guide for generating your request."
+msgstr ""
+"Voogudes hoitakse monitooringu andmeid. Soovitatav on teha voogusid "
+"sisenditest (vaata sisendite lehte). Kui sul on sisendid, siis saad nad "
+"suunata kas otse voogu või saab lisada erinevaid tegevusi sisendite jaoks, "
+"nagu näiteks päevane keskmine või sisendi kalibreerimine ennem salvestamist. "
+"Te võide järgida lingil toodud juhiseid päringute genereerimise kohta."
+
+#: ../../../Views/feedlist_view.php:32
+msgid "Feed API helper"
+msgstr "Voo API abimees"
+
+#: ../../../Views/feedlist_view.php:42
+msgid "WARNING deleting a feed is permanent"
+msgstr "HOIATUS! Voo kustutamine on lõplik"
+
+#: ../../../Views/feedlist_view.php:45
+msgid "Are you sure you want to delete this feed?"
+msgstr "Kas sa oled kindel, et soovid antud voo kustutada?"
+
+#: ../../../Views/feedlist_view.php:48
+msgid "Cancel"
+msgstr "Tühista"
+
+#: ../../../Views/feedlist_view.php:49
+msgid "Delete permanently"
+msgstr "Kustuta jäädavalt"
+
+#: ../../../Views/feedlist_view.php:113
+msgid "Close"
+msgstr "Sulge"
+
+#: ../../../Views/feedlist_view.php:127
+msgid "Id"
+msgstr "Id"
+
+#: ../../../Views/feedlist_view.php:128
+msgid "Name"
+msgstr "Nimi"
+
+#: ../../../Views/feedlist_view.php:129
+msgid "Tag"
+msgstr "Tag"
+
+#: ../../../Views/feedlist_view.php:130
+msgid "Datatype"
+msgstr "Andmetüüp"
+
+#: ../../../Views/feedlist_view.php:131
+msgid "Engine"
+msgstr "Mootor"
+
+#: ../../../Views/feedlist_view.php:132
+msgid "Public"
+msgstr "Avalik"
+
+#: ../../../Views/feedlist_view.php:133
+msgid "Size"
+msgstr "Suurus"
+
+#: ../../../Views/feedlist_view.php:135
+msgid "Updated"
+msgstr "Uuendatud"
+
+#: ../../../Views/feedlist_view.php:136
+msgid "Value"
+msgstr "Väärtus"

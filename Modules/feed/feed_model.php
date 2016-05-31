@@ -195,6 +195,14 @@ class Feed
         }
         return $feedexist;
     }
+    
+    public function get_id($userid,$name)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\w\s-:]/','',$name);
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+    }
 
     // Update feed size and return total
     public function update_user_feeds_size($userid)
@@ -236,6 +244,13 @@ class Feed
         $feedid = (int) $feedid;
         $engine = $this->get_engine($feedid);
         return $this->EngineClass($engine)->get_meta($feedid);
+    }
+
+    public function get_npoints($feedid) {
+        $feedid = (int) $feedid;
+        $engine = $this->get_engine($feedid);
+        if ($engine!=5) return false;
+        return $this->EngineClass($engine)->get_npoints($feedid);
     }
 
 
@@ -430,15 +445,79 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled']) {
             // Add redisbuffer cache if available
-            $bufferstart=end($data)[0];
-            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+            // $bufferstart=end($data)[0];
+            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
+            
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
-                $data = array_merge($data, $bufferdata);
+                
+                // Merge buffered data into base data timeslots (over-writing null values where they exist)
+                if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
+                    $outintervalms = $outinterval * 1000;
+                    
+                    // Convert buffered data to associative array - by timestamp
+                    $bufferdata_assoc = array();
+                    for ($z=0; $z<count($bufferdata); $z++) {
+                        $time = floor($bufferdata[$z][0]/$outintervalms)*$outintervalms;
+                        $bufferdata_assoc[$time] = $bufferdata[$z][1];
+                    }
+                    
+                    // Merge data into base data
+                    for ($z=0; $z<count($data); $z++) {
+                        $time = $data[$z][0];
+                        if (isset($bufferdata_assoc[$time]) && $data[$z][1]==null) $data[$z][1] = $bufferdata_assoc[$time];
+                    }
+                } else {
+                    $data = array_merge($data, $bufferdata);
+                }
             }
+            
         }
 
         return $data;
+    }
+    
+    public function get_data_DMY($feedid,$start,$end,$mode)
+    {
+        $feedid = (int) $feedid;
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        
+        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
+        
+        // Call to engine get_data
+        $userid = $this->get_field($feedid,"userid");
+        $timezone = $this->get_user_timezone($userid);
+            
+        $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
+        return $data;
+    }
+    
+    public function get_average($feedid,$start,$end,$outinterval)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $engine = $this->get_engine($feedid);
+        if ($engine!=Engine::PHPFINA) return false;
+        
+        return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
+    }
+    
+    public function get_average_DMY($feedid,$start,$end,$mode)
+    {
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        
+        $engine = $this->get_engine($feedid);
+        if ($engine!=Engine::PHPFINA) return false;
+
+        // Call to engine get_data
+        $userid = $this->get_field($feedid,"userid");
+        $timezone = $this->get_user_timezone($userid);
+        
+        return $this->EngineClass($engine)->get_average_DMY($feedid,$start,$end,$mode,$timezone);
     }
 
     public function csv_export($feedid,$start,$end,$outinterval,$datetimeformat,$name)
@@ -653,7 +732,7 @@ class Feed
             $this->EngineClass($engine)->update($feedid,$feedtime,$value);
         }
 
-        $this->set_timevalue($feedid, $value, $updatetime);
+        if ($updatetime!=false) $this->set_timevalue($feedid, $value, $updatetime);
 
         return $value;
     }
@@ -802,6 +881,21 @@ class Feed
             $feed_engine_cache[$feedid] = $engine; // Cache it
         }
         return $engine;
+    }
+    
+    public function get_user_timezone($userid) 
+    {
+        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
+        $row = $result->fetch_object();
+
+        $now = new DateTime();
+        try {
+            $now->setTimezone(new DateTimeZone($row->timezone));
+            $timezone = $row->timezone;
+        } catch (Exception $e) {
+            $timezone = "UTC";
+        }
+        return $timezone;
     }
 }
 

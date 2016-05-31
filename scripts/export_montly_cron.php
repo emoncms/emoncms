@@ -27,7 +27,7 @@
     $log = new EmonLogger(__FILE__);
     $log->info("Starting export task script");
 
-    $mysqli = @new mysqli($server,$username,$password,$database);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ($mysqli->connect_error) { $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }
 
     if ($redis_enabled) {

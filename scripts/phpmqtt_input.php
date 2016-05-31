@@ -56,7 +56,7 @@
         die;
     }
     
-    $mysqli = @new mysqli($server,$username,$password,$database);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
 
     if ($redis_enabled) {

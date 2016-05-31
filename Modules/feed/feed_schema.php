@@ -6,7 +6,7 @@ $schema['feeds'] = array(
     'userid' => array('type' => 'int(11)'),
     'tag' => array('type' => 'text'),
     'time' => array('type' => 'int(10)'),
-    'value' => array('type' => 'float'), // use double for more precision, database space will double
+    'value' => array('type' => 'double'),
     'datatype' => array('type' => 'int(11)', 'Null'=>'NO'),
     'public' => array('type' => 'tinyint(1)', 'default'=>0),
     'size' => array('type' => 'int(11)'),

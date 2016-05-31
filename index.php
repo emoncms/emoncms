@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.31 | 2016.02.13";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7 | 2016.05.25";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -43,7 +43,7 @@
 
     $mqtt = false;
 
-    $mysqli = @new mysqli($server,$username,$password,$database);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {
@@ -106,17 +106,24 @@
         $session = $user->emon_session_start();
     }
 
+    // Shutdown / Reboot Code Handler
+    if (isset($_POST['shutdownPi'])) {
+      $shutdownPi = trim($_POST['shutdownPi']);
+      $shutdownPi = stripslashes($shutdownPi);
+      $shutdownPi = htmlspecialchars($shutdownPi);
+    }
+
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
-    $route = new Route(get('q'));
+    $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
-    if (!$route->controller && !$route->action)
+    if ($route->isRouteNotDefined())
     {
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults
@@ -206,7 +213,7 @@
             print view($themeDir . "theme.php", $output);
         }
     }
-    else if ($route->format == 'text')
+    else if ($route->format == 'text' || $route->format == 'text/plain')
     {
         header('Content-Type: text');
         print $output['content'];

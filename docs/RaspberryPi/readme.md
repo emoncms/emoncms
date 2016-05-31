@@ -17,6 +17,22 @@ Install the dependencies:
 
 During the installation, you will be prompted to select a password for the 'MYSQL "root" user', and to confirm it by entering it a second time. Make a note of the password - you will need it later
 
+**Note: at time of writing (March 2016) the version of php5-redis included in the Raspbian Jessie sources (2.2.5-1) caused Apache to crash (segmentation errrors in Apache error log). Installing the latest stable version (2.2.7) of php5-redis from github fixed the issue. This step probably won't be required in the future when the updated version of php5-redis makes it's way into the sources.** 
+
+To check the version in the sources: `sudo apt-cache show php5-redis`
+
+To fix:
+```
+git clone --branch 2.2.7 https://github.com/phpredis/phpredis
+cd phpredis
+(check the version we are about to install:)
+​cat php_redis.h | grep VERSION
+phpize
+./configure 
+sudo make 
+sudo make install
+```
+
 Install the pecl dependencies (serial, redis and swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org

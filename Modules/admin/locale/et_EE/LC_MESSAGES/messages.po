@@ -1,0 +1,122 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 9.x - Admin\n"
+"POT-Creation-Date: 2015-02-04 02:27+0100\n"
+"PO-Revision-Date: 2015-11-09 21:44+0200\n"
+"Last-Translator: Kristo Kaasan <kristo@kaasan.ee>\n"
+"Language-Team: Environ\n"
+"Language: et_EE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../admin_db_view.php:1
+msgid "Database setup, update and status check"
+msgstr "Andmebaasi haldus, uuenda ja kontrolli staatust"
+
+#: ../../../admin_db_view.php:2
+msgid ""
+"This page displays the output of the database setup and update process which "
+"checks the database requirements of each module installed and enter any new "
+"table or fields if required."
+msgstr ""
+"See lehekülg kuvab andmebaasi seadistust ja uuenduse protsessi väljundit, "
+"mis kontrollib andmebaasi tingimusi iga paigaldatud mooduli kohta ja "
+"sisestab uue tabeli või välja, kui see on vajalik."
+
+#: ../../../admin_db_view.php:3
+msgid ""
+"If all the item statuses below show ok that means your database is setup "
+"correctly."
+msgstr ""
+"Kui kõik elementide seisundid allpool on korras, siis on andmebaas "
+"seadistatud korrektselt."
+
+#: ../../../admin_db_view.php:7
+msgid "Schema item"
+msgstr "Andmebaasi osa"
+
+#: ../../../admin_db_view.php:7
+msgid "Name"
+msgstr "Nimi"
+
+#: ../../../admin_db_view.php:7
+msgid "Status"
+msgstr "Seisund"
+
+#: ../../../admin_main_view.php:6
+msgid "version"
+msgstr "versioon"
+
+#: ../../../admin_main_view.php:10 ../../../admin_main_view.php:14
+msgid "Users"
+msgstr "Kasutajad"
+
+#: ../../../admin_main_view.php:11
+msgid "Administer user accounts"
+msgstr "Halda kasutajakontosid"
+
+#: ../../../admin_main_view.php:19 ../../../update_view.php:29
+msgid "Update database"
+msgstr "Uuenda andmebaas"
+
+#: ../../../admin_main_view.php:20
+msgid ""
+"Run this after updating emoncms, after installing a new module or to check "
+"emoncms database status."
+msgstr ""
+"Käivita see peale emoncms uuendamist, peale uue mooduli paigaldamist või "
+"kontrollimaks andmebaasi seisukorda"
+
+#: ../../../admin_main_view.php:23
+msgid "Update & check"
+msgstr "Uuenda ja kontrolli"
+
+#: ../../../admin_main_view.php:27
+msgid "INSTALLED"
+msgstr "PAIGALDATUD"
+
+#: ../../../admin_main_view.php:27
+msgid "yes"
+msgstr "jah"
+
+#: ../../../admin_main_view.php:27
+msgid "no"
+msgstr "ei"
+
+#: ../../../admin_menu.php:7
+msgid "Admin"
+msgstr "Administraator"
+
+#: ../../../update_view.php:37
+msgid "Apply changes"
+msgstr "Rakenda muudatused"
+
+#: ../../../update_view.php:44
+msgid "Check for further updates"
+msgstr "Kontrolli teisi uuendusi"
+
+#: ../../../update_view.php:51
+msgid "Database is up to date "
+msgstr "Andmebaas on ajakohane"
+
+#: ../../../update_view.php:51
+msgid "Nothing to do"
+msgstr "Ei ole vaja midagi teha"
+
+#: ../../../userlist_view.php:32
+msgid "Id"
+msgstr "Id"
+
+#: ../../../userlist_view.php:33
+msgid "Username"
+msgstr "Kasutajanimi"
+
+#: ../../../userlist_view.php:34
+msgid "Email"
+msgstr "E-post"

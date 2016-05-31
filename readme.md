@@ -1,44 +1,37 @@
 # Emoncms 9
 
-Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org/emon).
-
-**Version 9 of emoncms has been developed by [Chaveiro](https://github.com/chaveiro/) with a significant list of improvements, see [forum thread with full change log](http://openenergymonitor.org/emon/node/11009)**
+Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org).
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
 ## Branches
 
-**Note:** We are currently reorganising the emoncms branches. The master branch is now the same as 9.x. 
-
 * [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch (as of Jan 16 ready-to-go SD card image), regularly merged from master. Slightly more tried and tested. 
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See change log](https://github.com/emoncms/emoncms/releases)
 
-* [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - The old emonpi/emonbase emoncms version (July 15 ready-to-go SD card image). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
+* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
 
-**Optional modules**
+## Modules
 
-Optional modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to update check for database updates in Administration menu after installing new modules:
+Modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to check for database updates in Administration menu after installing new modules:
 
-- Dashboards module, required for creating, viewing and publishing dashboards: 
-https://github.com/emoncms/dashboard
+- [Dashboards module](https://github.com/emoncms/dashboard), required for creating, viewing and publishing dashboards: 
 
-- App provides application specific dashboards for emoncms: myelectric, mysolar, mysolar&wind, myheatpump https://github.com/emoncms/app.git
-
-- Nodes provides a RFM12/69 focused alternative to the input module, with support for receiving and sending node data over the RFM network. The Nodes module has been developed to complement and integrate closely with emonhub node defenintions and configuration. 
-https://github.com/emoncms/nodes.git
+- [App Module](https://github.com/emoncms/app.git) - Application specific dashboards e.g. MyElectric, MySolar
     
-- Config provides an in-browser emonhub.conf editor and emonhub.log log viewer. git clone https://github.com/emoncms/config.git
+- [Config]( https://github.com/emoncms/config.git) - In-browser emonhub.conf editor and emonhub.log log viewer. git clone
     
-- Wifi provides an in emoncms wifi configuration interface designed for use on the emonpi. git clone https://github.com/emoncms/wifi.git
+- [Wifi Module]( https://github.com/emoncms/wifi.git) - [Wifi configuration interface designed for use on the emonPi](https://guide.openenergymonitor.org/setup/connect/)
 
-There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the emoncms repo list: https://github.com/emoncms
+There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
 
 
 ## Install
 
 * Recommended: [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Raspberry Pi](docs/RaspberryPi/readme.md)
+  * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md)
 
@@ -46,24 +39,25 @@ There are many other modules such as the event module and openbem (open source b
 
 * [Upgrading emoncms](docs/Upgrading.md)
 
-## Backing up emoncms data
+## Data Backup
 
 * [Backup](docs/Backup.md)
+* [Raspberry Pi Backup / Restore Module](https://github.com/emoncms/backup) (emonPi / emonBase)
 
 ## Development
 
-**v9 Development [http://openenergymonitor.org/emon/node/11009](http://openenergymonitor.org/emon/node/11009)**
+* [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms])
+* [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
-**EmonView:** An open source python, flask, socketio, js web application for monitoring and control [https://github.com/trystanlea/emonview](https://github.com/trystanlea/emonview)
 
+## Using Emoncms
 
-## Using emoncms
-
-* [Blog post: An Example of configuring the new emoncms bargraph visualisation that uses accumulating watt hour data - part of the Monitoring SolarPV, Heatpump and house electric, EmonTx v2 system upgrade example](http://openenergymonitor.blogspot.co.uk/2014/08/monitoring-solarpv-heatpump-and-house.html)
+* [Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy)
+* [Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/)
 
 #### Design
 
-Documentation hosted on openenergymonitor documentation github: 
+*Note: due to ongoing development some docs may now be outdated*
 
 - [Emoncms architecture](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/architecture.md)
 - [Input processing](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/developinputproc.md)
@@ -74,41 +68,15 @@ Documentation hosted on openenergymonitor documentation github:
 - [Improving write performance with buffering](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/writeloadinvestigation.md)
 
 #### Android App
-- [Forum post: How to build an Energy Monitoring Android App part 1](http://openenergymonitor.org/emon/node/5250)
-- [How to build an Energy Monitoring Android App P1 - Retrieving data from a remote server such as emoncms.org](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/AndroidApp/AndroidAppPart1.md)
-- [How to build an Energy Monitoring Android App P2 - Drawing an Energy Monitoring display with java 2d canvas](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/AndroidApp/AndroidAppPart2.md)
-- [Drawing a myelectric style bar chart](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/DrawingABarChart/DrawingABarChart.md)
+
+[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB
+
+[GitHub Repo](https://github.com/emoncms/AndroidApp)
+
+[Development Forum](https://community.openenergymonitor.org/c/emoncms/mobile-app)
 
 ## More information
 
 - Official site - http://emoncms.org
-- [OpenEnergyMonitor Forums](http://openenergymonitor.org/emon/forum)
+- [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
-
-## IRC
-You can also join us on our IRC channel #emon on irc.freenode.net.
-    
-## Developers
-Emoncms is developed and has had contributions from the following people.
-
-- Trystan Lea           https://github.com/trystanlea (principal maintainer)
-- Chaveiro              https://github.com/chaveiro (principal developer of v9)
-- Paul Reed             https://github.com/Paul-Reed
-- Ildefonso Martínez    https://github.com/ildemartinez
-- Matthew Wire          https://github.com/mattwire
-- Baptiste Gaultier     https://github.com/bgaultier
-- Paul Allen            https://github.com/MarsFlyer
-- James Moore           https://github.com/foozmeat
-- Lloyda                https://github.com/lloyda
-- JSidrach              https://github.com/JSidrach
-- Jramer                https://github.com/jramer
-- Drsdre                https://github.com/drsdre
-- Dexa187               https://github.com/dexa187
-- Carlos Alonso Gabizó
-- PlaneteDomo           https://github.com/PlaneteDomo
-- Paul Reed             https://github.com/Paul-Reed
-- thunderace            https://github.com/thunderace
-- pacaj2am              https://github.com/pacaj2am
-- Ynyr Edwards          https://github.com/ynyreds
-- Jerome                https://github.com/Jerome-github
-- fake-name             https://github.com/fake-name

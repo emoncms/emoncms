@@ -43,16 +43,30 @@
     <p><b>Stats</b></p>
     
     <table class="table">
-        <tr><th></th><th>Mean</th><th>Min</th><th>Max</th><th>Std Dev</th><th>npoints</th></tr>
+        <tr><th></th><th>Mean</th><th>Min</th><th>Max</th><th>Diff</th><th>Std Dev</th><th>npoints</th></tr>
         <tr>
             <td></td>
             <td id="stats-mean"></td>
             <td id="stats-min"></td>
             <td id="stats-max"></td>
+            <td id="stats-diff"></td>
             <td id="stats-stdev"></td>
             <td id="stats-npoints"></td>
         </tr>
     </table>
+    
+    <p><b>Advanced</b></p>
+    <div>Apply smoothing (number of points):
+      <select id="smoothing" style="width:50px">
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+      </select>
+    </div>
+    <br>
 
     <p><b>API Request</b></p>
     
