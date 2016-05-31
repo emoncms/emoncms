@@ -123,7 +123,7 @@
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
-    if (!$route->isRouteDefined())
+    if ($route->isRouteNotDefined())
     {
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults

@@ -117,8 +117,8 @@ class Route
     /**
      * @return bool
      */
-    public function isRouteDefined()
+    public function isRouteNotDefined()
     {
-        return !empty($this->controller) && !empty($this->action);
+        return !$this->controller && !$this->action;
     }
 }
