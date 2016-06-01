@@ -1,5 +1,7 @@
 # Emoncms 9
 
+[![Build Status](https://travis-ci.org/emoncms/emoncms.svg?branch=master)](https://travis-ci.org/emoncms/emoncms)
+
 Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org).
 
 ![Emoncms](docs/files/emoncms_graphic.png)
