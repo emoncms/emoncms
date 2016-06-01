@@ -6,4 +6,4 @@ php:
   - '7.0'
   - hhvm
   - nightly
-script: phpunit route.php
+script: phpunit test.php
