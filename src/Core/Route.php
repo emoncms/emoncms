@@ -1,7 +1,6 @@
 <?php
 
 /*
-
     All Emoncms code is released under the GNU Affero General Public License.
     See COPYRIGHT.txt and LICENSE.txt.
 
@@ -11,6 +10,8 @@
     http://openenergymonitor.org
 
 */
+
+namespace Emoncms\Core;
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
@@ -45,19 +46,21 @@ class Route
     /**
      * @param string $q
      * @param string $documentRoot
+     * @param string $basePath
      * @param string $requestMethod
      */
-    public function __construct($q, $documentRoot, $requestMethod)
+    public function __construct($q, $documentRoot, $basePath, $requestMethod)
     {
-        $this->decode($q, $documentRoot, $requestMethod);
+        $this->decode($q, $documentRoot, $basePath, $requestMethod);
     }
 
     /**
      * @param  string $q
      * @param string $documentRoot
+     * @param string $basePath
      * @param string $requestMethod
      */
-    public function decode($q, $documentRoot, $requestMethod)
+    public function decode($q, $documentRoot, $basePath, $requestMethod)
     {
         // filter out the applications relative root
 
@@ -65,15 +68,11 @@ class Route
         // for the example of viewing a users profile. We need to remove the first directory to get the "clean" routing path
         // within the application no matter at which path it's hosted.
 
-        // First get the absolute physical path
-        // Example running at root: '/var/www' or subdirectory: '/var/www/emoncms'
-        $absolutePath = realpath(dirname(__FILE__));
-
         // Next up, we need to find the relative path to the www root and remove everything except the part we will use to route
         // for example this will perform the following:
         // Running at root: str_replace('/var/www', '', '/var/www') => ''
         // Running at subdirectory: str_replace('/var/www', '', '/var/www/emoncms') => '/emoncms'
-        $relativeApplicationPath = str_replace($documentRoot, '', $absolutePath);
+        $relativeApplicationPath = str_replace($documentRoot, '', $basePath);
 
         // Next up we will need to remove the '/emoncms' from the route path '/emoncms/user/view'
         // str_replace('/emoncms', '', '/emoncms/user/view') => '/user/view'
