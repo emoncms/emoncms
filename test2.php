@@ -1,6 +1,6 @@
 
 <?php
 
-echoo "test"
+echo "test"
 
 ?>
