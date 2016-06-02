@@ -7,3 +7,7 @@ php:
 
 before_script:
   - if find . -name "*.php" ! -path "./vendor/*" -exec php -l {} 2>&1 \; | grep "syntax error, unexpected"; then exit 1; fi
+install:
+  - composer install
+script:
+  - vendor/bin/phpunit

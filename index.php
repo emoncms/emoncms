@@ -11,13 +11,16 @@
 
     */
 
+    use Emoncms\Core\Route;
+
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
+
+    require __DIR__ . '/vendor/autoload.php';
 
     // 1) Load settings and core scripts
     require "process_settings.php";
     require "core.php";
-    require "route.php";
     require "locale.php";
 
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7 | 2016.05.25";
@@ -118,7 +121,7 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
-    $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
+    $route = new Route(get('q'), server('DOCUMENT_ROOT'), realpath(dirname(__DIR__)), server('REQUEST_METHOD'));
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
