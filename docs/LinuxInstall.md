@@ -192,4 +192,4 @@ Now save and close and restart your apache.
     
 ## Install Logger
 
-   See: https://github.com/emoncms/usefulscripts/logger
+   See: https://github.com/emoncms/emoncms/tree/master/scripts/logger
