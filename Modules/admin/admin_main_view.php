@@ -291,7 +291,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
                 if (count($system['partitions']) > 0) {
                     echo "<tr><td><b>Disk</b></td><td><b>Mount</b></td><td><b>Stats</b></td></tr>\n";
                     foreach($system['partitions'] as $fs) {
-                      if (!$fs['Temporary']['bool'] && $fs['FileSystem']['text']!= "none") {
+                      if (!$fs['Temporary']['bool'] && $fs['FileSystem']['text']!= "none" && $fs['FileSystem']['text']!= "udev") {
                         $diskFree = $fs['Free']['value'];
                         $diskTotal = $fs['Size']['value'];;
                         $diskUsed = $fs['Used']['value'];;
