@@ -55,7 +55,7 @@ function feed_controller()
                 if ($feed->exist($feedid)) {  // if the feed exists
                    $f = $feed->get($feedid);
                    if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read'])) {
-                       $result[$i] = 1*$feed->get_value($feedid); // null is a valid response
+                       $result[$i] = $feed->get_value($feedid); // null is a valid response
                    } else { $result[$i] = false; }
                 } else { $result[$i] = false; } // false means feed not found
             }

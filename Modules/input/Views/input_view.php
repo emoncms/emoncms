@@ -163,7 +163,7 @@
     var contextname = "";
     if (i.description != "") { 
         newfeedname = i.description;
-        contextname = "Node" + i.nodeid + " : " + newfeedname;
+        contextname = "Node " + i.nodeid + " : " + newfeedname;
     }
     else { 
         newfeedname = "node:" + i.nodeid+":" + i.name;

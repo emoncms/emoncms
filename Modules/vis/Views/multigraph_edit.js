@@ -101,7 +101,7 @@ function draw_multigraph_feedlist_editor(){
     var checked = ""; if (multigraph_feedlist[z]['stacked']) checked = "checked";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
     out += "<td style='text-align: center;vertical-align:middle;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    out += "<td ></td>";
+    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
     out += "</tr>";
     if (publicfeed == 1) publicfeed = (get_feed_public(multigraph_feedlist[z]['id']));
   }
@@ -126,7 +126,7 @@ function draw_multigraph_feedlist_editor(){
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
-  out += "<tr><td>Refresh Interval(s)</strong></td>";
+  out += "<tr><td>Auto refresh (secs)</strong></td>";
   out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
   out += "<td></td>";
   out += "<td></td>";
@@ -259,7 +259,7 @@ function load_events(){
     vis_feed_data();
     modified();
   });
-  
+
    $(baseElement).on("click","#stacked",function(event){
     var z = $(this).attr('listid');
     multigraph_feedlist[z]['stacked'] = $(this)[0].checked;
