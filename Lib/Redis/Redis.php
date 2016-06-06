@@ -34,12 +34,16 @@ class Redis
     }
 
     /**
-     * Get Redis connection.
+     * Get Redis connection. Return false if connection not setup.
      *
-     * @return \Redis
+     * @return \Redis|false
      */
     public function getRedis()
     {
+        if ($this->redis === null) {
+            return false;
+        }
+        
         return $this->redis;
     }
 

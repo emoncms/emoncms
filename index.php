@@ -40,15 +40,15 @@
 
     require "Lib/Redis/Redis.php";
     $emonRedis =  new Redis($redisConfig);
-    $redis = false;
     if ($emonRedis->isRedisEnabled()) {
         try {
             $emonRedis->connect();
-            $redis = $emonRedis->getRedis();
         } catch (Exception $e) {
             echo $e->getMessage(); die;
         }
     }
+
+    $redis = $emonRedis->getRedis();
 
     $mqtt = false;
 
