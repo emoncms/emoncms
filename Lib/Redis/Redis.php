@@ -40,7 +40,7 @@ class Redis
      */
     public function getRedis()
     {
-        if ($this->redis === null) {
+        if (!$this->isConnected()) {
             return false;
         }
         
