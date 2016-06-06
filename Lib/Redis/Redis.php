@@ -19,22 +19,16 @@ class Redis
 
     /**
      * @param RedisConfig $config
+     * @throws Exception
      */
     public function __construct(RedisConfig $config)
     {
         $this->config = $config;
+        $this->initialize();
     }
 
     /**
-     * @return bool
-     */
-    public function isRedisEnabled()
-    {
-        return $this->config->hasValidConfig();
-    }
-
-    /**
-     * Get Redis connection. Return false if connection not setup.
+     * Get Redis connection. Return false if connection not connected.
      *
      * @return \Redis|false
      */
@@ -69,7 +63,7 @@ class Redis
      * @return \Redis
      * @throws Exception
      */
-    public function connect()
+    private function initialize()
     {
         $this->redis = new \Redis();
         $connected = $this->redis->connect($this->config->getHost(), $this->config->getPort());
