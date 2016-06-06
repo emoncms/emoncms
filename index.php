@@ -11,6 +11,9 @@
 
     */
 
+    use Emoncms\Config\RedisConfig;
+    use Emoncms\Redis\Redis;
+
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 
@@ -26,19 +29,25 @@
     require "Lib/EmonLogger.php";
 
 
-    // 2) Database
-    if ($redis_enabled) {
-        $redis = new Redis();
-        $connected = $redis->connect($redis_server['host'], $redis_server['port']);
-        if (!$connected) { echo "Can't connect to redis at ".$redis_server['host'].":".$redis_server['port']." , it may be that redis-server is not installed or started see readme for redis installation"; die; }
-        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
-        if (!empty($redis_server['auth'])) {
-            if (!$redis->auth($redis_server['auth'])) {
-                echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
-            }
+    require "Lib/Config/RedisConfig.php";
+    $redisConfig = new RedisConfig(
+        $redis_enabled,
+        $redis_server['host'],
+        $redis_server['port'],
+        $redis_server['auth'],
+        $redis_server['prefix']
+    );
+
+    require "Lib/Redis/Redis.php";
+    $emonRedis =  new Redis($redisConfig);
+    $redis = false;
+    if ($emonRedis->isRedisEnabled()) {
+        try {
+            $emonRedis->connect();
+            $redis = $emonRedis->getRedis();
+        } catch (Exception $e) {
+            echo $e->getMessage(); die;
         }
-    } else {
-        $redis = false;
     }
 
     $mqtt = false;
@@ -61,7 +70,7 @@
 
     // 3) User sessions
     require("Modules/user/user_model.php");
-    $user = new User($mysqli,$redis);
+    $user = new User($mysqli, $emonRedis);
 
     $apikey = false;
     $devicekey = false;
