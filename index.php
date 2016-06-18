@@ -38,13 +38,12 @@
         $redis_server['prefix']
     );
 
-    if ($redisConfig->hasValidConfig()) {
-        try {
-            require "Lib/Redis/Redis.php";
-            $emonRedis = new Redis($redisConfig);
-        } catch (Exception $e) {
-            echo $e->getMessage(); die;
-        }
+
+    try {
+        require "Lib/Redis/Redis.php";
+        $emonRedis = new Redis($redisConfig);
+    } catch (Exception $e) {
+        echo $e->getMessage(); die;
     }
 
     $redis = $emonRedis->getRedis();

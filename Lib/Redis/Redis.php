@@ -24,7 +24,10 @@ class Redis
     public function __construct(RedisConfig $config)
     {
         $this->config = $config;
-        $this->initialize();
+
+        if ($this->config->hasValidConfig()) {
+            $this->initialize();
+        }
     }
 
     /**
