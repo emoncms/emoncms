@@ -155,7 +155,6 @@ class Process_ProcessList
         $list[57] = array(_(" * source feed"),ProcessArg::FEEDID,"multiply_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         $list[58] = array(_(" / source feed"),ProcessArg::FEEDID,"divide_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
         $list[59] = array(_("1/ source feed"),ProcessArg::FEEDID,"reciprocal_by_source_feed",0,DataType::UNDEFINED,"Virtual", 'desc'=>"");
-        
         return $list;
     }
 
@@ -169,7 +168,11 @@ class Process_ProcessList
 
     public function divide($arg, $time, $value)
     {
-        return $value / $arg;
+        if ($arg!=0) {
+            return $value / $arg;
+        } else {
+            return null;
+        }
     }
 
     public function offset($arg, $time, $value)
@@ -194,7 +197,7 @@ class Process_ProcessList
          $value = 0;
          return $value;
     }
-    
+
     public function reset2original($arg, $time, $value)
     {
          return $this->proc_initialvalue;
@@ -637,7 +640,7 @@ class Process_ProcessList
         if ($myvar!=0) {
             return $value / $myvar;
         } else {
-            return 0;
+            return null;
         }
     }
     
@@ -846,7 +849,7 @@ class Process_ProcessList
         if ($myvar!=0) {
             return $value / $myvar;
         } else {
-            return 0;
+            return null;
         }
     }
     
@@ -858,7 +861,7 @@ class Process_ProcessList
         if ($myvar!=0) {
             return 1 / $myvar;
         } else {
-            return 0;
+            return null;
         }
     }
 

@@ -4,7 +4,7 @@ class VirtualFeed
 {
 
     private $mysqli;
-    private $process;
+    private $input;
     private $feed;
     private $log;
 
@@ -16,10 +16,7 @@ class VirtualFeed
         $this->log = new EmonLogger(__FILE__);
 
         require_once "Modules/input/input_model.php";
-        $input = new Input($mysqli,$redis, $feed);
-
-        require_once "Modules/process/process_model.php";
-        $this->process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
+        $this->input = new Input($mysqli,$redis, $feed);
     }
 
     public function create($feedid,$options)
@@ -74,14 +71,21 @@ class VirtualFeed
             $feed_datatype_cache[$feedid] = $datatype; // Cache it
         }
         $now = time();
+        
+        // Lets instantiate a new class of process so we can run many proceses recursively without interference
+        global $session,$user;
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($session['userid']));
+        
+        
         if ($datatype==2) { //daily
-            $start=$this->process->process__getstartday($now); // start of day
+            $start=$process->process__getstartday($now); // start of day
             $endslot = $start + 86400; // one day range
             $opt_timearray = array('start' => $start, 'end' => $endslot, 'interval' => 86400, 'sourcetype' => "VIRTUALFEED", 'sourceid' => $feedid);
-            $dataValue = $this->process->input($start, null, $processList, $opt_timearray); // execute processlist 
+            $dataValue = $process->input($start, null, $processList, $opt_timearray); // execute processlist 
         } else {
             $opt_timearray = array('sourcetype' => "VIRTUALFEED", 'sourceid' => $feedid);
-            $dataValue = $this->process->input($now, null, $processList, $opt_timearray); // execute processlist 
+            $dataValue = $process->input($now, null, $processList, $opt_timearray); // execute processlist 
         }
         //$this->log->info("lastvalue() feedid=$feedid dataValue=$dataValue");
         return array('time'=>$now, 'value'=>$dataValue);
@@ -123,6 +127,12 @@ class VirtualFeed
 
         $data = array();
         $dataValue = null;
+        
+        // Lets instantiate a new class of process so we can run many proceses recursively without interference
+        global $session,$user;
+        require_once "Modules/process/process_model.php";
+        $process = new Process($this->mysqli,$this->input,$this->feed,$user->get_timezone($session['userid']));
+        
         if ($dp > 0) 
         {
             $range = $end - $start; // windows duration in seconds
@@ -132,7 +142,7 @@ class VirtualFeed
             {
                 $tb = $start + intval(($i+1)*$td); //next end time
                 $opt_timearray = array('start' => $t, 'end' => $tb, 'interval' => $interval);
-                $dataValue = $this->process->input($t, $dataValue, $processList, $opt_timearray); // execute processlist 
+                $dataValue = $process->input($t, $dataValue, $processList, $opt_timearray); // execute processlist 
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $t * 1000;
@@ -143,14 +153,14 @@ class VirtualFeed
         }
         else {
             //daily virtual feed
-             $startslot=$this->process->process__getstartday($start); // start of day for user timezone
-             $endslot=$this->process->process__getstartday($end); // end of day for user timezone
+             $startslot=$process->process__getstartday($start); // start of day for user timezone
+             $endslot=$process->process__getstartday($end); // end of day for user timezone
             
              if ($endslot < $startslot) $endslot = $endslot + 86400; // one day range
              while ($startslot<$endslot)
              {
                 $opt_timearray = array('start' => $startslot, 'end' => $startslot+86400, 'interval' => $interval);
-                $dataValue = $this->process->input($startslot, $dataValue, $processList, $opt_timearray); // execute processlist 
+                $dataValue = $process->input($startslot, $dataValue, $processList, $opt_timearray); // execute processlist 
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $startslot * 1000;
