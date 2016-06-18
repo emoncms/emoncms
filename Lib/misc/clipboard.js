@@ -1,5 +1,5 @@
 function copyToClipboardMsg(elem, msgElem) {
-          var succeed = copyToClipboard(elem);
+    var succeed = copyToClipboard(elem);
     var msg;
     if (!succeed) {
         msg = "Copy not supported by this browser."
@@ -15,7 +15,7 @@ function copyToClipboardMsg(elem, msgElem) {
     }, 2000);
 }
 function copyToClipboard(elem) {
-          // create hidden text element, if it doesn't already exist
+    // create hidden text element, if it doesn't already exist
     var targetId = "_hiddenCopyText_";
     var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
     var origSelectionStart, origSelectionEnd;
@@ -41,7 +41,7 @@ function copyToClipboard(elem) {
     var currentFocus = document.activeElement;
     target.focus();
     target.setSelectionRange(0, target.value.length);
-        // copy the selection
+    // copy the selection
     var succeed;
     try {
           succeed = document.execCommand("copy");

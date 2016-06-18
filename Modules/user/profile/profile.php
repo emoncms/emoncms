@@ -42,8 +42,8 @@ function languagecode_to_name($langs) {
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/qrcode.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/clipboard.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
 
@@ -154,10 +154,10 @@ function languagecode_to_name($langs) {
     
     // Clipboard code
     document.getElementById("copyapiwritebtn").addEventListener("click", function() {
-    copyToClipboardMsg(document.getElementById("copyapiwrite"), "msg");
+      copyToClipboardMsg(document.getElementById("copyapiwrite"), "msg");
     });
     document.getElementById("copyapireadbtn").addEventListener("click", function() {
-    copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
+      copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
     });
     
     var currentlanguage = list.data.language;

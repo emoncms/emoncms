@@ -2,6 +2,7 @@ var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
 var event_vis_feed_data;
+var event_refresh;
 var showlegend = true;
   
 function convert_to_plotlist(multigraph_feedlist) {
@@ -18,7 +19,7 @@ function convert_to_plotlist(multigraph_feedlist) {
         plot: {
           data: null,
           label: tag + multigraph_feedlist[z]['name'],
- 		  stack: stacked,
+          stack: stacked,
           points: { 
             show: true,
             radius: 0,
@@ -40,11 +41,10 @@ function convert_to_plotlist(multigraph_feedlist) {
         plot: {
           data: null,
           label: tag + multigraph_feedlist[z]['name'],
-		  stack: stacked,
+          stack: stacked,
           bars: {
             show: true,
-            align: "left", barWidth: 3600*24*1000,
-			fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
+            align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
           }
         }
       };
@@ -83,23 +83,25 @@ function convert_to_plotlist(multigraph_feedlist) {
 */
 
 function vis_feed_data() {
-	if (multigraph_feedlist !== undefined && multigraph_feedlist[0] != undefined && multigraph_feedlist[0]['autorefresh'] != undefined) {
-	  var now = new Date().getTime();
-	  var timeWindow = view.end - view.start;
-	  if (now - view.end < 2000 * multigraph_feedlist[0]['autorefresh']) {
+    if (multigraph_feedlist !== undefined && multigraph_feedlist[0] != undefined && multigraph_feedlist[0]['autorefresh'] != undefined) {
+        var now = new Date().getTime();
+        var timeWindow = view.end - view.start;
+        if (now - view.end < 2000 * multigraph_feedlist[0]['autorefresh']) {
 	    view.end = now;
 	    view.start = view.end - timeWindow;
-        vis_feed_data1();
-	    setTimeout(vis_feed_data, 1000 * multigraph_feedlist[0]['autorefresh']);
-      } else{		
-        vis_feed_data1();
-	  }
-    } else{		
-      vis_feed_data1();
-	}
- }
+            vis_feed_data_ori();
+            clearTimeout(event_refresh); // Cancel any pending event
+            event_refresh = setTimeout(vis_feed_data, 1000 * multigraph_feedlist[0]['autorefresh']);
+        } else {		
+            vis_feed_data_ori();
+        }
+    } else {		
+        vis_feed_data_ori();
+    }
+}
+
 // Ignore load request spurts
-function vis_feed_data1() {
+function vis_feed_data_ori() {
    clearTimeout(event_vis_feed_data); // Cancel any pending events
    event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
    if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
@@ -109,10 +111,11 @@ function vis_feed_data1() {
 // Load relevant feed data asynchronously
 function vis_feed_data_delayed() {
   var plotlist = convert_to_plotlist(multigraph_feedlist);
+  var npoints = 800;
+  interval = Math.round(((view.end - view.start)/npoints)/1000);
   for(var i in plotlist) {
     if (plotlist[i].selected) {
       if (!plotlist[i].plot.data) {
-      
         var skipmissing = 0; if (multigraph_feedlist[i]['skipmissing']) skipmissing = 1;
 
         if (plotdata[i] === undefined) plotdata[i] = [];
@@ -122,18 +125,6 @@ function vis_feed_data_delayed() {
           ajaxAsyncXdr[i]=undefined;
         }
         var context = {index:i, plotlist:plotlist[i]}; 
-        
-        
-        var npoints = 800;
-        interval = Math.round(((view.end - view.start)/npoints)/1000);
-          
-        // Round to more common and useful intervals:
-        interval = view.round_interval(interval);
-         
-        var intervalms = interval*1000;
-        view.start = Math.round(view.start/intervalms)*intervalms;
-        view.end = Math.round(view.end/intervalms)*intervalms;
-        
         ajaxAsyncXdr[i] = get_feed_data_async(vis_feed_data_callback,context,plotlist[i].id,view.start,view.end,interval,skipmissing,1);
       }
     }
