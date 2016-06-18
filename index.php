@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7 | 2016.05.25";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7.1 | 2016.06.18";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -107,7 +107,7 @@
     }
 
     // Shutdown / Reboot Code Handler
-    if (isset($_POST['shutdownPi'])) { 
+    if (isset($_POST['shutdownPi'])) {
       $shutdownPi = trim($_POST['shutdownPi']);
       $shutdownPi = stripslashes($shutdownPi);
       $shutdownPi = htmlspecialchars($shutdownPi);
@@ -118,12 +118,12 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
-    $route = new Route(get('q'));
+    $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
-    if (!$route->controller && !$route->action)
+    if ($route->isRouteNotDefined())
     {
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults
