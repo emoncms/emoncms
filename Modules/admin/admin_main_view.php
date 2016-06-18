@@ -212,7 +212,7 @@ if ($allow_emonpi_admin) {
             <tr>
                 <td style="border-top: 0px">
                     <h3><?php echo _('Update emonPi'); ?></h3>
-                    <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">emonPi firmware change log.</a></p>
+                    <p>Updates Emoncms and emonPi firmware. See <a href="https://github.com/emoncms/emoncms/releases">Emoncms changelog.</a> and <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">firmware changelog.</a></p>
                     <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
