@@ -42,6 +42,18 @@
     }
 
     $mqtt = false;
+    
+    # Check MySQL PHP modules are loddee
+    if (!extension_loaded('mysql') && !extension_loaded('mysqli')){
+       echo "php mysql extension(s) not loaded. <br>";
+       echo "Your PHP installation appears to be missing the MySQL extension which is required by Emoncms."; die;
+    }
+    
+    # Check Gettext PHP  module is loded
+    if (!extension_loaded('gettext')){
+       echo "php gettext extension(s) not loaded. <br>";
+       echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms."; die;
+    }
 
     $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ( $mysqli->connect_error ) {
