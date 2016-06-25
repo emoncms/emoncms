@@ -803,7 +803,7 @@ class Process_ProcessList
                 $p = 0;
                 $sum = 0;
                 while($p<$cnt) {
-                    if (isset($data[$p][1]) && !is_nan($data[$p][1])) {
+                    if (isset($data[$p][1]) && is_numeric($data[$p][1])) {
                         $sum += $data[$p][1];
                     }
                     $p++;
