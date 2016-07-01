@@ -1,21 +1,22 @@
 <?php
 
 //1 #### Mysql database settings
-    $server   = "localhost";
-    $database = "emoncms";
-    $username = "_DB_USER_";
-    $password = "_DB_PASSWORD_";
-    $port     = "3306";
+    $server   = isset($_ENV["MYSQL_HOST"])      ? $_ENV["MYSQL_HOST"]     : "localhost";
+    $database = isset($_ENV["MYSQL_DATABASE"])  ? $_ENV["MYSQL_DATABASE"] : "emoncms";
+    $username = isset($_ENV["MYSQL_USER"])      ? $_ENV["MYSQL_USER"]     : "_DB_USER_";
+    $password = isset($_ENV["MYSQL_PASSWORD"])  ? $_ENV["MYSQL_PASSWORD"] : "_DB_PASSWORD_";
+    $port     = isset($_ENV["MYSQL_PORT"])      ? $_ENV["MYSQL_PORT"]     : "3306";
     // Skip database setup test - set to false once database has been setup.
     $dbtest = true;
 
 
 //2 #### Redis
-    $redis_enabled = false;
-    $redis_server = array( 'host'   => 'localhost',
-                           'port'   => 6379,
-                           'auth'   => '',
-                           'prefix' => 'emoncms');
+    // Note that boolean values need to be coerced into 'real' booleans from their string values
+    $redis_enabled =  isset($_ENV["REDIS_ENABLED"]) ? $_ENV["REDIS_ENABLED"] === 'true' : false;
+    $redis_server = array(  'host'   =>  isset($_ENV["REDIS_HOST"])   ? $_ENV["REDIS_HOST"]   : 'localhost',
+                            'port'   =>  isset($_ENV["REDIS_PORT"])   ? $_ENV["REDIS_PORT"]   : 6379,
+                            'auth'   =>  isset($_ENV["REDIS_AUTH"])   ? $_ENV["REDIS_AUTH"]   : '',
+                            'prefix' =>  isset($_ENV["REDIS_PREFIX"]) ? $_ENV["REDIS_PREFIX"] : 'emoncms');
 
 
 //3 #### MQTT
