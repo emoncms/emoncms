@@ -8,13 +8,14 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
-## Branches
+## Install
 
-* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
-
-* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See change log](https://github.com/emoncms/emoncms/releases)
-
-* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
+* [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
+* [Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
+* [Raspberry Pi](docs/RaspberryPi/readme.md)
+  * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
+* [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
+* [Windows](docs/WindowsInstall.md)
 
 ## Modules
 
@@ -30,14 +31,14 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
 
+## Branches
 
-## Install
+* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk! All pull-requests should be made to the *master* branch.  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* Recommended: [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
-* [Raspberry Pi](docs/RaspberryPi/readme.md)
-  * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
-* [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
-* [Windows](docs/WindowsInstall.md)
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See change log](https://github.com/emoncms/emoncms/releases)
+
+* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
+
 
 ## Upgrade
 
@@ -81,6 +82,6 @@ There are many other modules such as the event module and openbem (open source b
 
 ## More information
 
-- Official site - http://emoncms.org
+- Cloud hosted platform - http://emoncms.org
 - [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
