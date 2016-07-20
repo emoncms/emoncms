@@ -74,7 +74,7 @@ There are many other modules such as the event module and openbem (open source b
 
 #### Android App
 
-[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB
+[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB)
 
 [GitHub Repo](https://github.com/emoncms/AndroidApp)
 
