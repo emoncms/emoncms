@@ -10,7 +10,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Requirements
 
-- PHP 5.5 (PHP 5.6 recomended)
+- PHP (5.5-5.6 recomended)
 - MYSQL (5.5 - 5.7 recomended) 
 - Apache (2.4 recomended)
 - Redis OPTIONAL (2.2 - 3.0 recomended)
