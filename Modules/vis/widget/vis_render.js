@@ -16,10 +16,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr("Feed")],
-      "optionshint":[_Tr("Feed source")],
+      "options":["feedid","colour"],
+      "optionstype":["feedid","colour_picker"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
       "html":""
     },
 
