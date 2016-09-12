@@ -59,7 +59,7 @@ There are many other modules such as the event module and openbem (open source b
 
 ## Development
 
-* [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms])
+* [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms)
 * [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
 
