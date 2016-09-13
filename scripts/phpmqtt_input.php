@@ -160,24 +160,46 @@
         $log->info($topic." ".$value);
         
         #Emoncms user ID TBD: incorporate on message via authentication mechanism
-       global $mqttsettings;
+        global $mqttsettings;
         $userid = $mqttsettings['userid'];
         
         $inputs = array();
         
         $route = explode("/",$topic);
+	$basetopic = explode("/",$mqtt_server['basetopic']);
 
-        if ($route[0]==$mqtt_server['basetopic'])
+	/*Iterate over base topic to determine correct sub-topic*/
+	$st=-1;
+	foreach ($basetopic as $subtopic) 
+	{
+		if(isset($route[$st+1]))
+		{
+			if($basetopic[$st+1]==$route[$st+1])
+			{
+				$st = $st + 1;
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			$log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+		}
+	}
+ 
+        if ($st>=0)
         {
  
-            if (isset($route[1]))
+            if (isset($route[$st+1]))
             {
-                $nodeid = $route[1];
+                $nodeid = $route[$st+1];
                 $dbinputs = $input->get_inputs($userid);
             
-                if (isset($route[2]))
+                if (isset($route[$st+2]))
                 {
-                    $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[2], "value"=>$value);
+                    $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
                 }
                 else
                 {
@@ -189,6 +211,9 @@
                 }
             }
         }
+	else{
+		$log->error("No matching MQTT topics! None or null inputs will be recorded!");	
+	}
         
         $tmp = array();
         foreach ($inputs as $i)
