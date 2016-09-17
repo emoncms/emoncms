@@ -48,12 +48,15 @@ function feed_controller()
             $result = $feed->get_buffer_size();
         // To "fetch" multiple feed values in a single request
         // http://emoncms.org/feed/fetch.json?ids=123,567,890
-        } elseif ($route->action == "fetch" && $session['read']) {
+        } elseif ($route->action == "fetch") {
             $feedids = (array) (explode(",",(get('ids'))));
             for ($i=0; $i<count($feedids); $i++) {
                 $feedid = (int) $feedids[$i];
-                if ($feed->exist($feedid)) { // if the feed exists
-                   $result[$i] = $feed->get_value($feedid); // null is a valid response
+                if ($feed->exist($feedid)) {  // if the feed exists
+                   $f = $feed->get($feedid);
+                   if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read'])) {
+                       $result[$i] = $feed->get_value($feedid); // null is a valid response
+                   } else { $result[$i] = false; }
                 } else { $result[$i] = false; } // false means feed not found
             }
         } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
@@ -81,12 +84,20 @@ function feed_controller()
                         if (isset($_GET['interval'])) {
                             $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                         } else if (isset($_GET['mode'])) {
-                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'),get('timezone'));
+                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                        }
+                    }
+                    else if ($route->action == 'average') {
+                        if (isset($_GET['interval'])) {
+                            $result = $feed->get_average($feedid,get('start'),get('end'),get('interval'));
+                        } else if (isset($_GET['mode'])) {
+                            $result = $feed->get_average_DMY($feedid,get('start'),get('end'),get('mode'));
                         }
                     }
                     else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);
+                    else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
 
                     else if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
@@ -103,7 +114,6 @@ function feed_controller()
                         if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
                         $result = $feed->update_data($feedid,$updatetime,get("time"),get('value'));
                     } else if ($route->action == "delete") $result = $feed->delete($feedid);
-                    else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
                     else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
 
                     else if ($route->action == "process")

@@ -163,11 +163,11 @@
     var contextname = "";
     if (i.description != "") { 
         newfeedname = i.description;
-        contextname = "Node" + i.nodeid + " : " + newfeedname;
+        contextname = "Node " + i.nodeid + " : " + newfeedname;
     }
     else { 
         newfeedname = "node:" + i.nodeid+":" + i.name;
-        contextname = "Node" + i.nodeid + " : " + i.name;
+        contextname = "Node " + i.nodeid + " : " + i.name;
     }
     var newfeedtag = "Node " + i.nodeid;
     var processlist = processlist_ui.decode(i.processList); // Input process list

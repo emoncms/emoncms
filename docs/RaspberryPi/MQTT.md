@@ -11,13 +11,13 @@ Before following this guide, it is essential that emoncms was initially installe
 
 #### Ensure packages are installed
 
-In addition to Mosquitto MQTT server we will need:
+In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-repository]( http://mosquitto.org/2013/01/mosquitto-debian-repository) and [Mosquitto-PHP library](https://github.com/mgdm/Mosquitto-PHP):
 
     sudo apt-get install libmosquitto-dev
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
     
-If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the mosquitto install guide here: http://mosquitto.org/2013/01/mosquitto-debian-repository. 
+If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository). 
 
 If PHP extension config files `/etc/php5/cli/conf.d/20-mosquitto.ini` and `/etc/php5/apache2/conf.d/20-mosquitto.ini` don't exist then create with:
 
@@ -45,7 +45,7 @@ The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. Th
 
 ### Run Emoncms phpmqtt_input script
 
-Create a symlink to run `scripts/phpmqtt_input` as a daemon and set permissions
+Create a symlink to run MQTT Input script as a daemon and set permissions
 
     cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/mqtt_input
     sudo chown root:root /var/www/emoncms/scripts/mqtt_input

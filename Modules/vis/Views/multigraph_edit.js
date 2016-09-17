@@ -11,6 +11,8 @@ var multigraphs=[];
 var multigraphs_name=[];
 var movingtime = false;
 var showtag = true;
+var autorefresh = 0;
+var showlegend = true;
 
 var baseElement = "#box-options";
 
@@ -55,6 +57,16 @@ function draw_multigraph_feedlist_editor(){
   else
     showtag = true;
 
+  if (typeof multigraph_feedlist[0] !== 'undefined' && typeof multigraph_feedlist[0]['autorefresh'] !== 'undefined')
+    autorefresh = multigraph_feedlist[0]['autorefresh'];
+  else
+    autorefresh = 0;
+
+  if (typeof multigraph_feedlist[0] !== 'undefined' && typeof multigraph_feedlist[0]['showlegend'] !== 'undefined')
+    showlegend = multigraph_feedlist[0]['showlegend'];
+  else
+    showlegend = true;
+
   var out = "";
   out += '<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">';
   out += '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 id="myModalLabel">Delete Multigraph</h3></div>';
@@ -86,7 +98,10 @@ function draw_multigraph_feedlist_editor(){
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
     out += "<td style='text-align: center;vertical-align:middle;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    out += "<td colspan='3'></td>";
+    var checked = ""; if (multigraph_feedlist[z]['stacked']) checked = "checked";
+    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
+    out += "<td style='text-align: center;vertical-align:middle;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
     out += "</tr>";
     if (publicfeed == 1) publicfeed = (get_feed_public(multigraph_feedlist[z]['id']));
   }
@@ -108,6 +123,17 @@ function draw_multigraph_feedlist_editor(){
   out += "<tr><td>Show tag name</strong></td>";
   var checked = ""; if (showtag) checked = "checked";
   out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
+  out += "<td></td>";
+  out += "<td></td>";
+  out += "<td></td></tr>";
+  out += "<tr><td>Auto refresh (secs)</strong></td>";
+  out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
+  out += "<td></td>";
+  out += "<td></td>";
+  out += "<td></td></tr>";
+  out += "<tr><td>Show Legend</strong></td>";
+  var checked = ""; if (showlegend) checked = "checked";
+  out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
@@ -203,6 +229,18 @@ function load_events(){
     vis_feed_data();
     modified();
   });
+  $(baseElement).on("change","#autorefresh",function(event){
+    autorefresh = $(this)[0].value;
+    multigraph_feedlist[0]['autorefresh'] = autorefresh;
+    // vis_feed_data(); doesn't affect data
+    modified();
+  });
+  $(baseElement).on("click","#showlegend",function(event){
+    showlegend = $(this)[0].checked;
+    multigraph_feedlist[0]['showlegend'] = showlegend;
+    vis_feed_data();
+    modified();
+  });
   // Event for every change event in the lineColour input for each line in the plot.
   $(baseElement).on("input","#lineColour",function(event){
     var z = $(this).attr('listid');
@@ -221,8 +259,15 @@ function load_events(){
     vis_feed_data();
     modified();
   });
+
+   $(baseElement).on("click","#stacked",function(event){
+    var z = $(this).attr('listid');
+    multigraph_feedlist[z]['stacked'] = $(this)[0].checked;
+    vis_feed_data();
+    modified();
+  });
   
-  $(baseElement).on("click",".left",function(event){
+ $(baseElement).on("click",".left",function(event){
     var z = $(this).attr('listid');
     multigraph_feedlist[z]['left'] = $(this)[0].checked;
     if (multigraph_feedlist[z]['left'] == true && multigraph_feedlist[z]['right'] == true)

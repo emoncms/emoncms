@@ -55,7 +55,7 @@ class Process
     public function get_process_list()
     {
         static $list = array(); // Array to hold the cache
-        if (empty($list)) {     // Cache it now
+        if (empty($list) || empty($this->modules_functions)) {     // Cache it now
             $list=$this->load_modules();  
         }
         return $list;
@@ -127,7 +127,7 @@ class Process
         $module_file = "Modules/".$module_name."/".$module_name."_processlist.php";
         $module_class=null;
         if(file_exists($module_file)){
-            require($module_file);
+            require_once($module_file);
             $module_class_name = ucfirst(strtolower($module_name)."_ProcessList");
             $module_class = new $module_class_name($this); // passes this class as reference
             $module_class_functions = get_class_methods($module_class);

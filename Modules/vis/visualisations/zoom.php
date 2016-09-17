@@ -104,7 +104,7 @@
   end = Math.floor(end / 86400000) * 86400000;
   start -= offset * 3600000;
   end -= offset * 3600000;
-  get_feed_data_async(vis_feed_kwh_data_callback,null,kwhd,start,end,3600*24,1,1); // get 5 years of daily kw_data
+  get_feed_data_DMY_async(vis_feed_kwh_data_callback,null,kwhd,start,end,"day"); // get 5 years of daily kw_data
   
   //load feed kwh_data
   function vis_feed_kwh_data_callback(context,data){

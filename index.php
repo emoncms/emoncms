@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.4 | 2016.03.15";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7.2 | 2016.07.04";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -42,6 +42,16 @@
     }
 
     $mqtt = false;
+    
+    # Check MySQL PHP modules are loaded
+    if (!extension_loaded('mysql') && !extension_loaded('mysqli')){
+       echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)"; die;
+    }
+    
+    # Check Gettext PHP  module is loaded
+    if (!extension_loaded('gettext')){
+       echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms. <br> See /php-info.php (restricted to local access)"; die;
+    }
 
     $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ( $mysqli->connect_error ) {
@@ -111,12 +121,12 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
-    $route = new Route(get('q'));
+    $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
-    if (!$route->controller && !$route->action)
+    if ($route->isRouteNotDefined())
     {
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults
@@ -206,7 +216,7 @@
             print view($themeDir . "theme.php", $output);
         }
     }
-    else if ($route->format == 'text')
+    else if ($route->format == 'text' || $route->format == 'text/plain')
     {
         header('Content-Type: text');
         print $output['content'];

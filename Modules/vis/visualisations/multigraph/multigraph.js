@@ -2,12 +2,16 @@ var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
 var event_vis_feed_data;
+var event_refresh;
+var showlegend = true;
   
 function convert_to_plotlist(multigraph_feedlist) {
   var plotlist = [];
   var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
+  showlegend = (multigraph_feedlist[0]['showlegend']==undefined || multigraph_feedlist[0]['showlegend']);
   for (z in multigraph_feedlist) {
     var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
+    var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
     if (multigraph_feedlist[z]['datatype']==1) {
       plotlist[z] = {
         id: multigraph_feedlist[z]['id'],
@@ -15,6 +19,7 @@ function convert_to_plotlist(multigraph_feedlist) {
         plot: {
           data: null,
           label: tag + multigraph_feedlist[z]['name'],
+          stack: stacked,
           points: { 
             show: true,
             radius: 0,
@@ -23,7 +28,7 @@ function convert_to_plotlist(multigraph_feedlist) {
           },
           lines: {
             show: true,
-            fill: multigraph_feedlist[z]['fill']
+            fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
           }
         }
       };
@@ -36,9 +41,10 @@ function convert_to_plotlist(multigraph_feedlist) {
         plot: {
           data: null,
           label: tag + multigraph_feedlist[z]['name'],
+          stack: stacked,
           bars: {
             show: true,
-            align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill']
+            align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
           }
         }
       };
@@ -76,8 +82,26 @@ function convert_to_plotlist(multigraph_feedlist) {
  Handle Feeds
 */
 
-// Ignore load request spurts
 function vis_feed_data() {
+    if (multigraph_feedlist !== undefined && multigraph_feedlist[0] != undefined && multigraph_feedlist[0]['autorefresh'] != undefined) {
+        var now = new Date().getTime();
+        var timeWindow = view.end - view.start;
+        if (now - view.end < 2000 * multigraph_feedlist[0]['autorefresh']) {
+	    view.end = now;
+	    view.start = view.end - timeWindow;
+            vis_feed_data_ori();
+            clearTimeout(event_refresh); // Cancel any pending event
+            event_refresh = setTimeout(vis_feed_data, 1000 * multigraph_feedlist[0]['autorefresh']);
+        } else {		
+            vis_feed_data_ori();
+        }
+    } else {		
+        vis_feed_data_ori();
+    }
+}
+
+// Ignore load request spurts
+function vis_feed_data_ori() {
    clearTimeout(event_vis_feed_data); // Cancel any pending events
    event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
    if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
@@ -87,11 +111,11 @@ function vis_feed_data() {
 // Load relevant feed data asynchronously
 function vis_feed_data_delayed() {
   var plotlist = convert_to_plotlist(multigraph_feedlist);
+  var npoints = 800;
+  interval = Math.round(((view.end - view.start)/npoints)/1000);
   for(var i in plotlist) {
     if (plotlist[i].selected) {
       if (!plotlist[i].plot.data) {
-        var npoints = 800;
-        interval = Math.round(((view.end - view.start)/npoints)/1000);
         var skipmissing = 0; if (multigraph_feedlist[i]['skipmissing']) skipmissing = 1;
 
         if (plotdata[i] === undefined) plotdata[i] = [];
@@ -122,7 +146,7 @@ function plot() {
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
     selection: { mode: "x" },
-    legend: { position: "nw", toggle: true },
+    legend: { show: showlegend, position: "nw", toggle: true },
     toggle: { scale: "visible" },
     touch: { pan: "x", scale: "x" }
   });
