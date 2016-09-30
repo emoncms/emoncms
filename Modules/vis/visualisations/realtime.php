@@ -12,7 +12,8 @@
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
     
     <?php if (!$embed) { ?>
     <h2><?php echo _("Realtime data:"); ?> <?php echo $feedidname; ?></h2>
@@ -38,6 +39,12 @@
     var timerget;
     var timeWindow = (900*1000);  //Initial 15m time window
     var fast_update_fps = 10;
+
+    var plotColour = urlParams.colour;
+    if (plotColour==undefined || plotColour=='') plotColour = "EDC240";
+    if (plotColour.indexOf("#") == -1) {
+        plotColour = "#" + plotColour;
+    }
     
     var graph_bound = $('#graph_bound'),
     graph = $("#graph");
@@ -94,8 +101,9 @@
     }
 
     function plot(){
-      $.plot(graph,[{data: data, lines: { fill: true }}],
+      $.plot(graph,[{data: data, color: plotColour}],
       {
+        lines: { fill: true },
         series: { shadowSize: 0 },
         xaxis: { tickLength:10, mode: "time", timezone: "browser", min: start, max: end }
       });

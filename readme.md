@@ -1,18 +1,29 @@
 # Emoncms 9
 
+[![Build Status](https://travis-ci.org/emoncms/emoncms.svg?branch=master)](https://travis-ci.org/emoncms/emoncms)
+
 Emoncms is an open-source web application for processing, logging and visualising energy, temperature and other environmental data and is part of the [OpenEnergyMonitor project](http://openenergymonitor.org).
 
 **Version 9 of emoncms has been developed by [Chaveiro](https://github.com/chaveiro/) with a significant list of improvements, see [forum thread with full change log](http://openenergymonitor.org/emon/node/11009)**
 
 ![Emoncms](docs/files/emoncms_graphic.png)
 
-## Branches
+## Requirements
 
-* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk!  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
+- PHP (5.5-5.6 recomended)
+- MYSQL (5.5 - 5.7 recomended) 
+- Apache (2.4 recomended)
+- Redis OPTIONAL (2.2 - 3.0 recomended)
 
-* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See change log](https://github.com/emoncms/emoncms/releases)
 
-* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
+## Install
+
+* [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
+* [Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
+* [Raspberry Pi](docs/RaspberryPi/readme.md)
+  * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
+* [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
+* [Windows](docs/WindowsInstall.md)
 
 ## Modules
 
@@ -28,14 +39,14 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
 
+## Branches
 
-## Install
+* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk! All pull-requests should be made to the *master* branch.  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
 
-* Recommended: [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
-* [Raspberry Pi](docs/RaspberryPi/readme.md)
-  * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
-* [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
-* [Windows](docs/WindowsInstall.md)
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See change log](https://github.com/emoncms/emoncms/releases)
+
+* ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
+
 
 ## Upgrade
 
@@ -48,7 +59,7 @@ There are many other modules such as the event module and openbem (open source b
 
 ## Development
 
-* [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms])
+* [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms)
 * [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
 
@@ -71,7 +82,7 @@ There are many other modules such as the event module and openbem (open source b
 
 #### Android App
 
-[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB
+[Google Play](https://play.google.com/store/apps/details?id=org.emoncms.myapps&hl=en_GB)
 
 [GitHub Repo](https://github.com/emoncms/AndroidApp)
 
@@ -79,6 +90,6 @@ There are many other modules such as the event module and openbem (open source b
 
 ## More information
 
-- Official site - http://emoncms.org
+- Cloud hosted platform - http://emoncms.org
 - [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)

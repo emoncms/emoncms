@@ -6,4 +6,8 @@ php:
   - '7.0'
   - hhvm
   - nightly
-script: phpunit route.php
+
+before_script:
+  - if find . -name "*.php" ! -path "./vendor/*" -exec php -l {} 2>&1 \; | grep "syntax error, unexpected"; then exit 1; fi
+
+script: phpunit test.php

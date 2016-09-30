@@ -13,13 +13,15 @@
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
     
-    $data = explode("\n", file_get_contents("/proc/meminfo"));
-    $meminfo = array();
-    foreach ($data as $line) {
-        if (strpos($line, ':') !== false) {
-            list($key, $val) = explode(":", $line);
-            $meminfo[$key] = 1024 * floatval( trim( str_replace( ' kB', '', $val ) ) );
-        }
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { $meminfo = array(); } else { //Only do this on NON-Windows Platforms
+      $data = explode("\n", file_get_contents("/proc/meminfo"));
+      $meminfo = array();
+      foreach ($data as $line) {
+          if (strpos($line, ':') !== false) {
+              list($key, $val) = explode(":", $line);
+              $meminfo[$key] = 1024 * floatval( trim( str_replace( ' kB', '', $val ) ) );
+          }
+      }
     }
 
     return array('date' => date('Y-m-d H:i:s T'),
@@ -212,7 +214,7 @@ if ($allow_emonpi_admin) {
             <tr>
                 <td style="border-top: 0px">
                     <h3><?php echo _('Update emonPi'); ?></h3>
-                    <p>Downloads latest Emoncms changes from Github and updates emonPi firmware. See important notes in <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">emonPi firmware change log.</a></p>
+                    <p>Updates Emoncms and emonPi firmware. See <a href="https://github.com/emoncms/emoncms/releases">Emoncms changelog</a> and <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">firmware changelog.</a></p>
                     <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
@@ -274,6 +276,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
 }
 
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-Windows Platforms
 // Ram information
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
@@ -303,6 +306,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
                       }
                     }
                 }
+} //End the stuff we dont do on Windows
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>

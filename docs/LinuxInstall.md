@@ -1,4 +1,4 @@
-# Install Emoncms v8 on Ubuntu / Debian Linux
+# Install Emoncms on Ubuntu / Debian Linux
 
 This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see raspberrypi installation guides.
 
@@ -192,4 +192,4 @@ Now save and close and restart your apache.
     
 ## Install Logger
 
-   See: https://github.com/emoncms/usefulscripts/logger
+   See: https://github.com/emoncms/emoncms/tree/master/scripts/logger

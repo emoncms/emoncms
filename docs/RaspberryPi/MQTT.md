@@ -45,7 +45,7 @@ The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. Th
 
 ### Run Emoncms phpmqtt_input script
 
-Create a symlink to run `scripts/phpmqtt_input` as a daemon and set permissions
+Create a symlink to run MQTT Input script as a daemon and set permissions
 
     cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/mqtt_input
     sudo chown root:root /var/www/emoncms/scripts/mqtt_input
