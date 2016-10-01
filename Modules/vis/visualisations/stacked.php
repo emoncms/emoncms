@@ -79,7 +79,7 @@
 
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').width()*0.5);
+  $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
 
   $('#loading').hide();
