@@ -22,6 +22,9 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/Views/multigraph_edit.js"></script>
 
+<link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
+
 <h2><?php echo _('Visualisations'); ?></h2>
 <div id="vispage">
 <table><tr valign="top"><td>

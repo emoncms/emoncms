@@ -4,11 +4,19 @@ var ajaxAsyncXdr = [];
 var event_vis_feed_data;
 var event_refresh;
 var showlegend = true;
+var datetimepicker1;
+var datetimepicker2;
   
 function convert_to_plotlist(multigraph_feedlist) {
   var plotlist = [];
   var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
   showlegend = (multigraph_feedlist[0]['showlegend']==undefined || multigraph_feedlist[0]['showlegend']);
+  
+  view.ymin = (multigraph_feedlist[0]['ymin'] != undefined ? multigraph_feedlist[0]['ymin'] : null);
+  view.ymax = (multigraph_feedlist[0]['ymax'] != undefined ? multigraph_feedlist[0]['ymax'] : null);
+  view.y2min = (multigraph_feedlist[0]['y2min'] != undefined ? multigraph_feedlist[0]['y2min'] : null);
+  view.y2max = (multigraph_feedlist[0]['y2max'] != undefined ? multigraph_feedlist[0]['y2max'] : null);
+
   for (z in multigraph_feedlist) {
     var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
     var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
@@ -81,31 +89,34 @@ function convert_to_plotlist(multigraph_feedlist) {
 /*
  Handle Feeds
 */
-
 function vis_feed_data() {
     if (multigraph_feedlist !== undefined && multigraph_feedlist[0] != undefined && multigraph_feedlist[0]['autorefresh'] != undefined) {
         var now = new Date().getTime();
         var timeWindow = view.end - view.start;
         if (now - view.end < 2000 * multigraph_feedlist[0]['autorefresh']) {
-	    view.end = now;
-	    view.start = view.end - timeWindow;
+        view.end = now;
+        view.start = view.end - timeWindow;
             vis_feed_data_ori();
             clearTimeout(event_refresh); // Cancel any pending event
             event_refresh = setTimeout(vis_feed_data, 1000 * multigraph_feedlist[0]['autorefresh']);
-        } else {		
+        } else {        
             vis_feed_data_ori();
         }
-    } else {		
+    } else {        
         vis_feed_data_ori();
     }
 }
 
 // Ignore load request spurts
 function vis_feed_data_ori() {
-   clearTimeout(event_vis_feed_data); // Cancel any pending events
-   event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
-   if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
-   plot();
+  datetimepicker1.setLocalDate(new Date(view.start));
+  datetimepicker2.setLocalDate(new Date(view.end));
+  datetimepicker1.setEndDate(new Date(view.end));
+  datetimepicker2.setStartDate(new Date(view.start));
+  clearTimeout(event_vis_feed_data); // Cancel any pending events
+  event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
+  if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
+  plot();
 }
   
 // Load relevant feed data asynchronously
@@ -148,7 +159,9 @@ function plot() {
     selection: { mode: "x" },
     legend: { show: showlegend, position: "nw", toggle: true },
     toggle: { scale: "visible" },
-    touch: { pan: "x", scale: "x" }
+    touch: { pan: "x", scale: "x" },
+    yaxis: { min: view.ymin , max: view.ymax},
+    y2axis: { min: view.y2min , max: view.y2max}
   });
 }
 
@@ -173,26 +186,50 @@ function multigraph_init(element) {
   var out =
     "<div id='graph_bound' style='height:400px; width:100%; position:relative; '>"+
       "<div id='graph'></div>"+
-      "<div id='graph-buttons' style='position:absolute; top:20px; right:30px; opacity:0.5; display: none;'>"+
-        "<div class='input-prepend input-append' id='graph-tooltip' style='margin:0'>"+
-        "<span class='add-on'>Tooltip:</span>"+
-        "<span class='add-on'><input id='enableTooltip' type='checkbox' checked ></span>"+
+
+      "<div id='graph-buttons-timemanual' style='position:absolute; top:15px; right:35px; opacity:0.5; display: none;'>"+
+        "<div class='input-prepend input-append'>"+
+            "<span class='add-on'>Select time window</span>"+
+
+            "<span class='add-on'>Start:</span>"+
+            "<span id='datetimepicker1'>"+
+                "<input id='timewindow-start' data-format='dd/MM/yyyy hh:mm:ss' type='text' style='width:140px'/>"+
+                "<span class='add-on'><i data-time-icon='icon-time' data-date-icon='icon-calendar'></i></span>"+
+            "</span> "+
+
+            "<span class='add-on'>End:</span>"+
+            "<span id='datetimepicker2'>"+
+                "<input id='timewindow-end' data-format='dd/MM/yyyy hh:mm:ss' type='text' style='width:140px'/>"+
+                "<span class='add-on'><i data-time-icon='icon-time' data-date-icon='icon-calendar'></i></span>"+
+            "</span> "+
+
+            "<button class='btn graph-timewindow-set' type='button'><i class='icon-ok'></i></button>"+
         "</div> "+
-
-        "<div class='btn-group'>"+
-        "<button class='btn graph-time' type='button' time='1'>D</button>"+
-        "<button class='btn graph-time' type='button' time='7'>W</button>"+
-        "<button class='btn graph-time' type='button' time='30'>M</button>"+
-        "<button class='btn graph-time' type='button' time='365'>Y</button></div>"+
-
-        "<div class='btn-group' id='graph-navbar' style='display: none;'>"+
-        "<button class='btn graph-nav' id='zoomin'>+</button>"+
-        "<button class='btn graph-nav' id='zoomout'>-</button>"+
-        "<button class='btn graph-nav' id='left'><</button>"+
-        "<button class='btn graph-nav' id='right'>></button></div>"+
       "</div>"+
-    "</div>"
-  ;
+
+      "<div id='graph-buttons' style='position:absolute; top:15px; right:35px; opacity:0.5; display: none;'>"+
+        "<div id='graph-buttons-normal'>"+
+            "<div class='input-prepend input-append' id='graph-tooltip' style='margin:0'>"+
+             "<span class='add-on'>Tooltip:</span>"+
+             "<span class='add-on'><input id='enableTooltip' type='checkbox' checked ></span>"+
+            "</div> "+
+
+            "<div class='btn-group'>"+
+             "<button class='btn graph-time' type='button' time='1'>D</button>"+
+             "<button class='btn graph-time' type='button' time='7'>W</button>"+
+             "<button class='btn graph-time' type='button' time='30'>M</button>"+
+             "<button class='btn graph-time' type='button' time='365'>Y</button>"+
+             "<button class='btn graph-timewindow' type='button'><i class='icon-resize-horizontal'></i></button></div>"+
+
+            "<div class='btn-group' id='graph-navbar' style='display: none;'>"+
+             "<button class='btn graph-nav' id='zoomin'>+</button>"+
+             "<button class='btn graph-nav' id='zoomout'>-</button>"+
+             "<button class='btn graph-nav' id='left'><</button>"+
+             "<button class='btn graph-nav' id='right'>></button></div>"+
+
+        "</div>"+
+      "</div>"+
+    "</div>";
   $(element).html(out);
 
   // Tool tip
@@ -262,6 +299,69 @@ function multigraph_init(element) {
   $('#right').click(function () {view.panright(); vis_feed_data();});
   $('#left').click(function () {view.panleft(); vis_feed_data();});
   $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
+  
+  $('.graph-timewindow').click(function () {
+     $("#graph-buttons-timemanual").show();
+     $("#graph-buttons-normal").hide();
+  });
+
+  $('.graph-timewindow-set').click(function () {
+    var timewindow_start = parse_timepicker_time($("#timewindow-start").val());
+    var timewindow_end = parse_timepicker_time($("#timewindow-end").val());
+    if (!timewindow_start) {alert("Please enter a valid start date."); return false; }
+    if (!timewindow_end) {alert("Please enter a valid end date."); return false; }
+    if (timewindow_start>=timewindow_end) {alert("Start date must be further back in time than end date."); return false; }
+
+    $("#graph-buttons-timemanual").hide();
+    $("#graph-buttons-normal").show();
+    view.start = timewindow_start * 1000;
+    view.end = timewindow_end *1000;
+    vis_feed_data();
+  });
+
+  $('#datetimepicker1').datetimepicker({
+    language: 'en-EN'
+  });
+
+  $('#datetimepicker2').datetimepicker({
+    language: 'en-EN',
+    useCurrent: false //Important! See issue #1075
+  });
+
+  $('#datetimepicker1').on("changeDate", function (e) {
+    if (view.datetimepicker_previous == null) view.datetimepicker_previous = view.start;
+    if (Math.abs(view.datetimepicker_previous - e.date.getTime()) > 1000*60*60*24)
+    {
+        var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
+        d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
+        var out = d;    
+		$('#datetimepicker1').data("datetimepicker").setDate(out);
+    } else {
+        var out = e.date;
+    }
+    view.datetimepicker_previous = e.date.getTime();
+
+    $('#datetimepicker2').data("datetimepicker").setStartDate(out);
+  });
+
+  $('#datetimepicker2').on("changeDate", function (e) {
+    if (view.datetimepicker_previous == null) view.datetimepicker_previous = view.end;
+    if (Math.abs(view.datetimepicker_previous - e.date.getTime()) > 1000*60*60*24)
+    {
+        var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
+        d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
+        var out = d;    
+		$('#datetimepicker2').data("datetimepicker").setDate(out);
+    } else {
+        var out = e.date;
+    }
+    view.datetimepicker_previous = e.date.getTime();
+
+    $('#datetimepicker1').data("datetimepicker").setEndDate(out);
+  });
+
+  datetimepicker1 = $('#datetimepicker1').data('datetimepicker');
+  datetimepicker2 = $('#datetimepicker2').data('datetimepicker');
 
   // Navigation and zooming buttons for mouse and touch
   $("#graph").mouseenter(function() {
