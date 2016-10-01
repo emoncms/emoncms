@@ -129,7 +129,7 @@ class MysqlTimeSeries
 
         $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time Desc LIMIT 1");
         if ($result && $row = $result->fetch_array()){
-            return array('time'=>$row['time'], 'value'=>$row['data']);
+            return array('time'=>(int)$row['time'], 'value'=>(float)$row['data']);
         } else {
             return false;
         }
