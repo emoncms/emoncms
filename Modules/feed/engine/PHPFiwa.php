@@ -389,7 +389,7 @@ class PHPFiwa
             }
             
             if ($value!==null || $skipmissing===0) {
-                $data[] = array($time0*1000,$value);
+                $data[] = array($time0*1000,(float)$value);
             }
 
             $i++;
@@ -420,11 +420,11 @@ class PHPFiwa
             $val = unpack("f",$d);
             $time = $meta->start_time + $meta->interval[0] * $meta->npoints[0];
             
-            return array('time'=>$time, 'value'=>$val[1]);
+            return array('time'=>(int)$time, 'value'=>(float)$val[1]);
         }
         else
         {
-            return array('time'=>0, 'value'=>0);
+            return array('time'=>(int)0, 'value'=>(float)0);
         }
     }
     

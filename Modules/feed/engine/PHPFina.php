@@ -273,7 +273,7 @@ class PHPFina
 
             $val = unpack("f",$d);
             $time = $meta->start_time + ($meta->interval * $meta->npoints);
-            return array('time'=>$time, 'value'=>$val[1]);
+            return array('time'=>(int)$time, 'value'=>(float)$val[1]);
         }
         return false;
     }
@@ -337,7 +337,7 @@ class PHPFina
             
             if ($value!==null || $skipmissing===0) {
                 // see https://openenergymonitor.org/emon/node/11260
-                $data[] = array($time*1000,$value);
+                $data[] = array($time*1000,(float)$value);
             }
 
             $i++;
