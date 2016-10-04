@@ -117,7 +117,7 @@ class TemplateEngine
         // example of datapoint format
         $time = time() * 1000; // time in milliseconds
         $value = 123.4; 
-        $data[] = array($time,$(float)value);
+        $data[] = array($time,(float)$value);
 
         return $data;
     }
