@@ -40,9 +40,9 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","colour","interval","units","dp","scale","delta","mode"],
-      "optionstype":["feedid","colour_picker","value","value","value","value","value","value"],
+      "optionstype":["feedid","colour_picker","value","value","value","value","boolean","value"],
       "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta"),_Tr("mode")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")"),"Mode set to 'daily' can be used instead of interval for timezone based daily data"],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar","Mode set to 'daily' can be used instead of interval for timezone based daily data"],
       "html":""
     },
 
@@ -62,9 +62,9 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["power","kwhd","currency","currency_after_val","pricekwh","delta"],
-      "optionstype":["feedid","feedid","value","value","value","value"],
+      "optionstype":["feedid","feedid","value","value","value","boolean"],
       "optionsname":[_Tr("Power"),_Tr("kwhd"),_Tr("Currency"),_Tr("Currency position"),_Tr("Kwh price"),_Tr("delta")],
-      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"),_Tr("Currency to show"),_Tr("0 = before value, 1 = after value"),_Tr("Set kwh price"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")")],
+      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"),_Tr("Currency to show"),_Tr("0 = before value, 1 = after value"),_Tr("Set kwh price"),_Tr("Show difference between each bar")],
       "html":""
     },
 
@@ -73,9 +73,9 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["power","kwhd","delta"],
-      "optionstype":["feedid","feedid","value"],
+      "optionstype":["feedid","feedid","boolean"],
       "optionsname":[_Tr("Power"),_Tr("kwhd"),_Tr("delta")],
-      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")")],
+      "optionshint":[_Tr("Power to show"),_Tr("kwhd source"),_Tr("Show difference between each bar")],
       "html":""
     },
 
@@ -117,9 +117,9 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["feedid","delta"],
-      "optionstype":["feedid","value"],
+      "optionstype":["feedid","boolean"],
       "optionsname":[_Tr("Feed"),_Tr("delta")],
-      "optionshint":[_Tr("Feed source"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")")],
+      "optionshint":[_Tr("Feed source"),_Tr("Show difference between each bar")],
       "html":""
     },
 
@@ -128,9 +128,9 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["bottom","top","colourt","colourb","delta"],
-      "optionstype":["feedid","feedid","colour_picker","colour_picker","value"],
+      "optionstype":["feedid","feedid","colour_picker","colour_picker","boolean"],
       "optionsname":[_Tr("Bottom"),_Tr("Top"),_Tr("Top colour"),_Tr("Bottom colour"),_Tr("delta")],
-      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value"),_Tr("Top colour"),_Tr("Bottom colour"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")")],
+      "optionshint":[_Tr("Bottom feed value"),_Tr("Top feed value"),_Tr("Top colour"),_Tr("Bottom colour"),_Tr("Show difference between each bar")],
       "html":""
     },
 
@@ -139,9 +139,9 @@ function vis_widgetlist(){
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
       "options":["solar","consumption","delta"],
-      "optionstype":["feedid","feedid","value"],
+      "optionstype":["feedid","feedid","boolean"],
       "optionsname":[_Tr("Solar"),_Tr("Consumption"),_Tr("delta")],
-      "optionshint":[_Tr("Solar feed value"),_Tr("Consumption feed value"),_Tr("St to \"1\" to show diff between each bar. It displays an ever-increasing Wh feed as a daily\/montly\/yeayly kWh feed (set interval to \"d\", or \"m\", or \"y\")")],
+      "optionshint":[_Tr("Solar feed value"),_Tr("Consumption feed value"),_Tr("Show difference between each bar")],
       "html":""
     },
 
