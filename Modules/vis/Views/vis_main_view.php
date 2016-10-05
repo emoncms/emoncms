@@ -173,6 +173,8 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 
       if (type == 0 || type == 1 || type == 2 || type == 3) {
         options_html += select_feed(box_options[z][0], feedlist, type);
+      } else if (type == 4)  { // boolean
+        options_html += "<select class='options' id='"+box_options[z][0]+"'><option value='0'" + (box_options[z][3] == 0 ? " selected" : "") + "><?php echo _("Off")?></option><option value='1'" + (box_options[z][3] == 1 ? " selected" : "") + "><?php echo _("On")?></option></select>";
       } else if (type == 9)  { // colour
         options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
       } else {

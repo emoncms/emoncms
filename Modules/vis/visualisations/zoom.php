@@ -7,14 +7,6 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
     global $path, $embed;
-    
-    $kwhd = get('kwhd');
-    $power = get('power');
-    $apikey = get('apikey');
-    $currency = get('currency')?get('currency'):'&euro;';
-    $currency_after_val = get('currency_after_val')?get('currency_after_val'):'0';
-    $pricekwh = get('pricekwh')?get('pricekwh'):0.12;
-    $delta = get('delta')?get('delta'):'0';
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->

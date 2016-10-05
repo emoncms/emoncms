@@ -84,12 +84,14 @@
                               $array['valid'] = false;
                             }
                         }
-                        else if ($type==4)
-                            // Boolean not used at the moment
-                            if (get($key)==true || get($key)==false)
-                                $array[$key] = get($key); else $array[$key] = $default;
+                        else if ($type==4) // Boolean
+                            if (get($key) == "true" || get($key) == 1)
+                                $array[$key] = 1;
+							else if (get($key) || get($key) == "false" || get($key) == 0)
+                                $array[$key] = 0;
+							else $array[$key] = $default;
                         else if ($type==5)
-                            $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥]/u','',get($key))?get($key):$default;
+                            $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥₽]/u','',get($key))?get($key):$default;
                         else if ($type==6)
                             $array[$key] = str_replace(',', '.', floatval((get($key)?get($key):$default)));
                         else if ($type==7)
@@ -107,7 +109,7 @@
 
                         # we need to either urlescape the colour, or just scrub out invalid chars. I'm doing the second, since
                         # we can be fairly confident that colours are eiter a hex or a simple word (e.g. "blue" or such)
-                        else if ($type==9)
+                        else if ($type==9) // Color
                             $array[$key] = preg_replace('/[^\dA-Za-z]/','',get($key))?get($key):$default;
                     }
                 }
