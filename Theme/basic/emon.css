@@ -93,3 +93,9 @@ input[type=text][class=variable-name-edit] {
 .menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
   display: inherit !important;
 }
+
+.scrollable-menu {
+  height: auto;
+  max-height: 250px;
+  overflow-y: auto;
+}
