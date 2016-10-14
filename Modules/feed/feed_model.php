@@ -445,23 +445,23 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled']) {
             // Add redisbuffer cache if available
-            // $bufferstart=end($data)[0];
-            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
-            
+            $bufferstart=end($data)[0];
+            $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
+
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
-                
+
                 // Merge buffered data into base data timeslots (over-writing null values where they exist)
                 if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) {
                     $outintervalms = $outinterval * 1000;
-                    
+
                     // Convert buffered data to associative array - by timestamp
                     $bufferdata_assoc = array();
                     for ($z=0; $z<count($bufferdata); $z++) {
                         $time = floor($bufferdata[$z][0]/$outintervalms)*$outintervalms;
                         $bufferdata_assoc[$time] = $bufferdata[$z][1];
                     }
-                    
+
                     // Merge data into base data
                     for ($z=0; $z<count($data); $z++) {
                         $time = $data[$z][0];
@@ -471,7 +471,6 @@ class Feed
                     $data = array_merge($data, $bufferdata);
                 }
             }
-            
         }
 
         return $data;

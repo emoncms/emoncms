@@ -385,11 +385,14 @@ class PHPFiwa
                 
                 if ($points_in_sum) {
                     $value = $point_sum / $points_in_sum;
+                    if ($value !== null) {
+                         $value = (float)$value;
+                    } 
                 }
             }
             
             if ($value!==null || $skipmissing===0) {
-                $data[] = array($time0*1000,(float)$value);
+                $data[] = array($time0*1000,$value);
             }
 
             $i++;
@@ -417,10 +420,14 @@ class PHPFiwa
             $d = fread($fh,4);
             fclose($fh);
 
+	    $value = null;
             $val = unpack("f",$d);
             $time = $meta->start_time + $meta->interval[0] * $meta->npoints[0];
-            
-            return array('time'=>(int)$time, 'value'=>(float)$val[1]);
+
+            if (!is_nan($val[1])) {
+                $value = (float) $val[1];
+            } 
+            return array('time'=>(int)$time, 'value'=>$value);
         }
         else
         {

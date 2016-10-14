@@ -97,7 +97,7 @@ class TemplateEngine
     */
     public function lastvalue($feedid)
     {
-        return array('time'=>(int)time(), 'value'=>(float)0);
+        return array('time'=>time(), 'value'=>0);
     }
 
     /**
@@ -117,7 +117,7 @@ class TemplateEngine
         // example of datapoint format
         $time = time() * 1000; // time in milliseconds
         $value = 123.4; 
-        $data[] = array($time,(float)$value);
+        $data[] = array($time,$value);
 
         return $data;
     }

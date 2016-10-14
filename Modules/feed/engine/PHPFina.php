@@ -271,9 +271,13 @@ class PHPFina
              $d = fread($fh,4);
             fclose($fh);
 
+            $value = null;
             $val = unpack("f",$d);
             $time = $meta->start_time + ($meta->interval * $meta->npoints);
-            return array('time'=>(int)$time, 'value'=>(float)$val[1]);
+            if (!is_nan($val[1])) {
+                $value = (float) $val[1];
+            } 
+            return array('time'=>(int)$time, 'value'=>$value);
         }
         return false;
     }
@@ -328,7 +332,7 @@ class PHPFina
 
                 // add to the data array if its not a nan value
                 if (!is_nan($val[1])) {
-                    $value = $val[1];
+                    $value = (float) $val[1];
                 } else {
                     $value = null;
                 }
@@ -337,7 +341,7 @@ class PHPFina
             
             if ($value!==null || $skipmissing===0) {
                 // see https://openenergymonitor.org/emon/node/11260
-                $data[] = array($time*1000,(float)$value);
+                $data[] = array($time*1000,$value);
             }
 
             $i++;
