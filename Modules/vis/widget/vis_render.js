@@ -42,7 +42,7 @@ function vis_widgetlist(){
       "options":["feedid","colour","interval","units","dp","scale","delta","mode"],
       "optionstype":["feedid","colour_picker","value","value","value","value","boolean","value"],
       "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta"),_Tr("mode")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar","Mode set to 'daily' can be used instead of interval for timezone based daily data")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar"),_Tr("Mode set to 'daily' can be used instead of interval for timezone based daily data")],
       "html":""
     },
 
