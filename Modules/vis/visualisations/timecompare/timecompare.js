@@ -127,6 +127,7 @@ function vis_feed_data_callback(context, data) {
 
 function plot() {
   $.plot($("#graph"), plotdata, {
+    canvas: true,
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
     selection: { mode: "x" },
