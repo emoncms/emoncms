@@ -154,6 +154,7 @@ function vis_feed_data_callback(context,data) {
 
 function plot() {
   $.plot($("#graph"), plotdata, {
+    canvas: true,
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end },
     selection: { mode: "x" },
