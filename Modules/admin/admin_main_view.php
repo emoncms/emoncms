@@ -266,7 +266,7 @@ if ($redis_enabled) {
 }
 if ($mqtt_enabled) {
 ?>
-              <tr><td><b>MQTT</b></td><td>Version</td><td><?php echo "n/a"; ?></td></tr>
+              <tr><td><b>MQTT</b></td><td>Version</td><td><?php if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*\(build)\''); } } ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
 <?php
 }
@@ -278,10 +278,10 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-Windows Platforms
 // Ram information
-              $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'];
+              $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
               echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used&nbsp;".$sysRamPercent."%</div></div>";
-              echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemFree'])."</td></tr>\n";
+              echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."</td></tr>\n";
               
               if ($system['mem_info']['SwapTotal'] > 0) {
                 $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree'];
