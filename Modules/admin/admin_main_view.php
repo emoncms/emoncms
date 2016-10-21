@@ -265,8 +265,9 @@ if ($redis_enabled) {
 <?php
 }
 if ($mqtt_enabled) {
+              @exec('mosquitto -h | grep -oP '(?<=mosquitto\sversion\s)[0-9.]+(?=\s*\(build)'', $mqtt_version);
 ?>
-              <tr><td><b>MQTT</b></td><td>Version</td><td><?php echo "n/a"; ?></td></tr>
+              <tr><td><b>MQTT</b></td><td>Version</td><td><?php echo $mqtt_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
 <?php
 }
