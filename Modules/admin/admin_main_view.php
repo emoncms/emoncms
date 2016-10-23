@@ -124,6 +124,7 @@
       return $partitions;
   }
 
+$emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';
 $emoncmsModuleFolders = glob("$emoncmsModulesPath/*/.git", GLOB_BRACE);                                                 // find all the subfolders containing a .git file
         foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
         $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
