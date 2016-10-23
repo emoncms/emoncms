@@ -123,8 +123,17 @@
       }
       return $partitions;
   }
- 
- ?>
+
+$emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';
+$emoncmsModuleFolders = glob("$emoncmsModulesPath/*/.git", GLOB_BRACE);                                                 // find all the subfolders containing a .git file
+        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
+        $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
+        $emoncmsModuleFolder = str_replace("/.git", '', $emoncmsModuleFolder);                                          // more clean up to remove /.git from the end of the output
+        if ($emoncmsModuleFolder == 'app' || $emoncmsModuleFolder == 'config' || $emoncmsModuleFolder == 'dashboard' || $emoncmsModuleFolder == 'graph' || $emoncmsModuleFolder == 'wifi') {$emoncmsModuleFolder = "<b>".$emoncmsModuleFolder."</b>";}
+        if (isset($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;} // add the commas as appropriate
+        }
+
+?>
 <style>
 pre {
     width:100%;
@@ -236,6 +245,7 @@ if ($allow_emonpi_admin) {
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
               <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $emoncms_modules; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
 ?>
