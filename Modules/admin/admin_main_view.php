@@ -284,6 +284,10 @@ if ($mqtt_enabled) {
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
+              foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
+                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease); 
+                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+              }
 }
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-Windows Platforms
