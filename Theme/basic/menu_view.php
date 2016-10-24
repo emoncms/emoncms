@@ -42,7 +42,7 @@
                 if ($i > 0) {
                     $out .= '<li class="dropdown' . ($subactive ? " active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . '">';
                     $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . drawNameIcon($item,false) . '<b class="caret"></b></a>';
-                    $out .= '<ul class="dropdown-menu">';
+                    $out .= '<ul class="dropdown-menu scrollable-menu">';
                     $out .= $outdrop;
                     $out .= '</ul></li>';
                 }

@@ -11,6 +11,11 @@
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.canvas.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
  
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/inst.js"></script>
@@ -28,7 +33,7 @@
 <script id="source" language="javascript" type="text/javascript">
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').width()*0.5);
+  $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
 
   var feedid = "<?php echo $feedid; ?>";
@@ -54,7 +59,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    $('#graph').height($('#graph_bound').width()*0.5);
+    $('#graph').height($('#graph_bound').height());
     if (embed) $('#graph').height($(window).height());
     plot();
   });
@@ -89,6 +94,7 @@
   function plot()
   {
     var plot = $.plot($("#graph"), [{data: graph_data, bars: { show: true, align: "center", fill: true}}], {
+      canvas: true,
       grid: { show: true, hoverable: true },
       yaxis: {min: 0}
     });
