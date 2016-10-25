@@ -53,7 +53,21 @@ function admin_controller()
                 $_SESSION['userid'] = intval(get('id'));
                 header("Location: ../user/view");
             }
-
+            
+            else if ($route->action == 'downloadlog')
+            {
+              if ($log_enabled) {
+                ob_start();
+                header('Content-Type: application/octet-stream');
+                header("Content-Transfer-Encoding: Binary"); 
+                header("Content-disposition: attachment; filename=\"" . basename($log_filename) . "\"");
+                ob_clean(); 
+                flush();
+                readfile($log_filename);
+                exit;
+              }
+            }
+            
             else if ($route->action == 'getlog')
             {
                 $route->format = "text";

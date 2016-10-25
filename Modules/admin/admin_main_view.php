@@ -203,6 +203,7 @@ if(is_writable($log_filename)) {
 <?php if(is_writable($log_filename)) { ?>
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
+                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download'); ?></a>
 <?php } ?>
                 </td>
             </tr>
