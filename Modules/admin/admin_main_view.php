@@ -203,7 +203,7 @@ if(is_writable($log_filename)) {
 <?php if(is_writable($log_filename)) { ?>
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
-                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download'); ?></a>
+                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download log'); ?></a>
 <?php } ?>
                 </td>
             </tr>
@@ -229,6 +229,7 @@ if ($allow_emonpi_admin) {
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
                     <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button><br><br>
+                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a>
                 </td>
             </tr>
             <tr>

@@ -57,11 +57,11 @@ function admin_controller()
             else if ($route->action == 'downloadlog')
             {
               if ($log_enabled) {
-                ob_start();
-                header('Content-Type: application/octet-stream');
+                header("Content-Type: application/octet-stream");
                 header("Content-Transfer-Encoding: Binary"); 
                 header("Content-disposition: attachment; filename=\"" . basename($log_filename) . "\"");
-                ob_clean(); 
+                header("Pragma: no-cache"); 
+                header("Expires: 0");
                 flush();
                 readfile($log_filename);
                 exit;
@@ -143,6 +143,21 @@ function admin_controller()
                     $result = trim(ob_get_clean());
                 }
                 
+                if ($route->subaction == 'downloadupdatelog')
+                {
+                  if (file_exists("/home/pi/data/emonpiupdate.log"))
+                  {
+                    header("Content-Type: application/octet-stream");
+                    header("Content-Transfer-Encoding: Binary"); 
+                    header("Content-disposition: attachment; filename=emonpiupdate.log");
+                    header("Pragma: no-cache"); 
+                    header("Expires: 0");
+                    flush();
+                    readfile("/home/pi/data/emonpiupdate.log");
+                    exit;
+                  }
+                }
+                
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) { 
                     $route->format = "text";
                     $file = "/tmp/emonpibackup";
@@ -157,6 +172,21 @@ function admin_controller()
                     ob_start();
                     passthru("cat /home/pi/data/emonpibackup.log");
                     $result = trim(ob_get_clean());
+                }
+                
+                if ($route->subaction == 'downloadbackuplog')
+                {
+                  if (file_exists("/home/pi/data/emonpibackup.log"))
+                  {
+                    header("Content-Type: application/octet-stream");
+                    header("Content-Transfer-Encoding: Binary"); 
+                    header("Content-disposition: attachment; filename=emonpibackup.log");
+                    header("Pragma: no-cache"); 
+                    header("Expires: 0");
+                    flush();
+                    readfile("/home/pi/data/emonpibackup.log");
+                    exit;
+                  }
                 }
                 
                 if ($route->subaction == "downloadbackup" && $session['write'] && $session['admin']) {
