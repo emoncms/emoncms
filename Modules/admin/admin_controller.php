@@ -63,7 +63,13 @@ function admin_controller()
                 header("Pragma: no-cache"); 
                 header("Expires: 0");
                 flush();
-                readfile($log_filename);
+                if (file_exists($log_filename)) {
+                  readfile($log_filename);
+                }
+                else
+                {
+                  echo($log_filename . " does not exist!");
+                }
                 exit;
               }
             }
@@ -136,26 +142,30 @@ function admin_controller()
                     @fclose($fh);
                 }
                 
-                if ($route->subaction == 'getupdatelog') { 
+                if ($route->subaction == 'getupdatelog' && $session['admin']) { 
                     $route->format = "text";
                     ob_start();
                     passthru("cat /home/pi/data/emonpiupdate.log");
                     $result = trim(ob_get_clean());
                 }
                 
-                if ($route->subaction == 'downloadupdatelog')
+                if ($route->subaction == 'downloadupdatelog' && $session['admin'])
                 {
-                  if (file_exists("/home/pi/data/emonpiupdate.log"))
-                  {
                     header("Content-Type: application/octet-stream");
                     header("Content-Transfer-Encoding: Binary"); 
                     header("Content-disposition: attachment; filename=emonpiupdate.log");
                     header("Pragma: no-cache"); 
                     header("Expires: 0");
                     flush();
-                    readfile("/home/pi/data/emonpiupdate.log");
+                    if (file_exists("/home/pi/data/emonpiupdate.log"))
+                    {
+                      readfile("/home/pi/data/emonpiupdate.log");
+                    }
+                    else
+                    {
+                      echo("/home/pi/data/emonpiupdate.log does not exist!");
+                    }     
                     exit;
-                  }
                 }
                 
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) { 
@@ -167,26 +177,29 @@ function admin_controller()
                     @fclose($fh);
                 }
                 
-                if ($route->subaction == 'getbackuplog') { 
+                if ($route->subaction == 'getbackuplog' && $session['admin']) { 
                     $route->format = "text";
                     ob_start();
                     passthru("cat /home/pi/data/emonpibackup.log");
                     $result = trim(ob_get_clean());
                 }
                 
-                if ($route->subaction == 'downloadbackuplog')
+                if ($route->subaction == 'downloadbackuplog' && $session['admin'])
                 {
-                  if (file_exists("/home/pi/data/emonpibackup.log"))
-                  {
                     header("Content-Type: application/octet-stream");
                     header("Content-Transfer-Encoding: Binary"); 
                     header("Content-disposition: attachment; filename=emonpibackup.log");
                     header("Pragma: no-cache"); 
                     header("Expires: 0");
                     flush();
-                    readfile("/home/pi/data/emonpibackup.log");
+                    if (file_exists("/home/pi/data/emonpibackup.log")) {
+                      readfile("/home/pi/data/emonpibackup.log");      
+                    }
+                    else
+                    {
+                      echo("/home/pi/data/emonpibackup.log does not exist!");
+                    }              
                     exit;
-                  }
                 }
                 
                 if ($route->subaction == "downloadbackup" && $session['write'] && $session['admin']) {
