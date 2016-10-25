@@ -228,8 +228,8 @@ if ($allow_emonpi_admin) {
                     <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
-                    <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button><br><br>
-                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a>
+                    <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button>
+                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a><br><br>
                 </td>
             </tr>
             <tr>
