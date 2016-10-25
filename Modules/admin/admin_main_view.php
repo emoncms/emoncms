@@ -358,7 +358,10 @@ function getLog() {
   $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: function(result)
     {
       $("#logreply").html(result);
-      $("#logreply-bound").scrollTop = $("#logreply-bound").scrollHeight;
+      var height = $("#logreply-bound").get(0).scrollHeight;
+      $("#logreply-bound").animate({
+        scrollTop: height
+      }, 500);
     }
   });
 }
@@ -387,10 +390,10 @@ function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      if (result.indexOf("emonPi update done")!=-1) {
-          clearInterval(refresher_update);
-      }
+      var height = $("#update-log-bound").get(0).scrollHeight;
+      $("#update-log-bound").animate({
+        scrollTop: height
+      }, 500);
     }
   });
 }
