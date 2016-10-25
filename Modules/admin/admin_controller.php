@@ -125,12 +125,20 @@ function admin_controller()
             }
 
             else if ($allow_emonpi_admin && $route->action == 'emonpi') {
+                //put $update_logfile here so it can be referenced in other if statements
+                //before it was only accesable in the update subaction                
+                //placed some other variables here as well so they are grouped
+                //together for the emonpi action even though they might not be used
+                //in the subaction
+                $update_logfile = "/home/pi/data/emonpiupdate.log";                
+                $backup_logfile = "/home/pi/data/emonpibackup.log";                
+                $update_flag = "/tmp/emoncms-flag-update";
+                $backup_flag = "/tmp/emonpibackup";
+                $update_script = "/home/pi/emonpi/service-runner-update.sh";
+                $backup_file = "/home/pi/data/backup.tar.gz";
+                                
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) { 
                     $route->format = "text";
-                    
-                    $update_flag = "/tmp/emoncms-flag-update";
-                    $update_script = "/home/pi/emonpi/service-runner-update.sh";
-                    $update_logfile = "/home/pi/data/emonpiupdate.log";
                     
                     $fh = @fopen($update_flag,"w");
                     if (!$fh) {
@@ -145,7 +153,7 @@ function admin_controller()
                 if ($route->subaction == 'getupdatelog' && $session['admin']) { 
                     $route->format = "text";
                     ob_start();
-                    passthru("cat /home/pi/data/emonpiupdate.log");
+                    passthru("cat " . $update_logfile);
                     $result = trim(ob_get_clean());
                 }
                 
@@ -153,36 +161,35 @@ function admin_controller()
                 {
                     header("Content-Type: application/octet-stream");
                     header("Content-Transfer-Encoding: Binary"); 
-                    header("Content-disposition: attachment; filename=emonpiupdate.log");
+                    header("Content-disposition: attachment; filename=\"" . basename($update_logfile) . "\"");
                     header("Pragma: no-cache"); 
                     header("Expires: 0");
                     flush();
-                    if (file_exists("/home/pi/data/emonpiupdate.log"))
+                    if (file_exists($update_logfile))
                     {
                       ob_start();
-                      readfile("/home/pi/data/emonpiupdate.log");
+                      readfile($update_logfile);
                       echo(trim(ob_get_clean()));
                     }
                     else
                     {
-                      echo("/home/pi/data/emonpiupdate.log does not exist!");
+                      echo($update_logfile . " does not exist!");
                     }     
                     exit;
                 }
                 
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) { 
                     $route->format = "text";
-                    $file = "/tmp/emonpibackup";
-                    $fh = @fopen($file,"w");
-                    if (!$fh) $result = "ERROR: Can't write the flag $file.";
-                    else $result = "Update flag file $file created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
+                    $fh = @fopen($backup_flag,"w");
+                    if (!$fh) $result = "ERROR: Can't write the flag $backup_flag.";
+                    else $result = "Update flag file $backup_flag created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
                     @fclose($fh);
                 }
                 
                 if ($route->subaction == 'getbackuplog' && $session['admin']) { 
                     $route->format = "text";
                     ob_start();
-                    passthru("cat /home/pi/data/emonpibackup.log");
+                    passthru("cat " . $backup_logfile);
                     $result = trim(ob_get_clean());
                 }
                 
@@ -190,28 +197,28 @@ function admin_controller()
                 {
                     header("Content-Type: application/octet-stream");
                     header("Content-Transfer-Encoding: Binary"); 
-                    header("Content-disposition: attachment; filename=emonpibackup.log");
+                    header("Content-disposition: attachment; filename=\"" . basename($backup_logfile) . "\"");
                     header("Pragma: no-cache"); 
                     header("Expires: 0");
                     flush();
-                    if (file_exists("/home/pi/data/emonpibackup.log")) {
+                    if (file_exists($backup_logfile)) {
                       ob_start();
-                      readfile("/home/pi/data/emonpibackup.log");
+                      readfile($backup_logfile);
                       echo(trim(ob_get_clean()));
                     }
                     else
                     {
-                      echo("/home/pi/data/emonpibackup.log does not exist!");
+                      echo($backup_logfile . " does not exist!");
                     }              
                     exit;
                 }
                 
                 if ($route->subaction == "downloadbackup" && $session['write'] && $session['admin']) {
                     header("Content-type: application/zip"); 
-                    header("Content-Disposition: attachment; filename=backup.tar.gz"); 
+                    header("Content-Disposition: attachment; filename=\"" . basename($backup_file) . "\""); 
                     header("Pragma: no-cache"); 
                     header("Expires: 0"); 
-                    readfile("/home/pi/data/backup.tar.gz");
+                    readfile($backup_file);
                     exit;
                 }
             }
