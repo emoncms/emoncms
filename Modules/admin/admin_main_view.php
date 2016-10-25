@@ -124,13 +124,14 @@
       return $partitions;
   }
 
+$emoncms_modules = NULL;
 $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';
 $emoncmsModuleFolders = glob("$emoncmsModulesPath/*/.git", GLOB_BRACE);                                                 // find all the subfolders containing a .git file
         foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
         $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
         $emoncmsModuleFolder = str_replace("/.git", '', $emoncmsModuleFolder);                                          // more clean up to remove /.git from the end of the output
         if ($emoncmsModuleFolder == 'app' || $emoncmsModuleFolder == 'config' || $emoncmsModuleFolder == 'dashboard' || $emoncmsModuleFolder == 'graph' || $emoncmsModuleFolder == 'wifi') {$emoncmsModuleFolder = "<b>".$emoncmsModuleFolder."</b>";}
-        if (isset($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;} // add the commas as appropriate
+        if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;} // add the commas as appropriate
         }
 
 ?>
