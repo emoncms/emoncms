@@ -64,7 +64,7 @@ function admin_controller()
                 header("Expires: 0");
                 flush();
                 if (file_exists($log_filename)) {
-                  trim(readfile($log_filename));
+                  readfile($log_filename);
                 }
                 else
                 {
