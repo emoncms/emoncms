@@ -159,7 +159,9 @@ function admin_controller()
                     flush();
                     if (file_exists("/home/pi/data/emonpiupdate.log"))
                     {
-                      trim(readfile("/home/pi/data/emonpiupdate.log"));
+                      ob_start();
+                      readfile("/home/pi/data/emonpiupdate.log");
+                      echo(trim(ob_get_clean()));
                     }
                     else
                     {
@@ -193,7 +195,9 @@ function admin_controller()
                     header("Expires: 0");
                     flush();
                     if (file_exists("/home/pi/data/emonpibackup.log")) {
-                      trim(readfile("/home/pi/data/emonpibackup.log"));      
+                      ob_start();
+                      readfile("/home/pi/data/emonpibackup.log");
+                      echo(trim(ob_get_clean()));
                     }
                     else
                     {
