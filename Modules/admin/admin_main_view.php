@@ -390,9 +390,8 @@ function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      if (result.indexOf("emonPi update done")!=-1) {
-          clearInterval(refresher_update);
+      if(result.indexOf("emonPi update done") > -1) {} else {
+        $('#update-log-bound').animate({scrollTop: $('#update-log-bound').prop("scrollHeight")}, 1000);
       }
     }
   });
