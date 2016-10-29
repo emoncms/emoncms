@@ -124,13 +124,14 @@
       return $partitions;
   }
 
+$emoncms_modules = NULL;
 $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';
 $emoncmsModuleFolders = glob("$emoncmsModulesPath/*/.git", GLOB_BRACE);                                                 // find all the subfolders containing a .git file
         foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
         $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
         $emoncmsModuleFolder = str_replace("/.git", '', $emoncmsModuleFolder);                                          // more clean up to remove /.git from the end of the output
         if ($emoncmsModuleFolder == 'app' || $emoncmsModuleFolder == 'config' || $emoncmsModuleFolder == 'dashboard' || $emoncmsModuleFolder == 'graph' || $emoncmsModuleFolder == 'wifi') {$emoncmsModuleFolder = "<b>".$emoncmsModuleFolder."</b>";}
-        if (isset($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;} // add the commas as appropriate
+        if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;} // add the commas as appropriate
         }
 
 ?>
@@ -203,6 +204,7 @@ if(is_writable($log_filename)) {
 <?php if(is_writable($log_filename)) { ?>
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
+                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download log'); ?></a>
 <?php } ?>
                 </td>
             </tr>
@@ -227,7 +229,8 @@ if ($allow_emonpi_admin) {
                     <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
-                    <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button><br><br>
+                    <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button>
+                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a><br><br>
                 </td>
             </tr>
             <tr>
@@ -284,6 +287,10 @@ if ($mqtt_enabled) {
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
+              foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
+                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease); 
+                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+              }
 }
 
 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-Windows Platforms
@@ -383,9 +390,8 @@ function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      if (result.indexOf("emonPi update done")!=-1) {
-          clearInterval(refresher_update);
+      if(result.indexOf("emonPi update done") > -1) {} else {
+        $('#update-log-bound').animate({scrollTop: $('#update-log-bound').prop("scrollHeight")}, 1000);
       }
     }
   });
