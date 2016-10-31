@@ -124,16 +124,16 @@
       return $partitions;
   }
 
-$emoncms_modules = NULL;
-$emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';
-$emoncmsModuleFolders = glob("$emoncmsModulesPath/*/.git", GLOB_BRACE);                                                 // find all the subfolders containing a .git file
+$emoncms_modules = NULL;                                                                                                // Set the variable to null
+$emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';     // Set the Modules path
+$emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                                                    // Use glob to get all the folder names only
         foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
         $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
-        $emoncmsModuleFolder = str_replace("/.git", '', $emoncmsModuleFolder);                                          // more clean up to remove /.git from the end of the output
-        if ($emoncmsModuleFolder == 'app' || $emoncmsModuleFolder == 'config' || $emoncmsModuleFolder == 'dashboard' || $emoncmsModuleFolder == 'graph' || $emoncmsModuleFolder == 'wifi') {$emoncmsModuleFolder = "<b>".$emoncmsModuleFolder."</b>";}
-        if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;} // add the commas as appropriate
+        if ($emoncmsModuleFolder == 'admin' || $emoncmsModuleFolder == 'eventp' || $emoncmsModuleFolder == 'feed' || $emoncmsModuleFolder == 'input' ||         // BOLD non-stock modules
+            $emoncmsModuleFolder == 'process' || $emoncmsModuleFolder == 'schedule' || $emoncmsModuleFolder == 'time' || $emoncmsModuleFolder == 'user' ||      // BOLD non-stock modules cont.
+            $emoncmsModuleFolder == 'vis') {} else {$emoncmsModuleFolder = "<b>".$emoncmsModuleFolder."</b>";}                                                  // BOLD non-stock modules cont.
+        if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;}      // add the commas as appropriate
         }
-
 ?>
 <style>
 pre {
