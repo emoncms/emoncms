@@ -129,9 +129,6 @@ $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['S
 $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                                                    // Use glob to get all the folder names only
         foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
         $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
-        if ($emoncmsModuleFolder == 'admin' || $emoncmsModuleFolder == 'eventp' || $emoncmsModuleFolder == 'feed' || $emoncmsModuleFolder == 'input' ||         // BOLD non-stock modules
-            $emoncmsModuleFolder == 'process' || $emoncmsModuleFolder == 'schedule' || $emoncmsModuleFolder == 'time' || $emoncmsModuleFolder == 'user' ||      // BOLD non-stock modules cont.
-            $emoncmsModuleFolder == 'vis') {} else {$emoncmsModuleFolder = "<b>".$emoncmsModuleFolder."</b>";}                                                  // BOLD non-stock modules cont.
         if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;}      // add the commas as appropriate
         }
 ?>
