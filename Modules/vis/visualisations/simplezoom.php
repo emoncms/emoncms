@@ -15,6 +15,11 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.canvas.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
@@ -53,7 +58,7 @@
   var embed = <?php echo $embed; ?>;
 
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').width()*0.5);
+  $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
 
   var path = "<?php echo $path; ?>";
@@ -80,7 +85,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    $('#graph').height($('#graph_bound').width()*0.5);
+    $('#graph').height($('#graph_bound').height());
     if (embed) $('#graph').height($(window).height());
     plot();
   });
@@ -159,6 +164,7 @@
   function plot()
   {
     var plot = $.plot($("#graph"), plotdata, {
+      canvas: true,
       selection: { mode: "x" },
       grid: { show: true, clickable: true, hoverable: true },
       xaxis: { mode: "time", timezone: "browser", min: start, max: end },

@@ -266,6 +266,7 @@ class PHPTimeSeries
                 $value = $array['value'];
                 $atime = $array['time'];
             }
+            if ($value !== null) $value = (float) $value ;
 
             if ($atime!=$lasttime) {
                 if ($value!==null || $skipmissing===0) $data[] = array($atime*1000,$value);

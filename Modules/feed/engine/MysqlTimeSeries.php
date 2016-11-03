@@ -129,7 +129,8 @@ class MysqlTimeSeries
 
         $result = $this->mysqli->query("SELECT time, data FROM $feedname ORDER BY time Desc LIMIT 1");
         if ($result && $row = $result->fetch_array()){
-            return array('time'=>$row['time'], 'value'=>$row['data']);
+            if ($row['data'] !== null) $row['data'] = (float) $row['data'];
+            return array('time'=>(int)$row['time'], 'value'=>$row['data']);
         } else {
             return false;
         }
@@ -189,7 +190,8 @@ class MysqlTimeSeries
                 if ($stmt->fetch()) {
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $dataTime * 1000;
-                        $data[] = array($time, (float)$dataValue);
+                        if ($dataValue !== null) $dataValue = (float) $dataValue ;
+                        $data[] = array($time, $dataValue);
                     }
                 }
                 $t = $tb;
@@ -217,7 +219,8 @@ class MysqlTimeSeries
                     $dataValue = $row['data'];
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * 1000 * $td;
-                        $data[] = array($time , (float)$dataValue);
+                        if ($dataValue !== null) $dataValue = (float) $dataValue ;
+                        $data[] = array($time , $dataValue);
                     }
                 }
             }

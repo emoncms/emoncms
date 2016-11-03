@@ -271,9 +271,13 @@ class PHPFina
              $d = fread($fh,4);
             fclose($fh);
 
+            $value = null;
             $val = unpack("f",$d);
             $time = $meta->start_time + ($meta->interval * $meta->npoints);
-            return array('time'=>$time, 'value'=>$val[1]);
+            if (!is_nan($val[1])) {
+                $value = (float) $val[1];
+            } 
+            return array('time'=>(int)$time, 'value'=>$value);
         }
         return false;
     }
@@ -328,7 +332,7 @@ class PHPFina
 
                 // add to the data array if its not a nan value
                 if (!is_nan($val[1])) {
-                    $value = $val[1];
+                    $value = (float) $val[1];
                 } else {
                     $value = null;
                 }

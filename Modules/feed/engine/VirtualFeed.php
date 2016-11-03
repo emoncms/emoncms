@@ -88,7 +88,8 @@ class VirtualFeed
             $dataValue = $process->input($now, null, $processList, $opt_timearray); // execute processlist 
         }
         //$this->log->info("lastvalue() feedid=$feedid dataValue=$dataValue");
-        return array('time'=>$now, 'value'=>$dataValue);
+        if ($dataValue !== null) $dataValue = (float) $dataValue ;
+        return array('time'=>(int)$now, 'value'=>$dataValue);  // datavalue can be float or null, dont cast!
     }
 
     // 1 - Calculates date slots for given start, end and interval. Representing about a pixel on the x axis of the graph for each time slot.
@@ -146,6 +147,7 @@ class VirtualFeed
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $t * 1000;
+                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
                     $data[] = array($time, $dataValue);
                 }
                 $t = $tb; // next start time
@@ -164,6 +166,7 @@ class VirtualFeed
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                     $time = $startslot * 1000;
+                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
                     $data[] = array($time, $dataValue);
                 }
                 $startslot +=86400; // inc a day

@@ -13,6 +13,10 @@ var movingtime = false;
 var showtag = true;
 var autorefresh = 0;
 var showlegend = true;
+var ymin = "auto";
+var ymax = "auto";
+var y2min = "auto";
+var y2max = "auto";
 
 var baseElement = "#box-options";
 
@@ -47,25 +51,49 @@ function draw_multigraph_feedlist_editor(){
   }
 
   if (multigraph_feedlist === null) multigraph_feedlist = [];
-  if (typeof multigraph_feedlist[0] !== 'undefined' && multigraph_feedlist[0]['end'] != 0)
-    movingtime=false;
-  else
-    movingtime=true;
+  
+  if (typeof multigraph_feedlist[0] !== 'undefined') {
+      
+      if (multigraph_feedlist[0]['end'] != 0)
+        movingtime=false;
+      else
+        movingtime=true;
 
-  if (typeof multigraph_feedlist[0] !== 'undefined' && typeof multigraph_feedlist[0]['showtag'] !== 'undefined')
-    showtag = multigraph_feedlist[0]['showtag'];
-  else
-    showtag = true;
+      if (typeof multigraph_feedlist[0]['showtag'] !== 'undefined')
+        showtag = multigraph_feedlist[0]['showtag'];
+      else
+        showtag = true;
 
-  if (typeof multigraph_feedlist[0] !== 'undefined' && typeof multigraph_feedlist[0]['autorefresh'] !== 'undefined')
-    autorefresh = multigraph_feedlist[0]['autorefresh'];
-  else
-    autorefresh = 0;
+      if (typeof multigraph_feedlist[0]['autorefresh'] !== 'undefined')
+        autorefresh = multigraph_feedlist[0]['autorefresh'];
+      else
+        autorefresh = 0;
 
-  if (typeof multigraph_feedlist[0] !== 'undefined' && typeof multigraph_feedlist[0]['showlegend'] !== 'undefined')
-    showlegend = multigraph_feedlist[0]['showlegend'];
-  else
-    showlegend = true;
+      if (typeof multigraph_feedlist[0]['showlegend'] !== 'undefined')
+        showlegend = multigraph_feedlist[0]['showlegend'];
+      else
+        showlegend = true;
+
+      if (typeof multigraph_feedlist[0]['ymin'] !== 'undefined' && $.isNumeric(multigraph_feedlist[0]['ymin']))
+        ymin = multigraph_feedlist[0]['ymin'];
+      else
+        ymin = "auto";
+
+      if (typeof multigraph_feedlist[0]['ymax'] !== 'undefined' && $.isNumeric(multigraph_feedlist[0]['ymax']))
+        ymax = multigraph_feedlist[0]['ymax'];
+      else
+        ymax = "auto";
+    
+      if (typeof multigraph_feedlist[0]['y2min'] !== 'undefined' && $.isNumeric(multigraph_feedlist[0]['y2min']))
+        y2min = multigraph_feedlist[0]['y2min'];
+      else
+        y2min = "auto";
+
+      if (typeof multigraph_feedlist[0]['y2max'] !== 'undefined' && $.isNumeric(multigraph_feedlist[0]['y2max']))
+        y2max = multigraph_feedlist[0]['y2max'];
+      else
+        y2max = "auto";
+  }
 
   var out = "";
   out += '<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">';
@@ -114,24 +142,35 @@ function draw_multigraph_feedlist_editor(){
   out += "<td><input id='add' type='button' class='btn' value='Add'/ ></td>";
   out += "<td></td>";
   out += "</tr>";
-  out += "<tr><td>Floating time</strong></td>";
+
+  out += "<tr><td style='width:130px;' >Y axes limits</td><td colspan='2' style='text-align: center;'>Min</td><td colspan='2' style='text-align: center;'>Max</td></tr>";
+  out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Left</td>";
+  out += "<td colspan='2'><input style='width:50px' id='ymin' value='" + ymin + "'/></td>";
+  out += "<td colspan='2'><input style='width:50px' id='ymax' value='" + ymax + "'/></td>";
+  out += "</tr>";
+  out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Right</td>";
+  out += "<td colspan='2'><input style='width:50px' id='y2min' value='" + y2min + "'/></td>";
+  out += "<td colspan='2'><input style='width:50px' id='y2max' value='" + y2max + "'/></td>";
+  out += "</tr>";
+
+  out += "<tr><td>Floating time</td>";
   var checked = ""; if (movingtime) checked = "checked";
   out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
-  out += "<tr><td>Show tag name</strong></td>";
+  out += "<tr><td>Auto refresh (secs)</td>";
+  out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
+  out += "<td></td>";
+  out += "<td></td>";
+  out += "<td></td></tr>";
+  out += "<tr><td>Show tag name</td>";
   var checked = ""; if (showtag) checked = "checked";
   out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
-  out += "<tr><td>Auto refresh (secs)</strong></td>";
-  out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
-  out += "<td></td>";
-  out += "<td></td>";
-  out += "<td></td></tr>";
-  out += "<tr><td>Show Legend</strong></td>";
+  out += "<tr><td>Show Legend</td>";
   var checked = ""; if (showlegend) checked = "checked";
   out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
@@ -218,6 +257,39 @@ function load_events(){
     modified();
   });
 
+  
+  $(baseElement).on("change","#ymin",function(event){
+    ymin = $(this)[0].value;
+    if (!$.isNumeric(ymin)) ymin = null;
+    multigraph_feedlist[0]['ymin'] = ymin;
+    vis_feed_data();
+    modified();
+  });
+  
+  $(baseElement).on("change","#ymax",function(event){
+    ymax = $(this)[0].value;
+    if (!$.isNumeric(ymax)) ymax = null;
+    multigraph_feedlist[0]['ymax'] = ymax;
+    vis_feed_data();
+    modified();
+  });
+  
+  $(baseElement).on("change","#y2min",function(event){
+    y2min = $(this)[0].value;
+    if (!$.isNumeric(y2min)) y2min = null;
+    multigraph_feedlist[0]['y2min'] = y2min;
+    vis_feed_data();
+    modified();
+  });
+  
+  $(baseElement).on("change","#y2max",function(event){
+    y2max = $(this)[0].value;
+    if (!$.isNumeric(y2max)) y2max = null;
+    multigraph_feedlist[0]['y2max'] = y2max;
+    vis_feed_data();
+    modified();
+  });
+  
   $(baseElement).on("click","#movingtime",function(event){
     movingtime = $(this)[0].checked;
     vis_feed_data();
