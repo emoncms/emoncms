@@ -27,10 +27,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",  
-      "options":["feedid","colour","units","dp","scale","fill"],
-      "optionstype":["feedid","colour_picker","value","value","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value")],
+      "options":["feedid","colour","units","dp","scale","fill","initzoom"],
+      "optionstype":["feedid","colour_picker","value","value","value","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill"),_Tr("Initial Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value"),_Tr("D=Day, W=Week, M=Month, Y=Year")],
       
       "html":""
     },
