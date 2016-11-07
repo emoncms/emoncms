@@ -50,10 +50,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","units"],
-      "optionstype":["feedid","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Units")],
-      "optionshint":[_Tr("Feed source"),_Tr("Units to show")],
+      "options":["feedid","units","initzoom"],
+      "optionstype":["feedid","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Units"),_Tr("Initial Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Units to show"),_Tr("D=Day, W=Week, M=Month, Y=Year")],
       "html":""
     },
 

@@ -76,13 +76,23 @@ var apikey = "";
 // var feedid = urlParams['feedid'];
 // var embed = urlParams['embed'] || false;
 
+var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || "DWMY".indexOf(initzoom)===-1) initzoom = 'W';
+
 var placeholder_bound = $('#placeholder_bound');
 var placeholder = $('#placeholder').width(placeholder_bound.width()).height($('#placeholder_bound').height()-top_offset);
 if (embed) placeholder.height($(window).height()-top_offset);
 
 
 
-var timeWindow = (3600000*24.0*7);
+if (initzoom==='D')
+    var timeWindow = (3600000*24.0);
+if (initzoom==='W')
+    var timeWindow = (3600000*24.0*7);
+if (initzoom==='M')
+    var timeWindow = (3600000*24.0*30);
+if (initzoom==='Y')
+    var timeWindow = (3600000*24.0*365);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
 
