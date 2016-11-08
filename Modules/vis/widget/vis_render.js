@@ -94,10 +94,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","thresholdA","thresholdB"],
-      "optionstype":["feedid","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B")],
-      "optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used")],
+      "options":["feedid","thresholdA","thresholdB","initzoom"],
+      "optionstype":["feedid","value","value","value"],
+      "optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B"),_Tr("Initial Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used"),_Tr("D=Day, W=Week, M=Month, Y=Year")],
       "html":""
     },
 
