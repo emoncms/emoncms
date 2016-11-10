@@ -19,6 +19,11 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.canvas.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
@@ -79,7 +84,9 @@ var scale = urlParams.scale;
     if (scale==undefined || scale=='') scale = 1;
 var fill = +urlParams.fill;
     if (fill==undefined || fill=='') fill = 0;
-if (fill>0) fill = true;
+    if (fill>0) fill = true;
+var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || "DWMY".indexOf(initzoom)===-1) initzoom = 'W';
 // Some browsers want the colour codes to be prepended with a "#". Therefore, we
 // add one if it's not already there
 if (plotColour.indexOf("#") == -1) {
@@ -99,7 +106,14 @@ placeholder.height(height-top_offset);
 
 if (embed) placeholder.height($(window).height()-top_offset);
 
-var timeWindow = (3600000*24.0*7);
+if (initzoom==='D')
+    var timeWindow = (3600000*24.0);
+if (initzoom==='W')
+    var timeWindow = (3600000*24.0*7);
+if (initzoom==='M')
+    var timeWindow = (3600000*24.0*30);
+if (initzoom==='Y')
+    var timeWindow = (3600000*24.0*365);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
 
@@ -182,6 +196,7 @@ $(function() {
     function plot()
     {
         var options = {
+            canvas: true,
             lines: { fill: fill },
             xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
             //yaxis: { min: 0 },

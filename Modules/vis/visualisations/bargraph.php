@@ -18,6 +18,11 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.canvas.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
@@ -79,6 +84,9 @@
     var mode = urlParams.mode;
     if (mode==undefined || mode=='') mode = false;
     
+    var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || "DWMY".indexOf(initzoom)===-1) initzoom = 'W';
+    
     document.getElementById("textunitD").innerHTML=units;
     document.getElementById("textunitM").innerHTML=units;
     document.getElementById("textunitY").innerHTML=units;
@@ -107,16 +115,14 @@
 
     var intervalms = interval * 1000;
 
-    var timeWindow;
-
-    if (intervalcode=='y')
-       timeWindow = 3600000*24*365*5;
-    else if (intervalcode=='m')
-       timeWindow = 3600000*24*365;
-    else if (intervalcode=='d')
-       timeWindow = 3600000*24*10;
-    else
-       timeWindow = 3600000*24*31;
+    if (initzoom==='D')
+        var timeWindow = (3600000*24.0);
+    if (initzoom==='W')
+        var timeWindow = (3600000*24.0*7);
+    if (initzoom==='M')
+        var timeWindow = (3600000*24.0*30);
+    if (initzoom==='Y')
+        var timeWindow = (3600000*24.0*365);
 
     view.start = +new Date - timeWindow;
     view.end = +new Date;
@@ -327,6 +333,7 @@
                 intervalrange=interval;
 
             var options = {
+                canvas: true,
                 bars: { show: true, align: "center", barWidth: 0.75*intervalrange*1000, fill: true},
                 xaxis: { mode: "time", timezone: "browser",
                 min: view.start, max: view.end, minTickSize: [intervalrange, "second"] },

@@ -15,9 +15,15 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.canvas.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
 
 <?php if (!$embed) { ?>
 <h2><?php echo _("Threshold"); ?></h2>
@@ -57,8 +63,18 @@
 
   var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
+  
+  var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || "DWMY".indexOf(initzoom)===-1) initzoom = 'W'; //Initial time window
 
-  var timeWindow = (3600000*24.0*7);        //Initial time window
+  if (initzoom==='D')
+    var timeWindow = (3600000*24.0);
+  if (initzoom==='W')
+    var timeWindow = (3600000*24.0*7);
+  if (initzoom==='M')
+    var timeWindow = (3600000*24.0*30);
+  if (initzoom==='Y')
+    var timeWindow = (3600000*24.0*365);      
   var start = ((new Date()).getTime())-timeWindow;    //Get start time
   var end = (new Date()).getTime();       //Get end time
 
@@ -79,6 +95,7 @@
 
     $.plot($("#graph"), [{color: "#c1a81f", data:dataA}, {color: "#dec225", data:dataB}, {color: "#deb368", data:dataC}],
     {
+      canvas: true,
       series: {
         stack: true,
         bars: { show: true,align: "center",barWidth: (3600*18*1000),fill: true }

@@ -18,6 +18,11 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.canvas.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
@@ -71,13 +76,23 @@ var apikey = "";
 // var feedid = urlParams['feedid'];
 // var embed = urlParams['embed'] || false;
 
+var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || "DWMY".indexOf(initzoom)===-1) initzoom = 'W';
+
 var placeholder_bound = $('#placeholder_bound');
 var placeholder = $('#placeholder').width(placeholder_bound.width()).height($('#placeholder_bound').height()-top_offset);
 if (embed) placeholder.height($(window).height()-top_offset);
 
 
 
-var timeWindow = (3600000*24.0*7);
+if (initzoom==='D')
+    var timeWindow = (3600000*24.0);
+if (initzoom==='W')
+    var timeWindow = (3600000*24.0*7);
+if (initzoom==='M')
+    var timeWindow = (3600000*24.0*30);
+if (initzoom==='Y')
+    var timeWindow = (3600000*24.0*365);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
 
@@ -149,6 +164,7 @@ $(function() {
     function plot()
     {
         var plot = $.plot(placeholder, [plotdata], {
+            canvas: true,
             //points: {show:true},
             bars: { show: true, align: "center", barWidth: 0.75*interval*1000, fill: true},
             xaxis: { mode: "time", timezone: "browser", min: view.start, max: view.end, minTickSize: [interval, "second"] },
