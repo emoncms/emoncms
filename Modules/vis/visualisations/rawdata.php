@@ -84,7 +84,9 @@ var scale = urlParams.scale;
     if (scale==undefined || scale=='') scale = 1;
 var fill = +urlParams.fill;
     if (fill==undefined || fill=='') fill = 0;
-if (fill>0) fill = true;
+    if (fill>0) fill = true;
+var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || "DWMY".indexOf(initzoom)===-1) initzoom = 'W';
 // Some browsers want the colour codes to be prepended with a "#". Therefore, we
 // add one if it's not already there
 if (plotColour.indexOf("#") == -1) {
@@ -104,7 +106,14 @@ placeholder.height(height-top_offset);
 
 if (embed) placeholder.height($(window).height()-top_offset);
 
-var timeWindow = (3600000*24.0*7);
+if (initzoom==='D')
+    var timeWindow = (3600000*24.0);
+if (initzoom==='W')
+    var timeWindow = (3600000*24.0*7);
+if (initzoom==='M')
+    var timeWindow = (3600000*24.0*30);
+if (initzoom==='Y')
+    var timeWindow = (3600000*24.0*365);
 view.start = +new Date - timeWindow;
 view.end = +new Date;
 
