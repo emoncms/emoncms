@@ -23,6 +23,12 @@
           }
       }
     }
+    $emoncms_modules = "";
+    $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);  // Use glob to get all the folder names only
+    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {  // loop through the folders
+        $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
+    }
 
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
@@ -53,7 +59,8 @@
                  'http_port' => $_SERVER['SERVER_PORT'],
                  'php_modules' => get_loaded_extensions(),
                  'mem_info' => $meminfo,
-                 'partitions' => disk_list()
+                 'partitions' => disk_list(),
+                 'emoncms_modules' => $emoncms_modules
                  );
   }
 
@@ -123,15 +130,8 @@
       }
       return $partitions;
   }
-
-$emoncms_modules = NULL;                                                                                                // Set the variable to null
-$emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';     // Set the Modules path
-$emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                                                    // Use glob to get all the folder names only
-        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
-        $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
-        if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;}      // add the commas as appropriate
-        }
-?>
+ 
+ ?>
 <style>
 pre {
     width:100%;
@@ -245,7 +245,7 @@ if ($allow_emonpi_admin) {
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
               <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $emoncms_modules; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
 ?>
@@ -387,8 +387,9 @@ function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      if(result.indexOf("emonPi update done") > -1) {} else {
-        $('#update-log-bound').animate({scrollTop: $('#update-log-bound').prop("scrollHeight")}, 1000);
+      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
+      if (result.indexOf("emonPi update done")!=-1) {
+          clearInterval(refresher_update);
       }
     }
   });
