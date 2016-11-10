@@ -32,7 +32,7 @@ function vis_widgetlist(){
       "optionstype":["feedid","colour_picker","value","value","value","value","dropbox"],
       "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill"),_Tr("Zoom")],
       "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value"),_Tr("Default visible window interval")],
-      "optionsdata": [ , , , , , , [["300", "605 mins"],["7", "Week"],["30", "Month"],["365", "Year"]] ],
+      "optionsdata": [ , , , , , , [["1", "Day"],["7", "Week"],["30", "Month"],["365", "Year"]] ],
       "html":""
     },
     
