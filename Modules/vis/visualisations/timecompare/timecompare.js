@@ -142,7 +142,7 @@ function timecompare_init(element) {
   var now = new Date().getTime();
 
   plotdata = [];
-  compare_unit = (1000*60*60*24.0*7); // One week in milliseconds 
+  compare_unit = (1000*60*60*initzoom);
   view.start = now - compare_unit;
   view.end = now;
 
