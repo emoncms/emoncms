@@ -13,7 +13,8 @@
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
     
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !is_readable('/proc/meminfo') == 'TRUE') { $meminfo = array(); } else { //Only do this on NON-Windows Platforms
+    $meminfo = false;
+    if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
       $meminfo = array();
       foreach ($data as $line) {
@@ -291,8 +292,8 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               }
 }
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !is_readable('/proc/meminfo') == 'TRUE') {} else { //Only do this on NON-Windows Platforms
 // Ram information
+if ($system['mem_info']) {
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
               echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used&nbsp;".$sysRamPercent."%</div></div>";
@@ -304,7 +305,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !is_readable('/proc/meminfo') 
                 echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercent."%;'>Used&nbsp;".$sysSwapPercent."%</div></div>";
                 echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
               }
-
+}
 // Filesystem Information
                 if (count($system['partitions']) > 0) {
                     echo "<tr><td><b>Disk</b></td><td><b>Mount</b></td><td><b>Stats</b></td></tr>\n";
@@ -321,7 +322,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !is_readable('/proc/meminfo') 
                       }
                     }
                 }
-} //End the stuff we dont do on Windows
+
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>
