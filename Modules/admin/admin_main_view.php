@@ -13,7 +13,7 @@
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
     
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { $meminfo = array(); } else { //Only do this on NON-Windows Platforms
+    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !is_readable('/proc/meminfo') == 'TRUE') { $meminfo = array(); } else { //Only do this on NON-Windows Platforms
       $data = explode("\n", file_get_contents("/proc/meminfo"));
       $meminfo = array();
       foreach ($data as $line) {
@@ -291,7 +291,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               }
 }
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-Windows Platforms
+if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN' || !is_readable('/proc/meminfo') == 'TRUE') {} else { //Only do this on NON-Windows Platforms
 // Ram information
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
