@@ -20,9 +20,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     //languages order by language name
     $languages_new = array();
     foreach ($languages_name as $key=>$lang){
-       $languages_new[$key]=$languages[$key];        
+       $languages_new[$key]=$languages[$key];
     }
-    $languages= array_values($languages_new); 
+    $languages= array_values($languages_new);
     $languages_name= array_values($languages_name);
 
     
@@ -73,7 +73,7 @@ function languagecode_to_name($langs) {
 
             <div class="account-item">
                 <a id="changedetails"><?php echo _('Change Password'); ?></a>
-            </div>  
+            </div>
 
         </div>
 
@@ -99,21 +99,19 @@ function languagecode_to_name($langs) {
         <div id="account">
         <div class="account-item">
             <span class="muted"><?php echo _('Write API Key'); ?></span> <button class="btn btn-info" id="copyapiwritebtn">Copy API Key</button>
-            <!--<a id="newapikeywrite" >new</a>-->
-            <span class="writeapikey" id="copyapiwrite"></span>
+            <b><i><span class="writeapikey" id="copyapiwrite"></span></b></i>
         </div>
         <div class="account-item">
             <span class="muted"><?php echo _('Read API Key'); ?></span> <button class="btn btn-info" id="copyapireadbtn">Copy API Key</button>
-            <!--<a id="newapikeyread" >new</a>-->
-            <span class="readapikey" id="copyapiread"></span>
+            <b><i><span class="readapikey" id="copyapiread"></span></b></i>
             <span id="msg"></span>
         </div>
         <div class="account-item">
-            <span class="muted"><?php echo _('App Integration QR Code'); ?></span>
+            <span class="muted"><?php echo _('Mobile App Integration QR Code'); ?></span>
             <div id="qr_apikey"></div>
             <br>
-	        <span class="muted">Scan this QR code from the <a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
-	            Android App</a> for simplified setup, or scan using a barcode scanner on a mobile device to directly view your Emoncms MyElectric.</span>
+	        <span class="muted">Scan this QR code from the <a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8">iOS</a> or <a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
+	            Android</a> App. Or scan using a barcode scanner to directly view your MyElectric graph.</span>
 	        <br><br>
 	        <div style="width:150px"><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
 	            <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" /></a></div>
