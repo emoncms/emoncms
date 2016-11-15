@@ -14,11 +14,18 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
-// Check if settings.php file exists
-if(file_exists(dirname(__FILE__)."/settings.php"))
+$settings_file = 'settings.php';
+
+// Check if env EMONCMS_SETTINGS_FILE is set and override settings file path
+if (isset($_ENV["EMONCMS_SETTINGS_FILE"]) && file_exists(dirname(__FILE__)."/".$_ENV["EMONCMS_SETTINGS_FILE"])) {
+	$settings_file = $_ENV["EMONCMS_SETTINGS_FILE"];
+}
+
+// Check if $settings_file file exists
+if(file_exists(dirname(__FILE__)."/".$settings_file))
 {
-    // Load settings.php
-    require_once('settings.php');
+    // Load $settings_file
+    require_once($settings_file);
 
     $error_out = "";
 
@@ -95,7 +102,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 else
 {
     echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
-    echo "<h3>settings.php file error</h3>";
+    echo "<h3>".$settings_file." file error</h3>";
     echo 'Copy and modify default.settings.php to settings.php<br>';
     echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';
     echo "</div>";
