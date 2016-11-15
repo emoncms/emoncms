@@ -36,12 +36,12 @@
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),                 
+                 'ip' => gethostbyname($host),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
                  'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                 'db_server' => $server,       
+                 'db_server' => $server,
                  'db_ip' => gethostbyname($server),
                  'db_version' => 'MySQL ' . $mysqli->server_info,
                  'db_stat' => $mysqli->stat(),
@@ -83,7 +83,7 @@
     $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
     if (stripos($chkReboot, "scheduled ") > 0) {
       shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
-      return "<button id=\"haltPi\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
+      return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
     }
     else {
       return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
@@ -225,10 +225,10 @@ if ($allow_emonpi_admin) {
                 <td style="border-top: 0px">
                     <h3><?php echo _('Update emonPi'); ?></h3>
                     <p>Updates Emoncms and emonPi firmware. See <a href="https://github.com/emoncms/emoncms/releases">Emoncms changelog</a> and <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">firmware changelog.</a></p>
-                    <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
+                    <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p>
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
-                    <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button>
+                    <button id="emonpiupdate" class="btn btn-warning"><?php echo _('Update Now'); ?></button>
                     <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a><br><br>
                 </td>
             </tr>
@@ -238,8 +238,8 @@ if ($allow_emonpi_admin) {
             </table>
         </td>
     </tr>
-<?php 
-}   
+<?php
+}
 ?>
 
     <tr colspan=2>
@@ -287,7 +287,7 @@ if ($mqtt_enabled) {
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
-                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease); 
+                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
               }
 }
