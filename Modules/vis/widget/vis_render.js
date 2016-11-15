@@ -40,11 +40,10 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour","interval","units","dp","scale","delta","initzoom"],
-      "optionstype":["feedid","colour_picker","value","value","value","value","boolean","dropbox"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("Interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta"),_Tr("Zoom")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar"),_Tr("Default visible window interval")],
-      "optionsdata": [ , , , , , , , [["1", _Tr("Day")],["7", _Tr("Week")],["30", _Tr("Month")],["365", _Tr("Year")]] ],
+      "options":["feedid","colour","interval","units","dp","scale","delta"],
+      "optionstype":["feedid","colour_picker","value","value","value","value","boolean"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("Interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar")],
       "html":""
     },
 
