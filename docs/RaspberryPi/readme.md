@@ -118,6 +118,11 @@ Update your settings to use your Database 'user' & 'password', which will enable
     $database = "emoncms";
     $username = "emoncms";
     $password = "new_secure_password";
+    
+That's also the opportunity to activate redis support if needed :
+
+	//2 #### Redis
+	$redis_enabled = true;
 
 Save and exit.  
 Create a symlink to reference emoncms within the web root folder:
