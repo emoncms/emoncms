@@ -25,7 +25,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     $languages= array_values($languages_new);
     $languages_name= array_values($languages_name);
 
-    
+
 function languagecode_to_name($langs) {
     static $lang_names = null;
     if ($lang_names === null) {
@@ -94,7 +94,7 @@ function languagecode_to_name($langs) {
             <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
             <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
         </div>
-        
+
         <br>
         <div id="account">
         <div class="account-item">
@@ -115,7 +115,7 @@ function languagecode_to_name($langs) {
 	        <br><br>
           <div style="width:150px"><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" width="150" src="<?php echo $path; ?>Modules/user/images/appstore.svg" /></a></div><br/>
 	        <div style="width:150px"><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
-	            <img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en-play-badge.png" /></a></div>
+	            <img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
         </div>
         </div>
     </div>
@@ -146,11 +146,11 @@ function languagecode_to_name($langs) {
         colorLight : "#ffffff",
         correctLevel : QRCode.CorrectLevel.H
     }); //Re-designed on-board QR generation using javascript
-    
+
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});
     // $("#newapikeywrite").click(function(){user.newapikeywrite()});
-    
+
     // Clipboard code
     document.getElementById("copyapiwritebtn").addEventListener("click", function() {
       copyToClipboardMsg(document.getElementById("copyapiwrite"), "msg");
@@ -158,7 +158,7 @@ function languagecode_to_name($langs) {
     document.getElementById("copyapireadbtn").addEventListener("click", function() {
       copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
     });
-    
+
     var currentlanguage = list.data.language;
 
     list.fields = {
@@ -169,11 +169,11 @@ function languagecode_to_name($langs) {
         'language':{'title':"<?php echo _('Language'); ?>", 'type':'language', 'options':lang, 'label':lang_name},
         'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'}
     }
-    
+
     $.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
         list.timezones = result;
     }});
-    
+
     list.init();
 
     $("#table").bind("onSave", function(e){
