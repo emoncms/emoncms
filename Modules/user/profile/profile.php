@@ -113,9 +113,8 @@ function languagecode_to_name($langs) {
 	        <span class="muted">Scan this QR code from the <a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8">iOS</a> or <a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
 	            Android</a> App. Or scan using a barcode scanner to directly view your MyElectric graph.</span>
 	        <br><br>
-          <div style="width:150px"><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" width="150" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div><br/>
-	        <div style="width:150px"><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
-	            <img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
+          <div<a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div><br/>
+	        <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
         </div>
         </div>
     </div>
