@@ -23,12 +23,19 @@ on 16.04:
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
     
-Add pecl modules to php5 config
+**If running PHP5:** Add pecl modules to php5 config
     
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
+ 
+ **If running PHP7:** Add pecl modules to php7 config
+ 
+    sudo sh -c 'echo "extension=dio.so" > /etc/php7/apache2/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php7/cli/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php7/apache2/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php7/cli/conf.d/20-redis.ini'
 
 ### Configure Apache
 
