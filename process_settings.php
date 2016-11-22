@@ -123,7 +123,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
       echo $error_out;
       echo "<p>To fix, check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
       echo "</div>";
-      die;
+      $failed_settings_validation = true;
     }
 
 
@@ -140,5 +140,5 @@ else
     echo 'Copy and modify default.settings.php to settings.php<br>';
     echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';
     echo "</div>";
-    die;
+    $failed_settings_validation = true;
 }

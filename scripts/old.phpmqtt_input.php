@@ -45,7 +45,9 @@
     
     chdir(dirname(__FILE__)."/../");
     require "Lib/EmonLogger.php";
+
     require "process_settings.php";
+    if($failed_settings_validation) { die; };
     
     if (!$mqtt_enabled) { echo "Error: setting must be true: mqtt_enabled\n"; die; }
     
