@@ -32,10 +32,10 @@ on 16.04:
  
  **If running PHP7:** Add pecl modules to php7 config
  
-    sudo sh -c 'echo "extension=dio.so" > /etc/php7/apache2/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=dio.so" > /etc/php7/cli/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php7/apache2/conf.d/20-redis.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php7/cli/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php/7.0/apache2/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php/7.0/cli/conf.d/20-redis.ini'
 
 ### Configure Apache
 
