@@ -14,13 +14,19 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
+// Allow the settings file to be specified in an environment variable.
+if (isset($_ENV["EMONCMS_CONFIG_FILE"])) {
+    $settings_file = $_ENV["EMONCMS_CONFIG_FILE"];
+}else{
+    $settings_file = dirname(__FILE__)."/settings.php";
+}
+
 // Check if settings.php file exists
-if(file_exists(dirname(__FILE__)."/settings.php"))
-{
+if(file_exists($settings_file)) {
     /*
         Load settings.php
     */
-    require_once('settings.php');
+    require_once($settings_file);
 
     /*
         Load settings from environment variables
@@ -61,6 +67,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     /*
         Validate settings are complete
     */
+    $failed_settings_validation = false;
     $error_out = "";
 
     if (!isset($config_file_version) || $config_file_version < 8) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
