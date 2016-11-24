@@ -44,14 +44,15 @@ Emoncms uses a front controller to route requests, modrewrite needs to be config
     
 ```
  sudo a2enmod rewrite
- sudo sh -c "echo '<Directory /var/www/html/emoncms>' >> /etc/apache2/sites-available/emoncms"
- sudo sh -c "echo '  Options FollowSymLinks' >> /etc/apache2/sites-available/emoncms"
- sudo sh -c "echo '  AllowOverride All' >> /etc/apache2/sites-available/emoncms"
- sudo sh -c "echo '  DirectoryIndex index.php' >> /etc/apache2/sites-available/emoncms"
- sudo sh -c "echo '  Order allow,deny' >> /etc/apache2/sites-available/emoncms"
- sudo sh -c "echo '  Allow from all' >> /etc/apache2/sites-available/emoncms"
- sudo sh -c "echo '</Directory>' >> /etc/apache2/sites-available/emoncms"
- sudo ln -s /etc/apache2/sites-available/emoncms /etc/apache2/sites-enabled/
+ sudo sh -c "echo '<Directory /var/www/html/emoncms>' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  Options FollowSymLinks' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  AllowOverride All' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  DirectoryIndex index.php' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  Order allow,deny' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  Allow from all' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '</Directory>' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo ln -s /etc/apache2/sites-available/emoncms.conf /etc/apache2/sites-enabled/
+ sudo a2ensite emoncms
  sudo service apache2 reload
 ```
     
