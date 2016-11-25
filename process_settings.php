@@ -26,7 +26,7 @@ if(file_exists($settings_file)) {
     /*
         Load settings.php
     */
-    require_once($settings_file);
+    require($settings_file);
 
     /*
         Load settings from environment variables
