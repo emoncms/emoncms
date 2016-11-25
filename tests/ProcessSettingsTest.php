@@ -22,6 +22,7 @@ class ProcessSettingsTest extends TestCase
     {
         // when the settings file exists
         $_ENV["EMONCMS_CONFIG_FILE"] = basename(__DIR__).'/../default.settings.php';
+
         // and I load the settings
         require(basename(__DIR__).'/../process_settings.php');
 
@@ -54,5 +55,64 @@ class ProcessSettingsTest extends TestCase
             'password' => '',
             'basetopic'=> 'emon'
           ));
+    }
+
+    public function testEnvironmentVariableLoad()
+    {
+      // when the settings file exists
+        $_ENV["EMONCMS_CONFIG_FILE"] = basename(__DIR__).'/../default.settings.php';
+
+        // and the environment variables are set
+        $_ENV['EMONCMS_MYSQL_HOST'] = '1';
+        $_ENV['EMONCMS_MYSQL_DATABASE'] = '2';
+        $_ENV['EMONCMS_MYSQL_USER'] = '3';
+        $_ENV['EMONCMS_MYSQL_PASSWORD'] = '4';
+        $_ENV['EMONCMS_MYSQL_PORT'] = '5';
+        $_ENV['EMONCMS_REDIS_ENABLED'] = 'false';
+        $_ENV['EMONCMS_REDIS_HOST'] = '7';
+        $_ENV['EMONCMS_REDIS_PORT'] = '8';
+        $_ENV['EMONCMS_REDIS_AUTH'] = '9';
+        $_ENV['EMONCMS_REDIS_PREFIX'] = '10';
+        $_ENV['EMONCMS_MQTT_ENABLED'] = 'false';
+        $_ENV['EMONCMS_MQTT_HOST'] = '12';
+        $_ENV['EMONCMS_MQTT_PORT'] = '13';
+        $_ENV['EMONCMS_MQTT_USER'] = '14';
+        $_ENV['EMONCMS_MQTT_PASSWORD'] = '15';
+        $_ENV['EMONCMS_MQTT_BASETOPIC'] = '16';
+
+        // and I load the settings
+        require(basename(__DIR__).'/../process_settings.php');
+
+        // it sets $failed_settings_validation, without output
+        $this->assertFalse($failed_settings_validation);
+
+        // it sets the MySQL global values to the environment variable values
+        $this->assertEquals($server, '1');
+        $this->assertEquals($database, '2');
+        $this->assertEquals($username, '3');
+        $this->assertEquals($password, '4');
+        $this->assertEquals($port, '5');
+
+        // it sets the Redis global values to the environment variable values
+        $this->assertFalse($redis_enabled);
+        $this->assertEquals($redis_server, array(
+            'host'   => '7',
+            'port'   => '8',
+            'auth'   => '9',
+            'prefix' => '10'
+          ));
+
+        // it sets the MQTT global values to the environment variable values
+        $this->assertFalse($mqtt_enabled);
+        $this->assertEquals($mqtt_server, array(
+            'host'     => '12',
+            'port'     => '13',
+            'user'     => '14',
+            'password' => '15',
+            'basetopic'=> '16'
+          ));
+
+        // it sets $failed_settings_validation to false
+        $this->assertFalse($failed_settings_validation);
     }
 }
