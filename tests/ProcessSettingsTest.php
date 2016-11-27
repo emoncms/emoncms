@@ -6,7 +6,7 @@ class ProcessSettingsTest extends TestCase
     public function testNonExistantFileLoad()
     {
         // when the settings file does not exist
-        $_ENV["EMONCMS_CONFIG_FILE"] = '/some/nonexistant/file.php';
+        putenv('EMONCMS_CONFIG_FILE=/some/nonexistant/file.php');
 
         // and I load the settings
         require(basename(__DIR__).'/../process_settings.php');
@@ -21,7 +21,7 @@ class ProcessSettingsTest extends TestCase
     public function testValidFileLoad()
     {
         // when the settings file exists
-        $_ENV["EMONCMS_CONFIG_FILE"] = basename(__DIR__).'/../default.settings.php';
+        putenv('EMONCMS_CONFIG_FILE='.basename(__DIR__).'/../default.settings.php');
 
         // and I load the settings
         require(basename(__DIR__).'/../process_settings.php');
@@ -59,8 +59,8 @@ class ProcessSettingsTest extends TestCase
 
     public function testEnvironmentVariableLoad()
     {
-      // when the settings file exists
-        $_ENV["EMONCMS_CONFIG_FILE"] = basename(__DIR__).'/../default.settings.php';
+        // when the settings file exists
+        putenv('EMONCMS_CONFIG_FILE='.basename(__DIR__).'/../default.settings.php');
 
         // and the environment variables are set
         $_ENV['EMONCMS_MYSQL_HOST'] = '1';

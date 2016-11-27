@@ -15,8 +15,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 require_once('Lib/enum.php');
 
 // Allow the settings file to be specified in an environment variable.
-if (isset($_ENV["EMONCMS_CONFIG_FILE"])) {
-    $settings_file = $_ENV["EMONCMS_CONFIG_FILE"];
+if (getenv('EMONCMS_CONFIG_FILE') !== null) {
+    $settings_file = getenv('EMONCMS_CONFIG_FILE');
 }else{
     $settings_file = dirname(__FILE__)."/settings.php";
 }
