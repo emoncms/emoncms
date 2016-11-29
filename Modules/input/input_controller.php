@@ -137,6 +137,12 @@ function input_controller()
                             $name = 1;
                             for ($i=2; $i<count($item); $i++)
                             {
+                                if (is_object($item[$i]))
+                                {
+                                    $value = (float) current($item[$i]);
+                                    $inputs[key($item[$i])] = $value;
+                                    continue;
+                                }
                                 if (strlen($item[$i]))
                                 {
                                     $value = (float) $item[$i];
