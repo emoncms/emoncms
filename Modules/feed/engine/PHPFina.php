@@ -357,7 +357,7 @@ class PHPFina
         $end = intval($end/1000);
                
         // If meta data file does not exist exit
-        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$id");
         $meta->npoints = $this->get_npoints($id);
         
         $data = array();
@@ -373,7 +373,9 @@ class PHPFina
         if ($mode=="monthly") $date->modify("first day of this month");
         
         $n = 0;
-        while($n<10000) // max itterations
+        $lastpos = 0;
+        $lastvalue = null;
+        while($n<10000) // max iterations
         {
             $time = $date->getTimestamp();
             if ($time>$end) break;
@@ -383,25 +385,35 @@ class PHPFina
             
             if ($pos>=0 && $pos < $meta->npoints)
             {
-                // read from the file
-                fseek($fh,$pos*4);
-                $val = unpack("f",fread($fh,4));
-                
-                // add to the data array if its not a nan value
-                if (!is_nan($val[1])) {
-                    $value = $val[1];
-                } else {
-                    $value = null;
+                // look back if value is null
+                while ($pos>$lastpos && $value==null)
+                {
+                    // read from the file
+                    fseek($fh,$pos*4);
+                    $val = unpack("f",fread($fh,4));
+                    // keep the value if not nan
+                    if (!is_nan($val[1])) {
+                        $value = $val[1];
+                    }
+                    $pos--; // move to the previous position
+                    $n++; // advance the max iterations counter in the internal loop
                 }
             }
+            // search back to the last pos and all nulls: use the last value
+            if ($value==null) $value = $lastvalue;
+
+            // add the value to the data array
             if ($time>=$start && $time<$end) {
                 $data[] = array($time*1000,$value);
             }
-            
+
+            // update last pos and value for next iteration
+            $lastpos = round(($time - $meta->start_time) / $meta->interval);
+            $lastvalue = $value;
+
             if ($mode=="daily") $date->modify("+1 day");
             if ($mode=="weekly") $date->modify("+1 week");
             if ($mode=="monthly") $date->modify("+1 month");
-            $n++;
         }
         
         fclose($fh);
