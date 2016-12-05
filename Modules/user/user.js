@@ -45,7 +45,7 @@ var user = {
   'passwordreset':function(username,email)
   {
     var result = {};
-    $.ajax({ url: path+"user/passwordreset.json", data: "&username="+username+"&email="+email, dataType: 'json', async: false, success: function(data) {result = data;} });
+    $.ajax({ url: path+"user/passwordreset.json", data: "&username="+encodeURIComponent(username)+"&email="+encodeURIComponent(email), dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
   },
 
