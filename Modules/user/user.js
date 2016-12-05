@@ -24,7 +24,7 @@ var user = {
     $.ajax({
       type: "POST",
       url: path+"user/register.json",
-      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(password),
+      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(email),
       dataType: 'json',
       async: false, 
       success: function(data)
