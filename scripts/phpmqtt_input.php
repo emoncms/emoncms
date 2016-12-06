@@ -225,7 +225,9 @@
             $value = $i['value'];
             
             if (!isset($dbinputs[$nodeid][$name])) {
+                usleep(100);
                 $inputid = $input->create_input($userid, $nodeid, $name);
+                usleep(100);
                 $dbinputs[$nodeid][$name] = true;
                 $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
