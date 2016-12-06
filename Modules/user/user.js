@@ -7,7 +7,7 @@ var user = {
     $.ajax({
       type: "POST",
       url: path+"user/login.json",
-      data: "&username="+username+"&password="+encodeURIComponent(password)+"&rememberme="+rememberme,
+      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&rememberme="+encodeURIComponent(rememberme),
       dataType: 'json',
       async: false,
       success: function(data)
@@ -24,7 +24,7 @@ var user = {
     $.ajax({
       type: "POST",
       url: path+"user/register.json",
-      data: "&username="+username+"&password="+encodeURIComponent(password)+"&email="+email,
+      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(email),
       dataType: 'json',
       async: false, 
       success: function(data)
@@ -45,7 +45,7 @@ var user = {
   'passwordreset':function(username,email)
   {
     var result = {};
-    $.ajax({ url: path+"user/passwordreset.json", data: "&username="+username+"&email="+email, dataType: 'json', async: false, success: function(data) {result = data;} });
+    $.ajax({ url: path+"user/passwordreset.json", data: "&username="+encodeURIComponent(username)+"&email="+encodeURIComponent(email), dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
   },
 
