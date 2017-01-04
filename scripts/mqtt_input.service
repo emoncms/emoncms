@@ -1,0 +1,43 @@
+# Systemd unit file for mqtt input script
+
+# INSTALL:
+# sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
+
+# RUN AT STARTUP
+# sudo systemctl daemon-reload
+# sudo systemctl enable mqtt_service
+
+# START / STOP With:
+# sudo systemctl start mqtt_input
+# sudo systemctl stop mqtt_input    
+
+# VIEW STATUS / LOG
+# sudo systemctl status mqtt_input -n50
+# where -nX is the number of log lines to view 
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+###
+
+[Unit]
+Description=Emoncms MQTT Input Script
+After=mosquitto.service mysql.service redis.service
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php
+
+# Restart script if stopped
+Restart=always
+# Wait 60s before restart
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
