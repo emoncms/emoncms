@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7.9 | 2018.01.05";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.7.9 | 2017.01.05";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
