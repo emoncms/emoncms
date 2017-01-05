@@ -45,12 +45,26 @@ The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. Th
 
 ### Run Emoncms phpmqtt_input script
 
-Create a symlink to run MQTT Input script as a daemon and set permissions
+Install `phpmqtt_input` systemd unit script and make starts on boot: 
 
-    cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/mqtt_input
-    sudo chown root:root /var/www/emoncms/scripts/mqtt_input
-    sudo chmod 755 /var/www/emoncms/scripts/mqtt_input
-    sudo update-rc.d mqtt_input defaults
+```
+sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
+sudo systemctl daemon-reload
+sudo systemctl enable mqtt_service
+```
+
+Start / stop with:
+
+```
+sudo systemctl start mqtt_input
+sudo systemctl stop mqtt_input    
+```
+
+View status / log with:
+
+`sudo systemctl status mqtt_input -n50`
+
+*Where -nX is the number of log lines to view* 
 
 ## Node format
 
