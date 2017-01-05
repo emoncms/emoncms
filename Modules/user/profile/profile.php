@@ -249,7 +249,7 @@ function languagecode_to_name($langs) {
         {
             $.ajax({
                 url: path+"user/changeemail.json",
-                data: "&email="+email,
+                data: "&email="+encodeURIComponent(email),
                 dataType: 'json',
                 success: function(result)
                 {

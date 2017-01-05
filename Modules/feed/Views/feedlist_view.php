@@ -28,7 +28,7 @@
 </style>
 
 <div>
-    <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div>
+    <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
     <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
 
     <div id="table"><div align='center'>loading...</div></div>
