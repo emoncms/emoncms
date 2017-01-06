@@ -61,7 +61,7 @@ sudo systemctl stop mqtt_input
 sudo systemctl restart mqtt_input
 ```
 
-View status / log with:
+View status / log snippt with:
 
 `sudo systemctl status mqtt_input -n50`
 
@@ -69,7 +69,13 @@ View status / log with:
 
 Log can be viewed as text and standrd text manipulation tools can be applied: 
 
-`sudo journalctl -f -u mqtt_input -o cat | grep emontx`
+`sudo journalctl -f -u mqtt_input -o cat | grep emonpi`
+
+Or with datesamp:
+
+`sudo journalctl -f -u mqtt_input -o short`
+
+There are lots of journalctrl output options: `short, short-iso, short-precise, short-monotonic, verbose,export, json, json-pretty, json-sse, cat`
 
 ## Node format
 
