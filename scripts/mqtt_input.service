@@ -14,6 +14,7 @@
 # VIEW STATUS / LOG
 # sudo systemctl status mqtt_input -n50
 # where -nX is the number of log lines to view 
+# sudo journalctl -f -u mqtt_input -o cat | grep emontx
 
 ###
 #
@@ -29,15 +30,26 @@
 [Unit]
 Description=Emoncms MQTT Input Script
 After=mosquitto.service mysql.service redis.service
+Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
 
 [Service]
 Type=idle
 ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php
 
+Uncomment instead of above to use standard log file, else use systemd log
+# ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php  > /var/log/mqtt_input.log 2>&1
+
 # Restart script if stopped
 Restart=always
 # Wait 60s before restart
 RestartSec=60
+
+# Tag things in the log
+# View with: sudo journalctl -f -u mqtt_input -o cat
+SyslogIdentifier=mqtt_input
+
+# Un-comment to pipe log to syslog
+#StandardOutput=syslog
 
 [Install]
 WantedBy=multi-user.target

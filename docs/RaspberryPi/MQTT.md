@@ -53,11 +53,12 @@ sudo systemctl daemon-reload
 sudo systemctl enable mqtt_service
 ```
 
-Start / stop with:
+Start / stop / restart with:
 
 ```
 sudo systemctl start mqtt_input
 sudo systemctl stop mqtt_input    
+sudo systemctl restart mqtt_input
 ```
 
 View status / log with:
@@ -65,6 +66,10 @@ View status / log with:
 `sudo systemctl status mqtt_input -n50`
 
 *Where -nX is the number of log lines to view* 
+
+Log can be viewed as text and standrd text manipulation tools can be applied: 
+
+`sudo journalctl -f -u mqtt_input -o cat | grep emontx`
 
 ## Node format
 
