@@ -36,7 +36,7 @@ Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQ
 Type=idle
 ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php
 
-Uncomment instead of above to use standard log file, else use systemd log
+# Uncomment instead of above to use standard log file, else use systemd log
 # ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php  > /var/log/mqtt_input.log 2>&1
 
 # Restart script if stopped
