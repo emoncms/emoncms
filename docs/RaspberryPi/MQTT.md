@@ -50,7 +50,7 @@ Install `phpmqtt_input` systemd unit script and make starts on boot:
 ```
 sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
 sudo systemctl daemon-reload
-sudo systemctl enable mqtt_service
+sudo systemctl enable mqtt_input.service
 ```
 
 Start / stop / restart with:
