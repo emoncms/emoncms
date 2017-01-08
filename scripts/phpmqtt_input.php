@@ -51,7 +51,7 @@
     $log->warn("Starting MQTT Input script");
     
     if (!$mqtt_enabled) {
-        echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
+        //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
         $log->error("MQTT must be enabled in settings.php");
         die;
     }
@@ -110,13 +110,13 @@
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 $topic = $mqtt_server['basetopic']."/#";
-                echo "Subscribing to: ".$topic."\n";
+                //echo "Subscribing to: ".$topic."\n";
                 $log->warn("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
             } catch (Exception $e) {
             
             }
-            echo "Not connected, retrying connection\n";
+            //echo "Not connected, retrying connection\n";
             $log->warn("Not connected, retrying connection");
         }
     }
@@ -125,26 +125,26 @@
     function connect($r, $message) {
         global $log, $connected;
         $connected = true;
-        echo "Connected to MQTT server with code {$r} and message {$message}\n";
+        //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
         global $log, $topic;
-        echo "Subscribed to topic: ".$topic."\n";
+        //echo "Subscribed to topic: ".$topic."\n";
         $log->warn("Subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
         global $log, $topic;
-        echo "Unsubscribed from topic:".$topic."\n";
+        //echo "Unsubscribed from topic:".$topic."\n";
         $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
         global $connected, $log;
         $connected = false;
-        echo "Disconnected cleanly\n";
+        //echo "Disconnected cleanly\n";
         $log->warn("Disconnected cleanly");
     }
 
@@ -154,7 +154,7 @@
         $value = $message->payload;
         
         $time = time();
-        echo $topic." ".$value."\n";
+        //echo $topic." ".$value."\n";
         
         global $mqtt_server, $user, $input, $process, $feed, $log;
         $log->info($topic." ".$value);
