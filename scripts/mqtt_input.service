@@ -5,7 +5,7 @@
 
 # RUN AT STARTUP
 # sudo systemctl daemon-reload
-# sudo systemctl enable mqtt_service
+# sudo systemctl enable mqtt_input.service
 
 # START / STOP With:
 # sudo systemctl start mqtt_input
