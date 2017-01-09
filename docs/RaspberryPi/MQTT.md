@@ -77,6 +77,8 @@ Or with a datestamp:
 
 There are lots of journalctrl output options: `short, short-iso, short-precise, short-monotonic, verbose,export, json, json-pretty, json-sse, cat`
 
+To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `mqtt_input`. 
+
 #### An alternative for systems not running systemd
 
 On older operating systems, or those not running systemd, the mqtt_input script can be run as a init.d daemon instead of the above which uses a systemd unit script instead. Install either this or the above, **Not both!**
