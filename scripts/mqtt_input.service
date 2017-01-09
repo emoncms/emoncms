@@ -5,7 +5,7 @@
 
 # RUN AT STARTUP
 # sudo systemctl daemon-reload
-# sudo systemctl enable mqtt_service
+# sudo systemctl enable mqtt_input.service
 
 # START / STOP With:
 # sudo systemctl start mqtt_input
@@ -37,7 +37,8 @@ Type=idle
 ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php
 
 # Uncomment instead of above to use standard log file, else use systemd log
-# ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php  > /var/log/mqtt_input.log 2>&1
+# Type=forking
+# ExecStart=/bin/sh -c '/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php 2>&1 > /var/log/mqtt_input.log &'
 
 # Restart script if stopped
 Restart=always

@@ -50,7 +50,7 @@ Install `phpmqtt_input` systemd unit script and make starts on boot:
 ```
 sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
 sudo systemctl daemon-reload
-sudo systemctl enable mqtt_service
+sudo systemctl enable mqtt_input.service
 ```
 
 Start / stop / restart with:
@@ -61,16 +61,33 @@ sudo systemctl stop mqtt_input
 sudo systemctl restart mqtt_input
 ```
 
-View status / log with:
+View status / log snippet with:
 
 `sudo systemctl status mqtt_input -n50`
 
 *Where -nX is the number of log lines to view* 
 
-Log can be viewed as text and standrd text manipulation tools can be applied: 
+Log can be viewed as text and standard text manipulation tools can be applied: 
 
-`sudo journalctl -f -u mqtt_input -o cat | grep emontx`
+`sudo journalctl -f -u mqtt_input -o cat | grep emonpi`
 
+Or with a datestamp:
+
+`sudo journalctl -f -u mqtt_input -o short`
+
+There are lots of journalctrl output options: `short, short-iso, short-precise, short-monotonic, verbose,export, json, json-pretty, json-sse, cat`
+
+#### An alternative for systems not running systemd
+
+On older operating systems, or those not running systemd, the mqtt_input script can be run as a init.d daemon instead of the above which uses a systemd unit script instead. Install either this or the above, **Not both!**
+
+Create a symlink to run the MQTT Input script as a daemon and set permissions
+```
+cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/mqtt_input
+sudo chown root:root /var/www/emoncms/scripts/mqtt_input
+sudo chmod 755 /var/www/emoncms/scripts/mqtt_input
+sudo update-rc.d mqtt_input defaults
+```
 ## Node format
 
 #### emoncms as a publisher
