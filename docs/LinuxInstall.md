@@ -90,7 +90,7 @@ Once installed you can pull in updates with:
 Enter the mysql password that you set above.
 Then enter the sql to create a database:
 
-    mysql> CREATE DATABASE emoncms;
+    mysql> CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
     
 Then add a user for emoncms and give it permissions on the new database (think of a nice long password):
 
