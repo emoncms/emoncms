@@ -78,9 +78,9 @@ Cd into the www directory and git clone emoncms:
     mysql -u root -p
 
 When prompted, enter the 'MYSQL "root" user' password you were prompted for earlier in this procedure.
-Create the emoncms database:
+Create the emoncms database using utf8 character decoding:
 
-    CREATE DATABASE emoncms;
+    CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
 
 Add an emoncms database user and set that user's permissions.
 In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user.
