@@ -1,6 +1,6 @@
 # Install Emoncms on Ubuntu / Debian Linux
 
-This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see raspberrypi installation guides.
+This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see the [RaspberryPi installation guides](RaspberryPi/readme.md).
 
 ## Install dependencies
 
@@ -40,7 +40,6 @@ on 16.04:
 ### Configure Apache
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
-
     
 ```
  sudo a2enmod rewrite
@@ -143,11 +142,12 @@ Save (Ctrl-X), type Y and exit
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
  
-Once logged into Emoncms check for database upates on the Admin page.
+The 'modules' need to save their configurations in the emoncms database, so in your browser - update your emoncms database:
+`Setup > Administration > Update database` (you may need to log out, and log back into emoncms to see the Administration menu).
 
 See individual module readme's for further information on individual module installation.
 
-## Runing Emoncms
+## Running Emoncms
 
 [http://localhost/emoncms](http://localhost/emoncms)
 
