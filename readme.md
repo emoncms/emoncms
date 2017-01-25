@@ -69,6 +69,10 @@ There are many other modules such as the event module and openbem (open source b
 * [Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy)
 * [Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/)
 
+## Tools
+
+* [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full emoncms installation. Useful for checking backup's and archived data.
+
 #### Design
 
 *Note: due to ongoing development some docs may now be outdated*
