@@ -225,13 +225,13 @@ if ($allow_emonpi_admin) {
                 <td style="border-top: 0px">
                     <h3><?php echo _('Update'); ?></h3>
                     <p><b>emonPi Update:</b> updates emonPi firmware & Emoncms</p>
-                    <p><b>RFM69Pi Update:</b> updates RFM69Pi (emonBase) firmware & Emoncms</p>
+                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) & Emoncms</p>
                     <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
                     <p><i>Caution: ensure RFM69Pi is populated with RFM69CW module not RFM12B before running RFM69Pi update: <a href="https://learn.openenergymonitor.org/electricity-monitoring/networking/which-radio-module">Identifying different RF Modules</a>.</i></p>
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
                     <button id="emonpiupdate" class="btn btn-warning"><?php echo _('emonPi Update'); ?></button>
-                    <button id="rfm69piupdate" class="btn btn-danger"><?php echo _('RFM69Pi Update'); ?></button><br></br>
+                    <button id="rfm69piupdate" class="btn btn-danger"><?php echo _('emonBase Update'); ?></button><br></br>
                     <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download Log'); ?></a><br><br>
                 </td>
             </tr>
