@@ -8,8 +8,8 @@
 */
     global $path, $embed;
 
-    if (isset($_GET['feedA'])) $feedA = $_GET['feedA']; else $feedA = 0;
-    if (isset($_GET['feedB'])) $feedB = $_GET['feedB']; else $feedB = 0;
+    if (isset($_GET['feedA'])) $feedA = (int) $_GET['feedA']; else $feedA = 0;
+    if (isset($_GET['feedB'])) $feedB = (int) $_GET['feedB']; else $feedB = 0;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
