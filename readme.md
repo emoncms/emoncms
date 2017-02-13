@@ -30,6 +30,15 @@ There are also two screencasts that are specific to optional modules that are in
 - [YouTube: Connecting to WIFI using the emoncms WIFI module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
 - [YouTube: Data backup and import using emoncms backup module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
 
+**2. Emoncms Terminology**
+
+- **Inputs:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
+- **Input: Node:** A grouping identifier for inputs or feeds.
+- **Input: Key:** A sub-identifier for items within each Node.
+- **Input process list (or input processing):** A list of processes performed sequentially on each input value as it is received on that input.
+- **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed.
+- **Feeds:** (Feed) A place where data is recorded, a time-series of datapoints. The standard time-series databases used by emoncms are PHPFina and PHPTimeSeries and where written as part of the emoncms project.
+
 **Emoncms.org API Reference**
 
 - [Input API reference](https://emoncms.org/site/api#input)
