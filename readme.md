@@ -16,6 +16,12 @@ Emoncms is an open-source web application for processing, logging and visualisin
 - Apache (2.4 recomended)
 - Redis OPTIONAL (2.2 - 3.0 recomended)
 
+## Standard Emoncms and Emoncms.org 
+
+There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms, currently in version 9. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
+
+The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
+
 ## Using Emoncms
 
 **1. Screencasts/Videos**
@@ -34,8 +40,8 @@ There are also two screencasts that are specific to optional modules that are in
 
 - [Guide: Creating daily kWh graphs](http://guide.openenergymonitor.org/setup/daily-kwh) - How to create daily kWh graphs from cumulative kWh electricity/heat energy feeds.
 - [Guide: Daily Averages](http://guide.openenergymonitor.org/setup/daily-averages) - How to extract daily averages from temperature, humidity & power feeds.
-- [Guide: Exporting CSV](http://guide.openenergymonitor.org/setup/export-csv)
-- [Guide: Histograms](http://guide.openenergymonitor.org/setup/histograms)
+- [Guide: Exporting CSV](http://guide.openenergymonitor.org/setup/export-csv) - How to use the graph module and feeds interface to export CSV data for use in 3rd party programs such as OpenOffice Calc or Excel.
+- [Guide: Histograms](http://guide.openenergymonitor.org/setup/histograms) - How to use the histogram tool in the graph module.
 - [Guide: Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy) - example of configuring the MyElectric dashboard.
 - [Guide: Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/) - example of configuring the MySolar dashboard.
 
