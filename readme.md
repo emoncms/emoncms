@@ -18,7 +18,7 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Using Emoncms
 
-**Important:** [Differences between standard Emoncms and Emoncms.org](#standard-vs-emoncmsorg)
+**Important:** See appendix on differences between standard Emoncms and Emoncms.org
 
 **1. Screencasts/Videos**
 
@@ -138,7 +138,7 @@ There are many other modules such as the event module and openbem (open source b
 - [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
 
-## Standard Emoncms and Emoncms.org {#standard-vs-emoncmsorg}
+## Standard Emoncms and Emoncms.org
 
 There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms, currently in version 9. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
 
