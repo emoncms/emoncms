@@ -72,12 +72,15 @@ Experimental:
 * [Multi-platform using Docker Container](https://github.com/emoncms/emoncms-docker)
 
 Other (less supported, not tested on latest versions of emoncms)
+
 * [Shared Linux Hosting](docs/SharedLinuxHostingInstall.md)
 * [Windows](docs/WindowsInstall.md) Emoncms is developed and tested on Linux only and so additional research, steps may be required that are not covered in this guide.
 
 ## Modules
 
 Modules can be installed by downloading or git cloning into the emoncms/Modules folder. Be sure to check for database updates in Administration menu after installing new modules:
+
+- [Graph module](https://github.com/emoncms/graph) advanced graphing module that integrates with the emoncms feed list, highly recommended, examples of use can be found in emoncms guide [[1]](http://guide.openenergymonitor.org/setup/daily-kwh)[[2]](http://guide.openenergymonitor.org/setup/daily-averages/)[[3]](http://guide.openenergymonitor.org/setup/export-csv/)[[4]](http://guide.openenergymonitor.org/setup/histograms)
 
 - [Dashboards module](https://github.com/emoncms/dashboard), required for creating, viewing and publishing dashboards: 
 
