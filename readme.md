@@ -30,7 +30,16 @@ There are also two screencasts that are specific to optional modules that are in
 - [YouTube: Connecting to WIFI using the emoncms WIFI module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
 - [YouTube: Data backup and import using emoncms backup module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
 
-**2. Emoncms Terminology**
+**2. From the Guide**
+
+- [Guide: Creating daily kWh graphs](http://guide.openenergymonitor.org/setup/daily-kwh) - How to create daily kWh graphs from cumulative kWh electricity/heat energy feeds.
+- [Guide: Daily Averages](http://guide.openenergymonitor.org/setup/daily-averages) - How to extract daily averages from temperature, humidity & power feeds.
+- [Guide: Exporting CSV](http://guide.openenergymonitor.org/setup/export-csv)
+- [Guide: Histograms](http://guide.openenergymonitor.org/setup/histograms)
+- [Guide: Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy) - example of configuring the MyElectric dashboard.
+- [Guide: Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/) - example of configuring the MySolar dashboard.
+
+**3. Emoncms Terminology**
 
 - **Inputs:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
 - **Input: Node:** A grouping identifier for inputs or feeds.
@@ -39,19 +48,12 @@ There are also two screencasts that are specific to optional modules that are in
 - **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed.
 - **Feeds:** (Feed) A place where data is recorded, a time-series of datapoints. The standard time-series databases used by emoncms are PHPFina and PHPTimeSeries and where written as part of the emoncms project.
 
-**Emoncms.org API Reference**
+**4. Emoncms.org API Reference**
+
+The following API references apply to emoncms.org they differ slightly to the API available on EmonPI/EmonBase installs, the API refrence for which can be found from the inputs and feed pages when logged in locally.
 
 - [Input API reference](https://emoncms.org/site/api#input)
 - [Feed API reference](https://emoncms.org/site/api#feed)
-
-**From the Guide**
-
-- [Guide: Creating daily kWh feeds](http://guide.openenergymonitor.org/setup/daily-kwh)
-- [Guide: Daily Averages](http://guide.openenergymonitor.org/setup/daily-averages)
-- [Guide: Exporting CSV](http://guide.openenergymonitor.org/setup/export-csv)
-- [Guide: Histograms](http://guide.openenergymonitor.org/setup/histograms)
-- [Guide: Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy) - example of configuring the MyElectric dashboard.
-- [Guide: Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/) - example of configuring the MySolar dashboard.
 
 ## Install
 
