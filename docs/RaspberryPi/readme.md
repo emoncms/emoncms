@@ -23,7 +23,7 @@ During the installation, you will be prompted to select a password for the 'MYSQ
 
 **March 2016: The version of php5-redis included in the Raspbian Jessie sources (2.2.5-1) caused Apache to crash (segmentation errrors in Apache error log). Installing the latest stable version (2.2.7) of php5-redis from github fixed the issue. This step probably won't be required in the future when the updated version of php5-redis makes it's way into the sources.**
 
-**February 2017: phpredis v3.1.1 has been released supporting both php5 and php7. It can be installed direct from PECL and is called simply: redis. This guide will be updated to reflect this change once tested in due course.
+**February 2017: phpredis v3.1.1 has been released supporting both php5 and php7. It can be installed direct from PECL and is called simply: redis. This guide will be updated to reflect this change once tested in due course.**
 
 To check the version in the sources: `sudo apt-cache show php5-redis`
 
