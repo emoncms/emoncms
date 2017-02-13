@@ -16,6 +16,28 @@ Emoncms is an open-source web application for processing, logging and visualisin
 - Apache (2.4 recomended)
 - Redis OPTIONAL (2.2 - 3.0 recomended)
 
+## Using Emoncms
+
+**Video's**
+
+- [YouTube: Connecting to WIFI using the emoncms WIFI module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
+- [YouTube: Logging data locally with emoncms on the EmonPi/Emonbase](https://www.youtube.com/watch?v=8nVP0Hgkuuc)
+- [YouTube: Viewing data and creating dashboards on the EmonPi/Emonbase](https://www.youtube.com/watch?v=eqN9rc9VnqI)
+- [YouTube: Data backup and import using emoncms backup module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
+
+**Emoncms.org API Reference**
+
+- [Input API reference](https://emoncms.org/site/api#input)
+- [Feed API reference](https://emoncms.org/site/api#feed)
+
+**From the Guide**
+
+- [Guide: Creating daily kWh feeds](http://guide.openenergymonitor.org/setup/daily-kwh)
+- [Guide: Daily Averages](http://guide.openenergymonitor.org/setup/daily-averages)
+- [Guide: Exporting CSV](http://guide.openenergymonitor.org/setup/export-csv)
+- [Guide: Histograms](http://guide.openenergymonitor.org/setup/histograms)
+- [Guide: Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy) - example of configuring the MyElectric dashboard.
+- [Guide: Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/) - example of configuring the MySolar dashboard.
 
 ## Install
 
@@ -63,12 +85,6 @@ There are many other modules such as the event module and openbem (open source b
 * [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms)
 * [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
-
-## Using Emoncms
-
-* [Home Energy Monitor](https://guide.openenergymonitor.org/applications/home-energy)
-* [Solar PV Monitor](https://guide.openenergymonitor.org/applications/solar-pv/)
-
 ## Tools
 
 * [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full emoncms installation. Useful for checking backup's and archived data.
@@ -77,13 +93,18 @@ There are many other modules such as the event module and openbem (open source b
 
 *Note: due to ongoing development some docs may now be outdated*
 
-- [Emoncms architecture](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/architecture.md)
-- [Input processing](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/emoncms/developinputproc.md)
-- [Emoncms time series database development history](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/history.md)
-- [Variable interval time series](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/variableinterval.md)
-- [Fixed interval time series](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/fixedinterval.md)
-- [Fixed interval with averaging time series](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/fixedintervalaveraging.md)
-- [Improving write performance with buffering](https://github.com/openenergymonitor/documentation/blob/master/BuildingBlocks/TimeSeries/writeloadinvestigation.md)
+- [Emoncms architecture](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/architecture)
+- [Input processing](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/input-processing)
+- [Developing a new Module](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/developing-a-new-module)
+- [Global variables in Emoncms](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/global-variables)
+
+**Emoncms timeseries database design (feed storage)**
+
+- [Emoncms time series database development history](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/History)
+- [Variable interval time series](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Variable-interval)
+- [Fixed interval time series](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Fixed-interval)
+- [Fixed interval with averaging time series](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Fixed-interval-averaging)
+- [Improving write performance with buffering](https://learn.openenergymonitor.org/electricity-monitoring/timeseries/Write-load-investigation)
 
 #### Android App
 
