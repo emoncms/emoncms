@@ -18,11 +18,16 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Using Emoncms
 
-**Video's**
+**1. Screencasts/Videos**
 
-- [YouTube: Connecting to WIFI using the emoncms WIFI module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
+These screencasts where put together to accompany the [EmonPi/EmonBase setup guide](http://guide.openenergymonitor.org/setup) and do therefore contain a number of references that are EmonPi/EmonBase/RaspberryPi specific. They do however give a useful overview of some of the core parts of emoncms including configuring inputs, creating feeds and dashboards.
+
 - [YouTube: Logging data locally with emoncms on the EmonPi/Emonbase](https://www.youtube.com/watch?v=8nVP0Hgkuuc)
 - [YouTube: Viewing data and creating dashboards on the EmonPi/Emonbase](https://www.youtube.com/watch?v=eqN9rc9VnqI)
+
+There are also two screencasts that are specific to optional modules that are included on the EmonPi/Emonbase standard SD card install but are not part of the standard install if you follow the installation guides below.
+
+- [YouTube: Connecting to WIFI using the emoncms WIFI module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
 - [YouTube: Data backup and import using emoncms backup module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
 
 **Emoncms.org API Reference**
