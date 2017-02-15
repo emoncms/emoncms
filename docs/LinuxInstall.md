@@ -21,7 +21,7 @@ on 16.04:
 *Not essential, required for mail sending e.g. password recovery*
 
     sudo pear channel-discover pear.swiftmailer.org
-    sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
+    sudo pecl install swift/swift
     
 **If running PHP5:** Add pecl modules to php5 config
     
