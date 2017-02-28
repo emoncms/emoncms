@@ -16,6 +16,8 @@
 
     // 1) Load settings and core scripts
     require "process_settings.php";
+    if($failed_settings_validation) { die; };
+    
     require "core.php";
     require "route.php";
     require "locale.php";

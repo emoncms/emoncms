@@ -14,7 +14,9 @@
 
     chdir(dirname(__FILE__)."/../");
     require "Lib/EmonLogger.php";
+    
     require "process_settings.php";
+    if($failed_settings_validation) { die; };
 
     if (!$redis_enabled) { echo "Error: setting must be true: redis_enabled\n"; die; }
     

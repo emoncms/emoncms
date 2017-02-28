@@ -10,8 +10,10 @@
 
     chdir(dirname(__FILE__)."/../");
     require "Lib/EmonLogger.php";
-    require "process_settings.php";
 
+    require "process_settings.php";
+    if($failed_settings_validation) { die; };
+    
     if (!$redis_enabled) { echo "Error: setting must be true: redis_enabled\n"; die; }
     if (!$feed_settings['redisbuffer']['enabled']) { echo "Error: setting must be true: feed_settings['redisbuffer']['enabled']\n"; die; }
     if (!$feed_settings['redisbuffer']['sleep'] || (int)$feed_settings['redisbuffer']['sleep'] < 1) { echo "Error: setting must be > 0 : feed_settings['redisbuffer']['sleep']\n"; die; }

@@ -14,13 +14,19 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
+// Allow the settings file to be specified in an environment variable.
+if (getenv('EMONCMS_CONFIG_FILE') !== null) {
+    $settings_file = getenv('EMONCMS_CONFIG_FILE');
+}else{
+    $settings_file = dirname(__FILE__)."/settings.php";
+}
+
 // Check if settings.php file exists
-if(file_exists(dirname(__FILE__)."/settings.php"))
-{
+if(file_exists($settings_file)) {
     /*
         Load settings.php
     */
-    require_once('settings.php');
+    require($settings_file);
 
     /*
         Load settings from environment variables
@@ -51,16 +57,16 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     // create the array if it's not already been done
     if (!isset($mqtt_server)) $mqtt_server = array();
     if (isset($_ENV["EMONCMS_MQTT_ENABLED"]))  $mqtt_enabled = $_ENV["EMONCMS_MQTT_ENABLED"] === 'true';
-
-    if (isset($_ENV["EMONCMS_MQTT_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_MQTT_HOST"];
-    if (isset($_ENV["EMONCMS_MQTT_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_MQTT_PORT"];
-    if (isset($_ENV["EMONCMS_MQTT_USER"]))     $redis_server['user'] = $_ENV["EMONCMS_MQTT_USER"];
-    if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
-    if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
+    if (isset($_ENV["EMONCMS_MQTT_HOST"]))     $mqtt_server['host'] = $_ENV["EMONCMS_MQTT_HOST"];
+    if (isset($_ENV["EMONCMS_MQTT_PORT"]))     $mqtt_server['port'] = $_ENV["EMONCMS_MQTT_PORT"];
+    if (isset($_ENV["EMONCMS_MQTT_USER"]))     $mqtt_server['user'] = $_ENV["EMONCMS_MQTT_USER"];
+    if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $mqtt_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
+    if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $mqtt_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
 
     /*
         Validate settings are complete
     */
+    $failed_settings_validation = false;
     $error_out = "";
 
     if (!isset($config_file_version) || $config_file_version < 8) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
@@ -123,7 +129,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
       echo $error_out;
       echo "<p>To fix, check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
       echo "</div>";
-      die;
+      $failed_settings_validation = true;
     }
 
 
@@ -140,5 +146,5 @@ else
     echo 'Copy and modify default.settings.php to settings.php<br>';
     echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';
     echo "</div>";
-    die;
+    $failed_settings_validation = true;
 }
