@@ -561,6 +561,7 @@ class Process_ProcessList
         global $redis;
         if (!$redis) return $value; // return if redis is not available
         
+        $power = 0;
         if ($redis->exists("process:kwhtopower:$feedid")) {
             $lastvalue = $redis->hmget("process:kwhtopower:$feedid",array('time','value'));
             $kwhinc = $value - $lastvalue['value'];
@@ -888,8 +889,6 @@ class Process_ProcessList
         }
     }
 
-    
-    
     // No longer used
     public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing    
     public function phaseshift($id, $time, $value) { return $value; }
