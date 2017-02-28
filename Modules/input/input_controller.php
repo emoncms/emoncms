@@ -124,7 +124,13 @@ function input_controller()
                             $itemtime = (int) $item[0];
 
                             $time = $time_ref + (int) $itemtime;
-                            $nodeid = $item[1];
+                            if (!is_object($item[1])) {
+                                $nodeid = $item[1]; 
+                            } else {
+                                $valid = false;
+                                $error = "Format error, node must not be an object";
+                                break;
+                            }
 
                             $validate_access = $input->validate_access($dbinputs, $nodeid);
                             if (!$validate_access['success']) {
