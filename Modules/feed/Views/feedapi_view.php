@@ -52,6 +52,9 @@
     <tr><td><?php echo _("Get all feed fields");?></td><td>
 		<a href="<?php echo $path; ?>feed/aget.json?id=1"><?php echo $path; ?>feed/aget.json?id=1</a>
 	</td></tr>
+	  <tr><td><?php echo _("Get feed meta (PHPFina, PHPFiwa)");?></td><td>
+		<a href="<?php echo $path; ?>feed/getmeta.json?id=1"><?php echo $path; ?>feed/getmeta.json?id=1</a>
+	</td></tr>
 </table>
 
 <p><b>Read feed data actions</b></p>
