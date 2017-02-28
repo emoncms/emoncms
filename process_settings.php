@@ -30,34 +30,36 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         installation (e.g. for testing).
     */
 
-    //1 #### Mysql database settings
-    if (isset($_ENV["EMONCMS_MYSQL_HOST"]))     $server = $_ENV["EMONCMS_MYSQL_HOST"];
-    if (isset($_ENV["EMONCMS_MYSQL_DATABASE"])) $database = $_ENV["EMONCMS_MYSQL_DATABASE"];
-    if (isset($_ENV["EMONCMS_MYSQL_USER"]))     $username = $_ENV["EMONCMS_MYSQL_USER"];
-    if (isset($_ENV["EMONCMS_MYSQL_PASSWORD"])) $password = $_ENV["EMONCMS_MYSQL_PASSWORD"];
-    if (isset($_ENV["EMONCMS_MYSQL_PORT"]))     $port = $_ENV["EMONCMS_MYSQL_PORT"];
+    if (isset($_ENV["ENV_ENABLE"]) && $_ENV["ENV_ENABLE"])
+    {
+        //1 #### Mysql database settings
+        if (isset($_ENV["EMONCMS_MYSQL_HOST"]))     $server = $_ENV["EMONCMS_MYSQL_HOST"];
+        if (isset($_ENV["EMONCMS_MYSQL_DATABASE"])) $database = $_ENV["EMONCMS_MYSQL_DATABASE"];
+        if (isset($_ENV["EMONCMS_MYSQL_USER"]))     $username = $_ENV["EMONCMS_MYSQL_USER"];
+        if (isset($_ENV["EMONCMS_MYSQL_PASSWORD"])) $password = $_ENV["EMONCMS_MYSQL_PASSWORD"];
+        if (isset($_ENV["EMONCMS_MYSQL_PORT"]))     $port = $_ENV["EMONCMS_MYSQL_PORT"];
 
-    //2 #### redis
-    // create the array if it's not already been done
-    if (!isset($redis_server)) $redis_server = array();
+        //2 #### redis
+        // create the array if it's not already been done
+        if (!isset($redis_server)) $redis_server = array();
 
-    if (isset($_ENV["EMONCMS_REDIS_ENABLED"]))  $redis_enabled = $_ENV["EMONCMS_REDIS_ENABLED"] === 'true';
-    if (isset($_ENV["EMONCMS_REDIS_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_REDIS_HOST"];
-    if (isset($_ENV["EMONCMS_REDIS_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_REDIS_PORT"];
-    if (isset($_ENV["EMONCMS_REDIS_AUTH"]))     $redis_server['auth'] = $_ENV["EMONCMS_REDIS_AUTH"];
-    if (isset($_ENV["EMONCMS_REDIS_PREFIX"]))   $redis_server['prefix'] = $_ENV["EMONCMS_REDIS_PREFIX"];
+        if (isset($_ENV["EMONCMS_REDIS_ENABLED"]))  $redis_enabled = $_ENV["EMONCMS_REDIS_ENABLED"] === 'true';
+        if (isset($_ENV["EMONCMS_REDIS_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_REDIS_HOST"];
+        if (isset($_ENV["EMONCMS_REDIS_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_REDIS_PORT"];
+        if (isset($_ENV["EMONCMS_REDIS_AUTH"]))     $redis_server['auth'] = $_ENV["EMONCMS_REDIS_AUTH"];
+        if (isset($_ENV["EMONCMS_REDIS_PREFIX"]))   $redis_server['prefix'] = $_ENV["EMONCMS_REDIS_PREFIX"];
 
-    //3 #### MQTT
-    // create the array if it's not already been done
-    if (!isset($mqtt_server)) $mqtt_server = array();
-    if (isset($_ENV["EMONCMS_MQTT_ENABLED"]))  $mqtt_enabled = $_ENV["EMONCMS_MQTT_ENABLED"] === 'true';
+        //3 #### MQTT
+        // create the array if it's not already been done
+        if (!isset($mqtt_server)) $mqtt_server = array();
+        if (isset($_ENV["EMONCMS_MQTT_ENABLED"]))  $mqtt_enabled = $_ENV["EMONCMS_MQTT_ENABLED"] === 'true';
 
-    if (isset($_ENV["EMONCMS_MQTT_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_MQTT_HOST"];
-    if (isset($_ENV["EMONCMS_MQTT_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_MQTT_PORT"];
-    if (isset($_ENV["EMONCMS_MQTT_USER"]))     $redis_server['user'] = $_ENV["EMONCMS_MQTT_USER"];
-    if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
-    if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
-
+        if (isset($_ENV["EMONCMS_MQTT_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_MQTT_HOST"];
+        if (isset($_ENV["EMONCMS_MQTT_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_MQTT_PORT"];
+        if (isset($_ENV["EMONCMS_MQTT_USER"]))     $redis_server['user'] = $_ENV["EMONCMS_MQTT_USER"];
+        if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
+        if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
+    }
     /*
         Validate settings are complete
     */
