@@ -70,8 +70,8 @@
                             }
                         </style>
 <?php } ?>
-                    <?php if (!isset($runmenu)) $runmenu = '';
-                        echo $mainmenu.$runmenu;
+                    <?php
+                        echo $mainmenu;
                     ?>
 <?php
     if ($menucollapses) {
