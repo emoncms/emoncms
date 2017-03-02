@@ -97,7 +97,10 @@ function feed_controller()
                     else if ($route->action == "value") $result = $feed->get_value($feedid); // null is a valid response
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);
-                    else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
+                    else if ($route->action == "getmeta") { 
+                        $result = $feed->get_meta($feedid);
+                        $result->npoints = $feed->get_npoints($feedid);
+                    }
 
                     else if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
