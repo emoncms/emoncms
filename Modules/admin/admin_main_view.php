@@ -203,7 +203,7 @@ if(is_writable($log_filename)) {
 <?php if(is_writable($log_filename)) { ?>
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
-                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download log'); ?></a>
+                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
 <?php } ?>
                 </td>
             </tr>
@@ -223,13 +223,16 @@ if ($allow_emonpi_admin) {
             <table class="table table-condensed" style="background-color: transparent">
             <tr>
                 <td style="border-top: 0px">
-                    <h3><?php echo _('Update emonPi'); ?></h3>
-                    <p>Updates Emoncms and emonPi firmware. See <a href="https://github.com/emoncms/emoncms/releases">Emoncms changelog</a> and <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">firmware changelog.</a></p>
-                    <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p>
+                    <h3><?php echo _('Update'); ?></h3>
+                    <p><b>emonPi Update:</b> updates emonPi firmware & Emoncms</p>
+                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) & Emoncms</p>
+                    <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
+                    <p><i>Caution: ensure RFM69Pi is populated with RFM69CW module not RFM12B before running RFM69Pi update: <a href="https://learn.openenergymonitor.org/electricity-monitoring/networking/which-radio-module">Identifying different RF Modules</a>.</i></p>
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
-                    <button id="emonpiupdate" class="btn btn-warning"><?php echo _('Update Now'); ?></button>
-                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a><br><br>
+                    <button id="emonpiupdate" class="btn btn-warning"><?php echo _('emonPi Update'); ?></button>
+                    <button id="rfm69piupdate" class="btn btn-danger"><?php echo _('emonBase Update'); ?></button><br></br>
+                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download Log'); ?></a><br><br>
                 </td>
             </tr>
             <tr>
@@ -372,8 +375,22 @@ $("#getlog").click(function() {
 });
 
 var refresher_update;
+
 $("#emonpiupdate").click(function() {
-  $.ajax({ url: path+"admin/emonpi/update", async: true, dataType: "text", success: function(result)
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "argument=emonpi", async: true, success: function(result)
+    {
+      $("#update-log").html(result);
+      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
+      $("#update-log-bound").show()
+      clearInterval(refresher_update);
+      refresher_update = null;
+      refresher_update = setInterval(getUpdateLog,1000);
+    }
+  });
+});
+
+$("#rfm69piupdate").click(function() {
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "argument=rfm69pi", async: true, success: function(result)
     {
       $("#update-log").html(result);
       $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;

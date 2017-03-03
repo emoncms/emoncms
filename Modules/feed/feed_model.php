@@ -418,9 +418,12 @@ class Feed
             $result = $this->mysqli->query("SELECT time,value FROM feeds WHERE `id` = '$id'");
             $row = $result->fetch_array();
             if ($row) {
-                $lastvalue = array('time'=>(int)$row['time'], 'value'=>(float)$row['value']);
+                $lastvalue = array('time'=>$row['time'], 'value'=>$row['value']);
             }
         }
+        
+        $lastvalue['time'] = (int) $lastvalue['time'];
+        $lastvalue['value'] = (float) $lastvalue['value'];
         return $lastvalue;
     }
 
