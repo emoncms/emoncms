@@ -3,6 +3,8 @@
 
     Copyright (C) 2013 Trystan Lea
 
+    2016-12-20 - Expanded tables by : Nuno Chaveiro  nchaveiro(a)gmail.com  
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
     published by the Free Software Foundation, either version 3 of the
@@ -21,4 +23,3 @@
     Trystan Lea
     trystan.lea@gmail.com
     http://openenergymonitor.org
-    

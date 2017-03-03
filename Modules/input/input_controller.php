@@ -170,7 +170,7 @@ function input_controller()
                                 else
                                 {
                                     $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => "INPUT",'sourceid'=>$dbinputs[$nodeid][$name]['id']));
+                                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => ProcessOriginType::INPUT,'sourceid'=>$dbinputs[$nodeid][$name]['id']));
                                 }
                             }
 
@@ -261,7 +261,7 @@ function input_controller()
                             $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
                         } else {
                             $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => "INPUT",'sourceid'=>$dbinputs[$nodeid][$name]['id']));
+                            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => ProcessOriginType::INPUT,'sourceid'=>$dbinputs[$nodeid][$name]['id']));
                         }
                     }
 

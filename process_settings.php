@@ -17,21 +17,19 @@ require_once('Lib/enum.php');
 // Check if settings.php file exists
 if(file_exists(dirname(__FILE__)."/settings.php"))
 {
-    /*
-        Load settings.php
-    */
+    // Load settings.php
     require_once('settings.php');
 
-    /*
-        Load settings from environment variables
+    if (!isset($allow_config_env_vars)) $allow_config_env_vars = false;
+    if ($allow_config_env_vars) {
+        /*
+            Load settings from environment variables
 
-        Environment settings override settings.php and defaults, 
-        and allow you to run multiple variants of the same
-        installation (e.g. for testing).
-    */
+            Environment settings override settings.php and defaults, 
+            and allow you to run multiple variants of the same
+            installation (e.g. for testing).
+        */
 
-    if (isset($_ENV["ENV_ENABLE"]) && $_ENV["ENV_ENABLE"])
-    {
         //1 #### Mysql database settings
         if (isset($_ENV["EMONCMS_MYSQL_HOST"]))     $server = $_ENV["EMONCMS_MYSQL_HOST"];
         if (isset($_ENV["EMONCMS_MYSQL_DATABASE"])) $database = $_ENV["EMONCMS_MYSQL_DATABASE"];
@@ -60,12 +58,12 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
         if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
     }
-    /*
-        Validate settings are complete
-    */
+    
+    //  Validate settings are complete
+
     $error_out = "";
 
-    if (!isset($config_file_version) || $config_file_version < 8) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
+    if (!isset($config_file_version) || $config_file_version < 9) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
     if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';

@@ -52,6 +52,8 @@ class Process_ProcessList
     // Module required process configuration, return $list array
     public function process_list() {
         $list = array();
+        // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'requireredis'=>true | 'desc'=>Description | 'internalerror'=>true | 'internalerror_reason'=>true
+        $list[] = array(_("EXIT"), ProcessArg::NONE, "error_found", 0, DataType::UNDEFINED, "Hidden", 'desc'=>"<p>This was automaticaly added when a loop error was discovered on the processList or execution took too many steps to process.  Review the usage of GOTOs or decrease the number of items and delete this entry to resume execution.</p>", 'internalerror'=>true,'internalerror_reason'=>"HAS ERRORS",'internalerror_desc'=>'Processlist disabled due to errors found during execution.');
         return $list;
     }
 
@@ -747,6 +749,11 @@ class Process_ProcessList
         return $value;
     }
 
+    public function error_found($arg, $time, $value){
+        $this->proc_goto = PHP_INT_MAX;
+        return $value;
+    }
+
 
     // Used as Virtual feed source of data (read from other feeds). Gets feed data for the specified time range in $options variable, 
     // Set data_sampling to false in settings.php to allow precise average feed data calculation. It will be 10x slower!
@@ -889,6 +896,8 @@ class Process_ProcessList
         }
     }
 
+    
+    
     // No longer used
     public function average($feedid, $time_now, $value) { return $value; } // needs re-implementing    
     public function phaseshift($id, $time, $value) { return $value; }
