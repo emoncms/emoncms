@@ -99,3 +99,13 @@ input[type=text][class=variable-name-edit] {
   max-height: 250px;
   overflow-y: auto;
 }
+
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8)
+    	url(ajax-loader.gif)
+    	center
+    	no-repeat;
+}

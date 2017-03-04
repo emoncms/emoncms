@@ -13,6 +13,8 @@ var processlist_ui =
   
   engines_hidden:[],
   has_redis: 0,
+  
+  table: table,
 
   'draw':function(){
     var i = 0;
@@ -47,9 +49,15 @@ var processlist_ui =
 
         if (this.processlist[processkey] != undefined) {
           var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
-          if (procneedredis) {
+          if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
+              arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
+              processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
+          }  
+          else if (procneedredis) {
             arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
-          } else {
+            processname = this.processlist[processkey][0];
+          }
+          else {
             // Check ProcessArg Type
             switch(this.processlist[processkey][1]) {
               case 0: // VALUE
@@ -106,8 +114,8 @@ var processlist_ui =
                 }
                 break;
             }
+            processname = this.processlist[processkey][0];
           }
-          processname = this.processlist[processkey][0];
         }
         else {
           processname = "UNSUPPORTED";
@@ -142,7 +150,9 @@ var processlist_ui =
 
           if (this.processlist[processkey] != undefined) {
             var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
-            if (procneedredis) {
+            if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
+                out += "<span class='badge badge-important' title='" + this.processlist[processkey]['internalerror_desc'] + "'>"+ this.processlist[processkey]['internalerror_reason'] +"</span> "
+            } else if (procneedredis) {
                 out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Redis not installed.'>NO REDIS</span> "
             } else {
               // Check ProcessArg Type
@@ -209,7 +219,7 @@ var processlist_ui =
       return out;
     }
   },
-  
+
   'group_drawerror':function(processlist){
     if (!processlist) return "";
     var localprocesslist = processlist_ui.decode(processlist);
@@ -225,7 +235,10 @@ var processlist_ui =
 
           if (this.processlist[processkey] != undefined) {
             var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
-            if (procneedredis) {
+            if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
+                out += "<span class='badge badge-important' title='" + this.processlist[processkey]['internalerror_desc'] + "'>"+ this.processlist[processkey]['internalerror_reason'] + "</span> "
+            }  
+            else if (procneedredis) {
                 out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Redis not installed.'>NO REDIS</span> "
             } else {
               // Check ProcessArg Type
@@ -254,19 +267,19 @@ var processlist_ui =
           } else {
               out += "<span class='badge badge-important' title='Process ´"+processkey+"´ not available. Module missing?'>UNSUPPORTED</span> "
           }
-		  if (out != "") return out; // return first error
+          if (out != "") return out; // return first error
         }
       }
       return out;
     }
   },
-  
+
   'events':function(){
     $("#processlist-ui #feed-engine").change(function(){
       var engine = $(this).val();
       $("#feed-interval").hide();
       if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
-      
+
       var processid = $("#process-select").val();
       var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
@@ -305,7 +318,7 @@ var processlist_ui =
 
         case 2: //FEEDID
           var feedid = $("#feed-select").val();
-          
+
           if (feedid==-1) {
             var feedname = $('#new-feed-name').val();
             var feedtag = $('#new-feed-tag').val();
@@ -333,15 +346,15 @@ var processlist_ui =
           }
           arg = feedid;
           break;
-          
+
         case 3: // NONE
           arg = 0;
           break;
-          
+
         case 4: // TEXT
           arg = $("#text-input").val();
           break;
-          
+
         case 5: // SCHEDULEID
           arg = $("#schedule-select").val();
           break;
@@ -364,14 +377,14 @@ var processlist_ui =
 
     $('#processlist-ui #process-select').change(function(){
       var processid = $(this).val();
-      
+
       $("#description").html("");
       $("#type-value").hide();
       $("#type-text").hide();
       $("#type-input").hide();
       $("#type-feed").hide();
       $("#type-schedule").hide();
-      
+
       // Check ProcessArg Type
       switch(processlist_ui.processlist[processid][1]) {
         case 0: // VALUE
@@ -495,13 +508,13 @@ var processlist_ui =
     });
 
   },
-  
+
   'showfeedoptions':function(processid){
     var prc = this.processlist[processid][2];     // process function
     var feedwrite = this.processlist[processid]['feedwrite']; // process writes to feed
     var engines = this.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
     var datatype = this.processlist[processid][4];  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
-    
+
     var feedgroups = [];
     for (z in this.feedlist) {
       if (datatype == 0 || (this.feedlist[z].datatype == datatype)) {
@@ -530,7 +543,7 @@ var processlist_ui =
     $("#feed-data-type").val(datatype); // select datatype
     $("#feed-data-type option[value="+datatype+"]").show();   // Show only the feed engine options that are available
     $("#feed-data-type option[value="+datatype+"]").prop('disabled', false);  //for IE show
-    
+
     $("#feed-engine option").hide();  // Start by hiding all feed engine options
     $("#feed-engine option").prop('disabled', true);  //for IE hide (grayed out)
     for (e in engines) { 
@@ -561,12 +574,12 @@ var processlist_ui =
     $("#save-processlist").attr('class','btn btn-warning').text("Changed, press to save");
   },
 
-  'saved':function(){
+  'saved':function(t){
     $("#save-processlist").attr('class','btn btn-success').text("Saved");
     // Update context table immedietly
-    for (z in table.data) {
-      if (table.data[z].id == processlist_ui.contextid) {
-        table.data[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
+    for (z in t.data) {
+      if (t.data[z].id == processlist_ui.contextid) {
+        t.data[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
     table.draw();
@@ -614,7 +627,7 @@ var processlist_ui =
 
     // Processors Select List
     $.ajax({ url: path+"process/list.json", dataType: 'json', async: true, success: function(result){
-      
+
       for (p in result)  // for each processor
       {
         result[p]['feedwrite']=false;
@@ -634,7 +647,7 @@ var processlist_ui =
           }
         }
       }
-      
+
       processlist_ui.processlist = result;
       var processgroups = [];
       for (z in processlist_ui.processlist) {
@@ -653,17 +666,24 @@ var processlist_ui =
       }
 
       var out = "";
-      for (z in processgroups) {
-        out += "<optgroup label='"+z+"'>";
-        for (p in processgroups[z])
+      for (pg in processgroups) {
+        out += "<optgroup " + (pg == "Hidden" ? "hidden " : "") + "label='"+pg+"'>";
+        for (p in processgroups[pg])
         {
           var procdisabled = "";
           var procneedredis = "";
-          if (processlist_ui.has_redis == 0 && processgroups[z][p]['requireredis'] != undefined && processgroups[z][p]['requireredis'] == true) { 
+          if ((pg == "Hidden") || 
+              (processgroups[pg][p]['internalerror'] != undefined && processgroups[pg][p]['internalerror'] == true)
+              )
+          {
+            procdisabled = 'hidden';
+            procneedredis = "";
+          }
+          else  if (processlist_ui.has_redis == 0 && processgroups[pg][p]['requireredis'] != undefined && processgroups[pg][p]['requireredis'] == true) { 
             procdisabled = 'disabled=""';
             procneedredis = " (needs REDIS)";
           }
-          out += "<option "+procdisabled+" value="+processgroups[z][p]['id']+">"+processgroups[z][p][0]+procneedredis+"</option>";
+          out += "<option "+procdisabled+" value="+processgroups[pg][p]['id']+">"+processgroups[pg][p][0]+procneedredis+"</option>";
         }
         out += "</optgroup>";
       }
@@ -685,12 +705,12 @@ var processlist_ui =
     $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
       var schedules = {};
       for (z in result) schedules[result[z].id] = result[z];
-      
+
       processlist_ui.schedulelist = schedules;
       var groupname = {0:'Public',1:'Mine'};
       var groups = [];
       //for (z in result) schedules[result[z].id] = result[z];
-      
+
       for (z in processlist_ui.schedulelist) {
         var group = processlist_ui.schedulelist[z].own;
         group = groupname[group];
@@ -698,7 +718,7 @@ var processlist_ui =
         processlist_ui.schedulelist[z]['_index'] = z;
         groups[group].push(processlist_ui.schedulelist[z]);
       }
-      
+
       var out = "";
       for (z in groups) {
         out += "<optgroup label='"+z+"'>";
@@ -725,7 +745,7 @@ var processlist_ui =
         if (!groups[group]) groups[group]=[];
         groups[group].push(processlist_ui.inputlist[z]);
       }
-      
+
       var out = "";
       for (z in groups) {
         out += "<optgroup label='"+z+"'>";
@@ -755,7 +775,7 @@ var processlist_ui =
       $("#processlist-ui #process-select").change();  // Force a refresh
     }
   },
-  
+
   'load': function(contextid,contextprocesslist,contextname,newfeedname,newfeedtag){
     this.contextid = contextid;
     this.contextprocesslist = contextprocesslist;
