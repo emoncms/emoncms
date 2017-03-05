@@ -10,9 +10,9 @@
 */
 
 // no direct access
-defined('EMONCMS_EXEC') or die('Restricted access');
+use Redis;
 
-use Emoncms\Redis\Redis;
+defined('EMONCMS_EXEC') or die('Restricted access');
 
 class User
 {
@@ -21,13 +21,13 @@ class User
     private $enable_rememberme = false;
 
     /**
-     * @var \Redis
+     * @var Redis
      */
     private $redis;
 
     private $log;
 
-    public function __construct(mysqli $mysqli, Redis $redis)
+    public function __construct(mysqli $mysqli, $redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
         global $enable_rememberme;
@@ -38,7 +38,7 @@ class User
         require "Modules/user/rememberme_model.php";
         $this->rememberme = new Rememberme($mysqli);
 
-        $this->redis = $redis->getRedis();
+        $this->redis = $redis;
         $this->log = new EmonLogger(__FILE__);
     }
 

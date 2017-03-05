@@ -12,7 +12,7 @@
     */
 
     use Emoncms\Config\RedisConfig;
-    use Emoncms\Redis\Redis;
+    use Emoncms\Redis\RedisFactory;
 
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
@@ -40,13 +40,13 @@
 
 
     try {
-        require "Lib/Redis/Redis.php";
-        $emonRedis = new Redis($redisConfig);
+        require "Lib/Redis/RedisFactory.php";
+        $redisFactory = new RedisFactory($redisConfig);
     } catch (Exception $e) {
         echo $e->getMessage(); die;
     }
 
-    $redis = $emonRedis->getRedis();
+    $redis = $redisFactory->getRedis();
 
     $mqtt = false;
 
@@ -68,7 +68,7 @@
 
     // 3) User sessions
     require("Modules/user/user_model.php");
-    $user = new User($mysqli, $emonRedis);
+    $user = new User($mysqli, $redis);
 
     $apikey = false;
     $devicekey = false;
