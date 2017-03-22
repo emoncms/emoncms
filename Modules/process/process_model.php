@@ -131,7 +131,7 @@ class Process
         $list = array();
         $dir = scandir("Modules");
         for ($i=2; $i<count($dir); $i++) {
-            if (filetype("Modules/".$dir[$i])=='dir') {
+            if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i]);
                 if ($class != null) {
                     $mod_process_list = $class->process_list();
