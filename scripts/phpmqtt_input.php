@@ -159,7 +159,7 @@
         $time = time();
         //echo $topic." ".$value."\n";
         
-        global $mqtt_server, $user, $input, $process, $feed, $log;
+        global $mqtt_server, $user, $input, $process, $feed, $device, $log;
         $log->info($topic." ".$value);
         
         #Emoncms user ID TBD: incorporate on message via authentication mechanism
