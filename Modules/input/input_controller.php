@@ -243,7 +243,7 @@ function input_controller()
                         if (isset($keyvalue[1])) {
                             if ($keyvalue[0]=='') {$valid = false; $error = "Format error, json key missing or invalid character"; }
                             if (!is_numeric($keyvalue[1])) {$valid = false; $error = "Format error, json value is not numeric"; }
-                            $data[$keyvalue[0]] = (float) $keyvalue[1];
+                            $data[trim($keyvalue[0])] = (float) $keyvalue[1];
                         } else {
                             if (!is_numeric($keyvalue[0])) {$valid = false; $error = "Format error: csv value is not numeric"; }
                             $data[$csvi+1] = (float) $keyvalue[0];
