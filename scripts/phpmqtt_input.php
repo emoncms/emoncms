@@ -86,6 +86,9 @@
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
 
+    require_once "Modules/device/device_model.php";
+    $device = new Device($mysqli,$redis);
+    
     $mqtt_client = new Mosquitto\Client();
     
     $connected = false;
@@ -166,32 +169,31 @@
         $inputs = array();
         
         $route = explode("/",$topic);
-	$basetopic = explode("/",$mqtt_server['basetopic']);
+	      $basetopic = explode("/",$mqtt_server['basetopic']);
 
-	/*Iterate over base topic to determine correct sub-topic*/
-	$st=-1;
-	foreach ($basetopic as $subtopic) 
-	{
-		if(isset($route[$st+1]))
-		{
-			if($basetopic[$st+1]==$route[$st+1])
-			{
-				$st = $st + 1;
-			}
-			else
-			{
-				break;
-			}
-		}
-		else
-		{
-			$log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
-		}
-	}
+	      /*Iterate over base topic to determine correct sub-topic*/
+	      $st=-1;
+	      foreach ($basetopic as $subtopic) 
+	      {
+		      if(isset($route[$st+1]))
+		      {
+			      if($basetopic[$st+1]==$route[$st+1])
+			      {
+				      $st = $st + 1;
+			      }
+			      else
+			      {
+				      break;
+			      }
+		      }
+		      else
+		      {
+			      $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+		      }
+	      }
  
         if ($st>=0)
         {
- 
             if (isset($route[$st+1]))
             {
                 $nodeid = $route[$st+1];
@@ -211,9 +213,9 @@
                 }
             }
         }
-	else{
-		$log->error("No matching MQTT topics! None or null inputs will be recorded!");	
-	}
+	      else{
+		      $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
+	      }
         
         $tmp = array();
         foreach ($inputs as $i)
@@ -224,21 +226,28 @@
             $name = $i['name'];
             $value = $i['value'];
             
-            if (!isset($dbinputs[$nodeid][$name])) {
-                usleep(100);
-                $inputid = $input->create_input($userid, $nodeid, $name);
-                usleep(100);
-                $dbinputs[$nodeid][$name] = true;
-                $dbinputs[$nodeid][$name] = array('id'=>$inputid);
-                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-            } else {
-                $inputid = $dbinputs[$nodeid][$name]['id'];
-                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                
-                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+            // Automatic device configuration using device module if 'describe' keyword found
+            if ($name=="describe") {
+                $result = $device->autocreate($userid,$nodeid,$value);
+                $log->warn($result);
+            }
+            else 
+            {
+                if (!isset($dbinputs[$nodeid][$name])) {
+                    usleep(100);
+                    $inputid = $input->create_input($userid, $nodeid, $name);
+                    usleep(100);
+                    $dbinputs[$nodeid][$name] = true;
+                    $dbinputs[$nodeid][$name] = array('id'=>$inputid);
+                    $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                } else {
+                    $inputid = $dbinputs[$nodeid][$name]['id'];
+                    $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                    
+                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                }
             }
         }
         
         foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
-      
     }
