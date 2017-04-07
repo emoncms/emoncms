@@ -265,7 +265,7 @@ class User
         }
         else
         {
-            return array('success'=>true, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
+            return array('success'=>true, 'userid'=>$userData->id, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
         }
     }
 
