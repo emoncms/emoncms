@@ -88,6 +88,9 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
 
+        // If feed of given name by the user already exists
+        if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
+        
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
@@ -201,6 +204,15 @@ class Feed
         $userid = intval($userid);
         $name = preg_replace('/[^\w\s-:]/','',$name);
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+    }
+    
+    public function exists_tag_name($userid,$tag,$name)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
+        $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name' AND tag = '$tag'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
 
