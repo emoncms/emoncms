@@ -81,9 +81,9 @@ class Process_ProcessList
         // NEW PROCESSES SHOULD BE ADDED AS MODULES IN /Module/modulename/modulename_processlist.php process_list() function
 
 	// Some fixed strings
-	$does_modify = "<p><b>Output Value:</b> Does modify value passed onto next process step</p>";
-	$does_not_modify = "<p><b>Output Value:</b> Does NOT modify value passed onto next process step</p>";
-	$may_modify = "<p><b>Output Value:</b> May modify value passed onto next process step</p>";
+	$does_modify = "<p><b>Output:</b> Modified value passed onto next process step</p>";
+	$does_not_modify = "<p><b>Output:</b> Does NOT modify value passed onto next process step</p>";
+	$may_modify = "<p><b>Output:</b> May modify value passed onto next process step</p>";
 	$redis_required = "<p><b>REDIS:</b> Requires REDIS</p>";
 
         $list[1] = array(_("Log to feed"),ProcessArg::FEEDID,"log_to_feed",1,DataType::REALTIME,"Main",array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY), 'desc'=>"<p><b>Log to feed:</b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>PHPFina</b> is the recommended feed engine it is a basic fixed interval timeseries engine.</li><li><b>PHPTimeseries</b> is for data posted at a non regular interval such as on state change.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>$does_not_modify");
