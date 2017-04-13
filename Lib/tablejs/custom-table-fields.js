@@ -26,7 +26,7 @@ var customtablefields = {
 			//boolean conversion and negate
 			var boolVal;
 			if(typeof val === "number"){
-				boolVal = val == 0 ? false : true;
+				boolVal = val === 0 ? false : true;
 			} else if(typeof val === "string"){
 				boolVal = (val == "0" || val == "false") ? false : true;
 			}else{
