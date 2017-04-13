@@ -23,7 +23,6 @@
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon.css" rel="stylesheet">
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     </head>
@@ -71,8 +70,8 @@
                             }
                         </style>
 <?php } ?>
-                    <?php if (!isset($runmenu)) $runmenu = '';
-                        echo $mainmenu.$runmenu;
+                    <?php
+                        echo $mainmenu;
                     ?>
 <?php
     if ($menucollapses) {
@@ -116,8 +115,8 @@
 
         <div id="footer">
             <?php echo _('Powered by '); ?>
-            <a href="http://openenergymonitor.org">openenergymonitor.org</a>
-            <span> | <?php echo $emoncms_version; ?></span>
+            <a href="http://openenergymonitor.org">OpenEnergyMonitor.org</a>
+            <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
     </body>

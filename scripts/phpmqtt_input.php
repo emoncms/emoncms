@@ -51,7 +51,7 @@
     $log->warn("Starting MQTT Input script");
     
     if (!$mqtt_enabled) {
-        echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
+        //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
         $log->error("MQTT must be enabled in settings.php");
         die;
     }
@@ -110,13 +110,13 @@
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 $topic = $mqtt_server['basetopic']."/#";
-                echo "Subscribing to: ".$topic."\n";
+                //echo "Subscribing to: ".$topic."\n";
                 $log->warn("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
             } catch (Exception $e) {
             
             }
-            echo "Not connected, retrying connection\n";
+            //echo "Not connected, retrying connection\n";
             $log->warn("Not connected, retrying connection");
         }
     }
@@ -125,26 +125,26 @@
     function connect($r, $message) {
         global $log, $connected;
         $connected = true;
-        echo "Connected to MQTT server with code {$r} and message {$message}\n";
+        //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
         global $log, $topic;
-        echo "Subscribed to topic: ".$topic."\n";
+        //echo "Subscribed to topic: ".$topic."\n";
         $log->warn("Subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
         global $log, $topic;
-        echo "Unsubscribed from topic:".$topic."\n";
+        //echo "Unsubscribed from topic:".$topic."\n";
         $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
         global $connected, $log;
         $connected = false;
-        echo "Disconnected cleanly\n";
+        //echo "Disconnected cleanly\n";
         $log->warn("Disconnected cleanly");
     }
 
@@ -154,30 +154,52 @@
         $value = $message->payload;
         
         $time = time();
-        echo $topic." ".$value."\n";
+        //echo $topic." ".$value."\n";
         
         global $mqtt_server, $user, $input, $process, $feed, $log;
         $log->info($topic." ".$value);
         
         #Emoncms user ID TBD: incorporate on message via authentication mechanism
-       global $mqttsettings;
+        global $mqttsettings;
         $userid = $mqttsettings['userid'];
         
         $inputs = array();
         
         $route = explode("/",$topic);
+	$basetopic = explode("/",$mqtt_server['basetopic']);
 
-        if ($route[0]==$mqtt_server['basetopic'])
+	/*Iterate over base topic to determine correct sub-topic*/
+	$st=-1;
+	foreach ($basetopic as $subtopic) 
+	{
+		if(isset($route[$st+1]))
+		{
+			if($basetopic[$st+1]==$route[$st+1])
+			{
+				$st = $st + 1;
+			}
+			else
+			{
+				break;
+			}
+		}
+		else
+		{
+			$log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+		}
+	}
+ 
+        if ($st>=0)
         {
  
-            if (isset($route[1]))
+            if (isset($route[$st+1]))
             {
-                $nodeid = $route[1];
+                $nodeid = $route[$st+1];
                 $dbinputs = $input->get_inputs($userid);
             
-                if (isset($route[2]))
+                if (isset($route[$st+2]))
                 {
-                    $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[2], "value"=>$value);
+                    $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
                 }
                 else
                 {
@@ -189,6 +211,9 @@
                 }
             }
         }
+	else{
+		$log->error("No matching MQTT topics! None or null inputs will be recorded!");	
+	}
         
         $tmp = array();
         foreach ($inputs as $i)
@@ -200,7 +225,9 @@
             $value = $i['value'];
             
             if (!isset($dbinputs[$nodeid][$name])) {
+                usleep(100);
                 $inputid = $input->create_input($userid, $nodeid, $name);
+                usleep(100);
                 $dbinputs[$nodeid][$name] = true;
                 $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                 $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);

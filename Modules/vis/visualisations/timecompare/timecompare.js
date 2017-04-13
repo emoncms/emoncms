@@ -127,6 +127,7 @@ function vis_feed_data_callback(context, data) {
 
 function plot() {
   $.plot($("#graph"), plotdata, {
+    canvas: true,
     grid: { show: true, hoverable: true, clickable: true },
     xaxis: { mode: "time", timezone: "browser", timeformat: xaxis_format, min: view.start, max: view.end },
     selection: { mode: "x" },
@@ -141,7 +142,7 @@ function timecompare_init(element) {
   var now = new Date().getTime();
 
   plotdata = [];
-  compare_unit = (1000*60*60*24.0*7); // One week in milliseconds 
+  compare_unit = (1000*60*60*initzoom);
   view.start = now - compare_unit;
   view.end = now;
 

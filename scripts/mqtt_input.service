@@ -1,0 +1,56 @@
+# Systemd unit file for mqtt input script
+
+# INSTALL:
+# sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
+
+# RUN AT STARTUP
+# sudo systemctl daemon-reload
+# sudo systemctl enable mqtt_input.service
+
+# START / STOP With:
+# sudo systemctl start mqtt_input
+# sudo systemctl stop mqtt_input    
+
+# VIEW STATUS / LOG
+# sudo systemctl status mqtt_input -n50
+# where -nX is the number of log lines to view 
+# sudo journalctl -f -u mqtt_input -o cat | grep emontx
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+###
+
+[Unit]
+Description=Emoncms MQTT Input Script
+After=mosquitto.service mysql.service redis.service
+Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php
+
+# Uncomment instead of above to use standard log file, else use systemd log
+# Type=forking
+# ExecStart=/bin/sh -c '/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php 2>&1 > /var/log/mqtt_input.log &'
+
+# Restart script if stopped
+Restart=always
+# Wait 60s before restart
+RestartSec=60
+
+# Tag things in the log
+# View with: sudo journalctl -f -u mqtt_input -o cat
+SyslogIdentifier=mqtt_input
+
+# Un-comment to pipe log to syslog
+#StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target

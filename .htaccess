@@ -199,3 +199,12 @@ AddDefaultCharset utf-8
     </IfModule>
 
 </FilesMatch>
+
+# protect phpinfo, only allow localhost and local network access
+<Files php-info.php>
+	Order Deny,Allow
+	Deny from all
+	Allow from 10
+	Allow from 172
+	Allow from 192
+</Files>

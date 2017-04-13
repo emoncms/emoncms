@@ -20,12 +20,12 @@ defined('EMONCMS_EXEC') or die('Restricted access');
     //languages order by language name
     $languages_new = array();
     foreach ($languages_name as $key=>$lang){
-       $languages_new[$key]=$languages[$key];        
+       $languages_new[$key]=$languages[$key];
     }
-    $languages= array_values($languages_new); 
+    $languages= array_values($languages_new);
     $languages_name= array_values($languages_name);
 
-    
+
 function languagecode_to_name($langs) {
     static $lang_names = null;
     if ($lang_names === null) {
@@ -42,6 +42,8 @@ function languagecode_to_name($langs) {
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
 
@@ -71,7 +73,7 @@ function languagecode_to_name($langs) {
 
             <div class="account-item">
                 <a id="changedetails"><?php echo _('Change Password'); ?></a>
-            </div>  
+            </div>
 
         </div>
 
@@ -92,21 +94,29 @@ function languagecode_to_name($langs) {
             <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
             <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
         </div>
-        
+
         <br>
         <div id="account">
         <div class="account-item">
-            <span class="muted"><?php echo _('Write API Key'); ?></span>
-            <!--<a id="newapikeywrite" >new</a>-->
-            <span class="writeapikey"></span>
+            <span class="muted"><?php echo _('Write API Key'); ?></span> <button class="btn btn-info" id="copyapiwritebtn">Copy API Key</button>
+            <b><i><span class="writeapikey" id="copyapiwrite"></span></b></i>
         </div>
         <div class="account-item">
-            <span class="muted"><?php echo _('Read API Key'); ?></span>
-            <!--<a id="newapikeyread" >new</a>-->
-            <span class="readapikey"></span>
+            <span class="muted"><?php echo _('Read API Key'); ?></span> <button class="btn btn-info" id="copyapireadbtn">Copy API Key</button>
+            <b><i><span class="readapikey" id="copyapiread"></span></b></i>
+            <span id="msg"></span>
+        </div>
+        <div class="account-item">
+            <span class="muted"><?php echo _('Mobile App Integration QR Code'); ?></span>
+            <div id="qr_apikey"></div>
+            <br>
+	        <span class="muted">Scan this QR code from the <a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8">iOS</a> or <a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
+	            Android</a> App. Or scan using a barcode scanner to directly view your MyElectric graph.</span>
+	        <br><br>
+          <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div><br/>
+	        <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
         </div>
         </div>
-        
     </div>
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
@@ -124,11 +134,30 @@ function languagecode_to_name($langs) {
 
     $(".writeapikey").html(list.data.apikey_write);
     $(".readapikey").html(list.data.apikey_read);
-    
+
+    //QR COde Generation
+    var urlCleaned = window.location.href.replace("user/view" ,"");
+    var qrcode = new QRCode(document.getElementById("qr_apikey"), {
+        text: urlCleaned + "app?readkey=" + list.data.apikey_read  + "#myelectric",
+        width: 192,
+        height: 192,
+        colorDark : "#000000",
+        colorLight : "#ffffff",
+        correctLevel : QRCode.CorrectLevel.H
+    }); //Re-designed on-board QR generation using javascript
+
     // Need to add an are you sure modal before enabling this.
     // $("#newapikeyread").click(function(){user.newapikeyread()});
     // $("#newapikeywrite").click(function(){user.newapikeywrite()});
-    
+
+    // Clipboard code
+    document.getElementById("copyapiwritebtn").addEventListener("click", function() {
+      copyToClipboardMsg(document.getElementById("copyapiwrite"), "msg");
+    });
+    document.getElementById("copyapireadbtn").addEventListener("click", function() {
+      copyToClipboardMsg(document.getElementById("copyapiread"), "msg");
+    });
+
     var currentlanguage = list.data.language;
 
     list.fields = {
@@ -139,11 +168,11 @@ function languagecode_to_name($langs) {
         'language':{'title':"<?php echo _('Language'); ?>", 'type':'language', 'options':lang, 'label':lang_name},
         'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'}
     }
-    
+
     $.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
         list.timezones = result;
     }});
-    
+
     list.init();
 
     $("#table").bind("onSave", function(e){
@@ -220,7 +249,7 @@ function languagecode_to_name($langs) {
         {
             $.ajax({
                 url: path+"user/changeemail.json",
-                data: "&email="+email,
+                data: "&email="+encodeURIComponent(email),
                 dataType: 'json',
                 success: function(result)
                 {

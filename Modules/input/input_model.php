@@ -311,7 +311,12 @@ class Input
     // USES: redis input
     public function set_processlist($id, $processlist)
     {
-        $this->mysqli->query("UPDATE input SET processList = '$processlist' WHERE id='$id'");
+        $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
+        $stmt->bind_param("si", $processlist, $id);
+        if (!$stmt->execute()) {
+            return array('success'=>false, 'message'=>_("Error setting processlist"));
+        }
+        
         if ($this->mysqli->affected_rows>0){
             // CHECK REDIS
             if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist);

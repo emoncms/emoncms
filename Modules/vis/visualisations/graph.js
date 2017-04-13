@@ -143,6 +143,7 @@ var app_graph = {
                 else
                 { 
                     var options = {
+                        canvas: true,
                         lines: { fill: false },
                         xaxis: { 
                             mode: "time", timezone: "browser", 

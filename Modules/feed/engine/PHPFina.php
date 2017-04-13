@@ -112,6 +112,7 @@ class PHPFina
             $meta->interval = $tmp[1];
             $tmp = unpack("I",fread($metafile,4)); 
             $meta->start_time = $tmp[1];
+            $meta->npoints = $this->get_npoints($feedid);
             fclose($metafile);
 
             $metadata_cache[$feedid] = $meta; // Cache it
@@ -271,9 +272,13 @@ class PHPFina
              $d = fread($fh,4);
             fclose($fh);
 
+            $value = null;
             $val = unpack("f",$d);
             $time = $meta->start_time + ($meta->interval * $meta->npoints);
-            return array('time'=>$time, 'value'=>$val[1]);
+            if (!is_nan($val[1])) {
+                $value = (float) $val[1];
+            } 
+            return array('time'=>(int)$time, 'value'=>$value);
         }
         return false;
     }
@@ -328,7 +333,7 @@ class PHPFina
 
                 // add to the data array if its not a nan value
                 if (!is_nan($val[1])) {
-                    $value = $val[1];
+                    $value = (float) $val[1];
                 } else {
                     $value = null;
                 }
@@ -336,10 +341,8 @@ class PHPFina
             }
             
             if ($value!==null || $skipmissing===0) {
-                // Re-enable see https://openenergymonitor.org/emon/node/11260
-                // if ($time>=$start && $time<$end) {
-                    $data[] = array($time*1000,$value);
-                // }
+                // see https://openenergymonitor.org/emon/node/11260
+                $data[] = array($time*1000,$value);
             }
 
             $i++;
@@ -718,7 +721,7 @@ class PHPFina
         return true;
     }
     
-    public function get_npoints($feedid)
+    private function get_npoints($feedid)
     {
         $bytesize = 0;
         

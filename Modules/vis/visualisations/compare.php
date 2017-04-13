@@ -8,15 +8,20 @@
 */
     global $path, $embed;
 
-    if (isset($_GET['feedA'])) $feedA = $_GET['feedA']; else $feedA = 0;
-    if (isset($_GET['feedB'])) $feedB = $_GET['feedB']; else $feedB = 0;
+    if (isset($_GET['feedA'])) $feedA = (int) $_GET['feedA']; else $feedA = 0;
+    if (isset($_GET['feedB'])) $feedB = (int) $_GET['feedB']; else $feedB = 0;
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.touch.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.touch.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/inst.js"></script>
@@ -206,6 +211,7 @@
     var plot = $.plot($("#graph"), [
     {data: feedA, lines: { show: true }},
     {data: feedB_cal, lines: { show: true }}], {
+      canvas: true,
       grid: { show: true, hoverable: true, clickable: true },
       xaxis: { mode: "time", timezone: "browser", min: start, max: end },
       selection: { mode: "x" },
@@ -213,6 +219,7 @@
     });
 
     var plot = $.plot($("#diff"), [{color:2, data: diff, lines: { show: true }}], {
+      canvas: true,
       grid: { show: true, hoverable: true },
       xaxis: { mode: "time", timezone: "browser", min: start, max: end },
       touch: { pan: "", scale: "x" , delayTouchEnded: 0}
@@ -227,6 +234,7 @@
     var plot = $.plot($("#line"), [
       {color:2,data: feedAB, points: { show: true }},
       {color: "#000",data: line_data,lines: { show: true, fill: false }}],{
+        canvas: true,
         grid: { show: true, hoverable: true },
         xaxis: { min: lineAmin-lineAoffset, max: lineAmax+lineAoffset},
         yaxis: { min: lineBmin-lineBoffset, max: lineBmax+lineBoffset},

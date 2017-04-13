@@ -9,11 +9,16 @@
     global $path, $embed;
 ?>
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.stack.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/date.format.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
+
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/daysmonthsyears.js"></script>
@@ -48,8 +53,8 @@
   start -= offset * 3600000;
   end -= offset * 3600000;
   
-  var dataA = get_feed_data_DMY(kwhdA,start,end,"day");
-  var dataB = get_feed_data_DMY(kwhdB,start,end,"day");
+  var dataA = get_feed_data_DMY(kwhdA,start,end,"daily");
+  var dataB = get_feed_data_DMY(kwhdB,start,end,"daily");
 
   if (delta==1) {
       var tmpA = [];
@@ -75,7 +80,7 @@
 
   var embed = <?php echo $embed; ?>;
   $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').width()*0.5);
+  $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
 
 
@@ -96,7 +101,7 @@
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());
-    $('#graph').height($('#graph_bound').width()*0.5);
+    $('#graph').height($('#graph_bound').height());
     if (embed) $('#graph').height($(window).height());
     bargraph(monthsA.data,monthsB.data,monthsC.data,3600*24*20,"month");
   });
@@ -144,6 +149,7 @@
 
   function bargraph(dataA,dataB,dataC,barwidth, mode){
     $.plot($("#graph"), [ {color: "#e0c21f", data:dataA}, {color: "#4e9acf", data:dataB}, {color: "#AA96ff", data:dataC}], {
+      canvas: true,
       series: {
         stack: true,
         bars: { show: true,align: "center",barWidth: (barwidth*1000),fill: true }

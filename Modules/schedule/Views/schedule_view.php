@@ -16,25 +16,24 @@
     <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Schedule Help'); ?></a></div>
     <div id="localheading"><h2><?php echo _('Schedules'); ?></h2></div>
 
-    <div id="noschedules" class="hide">
-        <br>
-        <div class="alert alert-block">
+    <div id="table"></div>
+
+    <div id="noschedules" class= "alert alert-block hide">
             <h4 class="alert-heading"><?php echo _('No schedules'); ?></h4><br>
             <p><?php echo _('There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
-        </div>
     </div>
 
-    <div id="table"><div align='center'>loading...</div></div>
+    <div id="schedule-loader" class="ajax-loader"></div>
 
     <div id="bottomtoolbar"><hr>
         <button id="addnewschedule" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New schedule'); ?></button>
     </div>
 </div>
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="scheduleDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="scheduleDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('Delete schedule'); ?></h3>
+        <h3 id="scheduleDeleteModalLabel"><?php echo _('Delete schedule'); ?></h3>
     </div>
     <div class="modal-body">
         <p><?php echo _('Deleting a schedule is permanent.'); ?>
@@ -84,6 +83,7 @@
       }
 
       table.draw();
+      $('#schedule-loader').hide();
       if (table.data.length != 0) {
         $("#noschedules").hide();
         $("#localheading").show();
@@ -97,8 +97,7 @@
   }
 
   var updater;
-  function updaterStart(func, interval)
-  {
+  function updaterStart(func, interval){
     clearInterval(updater);
     updater = null;
     if (interval > 0) updater = setInterval(func, interval);
@@ -110,7 +109,9 @@
   });
 
   $("#table").bind("onSave", function(e,id,fields_to_update){
+    $('#schedule-loader').show();
     schedule.set(id,fields_to_update);
+    $('#schedule-loader').hide();
   });
 
   $("#table").bind("onResume", function(e){
@@ -118,20 +119,20 @@
   });
 
   $("#table").bind("onDelete", function(e,id,row){
-    $('#myModal').modal('show');
-    $('#myModal').attr('scheduleid',id);
-    $('#myModal').attr('feedrow',row);
+    $('#scheduleDeleteModal').modal('show');
+    $('#scheduleDeleteModal').attr('scheduleid',id);
+    $('#scheduleDeleteModal').attr('feedrow',row);
   });
 
   $("#confirmdelete").click(function()
   {
-    var id = $('#myModal').attr('scheduleid');
-    var row = $('#myModal').attr('schedulerow');
+    var id = $('#scheduleDeleteModal').attr('scheduleid');
+    var row = $('#scheduleDeleteModal').attr('schedulerow');
     schedule.remove(id);
     table.remove(row);
     update();
 
-    $('#myModal').modal('hide');
+    $('#scheduleDeleteModal').modal('hide');
   });
 
   $("#addnewschedule").click(function(){

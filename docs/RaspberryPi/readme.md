@@ -1,7 +1,11 @@
 ## Install Emoncms on Raspberry Pi (Raspbian Jessie)
 
-This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.    
-An alternative installation guide is [avaliable for Raspbian Wheezy](install_Wheezy.md) - they are different, so ensure that you use the correct guide!  
+This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.
+
+**Highly Recommended: A pre-built Raspberry Pi SD card image (based on Raspbian Jessie lite) is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
+
+An alternative (older) installation guide is [avaliable for Raspbian Wheezy](install_Wheezy.md) - they are different, so ensure that you use the correct guide!  
+
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
 Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
@@ -17,7 +21,9 @@ Install the dependencies:
 
 During the installation, you will be prompted to select a password for the 'MYSQL "root" user', and to confirm it by entering it a second time. Make a note of the password - you will need it later
 
-**Note: at time of writing (March 2016) the version of php5-redis included in the Raspbian Jessie sources (2.2.5-1) caused Apache to crash (segmentation errrors in Apache error log). Installing the latest stable version (2.2.7) of php5-redis from github fixed the issue. This step probably won't be required in the future when the updated version of php5-redis makes it's way into the sources.** 
+**March 2016: The version of php5-redis included in the Raspbian Jessie sources (2.2.5-1) caused Apache to crash (segmentation errrors in Apache error log). Installing the latest stable version (2.2.7) of php5-redis from github fixed the issue. This step probably won't be required in the future when the updated version of php5-redis makes it's way into the sources.**
+
+**February 2017: phpredis v3.1.1 has been released supporting both php5 and php7. It can be installed direct from PECL and is called simply: redis. This guide will be updated to reflect this change once tested in due course.**
 
 To check the version in the sources: `sudo apt-cache show php5-redis`
 
@@ -74,9 +80,9 @@ Cd into the www directory and git clone emoncms:
     mysql -u root -p
 
 When prompted, enter the 'MYSQL "root" user' password you were prompted for earlier in this procedure.
-Create the emoncms database:
+Create the emoncms database using utf8 character decoding:
 
-    CREATE DATABASE emoncms;
+    CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
 
 Add an emoncms database user and set that user's permissions.
 In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user.
@@ -114,6 +120,11 @@ Update your settings to use your Database 'user' & 'password', which will enable
     $database = "emoncms";
     $username = "emoncms";
     $password = "new_secure_password";
+    
+That's also the opportunity to activate redis support if needed :
+
+	//2 #### Redis
+	$redis_enabled = true;
 
 Save and exit.  
 Create a symlink to reference emoncms within the web root folder:
