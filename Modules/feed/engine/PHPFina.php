@@ -112,6 +112,7 @@ class PHPFina
             $meta->interval = $tmp[1];
             $tmp = unpack("I",fread($metafile,4)); 
             $meta->start_time = $tmp[1];
+            $meta->npoints = $this->get_npoints($feedid);
             fclose($metafile);
 
             $metadata_cache[$feedid] = $meta; // Cache it
@@ -720,7 +721,7 @@ class PHPFina
         return true;
     }
     
-    public function get_npoints($feedid)
+    private function get_npoints($feedid)
     {
         $bytesize = 0;
         

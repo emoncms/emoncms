@@ -10,6 +10,16 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
+class ProcessError {
+    const NONE = 0;
+    const TOO_MANY_ITERATIONS = 1;
+}
+
+class ProcessOriginType {
+    const INPUT = 1;
+    const VIRTUALFEED = 2;
+}
+
 class Process
 {
     public $mysqli;
@@ -20,7 +30,9 @@ class Process
     public $proc_initialvalue;  // save the input value at beginning of the processes list execution
     public $proc_skip_next;     // skip execution of next process in process list
     public $proc_goto;          // goto step in process list
-
+    
+    public $runtime_error = ProcessError::NONE;  // Errors that occured at runtime
+    
     private $log;
     private $modules_functions = array();
 
@@ -61,6 +73,7 @@ class Process
         return $list;
     }
 
+
     public function input($time, $value, $processList, $options = null)
     {
         //$this->log->info("input() received time=$time\tvalue=$value");
@@ -71,7 +84,9 @@ class Process
         $process_list = $this->get_process_list();
         $pairs = explode(",",$processList);
         $total = count($pairs);
+        $steps=0;
         for($this->proc_goto = 0 ; $this->proc_goto < $total ; $this->proc_goto++) {
+            $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
             $processkey = $inputprocess[0];                          // Process id
             if (!isset($process_list[$processkey])) {
@@ -90,6 +105,23 @@ class Process
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; $this->proc_goto++;
             }
+
+            if ($steps > $total*2) {
+                // We are executing a looping processlist or too much gotos
+                // need to add 'error_found' process to this processList.
+                $this->runtime_error = ProcessError::TOO_MANY_ITERATIONS;
+                $this->log->error("input() DEACTIVATED processList due to too many steps. steps=$steps proc_goto=".$this->proc_goto." processkey=$processkey sourcetype=" . $options['sourcetype'] . " sourceid=" . $options['sourceid'] );
+                switch ($options['sourcetype']) {
+                    case ProcessOriginType::INPUT:
+                         $this->input->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
+                         break;
+                         
+                    case ProcessOriginType::VIRTUALFEED:
+                         $this->feed->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
+                         break;
+                }
+                return false;
+            }
         }
         return $value;
     }
@@ -99,7 +131,7 @@ class Process
         $list = array();
         $dir = scandir("Modules");
         for ($i=2; $i<count($dir); $i++) {
-            if (filetype("Modules/".$dir[$i])=='dir') {
+            if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
                 $class = $this->get_module_class($dir[$i]);
                 if ($class != null) {
                     $mod_process_list = $class->process_list();

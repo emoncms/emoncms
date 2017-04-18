@@ -88,6 +88,9 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
 
+        // If feed of given name by the user already exists
+        if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
+        
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
@@ -203,6 +206,15 @@ class Feed
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
+    
+    public function exists_tag_name($userid,$tag,$name)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
+        $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name' AND tag = '$tag'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+    }
 
     // Update feed size and return total
     public function update_user_feeds_size($userid)
@@ -244,13 +256,6 @@ class Feed
         $feedid = (int) $feedid;
         $engine = $this->get_engine($feedid);
         return $this->EngineClass($engine)->get_meta($feedid);
-    }
-
-    public function get_npoints($feedid) {
-        $feedid = (int) $feedid;
-        $engine = $this->get_engine($feedid);
-        if ($engine!=5) return false;
-        return $this->EngineClass($engine)->get_npoints($feedid);
     }
 
 
@@ -406,6 +411,8 @@ class Feed
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
+                $lastvalue['time'] = (int) $lastvalue['time'];
+                $lastvalue['value'] = (float) $lastvalue['value'];
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 $lastvalue = $this->EngineClass($engine)->lastvalue($id);

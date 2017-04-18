@@ -124,7 +124,13 @@ function input_controller()
                             $itemtime = (int) $item[0];
 
                             $time = $time_ref + (int) $itemtime;
-                            $nodeid = $item[1];
+                            if (!is_object($item[1])) {
+                                $nodeid = $item[1]; 
+                            } else {
+                                $valid = false;
+                                $error = "Format error, node must not be an object";
+                                break;
+                            }
 
                             $validate_access = $input->validate_access($dbinputs, $nodeid);
                             if (!$validate_access['success']) {
@@ -137,6 +143,12 @@ function input_controller()
                             $name = 1;
                             for ($i=2; $i<count($item); $i++)
                             {
+                                if (is_object($item[$i]))
+                                {
+                                    $value = (float) current($item[$i]);
+                                    $inputs[key($item[$i])] = $value;
+                                    continue;
+                                }
                                 if (strlen($item[$i]))
                                 {
                                     $value = (float) $item[$i];
@@ -158,7 +170,7 @@ function input_controller()
                                 else
                                 {
                                     $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => "INPUT",'sourceid'=>$dbinputs[$nodeid][$name]['id']));
+                                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => ProcessOriginType::INPUT,'sourceid'=>$dbinputs[$nodeid][$name]['id']));
                                 }
                             }
 
@@ -211,49 +223,67 @@ function input_controller()
                 if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
 
                 $datain = false;
-                // code below processes input regardless of json or csv type
+                /* The code below processes the data regardless of its type,
+                 * unless fulljson is used in which case the data is decoded
+                 * from JSON.  The previous 'json' type is retained for
+                 * backwards compatibility, since some strings would be parsed
+                 * differently in the two cases. */
                 if (isset($_GET['json'])) $datain = get('json');
+                else if (isset($_GET['fulljson'])) $datain = get('fulljson');
                 else if (isset($_GET['csv'])) $datain = get('csv');
                 else if (isset($_GET['data'])) $datain = get('data');
                 else if (isset($_POST['data'])) $datain = post('data');
 
                 if ($datain!="")
                 {
-                    $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);
-                    $datapairs = explode(',', $json);
-                    $data = array();
+                    if (isset($_GET['fulljson'])) {
+                        $data = json_decode($datain, true, 2);
+                        if (is_null($data)) {
+                            $valid = false;
+                            $error = "Error decoding JSON string (invalid or too deeply nested)";
+                        } else if (!is_array($data)) {
+                            $valid = false;
+                            $error = "Input must be a JSON object";
+                        }
+                    } else {
+                        $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);
+                        $datapairs = explode(',', $json);
+                        $data = array();
 
-                    $csvi = 0;
-                    for ($i=0; $i<count($datapairs); $i++)
-                    {
-                        $keyvalue = explode(':', $datapairs[$i]);
+                        $csvi = 0;
+                        for ($i=0; $i<count($datapairs); $i++)
+                        {
+                            $keyvalue = explode(':', $datapairs[$i]);
 
-                        if (isset($keyvalue[1])) {
-                            if ($keyvalue[0]=='') {$valid = false; $error = "Format error, json key missing or invalid character"; }
-                            if (!is_numeric($keyvalue[1])) {$valid = false; $error = "Format error, json value is not numeric"; }
-                            $data[$keyvalue[0]] = (float) $keyvalue[1];
-                        } else {
-                            if (!is_numeric($keyvalue[0])) {$valid = false; $error = "Format error: csv value is not numeric"; }
-                            $data[$csvi+1] = (float) $keyvalue[0];
-                            $csvi ++;
+                            if (isset($keyvalue[1])) {
+                                if ($keyvalue[0]=='') {$valid = false; $error = "Format error, json key missing or invalid character"; }
+                                if (!is_numeric($keyvalue[1])) {$valid = false; $error = "Format error, json value is not numeric"; }
+                                $data[$keyvalue[0]] = (float) $keyvalue[1];
+                            } else {
+                                if (!is_numeric($keyvalue[0])) {$valid = false; $error = "Format error: csv value is not numeric"; }
+                                $data[$csvi+1] = (float) $keyvalue[0];
+                                $csvi ++;
+                            }
                         }
                     }
 
-                    $tmp = array();
-                    foreach ($data as $name => $value)
-                    {
-                        if (!isset($dbinputs[$nodeid][$name])) {
-                            $inputid = $input->create_input($userid, $nodeid, $name);
-                            $dbinputs[$nodeid][$name] = true;
-                            $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
-                            $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                        } else {
-                            $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => "INPUT",'sourceid'=>$dbinputs[$nodeid][$name]['id']));
+                    if ($valid) {
+                        $tmp = array();
+                        foreach ($data as $name => $value)
+                        {
+                            if (!isset($dbinputs[$nodeid][$name])) {
+                                $inputid = $input->create_input($userid, $nodeid, $name);
+                                $dbinputs[$nodeid][$name] = true;
+                                $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
+                                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                            } else {
+                                $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList'],'opt'=>array('sourcetype' => ProcessOriginType::INPUT,'sourceid'=>$dbinputs[$nodeid][$name]['id']));
+                            }
                         }
-                    }
 
-                    foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList'],$i['opt']);
+                        foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList'],$i['opt']);
+                    }
                 }
                 else
                 {
