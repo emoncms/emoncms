@@ -61,15 +61,15 @@ Click save and then exit.
 
 ### 5) Generate the locale for your language.
 
-Currently emonCMS seems to detect the system lenguage in order to show translations, the supported locales can be found in '/usr/share/i18n/SUPPORTED'. Open the file to see the supported languages and character sets:
+The supported locales can be found in '/usr/share/i18n/SUPPORTED'. Open the file to see the supported languages and character sets:
 
     $ sudo nano /usr/share/i18n/SUPPORTED
 
-To change linux lenguage you need to reconfigure the locales and pick from the list the UTF-8 for the desired lenguage 
+To change linux language you need to reconfigure the locales and pick from the list the UTF-8 for the desired language 
 
     $ sudo dpkg-reconfigure locales
     
-You will see multiple lines for all the lenguagues, assuming (as an example) you are translating to en\_US you should pick always the UTF-8 (8-bit Unicode Transformation Format):
+You will see multiple lines for all the languages, assuming (as an example) you are translating to en\_US you should pick always the UTF-8 (8-bit Unicode Transformation Format):
 
     [X] en_US.UTF-8 UTF-8
     [ ] en_US ISO-8859-1
@@ -83,11 +83,11 @@ To generate the locale for the default character set, run the following:
 
     $ sudo /etc/init.d/apache2 restart 
     
-To enable a lenguage as a default for emonCMS you need to edit locale.php line 88
+To enable a language as a default for emonCMS you need to edit `locale.php` line 88
     
     $ default  : $lang='en_US';
 
-Notice that not all the string have been translated or ar emissing echoes so the misssing ones will show in english until translated
+*Note: currently not all Emoncms strings have been translated*
 
 
 This short guide is based on the following useful tutorials and QA:
