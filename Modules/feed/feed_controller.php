@@ -63,6 +63,12 @@ function feed_controller()
             // Export multiple feeds on the same csv
             // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
             $result = $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
+        } else if ($route->action == "listdmy") {
+            if ($session['read']) {
+                if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) $result = $feed->get_user_feeds_with_dmy($session['userid']);
+                else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) $result = $feed->get_user_public_feeds_with_dmy(get('userid'));
+            }
+            else if (isset($_GET['userid'])) $result = $feed->get_user_public_feeds_with_dmy(get('userid'));
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:

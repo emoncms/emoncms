@@ -282,6 +282,46 @@ class PHPFina
         }
         return false;
     }
+    
+    /**
+     * Get array with last day, month or year time and value from a feed
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $time The time to get
+     * @param bool $clip If $time is before the start or after the end, clip to the start/end
+    */
+    public function valueattime($feedid, $time, $clip)
+    {
+        if (!$meta = $this->get_meta($feedid)) return false;
+        $meta->npoints = $this->get_npoints($feedid);
+        
+        $pos = round(($time - $meta->start_time) / $meta->interval);
+        if ($clip) {
+            if ($pos < 0) {
+                $pos = 0;
+                $time = $meta->start_time;
+            } else if ($pos >= $meta->npoints) {
+                $pos = $meta->npoints - 1;
+                $time = $meta->start_time + ($pos * $meta->interval);
+            }
+        }
+        
+        $value = null;
+        
+        if ($pos >= 0 && $pos < $meta->npoints) {
+            // read from the file
+            $fh = fopen($this->dir.$feedid.".dat", 'rb');
+            fseek($fh,$pos*4);
+            $val = unpack("f",fread($fh,4));
+
+            // add to the data array if its not a nan value
+            if (!is_nan($val[1])) {
+                $value = $val[1];
+            }
+        }
+        
+        return array('time'=>$time, 'value'=>$value);
+    }
 
     /**
      * Return the data for the given timerange

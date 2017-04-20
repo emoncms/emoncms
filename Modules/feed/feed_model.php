@@ -322,6 +322,33 @@ class Feed
         }
         return $feeds;
     }
+    
+    public function get_user_feeds_with_dmy($userid)
+    {
+        $feeds = $this->get_user_feeds($userid);
+        
+        $newFeeds = array();
+        foreach ($feeds as $feed) {
+            $d_value = $this->get_dmy_timevalue($feed['id'], "d");
+            if ($d_value!==null) $feed["dvalue"] = $d_value;
+            $m_value = $this->get_dmy_timevalue($feed['id'], "m");
+            if ($d_value!==null) $feed["mvalue"] = $m_value;
+            $y_value = $this->get_dmy_timevalue($feed['id'], "y");
+            if ($d_value!==null) $feed["yvalue"] = $y_value;
+            
+            $newFeeds[] = $feed;
+        }
+
+        return $newFeeds;
+    }
+
+    public function get_user_public_feeds_with_dmy($userid)
+    {
+        $feeds = $this->get_user_feeds_with_dmy($userid);
+        $publicfeeds = array();
+        foreach ($feeds as $feed) { if ($feed['public']) $publicfeeds[] = $feed; }
+        return $publicfeeds;
+    }
 
     public function get_user_feed_ids($userid)
     {
@@ -427,6 +454,49 @@ class Feed
             if ($row) {
                 $lastvalue = array('time'=>(int)$row['time'], 'value'=>(float)$row['value']);
             }
+        }
+        return $lastvalue;
+    }
+    
+    public function get_dmy_timevalue($id, $dmy)
+    {
+        $id = (int) $id;
+        //$this->log->info("get_dmy_timevalue() $id");
+        if (!$this->exist($id)) {
+            $this->log->error("get_dmy_timevalue() Feed '".$id."' does not exist.");
+            return null;
+        }
+        $engine = $this->get_engine($id);
+
+        if ($engine != Engine::PHPFINA) { //only support PHPFINA for now
+            return null;
+        }
+        
+        $userid = $this->get_field($id,"userid");
+        $timezone = $this->get_user_timezone($userid);
+        if ($timezone===0) $timezone = "UTC";
+        
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->modify("midnight");
+        if ($dmy == "d") $date->modify("today");
+        else if ($dmy == "m") $date->modify("first day of this month");
+        else if ($dmy == "y") $date->modify("first day of January");
+        else return null;
+        $time = $date->getTimestamp();
+        
+        $lastvalue = null;
+        $rediskey = "feed:$id:value:$time";
+        
+        if ($this->redis) {
+            if ($this->redis->hExists($rediskey,'time')) {
+                return $this->redis->hmget($rediskey,array('time','value'));
+            }
+        }
+        
+        $lastvalue = $this->EngineClass($engine)->valueattime($id, $time, true);
+        if ($this->redis) {
+            $this->redis->hMset($rediskey, array('time' => $lastvalue['time'],'value' => $lastvalue['value']));
         }
         return $lastvalue;
     }
@@ -904,4 +974,3 @@ class Feed
         return $timezone;
     }
 }
-
