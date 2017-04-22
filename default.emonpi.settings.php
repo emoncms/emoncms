@@ -72,6 +72,7 @@
 //5 #### User Interface settings
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
+    $themecolor = "standard";
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon_emonpi.png";

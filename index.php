@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.2 | 2017.03.03";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.3 | 2017.04.18";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -134,10 +134,15 @@
             $route->action = $default_action;
             $route->subaction = "";
         } else {
-            // Authenticated defaults
-            $route->controller = $default_controller_auth;
-            $route->action = $default_action_auth;
-            $route->subaction = "";
+            if (isset($session["startingpage"])) {
+                header('Location: '.$session["startingpage"]);
+                die;
+            } else {
+                // Authenticated defaults
+                $route->controller = $default_controller_auth;
+                $route->action = $default_action_auth;
+                $route->subaction = "";
+            }
         }
     }
 

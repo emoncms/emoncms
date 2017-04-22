@@ -52,7 +52,7 @@ var user = {
   'set':function(data)
   {
     var result = {};
-    $.ajax({ url: path+"user/set.json", data: "&data="+JSON.stringify(data) ,dataType: 'json', async: false, success: function(data) {result = data;} });
+    $.ajax({ url: path+"user/set.json", data: "&data="+encodeURIComponent(JSON.stringify(data)) ,dataType: 'json', async: false, success: function(data) {result = data;} });
     return result;
   },
 
