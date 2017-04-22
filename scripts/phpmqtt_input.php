@@ -229,7 +229,7 @@
             // Automatic device configuration using device module if 'describe' keyword found
             if ($name=="describe") {
                 $result = $device->autocreate($userid,$nodeid,$value);
-                $log->warn($result);
+                $log->warn(json_encode($result));
             }
             else 
             {
