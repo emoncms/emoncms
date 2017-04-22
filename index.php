@@ -134,10 +134,15 @@
             $route->action = $default_action;
             $route->subaction = "";
         } else {
-            // Authenticated defaults
-            $route->controller = $default_controller_auth;
-            $route->action = $default_action_auth;
-            $route->subaction = "";
+            if (isset($session["startingpage"])) {
+                header('Location: '.$session["startingpage"]);
+                die;
+            } else {
+                // Authenticated defaults
+                $route->controller = $default_controller_auth;
+                $route->action = $default_action_auth;
+                $route->subaction = "";
+            }
         }
     }
 
