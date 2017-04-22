@@ -557,7 +557,7 @@ class User
         $_SESSION['lang'] = $language;
         
         $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ? WHERE id = ?");
-        $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $userid);
+        $stmt->bind_param("sssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $userid);
         if (!$stmt->execute()) {
             return array('success'=>false, 'message'=>_("Error updating user info"));
         }
