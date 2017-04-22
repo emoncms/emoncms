@@ -19,7 +19,23 @@ var customtablefields = {
         var field = $(this).parent().attr('field');
         var t = table;
         if (!t.data[row]['#READ_ONLY#']) {
-          t.data[row][field] = !t.data[row][field];
+		  var val = t.data[row][field];
+          if(typeof val === "boolean"){		  
+            t.data[row][field] = !val;
+		  }else{
+			//boolean conversion and negate
+			var boolVal;
+			if(typeof val === "number"){
+				boolVal = val === 0 ? false : true;
+			} else if(typeof val === "string"){
+				boolVal = (val == "0" || val == "false") ? false : true;
+			}else{
+				//neither bool nor number nor string
+				//"strange" value
+				boolVal = false;
+			}
+			t.data[row][field] = !boolVal;  
+		  }
 
           var fields = {};
           fields[field] = t.data[row][field];
