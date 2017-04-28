@@ -114,6 +114,7 @@ input[type=text][class=variable-name-edit] {
     background-image:none !important;
     background-color:#44b3e2 !important;
     border:none !important;
+    padding:0px !important;
 }
 
 .nav > .active > a {
