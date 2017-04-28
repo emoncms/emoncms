@@ -134,7 +134,7 @@
             $route->action = $default_action;
             $route->subaction = "";
         } else {
-            if (isset($session["startingpage"])) {
+            if (isset($session["startingpage"]) && $session["startingpage"]!="") {
                 header('Location: '.$session["startingpage"]);
                 die;
             } else {

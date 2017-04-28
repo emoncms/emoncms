@@ -113,7 +113,11 @@ class User
                 if ($loginresult)
                 {
                     // Remember me login
-                    $result = $this->mysqli->query("SELECT id,username,admin,language,startingpage FROM users WHERE id = '$loginresult'");
+                    
+                    // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
+                    // without cuasing an error if it has not yet been created in the database.
+                    // SELECT id,username,admin,language,startingpage FROM users WHERE id = '$loginresult'
+                    $result = $this->mysqli->query("SELECT * FROM users WHERE id = '$loginresult'");
                     if ($result->num_rows < 1) {
                         $this->logout(); // user id does not exist
                     } else {
@@ -126,7 +130,7 @@ class User
                             $_SESSION['write'] = 1;
                             //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
                             $_SESSION['lang'] = $userData->language;
-                            $_SESSION['startingpage'] = $userData->startingpage;
+                            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
                             // There is a chance that an attacker has stolen the login token, so we store
                             // the fact that the user was logged in via RememberMe (instead of login form)
                             $_SESSION['cookielogin'] = true;
@@ -208,7 +212,10 @@ class User
         $username = $this->mysqli->real_escape_string($username);
         //$password = $this->mysqli->real_escape_string($password);
 
-        $result = $this->mysqli->query("SELECT id,password,admin,salt,language,startingpage FROM users WHERE username = '$username'");
+        // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
+        // without cuasing an error if it has not yet been created in the database.
+        // SELECT id,password,admin,salt,language,startingpage FROM users WHERE id = '$loginresult'
+        $result = $this->mysqli->query("SELECT * FROM users WHERE username = '$username'");
 
         if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
 
@@ -228,7 +235,7 @@ class User
             $_SESSION['write'] = 1;
             $_SESSION['admin'] = $userData->admin;
             $_SESSION['lang'] = $userData->language;
-            $_SESSION['startingpage'] = $userData->startingpage;
+            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
                             
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
@@ -552,7 +559,8 @@ class User
         $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
         $language = preg_replace('/[^\w\s-.]/','',$data->language);
-        $startingpage = preg_replace('/[^\p{N}\p{L}_\s\/-?=]/u','',$data->startingpage);
+        
+        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?=\/]/u','',$data->startingpage);
         
         $_SESSION['lang'] = $language;
         
