@@ -86,8 +86,11 @@
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
 
-    require_once "Modules/device/device_model.php";
-    $device = new Device($mysqli,$redis);
+    $device = false;
+    if (file_exists("Modules/device/device_model.php")) {
+        require_once "Modules/device/device_model.php";
+        $device = new Device($mysqli,$redis);
+    }
     
     $mqtt_client = new Mosquitto\Client();
     
@@ -228,8 +231,10 @@
             
             // Automatic device configuration using device module if 'describe' keyword found
             if ($name=="DESCRIBE" || $name=="describe") {
-                $result = $device->autocreate($userid,$nodeid,$value);
-                $log->warn(json_encode($result));
+                if ($device && method_exists($device,"autocreate")) {
+                    $result = $device->autocreate($userid,$nodeid,$value);
+                    $log->warn(json_encode($result));
+                }
             }
             else 
             {
