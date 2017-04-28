@@ -545,6 +545,7 @@ class User
     {
         $userid = intval($userid);
         $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read FROM users WHERE id=$userid");
+        if (!$result) return array("success"=>false, "message"=>"Error fetching user data, you may need to run database update");
         $data = $result->fetch_object();
         return $data;
     }

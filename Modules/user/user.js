@@ -39,6 +39,11 @@ var user = {
   {
     var result = {};
     $.ajax({ url: path+"user/get.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+    
+    
+    if (result.success!=undefined) {
+        alert(result.message);
+    }
     return result;
   },
   
