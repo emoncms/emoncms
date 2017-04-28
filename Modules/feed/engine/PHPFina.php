@@ -1094,6 +1094,10 @@ class PHPFina
     
     public function upload_fixed_interval($id,$start,$interval,$npoints)
     {
+        $id = (int) $id;
+        $start = (int) $start;
+        $interval = (int) $interval;
+        $npoints = (int) $npoints;
         /*
         // Initial implementation using post_bulk_prepare
         if (!$fh=fopen('php://input','r')) return false;
@@ -1148,6 +1152,9 @@ class PHPFina
     
     public function upload_variable_interval($feedid,$npoints)
     {
+        $feedid = (int) $feedid;
+        $npoints = (int) $npoints;
+        
         if (!$fh=fopen('php://input','r')) return false;
         
         for ($i=0; $i<$npoints; $i++) {
