@@ -1091,4 +1091,83 @@ class PHPFina
         
         return true;
     }
+    
+    public function upload_fixed_interval($id,$start,$interval,$npoints)
+    {
+        $id = (int) $id;
+        $start = (int) $start;
+        $interval = (int) $interval;
+        $npoints = (int) $npoints;
+        /*
+        // Initial implementation using post_bulk_prepare
+        if (!$fh=fopen('php://input','r')) return false;
+        for ($i=0; $i<$npoints; $i++) {
+            $time = $start + ($interval * $i);
+            $tmp = unpack("f",fread($fh,4));
+            $value = $tmp[1];
+            $this->post_bulk_prepare($id,$time,$value,null);
+        }
+        $this->post_bulk_save();
+        fclose($fh);
+        */
+        
+        // Faster direct block write method
+        
+        // Fetch data from post body and check length match
+        $data = file_get_contents('php://input');
+        if ($npoints!=(strlen($data) / 4.0)) {
+            $this->log->warn("upload() data body does not match blocksize param id=$id");
+            return false;
+        }
+        
+        // Load feed meta to fetch start time and interval
+        if (!$meta = $this->get_meta($id)) {
+            $this->log->warn("upload() failed to fetch meta id=$id");
+            return false;
+        }
+        $meta->npoints = $this->get_npoints($id);
+        
+        if ($meta->start_time==0 && $meta->npoints != 0) {
+            $this->log->warn("upload() start time is zero but data in feed =$id");
+            return false;
+        }
+        
+        // If no data in feed and start time is zero, create meta
+        if ($meta->npoints == 0 && $meta->start_time==0) {
+            $meta->start_time = $start;
+            $this->create_meta($id,$meta);
+        }
+        
+        // Calculate start position
+        $pos = floor(($start - $meta->start_time)/$meta->interval);
+        
+        // Open feed data file, seek to position and write in data block
+        $fh = fopen($this->dir.$id.".dat","c");
+        fseek($fh,$pos*4);
+        fwrite($fh,$data);
+        fclose($fh);
+        
+        return true;
+    }
+    
+    public function upload_variable_interval($feedid,$npoints)
+    {
+        $feedid = (int) $feedid;
+        $npoints = (int) $npoints;
+        
+        if (!$fh=fopen('php://input','r')) return false;
+        
+        for ($i=0; $i<$npoints; $i++) {
+            $tmp = unpack("If",fread($fh,8));
+            $time = $tmp[1];
+            $value = $tmp[2];
+            //print $time." ".$value."\n";
+            $this->post_bulk_prepare($feedid,$time,$value,null);
+        }
+        $this->post_bulk_save();
+
+        fclose($fh);
+        
+        return true;
+    }
 }

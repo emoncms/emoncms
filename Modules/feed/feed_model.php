@@ -742,7 +742,36 @@ class Feed
 
         return $value;
     }
+    
+    public function upload_fixed_interval($feedid,$start,$interval,$npoints)
+    {
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $interval = (int) $interval;
+        $npoints = (int) $npoints;
 
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        if ($engine==Engine::PHPFINA) {
+            return $this->EngineClass($engine)->upload_fixed_interval($feedid,$start,$interval,$npoints);
+        } else {
+            return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
+        }
+    }
+
+    public function upload_variable_interval($feedid,$npoints)
+    {
+        $feedid = (int) $feedid;
+        $npoints = (int) $npoints;
+        
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');        
+        $engine = $this->get_engine($feedid);
+        if ($engine==Engine::PHPFINA) {
+            return $this->EngineClass($engine)->upload_variable_interval($feedid,$npoints);
+        } else {
+            return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
+        }
+    }
 
     // MysqlTimeSeries specific functions that we need to make available to the controller
     public function mysqltimeseries_export($feedid,$start) {
