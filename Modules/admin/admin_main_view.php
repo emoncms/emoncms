@@ -328,7 +328,7 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " &nbsp; "; } ?></td></tr>
             </table>
             
         </td>
