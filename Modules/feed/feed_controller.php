@@ -85,7 +85,11 @@ function feed_controller()
                         if (isset($_GET['interval'])) {
                             $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                         } else if (isset($_GET['mode'])) {
-                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                            if (isset($_GET['split'])) {
+                                $result = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
+                            } else {
+                                $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                            }
                         }
                     }
                     else if ($route->action == 'average') {

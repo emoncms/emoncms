@@ -500,6 +500,23 @@ class Feed
         return $data;
     }
     
+    public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)
+    {
+        $feedid = (int) $feedid;
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        
+        if ($engine != Engine::PHPFINA) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
+        
+        // Call to engine get_data
+        $userid = $this->get_field($feedid,"userid");
+        $timezone = $this->get_user_timezone($userid);
+            
+        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
+        return $data;
+    }
+    
     public function get_average($feedid,$start,$end,$outinterval)
     {
         $feedid = (int) $feedid;

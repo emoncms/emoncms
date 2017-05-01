@@ -409,6 +409,83 @@ class PHPFina
         
         return $data;
     }
+    
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
+    {
+        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
+        
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $split = json_decode($split);  
+        if (gettype($split)!="array") return false;
+        if (count($split)>24) return false;     
+               
+        // If meta data file does not exist exit
+        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        $meta->npoints = $this->get_npoints($id);
+        
+        $data = array();
+        
+        $fh = fopen($this->dir.$id.".dat", 'rb');
+        
+        $date = new DateTime();
+        if ($timezone===0) $timezone = "UTC";
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        if ($mode=="weekly") $date->modify("this monday");
+        if ($mode=="monthly") $date->modify("first day of this month");
+        
+        $n = 0;
+        while($n<10000) // max itterations
+        {
+            $time = $date->getTimestamp();
+            if ($time>$end) break;
+            
+            $value = null;
+            
+            $split_values = array();
+            
+            foreach ($split as $splitpoint) 
+            {
+                $splitpoint = (float) $splitpoint;
+                $split_offset = (int) $splitpoint * 3600;
+                
+                $pos = round((($time+$split_offset) - $meta->start_time) / $meta->interval);
+                $value = null;
+                
+                if ($pos>=0 && $pos < $meta->npoints)
+                {
+                    // read from the file
+                    fseek($fh,$pos*4);
+                    $val = unpack("f",fread($fh,4));
+                    
+                    // add to the data array if its not a nan value
+                    if (!is_nan($val[1])) {
+                        $value = $val[1];
+                    } else {
+                        $value = null;
+                    }
+                }
+                
+                $split_values[] = $value;
+            
+            }
+            
+            if ($time>=$start && $time<$end) {
+                $data[] = array($time*1000,$split_values);
+            }
+            
+            if ($mode=="daily") $date->modify("+1 day");
+            if ($mode=="weekly") $date->modify("+1 week");
+            if ($mode=="monthly") $date->modify("+1 month");
+            $n++;
+        }
+        
+        fclose($fh);
+        
+        return $data;
+    }
 
     public function export($id,$start)
     {
