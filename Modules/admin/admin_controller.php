@@ -225,6 +225,12 @@ function admin_controller()
                     readfile($backup_file);
                     exit;
                 }
+                if ($route->subaction == 'fs'){
+                  if ($data == 'ro')
+                  @exec('rpi-ro');
+          
+          
+                }
             }
         }
         else if ($route->format == 'json')
