@@ -292,6 +292,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-only')."</button></td></tr>\n";
               }
 }
 
@@ -437,5 +438,21 @@ $("#rebootPi").click(function() {
 
 $("#noshut").click(function() {
   alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
+});
+
+$("#fs-rw").click(function() {
+  if(confirm('Setting file-system to read-write, remember to set back to read-only when your done..')) {
+    $.ajax({ url: path+"admin/fs", async: true, dataType: "text", success: function(result)
+      {
+        var data = 'rw';
+      }
+  });
+});
+
+// $("#fs-ro").click(function() {
+//   if(confirm('Setting file-system back to read-only')) {
+//     @exec('rpi-ro');
+//   }
+  
 });
 </script>
