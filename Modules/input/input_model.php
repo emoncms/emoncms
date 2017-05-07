@@ -49,6 +49,17 @@ class Input
         $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
         if ($result->num_rows == 1) return true; else return false;
     }
+    
+    public function exists_nodeid_name($userid,$nodeid,$name)
+    {
+        $userid = (int) $userid;
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
+        $result = $this->mysqli->query("SELECT id FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid' AND `name` = '$name'");
+        if ($result->num_rows==0) return false;
+        $row = $result->fetch_array();
+        return $row["id"]; 
+    }    
 
     public function validate_access($dbinputs, $nodeid)
     {

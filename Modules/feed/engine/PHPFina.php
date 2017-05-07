@@ -409,6 +409,83 @@ class PHPFina
         
         return $data;
     }
+    
+    public function get_data_DMY_time_of_day($id,$start,$end,$mode,$timezone,$split) 
+    {
+        if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
+        
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        $split = json_decode($split);  
+        if (gettype($split)!="array") return false;
+        if (count($split)>24) return false;     
+               
+        // If meta data file does not exist exit
+        if (!$meta = $this->get_meta($id)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
+        $meta->npoints = $this->get_npoints($id);
+        
+        $data = array();
+        
+        $fh = fopen($this->dir.$id.".dat", 'rb');
+        
+        $date = new DateTime();
+        if ($timezone===0) $timezone = "UTC";
+        $date->setTimezone(new DateTimeZone($timezone));
+        $date->setTimestamp($start);
+        $date->modify("midnight");
+        if ($mode=="weekly") $date->modify("this monday");
+        if ($mode=="monthly") $date->modify("first day of this month");
+        
+        $n = 0;
+        while($n<10000) // max itterations
+        {
+            $time = $date->getTimestamp();
+            if ($time>$end) break;
+            
+            $value = null;
+            
+            $split_values = array();
+            
+            foreach ($split as $splitpoint) 
+            {
+                $splitpoint = (float) $splitpoint;
+                $split_offset = (int) $splitpoint * 3600;
+                
+                $pos = round((($time+$split_offset) - $meta->start_time) / $meta->interval);
+                $value = null;
+                
+                if ($pos>=0 && $pos < $meta->npoints)
+                {
+                    // read from the file
+                    fseek($fh,$pos*4);
+                    $val = unpack("f",fread($fh,4));
+                    
+                    // add to the data array if its not a nan value
+                    if (!is_nan($val[1])) {
+                        $value = $val[1];
+                    } else {
+                        $value = null;
+                    }
+                }
+                
+                $split_values[] = $value;
+            
+            }
+            
+            if ($time>=$start && $time<$end) {
+                $data[] = array($time*1000,$split_values);
+            }
+            
+            if ($mode=="daily") $date->modify("+1 day");
+            if ($mode=="weekly") $date->modify("+1 week");
+            if ($mode=="monthly") $date->modify("+1 month");
+            $n++;
+        }
+        
+        fclose($fh);
+        
+        return $data;
+    }
 
     public function export($id,$start)
     {
@@ -1088,6 +1165,85 @@ class PHPFina
         fwrite($of,$buffer);
         fclose($of);
         fclose($if);
+        
+        return true;
+    }
+    
+    public function upload_fixed_interval($id,$start,$interval,$npoints)
+    {
+        $id = (int) $id;
+        $start = (int) $start;
+        $interval = (int) $interval;
+        $npoints = (int) $npoints;
+        /*
+        // Initial implementation using post_bulk_prepare
+        if (!$fh=fopen('php://input','r')) return false;
+        for ($i=0; $i<$npoints; $i++) {
+            $time = $start + ($interval * $i);
+            $tmp = unpack("f",fread($fh,4));
+            $value = $tmp[1];
+            $this->post_bulk_prepare($id,$time,$value,null);
+        }
+        $this->post_bulk_save();
+        fclose($fh);
+        */
+        
+        // Faster direct block write method
+        
+        // Fetch data from post body and check length match
+        $data = file_get_contents('php://input');
+        if ($npoints!=(strlen($data) / 4.0)) {
+            $this->log->warn("upload() data body does not match blocksize param id=$id");
+            return false;
+        }
+        
+        // Load feed meta to fetch start time and interval
+        if (!$meta = $this->get_meta($id)) {
+            $this->log->warn("upload() failed to fetch meta id=$id");
+            return false;
+        }
+        $meta->npoints = $this->get_npoints($id);
+        
+        if ($meta->start_time==0 && $meta->npoints != 0) {
+            $this->log->warn("upload() start time is zero but data in feed =$id");
+            return false;
+        }
+        
+        // If no data in feed and start time is zero, create meta
+        if ($meta->npoints == 0 && $meta->start_time==0) {
+            $meta->start_time = $start;
+            $this->create_meta($id,$meta);
+        }
+        
+        // Calculate start position
+        $pos = floor(($start - $meta->start_time)/$meta->interval);
+        
+        // Open feed data file, seek to position and write in data block
+        $fh = fopen($this->dir.$id.".dat","c");
+        fseek($fh,$pos*4);
+        fwrite($fh,$data);
+        fclose($fh);
+        
+        return true;
+    }
+    
+    public function upload_variable_interval($feedid,$npoints)
+    {
+        $feedid = (int) $feedid;
+        $npoints = (int) $npoints;
+        
+        if (!$fh=fopen('php://input','r')) return false;
+        
+        for ($i=0; $i<$npoints; $i++) {
+            $tmp = unpack("If",fread($fh,8));
+            $time = $tmp[1];
+            $value = $tmp[2];
+            //print $time." ".$value."\n";
+            $this->post_bulk_prepare($feedid,$time,$value,null);
+        }
+        $this->post_bulk_save();
+
+        fclose($fh);
         
         return true;
     }

@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.3 | 2017.04.18";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.4 | 2017.05.01";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -123,6 +123,9 @@
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
+    // Return brief device descriptor for hub detection
+    if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
+
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
@@ -134,10 +137,15 @@
             $route->action = $default_action;
             $route->subaction = "";
         } else {
-            // Authenticated defaults
-            $route->controller = $default_controller_auth;
-            $route->action = $default_action_auth;
-            $route->subaction = "";
+            if (isset($session["startingpage"]) && $session["startingpage"]!="") {
+                header('Location: '.$session["startingpage"]);
+                die;
+            } else {
+                // Authenticated defaults
+                $route->controller = $default_controller_auth;
+                $route->action = $default_action_auth;
+                $route->subaction = "";
+            }
         }
     }
 
