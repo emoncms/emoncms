@@ -123,6 +123,9 @@
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
+    // Return brief device descriptor for hub detection
+    if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
+
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
     // If no route specified use defaults
