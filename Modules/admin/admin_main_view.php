@@ -291,9 +291,9 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
-                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-only')."</button></td></tr>\n";
               }
+                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
 }
 
 // Ram information
@@ -441,18 +441,23 @@ $("#noshut").click(function() {
 });
 
 $("#fs-rw").click(function() {
-  if(confirm('Setting file-system to read-write, remember to set back to read-only when your done..')) {
-    $.ajax({ url: path+"admin/fs", async: true, dataType: "text", success: function(result)
+  if(confirm('Setting file-system to Read-Write, remember to restore Read-Only when your done..')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=rw", async: true, success: function(result)
       {
-        var data = 'rw';
+        // console.log(data);
       }
-  });
+    });
+  }
 });
 
-// $("#fs-ro").click(function() {
-//   if(confirm('Setting file-system back to read-only')) {
-//     @exec('rpi-ro');
-//   }
-  
+$("#fs-ro").click(function() {
+  if(confirm('Settings filesystem back to Read Only')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=ro", async: true, success: function(result)
+      {
+      // console.log(data);
+      }
+    });
+  }
 });
+
 </script>
