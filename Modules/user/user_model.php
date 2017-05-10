@@ -95,6 +95,24 @@ class User
         //----------------------------------------------------
         return $session;
     }
+    
+    public function get_id_from_apikey($apikey_in) 
+    {    
+        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
+        
+        $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_array();
+            return $row["id"];
+        } else {
+            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_write='$apikey_in'");
+            if ($result->num_rows == 1) {
+                $row = $result->fetch_array();
+                return $row["id"];
+            }
+        }
+        return false;
+    }
 
     public function emon_session_start()
     {
