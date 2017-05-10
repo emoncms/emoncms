@@ -84,6 +84,9 @@
     var mode = urlParams.mode;
     if (mode==undefined || mode=='') mode = false;
     
+    var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '7'; // Initial zoom default to 7 days (1 week)
+    
     document.getElementById("textunitD").innerHTML=units;
     document.getElementById("textunitM").innerHTML=units;
     document.getElementById("textunitY").innerHTML=units;
