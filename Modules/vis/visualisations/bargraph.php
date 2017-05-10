@@ -112,17 +112,7 @@
 
     var intervalms = interval * 1000;
 
-    var timeWindow;
-
-    if (intervalcode=='y')
-       timeWindow = 3600000*24*365*5;
-    else if (intervalcode=='m')
-       timeWindow = 3600000*24*365;
-    else if (intervalcode=='d')
-       timeWindow = 3600000*24*10;
-    else
-       timeWindow = 3600000*24*31;
-
+    var timeWindow = (3600000*24.0*initzoom);
     view.start = +new Date - timeWindow;
     view.end = +new Date;
 
