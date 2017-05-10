@@ -407,6 +407,7 @@ class Feed
 
     public function get_timevalue($id)
     {
+       
         $id = (int) $id;
         //$this->log->info("get_timevalue() $id");
         if (!$this->exist($id)) {
@@ -420,12 +421,13 @@ class Feed
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id);
             return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
-
+        
         if ($this->redis)
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
                 $lastvalue['time'] = (int) $lastvalue['time'];
+                $lastvalue['value'] = $lastvalue['value'] * 1;
                 $lastvalue['value'] = (float) $lastvalue['value'];
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.

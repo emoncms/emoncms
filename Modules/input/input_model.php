@@ -201,6 +201,8 @@ class Input
             $row = $this->redis->hGetAll("input:$id");
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
             $row['time'] = $lastvalue['time'];
+            // Fix break point where value is NAN
+            $lastvalue['value'] = $lastvalue['value'] * 1; 
             $row['value'] = $lastvalue['value'];
             $inputs[] = $row;
         }
