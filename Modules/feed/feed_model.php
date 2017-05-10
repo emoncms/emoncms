@@ -323,6 +323,20 @@ class Feed
         return $feeds;
     }
 
+    public function get_user_feeds_with_meta($userid)
+    {
+        $userid = (int) $userid;
+        $feeds = $this->get_user_feeds($userid);
+        for ($i=0; $i<count($feeds); $i++) {
+            $id = $feeds[$i]["id"];
+            $meta = $this->get_meta($id);
+            foreach ($meta as $meta_key=>$meta_val) {
+                $feeds[$i][$meta_key] = $meta_val;
+            }
+        }
+        return $feeds;
+    }
+    
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
