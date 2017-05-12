@@ -329,9 +329,10 @@ class Feed
         $feeds = $this->get_user_feeds($userid);
         for ($i=0; $i<count($feeds); $i++) {
             $id = $feeds[$i]["id"];
-            $meta = $this->get_meta($id);
-            foreach ($meta as $meta_key=>$meta_val) {
-                $feeds[$i][$meta_key] = $meta_val;
+            if ($meta = $this->get_meta($id)) {
+                foreach ($meta as $meta_key=>$meta_val) {
+                    $feeds[$i][$meta_key] = $meta_val;
+                }
             }
         }
         return $feeds;
