@@ -84,6 +84,9 @@
     var mode = urlParams.mode;
     if (mode==undefined || mode=='') mode = false;
     
+    var initzoom = urlParams.initzoom;
+    if (initzoom==undefined || initzoom=='' || initzoom < 1) initzoom = '7'; // Initial zoom default to 7 days (1 week)
+    
     document.getElementById("textunitD").innerHTML=units;
     document.getElementById("textunitM").innerHTML=units;
     document.getElementById("textunitY").innerHTML=units;
@@ -112,17 +115,7 @@
 
     var intervalms = interval * 1000;
 
-    var timeWindow;
-
-    if (intervalcode=='y')
-       timeWindow = 3600000*24*365*5;
-    else if (intervalcode=='m')
-       timeWindow = 3600000*24*365;
-    else if (intervalcode=='d')
-       timeWindow = 3600000*24*10;
-    else
-       timeWindow = 3600000*24*31;
-
+    var timeWindow = (3600000*24.0*initzoom);
     view.start = +new Date - timeWindow;
     view.end = +new Date;
 
