@@ -51,7 +51,7 @@ function user_controller()
         if ($route->action == 'newapikeyread' && $session['write']) $result = $user->new_apikey_read($session['userid']);
         if ($route->action == 'newapikeywrite' && $session['write']) $result = $user->new_apikey_write($session['userid']);
 
-        if ($route->action == 'auth' && !$session['read']) $result = $user->get_apikeys_from_login(post('username'),post('password'));
+        if ($route->action == 'auth') $result = $user->get_apikeys_from_login(post('username'),post('password'));
 
         // Get and set - user by profile client
         if ($route->action == 'get' && $session['write']) $result = $user->get($session['userid']);

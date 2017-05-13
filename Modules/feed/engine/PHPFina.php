@@ -975,9 +975,9 @@ class PHPFina
         fclose($metafile);
         $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
         
-        if ((($end-$start) / $meta->interval)>69120) {
-            return array('success'=>false, 'message'=>"Range to long");
-        }
+        //if ((($end-$start) / $meta->interval)>69120) {
+        //    return array('success'=>false, 'message'=>"Range to long");
+        //}
         
         if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
         
@@ -986,6 +986,7 @@ class PHPFina
         $data = array();
         $time = 0; $i = 0;
         $numdp = 0;
+        $total_read_count = 0;
         // The datapoints are selected within a loop that runs until we reach a
         // datapoint that is beyond the end of our query range
         
@@ -1000,7 +1001,7 @@ class PHPFina
         if ($mode=="monthly") $date->modify("first day of this month");
         
         $itterations = 0;
-        while($itterations<10000) // max itterations
+        while(true) // max itterations
         {
             $time = $date->getTimestamp();
             if ($mode=="daily") $date->modify("+1 day");
@@ -1013,7 +1014,8 @@ class PHPFina
             $pos = round(($time - $meta->start_time) / $meta->interval);
             $nextpos = round(($nexttime - $meta->start_time) / $meta->interval);
             $dp_to_read = $nextpos - $pos;
-            $value = null;
+            if ($dp_to_read==0) return false;
+            
             $average = null;
             
             if ($pos>=0 && $pos < $meta->npoints)
@@ -1021,34 +1023,30 @@ class PHPFina
                 // read from the file
                 fseek($fh,$pos*4);
                 $s = fread($fh,4*$dp_to_read);
-                if (strlen($s)!=4*$dp_to_read) break;
+                
+                $len = strlen($s);
+                $total_read_count += $len / 4.0;
+                
+                if ($len==4*$dp_to_read) {
 
-                $tmp = unpack("f*",$s);
-                $sum = 0; $n = 0;
-                
-                /*
-                for ($x=0; $x<$dp_to_read; $x++) {
-                  if (!is_nan($tmp[$x+1])) {
-                      $sum += 1*$tmp[$x+1];
-                      $n++;
-                  }
-                }*/
-                
-                $val = NAN;
-                for ($x=0; $x<$dp_to_read; $x++) {
-                  if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
-                  if (!is_nan($val)) {
-                    $sum += $val;
-                    $n++;
-                  }
+                    $tmp = unpack("f*",$s);
+                    $sum = 0; $n = 0;
+                    
+                    $val = NAN;
+                    for ($x=0; $x<$dp_to_read; $x++) {
+                      if (!is_nan($tmp[$x+1])) $val = 1*$tmp[$x+1];
+                      if (!is_nan($val)) {
+                        $sum += $val;
+                        $n++;
+                      }
+                    }
+                    
+                    $average = null;
+                    if ($n>0) $average = $sum / $n;
                 }
-                
-                $average = null;
-                if ($n>0) $average = $sum / $n;
-
             }
             
-            if ($time>=$start && $time<$end) {
+            if ($time>=$start) {
                 $data[] = array($time*1000,$average);
             }
             

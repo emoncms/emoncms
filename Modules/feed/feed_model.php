@@ -323,6 +323,21 @@ class Feed
         return $feeds;
     }
 
+    public function get_user_feeds_with_meta($userid)
+    {
+        $userid = (int) $userid;
+        $feeds = $this->get_user_feeds($userid);
+        for ($i=0; $i<count($feeds); $i++) {
+            $id = $feeds[$i]["id"];
+            if ($meta = $this->get_meta($id)) {
+                foreach ($meta as $meta_key=>$meta_val) {
+                    $feeds[$i][$meta_key] = $meta_val;
+                }
+            }
+        }
+        return $feeds;
+    }
+    
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
@@ -393,6 +408,7 @@ class Feed
 
     public function get_timevalue($id)
     {
+       
         $id = (int) $id;
         //$this->log->info("get_timevalue() $id");
         if (!$this->exist($id)) {
@@ -406,12 +422,13 @@ class Feed
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id);
             return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
-
+        
         if ($this->redis)
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
                 $lastvalue['time'] = (int) $lastvalue['time'];
+                $lastvalue['value'] = $lastvalue['value'] * 1;
                 $lastvalue['value'] = (float) $lastvalue['value'];
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
