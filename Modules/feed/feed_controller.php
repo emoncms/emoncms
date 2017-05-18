@@ -42,6 +42,9 @@ function feed_controller()
 
         } elseif ($route->action == "listwithmeta" && $session['read']) {
             $result = $feed->get_user_feeds_with_meta($session['userid']);
+        } elseif ($route->action == "getid" && $session['read']) { 
+            $route->format = "text";
+            $result = $feed->get_id($session['userid'],get("name"));
         } elseif ($route->action == "create" && $session['write']) {
             $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
