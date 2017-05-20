@@ -199,6 +199,8 @@ class Input
         foreach ($inputids as $id)
         {
             $row = $this->redis->hGetAll("input:$id");
+            $row["description"] = utf8_encode($row["description"]);
+         
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
             // Fix break point where value is NAN
             $lastvalue['time'] = $lastvalue['time'] * 1; 
