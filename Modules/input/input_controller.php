@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!$session['write']) return array('content'=>false);
@@ -29,6 +29,11 @@ function input_controller()
 
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
+
+    if (!$device) {
+        require_once "Modules/device/device_model.php";
+        $device = new Device($mysqli,$redis);
+    }
 
     if ($route->format == 'html')
     {
@@ -221,6 +226,11 @@ function input_controller()
                 $error = $validate_access['message'];
             } else {
                 if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+
+                if (!isset($dbinputs[$nodeid])) {
+                    $dbinputs[$nodeid] = array();
+                    $device->create($userid,$nodeid);
+                }
 
                 $datain = false;
                 /* The code below processes the data regardless of its type,

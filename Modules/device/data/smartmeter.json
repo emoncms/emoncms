@@ -1,0 +1,51 @@
+{	
+  "name": "smartmeter",
+  "description": "Automatic inputs and feeds creation for smartmeter device.",
+  "inputs": [
+    {
+      "name": "P1",
+      "description": "CT1 Power",
+      "processList": [
+        {
+          "process": "1",
+          "arguments": {"type": "ProcessArg::FEEDID", "value": "use" }
+        },
+        {
+          "process": "4",
+          "arguments": {"type": "ProcessArg::FEEDID", "value": "use_kwh" }
+        }
+		  ]
+    },
+    {
+      "name": "E1",
+      "description": "CT1 Energy",
+      "processList": [
+        {
+          "process": "34",
+          "arguments": {"type": "ProcessArg::FEEDID", "value": "use_wh" }
+        }
+		  ]
+    }
+  ],
+
+  "feeds": [
+    {
+      "name": "use",
+      "type": "DataType::REALTIME",
+      "engine": "Engine::PHPFINA",
+      "interval": "10"
+    },
+    {
+      "name": "use_kwh",
+      "type": "DataType::REALTIME",
+      "engine": "Engine::PHPFINA",
+      "interval": "10"
+    },
+    {
+      "name": "use_wh",
+      "type": "DataType::REALTIME",
+      "engine": "Engine::PHPFINA",
+      "interval": "10"
+    }
+  ]
+}

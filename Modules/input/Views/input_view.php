@@ -8,27 +8,125 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <style>
-#table input[type="text"] {
-	width: 88%;
+.node {margin-bottom:10px;}
+
+.node-info {
+    height:40px;
+    background-color:#ddd;
+    cursor:pointer;
 }
 
-#table td:nth-of-type(1) { width:5%;}
-#table td:nth-of-type(2) { width:5%;}
-#table td:nth-of-type(3) { width:20%;}
-#table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
-#table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
-#table th[fieldg="time"] { font-weight:normal; text-align: right; }
-#table th[fieldg="processList"] { font-weight:normal; text-align: left; }
-#table td:nth-of-type(7) { width:14px; text-align: center; }
-#table td:nth-of-type(8) { width:14px; text-align: center; }
-#table td:nth-of-type(9) { width:14px; text-align: center; }
+.device-name { 
+    font-weight:bold;
+	float:left;
+	padding:10px;
+}
+
+.device-description { 
+    color:#666;
+	float:left;
+	padding:10px;
+}
+
+.device-key {
+	float:right;
+	padding:10px;
+	color:#666;
+}
+
+.device-configure {
+	float:right;
+	padding:10px;
+	width:50px;
+	text-align:center;
+	color:#666;
+	border-left: 1px solid #eee;
+}
+
+.device-configure:hover {background-color:#eaeaea;}
+
+.node-inputs {
+    padding: 0px 5px 5px 5px;
+    background-color:#ddd;
+}
+
+.node-input {
+    background-color:#f0f0f0;
+    border-bottom:1px solid #fff;
+    border-left:2px solid #f0f0f0;
+    height:41px;
+    padding-right:10px;
+}
+
+.node-input:hover{ border-left:2px solid #44b3e2; }
+
+.node-input .select {
+    width:20px;
+    padding: 10px;
+    float:left;
+    text-align:center;
+}
+
+.node-input .name {
+    padding-top:10px;
+    float:left;
+}
+
+.node-input .time {
+    width:60px;
+    padding-top:10px;
+    float:right;
+    text-align:center;
+}
+
+.node-input .value {
+    width:60px;
+    padding-top:10px;
+    float:right;
+    text-align:center;
+}
+
+.node-input .configure {
+    width:60px;
+    padding-top:10px;
+    float:right;
+    text-align:center;
+	cursor:pointer;
+}
+
+.node-input .view {
+    width:40px;
+    padding-top:10px;
+    float:right;
+    text-align:center;
+}
+
+input[type="checkbox"] { margin:0px; }
+#input-selection { width:80px; }
+.controls { margin-bottom:10px; }
+#inputs-to-delete { font-style:italic; }
+
 </style>
 
 <div>
 	<div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
-	<div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
+	<div id="localheading"><h3><?php echo _('Inputs'); ?></h3></div>
 
+<div class="controls">
+	<div class="input-prepend" style="margin-bottom:0px">
+		<span class="add-on">Select</span>
+		<select id="input-selection">
+			<option value="all">All</option>
+			<option value="none">None</option>
+		</select>
+	</div>
+	
+	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+</div>	
+	
 	<div id="table"></div>
+	
+	<div id="output"></div>
 
 	<div id="noinputs" class="alert alert-block hide">
 			<h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
@@ -45,35 +143,11 @@
 <script>
   var path = "<?php echo $path; ?>";
 
-  // Extend table library field types
-  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-  table.element = "#table";
-  table.groupprefix = "Node ";
-  table.groupby = 'nodeid';
-  table.groupfields = {
-	'processList':{'title':'<?php echo _("Process list"); ?>','type':"group-processlist"},
-	'time':{'title':"<?php echo _('Updated'); ?>", 'type':"group-updated"},
-	'dummy-6':{'title':'', 'type':"blank"},
-	'dummy-7':{'title':'', 'type':"blank"},
-	'dummy-8':{'title':'', 'type':"blank"},
-	'dummy-9':{'title':'', 'type':"blank"}
-  }
-
-  table.deletedata = false;
-  table.fields = {
-	//'id':{'type':"fixed"},
-	'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
-	'name':{'title':'<?php echo _("Key"); ?>','type':"text"},
-	'description':{'title':'<?php echo _("Name"); ?>','type':"text"},
-	'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
-	'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
-	'value':{'title':'<?php echo _("Value"); ?>','type':"value"},
-	// Actions
-	'edit-action':{'title':'', 'type':"edit"},
-	'delete-action':{'title':'', 'type':"delete"},
-	'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'}
-  }
-
+  var inputs = {};
+  var nodes = {};
+  var nodes_display = {};
+  var selected_inputs = {};
+  
   update();
 
   function update(){   
@@ -81,7 +155,53 @@
 	$.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
 	  table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
 	  table.data = data;
-	  table.draw();
+	  
+	  
+          inputs = {};
+		  for (var z in data) inputs[data[z].id] = data[z];
+          
+          var nodes = {};
+          for (var z in inputs) {
+              var node = inputs[z].nodeid;
+              if (nodes[node]==undefined) nodes[node] = [];
+              if (nodes_display[node]==undefined) nodes_display[node] = true;
+              nodes[node].push(inputs[z]);
+          }
+	  
+	  //table.draw();
+
+      var out = "";
+	  
+	  for (var node in nodes) {
+		  var visible = "hide"; if (nodes_display[node]) visible = "";
+		  
+		  out += "<div class='node'>";
+		  out += "<div class='node-info' node='"+node+"'>";
+		  out += "  <div class='device-name'>"+node+":</div>";
+		  out += "  <div class='device-description'></div>";
+		  
+		  out += "  <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
+		  out += "  <div class='device-key'></div>";
+		  
+		  out += "</div>";
+		  out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
+		  
+		  for (var input in nodes[node]) {
+			  var id = nodes[node][input].id;
+			  out += "<div class='node-input' id="+id+">";
+			  out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"'/></div>";
+			  out += "<div class='name'>"+nodes[node][input].name+"</div>";
+			  out += "<div class='configure' id='"+id+"'><i class='icon-wrench'></i></div>";
+			  out += "<div class='value'>"+list_format_value(nodes[node][input].value)+"</div>";
+			  out += "<div class='time'>"+list_format_updated(nodes[node][input].time)+"</div>";
+			  out += "</div>";
+		  }
+		  
+		  out += "</div>";
+		  out += "</div>";
+	  }
+	  $("#table").html(out);
+	  
 	  $('#input-loader').hide();
 	  if (table.data.length == 0) {
 		$("#noinputs").show();
@@ -92,9 +212,59 @@
 		$("#localheading").show();
 		$("#apihelphead").show();
 	  }
+	  
+	  // Join and include device data
+	  $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
+          $("#output").html(JSON.stringify(data));
+		  var devices = data;
+		  for (var z in devices) {
+			  if (nodes[devices[z].nodeid]!=undefined) {
+				   $(".node-info[node='"+devices[z].nodeid+"'] .device-description").html(devices[z].description);
+			       $(".node-info[node='"+devices[z].nodeid+"'] .device-key").html(devices[z].devicekey);
+			  }
+		  }  
+	  }});
+	  
 	}});
   }
 
+  $("#table").on("click",".node-info",function() {
+      var node = $(this).attr('node');
+      if (nodes_display[node]) {
+          $(".node-inputs[node='"+node+"']").hide();
+          nodes_display[node] = false;
+      } else {
+          $(".node-inputs[node='"+node+"']").show();
+          nodes_display[node] = true;
+      }
+  });
+
+  $("#table").on("click",".input-select",function(e) {
+      input_selection();
+  });
+  
+  function input_selection() 
+  {
+	  selected_inputs = {};
+	  var num_selected = 0;
+	  $(".input-select").each(function(){
+	      var id = $(this).attr("id");
+		  selected_inputs[id] = $(this)[0].checked;
+		  if (selected_inputs[id]==true) num_selected += 1;
+      });
+	  
+	  if (num_selected>0) {
+	      $(".input-delete").show();
+	  } else {
+          $(".input-delete").hide();
+	  }
+	  
+	  if (num_selected==1) {
+	      // $(".feed-edit").show();	  
+	  } else {
+		  // $(".feed-edit").hide();
+	  }
+  }
   var updater;
   function updaterStart(func, interval){
 	clearInterval(updater);
@@ -117,24 +287,37 @@
 	updaterStart(update, 10000);
   });
 
-  $("#table").bind("onDelete", function(e,id,row){
-	var i = table.data[row];
-	if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
-	  // delete now if has no values and updated +15m
-	  input.remove(id);
-	  table.remove(row);
-	  update();
-	} else {
-	  input_dialog.loadDelete(null, id, row);
-	}
-  });
-
+	$(".input-delete").click(function(){
+		$('#inputDeleteModal').modal('show');
+		var out = "";
+		for (var inputid in selected_inputs) {
+			if (selected_inputs[inputid]==true) {
+				var i = inputs[inputid];
+				if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
+					// delete now if has no values and updated +15m
+					input.remove(inputid);
+				} else {
+					out += i.nodeid+":"+i.name+"<br>";		
+				}
+			}
+		}
+		update();
+		$("#inputs-to-delete").html(out);
+	});
+  
+	$("#inputDelete-confirm").off('click').on('click', function(){
+		for (var inputid in selected_inputs) {
+			if (selected_inputs[inputid]==true) input.remove(inputid);
+		}
+		update();
+		$('#inputDeleteModal').modal('hide');
+	});
  
   // Process list UI js
   processlist_ui.init(0); // Set input context
 
-  $("#table").on('click', '.icon-wrench', function() {
-	var i = table.data[$(this).attr('row')];
+  $("#table").on('click', '.configure', function() {
+	var i = inputs[$(this).attr('id')];
 	console.log(i);
 	var contextid = i.id; // Current Input ID
 	// Input name

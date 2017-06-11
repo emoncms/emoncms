@@ -220,6 +220,12 @@
 		      $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
 	      }
         
+
+        if (!isset($dbinputs[$nodeid])) {
+            $dbinputs[$nodeid] = array();
+            $device->create($userid,$nodeid);
+        }
+
         $tmp = array();
         foreach ($inputs as $i)
         {

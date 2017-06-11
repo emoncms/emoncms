@@ -1,0 +1,54 @@
+{	"name": "EmonTH",
+	"description": "Automatic inputs and feeds creation for emonTH device.",
+	"inputs": [
+		{
+			"name": "1",
+			"description": "Temperature C",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "tempC" }
+							  }
+							]
+		},
+		{
+			"name": "2",
+			"description": "Humidity Rh%",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "humiRH" }
+							  }
+							]
+		},
+		{
+			"name": "3",
+			"description": "Internal Battery",
+			"processList": [
+							  {
+								"process": "1",
+								"arguments": {"type": "ProcessArg::FEEDID", "value": "batV" }
+							  }
+							]
+		}
+	],
+
+	"feeds": [
+	  {
+			"name": "tempC",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL",
+			"interval": "5"
+	  },
+	  {
+			"name": "humiRH",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      },
+	  {
+			"name": "batV",
+			"type": "DataType::REALTIME",
+			"engine": "Engine::MYSQL"
+      }
+	]
+}

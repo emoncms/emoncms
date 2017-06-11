@@ -1,0 +1,429 @@
+{
+	"name": "AMIG",
+	"description": "INPUTS & FEEDS for AMIG Logger from archimetrics.co.uk",
+	"inputs": [{
+		"name": "n1T",
+		"description": "N1 Temperature",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n1T"
+			}
+		}]
+	},
+	{
+		"name": "n1R",
+		"description": "N1 RH",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n1R"
+			}
+		}]
+	},
+	{
+		"name": "n1D",
+		"description": "N1 DewPoint",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n1D"
+			}
+		}]
+	},
+	{
+		"name": "n2T",
+		"description": "N2 Temperature",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n2T"
+			}
+		}]
+	},
+	{
+		"name": "n2R",
+		"description": "N2 RH",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n2R"
+			}
+		}]
+	},
+	{
+		"name": "n2D",
+		"description": "N2 DewPoint",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n2D"
+			}
+		}]
+	},
+	{
+		"name": "n3T",
+		"description": "N3 Temperature",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n3T"
+			}
+		}]
+	},
+	{
+		"name": "n3R",
+		"description": "N3 RH",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n3R"
+			}
+		}]
+	},
+	{
+		"name": "n3D",
+		"description": "N3 DewPoint",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n3D"
+			}
+		}]
+	},
+	{
+		"name": "n4T",
+		"description": "N4 Temperature",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n4T"
+			}
+		}]
+	},
+	{
+		"name": "n4R",
+		"description": "N4 RH",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n4R"
+			}
+		}]
+	},
+	{
+		"name": "n4D",
+		"description": "N4 DewPoint",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "n4D"
+			}
+		}]
+	},
+	{
+		"name": "iTS",
+		"description": "Internal Temperature Surface",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "iTS"
+			}
+		}]
+	},
+	{
+		"name": "eTS",
+		"description": "External Temperature Surface",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "eTS"
+			}
+		}]
+	},
+	{
+		"name": "eSR",
+		"description": "External Solar Radiation",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "eSR"
+			}
+		}]
+	},
+	{
+		"name": "iTA",
+		"description": "Internal Temperature Air",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "iTA"
+			}
+		}]
+	},
+	{
+		"name": "iRH",
+		"description": "Internal RH",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "iRH"
+			}
+		}]
+	},
+	{
+		"name": "iDP",
+		"description": "Internal DewPoint",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "iDP"
+			}
+		}]
+	},
+	{
+		"name": "eTA",
+		"description": "External Temperature Air",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "eTA"
+			}
+		}]
+	},
+	{
+		"name": "eRH",
+		"description": "External RH",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "eRH"
+			}
+		}]
+	},
+	{
+		"name": "eDP",
+		"description": "External DewPoint",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "eDP"
+			}
+		}]
+	},
+	{
+		"name": "hfV",
+		"description": "HeatFlux Voltage",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "hfV"
+			}
+		}]
+	},
+	{
+		"name": "hfW",
+		"description": "HeatFlux Watts",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "hfW"
+			}
+		}]
+	},
+	{
+		"name": "CO2",
+		"description": "Carbon Dioxide",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "CO2"
+			}
+		}]
+	},
+	{
+		"name": "SYS",
+		"description": "System Temperature",
+		"processList": [{
+			"process": "1",
+			"arguments": {
+				"type": "ProcessArg::FEEDID",
+				"value": "SYS"
+			}
+		}]
+	}],
+	"feeds": [{
+		"name": "n1T",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n1R",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n1D",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n2T",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n2R",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n2D",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n3T",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n3R",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n3D",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n4T",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n4R",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "n4D",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "iTS",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "eTS",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "eSR",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "iTA",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "iRH",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "iDP",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "eTA",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "eRH",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "eDP",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "hfV",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "hfW",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "CO2",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	},
+	{
+		"name": "SYS",
+		"type": "DataType::REALTIME",
+		"engine": "Engine::MYSQL",
+		"interval": "5"
+	}]
+}

@@ -23,7 +23,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
   }
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
-
+<br>
 <div class="main">
   <div class="well">
     <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emoncms_logo.png" alt="Emoncms" width="256" height="46" />
@@ -105,6 +105,8 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 
 var path = "<?php echo $path; ?>";
 var register_open = false;
+
+$("body").css("background-color","#1d8dbc");
 
 $(document).ready(function() {
     var passwordreset = "<?php echo $enable_password_reset; ?>";
