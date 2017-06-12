@@ -51,13 +51,18 @@ function device_controller()
             }
             // 2. User checks for device waiting for authentication
             else if ($route->subaction=="check" && $session['write']) {
-                $result = json_decode($redis->get("device_auth"));
+                if ($device_auth = $redis->get("device_auth")) {
+                    $result = json_decode($device_auth);
+                } else {
+                    $result = "no devices";
+                }
             }
             // 3. User allows device to receive authentication details
             else if ($route->subaction=="allow" && $session['write']) {
                  $ip = get("ip");
                  $redis->set("device_auth_allow",$ip);    // Temporary availability of auth for device ip address
                  $redis->expire("device_auth_allow",60);  // Expire after 60 seconds
+                 $redis->del("device_auth");
                  $result = true;
             }
             

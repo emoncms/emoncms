@@ -17,7 +17,7 @@
 }
 
 .device-name { 
-    font-weight:bold;
+  font-weight:bold;
 	float:left;
 	padding:10px;
 	padding-right:5px;
@@ -96,7 +96,7 @@
     padding-top:10px;
     float:right;
     text-align:center;
-	cursor:pointer;
+	  cursor:pointer;
 }
 
 .node-input .view {
@@ -110,6 +110,20 @@ input[type="checkbox"] { margin:0px; }
 #input-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
+
+#auth-check {
+    padding:10px;
+    background-color:#dc9696;
+    margin-bottom:10px;
+    font-weight:bold;
+    border: 1px solid #de6464;
+    color:#fff;
+}
+
+.auth-check-btn {
+    float:right;
+    margin-top:-2px;
+}
 
 </style>
 
@@ -128,6 +142,11 @@ input[type="checkbox"] { margin:0px; }
 	
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 </div>	
+	
+	<div id="auth-check">
+	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
+	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
+	</div>
 	
 	<div id="table"></div>
 	
@@ -187,7 +206,6 @@ var device_templates = {};
 $.ajax({ url: path+"device/listtemplatenames.json", dataType: 'json', async: true, success: function(data) { device_templates = data; }});
 
 update();
-
 function update(){   
     var requestTime = (new Date()).getTime();
     $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
@@ -350,10 +368,6 @@ $("#device-initialise").click(function(){
     }});
 });
 
-
-
-
-
 var updater;
 function updaterStart(func, interval){
 	  clearInterval(updater);
@@ -421,4 +435,28 @@ $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
 });
+
+// -------------------------------------------------------------------------------------------------------
+// Device authentication transfer
+// -------------------------------------------------------------------------------------------------------
+auth_check();
+setInterval(auth_check,5000);
+function auth_check(){
+    $.ajax({ url: path+"device/auth/check.json", dataType: 'json', async: true, success: function(data) {
+        if (data!="no devices") {
+            $("#auth-check").show();
+            $("#auth-check-ip").html(data.ip);
+        } else {
+            $("#auth-check").hide();
+        }
+    }});
+}
+
+$(".auth-check-allow").click(function(){
+    var ip = $("#auth-check-ip").html();
+    $.ajax({ url: path+"device/auth/allow.json?ip="+ip, dataType: 'json', async: true, success: function(data) {
+        $("#auth-check").hide();
+    }});
+});
+
 </script>
