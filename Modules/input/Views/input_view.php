@@ -143,7 +143,7 @@ input[type="checkbox"] { margin:0px; }
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 </div>	
 	
-	<div id="auth-check">
+	<div id="auth-check" class="hide">
 	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
 	</div>
