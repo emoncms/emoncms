@@ -20,18 +20,22 @@
     font-weight:bold;
 	float:left;
 	padding:10px;
+	padding-right:5px;
 }
 
 .device-description { 
-    color:#666;
+  color:#666;
 	float:left;
-	padding:10px;
+	padding-top:10px;
 }
 
 .device-key {
 	float:right;
 	padding:10px;
-	color:#666;
+	min-width:50px;
+	text-align:center;
+	color:#fff;
+	border-left: 1px solid #eee;
 }
 
 .device-configure {
@@ -43,6 +47,7 @@
 	border-left: 1px solid #eee;
 }
 
+.device-key:hover {background-color:#eaeaea;}
 .device-configure:hover {background-color:#eaeaea;}
 
 .node-inputs {
@@ -151,6 +156,7 @@ input[type="checkbox"] { margin:0px; }
 		        <span class="add-on" style="width:160px">Description or Location</span>
 		        <input id="device-description-input" type="text" />
 		        <button id="device-description-save" class="btn">Save</button>
+		        <span class="add-on" id="device-description-saved">Saved</span>
 	      </div>
         
         <div class="input-prepend input-append">
@@ -162,7 +168,7 @@ input[type="checkbox"] { margin:0px; }
         
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
     </div>
 </div>
 
@@ -170,6 +176,7 @@ input[type="checkbox"] { margin:0px; }
 
 var path = "<?php echo $path; ?>";
 
+var devices = {};
 var inputs = {};
 var nodes = {};
 var nodes_display = {};
@@ -210,7 +217,7 @@ function update(){
 		        out += "    <div class='device-name'>"+node+":</div>";
 		        out += "    <div class='device-description'></div>";
 		        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
-		        out += "    <div class='device-key'></div>";
+		        out += "    <div class='device-key'>KEY</div>";
 		        out += "  </div>";
 		        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
 		        
@@ -243,11 +250,13 @@ function update(){
 	      
 	      // Join and include device data
 	      $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
-		        var devices = data;
-		        for (var z in devices) {
-			          if (nodes[devices[z].nodeid]!=undefined) {
-				            $(".node-info[node='"+devices[z].nodeid+"'] .device-description").html(devices[z].description);
-                    $(".node-info[node='"+devices[z].nodeid+"'] .device-key").html(devices[z].devicekey);
+	          // convert to associative array by nodeid
+	          devices = {};
+	          for (var z in data) devices[data[z].nodeid] = data[z];
+	      
+		        for (var node in devices) {
+			          if (nodes[node]!=undefined) {
+				            $(".node-info[node='"+node+"'] .device-description").html(devices[node].description);
 			          }
 		        }  
 	      }});
@@ -295,20 +304,44 @@ function input_selection()
     }
 }
 
+$("#table").on("click",".device-key",function(e) {
+    e.stopPropagation();
+    var node = $(this).parent().attr("node");
+    $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);
+    /*
+    if ($(".node-info[node='"+node+"'] .device-key").html()=="KEY") {
+        $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);
+    } else {
+        $(".node-info[node='"+node+"'] .device-key").html("KEY");
+    }*/
+    
+});
+
 $("#table").on("click",".device-configure",function(e) {
     e.stopPropagation();
-    selected_device = 
-    
-    
+    selected_device = $(this).parent().attr("node");
     $('#deviceConfigureModal').modal('show');
+    $("#device-description-input").val(devices[selected_device].description);
+    $("#device-description-saved").hide();
     
     var out = "";
     for (var z in device_templates) out += "<option value='"+z+"'>"+device_templates[z]+"</option>";
     $("#device-type-select").html(out);
 });
 
+$("#device-description-input").keyup(function(){
+    $("#device-description-save").show();
+    $("#device-description-saved").hide();
+});
+
 $("#device-description-save").click(function(){
-    device.set(id,fields_to_update);
+    $.ajax({ 
+        url: path+"device/set.json", 
+        data: "id="+devices[selected_device].id+"&fields="+JSON.stringify({"description":$("#device-description-input").val()}), 
+        async: true, success: function(data) {
+            $("#device-description-saved").show();
+            $("#device-description-save").hide();
+    }});
 });
 
 
