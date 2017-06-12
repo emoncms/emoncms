@@ -32,7 +32,7 @@ function device_controller()
         // 4. device makes follow up request for authentication
         //    - reply authentication details
         // ---------------------------------------------------------------
-        if ($route->action == "auth") {
+        if ($redis && $route->action == "auth") {
             // 1. Register request for authentication details, or provide if allowed
             if ($route->subaction=="request") {
                 $ip = $_SERVER['REMOTE_ADDR'];
@@ -56,7 +56,8 @@ function device_controller()
             // 3. User allows device to receive authentication details
             else if ($route->subaction=="allow" && $session['write']) {
                  $ip = get("ip");
-                 $redis->set("device_auth_allow",$ip);
+                 $redis->set("device_auth_allow",$ip);    // Temporary availability of auth for device ip address
+                 $redis->expire("device_auth_allow",60);  // Expire after 60 seconds
                  $result = true;
             }
             
