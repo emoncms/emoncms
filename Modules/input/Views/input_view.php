@@ -140,204 +140,243 @@ input[type="checkbox"] { margin:0px; }
 
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
+<div id="deviceConfigureModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="deviceConfigureModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="deviceConfigureModalLabel"><?php echo _('Device configure'); ?></h3>
+    </div>
+    <div class="modal-body">
+
+        <div class="input-prepend input-append">
+		        <span class="add-on" style="width:160px">Description or Location</span>
+		        <input id="device-description-input" type="text" />
+		        <button id="device-description-save" class="btn">Save</button>
+	      </div>
+        
+        <div class="input-prepend input-append">
+		        <span class="add-on" style="width:160px">Device template</span>
+		        <select id="device-type-select"></select>
+		        <button id="device-initialise" class="btn">Initialise</button>
+	      </div>
+	      <p><i>A device can be automatically initialised by including input name "nodename/describe":"template-name"</i></p>
+        
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+    </div>
+</div>
+
 <script>
-  var path = "<?php echo $path; ?>";
 
-  var inputs = {};
-  var nodes = {};
-  var nodes_display = {};
-  var selected_inputs = {};
+var path = "<?php echo $path; ?>";
+
+var inputs = {};
+var nodes = {};
+var nodes_display = {};
+var selected_inputs = {};
+var selected_device = false;
+
+var device_templates = {};
+$.ajax({ url: path+"device/listtemplatenames.json", dataType: 'json', async: true, success: function(data) { device_templates = data; }});
+
+update();
+
+function update(){   
+    var requestTime = (new Date()).getTime();
+    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+        table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+        table.data = data;
+	      
+	      // Associative array of inputs by id
+        inputs = {};
+	      for (var z in data) inputs[data[z].id] = data[z];
+        
+        // Sort inputs into nodes / devices    
+        var nodes = {};
+        for (var z in inputs) {
+            var node = inputs[z].nodeid;
+            if (nodes[node]==undefined) nodes[node] = [];
+            if (nodes_display[node]==undefined) nodes_display[node] = true;
+            nodes[node].push(inputs[z]);
+        }
+
+        // Draw node/input list
+        var out = "";
+	      for (var node in nodes) {
+		        var visible = "hide"; if (nodes_display[node]) visible = "";
+		        
+		        out += "<div class='node'>";
+		        out += "  <div class='node-info' node='"+node+"'>";
+		        out += "    <div class='device-name'>"+node+":</div>";
+		        out += "    <div class='device-description'></div>";
+		        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
+		        out += "    <div class='device-key'></div>";
+		        out += "  </div>";
+		        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
+		        
+		        for (var input in nodes[node]) {
+			          var id = nodes[node][input].id;
+			          out += "<div class='node-input' id="+id+">";
+			          out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"'/></div>";
+			          out += "<div class='name'>"+nodes[node][input].name+"</div>";
+			          out += "<div class='configure' id='"+id+"'><i class='icon-wrench'></i></div>";
+			          out += "<div class='value'>"+list_format_value(nodes[node][input].value)+"</div>";
+			          out += "<div class='time'>"+list_format_updated(nodes[node][input].time)+"</div>";
+			          out += "</div>";
+		        }
+		        
+		        out += "</div>";
+		        out += "</div>";
+	      }
+	      $("#table").html(out);
+	      
+	      $('#input-loader').hide();
+	      if (table.data.length == 0) {
+		        $("#noinputs").show();
+		        $("#localheading").hide();
+		        $("#apihelphead").hide();
+	      } else {
+		        $("#noinputs").hide();
+		        $("#localheading").show();
+		        $("#apihelphead").show();
+	      }
+	      
+	      // Join and include device data
+	      $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
+		        var devices = data;
+		        for (var z in devices) {
+			          if (nodes[devices[z].nodeid]!=undefined) {
+				            $(".node-info[node='"+devices[z].nodeid+"'] .device-description").html(devices[z].description);
+                    $(".node-info[node='"+devices[z].nodeid+"'] .device-key").html(devices[z].devicekey);
+			          }
+		        }  
+	      }});
+	      
+    }});
+}
+
+// Show/hide node on click
+$("#table").on("click",".node-info",function() {
+    var node = $(this).attr('node');
+    if (nodes_display[node]) {
+        $(".node-inputs[node='"+node+"']").hide();
+        nodes_display[node] = false;
+    } else {
+        $(".node-inputs[node='"+node+"']").show();
+        nodes_display[node] = true;
+    }
+});
+
+
+$("#table").on("click",".input-select",function(e) {
+    input_selection();
+});
   
-  update();
+function input_selection() 
+{
+    selected_inputs = {};
+    var num_selected = 0;
+    $(".input-select").each(function(){
+        var id = $(this).attr("id");
+        selected_inputs[id] = $(this)[0].checked;
+        if (selected_inputs[id]==true) num_selected += 1;
+    });
 
-  function update(){   
-	var requestTime = (new Date()).getTime();
-	$.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-	  table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-	  table.data = data;
-	  
-	  
-          inputs = {};
-		  for (var z in data) inputs[data[z].id] = data[z];
-          
-          var nodes = {};
-          for (var z in inputs) {
-              var node = inputs[z].nodeid;
-              if (nodes[node]==undefined) nodes[node] = [];
-              if (nodes_display[node]==undefined) nodes_display[node] = true;
-              nodes[node].push(inputs[z]);
-          }
-	  
-	  //table.draw();
+    if (num_selected>0) {
+        $(".input-delete").show();
+    } else {
+        $(".input-delete").hide();
+    }
 
-      var out = "";
-	  
-	  for (var node in nodes) {
-		  var visible = "hide"; if (nodes_display[node]) visible = "";
-		  
-		  out += "<div class='node'>";
-		  out += "<div class='node-info' node='"+node+"'>";
-		  out += "  <div class='device-name'>"+node+":</div>";
-		  out += "  <div class='device-description'></div>";
-		  
-		  out += "  <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
-		  out += "  <div class='device-key'></div>";
-		  
-		  out += "</div>";
-		  out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
-		  
-		  for (var input in nodes[node]) {
-			  var id = nodes[node][input].id;
-			  out += "<div class='node-input' id="+id+">";
-			  out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"'/></div>";
-			  out += "<div class='name'>"+nodes[node][input].name+"</div>";
-			  out += "<div class='configure' id='"+id+"'><i class='icon-wrench'></i></div>";
-			  out += "<div class='value'>"+list_format_value(nodes[node][input].value)+"</div>";
-			  out += "<div class='time'>"+list_format_updated(nodes[node][input].time)+"</div>";
-			  out += "</div>";
-		  }
-		  
-		  out += "</div>";
-		  out += "</div>";
+    if (num_selected==1) {
+        // $(".feed-edit").show();	  
+    } else {
+        // $(".feed-edit").hide();
+    }
+}
+
+$("#table").on("click",".device-configure",function(e) {
+    e.stopPropagation();
+    selected_device = 
+    
+    
+    $('#deviceConfigureModal').modal('show');
+    
+    var out = "";
+    for (var z in device_templates) out += "<option value='"+z+"'>"+device_templates[z]+"</option>";
+    $("#device-type-select").html(out);
+});
+
+$("#device-description-save").click(function(){
+    device.set(id,fields_to_update);
+});
+
+
+var updater;
+function updaterStart(func, interval){
+	  clearInterval(updater);
+	  updater = null;
+	  if (interval > 0) updater = setInterval(func, interval);
+}
+updaterStart(update, 10000);
+
+//$("#table").bind("onSave", function(e,id,fields_to_update){
+//$('#input-loader').show();
+// input.set(id,fields_to_update);
+//$('#input-loader').hide();
+//});
+
+$(".input-delete").click(function(){
+	  $('#inputDeleteModal').modal('show');
+	  var out = "";
+	  for (var inputid in selected_inputs) {
+		    if (selected_inputs[inputid]==true) {
+			      var i = inputs[inputid];
+			      if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
+				        // delete now if has no values and updated +15m
+				        input.remove(inputid);
+			      } else {
+				        out += i.nodeid+":"+i.name+"<br>";		
+			      }
+		    }
 	  }
-	  $("#table").html(out);
-	  
-	  $('#input-loader').hide();
-	  if (table.data.length == 0) {
-		$("#noinputs").show();
-		$("#localheading").hide();
-		$("#apihelphead").hide();
-	  } else {
-		$("#noinputs").hide();
-		$("#localheading").show();
-		$("#apihelphead").show();
-	  }
-	  
-	  // Join and include device data
-	  $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
-          $("#output").html(JSON.stringify(data));
-		  var devices = data;
-		  for (var z in devices) {
-			  if (nodes[devices[z].nodeid]!=undefined) {
-				   $(".node-info[node='"+devices[z].nodeid+"'] .device-description").html(devices[z].description);
-			       $(".node-info[node='"+devices[z].nodeid+"'] .device-key").html(devices[z].devicekey);
-			  }
-		  }  
-	  }});
-	  
-	}});
-  }
-
-  $("#table").on("click",".node-info",function() {
-      var node = $(this).attr('node');
-      if (nodes_display[node]) {
-          $(".node-inputs[node='"+node+"']").hide();
-          nodes_display[node] = false;
-      } else {
-          $(".node-inputs[node='"+node+"']").show();
-          nodes_display[node] = true;
-      }
-  });
-
-  $("#table").on("click",".input-select",function(e) {
-      input_selection();
-  });
+	  update();
+	  $("#inputs-to-delete").html(out);
+});
   
-  function input_selection() 
-  {
-	  selected_inputs = {};
-	  var num_selected = 0;
-	  $(".input-select").each(function(){
-	      var id = $(this).attr("id");
-		  selected_inputs[id] = $(this)[0].checked;
-		  if (selected_inputs[id]==true) num_selected += 1;
-      });
-	  
-	  if (num_selected>0) {
-	      $(".input-delete").show();
-	  } else {
-          $(".input-delete").hide();
+$("#inputDelete-confirm").off('click').on('click', function(){
+	  for (var inputid in selected_inputs) {
+		    if (selected_inputs[inputid]==true) input.remove(inputid);
 	  }
-	  
-	  if (num_selected==1) {
-	      // $(".feed-edit").show();	  
-	  } else {
-		  // $(".feed-edit").hide();
-	  }
-  }
-  var updater;
-  function updaterStart(func, interval){
-	clearInterval(updater);
-	updater = null;
-	if (interval > 0) updater = setInterval(func, interval);
-  }
-  updaterStart(update, 10000);
-
-  $("#table").bind("onEdit", function(e){
-	updaterStart(update, 0);
-  });
-
-  $("#table").bind("onSave", function(e,id,fields_to_update){
-	$('#input-loader').show();
-	input.set(id,fields_to_update);
-	$('#input-loader').hide();
-  });
-
-  $("#table").bind("onResume", function(e){
-	updaterStart(update, 10000);
-  });
-
-	$(".input-delete").click(function(){
-		$('#inputDeleteModal').modal('show');
-		var out = "";
-		for (var inputid in selected_inputs) {
-			if (selected_inputs[inputid]==true) {
-				var i = inputs[inputid];
-				if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
-					// delete now if has no values and updated +15m
-					input.remove(inputid);
-				} else {
-					out += i.nodeid+":"+i.name+"<br>";		
-				}
-			}
-		}
-		update();
-		$("#inputs-to-delete").html(out);
-	});
-  
-	$("#inputDelete-confirm").off('click').on('click', function(){
-		for (var inputid in selected_inputs) {
-			if (selected_inputs[inputid]==true) input.remove(inputid);
-		}
-		update();
-		$('#inputDeleteModal').modal('hide');
-	});
+	  update();
+	  $('#inputDeleteModal').modal('hide');
+});
  
-  // Process list UI js
-  processlist_ui.init(0); // Set input context
+// Process list UI js
+processlist_ui.init(0); // Set input context
 
-  $("#table").on('click', '.configure', function() {
-	var i = inputs[$(this).attr('id')];
-	console.log(i);
-	var contextid = i.id; // Current Input ID
-	// Input name
-	var newfeedname = "";
-	var contextname = "";
-	if (i.description != "") { 
-		newfeedname = i.description;
-		contextname = "Node " + i.nodeid + " : " + newfeedname;
-	}
-	else { 
-		newfeedname = "node:" + i.nodeid+":" + i.name;
-		contextname = "Node " + i.nodeid + " : " + i.name;
-	}
-	var newfeedtag = "Node " + i.nodeid;
-	var processlist = processlist_ui.decode(i.processList); // Input process list
-	processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
-   });
+$("#table").on('click', '.configure', function() {
+    var i = inputs[$(this).attr('id')];
+    console.log(i);
+    var contextid = i.id; // Current Input ID
+    // Input name
+    var newfeedname = "";
+    var contextname = "";
+    if (i.description != "") { 
+	      newfeedname = i.description;
+	      contextname = "Node " + i.nodeid + " : " + newfeedname;
+    }
+    else { 
+	      newfeedname = "node:" + i.nodeid+":" + i.name;
+	      contextname = "Node " + i.nodeid + " : " + i.name;
+    }
+    var newfeedtag = "Node " + i.nodeid;
+    var processlist = processlist_ui.decode(i.processList); // Input process list
+    processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
+});
 
-  $("#save-processlist").click(function (){
-	var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-	if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
-  });
+$("#save-processlist").click(function (){
+    var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
+    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+});
 </script>

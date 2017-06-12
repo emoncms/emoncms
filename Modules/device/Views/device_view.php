@@ -16,71 +16,11 @@
 #table input[type="text"] {
   width: 88%;
 }
-
-.node {
-    margin-bottom:10px;
-}
-
-.node-info {
-    padding:10px;
-    background-color:#ddd;
-    font-weight:bold;
-    cursor:pointer;
-}
-
-.node-feeds {
-    padding: 0px 5px 5px 5px;
-    background-color:#ddd;
-}
-
-.node-feed {
-    background-color:#f0f0f0;
-    border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-    padding:10px;
-    cursor:pointer;
-}
-
-.node-feed:hover{
-    border-left:2px solid #44b3e2;
-}
-
-.node-feed .checkbox {
-    display: inline-block;
-    width:30px;
-}
-
-.node-feed .name {
-    display: inline-block;
-    width:20%;
-}
-
-.node-feed .time {
-    width:60px;
-    display: inline-block;
-    float:right;
-    text-align:center;
-}
-
-.node-feed .value {
-    width:60px;
-    display: inline-block;
-    float:right;
-    text-align:center;
-}
-
-.node-feed .view {
-    width:40px;
-    display: inline-block;
-    float:right;
-    text-align:center;
-}
-
 </style>
 
 <div>
     <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
-    <div id="localheading"><h3><?php echo _('My Devices'); ?></h3></div>
+    <div id="localheading"><h2><?php echo _('Devices'); ?></h2></div>
 
     <div id="table"><div align='center'>loading...</div></div>
 	
@@ -142,7 +82,7 @@
 <script>
   var path = "<?php echo $path; ?>";
   var devices = <?php echo json_encode($devices); ?>;
-
+  
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
   table.element = "#table";
@@ -178,19 +118,7 @@
         }
       }
 */
-
-
-      var devices = data;
-      var out = "";
-      for (var z in devices) {
-          out += "<div class='node'>";
-          out += "<div class='node-info'>"+devices[z].name+"</div>";
-          out += "</div>";
-      }
-      $("#table").html(out);
-
-
-      // table.draw();
+      table.draw();
       if (table.data.length != 0) {
         $("#nodevices").hide();
         $("#localheading").show();
@@ -257,3 +185,4 @@
   });
 
 </script>
+
