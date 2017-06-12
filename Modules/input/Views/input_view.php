@@ -344,6 +344,15 @@ $("#device-description-save").click(function(){
     }});
 });
 
+$("#device-initialise").click(function(){
+    $.ajax({ url: path+"device/inittemplate.json", data: "id="+devices[selected_device].id+"&type="+$("#device-type-select").val(), dataType: 'json', async: false, success: function(data) {
+        alert("Device '"+selected_device+"' initialised using template '"+$("#device-type-select").val()+"', inputs configured and feeds created");
+    }});
+});
+
+
+
+
 
 var updater;
 function updaterStart(func, interval){

@@ -71,7 +71,13 @@ function device_controller()
                     if ($route->action == "get") $result = $deviceget;
                     if ($route->action == "delete") $result = $device->delete($deviceid);
                     if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
-                    if ($route->action == 'inittemplate') $result = $device->init_template($deviceid);
+                    if ($route->action == 'inittemplate') {
+                        if (isset($_GET['type'])) {
+                            $device->set_fields($deviceid,json_encode(array("type"=>$_GET['type'])));
+                        }
+                        $result = $device->init_template($deviceid);
+                    
+                    }
                 }
             }
             else
