@@ -23,19 +23,43 @@ function device_controller()
 
     if ($route->format == 'json')
     {
-        if ($route->action == "mqttauth") {
-            $ip = $_SERVER['REMOTE_ADDR'];
-            
-            $redis->lpush("device_mqttauth",$ip);
-            
-            //if ($ip=="192.168.0.104") {
-                global $mqtt_server;
-                $result = $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
+        // ---------------------------------------------------------------
+        // Method for sharing authentication details with a node
+        // that does not require copying and pasting passwords and apikeys
+        // 1. device requests authentication - reply "request registered"
+        // 2. notification asks user whether to allow or deny device
+        // 3. user clicks on allow
+        // 4. device makes follow up request for authentication
+        //    - reply authentication details
+        // ---------------------------------------------------------------
+        if ($route->action == "auth") {
+            // 1. Register request for authentication details, or provide if allowed
+            if ($route->subaction=="request") {
+                $ip = $_SERVER['REMOTE_ADDR'];
+                
+                $allow_ip = $redis->get("device_auth_allow");
+                // Only show authentication details to allowed ip address
+                if ($allow_ip==$ip) {
+                    $redis->del("device_auth_allow");
+                    global $mqtt_server;
+                    $result = $mqtt_server["user"].":".$mqtt_server["password"].":".$mqtt_server["basetopic"];
+                } else {
+                    $redis->set("device_auth",json_encode(array("ip"=>$ip)));
+                    $result = "request registered";
+                }
                 $route->format = "text";
-            //} else {
-            //    $route->format = "text";
-            //    $result = "request registered";
-            //}
+            }
+            // 2. User checks for device waiting for authentication
+            else if ($route->subaction=="check" && $session['write']) {
+                $result = json_decode($redis->get("device_auth"));
+            }
+            // 3. User allows device to receive authentication details
+            else if ($route->subaction=="allow" && $session['write']) {
+                 $ip = get("ip");
+                 $redis->set("device_auth_allow",$ip);
+                 $result = true;
+            }
+            
         }
         // Used in conjunction with input name describe to auto create device
         else if ($route->action == "autocreate") {
