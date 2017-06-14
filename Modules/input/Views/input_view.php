@@ -74,6 +74,13 @@
 
 .node-input .name {
     padding-top:10px;
+    
+    float:left;
+}
+
+.node-input .processlist {
+    padding-top:10px;
+    padding-left:20px;
     float:left;
 }
 
@@ -250,6 +257,9 @@ function update(){
 			          out += "<div class='node-input' id="+id+">";
 			          out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"' "+selected+" /></div>";
 			          out += "<div class='name'>"+nodes[node][input].name+"</div>";
+			          
+                if (processlist_ui != undefined)  out += "<div class='processlist'>"+processlist_ui.drawpreview(nodes[node][input].processList)+"</div>";
+			          
 			          out += "<div class='configure' id='"+id+"'><i class='icon-wrench'></i></div>";
 			          out += "<div class='value'>"+list_format_value(nodes[node][input].value)+"</div>";
 			          out += "<div class='time'>"+list_format_updated(nodes[node][input].time)+"</div>";
@@ -394,7 +404,7 @@ function updaterStart(func, interval){
 	  updater = null;
 	  if (interval > 0) updater = setInterval(func, interval);
 }
-updaterStart(update, 10000);
+updaterStart(update, 5000);
 
 //$("#table").bind("onSave", function(e,id,fields_to_update){
 //$('#input-loader').show();

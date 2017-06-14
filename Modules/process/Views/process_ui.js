@@ -180,7 +180,7 @@ var processlist_ui =
                 if (this.feedlist[value]!=undefined) {
                   title = "Feed " + value + " (" + (this.feedlist[value].tag ? this.feedlist[value].tag+": " : "") + this.feedlist[value].name +")";
                   color = 'info';
-                  out += "<a target='_blank' href='"+path+"vis/auto?feedid="+value+"'<span class='label label-"+color+"' title='"+title+"' style='cursor:pointer'>"+key+"</span></a> "; 
+                  out += "<a target='_blank' href='"+path+"graph/"+value+"'<span class='label label-"+color+"' title='"+title+"' style='cursor:pointer'>"+key+"</span></a> "; 
                 } else {
                   return "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
                 }
