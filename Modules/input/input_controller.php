@@ -318,6 +318,8 @@ function input_controller()
         else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
         {
             if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
+            
+            // Delete input
             else if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
             else if ($route->action == "process")
             {
@@ -325,7 +327,17 @@ function input_controller()
                 else if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), post('processlist'));
                 else if ($route->subaction == "reset") $result = $input->reset_processlist(get("inputid"));
             }
+            
+        // Multiple input actions - permissions are checked within model
+        } else if (isset($_GET['inputids'])) {
+        
+            if ($route->action == "delete") {
+                $inputids = json_decode($_GET['inputids']);
+                if ($inputids!=null) $result = $input->delete_multiple($session['userid'],$inputids);
+            }
         }
+        
+        
     }
 
     return array('content'=>$result);

@@ -135,6 +135,7 @@ input[type="checkbox"] { margin:0px; }
 	<div class="input-prepend" style="margin-bottom:0px">
 		<span class="add-on">Select</span>
 		<select id="input-selection">
+		  <option value="custom">Custom</option>
 			<option value="all">All</option>
 			<option value="none">None</option>
 		</select>
@@ -241,8 +242,13 @@ function update(){
 		        
 		        for (var input in nodes[node]) {
 			          var id = nodes[node][input].id;
+			          
+			          var selected = "";
+			          if (selected_inputs[id]!=undefined && selected_inputs[id]==true) 
+			              selected = "checked";
+			          
 			          out += "<div class='node-input' id="+id+">";
-			          out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"'/></div>";
+			          out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"' "+selected+" /></div>";
 			          out += "<div class='name'>"+nodes[node][input].name+"</div>";
 			          out += "<div class='configure' id='"+id+"'><i class='icon-wrench'></i></div>";
 			          out += "<div class='value'>"+list_format_value(nodes[node][input].value)+"</div>";
@@ -296,6 +302,20 @@ $("#table").on("click",".node-info",function() {
 
 
 $("#table").on("click",".input-select",function(e) {
+    input_selection();
+});
+
+$("#input-selection").change(function(){
+    var selection = $(this).val();
+    
+    if (selection=="all") {
+        for (var id in inputs) selected_inputs[id] = true;
+        $(".input-select").prop('checked', true); 
+        
+    } else if (selection=="none") {
+        selected_inputs = {};
+        $(".input-select").prop('checked', false); 
+    }
     input_selection();
 });
   
@@ -385,25 +405,30 @@ updaterStart(update, 10000);
 $(".input-delete").click(function(){
 	  $('#inputDeleteModal').modal('show');
 	  var out = "";
+	  var ids = [];
 	  for (var inputid in selected_inputs) {
 		    if (selected_inputs[inputid]==true) {
 			      var i = inputs[inputid];
 			      if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
 				        // delete now if has no values and updated +15m
-				        input.remove(inputid);
+				        ids.push(parseInt(inputid)); 
 			      } else {
 				        out += i.nodeid+":"+i.name+"<br>";		
 			      }
 		    }
 	  }
+	  
+	  input.delete_multiple(ids);
 	  update();
 	  $("#inputs-to-delete").html(out);
 });
   
 $("#inputDelete-confirm").off('click').on('click', function(){
+    var ids = [];
 	  for (var inputid in selected_inputs) {
-		    if (selected_inputs[inputid]==true) input.remove(inputid);
+		    if (selected_inputs[inputid]==true) ids.push(parseInt(inputid));
 	  }
+	  input.delete_multiple(ids);
 	  update();
 	  $('#inputDeleteModal').modal('hide');
 });

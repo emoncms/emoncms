@@ -30,6 +30,11 @@ var input = {
     {
         $.ajax({ url: path+"input/delete.json", data: "inputid="+id, async: false, success: function(data){} });
     },
+    
+    'delete_multiple':function(ids)
+    {
+        $.ajax({ url: path+"input/delete.json", data: "inputids="+JSON.stringify(ids), async: false, success: function(data){} });
+    },
 
     // Process
 

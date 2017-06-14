@@ -283,6 +283,14 @@ class Input
             $this->redis->del("input:$inputid");
             $this->redis->srem("user:inputs:$userid",$inputid);
         }
+        return "input deleted";
+    }
+    
+    public function delete_multiple($userid, $inputids) {
+        foreach ($inputids as $inputid) {
+            if ($this->belongs_to_user($userid, $inputid)) $this->delete($userid, $inputid);
+        }
+        return "inputs deleted";
     }
 
     public function clean($userid)
