@@ -28,7 +28,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
   <div class="well">
     <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emoncms_logo.png" alt="Emoncms" width="256" height="46" />
     <div class="login-container">
-        <form id="login-form" method="post" action="/">
+        <form id="login-form" method="post" action="<?php echo $path; ?>">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Email'); ?>
