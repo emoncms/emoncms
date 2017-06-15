@@ -123,14 +123,30 @@
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
+    // Special routes
+    
     // Return brief device descriptor for hub detection
     if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
-
+    
     if (get('embed')==1) $embed = 1; else $embed = 0;
-
+    
     // If no route specified use defaults
     if ($route->isRouteNotDefined())
     {
+        // EmonPi Setup Wizard
+        if ($allow_emonpi_admin) {
+            if (file_exists("Modules/setup")) {
+                require "Modules/setup/setup_model.php";
+                $setup = new Setup($mysqli);
+                if ($setup->status()=="unconfigured") {
+                    $default_controller = "setup";
+                    $default_action = "";
+                    // Provide special setup access to WIFI module functions
+                    $_SESSION['setup_access'] = true; 
+                }
+            }
+        }
+        
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults
             $route->controller = $default_controller;
