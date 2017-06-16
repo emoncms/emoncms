@@ -1,0 +1,34 @@
+{	"name": "EmonPi: HomeEnergyMonitor",
+    "description": "Basic EmonPi Home Energy Monitor configuration",
+    "inputs": [
+        {
+            "name": "power1",
+            "description": "House consumption",
+            "processList": [
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use" }
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use_kwh" }
+                }
+            ]
+        }
+    ],
+
+    "feeds": [
+        {
+            "name": "use",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        },
+        {
+            "name": "use_kwh",
+            "type": "DataType::REALTIME",
+            "engine": "Engine::PHPFINA",
+            "interval": "10"
+        }
+    ]
+}

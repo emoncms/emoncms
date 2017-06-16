@@ -20,7 +20,7 @@
             ]
         },
         {
-            "name": "power2",
+            "name": "power4",
             "description": "Solar generation",
             "processList": [
                 {

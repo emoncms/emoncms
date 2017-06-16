@@ -1,5 +1,5 @@
-{	"name": "EmonTx: Solar PV Type 1",
-    "description": "EmonTx Solar PV Type 1 template using CT4 for solar",
+{	"name": "EmonPi: Solar PV Type 1",
+    "description": "EmonPi Solar PV Type 1 template",
     "inputs": [
         {
             "name": "power1",
@@ -15,7 +15,7 @@
                 },
                 {
                     "process": "subtract_input",
-                    "arguments": {"type": "ProcessArg::INPUTID", "value": "power4" }
+                    "arguments": {"type": "ProcessArg::INPUTID", "value": "power2" }
                 },
                 {
                     "process": "allowpositive",
@@ -32,7 +32,7 @@
             ]
         },
         {
-            "name": "power4",
+            "name": "power2",
             "description": "Solar generation",
             "processList": [
                 {

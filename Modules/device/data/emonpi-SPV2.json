@@ -1,22 +1,10 @@
-{	"name": "EmonTx: Solar PV Type 1",
-    "description": "EmonTx Solar PV Type 1 template using CT4 for solar",
+{	"name": "EmonPi: Solar PV Type 2",
+    "description": "EmonPi Solar PV Type 2 template",
     "inputs": [
         {
             "name": "power1",
             "description": "House consumption",
             "processList": [
-                {
-                    "process": "log_to_feed",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use" }
-                },
-                {
-                    "process": "power_to_kwh",
-                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use_kwh" }
-                },
-                {
-                    "process": "subtract_input",
-                    "arguments": {"type": "ProcessArg::INPUTID", "value": "power4" }
-                },
                 {
                     "process": "allowpositive",
                     "arguments": {"type": "ProcessArg::NONE"}
@@ -32,7 +20,7 @@
             ]
         },
         {
-            "name": "power4",
+            "name": "power2",
             "description": "Solar generation",
             "processList": [
                 {
@@ -42,6 +30,18 @@
                 {
                     "process": "power_to_kwh",
                     "arguments": {"type": "ProcessArg::FEEDID", "value": "solar_kwh" }
+                },
+                {
+                    "process": "add_input",
+                    "arguments": {"type": "ProcessArg::INPUTID", "value": "power1" }
+                },
+                {
+                    "process": "log_to_feed",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use" }
+                },
+                {
+                    "process": "power_to_kwh",
+                    "arguments": {"type": "ProcessArg::FEEDID", "value": "use_kwh" }
                 }
             ]
         }
