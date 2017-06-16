@@ -149,6 +149,8 @@ input[type="checkbox"] { margin:0px; }
 	</div>
 	
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+	
+	<button id="classic-view" class="btn" style="float:right">Classic</button>
 </div>	
 	
 	<div id="auth-check" class="hide">
@@ -493,5 +495,7 @@ $(".auth-check-allow").click(function(){
         $("#auth-check").hide();
     }});
 });
+
+$("#classic-view").click(function(){ window.location = path+"input/view-classic"; });
 
 </script>

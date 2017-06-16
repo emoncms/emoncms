@@ -39,6 +39,7 @@ function input_controller()
     {
         if ($route->action == 'api') $result = view("Modules/input/Views/input_api.php", array());
         else if ($route->action == 'view') $result =  view("Modules/input/Views/input_view.php", array());
+        else if ($route->action == 'view-classic') $result =  view("Modules/input/Views/input_view_classic.php", array());
     }
 
     else if ($route->format == 'json')

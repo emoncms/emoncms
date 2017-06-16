@@ -26,6 +26,7 @@ function feed_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "list" && $session['write']) $result = view("Modules/feed/Views/feedlist_view.php",array());
+        if ($route->action == "list-classic" && $session['write']) $result = view("Modules/feed/Views/feedlist_view_classic.php",array());
         else if ($route->action == "api" && $session['write']) $result = view("Modules/feed/Views/feedapi_view.php",array());
     }
 

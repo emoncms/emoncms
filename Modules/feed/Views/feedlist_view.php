@@ -87,6 +87,8 @@ input[type="checkbox"] { margin:0px; }
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
+	
+	<button id="classic-view" class="btn" style="float:right">Classic</button>
 </div>
 
 <div id="table"></div>
@@ -187,6 +189,8 @@ input[type="checkbox"] { margin:0px; }
       var feedid = $(this).attr("feedid");
       window.location = path+"graph/"+feedid;
   });
+  
+  $("#classic-view").click(function(){ window.location = path+"feed/list-classic"; });
   
   $(".feed-graph").click(function(){
       var graph_feeds = [];
