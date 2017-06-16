@@ -454,9 +454,19 @@ class Device
             $process = new Process(null,null,null,null);
             $process_list = $process->get_process_list(); // emoncms supported processes
 
+            $process_list_by_name = array();
+            foreach ($process_list as $process_id=>$process_item) {
+                $name = $process_item[2];
+                $process_list_by_name[$name] = $process_id;
+            }
+
             // create each processlist
             foreach($processArray as $p) {
                 $proc_name = $p->process;
+                
+                // If process names are used map to process id
+                if (isset($process_list_by_name[$proc_name])) $proc_name = $process_list_by_name[$proc_name];
+                
                 if (!isset($process_list[$proc_name])) {
                     $this->log->error("convertProcess() Process '$proc_name' not supported. Module missing?");
                     return array('success'=>false, 'message'=>"Process '$proc_name' not supported. Module missing?");
@@ -475,6 +485,8 @@ class Device
 
                         if (isset($p->arguments->value)) {
                             $value = $p->arguments->value;
+                        } else if ($type === ProcessArg::NONE) {
+                            $value = 0;
                         } else {
                             $this->log->error("convertProcess() Bad device template. Undefined argument value. process='$proc_name' type='".$p->arguments->type."'");
                             return array('success'=>false, 'message'=>"Bad device template. Undefined argument value. process='$proc_name' type='".$p->arguments->type."'");
