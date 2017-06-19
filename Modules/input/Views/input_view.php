@@ -276,11 +276,9 @@ function update(){
 	      $('#input-loader').hide();
 	      if (table.data.length == 0) {
 		        $("#noinputs").show();
-		        $("#localheading").hide();
 		        $("#apihelphead").hide();
 	      } else {
 		        $("#noinputs").hide();
-		        $("#localheading").show();
 		        $("#apihelphead").show();
 	      }
 	      
