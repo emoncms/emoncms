@@ -28,6 +28,14 @@ DirectoryIndex index.php
 </IfModule>
 
 # ------------------------------------------------------------------------------
+# Rewrite auth header. Fix Authorization: Bearer
+# https://cweiske.de/tagebuch/php-apache-authorization.htm
+# ------------------------------------------------------------------------------
+<IfModule mod_setenvif.c>
+  SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+</IfModule>
+
+# ------------------------------------------------------------------------------
 # The following are taken from html5 boilerplate
 # url: https://github.com/h5bp/html5-boilerplate/blob/master/.htaccess
 # ------------------------------------------------------------------------------
