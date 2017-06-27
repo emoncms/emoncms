@@ -174,6 +174,62 @@ class Input
         }
         return $dbinputs;
     }
+    
+    
+    public function get_inputs_v2($userid)
+    {
+        if ($this->redis) {
+            return $this->redis_get_inputs_v2($userid);
+        } else {
+            return $this->mysql_get_inputs_v2($userid);
+        }
+    }
+
+    // USES: redis input & user
+    private function redis_get_inputs_v2($userid)
+    {
+        $userid = (int) $userid;
+        if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
+
+        $dbinputs = array();
+        $inputids = $this->redis->sMembers("user:inputs:$userid");
+
+        foreach ($inputids as $id)
+        {
+            $row = $this->redis->hGetAll("input:$id");
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            
+            $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
+            // Fix break point where value is NAN
+            $lastvalue['time'] = $lastvalue['time'] * 1; 
+            $row['time'] = (int) $lastvalue['time'];
+            if (is_nan($row['time'])) $row['time'] = 0;
+         
+            $lastvalue['value'] = $lastvalue['value'] * 1; 
+            $row['value'] = (float) $lastvalue['value'];
+            if (is_nan($row['value'])) $row['value'] = 0;
+            
+            
+            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
+            $dbinputs[$row['nodeid']][$row['name']] = array('time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
+        }
+
+        return $dbinputs;
+    }
+
+    private function mysql_get_inputs_v2($userid)
+    {
+        $userid = (int) $userid;
+        $dbinputs = array();
+        $result = $this->mysqli->query("SELECT nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        while ($row = (array)$result->fetch_object())
+        {
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
+            $dbinputs[$row['nodeid']][$row['name']] = array('processList'=>$row['processList']);
+        }
+        return $dbinputs;
+    }
 
     //-----------------------------------------------------------------------------------------------
     // This public function gets a users input list, its used to create the input/list page
