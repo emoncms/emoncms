@@ -223,7 +223,7 @@ var selected_inputs = {};
 var selected_device = false;
 
 var device_templates = {};
-$.ajax({ url: path+"device/listtemplatenames.json", dataType: 'json', async: true, success: function(data) { device_templates = data; }});
+$.ajax({ url: path+"device/listtemplates-short.json", dataType: 'json', async: true, success: function(data) { device_templates = data; }});
 
 update();
 function update(){   
@@ -303,7 +303,7 @@ function update(){
 			          if (nodes[node]!=undefined) {
 				            $(".node-info[node='"+node+"'] .device-description").html(devices[node].description);
 				            
-				            if (node=="smartplug") {
+				            if (device_templates[node].control) {
 				                $(".node-info[node='"+node+"'] .device-schedule").show();
 				            }
 			          }
@@ -394,7 +394,7 @@ $("#table").on("click",".device-configure",function(e) {
     $("#device-description-saved").hide();
     
     var out = "";
-    for (var z in device_templates) out += "<option value='"+z+"'>"+device_templates[z]+"</option>";
+    for (var z in device_templates) out += "<option value='"+z+"'>"+device_templates[z].name+"</option>";
     $("#device-type-select").html(out);
 });
 

@@ -83,14 +83,16 @@ function device_controller()
         elseif ($route->action == "listtemplates") {
             if ($session['userid']>0 && $session['write']) $result = $device->get_templates();
         }
-        elseif ($route->action == "listtemplatenames") {
+        elseif ($route->action == "listtemplates-short") {
             if ($session['userid']>0 && $session['write']) { 
                 $devices_templates = $device->get_templates();
             
               	$devices = array();
 	              foreach($devices_templates as $key => $value)
 	              {
-		              $devices[$key] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
+	                $devices[$key] = array();
+	                $devices[$key]["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
+	                $devices[$key]["control"] = (!isset($value->control) ? false : true);
 	              }
 	              $result = $devices;
             }
