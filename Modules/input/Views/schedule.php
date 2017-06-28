@@ -38,12 +38,14 @@ $.ajax({ url: path+"device/gettemplate.json?device="+device, dataType: 'json', a
     controls = template.control;
     draw_controls();
     update();
+    
+    $("input[type=text]").keyup(function(){ $("#save").show(); $(".saved").hide(); });
+    $("input[type=checkbox]").change(function(){ $("#save").show(); $(".saved").hide(); });
+
 }});
 
 // -------------------------------------------------------------------------
 
-$("input[type=text]").keyup(function(){ $("#save").show(); $(".saved").hide(); });
-$("input[type=checkbox]").change(function(){ $("#save").show(); $(".saved").hide(); });
 
 $("#save").click(function(){
 
