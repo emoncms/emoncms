@@ -38,6 +38,16 @@
 	border-left: 1px solid #eee;
 }
 
+.device-schedule {
+	float:right;
+	padding:10px;
+	min-width:50px;
+	text-align:center;
+	color:#fff;
+	border-left: 1px solid #eee;
+	display:none;
+}
+
 .device-configure {
 	float:right;
 	padding:10px;
@@ -246,6 +256,7 @@ function update(){
 		        out += "    <div class='device-description'></div>";
 		        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
 		        out += "    <div class='device-key'>KEY</div>";
+		        out += "    <div class='device-schedule'>SCHEDULE</div>";
 		        out += "  </div>";
 		        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
 		        
@@ -291,6 +302,10 @@ function update(){
 		        for (var node in devices) {
 			          if (nodes[node]!=undefined) {
 				            $(".node-info[node='"+node+"'] .device-description").html(devices[node].description);
+				            
+				            if (node=="smartplug") {
+				                $(".node-info[node='"+node+"'] .device-schedule").show();
+				            }
 			          }
 		        }  
 	      }});
@@ -309,7 +324,6 @@ $("#table").on("click",".node-info",function() {
         nodes_display[node] = true;
     }
 });
-
 
 $("#table").on("click",".input-select",function(e) {
     input_selection();
@@ -362,6 +376,13 @@ $("#table").on("click",".device-key",function(e) {
     } else {
         $(".node-info[node='"+node+"'] .device-key").html("KEY");
     }*/
+    
+});
+
+$("#table").on("click",".device-schedule",function(e) {
+    e.stopPropagation();
+    var node = $(this).parent().attr("node");
+    window.location = path+"input/schedule?node="+node;
     
 });
 

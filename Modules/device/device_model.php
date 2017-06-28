@@ -298,6 +298,13 @@ class Device
         return $list;
     }
 
+    public function get_template($device) {
+        $device = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$device);
+        if (file_exists("Modules/device/data/$device.json")) {
+            return json_decode(file_get_contents("Modules/device/data/$device.json"));
+        }
+    }
+
     public function init_template($id)
     {
         $id = (int) $id;
@@ -352,7 +359,9 @@ class Device
 
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($this->mysqli,$this->redis,$feed_settings);
-
+        
+        $result = array("success"=>true);
+        
         foreach($feedArray as $f) {
             // Create each feed
             $name = $f->name;

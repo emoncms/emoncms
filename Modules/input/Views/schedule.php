@@ -1,7 +1,7 @@
 <?php 
 
 global $path;
-$device = "smartplug";
+$device = $_GET['node'];
 
 ?>
 
@@ -32,15 +32,13 @@ var path = "<?php echo $path; ?>";
 var device = "<?php echo $device; ?>";
 $("#devicename").html(jsUcfirst(device));
 
-var controls = {
-    period: {type:"text",default:0},
-    end: {type:"text",default:0},
-    interruptible: {type:"checkbox",default:0},
-    status: {type:"checkbox",default:0}
-}
+var controls = {};
 
-draw_controls();
-update();
+$.ajax({ url: path+"device/gettemplate.json?device="+device, dataType: 'json', async: true, success: function(template) { 
+    controls = template.control;
+    draw_controls();
+    update();
+}});
 
 // -------------------------------------------------------------------------
 
