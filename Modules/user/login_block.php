@@ -105,7 +105,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 
 var path = "<?php echo $path; ?>";
 var register_open = false;
-$("body").css("background-color","#1d8dbc");
+$("body").addClass("body-login");
 
 $(document).ready(function() {
     var passwordreset = "<?php echo $enable_password_reset; ?>";
