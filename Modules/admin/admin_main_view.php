@@ -291,8 +291,9 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
-                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
               }
+                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
 }
 
 // Ram information
@@ -328,7 +329,7 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " &nbsp; "; } ?></td></tr>
             </table>
             
         </td>
@@ -438,4 +439,25 @@ $("#rebootPi").click(function() {
 $("#noshut").click(function() {
   alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
 });
+
+$("#fs-rw").click(function() {
+  if(confirm('Setting file-system to Read-Write, remember to restore Read-Only when your done..')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=rw", async: true, success: function(result)
+      {
+        // console.log(data);
+      }
+    });
+  }
+});
+
+$("#fs-ro").click(function() {
+  if(confirm('Settings filesystem back to Read Only')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=ro", async: true, success: function(result)
+      {
+      // console.log(data);
+      }
+    });
+  }
+});
+
 </script>

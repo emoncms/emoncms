@@ -64,6 +64,8 @@
             'datadir' => '/var/lib/phptimeseries/'
         )
     );
+    
+    $homedir = "/home/pi";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
@@ -72,6 +74,7 @@
 //5 #### User Interface settings
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
+    $themecolor = "standard";
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon.png";

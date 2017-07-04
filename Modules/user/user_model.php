@@ -95,6 +95,24 @@ class User
         //----------------------------------------------------
         return $session;
     }
+    
+    public function get_id_from_apikey($apikey_in) 
+    {    
+        $apikey_in = $this->mysqli->real_escape_string($apikey_in);
+        
+        $result = $this->mysqli->query("SELECT id FROM users WHERE apikey_read='$apikey_in'");
+        if ($result->num_rows == 1) {
+            $row = $result->fetch_array();
+            return $row["id"];
+        } else {
+            $result = $this->mysqli->query("SELECT id, username FROM users WHERE apikey_write='$apikey_in'");
+            if ($result->num_rows == 1) {
+                $row = $result->fetch_array();
+                return $row["id"];
+            }
+        }
+        return false;
+    }
 
     public function emon_session_start()
     {
@@ -113,7 +131,11 @@ class User
                 if ($loginresult)
                 {
                     // Remember me login
-                    $result = $this->mysqli->query("SELECT id,username,admin,language FROM users WHERE id = '$loginresult'");
+                    
+                    // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
+                    // without cuasing an error if it has not yet been created in the database.
+                    // SELECT id,username,admin,language,startingpage FROM users WHERE id = '$loginresult'
+                    $result = $this->mysqli->query("SELECT * FROM users WHERE id = '$loginresult'");
                     if ($result->num_rows < 1) {
                         $this->logout(); // user id does not exist
                     } else {
@@ -126,6 +148,7 @@ class User
                             $_SESSION['write'] = 1;
                             //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
                             $_SESSION['lang'] = $userData->language;
+                            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
                             // There is a chance that an attacker has stolen the login token, so we store
                             // the fact that the user was logged in via RememberMe (instead of login form)
                             $_SESSION['cookielogin'] = true;
@@ -146,6 +169,7 @@ class User
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
+        if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
 
@@ -206,7 +230,10 @@ class User
         $username = $this->mysqli->real_escape_string($username);
         //$password = $this->mysqli->real_escape_string($password);
 
-        $result = $this->mysqli->query("SELECT id,password,admin,salt,language FROM users WHERE username = '$username'");
+        // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
+        // without cuasing an error if it has not yet been created in the database.
+        // SELECT id,password,admin,salt,language,startingpage FROM users WHERE id = '$loginresult'
+        $result = $this->mysqli->query("SELECT * FROM users WHERE username = '$username'");
 
         if ($result->num_rows < 1) return array('success'=>false, 'message'=>_("Username does not exist"));
 
@@ -226,7 +253,8 @@ class User
             $_SESSION['write'] = 1;
             $_SESSION['admin'] = $userData->admin;
             $_SESSION['lang'] = $userData->language;
-
+            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
+                            
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
                     $this->rememberme->createCookie($userData->id);
@@ -265,7 +293,7 @@ class User
         }
         else
         {
-            return array('success'=>true, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
+            return array('success'=>true, 'userid'=>$userData->id, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
         }
     }
 
@@ -534,7 +562,8 @@ class User
     public function get($userid)
     {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,apikey_write,apikey_read FROM users WHERE id=$userid");
+        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read FROM users WHERE id=$userid");
+        if (!$result) return array("success"=>false, "message"=>"Error fetching user data, you may need to run database update");
         $data = $result->fetch_object();
         return $data;
     }
@@ -542,16 +571,23 @@ class User
     public function set($userid,$data)
     {
         // Validation
-        $userid = intval($userid);
+        $userid = (int) $userid;
         $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
         $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
         $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
-        $language = preg_replace('/[^\w\s-.]/','',$data->language); 
+        $language = preg_replace('/[^\w\s-.]/','',$data->language);
+        
+        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?=\/]/u','',$data->startingpage);
+        
         $_SESSION['lang'] = $language;
-
-        $result = $this->mysqli->query("UPDATE users SET gravatar = '$gravatar', name = '$name', location = '$location', timezone = '$timezone', language = '$language', bio = '$bio' WHERE id='$userid'");
+        
+        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ? WHERE id = ?");
+        $stmt->bind_param("sssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $userid);
+        if (!$stmt->execute()) {
+            return array('success'=>false, 'message'=>_("Error updating user info"));
+        }
     }
 
     // Generates a new random read apikey

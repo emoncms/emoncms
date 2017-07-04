@@ -1,0 +1,111 @@
+/*
+All Emoncms code is released under the GNU Affero General Public License.
+See COPYRIGHT.txt and LICENSE.txt.
+
+---------------------------------------------------------------------
+Emoncms - open source energy visualisation
+Part of the OpenEnergyMonitor project:
+http://openenergymonitor.org
+
+*/
+ html, body {
+    height: 100%;
+}
+#wrap {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    /* Negative indent footer by it's height */
+    margin: 0 auto -40px;
+}
+
+#login-form input[type="text"], #login-form input[type="password"] {
+    width: 94%;
+}
+
+#push, #footer {
+    height: 30px;
+}
+#footer {
+    background-color: #f5f5f5;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top:10px;
+}
+#footer a {
+    color: #77b4d9;
+    text-decoration: none;
+}
+#footer span {
+    color:#999;
+}
+#submenu {
+    width:100%;
+    background-color:#ddd;
+    height:27px;
+}
+#topspacer {
+    padding-top: 40px;
+}
+
+div#account {
+    width:250px;
+}
+
+.account-item {
+    margin-bottom:10px;
+}
+
+input[type=text][class=variable-name-edit] {
+    margin-bottom:0px;
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+    #topspacer {
+        margin-top:-20px;
+        padding-top: 0px;
+    }
+}
+/* Lastly, apply responsive CSS fixes as necessary */
+@media (max-width: 767px) {
+    #submenu, #footer {
+        margin-left: -20px;
+        margin-right: -20px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    #topspacer {
+        margin-top:-20px;
+        padding-top: 0px;
+    }
+}
+
+.menu-text {
+  display: inherit !important;
+}
+
+.menu-description {
+  display: none !important;
+  margin-left: 10px;
+}
+
+.menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
+  display: inherit !important;
+}
+
+.scrollable-menu {
+  height: auto;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8)
+    	url(ajax-loader.gif)
+    	center
+    	no-repeat;
+}

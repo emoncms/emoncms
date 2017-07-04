@@ -49,6 +49,17 @@ class Input
         $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
         if ($result->num_rows == 1) return true; else return false;
     }
+    
+    public function exists_nodeid_name($userid,$nodeid,$name)
+    {
+        $userid = (int) $userid;
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
+        $result = $this->mysqli->query("SELECT id FROM input WHERE `userid` = '$userid' AND `nodeid` = '$nodeid' AND `name` = '$name'");
+        if ($result->num_rows==0) return false;
+        $row = $result->fetch_array();
+        return $row["id"]; 
+    }    
 
     public function validate_access($dbinputs, $nodeid)
     {
@@ -188,9 +199,18 @@ class Input
         foreach ($inputids as $id)
         {
             $row = $this->redis->hGetAll("input:$id");
+            $row["description"] = utf8_encode($row["description"]);
+         
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            $row['time'] = $lastvalue['time'];
-            $row['value'] = $lastvalue['value'];
+            // Fix break point where value is NAN
+            $lastvalue['time'] = $lastvalue['time'] * 1; 
+            $row['time'] = (int) $lastvalue['time'];
+            if (is_nan($row['time'])) $row['time'] = 0;
+         
+            $lastvalue['value'] = $lastvalue['value'] * 1; 
+            $row['value'] = (float) $lastvalue['value'];
+            if (is_nan($row['value'])) $row['value'] = 0;
+         
             $inputs[] = $row;
         }
         return $inputs;

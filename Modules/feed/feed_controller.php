@@ -40,6 +40,11 @@ function feed_controller()
             }
             else if (isset($_GET['userid'])) $result = $feed->get_user_public_feeds(get('userid'));
 
+        } elseif ($route->action == "listwithmeta" && $session['read']) {
+            $result = $feed->get_user_feeds_with_meta($session['userid']);
+        } elseif ($route->action == "getid" && $session['read']) { 
+            $route->format = "text";
+            $result = $feed->get_id($session['userid'],get("name"));
         } elseif ($route->action == "create" && $session['write']) {
             $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
         } elseif ($route->action == "updatesize" && $session['write']) {
@@ -62,7 +67,8 @@ function feed_controller()
         } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
             // Export multiple feeds on the same csv
             // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
-            $result = $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
+            $result = $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name')); 
+        
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
@@ -84,7 +90,11 @@ function feed_controller()
                         if (isset($_GET['interval'])) {
                             $result = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
                         } else if (isset($_GET['mode'])) {
-                            $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                            if (isset($_GET['split'])) {
+                                $result = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
+                            } else {
+                                $result = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                            }
                         }
                     }
                     else if ($route->action == 'average') {
@@ -109,19 +119,39 @@ function feed_controller()
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $f['userid']==$session['userid'])
                 {
                     // Storage engine agnostic
-                    if ($route->action == 'set') $result = $feed->set_feed_fields($feedid,get('fields'));
-                    else if ($route->action == "insert") $result = $feed->insert_data($feedid,time(),get("time"),get("value"));
-                    else if ($route->action == "update") {
+                    
+                    // Set feed meta fields
+                    if ($route->action == 'set') {
+                        $result = $feed->set_feed_fields($feedid,get('fields'));
+                        
+                    // Insert datapoint
+                    } else if ($route->action == "insert") { 
+                        $result = $feed->insert_data($feedid,time(),get("time"),get("value"));
+                        
+                    // Update datapoint
+                    } else if ($route->action == "update") {
                         if (isset($_GET['updatetime'])) $updatetime = get("updatetime"); else $updatetime = time();
                         $result = $feed->update_data($feedid,$updatetime,get("time"),get('value'));
-                    } else if ($route->action == "delete") $result = $feed->delete($feedid);
                     
-                    else if ($route->action == "process")
-                    {
+                    // Delete feed
+                    } else if ($route->action == "delete") {
+                        $result = $feed->delete($feedid);
+                    
+                    // Process
+                    } else if ($route->action == "process") {
                         if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }
                         else if ($route->subaction == "get") $result = $feed->get_processlist($feedid);
                         else if ($route->subaction == "set") $result = $feed->set_processlist($feedid, post('processlist'));
                         else if ($route->subaction == "reset") $result = $feed->reset_processlist($feedid);
+                        
+                    // Fast bulk uploader
+                    } else if ($route->action == "upload") {
+                        // Start time and interval
+                        if (isset($_GET['start']) && isset($_GET['interval']) && isset($_GET['npoints'])) {
+                            $result = $feed->upload_fixed_interval($feedid,get("start"),get("interval"),get("npoints"));
+                        } else if (isset($_GET['npoints'])) {
+                            $result = $feed->upload_variable_interval($feedid,get("npoints"));
+                        }
                     }
 
                     if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
