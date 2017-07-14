@@ -207,6 +207,7 @@ input[type="checkbox"] { margin:0px; }
         
     </div>
     <div class="modal-footer">
+        <button id="device-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i> <?php echo _('Delete device'); ?></button>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
     </div>
 </div>
@@ -226,91 +227,92 @@ var device_templates = {};
 $.ajax({ url: path+"device/listtemplates-short.json", dataType: 'json', async: true, success: function(data) { device_templates = data; }});
 
 update();
-function update(){   
-    var requestTime = (new Date()).getTime();
-    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-        table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-        table.data = data;
-	      
-	      // Associative array of inputs by id
-        inputs = {};
-	      for (var z in data) inputs[data[z].id] = data[z];
-        
-        // Sort inputs into nodes / devices    
-        var nodes = {};
-        for (var z in inputs) {
-            var node = inputs[z].nodeid;
-            if (nodes[node]==undefined) nodes[node] = [];
-            if (nodes_display[node]==undefined) nodes_display[node] = true;
-            nodes[node].push(inputs[z]);
-        }
+function update(){
 
-        // Draw node/input list
-        var out = "";
-	      for (var node in nodes) {
-		        var visible = "hide"; if (nodes_display[node]) visible = "";
-		        
-		        out += "<div class='node'>";
-		        out += "  <div class='node-info' node='"+node+"'>";
-		        out += "    <div class='device-name'>"+node+":</div>";
-		        out += "    <div class='device-description'></div>";
-		        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
-		        out += "    <div class='device-key'>KEY</div>";
-		        out += "    <div class='device-schedule'>SCHEDULE</div>";
-		        out += "  </div>";
-		        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
-		        
-		        for (var input in nodes[node]) {
-			          var id = nodes[node][input].id;
-			          
-			          var selected = "";
-			          if (selected_inputs[id]!=undefined && selected_inputs[id]==true) 
-			              selected = "checked";
-			          
-			          out += "<div class='node-input' id="+id+">";
-			          out += "<div class='select'><input class='input-select' type='checkbox' id='"+id+"' "+selected+" /></div>";
-			          out += "<div class='name'>"+nodes[node][input].name+"</div>";
-			          
-                if (processlist_ui != undefined)  out += "<div class='processlist'>"+processlist_ui.drawpreview(nodes[node][input].processList)+"</div>";
-			          
-			          out += "<div class='configure' id='"+id+"'><i class='icon-wrench'></i></div>";
-			          out += "<div class='value'>"+list_format_value(nodes[node][input].value)+"</div>";
-			          out += "<div class='time'>"+list_format_updated(nodes[node][input].time)+"</div>";
-			          out += "</div>";
-		        }
-		        
-		        out += "</div>";
-		        out += "</div>";
-	      }
-	      $("#table").html(out);
-	      
-	      $('#input-loader').hide();
-	      if (table.data.length == 0) {
-		        $("#noinputs").show();
-		        $("#apihelphead").hide();
-	      } else {
-		        $("#noinputs").hide();
-		        $("#apihelphead").show();
-	      }
-	      
-	      // Join and include device data
-	      $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
-	          // convert to associative array by nodeid
-	          devices = {};
-	          for (var z in data) devices[data[z].nodeid] = data[z];
-	      
-		        for (var node in devices) {
-			          if (nodes[node]!=undefined) {
-				            $(".node-info[node='"+node+"'] .device-description").html(devices[node].description);
-				            
-				            if (device_templates[node].control) {
-				                $(".node-info[node='"+node+"'] .device-schedule").show();
-				            }
-			          }
-		        }  
-	      }});
-	      
+    // Join and include device data
+    $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
+        
+        // Associative array of devices by nodeid
+        devices = {};
+        for (var z in data) devices[data[z].nodeid] = data[z];
+        
+        var requestTime = (new Date()).getTime();
+        $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+            table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+	          
+	          // Associative array of inputs by id
+            inputs = {};
+	          for (var z in data) inputs[data[z].id] = data[z];
+	          
+	          // Assign inputs to devices
+	          for (var z in inputs) {
+	              if (devices[inputs[z].nodeid]==undefined) devices[inputs[z].nodeid] = {description:""};
+	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
+	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
+	          }
+	          
+	          draw_devices();
+        }});
     }});
+}
+
+function draw_devices()
+{
+
+    // Draw node/input list
+    var out = "";
+    for (var node in devices) {
+        var visible = "hide"; if (nodes_display[node]) visible = "";
+        
+        out += "<div class='node'>";
+        out += "  <div class='node-info' node='"+node+"'>";
+        out += "    <div class='device-name'>"+node+":</div>";
+        out += "    <div class='device-description'>"+devices[node].description+"</div>";
+        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
+        out += "    <div class='device-key'>KEY</div>";
+        out += "    <div class='device-schedule'>SCHEDULE</div>";
+        out += "  </div>";
+        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
+        
+        for (var i in devices[node].inputs) {
+            var input = devices[node].inputs[i];
+            
+            var selected = "";
+            if (selected_inputs[input.id]!=undefined && selected_inputs[input.id]==true) 
+                selected = "checked";
+            
+            out += "<div class='node-input' id="+input.id+">";
+            out += "<div class='select'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div>";
+            out += "<div class='name'>"+input.name+"</div>";
+            
+            if (processlist_ui != undefined)  out += "<div class='processlist'>"+processlist_ui.drawpreview(input.processList)+"</div>";
+            
+            out += "<div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "<div class='value'>"+list_format_value(input.value)+"</div>";
+            out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
+            out += "</div>";
+        }
+        
+        out += "</div>";
+        out += "</div>";
+    }
+    $("#table").html(out);
+
+    $('#input-loader').hide();
+    if (out=="") {
+        $("#noinputs").show();
+        $("#apihelphead").hide();
+    } else {
+        $("#noinputs").hide();
+        $("#apihelphead").show();
+    }
+
+    for (var node in devices) {
+        if (device_templates[node]!=undefined && device_templates[node].control) {
+            $(".node-info[node='"+node+"'] .device-schedule").show();
+        }
+    }
 }
 
 // Show/hide node on click
@@ -416,6 +418,21 @@ $("#device-description-save").click(function(){
 $("#device-initialise").click(function(){
     $.ajax({ url: path+"device/inittemplate.json", data: "id="+devices[selected_device].id+"&type="+$("#device-type-select").val(), dataType: 'json', async: false, success: function(data) {
         alert("Device '"+selected_device+"' initialised using template '"+$("#device-type-select").val()+"', inputs configured and feeds created");
+    }});
+});
+
+$("#device-delete").click(function(){
+
+    var ids = [];
+	  for (var i in devices[selected_device].inputs) {
+	      var inputid = devices[selected_device].inputs[i].id;
+		    ids.push(parseInt(inputid));
+	  }
+	  input.delete_multiple(ids);
+	  
+    $.ajax({ url: path+"device/delete.json", data: "id="+devices[selected_device].id, dataType: 'json', async: false, success: function(data) {
+        $('#deviceConfigureModal').modal('hide');
+        update();
     }});
 });
 
