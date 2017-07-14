@@ -247,7 +247,7 @@ function updaterStart(func, interval){
 	  updater = null;
 	  if (interval > 0) updater = setInterval(func, interval);
 }
-//updaterStart(update, 5000);
+updaterStart(update, 5000);
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
