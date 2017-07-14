@@ -562,6 +562,10 @@ $("#classic-view").click(function(){ window.location = path+"input/view-classic"
 
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive
+//
+// The following implements the showing and hiding of the device fields depending on the available width
+// of the container and the width of the individual fields themselves. It implements a level of responsivness
+// that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
 var show_processlist = true;
 var show_select = true;
