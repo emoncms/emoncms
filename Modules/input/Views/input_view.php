@@ -106,14 +106,13 @@
 
 .node-input .value {
     display:inline-block;
-    width:60px;
     padding-top:10px;
     text-align:center;
 }
 
 .node-input .configure {
     display:inline-block;
-    width:50px;
+    width:40px;
     padding-top:10px;
     text-align:center;
 	  cursor:pointer;
@@ -136,6 +135,18 @@ input[type="checkbox"] { margin:0px; }
 .auth-check-btn {
     float:right;
     margin-top:-2px;
+}
+
+@media (min-width: 768px) and (max-width: 979px) {
+
+}
+
+@media (min-width: 480px) and (max-width: 768px) {
+
+}
+
+@media (max-width: 480px) {
+.node-input .processlist { display:none}
 }
 
 </style>
@@ -328,15 +339,22 @@ function draw_devices()
         }
     }
     
+    autowidth(".node-inputs .name",0);
+    autowidth(".node-inputs .value",10);
+
+}
+// ---------------------------------------------------------------------------------------------
+
+function autowidth(element,padding) {
     var mw = 0;
-    $(".node-inputs .name").each(function(){
+    $(element).each(function(){
         var w = $(this).width();
         if (w>mw) mw = w;
     });
-
-    $(".node-inputs .name").width(mw);
+    
+    $(element).width(mw+padding);
+    return mw;
 }
-// ---------------------------------------------------------------------------------------------
 
 // Show/hide node on click
 $("#table").on("click",".node-info",function() {
