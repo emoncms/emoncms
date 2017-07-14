@@ -70,7 +70,9 @@
     border-bottom:1px solid #fff;
     border-left:2px solid #f0f0f0;
     height:41px;
-    padding-right:10px;
+    /*
+    padding-left:10px;
+    padding-right:10px;*/
 }
 
 .node-input:hover{ border-left:2px solid #44b3e2; }
@@ -78,19 +80,20 @@
 .node-input .select {
     display:inline-block;
     width:20px;
-    padding: 10px;
+    padding-top: 10px;
+    /*padding-right: 10px;*/
     text-align:center;
 }
 
 .node-input .name {
     display:inline-block;
-    padding-top:10px;
+    /*padding-top:10px;*/
 }
 
 .node-input .processlist {
     display:inline-block;
     padding-top:10px;
-    padding-left:20px;
+    /*padding-left:10px;*/
 }
 
 .node-input-right {
@@ -146,7 +149,9 @@ input[type="checkbox"] { margin:0px; }
 }
 
 @media (max-width: 480px) {
-.node-input .processlist { display:none}
+/*.node-input .processlist { display:none}
+.node-input .value { display:none}
+.node-input .time { display:none}*/
 }
 
 </style>
@@ -242,7 +247,7 @@ function updaterStart(func, interval){
 	  updater = null;
 	  if (interval > 0) updater = setInterval(func, interval);
 }
-updaterStart(update, 5000);
+//updaterStart(update, 5000);
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
@@ -312,9 +317,9 @@ function draw_devices()
             if (processlist_ui != undefined)  out += "<div class='processlist'>"+processlist_ui.drawpreview(input.processList)+"</div>";
             
             out += "<div class='node-input-right'>";
-            out += "  <div class='time'>"+list_format_updated(input.time)+"</div>";
-            out += "  <div class='value'>"+list_format_value(input.value)+"</div>";
-            out += "  <div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
+            out += "<div class='value'>"+list_format_value(input.value)+"</div>";
+            out += "<div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "</div>";
             out += "</div>";
         }
@@ -341,7 +346,7 @@ function draw_devices()
     
     autowidth(".node-inputs .name",0);
     autowidth(".node-inputs .value",10);
-
+    resize();
 }
 // ---------------------------------------------------------------------------------------------
 
@@ -558,7 +563,44 @@ $("#classic-view").click(function(){ window.location = path+"input/view-classic"
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive
 // -------------------------------------------------------------------------------------------------------
-$(window).resize(function(){
+var show_processlist = true;
+var show_select = true;
+var show_time = true;
+var show_value = true;
+
+$(window).resize(function(){ resize(); });
+
+function resize() 
+{
+    show_processlist = true;
+    show_select = true;
+    show_time = true;
+    show_value = true;
+
+    $(".node-input").each(function(){
+       var w = $(this).width()-10;
+       
+       var tw = 0;
+       tw += $(this).find(".name").width();
+       tw += $(this).find(".configure").width();
+
+       tw += $(this).find(".select").width();
+       if (tw>w) show_select = false;
+       
+       tw += $(this).find(".value").width();
+       if (tw>w) show_value = false;
+       
+       tw += $(this).find(".time").width();
+       if (tw>w) show_time = false;   
+          
+       tw += $(this).find(".processlist").width();
+       if (tw>w) show_processlist = false;
+    });
     
-});
+    if (show_select) $(".select").show(); else $(".select").hide();
+    if (show_time) $(".time").show(); else $(".time").hide();
+    if (show_value) $(".value").show(); else $(".value").hide();
+    if (show_processlist) $(".processlist").show(); else $(".processlist").hide();
+    
+}
 </script>
