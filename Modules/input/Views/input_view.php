@@ -76,51 +76,47 @@
 .node-input:hover{ border-left:2px solid #44b3e2; }
 
 .node-input .select {
+    display:inline-block;
     width:20px;
     padding: 10px;
-    float:left;
     text-align:center;
 }
 
 .node-input .name {
+    display:inline-block;
     padding-top:10px;
-    
-    float:left;
 }
 
 .node-input .processlist {
+    display:inline-block;
     padding-top:10px;
     padding-left:20px;
-    float:left;
+}
+
+.node-input-right {
+    float:right;
 }
 
 .node-input .time {
+    display:inline-block;
     width:60px;
     padding-top:10px;
-    float:right;
     text-align:center;
 }
 
 .node-input .value {
+    display:inline-block;
     width:60px;
     padding-top:10px;
-    float:right;
     text-align:center;
 }
 
 .node-input .configure {
-    width:60px;
+    display:inline-block;
+    width:50px;
     padding-top:10px;
-    float:right;
     text-align:center;
 	  cursor:pointer;
-}
-
-.node-input .view {
-    width:40px;
-    padding-top:10px;
-    float:right;
-    text-align:center;
 }
 
 input[type="checkbox"] { margin:0px; }
@@ -224,9 +220,23 @@ var selected_inputs = {};
 var selected_device = false;
 
 var device_templates = {};
-$.ajax({ url: path+"device/listtemplates-short.json", dataType: 'json', async: true, success: function(data) { device_templates = data; }});
+$.ajax({ url: path+"device/listtemplates-short.json", dataType: 'json', async: true, success: function(data) { 
+    device_templates = data; 
+    update();
+}});
 
-update();
+var updater;
+function updaterStart(func, interval){
+	  clearInterval(updater);
+	  updater = null;
+	  if (interval > 0) updater = setInterval(func, interval);
+}
+updaterStart(update, 5000);
+
+// ---------------------------------------------------------------------------------------------
+// Fetch device and input lists
+// ---------------------------------------------------------------------------------------------
+
 function update(){
 
     // Join and include device data
@@ -257,9 +267,11 @@ function update(){
     }});
 }
 
+// ---------------------------------------------------------------------------------------------
+// Draw devices
+// ---------------------------------------------------------------------------------------------
 function draw_devices()
 {
-
     // Draw node/input list
     var out = "";
     for (var node in devices) {
@@ -288,9 +300,11 @@ function draw_devices()
             
             if (processlist_ui != undefined)  out += "<div class='processlist'>"+processlist_ui.drawpreview(input.processList)+"</div>";
             
-            out += "<div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
-            out += "<div class='value'>"+list_format_value(input.value)+"</div>";
-            out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
+            out += "<div class='node-input-right'>";
+            out += "  <div class='time'>"+list_format_updated(input.time)+"</div>";
+            out += "  <div class='value'>"+list_format_value(input.value)+"</div>";
+            out += "  <div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "</div>";
             out += "</div>";
         }
         
@@ -313,7 +327,16 @@ function draw_devices()
             $(".node-info[node='"+node+"'] .device-schedule").show();
         }
     }
+    
+    var mw = 0;
+    $(".node-inputs .name").each(function(){
+        var w = $(this).width();
+        if (w>mw) mw = w;
+    });
+
+    $(".node-inputs .name").width(mw);
 }
+// ---------------------------------------------------------------------------------------------
 
 // Show/hide node on click
 $("#table").on("click",".node-info",function() {
@@ -371,14 +394,7 @@ function input_selection()
 $("#table").on("click",".device-key",function(e) {
     e.stopPropagation();
     var node = $(this).parent().attr("node");
-    $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);
-    /*
-    if ($(".node-info[node='"+node+"'] .device-key").html()=="KEY") {
-        $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);
-    } else {
-        $(".node-info[node='"+node+"'] .device-key").html("KEY");
-    }*/
-    
+    $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);    
 });
 
 $("#table").on("click",".device-schedule",function(e) {
@@ -435,20 +451,6 @@ $("#device-delete").click(function(){
         update();
     }});
 });
-
-var updater;
-function updaterStart(func, interval){
-	  clearInterval(updater);
-	  updater = null;
-	  if (interval > 0) updater = setInterval(func, interval);
-}
-updaterStart(update, 5000);
-
-//$("#table").bind("onSave", function(e,id,fields_to_update){
-//$('#input-loader').show();
-// input.set(id,fields_to_update);
-//$('#input-loader').hide();
-//});
 
 $(".input-delete").click(function(){
 	  $('#inputDeleteModal').modal('show');
@@ -534,4 +536,11 @@ $(".auth-check-allow").click(function(){
 
 $("#classic-view").click(function(){ window.location = path+"input/view-classic"; });
 
+
+// -------------------------------------------------------------------------------------------------------
+// Interface responsive
+// -------------------------------------------------------------------------------------------------------
+$(window).resize(function(){
+    
+});
 </script>
