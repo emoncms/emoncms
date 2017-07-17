@@ -52,6 +52,9 @@
     <tr><td><?php echo _("Get all feed fields");?></td><td>
 		<a href="<?php echo $path; ?>feed/aget.json?id=1"><?php echo $path; ?>feed/aget.json?id=1</a>
 	</td></tr>
+	  <tr><td><?php echo _("Get feed meta (PHPFina, PHPFiwa)");?></td><td>
+		<a href="<?php echo $path; ?>feed/getmeta.json?id=1"><?php echo $path; ?>feed/getmeta.json?id=1</a>
+	</td></tr>
 </table>
 
 <p><b>Read feed data actions</b></p>
@@ -74,6 +77,10 @@
     <tr><td><?php echo _("Returns kwh consumed in a given power band using histogram data type");?></td><td>
 		<a href="<?php echo $path; ?>feed/kwhatpower.json?id=0&min=&max="><?php echo $path; ?>feed/kwhatpower.json?id=0&min=&max=</a>
 	</td></tr>
+    <tr><td><?php echo _("Export CSV data (timeformat=1: provides date time string format)");?></td><td>
+		<a href="<?php echo $path; ?>feed/csvexport.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=60&timeformat=1"><?php echo $path; ?>feed/csvexport.json?id=0&start=UNIXTIME&end=UNIXTIME&interval=60&timeformat=1=</a>
+	</td></tr>
+	
 </table>
 
 <p><b>Write feed data actions</b></p>

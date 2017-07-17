@@ -88,6 +88,9 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
 
+        // If feed of given name by the user already exists
+        if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
+        
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
@@ -203,6 +206,15 @@ class Feed
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
+    
+    public function exists_tag_name($userid,$tag,$name)
+    {
+        $userid = intval($userid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
+        $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name' AND tag = '$tag'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
+    }
 
     // Update feed size and return total
     public function update_user_feeds_size($userid)
@@ -244,13 +256,6 @@ class Feed
         $feedid = (int) $feedid;
         $engine = $this->get_engine($feedid);
         return $this->EngineClass($engine)->get_meta($feedid);
-    }
-
-    public function get_npoints($feedid) {
-        $feedid = (int) $feedid;
-        $engine = $this->get_engine($feedid);
-        if ($engine!=5) return false;
-        return $this->EngineClass($engine)->get_npoints($feedid);
     }
 
 
@@ -318,6 +323,21 @@ class Feed
         return $feeds;
     }
 
+    public function get_user_feeds_with_meta($userid)
+    {
+        $userid = (int) $userid;
+        $feeds = $this->get_user_feeds($userid);
+        for ($i=0; $i<count($feeds); $i++) {
+            $id = $feeds[$i]["id"];
+            if ($meta = $this->get_meta($id)) {
+                foreach ($meta as $meta_key=>$meta_val) {
+                    $feeds[$i][$meta_key] = $meta_val;
+                }
+            }
+        }
+        return $feeds;
+    }
+    
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
@@ -388,6 +408,7 @@ class Feed
 
     public function get_timevalue($id)
     {
+       
         $id = (int) $id;
         //$this->log->info("get_timevalue() $id");
         if (!$this->exist($id)) {
@@ -401,11 +422,14 @@ class Feed
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id);
             return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
-
+        
         if ($this->redis)
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
+                $lastvalue['time'] = (int) $lastvalue['time'];
+                $lastvalue['value'] = $lastvalue['value'] * 1;
+                $lastvalue['value'] = (float) $lastvalue['value'];
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 $lastvalue = $this->EngineClass($engine)->lastvalue($id);
@@ -490,6 +514,23 @@ class Feed
         $timezone = $this->get_user_timezone($userid);
             
         $data = $this->EngineClass($engine)->get_data_DMY($feedid,$start,$end,$mode,$timezone);
+        return $data;
+    }
+    
+    public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$split)
+    {
+        $feedid = (int) $feedid;
+        if ($end<=$start) return array('success'=>false, 'message'=>"Request end time before start time");
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        
+        if ($engine != Engine::PHPFINA) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
+        
+        // Call to engine get_data
+        $userid = $this->get_field($feedid,"userid");
+        $timezone = $this->get_user_timezone($userid);
+            
+        $data = $this->EngineClass($engine)->get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
         return $data;
     }
     
@@ -735,7 +776,36 @@ class Feed
 
         return $value;
     }
+    
+    public function upload_fixed_interval($feedid,$start,$interval,$npoints)
+    {
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $interval = (int) $interval;
+        $npoints = (int) $npoints;
 
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+        $engine = $this->get_engine($feedid);
+        if ($engine==Engine::PHPFINA) {
+            return $this->EngineClass($engine)->upload_fixed_interval($feedid,$start,$interval,$npoints);
+        } else {
+            return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
+        }
+    }
+
+    public function upload_variable_interval($feedid,$npoints)
+    {
+        $feedid = (int) $feedid;
+        $npoints = (int) $npoints;
+        
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');        
+        $engine = $this->get_engine($feedid);
+        if ($engine==Engine::PHPFINA) {
+            return $this->EngineClass($engine)->upload_variable_interval($feedid,$npoints);
+        } else {
+            return array('success'=>false, 'message'=>'Feed upload not supported for this engine');
+        }
+    }
 
     // MysqlTimeSeries specific functions that we need to make available to the controller
     public function mysqltimeseries_export($feedid,$start) {

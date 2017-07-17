@@ -16,10 +16,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour"],
-      "optionstype":["feedid","colour_picker"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default.")],
+      "options":["feedid","colour","initzoom"],
+      "optionstype":["feedid","colour_picker","dropbox"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Default visible window interval")],
+      "optionsdata": [ , , [["1", "1 "+_Tr("minute")],["5", "5 "+_Tr("minutes")],["15", "15 "+_Tr("minutes")],["30", "30 "+_Tr("minutes")],["60", "1 "+ _Tr("hour")]] ],
       "html":""
     },
 
@@ -27,11 +28,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",  
-      "options":["feedid","colour","units","dp","scale","fill"],
-      "optionstype":["feedid","colour_picker","value","value","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value")],
-      
+      "options":["feedid","colour","units","dp","scale","fill","initzoom"],
+      "optionstype":["feedid","colour_picker","value","value","value","value","dropbox"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("Fill"),_Tr("Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Fill value"),_Tr("Default visible window interval")],
+      "optionsdata": [ , , , , , , [["1", _Tr("Day")],["7", _Tr("Week")],["30", _Tr("Month")],["365", _Tr("Year")]] ],
       "html":""
     },
     
@@ -39,10 +40,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","colour","interval","units","dp","scale","delta","mode"],
-      "optionstype":["feedid","colour_picker","value","value","value","value","boolean","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta"),_Tr("mode")],
-      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar"),_Tr("Mode set to 'daily' can be used instead of interval for timezone based daily data")],
+      "options":["feedid","colour","interval","units","dp","scale","delta","mode","initzoom"],
+      "optionstype":["feedid","colour_picker","value","value","value","value","boolean","boolean","dropbox"],
+      "optionsname":[_Tr("Feed"),_Tr("Colour"),_Tr("Interval"),_Tr("units"),_Tr("dp"),_Tr("scale"),_Tr("delta"),_Tr("mode"),_Tr("Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Line colour in hex. Blank is use default."),_Tr("Interval (seconds)-you can set \"d\" for day, \"m\" for month, or \"y\" for year"),_Tr("Units"),_Tr("Decimal points"),_Tr("Scale by"),_Tr("Show difference between each bar"),_Tr("Mode set to 'daily' can be used instead of interval for timezone based daily data"),_Tr("Default visible window interval")],
+      "optionsdata": [ , , , , , , , , [["1", _Tr("Day")],["7", _Tr("Week")],["30", _Tr("Month")],["365", _Tr("Year")]] ],
       "html":""
     },
 
@@ -50,10 +52,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","units"],
-      "optionstype":["feedid","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Units")],
-      "optionshint":[_Tr("Feed source"),_Tr("Units to show")],
+      "options":["feedid","units","initzoom"],
+      "optionstype":["feedid","value","dropbox"],
+      "optionsname":[_Tr("Feed"),_Tr("Units"),_Tr("Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Units to show"),_Tr("Default visible window interval")],
+      "optionsdata": [ , , [["1", _Tr("Day")],["7", _Tr("Week")],["30", _Tr("Month")],["365", _Tr("Year")]] ],
       "html":""
     },
 
@@ -94,10 +97,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",
-      "options":["feedid","thresholdA","thresholdB"],
-      "optionstype":["feedid","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B")],
-      "optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used")],
+      "options":["feedid","thresholdA","thresholdB","initzoom"],
+      "optionstype":["feedid","value","value","dropbox"],
+      "optionsname":[_Tr("Feed"),_Tr("Threshold A"),_Tr("Threshold B"),_Tr("Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Threshold A used"),_Tr("Threshold B used"),_Tr("Default visible window interval")],
+      "optionsdata": [ , , , [["1", _Tr("Day")],["7", _Tr("Week")],["30", _Tr("Month")],["365", _Tr("Year")]] ],
       "html":""
     },
 
@@ -172,10 +176,11 @@ function vis_widgetlist(){
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
       "menu":"Visualisations",  
-      "options":["feedid","fill","depth","npoints"],
-      "optionstype":["feedid","value","value","value"],
-      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Depth"),_Tr("Data points")],
-      "optionshint":[_Tr("Feed source"),_Tr("Fill under line"),_Tr("Number of lines"),_Tr("Default: 800")],
+      "options":["feedid","fill","depth","npoints","initzoom"],
+      "optionstype":["feedid","value","value","value","dropbox"],
+      "optionsname":[_Tr("Feed"),_Tr("Fill"),_Tr("Depth"),_Tr("Data points"),_Tr("Zoom")],
+      "optionshint":[_Tr("Feed source"),_Tr("Fill under line"),_Tr("Number of lines"),_Tr("Default: 800"),_Tr("Default visible window interval")],
+      "optionsdata": [ , , , , [["8", "8 " + _Tr("Hours")],["24", _Tr("Day")],["168", _Tr("Week")],["672", _Tr("Month")],["8760", _Tr("Year")]] ],
       "html":""
     }
   }

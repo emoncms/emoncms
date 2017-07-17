@@ -87,9 +87,9 @@
                         else if ($type==4) // Boolean
                             if (get($key) == "true" || get($key) == 1)
                                 $array[$key] = 1;
-							else if (get($key) || get($key) == "false" || get($key) == 0)
+                            else if (get($key) || get($key) == "false" || get($key) == 0)
                                 $array[$key] = 0;
-							else $array[$key] = $default;
+                            else $array[$key] = $default;
                         else if ($type==5)
                             $array[$key] = preg_replace('/[^\p{L}_\p{N}\s£$€¥₽]/u','',get($key))?get($key):$default;
                         else if ($type==6)

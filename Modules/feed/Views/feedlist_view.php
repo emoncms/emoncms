@@ -28,15 +28,17 @@
 </style>
 
 <div>
-    <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Feed API Help'); ?></a></div>
+    <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
     <div id="localheading"><h2><?php echo _('Feeds'); ?></h2></div>
 
-    <div id="table"><div align='center'>loading...</div></div>
+    <div id="table"></div>
 
     <div id="nofeeds" class="alert alert-block hide">
             <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
             <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
     </div>
+
+    <div id="feed-loader" class="ajax-loader"></div>
 
     <div id="bottomtoolbar" class="hide"><hr>
         <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
@@ -44,10 +46,10 @@
     </div>
 </div>
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('Delete feed'); ?></h3>
+        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?></h3>
     </div>
     <div class="modal-body">
         <p><?php echo _('Deleting a feed is permanent.'); ?></p>
@@ -56,17 +58,18 @@
         <div id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></div>
         <br><br>
         <p><?php echo _('Are you sure you want to delete?'); ?></p>
+        <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+        <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
 </div>
 
-<div id="ExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="ExportModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="ExportModalLabel"><b><span id="SelectedExport"></span></b> CSV export</h3>
+        <h3 id="feedExportModalLabel"><b><span id="SelectedExport"></span></b> CSV export</h3>
     </div>
     <div class="modal-body">
     <p>Select the time range and interval that you wish to export: </p>
@@ -212,6 +215,7 @@
         }
       }
       table.draw();
+      $('#feed-loader').hide();
       if (table.data.length == 0){
         $("#nofeeds").show();
         $("#localheading").hide();
@@ -241,7 +245,9 @@
   });
 
   $("#table").bind("onSave", function(e,id,fields_to_update){
+    $('#feed-loader').show();
     feed.set(id,fields_to_update);
+    $('#feed-loader').hide();
   });
 
   $("#table").bind("onResume", function(e){
@@ -251,25 +257,25 @@
   $("#table").bind("onDelete", function(e,id,row){
     updaterStart(update, 0);
     if (table.data[row]['engine'] == 7) { //Virtual
-      $('#myModal #deleteFeedText').hide();
-      $('#myModal #deleteVirtualFeedText').show();
+      $('#feedDeleteModal #deleteFeedText').hide();
+      $('#feedDeleteModal #deleteVirtualFeedText').show();
     } else {
-      $('#myModal #deleteFeedText').show();
-      $('#myModal #deleteVirtualFeedText').hide();
+      $('#feedDeleteModal #deleteFeedText').show();
+      $('#feedDeleteModal #deleteVirtualFeedText').hide();
     }
-    $('#myModal').modal('show');
-    $('#myModal').attr('the_id',id);
-    $('#myModal').attr('the_row',row);
+    $('#feedDeleteModal').modal('show');
+    $('#feedDeleteModal').attr('the_id',id);
+    $('#feedDeleteModal').attr('the_row',row);
   });
 
-  $("#confirmdelete").click(function(){
-    var id = $('#myModal').attr('the_id');
-    var row = $('#myModal').attr('the_row');
+  $("#feedDelete-confirm").click(function(){
+    var id = $('#feedDeleteModal').attr('the_id');
+    var row = $('#feedDeleteModal').attr('the_row');
     feed.remove(id);
     table.remove(row);
     update();
 
-    $('#myModal').modal('hide');
+    $('#feedDeleteModal').modal('hide');
     updaterStart(update, 5000);
   });
 
@@ -307,7 +313,7 @@
       if (timezoneoffset==null) timezoneoffset = 0;
       $("#export-timezone-offset").val(parseInt(timezoneoffset));
     }
-    $('#ExportModal').modal('show');
+    $('#feedExportModal').modal('show');
   });
 
   $('#datetimepicker1').datetimepicker({
@@ -452,6 +458,6 @@
   
   $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-    if (result.success) { processlist_ui.saved(); } else { alert('ERROR: Could not save processlist. '+result.message); }
+    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
   }); 
 </script>

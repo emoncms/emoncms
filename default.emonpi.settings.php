@@ -64,6 +64,8 @@
             'datadir' => '/home/pi/data/phptimeseries/'
         )
     );
+    
+    $homedir = "/home/pi";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
@@ -72,6 +74,7 @@
 //5 #### User Interface settings
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
+    $themecolor = "standard";
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon_emonpi.png";
@@ -153,5 +156,8 @@
     // field separator
     $csv_field_separator = ",";
 
+    // set true on docker installations
+    $allow_config_env_vars = false;
+
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "8";
+    $config_file_version = "9";

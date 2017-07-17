@@ -3,9 +3,10 @@
   See COPYRIGHT.txt and LICENSE.txt.
 
   Part of the OpenEnergyMonitor project: http://openenergymonitor.org
+  2016-12-20 - Expanded tables by : Nuno Chaveiro  nchaveiro(a)gmail.com  
 */
 var table = {
-  'data':0,
+  'data':[],
   'groupshow':{},
 
   'eventsadded':false,
@@ -19,19 +20,40 @@ var table = {
 
   'timeServerLocalOffset':0, // offset of server to client time in ms
 
+  'expand':{ default:
+                      {'fields':[],
+                       'data':[],
+                       'groupshow':{},
+                       'sortfield':null,
+                       'sortorder':null,
+                       'sortable':true,
+                       'groupprefix':"",
+                       'expanded':false
+                      }
+  },
+
+  'expandByField':"id",
+
   'draw':function() {
-    /*if (table.data && table.sortable) {
-      table.data.sort(function(a,b) {
-      if(a[table.sortfield]<b[table.sortfield]) return -1;
-      if(a[table.sortfield]>b[table.sortfield]) return 1;
+      var html = table.draw_internal(table,"root");
+      $(table.element).html("<table class='table table-hover'>"+html+"</table>");
+      if (table.eventsadded==false) {table.add_events(); table.eventsadded = true}
+      $(table.element).trigger("onDraw");
+  },
+
+  'draw_internal':function(t,child_row) {
+    /*if (t.data && t.sortable) {
+      t.data.sort(function(a,b) {
+      if(a[t.sortfield]<b[t.sortfield]) return -1;
+      if(a[t.sortfield]>b[t.sortfield]) return 1;
       return 0;
       });
     }*/
 
-    if (table.data && table.sortable && table.sortfield) {
-      table.data.sort(function(a,b) {
-        var x=a[table.sortfield];
-        var y=b[table.sortfield];
+    if (t.data && t.sortable && t.sortfield) {
+      t.data.sort(function(a,b) {
+        var x=a[t.sortfield];
+        var y=b[t.sortfield];
         if (x===null)x=Number.POSITIVE_INFINITY;
         if (y===null)y=Number.POSITIVE_INFINITY;
         if ((x==true) || (x== false)) x==false? x=0:x=1;
@@ -40,7 +62,7 @@ var table = {
           var numa=parseFloat(x);
           var numb=parseFloat(y);
 
-          if (table.sortorder==1){
+          if (t.sortorder==1){
             return numa-numb;
           } else {
             return numb-numa;
@@ -51,7 +73,7 @@ var table = {
            if (typeof y == 'string') y=y.toUpperCase().replace(" ", "");
         }
 
-        if (table.sortorder==1){
+        if (t.sortorder==1){
           if(x<y) return -1;
           if(x>y) return 1;
           return 0;
@@ -65,12 +87,23 @@ var table = {
 
     var group_num = 0;
     var groups = {};
-    for (row in table.data) {
-      var group = table.data[row][table.groupby];
+    for (row in t.data) {
+      var group = t.data[row][t.groupby];
       if (!group) group = 'NoGroup';
       if (!groups[group]) {groups[group] = {}; groups[group]['ui_rows'] = ""; groups[group]['rows_id'] = []; group_num++;}
-      groups[group]['ui_rows'] += table.draw_row(row);
+      groups[group]['ui_rows'] += this.draw_row(t,row,child_row);
+
       groups[group]['rows_id'].push(row);
+
+	  // Draw expands
+      if (t.expand != undefined && t.expandByField != undefined && t.expand[t.data[row][t.expandByField]] != undefined && t.expand[t.data[row][t.expandByField]].expanded) {
+            var countFields = 0; for (field in table.fields) countFields++; // Calculate amount of padding required
+            // Draw expand placeholder
+            var html_expand_place = "<tr uid='"+child_row+"_"+row+"' class='expanded'><td colspan='"+countFields+"'>";
+            html_expand_place += "<table class='table table-hover expanded'>" + this.draw_internal(t.expand[t.data[row][t.expandByField]],t.data[row][t.expandByField]) + "</table>"
+            html_expand_place += '<\/td></tr>';
+            groups[group]['ui_rows'] += html_expand_place;
+      }
     }
 
     var html = "";
@@ -78,67 +111,66 @@ var table = {
       var visible = '';
       htmlg = "";
       if (group_num>1) {
-        var symbol ='<i class="MINMAX icon-minus-sign" group="'+group+'" style="cursor:pointer"></i>'; 
-        if (table.groupshow[group]==undefined) table.groupshow[group]=false; // default is collapsed
-        if (table.groupshow[group]==false) {symbol = '<i class="MINMAX icon-plus-sign" group="'+group+'" style="cursor:pointer"></i>'; visible = "display:none";}
-        htmlg += "<tr><th colspan='3'>"+symbol+" <a class='MINMAX' group='"+group+"' style='cursor:pointer'>"+table.groupprefix+group+"</a></th>";
-        var countFields = 0; for (field in table.fields) countFields++; // Calculate amount of padding required
-        if (table.groupfields == undefined) {
+        var symbol ='<i class="MINMAX icon-minus-sign" child_row="'+child_row+'" group="'+group+'" style="cursor:pointer"></i>'; 
+        if (t.groupshow[group]==undefined) t.groupshow[group]=false; // default is collapsed
+        if (t.groupshow[group]==false) {symbol = '<i class="MINMAX icon-plus-sign" child_row="'+child_row+'" group="'+group+'" style="cursor:pointer"></i>'; visible = "display:none";}
+        htmlg += "<tr><th colspan='3'>"+symbol+" <a class='MINMAX' child_row='"+child_row+"' group='"+group+"' style='cursor:pointer'>"+t.groupprefix+group+"</a></th>";
+        var countFields = 0; for (field in t.fields) countFields++; // Calculate amount of padding required
+        if (t.groupfields == undefined) {
           for (i=2; i<countFields-1; i++) htmlg += "<th></th>"; // Add th padding
         } else {
-          for (fieldg in table.groupfields) htmlg += "<th group='"+group+"' fieldg='"+fieldg+"' >"+table.fieldtypes[table.groupfields[fieldg].type].draw(group,groups[group]['rows_id'],fieldg)+"</th>";
+          for (fieldg in t.groupfields) htmlg += "<th group='"+group+"' fieldg='"+fieldg+"' >"+this.fieldtypes[t.groupfields[fieldg].type].draw(t,group,groups[group]['rows_id'],fieldg)+"</th>";
         }
         htmlg += "</tr>";
       }
       html += htmlg;
 
       html += "<tbody id='"+group+"' style='"+visible+"'><tr>";
-      for (field in table.fields)
+      for (field in t.fields)
       {
-        var title = field; if (table.fields[field].title!=undefined) title = table.fields[field].title;
-        html += "<th><a type='sort' field='"+field+"' style='cursor:pointer'>"+title+"</a></th>";
+        var title = field; if (t.fields[field].title!=undefined) title = t.fields[field].title;
+        html += "<th><a type='sort' child_row='"+child_row+"' field='"+field+"' style='cursor:pointer'>"+title+"</a></th>";
       }
       html += "</tr>";
       html += groups[group]['ui_rows'];
       html += "</tbody>";
     }
-
-    $(table.element).html("<table class='table table-hover'>"+html+"</table>");
-
-    if (table.eventsadded==false) {table.add_events(); table.eventsadded = true}
-    
-    $(table.element).trigger("onDraw");
+    return html;
   },
 
-  'draw_row': function(row) {
-    var html = "<tr uid='"+row+"' >";
-    for (field in table.fields) html += "<td row='"+row+"' field='"+field+"' >"+table.fieldtypes[table.fields[field].type].draw(row,field)+"</td>";
+  'draw_row': function(t,row,child_row) {
+    var html = "<tr uid='"+child_row+"_"+row+"'>";
+    for (field in t.fields) html += "<td row='"+row+"' child_row='"+child_row+"' field='"+field+"' >"+this.fieldtypes[t.fields[field].type].draw(t,row,child_row,field)+"</td>";
     html += "</tr>";
     return html;
   },
-    
-  'update':function(row,field,value) {
-    table.data[row][field] = value;
-    var type = table.fields[field].type;
-    if(typeof table.fieldtypes[type].draw === 'function') {
-      $("[row="+row+"][field="+field+"]").html(table.fieldtypes[type].draw(row,field));
+
+  'update':function(row,child_row,field,value) {
+    if (child_row == "root") { t=table; }
+    else { t=table.expand[child_row]; }
+    t.data[row][field] = value;
+    var type = t.fields[field].type;
+    if(typeof this.fieldtypes[type].draw === 'function') {
+      $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"']").html(this.fieldtypes[type].draw(t,row,child_row,field));
     }
   },
 
-  'remove':function(row) {
-    table.data.splice(row,1);
-    $("tr[uid="+row+"]").remove();
+  'remove':function(row,child_row) {
+    if (child_row == undefined || child_row == "root") { t=table; }
+    else { t=table.expand[child_row];  }
+    t.data.splice(row,1);
+    $("tr[uid='"+child_row+"_"+row+"']").remove();
   },
 
-  'sort':function(field,dir) {
-    if (table.sortfield == field) {
-      table.sortorder = -table.sortorder;
+  'sort':function(t,field,dir) {
+    if (t.sortfield == field) {
+      t.sortorder = -t.sortorder;
     } else {
-      table.sortorder = 1;
+      t.sortorder = 1;
     }
-    table.sortfield = field;
-    // table.sortorder = dir;
-    table.draw();
+    t.sortfield = field;
+    // t.sortorder = dir;
+    this.draw();
   },
 
    'add_events':function() {
@@ -153,19 +185,25 @@ var table = {
 
         // Do what needs to happen on double click. 
         var group = $(this).attr('group');
-        var state = table.groupshow[group];
-        for (gs in table.groupshow) { table.groupshow[gs] = !state; }
+        var child_row = $(this).attr('child_row');
+        if (child_row == "root") { t=table; }
+        else { t=table.expand[child_row];  }
+        var state = t.groupshow[group];
+        for (gs in t.groupshow) { t.groupshow[gs] = !state; }
         table.draw();
       } else {
         $me.data('clicked', true);
         var alreadyclickedTimeout=setTimeout(function(){
-          $me.data('clicked', false); // reset when it happens
+        $me.data('clicked', false); // reset when it happens
 
-          // Do what needs to happen on single click. Use $me instead of $(this) because $(this) is  no longer the element
-          var group = $me.attr('group');
-          var state = table.groupshow[group];
-          table.groupshow[group] = !state;
-          table.draw();
+        // Do what needs to happen on single click. Use $me instead of $(this) because $(this) is  no longer the element
+         var group = $me.attr('group');
+         var child_row = $me.attr('child_row');
+         if (child_row == "root") { t=table; }
+         else { t=table.expand[child_row];  }
+         var state = t.groupshow[group];
+         t.groupshow[group] = !state;
+         table.draw();
         },250); // dblclick tolerance
         $me.data('alreadyclickedTimeout', alreadyclickedTimeout); // store this id to clear if necessary
       }
@@ -174,108 +212,165 @@ var table = {
     // Event: sort by field
     $(table.element).on('click', 'a[type=sort]', function() {
       var field = $(this).attr('field');
-      table.sort(field,1);
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      table.sort(t,field,1);
       console.log(field);
     });
 
     // Event: delete row
     $(table.element).on('click', 'a[type=delete]', function() {
-      if (table.deletedata) table.remove( $(this).attr('row') );
-      $(table.element).trigger("onDelete",[$(this).attr('uid'),$(this).attr('row')]);
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      if (table.deletedata) table.remove($(this).attr('row'), $(this).attr('child_row') );
+      if (child_row == "root") {
+        $(table.element).trigger("onDelete",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
+      }
+      $(table.element).trigger("onDeleteExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
     });
 
     // Event: inline edit
     $(table.element).on('click', 'a[type=edit]', function() {
       var mode = $(this).attr('mode');
       var row = $(this).attr('row');
+      var child_row = $(this).attr('child_row');
       var uid = $(this).attr('uid');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
 
       // Trigger events
       if (mode=='edit') $(table.element).trigger("onEdit");
 
       var fields_to_update = {};
 
-      for (field in table.fields) {
-        var type = table.fields[field].type;
+      for (field in t.fields) {
+        var type = t.fields[field].type;
 
         if (mode == 'edit' && typeof table.fieldtypes[type].edit === 'function') {
-          $("[row="+row+"][field="+field+"]").html(table.fieldtypes[type].edit(row,field));
+          $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"']").html(table.fieldtypes[type].edit(t,row,child_row,field));
         }
         if (mode == 'save' && typeof table.fieldtypes[type].save === 'function') {
-          var value = table.fieldtypes[type].save(row,field);
-          if (table.data[row][field] != value) fields_to_update[field] = value; // only update db if value has changed
-          table.update(row,field,value);  // but update html table because this reverts back from <input>   
+          var value = table.fieldtypes[type].save(t,row,child_row,field);
+          if (t.data[row][field] != value) fields_to_update[field] = value; // only update db if value has changed
+          table.update(row,child_row,field,value);  // but update html table because this reverts back from <input>   
         }
       }
 
       // Call onSave event only if there are fields to be saved
       if (mode == 'save' && !$.isEmptyObject(fields_to_update)) {
-        $(table.element).trigger("onSave",[uid,fields_to_update]);
-        if (fields_to_update[table.groupby]!=undefined) table.draw();
+        if (child_row == "root") {
+            $(table.element).trigger("onSave",[uid,fields_to_update]); // Only called for root table (to keep compatibility)
+        }
+        $(table.element).trigger("onSaveExpand",[uid,fields_to_update,row,child_row]);  // If your code has an expand table use this instead on onSave
+        if (fields_to_update[t.groupby]!=undefined) t.draw();
       }
 
       if (mode == 'edit') {$(this).attr('mode','save'); $(this).html("<i class='icon-ok' style='cursor:pointer'></i>");}
       if (mode == 'save') {$(this).attr('mode','edit'); $(this).html("<i class='icon-pencil' style='cursor:pointer'></i>"); $(table.element).trigger("onResume");}
     });
 
+
+    // Event: inline expand
+    $(table.element).on('click', 'a[type=expand]', function() {
+      var mode = $(this).attr('mode');
+      var row = $(this).attr('row');
+      var uid = $(this).attr('uid');
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+
+      if ( t.expand[uid] == undefined) {
+          t.expand[uid]= $.extend(true, [], table.expand["default"]); // clone from default
+          t.expand[uid].expanded = true;
+      }
+
+      var tr = $(this).closest('tr');
+
+      if (mode == 'close') {
+        t.expand[uid].expanded = false;
+        tr.next().remove();
+        $(table.element).trigger("onClose",[uid,row,child_row]);
+        $(this).attr('mode','expand');
+        $(this).html("<i class='icon-chevron-down' style='cursor:pointer'></i>");
+      }
+      else if (mode == 'expand') {
+        t.expand[uid].expanded = true;
+        var fields_count = 0;
+        for (field in table.fields) { fields_count++; }
+        tr.after('<tr row="'+row+'" child_row="'+child_row+'" class="expanded"><td colspan="'+fields_count+'">loading...<\/td></tr>');
+        $(table.element).trigger("onExpand",[uid,row,child_row]); 
+        $(this).attr('mode','close'); 
+        $(this).html("<i class='icon-chevron-up' style='cursor:pointer'></i>"); 
+      }
+    });
+
     // Check if events have been defined for field types.
-    for (i in table.fieldtypes) {
-      if (typeof table.fieldtypes[i].event === 'function') table.fieldtypes[i].event();
+    for (i in this.fieldtypes) {
+      if (typeof this.fieldtypes[i].event === 'function') this.fieldtypes[i].event();
     }
   },
 
   // Field type space
   'fieldtypes': {
     'fixed': {
-      'draw': function (row,field) { return table.data[row][field] }
+      'draw': function (t,row,child_row,field) { return t.data[row][field] }
     },
 
     'text': {
-      'draw': function (row,field) { return table.data[row][field] },
-      'edit': function (row,field) { return "<input type='text' value='"+table.data[row][field]+"' / >" },
-      'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() },
+      'draw': function (t,row,child_row,field) { return t.data[row][field] },
+      'edit': function (t,row,child_row,field) { return "<input type='text' value='"+t.data[row][field]+"' / >" },
+      'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").val() },
     },
 
     'textlink': {
-      'draw': function (row,field) { return "<a href='"+table.fields[field].link+table.data[row]['id']+"' >"+table.data[row][field]+"</a>" },
-      'edit': function (row,field) { return "<input type='text' style='width:120px' value='"+table.data[row][field]+"' / >" },
-      'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").val() },
+      'draw': function (t,row,child_row,field) { return "<a href='"+t.fields[field].link+t.data[row]['id']+"' >"+t.data[row][field]+"</a>" },
+      'edit': function (t,row,child_row,field) { return "<input type='text' style='width:120px' value='"+t.data[row][field]+"' / >" },
+      'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row="+child_row+"][field='"+field+"'] input").val() },
     },
 
     'select': {
-      'draw': function (row,field) { return table.fields[field].options[table.data[row][field]] },
-      'edit': function (row,field) { 
+      'draw': function (t,row,child_row,field) { return t.fields[field].options[t.data[row][field]] },
+      'edit': function (t,row,child_row,field) {
         var options = "";
-        for (option in table.fields[field].options) 
-        {
-          var selected = ''; if (option==table.data[row][field]) selected = 'selected';
-          options += "<option value='"+option+"' "+selected+" >"+table.fields[field].options[option]+"</option>";
+        for (option in t.fields[field].options) {
+          var selected = ''; if (option==t.data[row][field]) selected = 'selected';
+          options += "<option value='"+option+"' "+selected+" >"+t.fields[field].options[option]+"</option>";
         }
         return "<select style='width:120px'>"+options+"</select>";
       },
-      'save': function (row,field) { return $("[row="+row+"][field="+field+"] select").val() },
+      'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] select").val() },
     },
 
     'fixedselect': {
-      'draw': function (row,field) { return table.fields[field].options[table.data[row][field]] }
+      'draw': function (t,row,child_row,field) { return t.fields[field].options[t.data[row][field]] }
     },
 
     'checkbox': {
-      'draw': function (row,field) { return table.data[row][field] },
-      'edit': function (row,field) { return "<input type='checkbox'>" },
-      'save': function (row,field) { return $("[row="+row+"][field="+field+"] input").prop('checked') },
+      'draw': function (t,row,child_row,field) { return t.data[row][field] },
+      'edit': function (t,row,child_row,field) { return "<input type='checkbox'>" },
+      'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").prop('checked') },
+    },
+    
+    'multiselect': {
+      'draw': function (t,row,child_row,field) { return "<input type='checkbox'>" },
     },
 
     'delete': {
-      'draw': function (row,field) { return table.data[row]['#READ_ONLY#'] ? "" : "<a type='delete' row='"+row+"' uid='"+table.data[row]['id']+"' ><i class='icon-trash' style='cursor:pointer'></i></a>"; }
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='delete' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-trash' style='cursor:pointer'></i></a>"; }
     },
 
     'edit': {
-      'draw': function (row,field) { return table.data[row]['#READ_ONLY#'] ? "" : "<a type='edit' row='"+row+"' uid='"+table.data[row]['id']+"' mode='edit'><i class='icon-pencil' style='cursor:pointer'></i></a>"; },
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='edit' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' mode='edit'><i class='icon-pencil' style='cursor:pointer'></i></a>"; },
     },
-
+    
+    'expand': {
+      'draw': function (t,row,child_row,field) { return "<a type='expand' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row][t.expandByField]+"' mode='" + (t.expand[t.data[row][t.expandByField]] == undefined || !t.expand[t.data[row][t.expandByField]].expanded ? "expand":"close") + "'><i class='" + (t.expand[t.data[row][t.expandByField]] == undefined || !t.expand[t.data[row][t.expandByField]].expanded ? "icon-chevron-down":"icon-chevron-up") + "' style='cursor:pointer'></i></a>"; },
+    },
+    
     'blank': {
-      'draw': function (row,field) { return ""; }
+      'draw': function (t,row,child_row,field) { return ""; }
     }
   }
 }

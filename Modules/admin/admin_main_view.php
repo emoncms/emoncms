@@ -13,7 +13,8 @@
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
     
-    if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { $meminfo = array(); } else { //Only do this on NON-Windows Platforms
+    $meminfo = false;
+    if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
       $meminfo = array();
       foreach ($data as $line) {
@@ -23,17 +24,24 @@
           }
       }
     }
+    $emoncms_modules = "";
+    $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);  // Use glob to get all the folder names only
+    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {  // loop through the folders
+        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;&nbsp;&nbsp;";
+        $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
+    }
 
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),                 
+                 'ip' => gethostbyname($host),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
                  'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                 'db_server' => $server,       
+                 'db_server' => $server,
                  'db_ip' => gethostbyname($server),
                  'db_version' => 'MySQL ' . $mysqli->server_info,
                  'db_stat' => $mysqli->stat(),
@@ -53,7 +61,8 @@
                  'http_port' => $_SERVER['SERVER_PORT'],
                  'php_modules' => get_loaded_extensions(),
                  'mem_info' => $meminfo,
-                 'partitions' => disk_list()
+                 'partitions' => disk_list(),
+                 'emoncms_modules' => $emoncms_modules
                  );
   }
 
@@ -74,7 +83,7 @@
     $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
     if (stripos($chkReboot, "scheduled ") > 0) {
       shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
-      return "<button id=\"haltPi\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-info btn-small pull-right\">"._('Reboot')."</button>";
+      return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
     }
     else {
       return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
@@ -123,15 +132,8 @@
       }
       return $partitions;
   }
-
-$emoncms_modules = NULL;                                                                                                // Set the variable to null
-$emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';     // Set the Modules path
-$emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                                                    // Use glob to get all the folder names only
-        foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                                                        // loop through the folders
-        $emoncmsModuleFolder = str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);                          // clean up the formatting, removing the path from the $emoncmsModulesPath variable
-        if (!is_null($emoncms_modules)) { $emoncms_modules = $emoncms_modules.", ".$emoncmsModuleFolder; } else {$emoncms_modules = $emoncmsModuleFolder;}      // add the commas as appropriate
-        }
-?>
+ 
+ ?>
 <style>
 pre {
     width:100%;
@@ -157,7 +159,7 @@ table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
 
-<h2>Administration</h2>
+<h2><?php echo _('Administration'); ?></h2>
 <table class="table table-hover">
     <tr>
         <td>
@@ -201,7 +203,7 @@ if(is_writable($log_filename)) {
 <?php if(is_writable($log_filename)) { ?>
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
-                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download log'); ?></a>
+                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
 <?php } ?>
                 </td>
             </tr>
@@ -221,13 +223,16 @@ if ($allow_emonpi_admin) {
             <table class="table table-condensed" style="background-color: transparent">
             <tr>
                 <td style="border-top: 0px">
-                    <h3><?php echo _('Update emonPi'); ?></h3>
-                    <p>Updates Emoncms and emonPi firmware. See <a href="https://github.com/emoncms/emoncms/releases">Emoncms changelog</a> and <a href="https://github.com/openenergymonitor/emonpi/blob/master/firmware/readme.md">firmware changelog.</a></p>
-                    <p>Note: If using emonBase (Raspberry Pi + RFM69Pi) the updater can still be used to update Emoncms, RFM69Pi firmware will not be changed.</p> 
+                    <h3><?php echo _('Update'); ?></h3>
+                    <p><b>emonPi Update:</b> updates emonPi firmware & Emoncms</p>
+                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) & Emoncms</p>
+                    <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
+                    <p><i>Caution: ensure RFM69Pi is populated with RFM69CW module not RFM12B before running RFM69Pi update: <a href="https://learn.openenergymonitor.org/electricity-monitoring/networking/which-radio-module">Identifying different RF Modules</a>.</i></p>
                 </td>
                 <td class="buttons" style="border-top: 0px"><br>
-                    <button id="emonpiupdate" class="btn btn-info"><?php echo _('Update Now'); ?></button>
-                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download log'); ?></a><br><br>
+                    <button id="emonpiupdate" class="btn btn-warning"><?php echo _('emonPi Update'); ?></button>
+                    <button id="rfm69piupdate" class="btn btn-danger"><?php echo _('emonBase Update'); ?></button><br></br>
+                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download Log'); ?></a><br><br>
                 </td>
             </tr>
             <tr>
@@ -236,8 +241,8 @@ if ($allow_emonpi_admin) {
             </table>
         </td>
     </tr>
-<?php 
-}   
+<?php
+}
 ?>
 
     <tr colspan=2>
@@ -245,7 +250,7 @@ if ($allow_emonpi_admin) {
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
               <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $emoncms_modules; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
 ?>
@@ -285,13 +290,14 @@ if ($mqtt_enabled) {
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
-                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease); 
-                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
+                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
 }
 
-if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-Windows Platforms
 // Ram information
+if ($system['mem_info']) {
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
               echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used&nbsp;".$sysRamPercent."%</div></div>";
@@ -303,7 +309,7 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-
                 echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercent."%;'>Used&nbsp;".$sysSwapPercent."%</div></div>";
                 echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
               }
-
+}
 // Filesystem Information
                 if (count($system['partitions']) > 0) {
                     echo "<tr><td><b>Disk</b></td><td><b>Mount</b></td><td><b>Stats</b></td></tr>\n";
@@ -320,10 +326,10 @@ if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {} else { //Only do this on NON-
                       }
                     }
                 }
-} //End the stuff we dont do on Windows
+
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " &nbsp; "; } ?></td></tr>
             </table>
             
         </td>
@@ -370,8 +376,22 @@ $("#getlog").click(function() {
 });
 
 var refresher_update;
+
 $("#emonpiupdate").click(function() {
-  $.ajax({ url: path+"admin/emonpi/update", async: true, dataType: "text", success: function(result)
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "argument=emonpi", async: true, success: function(result)
+    {
+      $("#update-log").html(result);
+      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
+      $("#update-log-bound").show()
+      clearInterval(refresher_update);
+      refresher_update = null;
+      refresher_update = setInterval(getUpdateLog,1000);
+    }
+  });
+});
+
+$("#rfm69piupdate").click(function() {
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "argument=rfm69pi", async: true, success: function(result)
     {
       $("#update-log").html(result);
       $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
@@ -387,8 +407,9 @@ function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
       $("#update-log").html(result);
-      if(result.indexOf("emonPi update done") > -1) {} else {
-        $('#update-log-bound').animate({scrollTop: $('#update-log-bound').prop("scrollHeight")}, 1000);
+      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
+      if (result.indexOf("emonPi update done")!=-1) {
+          clearInterval(refresher_update);
       }
     }
   });
@@ -418,4 +439,25 @@ $("#rebootPi").click(function() {
 $("#noshut").click(function() {
   alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
 });
+
+$("#fs-rw").click(function() {
+  if(confirm('Setting file-system to Read-Write, remember to restore Read-Only when your done..')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=rw", async: true, success: function(result)
+      {
+        // console.log(data);
+      }
+    });
+  }
+});
+
+$("#fs-ro").click(function() {
+  if(confirm('Settings filesystem back to Read Only')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=ro", async: true, success: function(result)
+      {
+      // console.log(data);
+      }
+    });
+  }
+});
+
 </script>

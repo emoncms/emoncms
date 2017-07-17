@@ -21,11 +21,12 @@
 </table>
 
 <h3><?php echo _('Available JSON commands'); ?></h3>
-<p><?php echo _('To use the json api the request url needs to include <b>.json</b>'); ?></p>
+<p><?php echo _('To use the json api the request url needs to include <b>.json</b>.  The "partial syntax" version is based on the CSV input parsing implementation and maintained for backwards compatibility; the "full syntax" version uses the PHP JSON decoder.'); ?></p>
 
 <p><b><?php echo _('Post data (using http get)'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('JSON format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
+    <tr><td><?php echo _('JSON format (partial syntax):'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
+    <tr><td><?php echo _('JSON format (full syntax):'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&fulljson={power1:100,power2:200,power3:300}</a></td></tr>
     <tr><td><?php echo _('CSV format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
     <tr><td><?php echo _('Assign inputs to a node group'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
     <tr><td><?php echo _('Set the input entry time manually'); ?></td><td><a href="<?php echo $path; ?>input/post.json?time=<?php echo time(); ?>&node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>time=<?php echo time(); ?></b>&node=1&csv=100,200,300</a></td></tr>
@@ -52,11 +53,12 @@
 <tr><td><?php echo _('Time offset format (-6 is -16 seconds to now):'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10"><?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]<b>&offset=-10</b></a></td></tr>
 <tr><td><?php echo _('Sentat format: (useful for sending as positive increasing time index)'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[520,16,1137],[530,17,1437,3164],[535,19,1412,3077]]&sentat=543"><?php echo $path; ?>input/bulk.json?data=[[520,16,1137],[530,17,1437,3164],[535,19,1412,3077]]<b>&sentat=543</b></b></a></td></tr>
 <tr><td><?php echo _('Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 UTC))'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=<?php echo time(); ?>"><?php echo $path; ?>input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]<b>&time=<?php echo time(); ?></b></a></td></tr>
+<tr><td><?php echo _('Named feeds (similar to the main example but updates the keys "data" and "anotherData" for node 19)'); ?></td><td><a href="<?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,{%22data%22:1412},{%22anotherData%22:3077}]]"><?php echo $path; ?>input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,<b>{"data":1412}</b>,<b>{"anotherData":3077}</b>]]"</a></td></tr>
 </table>
 
 <p><b><?php echo _('Post data (using http post)'); ?></b></p>
 <?php echo _('To post data using http post you can use the "data" post parameter, it will accept csv and json formatting. Other parameters need to be provided as a parameter in the url, the only exception is the apikey which can be a post parameter as well.'); ?></p>
-<?php echo _('The examples below use curl to post the data to the input api. It is availible '); ?><a href="https://curl.haxx.se/">here</a></p>
+<?php echo _('The examples below use curl to post the data to the input api. It is available '); ?><a href="https://curl.haxx.se/">here</a></p>
 <table class="table">
     <tr><td><?php echo _('JSON format:'); ?></td><td>curl --data "data={power1:100,power2:200,power3:300}" "<?php echo $path; ?>input/post.json?node=1&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>"</td></tr>
     <tr><td><?php echo _('CSV format:'); ?></td><td>curl --data "data=100,200,300" "<?php echo $path; ?>input/post.json?node=1&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>"</td></tr>

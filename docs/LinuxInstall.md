@@ -1,6 +1,6 @@
 # Install Emoncms on Ubuntu / Debian Linux
 
-This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see raspberrypi installation guides.
+This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see the [RaspberryPi installation guides](RaspberryPi/readme.md).
 
 ## Install dependencies
 
@@ -8,41 +8,54 @@ You may need to start by updating the system repositories
 
     sudo apt-get update
 
-Install all dependencies:
+on 14.04:
 
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
+    
+on 16.04:
 
-Install pecl dependencies (serial, redis and swift mailer)
+`sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y`
+
+### Install PHP pecl dependencies
+
+*Not essential, required for mail sending e.g. password recovery*
 
     sudo pear channel-discover pear.swiftmailer.org
-    sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
+    sudo pecl install swift/swift dio-0.0.9 redis
     
-Add pecl modules to php5 config
+**If running PHP5:** Add pecl modules to php5 config
     
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
     sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
+ 
+ **If running PHP7:** Add pecl modules to php7 config
+ 
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php/7.0/apache2/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=redis.so" > /etc/php/7.0/cli/conf.d/20-redis.ini'
+
+### Configure Apache
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
-
-    sudo a2enmod rewrite
     
-For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This may be on lines 7 and 11 of `/etc/apache2/sites-available/default`. Modern versions of Ubuntu store these in the main config file: `/etc/apache2/apache2.conf`.
+```
+ sudo a2enmod rewrite
+ sudo sh -c "echo '<Directory /var/www/html/emoncms>' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  Options FollowSymLinks' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  AllowOverride All' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  DirectoryIndex index.php' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  Order allow,deny' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '  Allow from all' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo '</Directory>' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo ln -s /etc/apache2/sites-available/emoncms.conf /etc/apache2/sites-enabled/
+ sudo a2ensite emoncms
+ sudo service apache2 reload
+```
     
-    sudo nano /etc/apache2/sites-available/default
-    
-or
-
-    sudo nano /etc/apache2/apache2.conf
-
-[Ctrl + X ] then [Y] then [Enter] to Save and exit.
-
-Restart the lamp server:
-
-    sudo service apache2 restart
-    
-### Install the emoncms application via git
+## Install Emoncms
 
 Git is a source code management and revision control system but at this stage we use it to just download and update the emoncms application.
 
@@ -69,14 +82,14 @@ Once installed you can pull in updates with:
     cd /var/www/html/emoncms
     git pull
     
-### Create a MYSQL database
+## Create a MYSQL database
 
     mysql -u root -p
 
 Enter the mysql password that you set above.
 Then enter the sql to create a database:
 
-    mysql> CREATE DATABASE emoncms;
+    mysql> CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
     
 Then add a user for emoncms and give it permissions on the new database (think of a nice long password):
 
@@ -98,7 +111,7 @@ Exit mysql by:
     sudo chown www-data:root /var/lib/phpfina
     sudo chown www-data:root /var/lib/phptimeseries
 
-### Set emoncms database settings.
+## Setup Emoncms settings
 
 cd into the emoncms directory where the settings file is located
 
@@ -123,20 +136,22 @@ You will also want to modify SMTP settings and the password reset flag further d
 
 Save (Ctrl-X), type Y and exit
 
-### Install add-on emoncms modules
+### Install add-on emoncms modules (optional)
     
     cd /var/www/html/emoncms/Modules
-    
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
  
+The 'modules' need to save their configurations in the emoncms database, so in your browser - update your emoncms database:
+`Setup > Administration > Update database` (you may need to log out, and log back into emoncms to see the Administration menu).
+
 See individual module readme's for further information on individual module installation.
 
-### In an internet browser, load emoncms:
+## Running Emoncms
 
 [http://localhost/emoncms](http://localhost/emoncms)
 
-The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen. 
+The first time you run emoncms it will automatically setup the database and you will be taken straight to the register/login screen.
 
 Create an account by entering your email and password and clicking register to complete.
 
@@ -151,6 +166,8 @@ Create an account by entering your email and password and clicking register to c
 **Internet explorer 9** - works well with compatibility mode turned off. F12 Development tools -> browser mode: IE9. Some widgets such as the hot water cylinder do load later than the dial.
 
 **IE 8, 7** - not recommended, widgets and dashboard editor <b>do not work</b> due to no html5 canvas fix implemented but visualisations do work as these have a fix applied.
+
+***
 
 #### PHP Suhosin module configuration (Debian 6, not required in ubuntu)
 
@@ -171,7 +188,7 @@ PHP 5.4.0 has removed the timezone guessing algorithm and now defaults the timez
 
 Open php.ini
 
-    sudo vi /etc/php5/apache2/php.ini
+    sudo nano /etc/php5/apache2/php.ini
 
 and search for "date.timezone"
 
@@ -193,3 +210,17 @@ Now save and close and restart your apache.
 ## Install Logger
 
    See: https://github.com/emoncms/emoncms/tree/master/scripts/logger
+   
+
+***
+
+# Debugging
+
+### Check log file
+
+`sudo tail /var/log/apache2/error.log`
+
+### /user/register.json cannot be found
+
+If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates an problem with apache mod_rewrite.
+

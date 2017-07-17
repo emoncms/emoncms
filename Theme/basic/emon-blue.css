@@ -46,11 +46,11 @@ http://openenergymonitor.org
     height:27px;
 }
 #topspacer {
-    padding-top: 42px;
+    padding-top: 40px;
 }
 
 div#account {
-    width:230px;
+    width:250px;
 }
 
 .account-item {
@@ -98,4 +98,37 @@ input[type=text][class=variable-name-edit] {
   height: auto;
   max-height: 250px;
   overflow-y: auto;
+}
+
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8)
+    	url(ajax-loader.gif)
+    	center
+    	no-repeat;
+}
+
+.navbar-inner {
+    background-image:none !important;
+    background-color:#44b3e2 !important;
+    border:none !important;
+    padding:0px !important;
+}
+
+.nav > .active > a {
+    background-color:#209ed3 !important;
+    box-shadow:none !important;
+}
+
+.nav > .open > a {
+    background-color:#2eaadf !important;
+}
+
+.nav > li > a { color: #fff !important; }
+.nav > li > a { text-shadow:none !important; }
+
+.caret {
+   border-top-color: #fff !important;
 }

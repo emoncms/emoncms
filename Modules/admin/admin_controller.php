@@ -58,9 +58,9 @@ function admin_controller()
             {
               if ($log_enabled) {
                 header("Content-Type: application/octet-stream");
-                header("Content-Transfer-Encoding: Binary"); 
+                header("Content-Transfer-Encoding: Binary");
                 header("Content-disposition: attachment; filename=\"" . basename($log_filename) . "\"");
-                header("Pragma: no-cache"); 
+                header("Pragma: no-cache");
                 header("Expires: 0");
                 flush();
                 if (file_exists($log_filename)) {
@@ -126,31 +126,35 @@ function admin_controller()
 
             else if ($allow_emonpi_admin && $route->action == 'emonpi') {
                 //put $update_logfile here so it can be referenced in other if statements
-                //before it was only accesable in the update subaction                
+                //before it was only accesable in the update subaction
                 //placed some other variables here as well so they are grouped
                 //together for the emonpi action even though they might not be used
                 //in the subaction
-                $update_logfile = "/home/pi/data/emonpiupdate.log";                
-                $backup_logfile = "/home/pi/data/emonpibackup.log";                
+                $update_logfile = "/home/pi/data/emonpiupdate.log";
+                $backup_logfile = "/home/pi/data/emonpibackup.log";
                 $update_flag = "/tmp/emoncms-flag-update";
                 $backup_flag = "/tmp/emonpibackup";
                 $update_script = "/home/pi/emonpi/service-runner-update.sh";
                 $backup_file = "/home/pi/data/backup.tar.gz";
                                 
-                if ($route->subaction == 'update' && $session['write'] && $session['admin']) { 
+                if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
-                    
+                    // Get update argument e.g. 'emonpi' or 'rfm69pi'
+                    $argument="";
+                    if (isset($_POST['argument'])) {
+                      $argument = $_POST['argument'];
+                    }
                     $fh = @fopen($update_flag,"w");
                     if (!$fh) {
                         $result = "ERROR: Can't write the flag $update_flag.";
                     } else {
-                        fwrite($fh,"$update_script>$update_logfile");
+                        fwrite($fh,"$update_script $argument>$update_logfile");
                         $result = "Update flag set";
                     }
                     @fclose($fh);
                 }
                 
-                if ($route->subaction == 'getupdatelog' && $session['admin']) { 
+                if ($route->subaction == 'getupdatelog' && $session['admin']) {
                     $route->format = "text";
                     ob_start();
                     passthru("cat " . $update_logfile);
@@ -160,9 +164,9 @@ function admin_controller()
                 if ($route->subaction == 'downloadupdatelog' && $session['admin'])
                 {
                     header("Content-Type: application/octet-stream");
-                    header("Content-Transfer-Encoding: Binary"); 
+                    header("Content-Transfer-Encoding: Binary");
                     header("Content-disposition: attachment; filename=\"" . basename($update_logfile) . "\"");
-                    header("Pragma: no-cache"); 
+                    header("Pragma: no-cache");
                     header("Expires: 0");
                     flush();
                     if (file_exists($update_logfile))
@@ -174,11 +178,11 @@ function admin_controller()
                     else
                     {
                       echo($update_logfile . " does not exist!");
-                    }     
+                    }
                     exit;
                 }
                 
-                if ($route->subaction == 'backup' && $session['write'] && $session['admin']) { 
+                if ($route->subaction == 'backup' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     $fh = @fopen($backup_flag,"w");
                     if (!$fh) $result = "ERROR: Can't write the flag $backup_flag.";
@@ -186,7 +190,7 @@ function admin_controller()
                     @fclose($fh);
                 }
                 
-                if ($route->subaction == 'getbackuplog' && $session['admin']) { 
+                if ($route->subaction == 'getbackuplog' && $session['admin']) {
                     $route->format = "text";
                     ob_start();
                     passthru("cat " . $backup_logfile);
@@ -196,9 +200,9 @@ function admin_controller()
                 if ($route->subaction == 'downloadbackuplog' && $session['admin'])
                 {
                     header("Content-Type: application/octet-stream");
-                    header("Content-Transfer-Encoding: Binary"); 
+                    header("Content-Transfer-Encoding: Binary");
                     header("Content-disposition: attachment; filename=\"" . basename($backup_logfile) . "\"");
-                    header("Pragma: no-cache"); 
+                    header("Pragma: no-cache");
                     header("Expires: 0");
                     flush();
                     if (file_exists($backup_logfile)) {
@@ -209,18 +213,33 @@ function admin_controller()
                     else
                     {
                       echo($backup_logfile . " does not exist!");
-                    }              
+                    }
                     exit;
                 }
                 
                 if ($route->subaction == "downloadbackup" && $session['write'] && $session['admin']) {
-                    header("Content-type: application/zip"); 
-                    header("Content-Disposition: attachment; filename=\"" . basename($backup_file) . "\""); 
-                    header("Pragma: no-cache"); 
-                    header("Expires: 0"); 
+                    header("Content-type: application/zip");
+                    header("Content-Disposition: attachment; filename=\"" . basename($backup_file) . "\"");
+                    header("Pragma: no-cache");
+                    header("Expires: 0");
                     readfile($backup_file);
                     exit;
                 }
+                
+                if ($route->subaction == 'fs' && $session['admin'])
+                {
+                  if (isset($_POST['argument'])) {
+                    $argument = $_POST['argument'];
+                    }
+                  if ($argument == 'ro'){
+                    $result = passthru('rpi-ro');
+
+                  }
+                  if ($argument == 'rw'){
+                    $result = passthru('rpi-rw');
+                  }
+                }
+                
             }
         }
         else if ($route->format == 'json')

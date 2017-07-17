@@ -9,7 +9,8 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$favicon;
+  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$themecolor,$favicon;
+
 ?>
 <html>
     <head>
@@ -23,15 +24,21 @@
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon.css" rel="stylesheet">
+        
+        <?php if ($themecolor=="blue") { ?>
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css" rel="stylesheet">
+        <?php } else { ?>
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css" rel="stylesheet">
+        <?php } ?>
+        
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     </head>
     <body>
         <div id="wrap">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        
+        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
-                <div class="container">
-<?php  if ($menucollapses) { ?>
+                    <?php  if ($menucollapses) { ?>
                     <style>
                         /* this is menu colapsed */
                         @media (max-width: 979px){
@@ -50,7 +57,7 @@
                     </button>
 
                     <div class="nav-collapse collapse">
-<?php } else { ?>
+                    <?php } else { ?>
                         <style>
                             @media (max-width: 1200px){
                               .menu-text {
@@ -69,18 +76,17 @@
                               }
                             }
                         </style>
-<?php } ?>
-                    <?php if (!isset($runmenu)) $runmenu = '';
-                        echo $mainmenu.$runmenu;
+                    <?php } ?>
+                    <?php
+                        echo $mainmenu;
                     ?>
-<?php
-    if ($menucollapses) {
-?>
+                    <?php
+                        if ($menucollapses) {
+                    ?>
                     </div>
-<?php
-    }
-?>
-                </div>
+                    <?php
+                        }
+                    ?>
             </div>
         </div>
 
@@ -115,7 +121,7 @@
 
         <div id="footer">
             <?php echo _('Powered by '); ?>
-            <a href="http://openenergymonitor.org">openenergymonitor.org</a>
+            <a href="http://openenergymonitor.org">OpenEnergyMonitor.org</a>
             <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
