@@ -272,7 +272,15 @@ function update(){
 	          
 	          // Assign inputs to devices
 	          for (var z in inputs) {
-	              if (devices[inputs[z].nodeid]==undefined) devices[inputs[z].nodeid] = {description:""};
+	              // Device does not exist which means this is likely a new system or that the device was deleted
+	              // There needs to be a corresponding device for every node and so the system needs to recreate the device here
+	              if (devices[inputs[z].nodeid]==undefined) {
+	                  devices[inputs[z].nodeid] = {description:""};
+	                  // Device creation
+	                  $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: true, success: function(data) {
+	                      if (!data) alert("There was an rrror creating device: "+inputs[z].nodeid); 
+	                  }});
+	              }
 	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);

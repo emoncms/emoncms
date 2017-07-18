@@ -75,7 +75,7 @@ function device_controller()
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
         }
         elseif ($route->action == "create") {
-            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid']);
+            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"));
         }
         elseif ($route->action == "gettemplate") {
             if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
