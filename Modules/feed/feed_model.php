@@ -90,7 +90,7 @@ class Feed
 
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
-        
+
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
@@ -206,7 +206,7 @@ class Feed
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
-    
+
     public function exists_tag_name($userid,$tag,$name)
     {
         $userid = intval($userid);
@@ -337,7 +337,7 @@ class Feed
         }
         return $feeds;
     }
-    
+
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
@@ -408,7 +408,6 @@ class Feed
 
     public function get_timevalue($id)
     {
-       
         $id = (int) $id;
         //$this->log->info("get_timevalue() $id");
         if (!$this->exist($id)) {
@@ -422,14 +421,13 @@ class Feed
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id);
             return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
-        
+
         if ($this->redis)
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
                 $lastvalue['time'] = (int) $lastvalue['time'];
-                $lastvalue['value'] = $lastvalue['value'] * 1;
-                $lastvalue['value'] = (float) $lastvalue['value'];
+                $lastvalue['value'] = (float) $lastvalue['value']; // CHAVEIRO comment: Dont multiply this to 1, it can return NULL as a valid number or else processlist logic will be broken
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 $lastvalue = $this->EngineClass($engine)->lastvalue($id);

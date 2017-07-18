@@ -75,7 +75,7 @@ class Process_ProcessList
         // Virtual feeds are feeds that are calculated in realtime when queried and use a processlist as post processor.
         // Processors that write or update a feed are not supported and hidden from the gui on the context of virtual feeds.
 
-        // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true
+        // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true | 'nochange'=>true  | 'helpurl'=>"http://..."
         
         // ATENTION: Next list elements have fixed numeric keys and are here just for backward compatibility.
         // NEW PROCESSES SHOULD BE ADDED AS MODULES IN /Module/modulename/modulename_processlist.php process_list() function

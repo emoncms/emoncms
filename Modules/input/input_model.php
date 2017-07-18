@@ -258,15 +258,8 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            // Fix break point where value is NAN
-            $lastvalue['time'] = $lastvalue['time'] * 1; 
-            $row['time'] = (int) $lastvalue['time'];
-            if (is_nan($row['time'])) $row['time'] = 0;
-         
-            $lastvalue['value'] = $lastvalue['value'] * 1; 
-            $row['value'] = (float) $lastvalue['value'];
-            if (is_nan($row['value'])) $row['value'] = 0;
-         
+            $row['time'] = $lastvalue['time'];
+            $row['value'] = $lastvalue['value'];  // CHAVEIRO comment: Dont multiply this to 1, it can return NULL as a valid number or else processlist logic will be broken
             $inputs[] = $row;
         }
         return $inputs;

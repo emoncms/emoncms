@@ -64,7 +64,7 @@
             'datadir' => '/home/pi/data/phptimeseries/'
         )
     );
-    
+
     $homedir = "/home/pi";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data

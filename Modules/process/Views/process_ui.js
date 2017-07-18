@@ -409,16 +409,14 @@ var processlist_ui =
       } else {
         $("#description").html(processlist_ui.processlist[processid]['desc']);
 
-	var does_modify = "<p><b>Output:</b> Modified value passed onto next process step</p>";
-	var does_not_modify = "<p><b>Output:</b> Does NOT modify value passed onto next process step</p>";
-	var redis_required = "<p><b>REDIS:</b> Requires REDIS</p>";
-	var help = "<p><b>See Also:</b> ";
+	var does_modify = "<p><b>Output:</b> Modified value passed onto next process step.</p>";
+	var does_not_modify = "<p><b>Output:</b> Does NOT modify value passed onto next process step.</p>";
+	var redis_required = "<p><b>REDIS:</b> Requires REDIS.</p>";
+	var help = "Click here for additional information about this process.";
 
-	if ('help_page' in processlist_ui.processlist[processid] &&
-	    'help_url' in processlist_ui.processlist[processid] &&
-	    typeof processlist_ui.processlist[processid]['help_page'] === 'string' &&
-	    typeof processlist_ui.processlist[processid]['help_url'] === 'string') {
-		$("#description").append(help + '<a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + processlist_ui.processlist[processid]['help_page']);
+	if ('helpurl' in processlist_ui.processlist[processid] &&
+	    typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
+		$("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
 	}
 
 	if ('nochange' in processlist_ui.processlist[processid] &&
