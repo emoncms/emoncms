@@ -107,8 +107,6 @@ var path = "<?php echo $path; ?>";
 var register_open = false;
 $("body").addClass("body-login");
 
-$("body").css("background-color","#1d8dbc");
-
 $(document).ready(function() {
     var passwordreset = "<?php echo $enable_password_reset; ?>";
     if (!passwordreset) $("#passwordreset-link").hide();
