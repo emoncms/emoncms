@@ -141,7 +141,7 @@ class VirtualFeed
             for ($i=0; $i<$dp; $i++)
             {
                 $tb = $start + intval(($i+1)*$td); //next end time
-                $opt_timearray = array('start' => $t, 'end' => $tb, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$dbinputs[$nodeid][$name]['id']);
+                $opt_timearray = array('start' => $t, 'end' => $tb, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
                 $dataValue = $process->input($t, $dataValue, $processList, $opt_timearray); // execute processlist 
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
@@ -160,7 +160,7 @@ class VirtualFeed
              if ($endslot < $startslot) $endslot = $endslot + 86400; // one day range
              while ($startslot<$endslot)
              {
-                $opt_timearray = array('start' => $startslot, 'end' => $startslot+86400, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$dbinputs[$nodeid][$name]['id']);
+                $opt_timearray = array('start' => $startslot, 'end' => $startslot+86400, 'interval' => $interval, 'sourcetype' => ProcessOriginType::VIRTUALFEED, 'sourceid'=>$feedid);
                 $dataValue = $process->input($startslot, $dataValue, $processList, $opt_timearray); // execute processlist 
                     
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph

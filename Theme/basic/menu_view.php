@@ -68,7 +68,7 @@
         if (isset($item['icon'])) $icon = $item['icon'];
         if (isset($item['published'])) $published = $item['published'];
         if (isset($item['id'])) $divid = "id='".$item['id']."'";
-        
+
         $title = ($desc ? $desc : $name);
         if($name && $published) $name = "<b>".$name."</b>";
 
