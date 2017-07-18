@@ -38,7 +38,8 @@ class Eventp_ProcessList
         // Virtual feeds are feeds that are calculed in realtime when queried and use a processlist as post processor. 
         // Processors that write or update a feed are not supported and hidden from the gui on the context of virtual feeds.
 
-        // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true/false
+        // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true | 'nochange'=>true  | 'helpurl'=>"http://..."
+	
         $list[] = array(_("If rate >=, skip next"), ProcessArg::VALUE, "ifRateGtEqualSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.</p>");
         $list[] = array(_("If rate <, skip next"), ProcessArg::VALUE, "ifRateLtSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.</p>");
         $list[] = array(_("If Mute, skip next"), ProcessArg::VALUE, "ifMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.</p>");

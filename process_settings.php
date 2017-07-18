@@ -103,7 +103,6 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings['phptimeseries'])) $error_out .= "<p>feed setting for phptimeseries is not configured, check settings: settings['phptimeseries']";
     if (!isset($feed_settings['redisbuffer'])) $error_out .= "<p>feed setting for redisbuffer is not configured, check settings: settings['redisbuffer']";
     if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
-    if (!isset($homedir)) $homedir = "/home/pi";
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
     if (!isset($data_sampling)) $data_sampling = true; // default
@@ -117,6 +116,9 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($csv_field_separator) || $csv_field_separator=="") $csv_field_separator = ',';
 
     if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
+
+    if (!isset($homedir)) $homedir = dirname(__FILE__);
+    if (!is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
 
     if ($error_out!="") {
       echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
