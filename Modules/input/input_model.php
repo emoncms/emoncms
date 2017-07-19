@@ -202,8 +202,9 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            $row['time'] = $lastvalue['time'];
-            $row['value'] = $lastvalue['value'];  // CHAVEIRO comment: Dont multiply this to 1, it can return NULL as a valid number or else processlist logic will be broken
+            $row['time'] = ($lastvalue['time'] ? $lastvalue['time'] : null);
+            $row['value'] = ($lastvalue['value'] ? $lastvalue['value'] : null);
+            // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             $inputs[] = $row;
         }
         return $inputs;
@@ -256,7 +257,8 @@ class Input
         $id = (int) $id;
 
         if ($this->redis) {
-            return $this->redis->hget("input:lastvalue:$id",'value');
+            $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
+            return ($lastvalue ? $lastvalue : null);
         } else {
             $result = $this->mysqli->query("SELECT value FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();

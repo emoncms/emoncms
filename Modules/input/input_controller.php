@@ -199,7 +199,7 @@ function input_controller()
             if ($valid) {
                 $result = 'ok';
             } else {
-                $result = "Error: $error\n";
+                $result = '{"success": false, "message": "'.str_replace("\"","'",$error).'"}';
                 $log = new EmonLogger(__FILE__);
                 $log->error($error);
             }
@@ -292,9 +292,13 @@ function input_controller()
             }
             
             if ($valid)
-                $result = 'ok';
+                if (isset($_GET['fulljson'])) {
+                    $result = '{"success": true}';
+                } else {
+                    $result = 'ok';
+                }
             else {
-                $result = "Error: $error\n";
+                $result = '{"success": false, "message": "'.str_replace("\"","'",$error).'"}';
                 $log = new EmonLogger(__FILE__);
                 $log->error($error);
             }
