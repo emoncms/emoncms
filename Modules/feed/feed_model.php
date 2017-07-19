@@ -426,8 +426,17 @@ class Feed
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
-                $lastvalue['time'] = (int) $lastvalue['time'];
-                $lastvalue['value'] = (float) $lastvalue['value']; // CHAVEIRO comment: Dont multiply this to 1, it can return NULL as a valid number or else processlist logic will be broken
+                if ($lastvalue['time']) {
+                    $lastvalue['time'] = (int) $lastvalue['time'];
+                } else {
+                    $lastvalue['time'] = null;
+                }
+                if ($lastvalue['value']) {
+                    $lastvalue['value'] = (float) $lastvalue['value'];
+                } else {
+                    $lastvalue['value'] = null;
+                }
+                // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 $lastvalue = $this->EngineClass($engine)->lastvalue($id);

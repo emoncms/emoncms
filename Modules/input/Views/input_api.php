@@ -21,13 +21,13 @@
 </table>
 
 <h3><?php echo _('Available JSON commands'); ?></h3>
-<p><?php echo _('To use the json api the request url needs to include <b>.json</b>.  The "partial syntax" version is based on the CSV input parsing implementation and maintained for backwards compatibility; the "full syntax" version uses the PHP JSON decoder.'); ?></p>
+<p><?php echo _('To use the json api the request url needs to include <b>.json</b>. The "fulljson" format is recommended for new integrations, it uses the PHP JSON decoder and answer is also in json. The "json like" format is based on the CSV input parsing implementation and maintained for backwards compatibility.'); ?></p>
 
 <p><b><?php echo _('Post data (using http get)'); ?></b></p>
 <table class="table">
-    <tr><td><?php echo _('JSON format (partial syntax):'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
-    <tr><td><?php echo _('JSON format (full syntax):'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&fulljson={power1:100,power2:200,power3:300}</a></td></tr>
-    <tr><td><?php echo _('CSV format:'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
+    <tr><td><?php echo _('JSON format'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&fulljson={"power1":100,"power2":200,"power3":300}</a></td></tr>
+    <tr><td><?php echo _('JSON like format (deprecated)'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post.json?<b>node=1</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
+    <tr><td><?php echo _('CSV format'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
     <tr><td><?php echo _('Assign inputs to a node group'); ?></td><td><a href="<?php echo $path; ?>input/post.json?node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>node=1</b>&csv=100,200,300</a></td></tr>
     <tr><td><?php echo _('Set the input entry time manually'); ?></td><td><a href="<?php echo $path; ?>input/post.json?time=<?php echo time(); ?>&node=1&csv=100,200,300"><?php echo $path; ?>input/post.json?<b>time=<?php echo time(); ?></b>&node=1&csv=100,200,300</a></td></tr>
 </table>
