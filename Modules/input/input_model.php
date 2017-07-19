@@ -86,12 +86,15 @@ class Input
     {
         $id = (int) $id;
         $time = (int) $time;
-        $value = (float) $value;
+        $value = $value; // Dont cast
 
         if ($this->redis) {
             $this->redis->hMset("input:lastvalue:$id", array('value' => $value, 'time' => $time));
         } else {
-            $this->mysqli->query("UPDATE input SET time='$time', value = '$value' WHERE id = '$id'");
+            if ($stmt = $this->mysqli->prepare("UPDATE input SET time = ?, value = ? WHERE id = ?")) {
+                $stmt->bind_param("idi", $time, $value, $id);
+                $stmt->execute();
+            }
         }
     }
 
@@ -202,8 +205,8 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            $row['time'] = ($lastvalue['time'] ? $lastvalue['time'] : null);
-            $row['value'] = ($lastvalue['value'] ? $lastvalue['value'] : null);
+            $row['time'] = ($lastvalue['time'] ? (int)$lastvalue['time'] : null);
+            $row['value'] = ($lastvalue['value'] ? (float)$lastvalue['value'] : null);
             // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             $inputs[] = $row;
         }
@@ -258,7 +261,7 @@ class Input
 
         if ($this->redis) {
             $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
-            return ($lastvalue ? $lastvalue : null);
+            return ($lastvalue ? (float)$lastvalue : null);
         } else {
             $result = $this->mysqli->query("SELECT value FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();
