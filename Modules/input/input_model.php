@@ -205,8 +205,16 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            $row['time'] = ($lastvalue['time'] ? (int)$lastvalue['time'] : null);
-            $row['value'] = ($lastvalue['value'] ? (float)$lastvalue['value'] : null);
+            if (!isset($row['time']) || $row['time'] === false) {
+                $row['time'] = null;
+            } else {
+                $row['time'] = (int) $row['time'];
+            }
+            if (!isset($row['value']) || $row['value'] === false) {
+                $row['value'] = null;
+            } else {
+                $row['value'] = (float) $row['value'];
+            }
             // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             $inputs[] = $row;
         }
@@ -261,7 +269,12 @@ class Input
 
         if ($this->redis) {
             $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
-            return ($lastvalue ? (float)$lastvalue : null);
+            if ($lastvalue === false) {
+                $lastvalue = null;
+            } else {
+                $lastvalue = (float) $lastvalue;
+            }
+            return $lastvalue;
         } else {
             $result = $this->mysqli->query("SELECT value FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();

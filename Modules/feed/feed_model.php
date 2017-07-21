@@ -426,15 +426,15 @@ class Feed
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
-                if ($lastvalue['time']) {
-                    $lastvalue['time'] = (int) $lastvalue['time'];
-                } else {
+                if (!isset($lastvalue['time']) || $lastvalue['time'] === false) {
                     $lastvalue['time'] = null;
-                }
-                if ($lastvalue['value']) {
-                    $lastvalue['value'] = (float) $lastvalue['value'];
                 } else {
+                    $lastvalue['time'] = (int) $lastvalue['time'];
+                }
+                if (!isset($lastvalue['value']) || $lastvalue['value'] === false) {
                     $lastvalue['value'] = null;
+                } else {
+                    $lastvalue['value'] = (float) $lastvalue['value'];
                 }
                 // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             } else {
@@ -725,11 +725,13 @@ class Feed
 
     public function set_timevalue($id, $value, $time)
     {
-        if ($value === null) $value = 'NULL'; // Null is a valid value
         if ($this->redis) {
             $this->redis->hMset("feed:$id", array('value' => $value, 'time' => $time));
         } else {
-            $this->mysqli->query("UPDATE feeds SET `time` = '$time', `value` = $value WHERE `id`= '$id'");
+            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET time = ?, value = ? WHERE id = ?")) {
+                $stmt->bind_param("idi", $time, $value, $id);
+                $stmt->execute();
+            }
         }
     }
 
