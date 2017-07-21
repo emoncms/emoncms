@@ -46,7 +46,7 @@
 .device-key {
 	float:right;
 	padding:10px;
-	min-width:50px;
+	min-width:30px;
 	text-align:center;
 	color:#fff;
 	border-left: 1px solid #eee;
@@ -55,7 +55,7 @@
 .device-schedule {
 	float:right;
 	padding:10px;
-	min-width:50px;
+	min-width:30px;
 	text-align:center;
 	color:#fff;
 	border-left: 1px solid #eee;
@@ -65,7 +65,7 @@
 .device-configure {
 	float:right;
 	padding:10px;
-	width:50px;
+	width:30px;
 	text-align:center;
 	color:#666;
 	border-left: 1px solid #eee;
