@@ -79,7 +79,7 @@
 
 .node-input .select {
     display:inline-block;
-    width:20px;
+
     padding-top: 10px;
     /*padding-right: 10px;*/
     text-align:center;
@@ -119,6 +119,10 @@
     padding-top:10px;
     text-align:center;
 	  cursor:pointer;
+}
+
+.ipad {
+    padding-left:10px;
 }
 
 input[type="checkbox"] { margin:0px; }
@@ -319,10 +323,10 @@ function draw_devices()
                 selected = "checked";
             
             out += "<div class='node-input' id="+input.id+">";
-            out += "<div class='select'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div>";
-            out += "<div class='name'>"+input.name+"</div>";
+            out += "<div class='select'><div class='ipad'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div></div>";
+            out += "<div class='name'><div class='ipad'>"+input.name+"</div></div>";
             
-            if (processlist_ui != undefined)  out += "<div class='processlist'>"+processlist_ui.drawpreview(input.processList)+"</div>";
+            if (processlist_ui != undefined)  out += "<div class='processlist'><div class='ipad'>"+processlist_ui.drawpreview(input.processList)+"</div></div>";
             
             out += "<div class='node-input-right'>";
             out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
@@ -590,23 +594,26 @@ function resize()
     show_value = true;
 
     $(".node-input").each(function(){
-       var w = $(this).width()-10;
-       
-       var tw = 0;
-       tw += $(this).find(".name").width();
-       tw += $(this).find(".configure").width();
+         var node_input_width = $(this).width();
+         if (node_input_width>0) {
+             var w = node_input_width-10;
+             
+             var tw = 0;
+             tw += $(this).find(".name").width();
+             tw += $(this).find(".configure").width();
 
-       tw += $(this).find(".select").width();
-       if (tw>w) show_select = false;
-       
-       tw += $(this).find(".value").width();
-       if (tw>w) show_value = false;
-       
-       tw += $(this).find(".time").width();
-       if (tw>w) show_time = false;   
-          
-       tw += $(this).find(".processlist").width();
-       if (tw>w) show_processlist = false;
+             tw += $(this).find(".select").width();
+             if (tw>w) show_select = false;
+             
+             tw += $(this).find(".value").width();
+             if (tw>w) show_value = false;
+             
+             tw += $(this).find(".time").width();
+             if (tw>w) show_time = false;   
+                
+             tw += $(this).find(".processlist").width();
+             if (tw>w) show_processlist = false;
+         }
     });
     
     if (show_select) $(".select").show(); else $(".select").hide();
