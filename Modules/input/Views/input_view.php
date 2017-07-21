@@ -8,6 +8,20 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <style>
+
+.container-fluid { padding: 0px 10px 0px 10px; }
+
+#footer {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.navbar-fixed-top {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+
 .node {margin-bottom:10px;}
 
 .node-info {
@@ -144,18 +158,12 @@ input[type="checkbox"] { margin:0px; }
     margin-top:-2px;
 }
 
-@media (min-width: 768px) and (max-width: 979px) {
-
+@media (min-width: 768px) {
+    .container-fluid { padding: 0px 20px 0px 20px; }
 }
 
-@media (min-width: 480px) and (max-width: 768px) {
-
-}
-
-@media (max-width: 480px) {
-/*.node-input .processlist { display:none}
-.node-input .value { display:none}
-.node-input .time { display:none}*/
+@media (max-width: 768px) {
+    body {padding:0};
 }
 
 </style>
@@ -383,6 +391,8 @@ $("#table").on("click",".node-info",function() {
         $(".node-inputs[node='"+node+"']").show();
         nodes_display[node] = true;
     }
+    
+    resize();
 });
 
 $("#table").on("click",".input-select",function(e) {
@@ -496,7 +506,8 @@ $(".input-delete").click(function(){
 			      var i = inputs[inputid];
 			      if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
 				        // delete now if has no values and updated +15m
-				        ids.push(parseInt(inputid)); 
+				        // ids.push(parseInt(inputid)); 
+				        out += i.nodeid+":"+i.name+"<br>";
 			      } else {
 				        out += i.nodeid+":"+i.name+"<br>";		
 			      }
