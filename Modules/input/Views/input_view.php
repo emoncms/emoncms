@@ -21,7 +21,6 @@
     margin-right: 0px;
 }
 
-
 .node {margin-bottom:10px;}
 
 .node-info {
@@ -84,24 +83,18 @@
     border-bottom:1px solid #fff;
     border-left:2px solid #f0f0f0;
     height:41px;
-    /*
-    padding-left:10px;
-    padding-right:10px;*/
 }
 
 .node-input:hover{ border-left:2px solid #44b3e2; }
 
 .node-input .select {
     display:inline-block;
-
     padding-top: 10px;
-    /*padding-right: 10px;*/
     text-align:center;
 }
 
 .node-input .name {
     display:inline-block;
-    /*padding-top:10px;*/
 }
 
 .node-input .processlist {
