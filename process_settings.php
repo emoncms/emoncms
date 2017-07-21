@@ -117,7 +117,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
 
-    if (!isset($homedir)) $homedir = dirname(__FILE__);
+    if (!isset($homedir)) $homedir = "/home/pi";
     if (!is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
 
     if ($error_out!="") {
