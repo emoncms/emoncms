@@ -318,8 +318,8 @@ function draw_devices()
         out += "    <div class='device-name'>"+node+":</div>";
         out += "    <div class='device-description'>"+devices[node].description+"</div>";
         out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
-        out += "    <div class='device-key'>KEY</div>";
-        out += "    <div class='device-schedule'>SCHEDULE</div>";
+        out += "    <div class='device-key'><i class='icon-lock icon-white'></i></div>"; 
+        out += "    <div class='device-schedule'><i class='icon-time icon-white'></i></div>";
         out += "  </div>";
         out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
         
