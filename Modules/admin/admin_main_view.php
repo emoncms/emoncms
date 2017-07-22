@@ -32,7 +32,7 @@
         if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
           $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
           $jsonVersion = $json->{'version'};
-          $emoncmsModuleFolder = $emoncmsModuleFolder."(".$jsonVersion.")";
+          $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
         }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
