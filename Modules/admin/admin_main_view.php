@@ -26,9 +26,14 @@
     }
     $emoncms_modules = "";
     $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);  // Use glob to get all the folder names only
-    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {  // loop through the folders
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
+    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
         if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;&nbsp;&nbsp;";
+        if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
+          $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
+          $jsonVersion = $json->{'version'};
+          $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
+        }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
 
@@ -292,7 +297,9 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
+              if (isset($emonpiRelease)) {
                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+              }
                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
 }
 
