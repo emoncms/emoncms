@@ -269,7 +269,7 @@ class Input
 
         if ($this->redis) {
             $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
-            if ($lastvalue === false) {
+            if (!isset($lastvalue) || $lastvalue === false) {
                 $lastvalue = null;
             } else {
                 $lastvalue = (float) $lastvalue;
