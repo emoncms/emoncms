@@ -26,9 +26,14 @@
     }
     $emoncms_modules = "";
     $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);  // Use glob to get all the folder names only
-    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {  // loop through the folders
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
+    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
         if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;&nbsp;&nbsp;";
+        if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
+          $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
+          $jsonVersion = $json->{'version'};
+          $emoncmsModuleFolder = $emoncmsModuleFolder."(".$jsonVersion.")";
+        }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
 
