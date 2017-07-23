@@ -215,7 +215,7 @@ class Input
             } else {
                 $row['value'] = (float) $row['value'];
             }
-            // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
+            // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken      
             $inputs[] = $row;
         }
         return $inputs;

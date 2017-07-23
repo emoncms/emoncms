@@ -27,6 +27,8 @@
         
         <?php if ($themecolor=="blue") { ?>
             <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css" rel="stylesheet">
+        <?php } else if ($themecolor=="sun") { ?>
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-sun.css" rel="stylesheet">
         <?php } else { ?>
             <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css" rel="stylesheet">
         <?php } ?>
