@@ -31,12 +31,12 @@
         if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;|&nbsp;";
         if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
           $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
-          $jsonVersion = $json->{'version'};
           $jsonAppName = $json->{'name'};
+          $jsonVersion = $json->{'version'};
           if ($jsonAppName) {
-            $emoncmsModuleFolder = $jsonAppName." v".$jsonVersion;
+            $emoncmsModuleFolder = $jsonAppName;
           }
-          else {
+          if ($jsonVersion) {
             $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
           }
         }
