@@ -1,6 +1,6 @@
 # Cassandra
 
-experimental Cassanda support
+experimental Cassandra support
 
 create a new keyspace if needed and set it in settings.php
 eg. CREATE KEYSPACE emoncms WITH replication = {'class': 'SimpleStrategy', 'replication_factor' : 3};

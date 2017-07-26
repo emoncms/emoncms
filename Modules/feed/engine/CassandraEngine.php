@@ -147,7 +147,7 @@ class CassandraEngine
         $feedname = "feed_$feedid";
         $data = array();
         $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND time >= $start AND time <= $end");
-        if($result) {
+        while($result) {
             foreach ($result as $row) {
                 $dataValue = $row['data'];
                 if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
@@ -156,6 +156,7 @@ class CassandraEngine
                     $data[] = array($time , $dataValue);
                 }
             }
+            $result = $result->nextPage();
         }
         return $data;
     }
