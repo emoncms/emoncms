@@ -123,6 +123,7 @@
                                         <option value=2>PHPTIMESERIES Variable Interval No Averaging</option>
                                         <option value=0>MYSQL TimeSeries</option>
                                         <option value=8>MYSQL Memory (RAM data lost on power off)</option>
+                                        <option value=10>CASSANDRA TimeSeries</option>
                                     </select>
 
                                     <select id="feed-interval" class="input-mini">

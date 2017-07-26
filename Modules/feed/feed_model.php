@@ -66,6 +66,9 @@ class Feed
             } else if ($e == "histogram") {
                     require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
                     $engines[$e] = new Histogram($this->mysqli);
+            } else if ($e == (string)Engine::CASSANDRA) {
+                    require "Modules/feed/engine/CassandraEngine.php";  // Cassandra engine
+                    $engines[$e] =  new CassandraEngine($this->settings['cassandra']);
             } else {
                     $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
                     throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
