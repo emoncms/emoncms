@@ -5,7 +5,6 @@ class CassandraEngine
     protected $cluster;
     protected $session;
     protected $log;
-    private $writebuffer = array();
 
     /**
      * Constructor.
@@ -14,11 +13,8 @@ class CassandraEngine
     */
     public function __construct($settings)
     {
-        if (isset($settings['keyspace'])) {
-            $keyspace = $settings['keyspace'];
-        } else {
-            $keyspace  = 'emoncms';
-        }
+        $keyspace = isset($settings['keyspace']) ? $settings['keyspace'] : 'emoncms';
+
         $this->cluster = Cassandra::cluster()                 // connects to localhost by default
                          ->build();
         $this->session = $this->cluster->connect($keyspace);  // create session, optionally scoped to a keyspace
@@ -38,7 +34,7 @@ class CassandraEngine
     public function create($feedid,$options)
     {
         $feedname = "feed_".trim($feedid)."";
-        $this->execCQL("CREATE TABLE IF NOT EXISTS $feedname (feed_id int, time bigint, data float, PRIMARY KEY (feed_id, time)) WITH CLUSTERING ORDER BY (time ASC)");
+        $this->execCQL("CREATE TABLE IF NOT EXISTS $feedname (feed_id int, day int, time bigint, data float, PRIMARY KEY ((feed_id,day), time)) WITH CLUSTERING ORDER BY (time ASC)");
         return true;
     }
 
@@ -75,7 +71,7 @@ class CassandraEngine
     */
     public function get_feed_size($feedid)
     {
-        $feedname = "feed_".$feedid;
+        $feedid = intval($feedid);
         $tablesize = 0; // FIXME
         return $tablesize;
     }
@@ -90,8 +86,10 @@ class CassandraEngine
     */
     public function post($feedid,$time,$value,$arg=null)
     {
+        $feedid = intval($feedid);
         $feedname = "feed_".trim($feedid)."";
-        $this->execCQL("INSERT INTO $feedname(feed_id,time,data) VALUES(".trim($feedid).",$time,$value)");
+        $day = $this->unixtoday($time);
+        $this->execCQL("INSERT INTO $feedname(feed_id,day,time,data) VALUES($feedid,$day,$time,$value)");
     }
 
     /**
@@ -105,7 +103,8 @@ class CassandraEngine
     {
         $feedid = (int) $feedid;
         $feedname = "feed_".trim($feedid)."";
-        $this->execCQL("UPDATE $feedname SET data = $value WHERE time = $time");
+        $day = $this->unixtoday($time);
+        $this->execCQL("UPDATE $feedname SET data = $value WHERE feed_id = $feedid AND day = $day AND time = $time");
         return $value;
     }
 
@@ -119,11 +118,18 @@ class CassandraEngine
         $feedid = intval($feedid);
         $feedname = "feed_".trim($feedid)."";
 
-        $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid ORDER BY time DESC LIMIT 1");
+        $result = $this->execCQL("SELECT max(day) AS max_day FROM $feedname WHERE feed_id=$feedid");
         if ($result && count($result)>0){
             $row=$result[0];
-            if ($row['data'] !== null) $row['data'] = (float) $row['data'];
-            return array('time'=>(int)$row['time'], 'value'=>$row['data']);
+            $max_day=$row['max_day'];
+            $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid and day=$max_day ORDER BY time DESC LIMIT 1");
+            if ($result && count($result)>0){
+                $row=$result[0];
+                if ($row['data'] !== null) $row['data'] = (float) $row['data'];
+                return array('time'=>(int)$row['time'], 'value'=>$row['data']);
+            } else {
+                return false;
+            }
         } else {
             return false;
         }
@@ -144,9 +150,11 @@ class CassandraEngine
         $feedid = intval($feedid);
         $start = round($start/1000);
         $end = round($end/1000);
+        $interval = intval($interval);
         $feedname = "feed_$feedid";
+        $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();
-        $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND time >= $start AND time <= $end");
+        $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND day IN (".implode($day_range,',').") AND time >= $start AND time <= $end");
         while($result) {
             foreach ($result as $row) {
                 $dataValue = $row['data'];
@@ -163,14 +171,14 @@ class CassandraEngine
 
     public function export($feedid,$start)
     {
+        $this->log->info("export($feedid,$start)");
         // TODO implement
-        exit;
     }
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
+        $this->log->info("csv_export($feedid,$start,$end,$outinterval,$usertimezone)");
         // TODO implement
-        exit;
     }
 
 // #### /\ Above are required methods
@@ -181,9 +189,10 @@ class CassandraEngine
     {
         $feedid = intval($feedid);
         $time = intval($time);
+        $day = $this->unixtoday($time);
 
         $feedname = "feed_".trim($feedid)."";
-        $this->execCQL("DELETE FROM $feedname where `time` = '$time' LIMIT 1");
+        $this->execCQL("DELETE FROM $feedname WHERE feed_id = $feedid AND day = $day AND time = $time");
     }
 
     public function deletedatarange($feedid,$start,$end)
@@ -191,10 +200,10 @@ class CassandraEngine
         $feedid = intval($feedid);
         $start = intval($start/1000.0);
         $end = intval($end/1000.0);
+        $day_range = range($this->unixtoday($start), $this->unixtoday($end));
 
         $feedname = "feed_".trim($feedid)."";
-        $this->execCQL("DELETE FROM $feedname where `time` >= '$start' AND `time`<= '$end'");
-
+        $this->execCQL("DELETE FROM $feedname WHERE feed_id=$feedid AND day IN (".implode($day_range,',').") AND time >= $start AND time <= $end");
         return true;
     }
 
@@ -206,6 +215,11 @@ class CassandraEngine
         $future    = $this->session->executeAsync($statement);  // fully asynchronous and easy parallel execution
         $result    = $future->get();                            // wait for the result, with an optional timeout
         return $result;
+    }
+
+    private function unixtoday($unixtime)
+    {
+        return floor($unixtime/86400);
     }
 
 }
