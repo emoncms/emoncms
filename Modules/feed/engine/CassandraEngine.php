@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * CassandraEngine
+ *
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ *
+ */
 class CassandraEngine
 {
     protected $cluster;
@@ -30,7 +36,10 @@ class CassandraEngine
      *
      * @param integer $feedid The id of the feed to be created
      * @param array $options for the engine
-    */
+     *
+     * {@inheritdoc}
+     *
+     */
     public function create($feedid,$options)
     {
         $feedname = "feed_".trim($feedid)."";
@@ -83,9 +92,13 @@ class CassandraEngine
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
      * @param arg $value optional padding mode argument
-    */
+     *
+     * {@inheritdoc}
+     *
+     */
     public function post($feedid,$time,$value,$arg=null)
     {
+        $arg = $arg;
         $feedid = intval($feedid);
         $feedname = "feed_".trim($feedid)."";
         $day = $this->unixtoday($time);
@@ -127,12 +140,9 @@ class CassandraEngine
                 $row=$result[0];
                 if ($row['data'] !== null) $row['data'] = (float) $row['data'];
                 return array('time'=>(int)$row['time'], 'value'=>$row['data']);
-            } else {
-                return false;
             }
-        } else {
-            return false;
         }
+        return false;
     }
 
     /**
@@ -144,7 +154,10 @@ class CassandraEngine
      * @param integer $interval The number os seconds for each data point to return (used by some engines)
      * @param integer $skipmissing Skip null values from returned data (used by some engines)
      * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
-    */
+     *
+     * {@inheritdoc}
+     *
+     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
         $feedid = intval($feedid);
