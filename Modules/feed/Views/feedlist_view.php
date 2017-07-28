@@ -185,7 +185,7 @@ input[type="checkbox"] { margin:0px; }
   var selected_feeds = {};
   var nodes_display = {};
   
-  var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER'];
+  var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
   //setInterval(update,5000);
@@ -527,3 +527,4 @@ function list_format_size(bytes) {
   }
 }
 </script>
+

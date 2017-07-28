@@ -62,6 +62,9 @@
         ),
         'phptimeseries'=>array(
             'datadir' => '/var/lib/phptimeseries/'
+        ),
+        'cassandra'=>array(
+            'keyspace' => 'emoncms'
         )
     );
     

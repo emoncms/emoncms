@@ -40,7 +40,8 @@
             //Engine::MYSQLMEMORY,   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
             //Engine::PHPTIMESERIES, // 2
             //Engine::PHPFINA,       // 5
-            Engine::PHPFIWA          // 6  PHPFIWA disabled for compatibility with Low-write mode
+            Engine::PHPFIWA,         // 6  PHPFIWA disabled for compatibility with Low-write mode
+            Engine::CASSANDRA			   // 10 Disabled by default, enable if you wish to use
         ),
 
         // Redis Low-write mode
