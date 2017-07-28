@@ -42,6 +42,7 @@ class CassandraEngine
      */
     public function create($feedid,$options)
     {
+    		$feedid = (int) $feedid;
         $feedname = "feed_".trim($feedid)."";
         $this->execCQL("CREATE TABLE IF NOT EXISTS $feedname (feed_id int, day int, time bigint, data float, PRIMARY KEY ((feed_id,day), time)) WITH CLUSTERING ORDER BY (time ASC)");
         return true;
@@ -54,6 +55,7 @@ class CassandraEngine
     */
     public function delete($feedid)
     {
+    		$feedid = (int) $feedid;
         $this->execCQL("DROP TABLE feed_".$feedid);
     }
 
@@ -64,6 +66,7 @@ class CassandraEngine
     */
     public function get_meta($feedid)
     {
+    		$feedid = (int) $feedid;
         $meta = new stdClass();
         $meta->id = $feedid;
         $meta->start_time = 0;
@@ -80,7 +83,7 @@ class CassandraEngine
     */
     public function get_feed_size($feedid)
     {
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
         $tablesize = 0; // FIXME
         return $tablesize;
     }
@@ -98,10 +101,13 @@ class CassandraEngine
      */
     public function post($feedid,$time,$value,$arg=null)
     {
-        $arg = $arg;
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
+        $time = (int) $time;
+        $value = (float) $value;
+        
         $feedname = "feed_".trim($feedid)."";
         $day = $this->unixtoday($time);
+        
         $this->execCQL("INSERT INTO $feedname(feed_id,day,time,data) VALUES($feedid,$day,$time,$value)");
     }
 
@@ -115,6 +121,9 @@ class CassandraEngine
     public function update($feedid,$time,$value)
     {
         $feedid = (int) $feedid;
+        $time = (int) $time;
+        $value = (float) $value;
+        
         $feedname = "feed_".trim($feedid)."";
         $day = $this->unixtoday($time);
         $this->execCQL("UPDATE $feedname SET data = $value WHERE feed_id = $feedid AND day = $day AND time = $time");
@@ -128,7 +137,7 @@ class CassandraEngine
     */
     public function lastvalue($feedid)
     {
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
         $feedname = "feed_".trim($feedid)."";
 
         $result = $this->execCQL("SELECT max(day) AS max_day FROM $feedname WHERE feed_id=$feedid");
@@ -160,7 +169,7 @@ class CassandraEngine
      */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
         $start = round($start/1000);
         $end = round($end/1000);
         $interval = intval($interval);
@@ -194,13 +203,20 @@ class CassandraEngine
 
     public function export($feedid,$start)
     {
+    		$feedid = (int) $feedid;
+    		$start = (int) $start;
         $this->log->info("export($feedid,$start)");
         // TODO implement
     }
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        $this->log->info("csv_export($feedid,$start,$end,$outinterval,$usertimezone)");
+    		$feedid = (int) $feedid;
+    		$start = (int) $start;
+    		$end = (int) $end;
+    		$outinterval = (int) $outinterval;
+    		
+        $this->log->info("csv_export($feedid,$start,$end,$outinterval)");  // add: $usertimezone
         // TODO implement
     }
 
@@ -210,8 +226,8 @@ class CassandraEngine
 
     public function delete_data_point($feedid,$time)
     {
-        $feedid = intval($feedid);
-        $time = intval($time);
+        $feedid = (int) $feedid;
+        $time = (int) $time;
         $day = $this->unixtoday($time);
 
         $feedname = "feed_".trim($feedid)."";
@@ -220,7 +236,7 @@ class CassandraEngine
 
     public function deletedatarange($feedid,$start,$end)
     {
-        $feedid = intval($feedid);
+        $feedid = (int) $feedid;
         $start = intval($start/1000.0);
         $end = intval($end/1000.0);
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
