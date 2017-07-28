@@ -165,16 +165,26 @@ class CassandraEngine
         $end = round($end/1000);
         $interval = intval($interval);
         $feedname = "feed_$feedid";
+        // Minimum interval
+        if ($interval<1) $interval = 1;
+        // Maximum request size
+        $req_dp = round(($end-$start) / $interval);
+        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();
         $result = $this->execCQL("SELECT time, data FROM $feedname WHERE feed_id=$feedid AND day IN (".implode($day_range,',').") AND time >= $start AND time <= $end");
+        $dp_time = $start;
         while($result) {
             foreach ($result as $row) {
+                $time = $row['time'];
                 $dataValue = $row['data'];
-                if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
-                    $time = $row['time'] * 1000;
-                    if ($dataValue !== null) $dataValue = (float) $dataValue ;
-                    $data[] = array($time , $dataValue);
+                if($time>=$dp_time){
+                    if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
+                        if ($dataValue !== null) $dataValue = (float) $dataValue;
+                        $data[] = array($time * 1000, $dataValue);
+                    }
+                    $dp_time+=$interval;
                 }
             }
             $result = $result->nextPage();
