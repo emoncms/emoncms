@@ -205,15 +205,15 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            if (!isset($row['time']) || $row['time'] === false) {
+            if (!isset($lastvalue['time']) || $lastvalue['time'] === false) {
                 $row['time'] = null;
             } else {
-                $row['time'] = (int) $row['time'];
+                $row['time'] = (int) $lastvalue['time'];
             }
-            if (!isset($row['value']) || $row['value'] === false) {
+            if (!isset($lastvalue['value']) || $lastvalue['value'] === false) {
                 $row['value'] = null;
             } else {
-                $row['value'] = (float) $row['value'];
+                $row['value'] = (float) $lastvalue['value'];
             }
             // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken      
             $inputs[] = $row;
