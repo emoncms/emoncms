@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-28 02:18+0100\n"
-"PO-Revision-Date: 2013-04-28 02:19+0100\n"
-"Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
+"POT-Creation-Date: 2017-07-29 13:13+0200\n"
+"PO-Revision-Date: 2017-07-29 14:42+0200\n"
+"Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
@@ -14,99 +14,533 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 2.0.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../vis_controller.php:14
-msgid "Restricted access"
-msgstr "Accès restreint"
-
-#: ../../../vis_main_view.php:27
+#: ../../../Views/vis_main_view.php:33
 msgid "Visualisations"
-msgstr "Visualisation des données"
+msgstr "Visualisations"
 
-#: ../../../vis_main_view.php:33
+#: ../../../Views/vis_main_view.php:38
 msgid "Select visualisation:"
 msgstr "Type de visualisation :"
 
-#: ../../../vis_main_view.php:43
+#: ../../../Views/vis_main_view.php:43
 msgid "Set options:"
 msgstr "Options :"
 
-#: ../../../vis_main_view.php:45
+#: ../../../Views/vis_main_view.php:45
 msgid "Note:"
 msgstr "Remarque :"
 
-#: ../../../vis_main_view.php:45
+#: ../../../Views/vis_main_view.php:45
 msgid ""
 "If a feed does not appear in the selection box, check that the type has been "
 "set on the feeds page."
 msgstr ""
-"Si un flux n'apparait pas dans la liste, pensez à vérifier que vous avez "
-"défini son type dans la page \"Flux\""
+"Si un flux n'apparait pas dans la liste, vérifiez que vous avez défini son "
+"type dans la page \"Flux\"."
 
-#: ../../../vis_main_view.php:53
+#: ../../../Views/vis_main_view.php:50
 msgid "View"
 msgstr "Afficher"
 
-#: ../../../vis_main_view.php:54
+#: ../../../Views/vis_main_view.php:51
 msgid "Full screen"
-msgstr "Plein Ecran"
+msgstr "Plein écran"
 
-#: ../../../vis_main_view.php:62
+#: ../../../Views/vis_main_view.php:56
 msgid "Embed in your website:"
-msgstr "Intégrer dans votre site Web :"
+msgstr "Intégration dans votre site Web :"
 
-#: ../../../vis_main_view.php:135
+#: ../../../Views/vis_main_view.php:135
 msgid ""
 "Some of the feeds selected are not public, to embed a visualisation publicly "
 "first make the feeds that you want to use public."
 msgstr ""
-"Les données du flux sélectionné ne sont pas configurées comme public. Pour "
-"pouvoir afficher cette visualisation sur un site public, il faut "
-"reconfigurer ces données."
+"Certains des flux sélectionnés ne sont pas publics, pour intégrer une "
+"visualisation publique, rendez d'abord publics les flux que vous voulez "
+"utiliser."
 
-#: ../../../vis_main_view.php:135
+#: ../../../Views/vis_main_view.php:135
 msgid "To embed privately:"
 msgstr "Pour une intégration privée :"
 
-#: ../../../vis_menu.php:3
-msgid "Vis"
+#: ../../../Views/vis_main_view.php:182
+msgid "Off"
+msgstr "Off"
+
+#: ../../../Views/vis_main_view.php:182
+msgid "On"
+msgstr "On"
+
+#: ../../../vis_controller.php:11
+msgid "Restricted access"
+msgstr "Accès restreint"
+
+#: ../../../vis_controller.php:121
+msgid "Not configured"
+msgstr "Non configuré"
+
+#: ../../../vis_controller.php:121
+msgid "or"
+msgstr "ou"
+
+#: ../../../vis_controller.php:121
+msgid "Authentication not valid"
+msgstr "Authentification non valide"
+
+#: ../../../vis_menu.php:7
+msgid "Visualization"
 msgstr "Visualisation"
 
-#: ../../../visualisations/editrealtime.php:54
+#: ../../../vis_object.php:20
+msgid "RealTime"
+msgstr "RealTime"
+
+#: ../../../vis_object.php:21 ../../../vis_object.php:28
+#: ../../../vis_object.php:37 ../../../vis_object.php:49
+#: ../../../vis_object.php:54 ../../../vis_object.php:59
+#: ../../../vis_object.php:91 ../../../vis_object.php:103
+#: ../../../vis_object.php:108 ../../../vis_object.php:115
+#: ../../../vis_object.php:119 ../../../vis_object.php:132
+#: ../../../vis_object.php:136
+msgid "feed"
+msgstr "flux"
+
+#: ../../../vis_object.php:22 ../../../vis_object.php:30
+#: ../../../vis_object.php:38
+msgid "colour"
+msgstr "couleur"
+
+#: ../../../vis_object.php:27
+msgid "RawData"
+msgstr "RawData"
+
+#: ../../../vis_object.php:29 ../../../vis_object.php:137
+msgid "fill"
+msgstr "remplissage"
+
+#: ../../../vis_object.php:31 ../../../vis_object.php:40
+#: ../../../vis_object.php:50
+msgid "units"
+msgstr "unité"
+
+#: ../../../vis_object.php:32 ../../../vis_object.php:41
+msgid "dp"
+msgstr "décimales"
+
+#: ../../../vis_object.php:33 ../../../vis_object.php:42
+msgid "scale"
+msgstr "échelle"
+
+#: ../../../vis_object.php:36
+msgid "BarGraph"
+msgstr "BarGraph"
+
+#: ../../../vis_object.php:39
+msgid "interval"
+msgstr "intervalle"
+
+#: ../../../vis_object.php:43 ../../../vis_object.php:72
+#: ../../../vis_object.php:81 ../../../vis_object.php:87
+#: ../../../vis_object.php:99 ../../../vis_object.php:104
+msgid "delta"
+msgstr "delta"
+
+#: ../../../vis_object.php:44
+msgid "mode"
+msgstr "mode"
+
+#: ../../../vis_object.php:48
+msgid "Daily from Multiple (BETA)"
+msgstr "Daily from Multiple (BETA)"
+
+#: ../../../vis_object.php:53 ../../../visualisations/smoothie.php:15
+msgid "Smoothie"
+msgstr "Smoothie"
+
+#: ../../../vis_object.php:55
+msgid "ufac"
+msgstr ""
+
+#: ../../../vis_object.php:58
+msgid "Histgraph"
+msgstr "Histgraph"
+
+#: ../../../vis_object.php:60
+msgid "barwidth"
+msgstr "largeur barre"
+
+#: ../../../vis_object.php:61
+msgid "start"
+msgstr "début"
+
+#: ../../../vis_object.php:62
+msgid "end"
+msgstr "fin"
+
+#: ../../../vis_object.php:66
+msgid "Zoom"
+msgstr "Zoom"
+
+#: ../../../vis_object.php:67 ../../../vis_object.php:97
+#: ../../../vis_object.php:109
+msgid "power"
+msgstr "puissance"
+
+#: ../../../vis_object.php:68
+msgid "kwhd"
+msgstr "kwhj"
+
+#: ../../../vis_object.php:69
+msgid "currency"
+msgstr "devise"
+
+#: ../../../vis_object.php:70
+msgid "currency_after_val"
+msgstr "devise_après_val"
+
+#: ../../../vis_object.php:71
+msgid "pricekwh"
+msgstr "prixkwh"
+
+#: ../../../vis_object.php:76 ../../../visualisations/stacked.php:28
+#: ../../../visualisations/stackedsolar.php:27
+msgid "Stacked"
+msgstr "Stacked"
+
+#: ../../../vis_object.php:77
+msgid "bottom"
+msgstr "bas"
+
+#: ../../../vis_object.php:78
+msgid "top"
+msgstr "haut"
+
+#: ../../../vis_object.php:79
+msgid "colourt"
+msgstr "couleur h"
+
+#: ../../../vis_object.php:80
+msgid "colourb"
+msgstr "couleur b"
+
+#: ../../../vis_object.php:84
+msgid "StackedSolar"
+msgstr "StackedSolar"
+
+#: ../../../vis_object.php:85
+msgid "solar"
+msgstr "solaire"
+
+#: ../../../vis_object.php:86
+msgid "consumption"
+msgstr "consommation"
+
+#: ../../../vis_object.php:90 ../../../visualisations/threshold.php:29
+msgid "Threshold"
+msgstr "Threshold"
+
+#: ../../../vis_object.php:92 ../../../vis_object.php:110
+msgid "thresholdA"
+msgstr "seuil A"
+
+#: ../../../vis_object.php:93 ../../../vis_object.php:111
+msgid "thresholdB"
+msgstr "seuil B"
+
+#: ../../../vis_object.php:96
+msgid "SimpleZoom"
+msgstr "SimpleZoom"
+
+#: ../../../vis_object.php:98
+msgid "kwh"
+msgstr "kwh"
+
+#: ../../../vis_object.php:102
+#| msgid "Order"
+msgid "OrderBars"
+msgstr "OrderBars"
+
+#: ../../../vis_object.php:107
+msgid "OrderThreshold"
+msgstr "OrderThreshold"
+
+#: ../../../vis_object.php:114
+msgid "EditRealtime"
+msgstr "EditRealtime"
+
+#: ../../../vis_object.php:118
+msgid "EditDaily"
+msgstr "EditDaily"
+
+#: ../../../vis_object.php:122
+#| msgid "Multigraph"
+msgid "MultiGraph"
+msgstr "MultiGraph"
+
+#: ../../../vis_object.php:123
+msgid "mid"
+msgstr ""
+
+#: ../../../vis_object.php:126
+msgid "Compare"
+msgstr "Compare"
+
+#: ../../../vis_object.php:127
+msgid "Feed A"
+msgstr "Flux A"
+
+#: ../../../vis_object.php:128
+msgid "Feed B"
+msgstr "Flux B"
+
+#: ../../../vis_object.php:131
+msgid "Graph (BETA)"
+msgstr "Graph (BETA)"
+
+#: ../../../vis_object.php:135
+msgid "Time Comparison"
+msgstr "Time Comparison"
+
+#: ../../../vis_object.php:138
+msgid "depth"
+msgstr "profondeur"
+
+#: ../../../vis_object.php:139
+msgid "data points"
+msgstr "points de données"
+
+#: ../../../visualisations/bargraph.php:126
+msgid "Bar graph:"
+msgstr "Graphique à barres : "
+
+#: ../../../visualisations/compare.php:31
+msgid "Feed calibration and comparison tool"
+msgstr "Outil de calibrage et de comparaison de flux"
+
+#: ../../../visualisations/compare.php:32
+msgid ""
+"Use this tool to compare two feeds: FeedA and FeedB. Enter feed ids for "
+"comparison below. If there is a difference between feed values adjust the "
+"calibration to see if the difference can be removed."
+msgstr ""
+"Utilisez cet outil pour comparer deux flux: Flux A et Flux B. Entrez les "
+"identifiants de flux pour une comparaison ci-dessous. S'il y a une "
+"différence entre les valeurs de flux, ajustez le calibrage pour voir si la "
+"différence peut être supprimée."
+
+#: ../../../visualisations/compare.php:35
+msgid "Feed A ID"
+msgstr "ID Flux A"
+
+#: ../../../visualisations/compare.php:40
+msgid "Feed B ID"
+msgstr "ID Flux B"
+
+#: ../../../visualisations/compare.php:42
+msgid "Load"
+msgstr "Charger"
+
+#: ../../../visualisations/compare.php:46
+msgid "Feed B Calibration"
+msgstr "Calibrage Flux B"
+
+#: ../../../visualisations/compare.php:48
+msgid "Update"
+msgstr "Mise à jour"
+
+#: ../../../visualisations/compare.php:74
+msgid "Difference between feeds (FeedB calibration applied - FeedA)"
+msgstr "Différence entre flux (Flux B avec calibrage appliqué - Flux A)"
+
+#: ../../../visualisations/compare.php:77
+msgid "FeedA vs FeedB"
+msgstr "Flux A vs Flux B"
+
+#: ../../../visualisations/compare.php:78
+msgid "Relationship should be linear if measurements are the same"
+msgstr "La relation doit être linéaire si les mesures sont les mêmes"
+
+#: ../../../visualisations/editdaily.php:30
+#: ../../../visualisations/editrealtime.php:31
+msgid "Datapoint editor:"
+msgstr "Éditeur de points de donnée"
+
+#: ../../../visualisations/editdaily.php:31
+#: ../../../visualisations/editrealtime.php:32
+msgid ""
+"Click on a datapoint to select, then in the edit box below the graph enter "
+"in the new value. You can also add another datapoint by changing the time to "
+"a point in time that does not yet have a datapoint."
+msgstr ""
+"Cliquez sur un point de donnée à sélectionner, puis dans la zone d'édition "
+"en dessous du graphique saisissez la nouvelle valeur. Vous pouvez également "
+"ajouter un autre point de donnée en modifiant le temps pour un point qui n'a "
+"pas encore de données."
+
+#: ../../../visualisations/editdaily.php:57
+#: ../../../visualisations/editrealtime.php:57
+msgid "Edit feed_"
+msgstr "Édition du flux_"
+
+#: ../../../visualisations/editdaily.php:57
+#: ../../../visualisations/editrealtime.php:57
+msgid "@ time:"
+msgstr "@ temps :"
+
+#: ../../../visualisations/editdaily.php:57
+#: ../../../visualisations/editrealtime.php:57
+msgid "new value:"
+msgstr "nouvelle valeur :"
+
+#: ../../../visualisations/editdaily.php:59
+#: ../../../visualisations/editrealtime.php:59
+#: ../../../visualisations/editrealtime.php:65
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ../../../visualisations/editrealtime.php:55
-msgid "Delete data in window"
-msgstr "Supprimer les données de cette fenêtre"
+#: ../../../visualisations/editdaily.php:60
+msgid "Delete"
+msgstr "Supprimer"
 
-#: ../../../visualisations/editrealtime.php:61
-msgid "WARNING deleting feed data is permanent"
-msgstr "ATTENTION ! La suppression d'un flux de données est permanente "
+#: ../../../visualisations/editrealtime.php:60
+msgid "Delete data in window"
+msgstr "Supprimer les données dans la fenêtre"
 
 #: ../../../visualisations/editrealtime.php:64
-msgid "Are you sure you want to delete the data in this window?"
-msgstr "Etes vous sur de vouloir supprimer cette source ? "
+msgid "Multiply data in window by:"
+msgstr "Multiplier les données dans la fenêtre par :"
 
-#: ../../../visualisations/editrealtime.php:67
+#: ../../../visualisations/editrealtime.php:71
+msgid "Delete feed data"
+msgstr "Supprimer les données du flux"
+
+#: ../../../visualisations/editrealtime.php:74
+msgid "Deleting feed data in this window is permanent."
+msgstr ""
+"ATTENTION ! La suppression des données du flux dans cette fenêtre est "
+"permanente ."
+
+#: ../../../visualisations/editrealtime.php:76
+msgid "Are you sure you want to delete?"
+msgstr "Êtes-vous sûr de vouloir supprimer?"
+
+#: ../../../visualisations/editrealtime.php:80
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../visualisations/editrealtime.php:68
+#: ../../../visualisations/editrealtime.php:81
 msgid "Delete permanently"
-msgstr "Supprimer le flux ?"
+msgstr "Supprimer de manière permanente"
 
-#: ../../../visualisations/realtime.php:36
+#: ../../../visualisations/histgraph.php:39
+msgid "Histogram:"
+msgstr ""
+
+#: ../../../visualisations/multigraph.php:59
+msgid "Multigraph:"
+msgstr ""
+
+#: ../../../visualisations/orderbars.php:25
+#| msgid "Bar graph (ordered by height)"
+msgid "Bar graph (ordered by height):"
+msgstr "Bar graph (trié par hauteur):"
+
+#: ../../../visualisations/orderthreshold.php:30
+msgid "Threshold Order"
+msgstr "Threshold Order"
+
+#: ../../../visualisations/orderthreshold.php:37
+msgid "Reload"
+msgstr "Recharger"
+
+#: ../../../visualisations/rawdata.php:56
+msgid "Mean:"
+msgstr "Moyenne :"
+
+#: ../../../visualisations/rawdata.php:57
+msgid "Min:"
+msgstr "Min :"
+
+#: ../../../visualisations/rawdata.php:58
+msgid "Max:"
+msgstr "Max :"
+
+#: ../../../visualisations/rawdata.php:59
+msgid "Standard deviation:"
+msgstr "Écart-type : "
+
+#: ../../../visualisations/rawdata.php:60
+msgid "Datapoints in view:"
+msgstr "Points de données dans la vue :"
+
+#: ../../../visualisations/rawdata.php:118
+msgid "Raw:"
+msgstr ""
+
+#: ../../../visualisations/realtime.php:25
+msgid "Realtime data:"
+msgstr ""
+
+#: ../../../visualisations/realtime.php:31
 msgid "hour"
 msgstr "heure"
 
-#: ../../../visualisations/realtime.php:37
-#: ../../../visualisations/realtime.php:38
-#: ../../../visualisations/realtime.php:39
+#: ../../../visualisations/realtime.php:32
+#: ../../../visualisations/realtime.php:33
+#: ../../../visualisations/realtime.php:34
+#: ../../../visualisations/realtime.php:35
 msgid "min"
 msgstr "min"
+
+#: ../../../visualisations/simplezoom.php:29
+msgid "Simpler kWh/d zoomer"
+msgstr ""
+
+#: ../../../visualisations/timecompare.php:55
+msgid "Time Compare: "
+msgstr "Comparaison de temps :"
+
+#: ../../../visualisations/timestoredaily.php:95
+msgid "Timestore Daily:"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:33
+msgid "kWh/d Zoomer"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:131
+#| msgid "Total: "
+msgid "Total:"
+msgstr "Total:"
+
+#: ../../../visualisations/zoom.php:131 ../../../visualisations/zoom.php:179
+msgid "kWh"
+msgstr "kWh"
+
+#: ../../../visualisations/zoom.php:131 ../../../visualisations/zoom.php:179
+msgid "Average:"
+msgstr "Moyenne :"
+
+#: ../../../visualisations/zoom.php:131
+msgid "a week"
+msgstr "une semaine"
+
+#: ../../../visualisations/zoom.php:131
+msgid "a year"
+msgstr "une année"
+
+#: ../../../visualisations/zoom.php:131
+msgid "Unit price:"
+msgstr "Prix unitaire :"
+
+#~ msgid "Vis"
+#~ msgstr "Visualisation"
+
+#~ msgid "Are you sure you want to delete the data in this window?"
+#~ msgstr "Etes vous sur de vouloir supprimer cette source ? "
 
 #~ msgid "API Helper"
 #~ msgstr "Aide de l'API"
@@ -166,32 +600,11 @@ msgstr "min"
 #~ msgid "Raw data graph"
 #~ msgstr "Donn&eacute;es brutes"
 
-#~ msgid "Bar graph"
-#~ msgstr "Histogramme"
-
 #~ msgid "All time histogram"
 #~ msgstr "Histogramme complet"
 
 #~ msgid "Daily histogram"
 #~ msgstr "Histogramme quotidien"
-
-#~ msgid "Zoom"
-#~ msgstr "Zoom"
-
-#~ msgid "kWh/d Comparison"
-#~ msgstr "Comparaison kWh/j"
-
-#~ msgid "Bar graph (ordered by height)"
-#~ msgstr "Histogramme (tri&eacute; par hauteur)"
-
-#~ msgid "Threshold ordered by height"
-#~ msgstr "Seuils (tri&eacute;s par hauteur)"
-
-#~ msgid "Multigraph"
-#~ msgstr "Graphiques multiples"
-
-#~ msgid "Datapoint Editor"
-#~ msgstr "&Eacute;diteur de points"
 
 #~ msgid "Hide menu"
 #~ msgstr "Cacher le menu"
@@ -254,12 +667,6 @@ msgstr "min"
 
 #~ msgid "Feed tag changed"
 #~ msgstr "L’&eacute;tiquetage du flux a &eacute;t&eacute; modifi&eacute;"
-
-#~ msgid "Feed renamed"
-#~ msgstr "Le flux a &eacute;t&eacute; renomm&eacute;"
-
-#~ msgid "Feed "
-#~ msgstr "Le flux"
 
 #~ msgid " deleted"
 #~ msgstr "a &eacute;t&eacute; supprim&eacute;"
@@ -353,9 +760,6 @@ msgstr "min"
 
 #~ msgid "histogram"
 #~ msgstr "histogramme"
-
-#~ msgid "average"
-#~ msgstr "moyenne"
 
 #~ msgid "Yes please"
 #~ msgstr "Oui"
@@ -530,9 +934,6 @@ msgstr "min"
 #~ msgid "Draw"
 #~ msgstr "&Eacute;diter"
 
-#~ msgid "Delete"
-#~ msgstr "Supprimer"
-
 #~ msgid "Public share URL"
 #~ msgstr "Adresse de partage (public)"
 
@@ -544,9 +945,6 @@ msgstr "min"
 
 #~ msgid "Draw Editor"
 #~ msgstr "&Eacute;diter"
-
-#~ msgid "View mode"
-#~ msgstr "Vue"
 
 #~ msgid "Config"
 #~ msgstr "Configuration"
@@ -569,23 +967,14 @@ msgstr "min"
 #~ msgid "Select graph type:"
 #~ msgstr "S&eacute;lectionner un type de graphique : "
 
-#~ msgid "Real-time"
-#~ msgstr "Temps-r&eacute;el"
-
 #~ msgid "Raw data"
 #~ msgstr "Donn&eacute;es brutes"
-
-#~ msgid "Histogram"
-#~ msgstr "Histogramme"
 
 #~ msgid "Feed type"
 #~ msgstr "Type de flux"
 
 #~ msgid "Undefined"
 #~ msgstr "Non d&eacute;fini"
-
-#~ msgid "Real-time data"
-#~ msgstr "Donn&eacute;es temps-r&eacute;el"
 
 #~ msgid "Daily data"
 #~ msgstr "Donn&eacute;es quotidienne"
@@ -611,9 +1000,6 @@ msgstr "min"
 #~ msgid "Set notification behavior for this feed"
 #~ msgstr "Configurer les notifications pour ce flux"
 
-#~ msgid "Are you sure you want to delete feed: "
-#~ msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce flux : "
-
 #~ msgid "feed/delete"
 #~ msgstr "flux/supprimer"
 
@@ -622,9 +1008,6 @@ msgstr "min"
 
 #~ msgid "Size"
 #~ msgstr "Taille"
-
-#~ msgid "Updated"
-#~ msgstr "Actualis&eacute;"
 
 #~ msgid "Value"
 #~ msgstr "Valeur"
@@ -643,9 +1026,6 @@ msgstr "min"
 
 #~ msgid "Input configuration:   "
 #~ msgstr "Configuration des sources : "
-
-#~ msgid "Order"
-#~ msgstr "Ordre"
 
 #~ msgid "Process"
 #~ msgstr "Action"
@@ -708,9 +1088,6 @@ msgstr "min"
 
 #~ msgid "converted feed: "
 #~ msgstr "fuente convertida:"
-
-#~ msgid "feed: "
-#~ msgstr "fuente:"
 
 #~ msgid " already converted"
 #~ msgstr " ya convertido"
@@ -789,9 +1166,6 @@ msgstr "min"
 
 #~ msgid "Date / Time"
 #~ msgstr "Fecha / Hora"
-
-#~ msgid "Total: "
-#~ msgstr "Total:"
 
 #~ msgid " kWh : pounds"
 #~ msgstr "kWh: libras"
