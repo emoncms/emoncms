@@ -66,6 +66,9 @@ class Feed
             } else if ($e == "histogram") {
                     require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
                     $engines[$e] = new Histogram($this->mysqli);
+            } else if ($e == (string)Engine::CASSANDRA) {
+                    require "Modules/feed/engine/CassandraEngine.php";  // Cassandra engine
+                    $engines[$e] =  new CassandraEngine($this->settings['cassandra']);
             } else {
                     $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
                     throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
@@ -90,7 +93,7 @@ class Feed
 
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
-        
+
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
@@ -206,7 +209,7 @@ class Feed
         $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND name = '$name'");
         if ($result->num_rows>0) { $row = $result->fetch_array(); return $row['id']; } else return false;
     }
-    
+
     public function exists_tag_name($userid,$tag,$name)
     {
         $userid = intval($userid);
@@ -337,7 +340,7 @@ class Feed
         }
         return $feeds;
     }
-    
+
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
@@ -408,7 +411,6 @@ class Feed
 
     public function get_timevalue($id)
     {
-       
         $id = (int) $id;
         //$this->log->info("get_timevalue() $id");
         if (!$this->exist($id)) {
@@ -422,14 +424,18 @@ class Feed
             $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($id);
             return array('time'=>$lastvirtual['time'], 'value'=>$lastvirtual['value']);
         }
-        
+
         if ($this->redis)
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
-                $lastvalue['time'] = (int) $lastvalue['time'];
-                $lastvalue['value'] = $lastvalue['value'] * 1;
-                $lastvalue['value'] = (float) $lastvalue['value'];
+                
+                if (!is_numeric($lastvalue["time"])) $lastvalue["time"] = null;
+                if (is_nan($lastvalue["time"])) $lastvalue["time"] = null;
+                
+                if (!is_numeric($lastvalue["value"])) $lastvalue["value"] = null;
+                if (is_nan($lastvalue["value"])) $lastvalue["value"] = null;
+            
             } else {
                 // if it does not, load it in to redis from the actual feed data because we have no updated data from sql feeds table with redis enabled.
                 $lastvalue = $this->EngineClass($engine)->lastvalue($id);

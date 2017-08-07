@@ -20,7 +20,7 @@
     require "route.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.7 | 2017.06.16";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.8 | 2017.07.18";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -124,12 +124,12 @@
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
 
     // Special routes
-    
+
     // Return brief device descriptor for hub detection
     if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
-    
+
     if (get('embed')==1) $embed = 1; else $embed = 0;
-    
+
     // If no route specified use defaults
     if ($route->isRouteNotDefined())
     {

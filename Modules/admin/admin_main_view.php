@@ -26,9 +26,20 @@
     }
     $emoncms_modules = "";
     $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);  // Use glob to get all the folder names only
-    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {  // loop through the folders
-        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;&nbsp;&nbsp;";
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
+    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
+        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;|&nbsp;";
+        if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
+          $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
+          $jsonAppName = $json->{'name'};
+          $jsonVersion = $json->{'version'};
+          if ($jsonAppName) {
+            $emoncmsModuleFolder = $jsonAppName;
+          }
+          if ($jsonVersion) {
+            $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
+          }
+        }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
 
@@ -224,8 +235,8 @@ if ($allow_emonpi_admin) {
             <tr>
                 <td style="border-top: 0px">
                     <h3><?php echo _('Update'); ?></h3>
-                    <p><b>emonPi Update:</b> updates emonPi firmware & Emoncms</p>
-                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) & Emoncms</p>
+                    <p><b>emonPi Update:</b> updates emonPi firmware &amp; Emoncms</p>
+                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) &amp; Emoncms</p>
                     <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
                     <p><i>Caution: ensure RFM69Pi is populated with RFM69CW module not RFM12B before running RFM69Pi update: <a href="https://learn.openenergymonitor.org/electricity-monitoring/networking/which-radio-module">Identifying different RF Modules</a>.</i></p>
                 </td>
@@ -289,9 +300,11 @@ if ($mqtt_enabled) {
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
+}
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
+              if (isset($emonpiRelease)) {
                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
 }
@@ -329,7 +342,7 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " &nbsp; "; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
             </table>
             
         </td>

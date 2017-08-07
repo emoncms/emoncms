@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-01 11:54+0100\n"
-"PO-Revision-Date: 2013-05-01 11:55+0100\n"
-"Last-Translator: VIALAT Mickael <contact@planete-domotique.com>\n"
+"POT-Creation-Date: 2017-07-29 22:19+0200\n"
+"PO-Revision-Date: 2017-07-29 22:20+0200\n"
+"Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
@@ -14,8 +14,12 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 2.0.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../admin_controller.php:18
+msgid "Admin re-authentication required"
+msgstr "Réauthentification admin requise"
 
 #: ../../../admin_db_view.php:1
 msgid "Database setup, update and status check"
@@ -35,7 +39,7 @@ msgid ""
 "If all the item statuses below show ok that means your database is setup "
 "correctly."
 msgstr ""
-"Si tous les élements ci-dessous sont ok, votre base de données a été mise à "
+"Si tous les éléments ci-dessous sont ok, votre base de données a été mise à "
 "jour correctement."
 
 #: ../../../admin_db_view.php:7
@@ -48,40 +52,123 @@ msgstr "Nom"
 
 #: ../../../admin_db_view.php:7
 msgid "Status"
-msgstr "Satus"
+msgstr "Statut"
 
-#: ../../../admin_main_view.php:7 ../../../update_view.php:29
+#: ../../../admin_main_view.php:97
+msgid "Shutdown"
+msgstr "Éteindre"
+
+#: ../../../admin_main_view.php:97
+msgid "Reboot"
+msgstr "Redémarrer"
+
+#: ../../../admin_main_view.php:100
+msgid "Shutdown Unsupported"
+msgstr "Redémarrage non supporté"
+
+#: ../../../admin_main_view.php:173 ../../../admin_menu.php:7
+msgid "Administration"
+msgstr "Administration"
+
+#: ../../../admin_main_view.php:177 ../../../admin_main_view.php:181
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: ../../../admin_main_view.php:178
+msgid "Administer user accounts"
+msgstr "Administration des comptes utilisateurs"
+
+#: ../../../admin_main_view.php:186 ../../../update_view.php:21
 msgid "Update database"
 msgstr "Mise à jour de la base de données"
 
-#: ../../../admin_main_view.php:8
+#: ../../../admin_main_view.php:187
 msgid ""
 "Run this after updating emoncms, after installing a new module or to check "
 "emoncms database status."
 msgstr ""
 "Lancez cette commande après une mise à jour de Emoncms, après l'installation "
-"d'un nouveau module ou pour tester l'intégrité de la base de données"
+"d'un nouveau module ou pour tester l'intégrité de la base de données."
 
-#: ../../../admin_main_view.php:12
+#: ../../../admin_main_view.php:190
 msgid "Update & check"
 msgstr "Mise à jour & Analyse"
 
-#: ../../../admin_menu.php:7
-msgid "Admin"
-msgstr "Admin"
+#: ../../../admin_main_view.php:201
+msgid "Logger"
+msgstr "Enregistreur"
 
-#: ../../../update_view.php:37
+#: ../../../admin_main_view.php:205
+msgid "View last entries on the logfile:"
+msgstr "Vue des dernières entrées dans le fichier journal : "
+
+#: ../../../admin_main_view.php:216
+msgid "Auto refresh"
+msgstr "Rafraîchissement automatique"
+
+#: ../../../admin_main_view.php:217 ../../../admin_main_view.php:246
+msgid "Download Log"
+msgstr "Télécharger le journal"
+
+#: ../../../admin_main_view.php:237
+msgid "Update"
+msgstr "Mise à jour"
+
+#: ../../../admin_main_view.php:244
+msgid "emonPi Update"
+msgstr "Mise à jour emonPi"
+
+#: ../../../admin_main_view.php:245
+msgid "emonBase Update"
+msgstr "Mise à jour emonBase"
+
+#: ../../../admin_main_view.php:261
+msgid "Server Information"
+msgstr "Informations serveur"
+
+#: ../../../admin_main_view.php:263
+msgid "Version"
+msgstr "Version"
+
+#: ../../../admin_main_view.php:289
+msgid "Flush"
+msgstr ""
+
+#: ../../../admin_main_view.php:309
+msgid "Read-Write"
+msgstr "Lecture-Écriture"
+
+#: ../../../admin_main_view.php:309
+msgid "Read-Only"
+msgstr "Lecture-seulement"
+
+#: ../../../update_view.php:26
 msgid "Apply changes"
 msgstr "Appliquer les modifications"
 
-#: ../../../update_view.php:44
+#: ../../../update_view.php:31
 msgid "Check for further updates"
-msgstr "Tester les mises à jour"
+msgstr "Vérifier les mises à jour"
 
-#: ../../../update_view.php:51
+#: ../../../update_view.php:36
 msgid "Database is up to date "
 msgstr "La base de données est à jour"
 
-#: ../../../update_view.php:51
+#: ../../../update_view.php:36
 msgid "Nothing to do"
 msgstr "Aucune mise à jour nécessaire"
+
+#: ../../../userlist_view.php:29
+msgid "Id"
+msgstr "Id"
+
+#: ../../../userlist_view.php:30
+msgid "Username"
+msgstr "Nom utilisateur"
+
+#: ../../../userlist_view.php:31
+msgid "Email"
+msgstr "Courriel"
+
+#~ msgid "Admin"
+#~ msgstr "Admin"

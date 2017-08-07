@@ -21,7 +21,7 @@ html, body {
 }
 
 .body-login {
-	background-color: #1d8dbc;
+	background-color: #eaa400;
 }
 
 #login-form input[type="text"], #login-form input[type="password"] {
@@ -41,7 +41,7 @@ html, body {
 }
 
 #footer a {
-    color: #77b4d9;
+    color: #eac666;
     text-decoration: none;
 }
 
@@ -122,18 +122,17 @@ input[type=text][class=variable-name-edit] {
 
 .navbar-inner {
     background-image:none !important;
-    background-color:#44b3e2 !important;
+    background-color:#ffbe14 !important;
     border:none !important;
-    padding:0px !important;
 }
 
 .nav > .active > a {
-    background-color:#209ed3 !important;
+    background-color:#f2ae00 !important;
     box-shadow:none !important;
 }
 
 .nav > .open > a {
-    background-color:#2eaadf !important;
+    background-color:#f7b50c !important;
 }
 
 .nav > li > a { color: #fff !important; }

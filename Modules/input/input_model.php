@@ -202,15 +202,15 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            // Fix break point where value is NAN
-            $lastvalue['time'] = $lastvalue['time'] * 1; 
-            $row['time'] = (int) $lastvalue['time'];
-            if (is_nan($row['time'])) $row['time'] = 0;
-         
-            $lastvalue['value'] = $lastvalue['value'] * 1; 
-            $row['value'] = (float) $lastvalue['value'];
-            if (is_nan($row['value'])) $row['value'] = 0;
-         
+            
+            if (!is_numeric($lastvalue["time"])) $lastvalue["time"] = null;
+            if (is_nan($lastvalue["time"])) $lastvalue["time"] = null;
+            $row['time'] = $lastvalue['time'];
+            
+            if (!is_numeric($lastvalue["value"])) $lastvalue["value"] = null;
+            if (is_nan($lastvalue["value"])) $lastvalue["value"] = null;
+            $row['value'] = $lastvalue['value'];
+            
             $inputs[] = $row;
         }
         return $inputs;
@@ -263,7 +263,8 @@ class Input
         $id = (int) $id;
 
         if ($this->redis) {
-            return $this->redis->hget("input:lastvalue:$id",'value');
+            $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
+            return $lastvalue;
         } else {
             $result = $this->mysqli->query("SELECT value FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();
