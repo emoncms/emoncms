@@ -41,6 +41,7 @@
             //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
+            //,Engine::CASSANDRA    // 10 Apache Cassandra
         ),
 
         // Redis Low-write mode
@@ -164,4 +165,4 @@
     $allow_config_env_vars = false;
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "9";
+    $config_file_version = "10";
