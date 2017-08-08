@@ -578,7 +578,7 @@ class User {
 
     public function get($userid) {
         $userid = intval($userid);
-        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read FROM users WHERE id=$userid");
+        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read,tags FROM users WHERE id=$userid");
         if (!$result)
             return array("success" => false, "message" => "Error fetching user data, you may need to run database update");
         $data = $result->fetch_object();
@@ -594,14 +594,14 @@ class User {
         $timezone = preg_replace('/[^\w-.\\/_]/', '', $data->timezone);
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u', '', $data->bio);
         $language = preg_replace('/[^\w\s-.]/', '', $data->language);
-        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{},:\w\s-.]/', '', $data->tags);
+        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s-.]/', '', $data->tags);
 
         $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?=\/]/u', '', $data->startingpage);
 
         $_SESSION['lang'] = $language;
 
         $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
-        $stmt->bind_param("sssssssis", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
+        $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
         if (!$stmt->execute()) {
             return array('success' => false, 'message' => _("Error updating user info"));
         }
