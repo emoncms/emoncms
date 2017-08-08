@@ -325,6 +325,19 @@ class User {
         session_destroy();
     }
 
+    public function set_password($userid, $new) {
+        $userid = intval($userid);
+
+        if (strlen($new) < 4 || strlen($new) > 250)
+            return array('success' => false, 'message' => _("Password length error"));
+
+        $hash = hash('sha256', $new);
+        $salt = md5(uniqid(rand(), true));
+        $password = hash('sha256', $salt . $hash);
+        $this->mysqli->query("UPDATE users SET password = '$password', salt = '$salt' WHERE id = '$userid'");
+        return array('success' => true);
+    }
+
     public function change_password($userid, $old, $new) {
         $userid = intval($userid);
 
