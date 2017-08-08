@@ -594,13 +594,14 @@ class User {
         $timezone = preg_replace('/[^\w-.\\/_]/', '', $data->timezone);
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u', '', $data->bio);
         $language = preg_replace('/[^\w\s-.]/', '', $data->language);
+        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{},:\w\s-.]/', '', $data->tags);
 
         $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?=\/]/u', '', $data->startingpage);
 
         $_SESSION['lang'] = $language;
 
-        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ? WHERE id = ?");
-        $stmt->bind_param("sssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $userid);
+        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
+        $stmt->bind_param("sssssssis", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
         if (!$stmt->execute()) {
             return array('success' => false, 'message' => _("Error updating user info"));
         }
