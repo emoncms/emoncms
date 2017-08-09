@@ -15,8 +15,8 @@ function device_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "view" && $session['write']) {
-            $devices_templates = $device->get_templates();
-            $result = view("Modules/device/Views/device_view.php",array('devices_templates'=>$devices_templates));
+            $device_templates = $device->get_template_list();
+            $result = view("Modules/device/Views/device_view.php",array('devices_templates'=>$device_templates));
         }
         if ($route->action == 'api') $result = view("Modules/device/Views/device_api.php", array());
     }
@@ -65,11 +65,6 @@ function device_controller()
                  $redis->del("device_auth");
                  $result = true;
             }
-            
-        }
-        // Used in conjunction with input name describe to auto create device
-        else if ($route->action == "autocreate") {
-            if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
         else if ($route->action == 'list') {
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
@@ -77,25 +72,20 @@ function device_controller()
         elseif ($route->action == "create") {
             if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"));
         }
-        elseif ($route->action == "gettemplate") {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
+        // Used in conjunction with input name describe to auto create device
+        else if ($route->action == "autocreate") {
+        	if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
-        elseif ($route->action == "listtemplates") {
-            if ($session['userid']>0 && $session['write']) $result = $device->get_templates();
-        }
-        elseif ($route->action == "listtemplates-short") {
-            if ($session['userid']>0 && $session['write']) { 
-                $devices_templates = $device->get_templates();
-            
-              	$devices = array();
-	              foreach($devices_templates as $key => $value)
-	              {
-	                $devices[$key] = array();
-	                $devices[$key]["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
-	                $devices[$key]["control"] = (!isset($value->control) ? false : true);
-	              }
-	              $result = $devices;
-            }
+        elseif ($route->action == "template") {
+        	if ($route->subaction == "list") {
+        		if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
+        	}
+        	elseif ($route->subaction == "listshort") {
+        		if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_short();
+        	}
+        	else if ($route->subaction == "get") {
+        		if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
+        	}
         }
         else {
             $deviceid = (int) get('id');
@@ -104,19 +94,17 @@ function device_controller()
                 $deviceget = $device->get($deviceid);
                 if (isset($session['write']) && $session['write'] && $session['userid']>0 && $deviceget['userid']==$session['userid']) {
                     if ($route->action == "get") $result = $deviceget;
-                    if ($route->action == "delete") $result = $device->delete($deviceid);
-                    if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
-                    if ($route->action == 'inittemplate') {
-                        if (isset($_GET['type'])) {
-                            $device->set_fields($deviceid,json_encode(array("type"=>$_GET['type'])));
-                        }
-                        $result = $device->init_template($deviceid);
-                    
+                    else if ($route->action == "delete") $result = $device->delete($deviceid);
+                    else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
+                    else if ($route->action == 'template' && $route->subaction == 'init') {
+                    	if (isset($_GET['type'])) {
+                    		$device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
+                    	}
+                    	$result = $device->init_template($deviceid);
                     }
                 }
             }
-            else
-            {
+            else {
                 $result = array('success'=>false, 'message'=>'Device does not exist');
             }
         }     

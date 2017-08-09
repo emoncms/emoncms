@@ -241,7 +241,7 @@ var selected_inputs = {};
 var selected_device = false;
 
 var device_templates = {};
-$.ajax({ url: path+"device/listtemplates-short.json", dataType: 'json', async: true, success: function(data) { 
+$.ajax({ url: path+"device/template/listshort.json", dataType: 'json', async: true, success: function(data) { 
     device_templates = data; 
     update();
 }});
@@ -283,7 +283,7 @@ function update(){
 	                  devices[inputs[z].nodeid] = {description:""};
 	                  // Device creation
 	                  $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: true, success: function(data) {
-	                      if (!data) alert("There was an rrror creating device: "+inputs[z].nodeid); 
+	                      if (!data) alert("There was an error creating device: "+inputs[z].nodeid); 
 	                  }});
 	              }
 	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;

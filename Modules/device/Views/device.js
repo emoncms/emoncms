@@ -26,14 +26,14 @@ var device = {
     'listtemplates':function()
     {
         var result = {};
-        $.ajax({ url: path+"device/listtemplates.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/template/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
     'inittemplate':function(id)
     {
         var result = {};
-        $.ajax({ url: path+"device/inittemplate.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/template/init.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     }
 }
