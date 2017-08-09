@@ -19,8 +19,8 @@ class DeviceTemplate
     
     // Module required constructor, receives parent as reference
     public function __construct(&$parent) {
-    	$this->mysqli = &$parent->mysqli;
-    	$this->redis = &$parent->redis;
+        $this->mysqli = &$parent->mysqli;
+        $this->redis = &$parent->redis;
         $this->log = new EmonLogger(__FILE__);
     }
 
@@ -46,7 +46,7 @@ class DeviceTemplate
     }
 
     public function init($userid, $nodeid, $name, $type) {
-    	$file = "Modules/device/data/".$type.".json";
+        $file = "Modules/device/data/".$type.".json";
         if (file_exists($file)) {
             $template = json_decode(file_get_contents($file));
         } else {

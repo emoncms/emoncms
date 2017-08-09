@@ -74,18 +74,18 @@ function device_controller()
         }
         // Used in conjunction with input name describe to auto create device
         else if ($route->action == "autocreate") {
-        	if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
+            if ($session['userid']>0 && $session['write']) $result = $device->autocreate($session['userid'],get('nodeid'),get('type'));
         }
         elseif ($route->action == "template") {
-        	if ($route->subaction == "list") {
-        		if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
-        	}
-        	elseif ($route->subaction == "listshort") {
-        		if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_short();
-        	}
-        	else if ($route->subaction == "get") {
-        		if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
-        	}
+            if ($route->subaction == "list") {
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list();
+            }
+            elseif ($route->subaction == "listshort") {
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template_list_short();
+            }
+            else if ($route->subaction == "get") {
+                if ($session['userid']>0 && $session['write']) $result = $device->get_template(get('device'));
+            }
         }
         else {
             $deviceid = (int) get('id');
@@ -97,10 +97,10 @@ function device_controller()
                     else if ($route->action == "delete") $result = $device->delete($deviceid);
                     else if ($route->action == 'set') $result = $device->set_fields($deviceid, get('fields'));
                     else if ($route->action == 'template' && $route->subaction == 'init') {
-                    	if (isset($_GET['type'])) {
-                    		$device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
-                    	}
-                    	$result = $device->init_template($deviceid);
+                        if (isset($_GET['type'])) {
+                            $device->set_fields($deviceid, json_encode(array("type"=>$_GET['type'])));
+                        }
+                        $result = $device->init_template($deviceid);
                     }
                 }
             }

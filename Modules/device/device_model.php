@@ -286,107 +286,107 @@ class Device
 
     public function get_template_list()
     {
-    	return $this->load_modules();
+        return $this->load_modules();
     }
 
     public function get_template_list_short()
     {
-    	if (empty($this->templates)) { // Cache it now
-    		$this->load_modules();
-    	}
-    	return $this->templates;
+        if (empty($this->templates)) { // Cache it now
+            $this->load_modules();
+        }
+        return $this->templates;
     }
     
     public function get_template($device)
     {
-    	if (empty($this->templates)) { // Cache it now
-    		$this->load_modules();
-    	}
-    	
-    	if (isset($this->templates[$device])) {
-    		$module = $this->templates[$device]['module'];
-    		$class = $this->get_module_class($module);
-    		if ($class != null) {
-    			return $class->get($device);
-    		}
-    	}
-    	else {
-    		return array('success'=>false, 'message'=>'Device template does not exist');
-    	}
-    	
-    	return array('success'=>false, 'message'=>'Unknown error while loading device template details');
+        if (empty($this->templates)) { // Cache it now
+            $this->load_modules();
+        }
+        
+        if (isset($this->templates[$device])) {
+            $module = $this->templates[$device]['module'];
+            $class = $this->get_module_class($module);
+            if ($class != null) {
+                return $class->get($device);
+            }
+        }
+        else {
+            return array('success'=>false, 'message'=>'Device template does not exist');
+        }
+        
+        return array('success'=>false, 'message'=>'Unknown error while loading device template details');
     }
 
     public function init_template($id)
     {
-    	if (empty($this->templates)) { // Cache it now
-    		$this->load_modules();
-    	}
-    	
-    	$id = (int) $id;
-    	if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
-    	
-    	$device = $this->get($id);
-    	if (isset($device['type']) && $device['type']) {
-    		if (isset($this->templates[$device])) {
-    			$module = $this->templates[$device]['module'];
-    			$class = $this->get_module_class($module);
-    			if ($class != null) {
-    				return $class->init($device['userid'], $device['nodeid'], $device['name'], $device['type']);
-    			}
-    		}
-    		else {
-    			return array('success'=>false, 'message'=>'Device template does not exist');
-    		}
-    	}
-    	else {
-    		return array('success'=>false, 'message'=>'Device type not specified');
-    	}
-    	
-    	return array('success'=>false, 'message'=>'Unknown error while initializing device');
+        if (empty($this->templates)) { // Cache it now
+            $this->load_modules();
+        }
+        
+        $id = (int) $id;
+        if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
+        
+        $device = $this->get($id);
+        if (isset($device['type']) && $device['type']) {
+            if (isset($this->templates[$device])) {
+                $module = $this->templates[$device]['module'];
+                $class = $this->get_module_class($module);
+                if ($class != null) {
+                    return $class->init($device['userid'], $device['nodeid'], $device['name'], $device['type']);
+                }
+            }
+            else {
+                return array('success'=>false, 'message'=>'Device template does not exist');
+            }
+        }
+        else {
+            return array('success'=>false, 'message'=>'Device type not specified');
+        }
+        
+        return array('success'=>false, 'message'=>'Unknown error while initializing device');
     }
 
     private function load_modules()
     {
-    	$list = array();
-    	$dir = scandir("Modules");
-    	for ($i=2; $i<count($dir); $i++) {
-    		if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-    			$class = $this->get_module_class($dir[$i]);
-    			if ($class != null) {
-    				$module_templates = $class->get_list();
-    				foreach($module_templates as $key => $value){
-    					$list[$key] = $value;
-    					
-    					$device = array(
-    							'module'=>$dir[$i]
-    					);
-    					$device["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
-    					$device["control"] = (!isset($value->control) ? false : true);
-    					$this->templates[$key] = $device;
-    				}
-    			}
-    		}
-    	}
-    	return $list;
+        $list = array();
+        $dir = scandir("Modules");
+        for ($i=2; $i<count($dir); $i++) {
+            if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
+                $class = $this->get_module_class($dir[$i]);
+                if ($class != null) {
+                    $module_templates = $class->get_list();
+                    foreach($module_templates as $key => $value){
+                        $list[$key] = $value;
+                        
+                        $device = array(
+                                'module'=>$dir[$i]
+                        );
+                        $device["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
+                        $device["control"] = (!isset($value->control) ? false : true);
+                        $this->templates[$key] = $device;
+                    }
+                }
+            }
+        }
+        return $list;
     }
 
     private function get_module_class($module)
     {
-    	/*
-    	 magic function __call (above) MUST BE USED with this.
-    	 Load additional template module files.
-    	 Looks in the folder Modules/modulename/ for a file modulename_template.php
-    	 (module_name all lowercase but class ModulenameTemplate in php file that is CamelCase)
-    	 */
-    	$module_file = "Modules/".$module."/".$module."_template.php";
-    	$module_class = null;
-    	if(file_exists($module_file)){
-    		require_once($module_file);
-    		
-    		$module_class_name = ucfirst(strtolower($module)."Template");
-    		$module_class = new $module_class_name($this);
-    	}
-    	return $module_class;
+        /*
+         magic function __call (above) MUST BE USED with this.
+         Load additional template module files.
+         Looks in the folder Modules/modulename/ for a file modulename_template.php
+         (module_name all lowercase but class ModulenameTemplate in php file that is CamelCase)
+         */
+        $module_file = "Modules/".$module."/".$module."_template.php";
+        $module_class = null;
+        if(file_exists($module_file)){
+            require_once($module_file);
+            
+            $module_class_name = ucfirst(strtolower($module)."Template");
+            $module_class = new $module_class_name($this);
+        }
+        return $module_class;
     }
 }
