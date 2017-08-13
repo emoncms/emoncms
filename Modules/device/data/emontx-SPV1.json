@@ -1,4 +1,7 @@
-{	"name": "EmonTx: Solar PV Type 1",
+{
+	"name": "EmonTx: Solar PV Type 1",
+	"group": "Energy",
+	"origin": "OpenEnergyMonitor",
     "description": "EmonTx Solar PV Type 1 template using CT4 for solar",
     "inputs": [
         {

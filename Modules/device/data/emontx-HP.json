@@ -1,4 +1,7 @@
-{	"name": "EmonTx: Heatpump Monitor",
+{
+	"name": "EmonTx: Heatpump Monitor",
+	"group": "Heatpump",
+	"origin": "OpenEnergyMonitor",
     "description": "Heatpump Monitor firmware for EmonTx v3",
     "inputs": [
         {

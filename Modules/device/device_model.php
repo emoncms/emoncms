@@ -191,10 +191,10 @@ class Device
         
         $name = "$nodeid:$type";
         
-        $deviceid = $this->exists_nodeid($userid,$nodeid);
+        $deviceid = $this->exists_nodeid($userid, $nodeid);
         
         if (!$deviceid) {
-            $deviceid = $this->create($userid,$nodeid);
+            $deviceid = $this->create($userid, $nodeid, null, null, null);
             if (!$deviceid) return array("success"=>false, "message"=>"Device creation failed");
         }
         
@@ -206,14 +206,23 @@ class Device
         }
     }   
     
-    public function create($userid,$nodeid)
+    public function create($userid, $nodeid, $name, $description, $type)
     {
         $userid = intval($userid);
-        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $nodeid);
+        if (isset($name)) {
+            $name = preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $name);
+        }
+        else $name = $nodeid;
+        
+        if (isset($description)) {
+            $description= preg_replace('/[^\p{L}_\p{N}\s-:]/u', '', $description);
+        }
+        else $description = '';
         
         if (!$this->exists_nodeid($userid,$nodeid)) {
             $devicekey = md5(uniqid(mt_rand(), true));
-            $this->mysqli->query("INSERT INTO device (`userid`, `name`, `description`, `nodeid`, `devicekey`) VALUES ('$userid','$nodeid','','$nodeid','$devicekey')");
+            $this->mysqli->query("INSERT INTO device (`userid`, `nodeid`, `name`, `description`, `type`, `devicekey`) VALUES ('$userid','$nodeid','$name','$description','$type','$devicekey')");
             if ($this->redis) $this->load_to_redis($userid);
             return $this->mysqli->insert_id;
         } else {
@@ -327,9 +336,9 @@ class Device
         if (!$this->exist($id)) return array('success'=>false, 'message'=>'Device does not exist');
         
         $device = $this->get($id);
-        if (isset($device['type']) && $device['type']) {
-            if (isset($this->templates[$device])) {
-                $module = $this->templates[$device]['module'];
+        if (isset($device['type']) && $device['type'] != 'null' && $device['type']) {
+            if (isset($this->templates[$device['type']])) {
+                $module = $this->templates[$device['type']]['module'];
                 $class = $this->get_module_class($module);
                 if ($class != null) {
                     return $class->init($device['userid'], $device['nodeid'], $device['name'], $device['type']);
@@ -362,6 +371,9 @@ class Device
                                 'module'=>$dir[$i]
                         );
                         $device["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
+                        $device["group"] = ((!isset($value->group) || $value->group == "" ) ? "Misc" : $value->group);
+                        $device["origin"] = ((!isset($value->origin) || $value->origin== "" ) ? "Unknown" : $value->origin);
+                        $device["description"] = (!isset($value->description) ? "" : $value->description);
                         $device["control"] = (!isset($value->control) ? false : true);
                         $this->templates[$key] = $device;
                     }

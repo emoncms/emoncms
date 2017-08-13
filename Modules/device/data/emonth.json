@@ -1,4 +1,7 @@
-{	"name": "EmonTH",
+{
+	"name": "EmonTH",
+	"group": "Temperature & Humidity",
+	"origin": "OpenEnergyMonitor",
     "description": "Automatic inputs and feeds creation for emonTH device.",
     "inputs": [
         {

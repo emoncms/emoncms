@@ -1,4 +1,7 @@
-{	"name": "EmonPi: Solar PV Type 2",
+{
+	"name": "EmonPi: Solar PV Type 2",
+	"group": "Energy",
+	"origin": "OpenEnergyMonitor",
     "description": "EmonPi Solar PV Type 2 template",
     "inputs": [
         {

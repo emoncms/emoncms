@@ -1,11 +1,5 @@
 <?php
     global $path;
-
-	$devices = array();
-	foreach($devices_templates as $key => $value)
-	{
-		$devices[$key] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
-	}
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
@@ -16,68 +10,41 @@
 #table input[type="text"] {
   width: 88%;
 }
+#table td:nth-of-type(1) { width:5%;}
+#table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
+#table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
+#table th[fieldg="time"] { font-weight:normal; text-align: right; }
+#table td:nth-of-type(7) { width:14px; text-align: center; }
+#table td:nth-of-type(8) { width:14px; text-align: center; }
+#table td:nth-of-type(9) { width:14px; text-align: center; }
+#table td:nth-of-type(10) { width:14px; text-align: center; }
 </style>
 
 <div>
-    <div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
-    <div id="localheading"><h2><?php echo _('Devices'); ?></h2></div>
+    <div id="api-help-header" style="float:right;"><a href="api"><?php echo _('Devices Help'); ?></a></div>
+    <div id="local-header"><h2><?php echo _('Devices'); ?></h2></div>
 
     <div id="table"><div align='center'>loading...</div></div>
-	
-    <div id="nodevices" class="hide">
+
+    <div id="device-none" class="hide">
         <div class="alert alert-block">
-            <h4 class="alert-heading"><?php echo _('No devices'); ?></h4><br>
-            <p><?php echo _('There are no devices configured. Please add a new device.'); ?></p>
+            <h4 class="alert-heading"><?php echo _('No device connections'); ?></h4><br>
+            <p>
+                <?php echo _('Device connections are used to configure and prepare the communication with different metering units.'); ?>
+                <br><br>
+                <?php echo _('A device configures and prepares inputs, feeds possible device channels, representing e.g. different registers of defined metering units (see the channels tab).'); ?>
+                <br>
+                <?php echo _('You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Device API helper'); ?></a>
+            </p>
         </div>
     </div>
 
-    <div id="bottomtoolbar"><hr>
-        <button id="addnewdevice" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
+    <div id="toolbar_bottom"><hr>
+        <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
     </div>
 </div>
 
-<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('Delete device'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <p><?php echo _('Deleting a device is permanent.'); ?>
-           <br><br>
-           <?php echo _('If this device is active and is using a device key, it will no longer be able to post data.'); ?>
-		   <br><br>
-		   <?php echo _('Inputs and Feeds that this device uses are not deleted and all historic data is kept. To remove them, deleted manualy afterwards.'); ?>
-           <br><br>
-           <?php echo _('Are you sure you want to delete?'); ?>
-        </p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
-    </div>
-</div>
-
-<div id="initdeviceModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="initdeviceModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="initdeviceModalLabel"><?php echo _('Initialize device'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <p><?php echo _('Default inputs and associated feeds will be automaticaly created.'); ?>
-		   <br><br>
-		   <?php echo _('Make sure the selected device node and type are correcly configured before proceding.'); ?>
-		   <br>
-		   <?php echo _('Initializing a device usualy should only be done once on installation.'); ?>
-		   <br>
-           <?php echo _('If the node name already exists, new default inputs and feeds will be added.'); ?>
-		   <br><br>
-        </p>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirminitdevice" class="btn btn-primary"><?php echo _('Initialize'); ?></button>
-    </div>
-</div>
+<?php require "Modules/device/Views/device_dialog.php"; ?>
 
 <script>
   var path = "<?php echo $path; ?>";
@@ -86,22 +53,33 @@
   // Extend table library field types
   for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
   table.element = "#table";
-  //table.groupby = 'description';
+  table.groupprefix = "Location ";
+  table.groupby = 'description';
+  table.groupfields = {
+    'dummy-4':{'title':'', 'type':"blank"},
+    'dummy-5':{'title':'', 'type':"blank"},
+    'time':{'title':'<?php echo _('Updated'); ?>', 'type':"group-updated"},
+    'dummy-7':{'title':'', 'type':"blank"},
+    'dummy-8':{'title':'', 'type':"blank"},
+    'dummy-9':{'title':'', 'type':"blank"},
+    'dummy-10':{'title':'', 'type':"blank"}
+  }
+  
   table.deletedata = false;
   table.fields = {
     //'id':{'type':"fixed"},
+    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"text"},
     'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
     'description':{'title':'<?php echo _('Location'); ?>','type':"text"},
-    'nodeid':{'title':'<?php echo _("Node"); ?>','type':"text"},
-	'type':{'title':'<?php echo _("Type"); ?>','type':"select",'options':devices},
-	'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"text"},
-	'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
+    'typename':{'title':'<?php echo _("Type"); ?>','type':"fixed"},
+    'devicekey':{'title':'<?php echo _('Device access key'); ?>','type':"text"},
+    'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
     //'public':{'title':"<?php echo _('tbd'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
-    //'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'},
-    'create-action':{'title':'', 'type':"iconbasic", 'icon':'icon-file'}
+    'init-action':{'title':'', 'type':"iconbasic", 'icon':'icon-refresh'},
+    'config-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'}
   }
 
   update();
@@ -111,13 +89,19 @@
     $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
       table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
       table.data = data;
-/*
-	  for (d in data) {
+
+      for (d in data) {
+        if (data[d]['type'] !== null && data[d]['type'] != '') {
+          data[d]['typename'] = devices[data[d]['type']].name;
+        }
+        else data[d]['typename'] = '';
+        /*
         if (data[d]['own'] != true){ 
           data[d]['#READ_ONLY#'] = true;  // if the data field #READ_ONLY# is true, the fields type: edit, delete will be ommited from the table row and icon type will not update when clicked.
         }
+        */
       }
-*/
+
       table.draw();
       if (table.data.length != 0) {
         $("#nodevices").hide();
@@ -150,39 +134,30 @@
     updaterStart(update, 10000);
   });
 
-  $("#table").bind("onDelete", function(e,id,row){
-    $('#myModal').modal('show');
-    $('#myModal').attr('deviceid',id);
-    $('#myModal').attr('devicerow',row);
+  $("#table").bind("onDelete", function(e,id,row) {
+
+    // Get device of clicked row
+    var localDevice = device.get(id);
+    device_dialog.loadDelete(localDevice, row);
   });
 
-  $("#confirmdelete").click(function()
-  {
-    var id = $('#myModal').attr('deviceid');
-    var row = $('#myModal').attr('schedulerow');
-    device.remove(id);
-    table.remove(row);
-    update();
+  $("#table").on('click', '.icon-refresh', function() {
 
-    $('#myModal').modal('hide');
+    // Get device of clicked row
+    var localDevice = table.data[$(this).attr('row')];
+    device_dialog.loadInit(localDevice);
   });
 
-  $("#addnewdevice").click(function(){
-    $.ajax({ url: path+"device/create.json", success: function(data){update();} });
+  $("#table").on('click', '.icon-wrench', function() {
+
+    // Get device of clicked row
+    var localDevice = table.data[$(this).attr('row')];
+    device_dialog.loadConfig(devices, localDevice);
   });
- 
-  $("#table").on('click', '.icon-file', function() {
-    $('#initdeviceModal').modal('show');
-    $('#initdeviceModal').attr('deviceid',table.data[$(this).attr('row')]['id']);
-  });
-  
-  $("#confirminitdevice").click(function()
-  {
-    var id = $('#initdeviceModal').attr('deviceid');
-    var result = device.inittemplate(id);
-    alert(result['message']);
-    $('#initdeviceModal').modal('hide');
+
+  $("#device-new").on('click', function () {
+
+    device_dialog.loadConfig(devices, null);
   });
 
 </script>
-
