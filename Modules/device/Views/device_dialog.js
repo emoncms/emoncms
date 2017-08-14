@@ -88,7 +88,7 @@ var device_dialog =
         }
         $("#template-table").html(out);
         
-        if (this.deviceType != null) {
+        if (this.deviceType != null && this.deviceType != '') {
             var template = this.templates[this.deviceType]
             
             $(".group-body[group='"+template.group+"']").show();
@@ -112,11 +112,15 @@ var device_dialog =
             $('#device-config-node').val(this.device.nodeid);
             $('#device-config-name').val(this.device.name);
             $('#device-config-description').val(this.device.description);
+
+            $('#device-config-delete').show();
         }
         else {
             $('#device-config-node').val('');
             $('#device-config-name').val('');
             $('#device-config-description').val('');
+
+            $('#device-config-delete').hide();
         }
     },
 
@@ -210,7 +214,7 @@ var device_dialog =
                     if (device_dialog.device.nodeid != node) fields['node'] = node;
                     if (device_dialog.device.name != name) fields['name'] = name;
                     if (device_dialog.device.description != desc) fields['description'] = desc;
-                    if (device_dialog.device.nodeid != device_dialog.deviceType) {
+                    if (device_dialog.device.type != device_dialog.deviceType) {
                         if (device_dialog.deviceType != null) {
                             fields['type'] = device_dialog.deviceType;
                         }
@@ -224,7 +228,7 @@ var device_dialog =
                     }
                     update();
                     
-                    if (device_dialog.device.nodeid != device_dialog.deviceType
+                    if (device_dialog.device.type != device_dialog.deviceType
                             && device_dialog.deviceType != null) {
                         
                         var result = device.inittemplate(device_dialog.device.id);
@@ -253,6 +257,13 @@ var device_dialog =
                 return false;
             }
         });
+
+		$("#device-delete").off('click').on('click', function () {
+			
+			$('#device-config-modal').modal('hide');
+			
+			device_dialog.loadDelete(device_dialog.device, null);
+		});
     },
 
     'loadInit': function(device) {
@@ -294,9 +305,10 @@ var device_dialog =
         
         $("#device-delete-confirm").off('click').on('click', function() {
             device.remove(device_dialog.device.id);
-            table.remove(row);
-            update();
-            
+            if (row != null) {
+                table.remove(row);
+                update();
+            }
             $('#device-delete-modal').modal('hide');
         });
     }
