@@ -431,7 +431,7 @@ class Feed
                 } else {
                     $lastvalue['time'] = (int) $lastvalue['time'];
                 }
-                if (!isset($lastvalue['value']) || $lastvalue['value'] === false) {
+                if (!isset($lastvalue['value']) || $lastvalue['value'] === false || is_nan($lastvalue['value'])) {
                     $lastvalue['value'] = null;
                 } else {
                     $lastvalue['value'] = (float) $lastvalue['value'];

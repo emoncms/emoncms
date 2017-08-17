@@ -210,12 +210,12 @@ class Input
             } else {
                 $row['time'] = (int) $lastvalue['time'];
             }
-            if (!isset($lastvalue['value']) || $lastvalue['value'] === false) {
+            if (!isset($lastvalue['value']) || $lastvalue['value'] === false || is_nan($lastvalue['value'])) {
                 $row['value'] = null;
             } else {
                 $row['value'] = (float) $lastvalue['value'];
             }
-            // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken      
+            // CHAVEIRO comment: Can return NULL as a valid number or else processlist logic will be broken
             $inputs[] = $row;
         }
         return $inputs;
@@ -269,7 +269,7 @@ class Input
 
         if ($this->redis) {
             $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
-            if (!isset($lastvalue) || $lastvalue === false) {
+            if (!isset($lastvalue) || $lastvalue === false || is_nan($lastvalue)) {
                 $lastvalue = null;
             } else {
                 $lastvalue = (float) $lastvalue;
