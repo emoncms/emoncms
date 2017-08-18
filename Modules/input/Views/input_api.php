@@ -72,7 +72,7 @@ td:nth-of-type(2) { width:4%;}
 
 <ul>
 <li><?php echo _('The first number of each node is the time offset (see below).'); ?></li>
-<li><?php echo _('The second number is the node id, this is the unique identifer for the wireless node.'); ?></li>
+<li><?php echo _('The second number is the node id, this is the unique identifier for the wireless node.'); ?></li>
 <li><?php echo _('All the numbers after the first two are data values. The second node here (node 17) has two data values: 1437 and 3164.'); ?></li>
 <li><?php echo _('Optional offset and time parameters allow the sender to set the time reference for the packets. If none is specified, it is assumed that the last packet just arrived. The time for the other packets is then calculated accordingly.'); ?></li>
 </ul>
@@ -105,7 +105,7 @@ td:nth-of-type(2) { width:4%;}
 1. Starting with a JSON object holding the data to post e.g: [[1503074934,16,1137],[1503074934,17,1437,3164],[1503074934,19,1412,3077]]<br>
 2. Create an initialization vector.<br>
 3. Encrypt using AES-128-CBC.<br>
-4. Create a single string starting with the initialization vector followed by the ciphertext result of the AES-128-CBC Encryptiion.<br>
+4. Create a single string starting with the initialization vector followed by the cipher-text result of the AES-128-CBC encryption.<br>
 5. Convert to a base64 encoded string.<br>
 6. Send the result along with your account username to the /input/encrypted API.<br>
 7. Verify the result. The result is a base64 encoded sha256 hash of the json data string.
