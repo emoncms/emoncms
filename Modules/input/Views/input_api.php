@@ -111,6 +111,8 @@ td:nth-of-type(2) { width:4%;}
 7. Verify the result. The result is a base64 encoded sha256 hash of the json data string.
 </p>
 
+<p><a href="https://github.com/emoncms/emoncms/blob/input-improvements/docs/input_encrypted.md">PHP Example source code</a></p>
+
 <table class="table">
 <tr><th>Description</th><th>Method</th><th>Example</th></tr>
 <tr><td><?php echo _('URL and POST parameters:'); ?></td><td>POST</td><td>URL: /input/encrypted, POST BODY: username=USERNAME&data=IV+CIPHERTEXT</td></tr>
