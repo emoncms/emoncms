@@ -38,7 +38,7 @@
 <p><?php echo _("To use the json api the request url needs to include .json");?></p>
 
 
-<p><b>Read feed actions</b></p>
+<p><b><?php echo _("Read feed actions");?></b></p>
 <table class="table">
     <tr><td><?php echo _("List feeds for autenticated user"); ?></td><td>
 		<a href="<?php echo $path; ?>feed/list.json"><?php echo $path; ?>feed/list.json</a>
@@ -57,7 +57,7 @@
 	</td></tr>
 </table>
 
-<p><b>Read feed data actions</b></p>
+<p><b><?php echo _("Read feed data actions");?></b></p>
 <table class="table">
 	<tr><td><?php echo _("Last updated time and value for feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/timevalue.json?id=1"><?php echo $path; ?>feed/timevalue.json?id=1</a>
@@ -83,28 +83,28 @@
 	
 </table>
 
-<p><b>Write feed data actions</b></p>
+<p><b><?php echo _("Write feed data actions");?></b></p>
 <table class="table">
-    <tr><td>Insert new data point</td><td>
+    <tr><td><?php echo _("Insert new data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/insert.json?id=0&time=UNIXTIME&value=100.0</a>
 	</td></tr>
-    <tr><td>Update data point</td><td>
+    <tr><td><?php echo _("Update data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0"><?php echo $path; ?>feed/update.json?id=0&time=UNIXTIME&value=100.0</a>
 	</td></tr>
-    <tr><td>Delete data point</td><td>
+    <tr><td><?php echo _("Delete data point");?></td><td>
 		<a href="<?php echo $path; ?>feed/deletedatapoint.json?id=0&feedtime=UNIXTIME"><?php echo $path; ?>feed/deletedatapoint.json?id=0&feedtime=UNIXTIME</a>
 	</td></tr>
 </table>
 
-<p><b>Feed setup actions</b></p>
+<p><b><?php echo _("Feed setup actions");?></b></p>
 <table class="table">
-	<tr><td>Create new feed</td><td>
+	<tr><td><?php echo _("Create new feed");?></td><td>
 		<a href='<?php echo $path; ?>feed/create.json?tag=Test&name=Power&datatype=1&engine=5&options={"interval":10}'><?php echo $path; ?>feed/create.json?tag=Test&name=Power&datatype=1&engine=5&options={"interval":10}</a>
 	</td></tr>
-    <tr><td>Delete existent feed</td><td>
+    <tr><td><?php echo _("Delete existent feed");?></td><td>
 		<a href="<?php echo $path; ?>feed/delete.json?id=0"><?php echo $path; ?>feed/delete.json?id=0</a>
 	</td></tr>
-    <tr><td>Update feed field</td><td>
+    <tr><td><?php echo _("Update feed field");?></td><td>
 		<a href="<?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}"><?php echo $path; ?>feed/set.json?id=0&fields={'name':'anewname'}</a>
 	</td></tr>
     <tr><td><?php echo _("Return total engines size");?></td><td>
