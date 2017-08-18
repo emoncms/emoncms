@@ -426,12 +426,12 @@ class Feed
         {
             if ($this->redis->hExists("feed:$id",'time')) {
                 $lastvalue = $this->redis->hmget("feed:$id",array('time','value'));
-                if (!isset($lastvalue['time']) || $lastvalue['time'] === false) {
+                if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time'])) {
                     $lastvalue['time'] = null;
                 } else {
                     $lastvalue['time'] = (int) $lastvalue['time'];
                 }
-                if (!isset($lastvalue['value']) || $lastvalue['value'] === false || is_nan($lastvalue['value'])) {
+                if (!isset($lastvalue['value']) || !is_numeric($lastvalue['value'])) {
                     $lastvalue['value'] = null;
                 } else {
                     $lastvalue['value'] = (float) $lastvalue['value'];
