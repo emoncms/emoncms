@@ -1,5 +1,17 @@
 ## Example code for posting data to the input/encrypted API
 
+An Encrypted AES-128bit version of the input/bulk API.
+
+1. Starting with a JSON object holding the data to post e.g: [[1503074934,16,1137],[1503074934,17,1437,3164],[1503074934,19,1412,3077]]
+2. Create an initialization vector.
+3. Encrypt using AES-128-CBC.
+4. Create a single string starting with the initialization vector followed by the ciphertext result of the AES-128-CBC Encryptiion.
+5. Convert to a base64 encoded string.
+6. Send the result along with your account username to the /input/encrypted API.
+7. Verify the result. The result is a base64 encoded sha256 hash of the json data string.
+
+PHP Example source code:
+
     <?php
 
     $username = "USERNAME";
