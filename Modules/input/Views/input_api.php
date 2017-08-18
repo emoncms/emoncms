@@ -68,10 +68,18 @@
 </table>
 
 <br>
+<p><b><?php echo _('Input get'); ?></b></p>
+<table class="table">
+<tr><td><?php echo _('List all nodes and associated inputs:'); ?></td><td><a href="<?php echo $path; ?>input/get"><?php echo $path; ?>input/get</a></td></tr>
+<tr><td><?php echo _('List inputs for specific node:'); ?></td><td><a href="<?php echo $path; ?>input/get/emontx"><?php echo $path; ?>input/get/emontx</a></td></tr>
+<tr><td><?php echo _('Fetch specific input from node:'); ?></td><td><a href="<?php echo $path; ?>input/get/emontx/power1"><?php echo $path; ?>input/get/emontx/power1</a></td></tr>
+</table>
+
+<br>
 <p><b><?php echo _('Input actions'); ?></b></p>
 <table class="table">
 <tr><td><?php echo _('List of inputs with latest data'); ?></td><td><a href="<?php echo $path; ?>input/list"><?php echo $path; ?>input/list</a></td></tr>
-<tr><td><?php echo _('Get inputs configuration'); ?></td><td><a href="<?php echo $path; ?>input/get_inputs"><?php echo $path; ?>input/get_inputs</a></td></tr>
+<tr><td><?php echo _('Get inputs configuration (last time and value not included)'); ?></td><td><a href="<?php echo $path; ?>input/get_inputs"><?php echo $path; ?>input/get_inputs</a></td></tr>
 <tr><td><?php echo _('Set input fields'); ?></td><td><a href="<?php echo $path; ?>input/set?inputid=0&fields={'description':'Input Description'}"><?php echo $path; ?>input/set?inputid=0&fields={'description':'Input Description'}</a></td></tr>
 <tr><td><?php echo _('Delete an input'); ?></td><td><a href="<?php echo $path; ?>input/delete?inputid=0"><?php echo $path; ?>input/delete?inputid=0</a></td></tr>
 <tr><td><?php echo _('Clean inputs without a process list'); ?></td><td><a href="<?php echo $path; ?>input/clean"><?php echo $path; ?>input/clean</a></td></tr>
