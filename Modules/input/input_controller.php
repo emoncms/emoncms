@@ -156,6 +156,10 @@ function input_controller()
     } else if ($route->action == 'view') {
         $route->format = "html";
         $result =  view("Modules/input/Views/input_view.php", array());
+        
+    } else if ($route->action == 'view-classic') {
+        $route->format = "html";
+        $result =  view("Modules/input/Views/input_view_classic.php", array());
     }
 
     return array('content'=>$result);
