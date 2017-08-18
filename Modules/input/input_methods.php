@@ -118,10 +118,16 @@ class InputMethods
     {   
         // Nodeid
         global $route;
+        
+        // Default nodeid is zero
+        $nodeid = 0;
+        
         if ($route->subaction) {
             $nodeid = $route->subaction;
-        } else {
-            $nodeid = get('node');
+        } else if (isset($_GET['node'])) {
+            $nodeid = $_GET['node'];
+        } else if (isset($_POST['node'])) {
+            $nodeid = $_POST['node'];
         }
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
         
