@@ -205,12 +205,12 @@ class Input
             $row["description"] = utf8_encode($row["description"]);
          
             $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
-            if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time'])) {
+            if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
                 $row['time'] = null;
             } else {
                 $row['time'] = (int) $lastvalue['time'];
             }
-            if (!isset($lastvalue['value']) || !is_numeric($lastvalue['value'])) {
+            if (!isset($lastvalue['value']) || !is_numeric($lastvalue['value']) || is_nan($lastvalue['value'])) {
                 $row['value'] = null;
             } else {
                 $row['value'] = (float) $lastvalue['value'];
@@ -269,7 +269,7 @@ class Input
 
         if ($this->redis) {
             $lastvalue = $this->redis->hget("input:lastvalue:$id",'value'); 
-            if (!isset($lastvalue) || !is_numeric($lastvalue)) {
+            if (!isset($lastvalue) || !is_numeric($lastvalue) || is_nan($lastvalue)) {
                 $lastvalue = null;
             } else {
                 $lastvalue = (float) $lastvalue;
