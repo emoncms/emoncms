@@ -309,6 +309,16 @@ var device_dialog =
                 table.remove(row);
                 update();
             }
+            else if (typeof device_dialog.device.inputs != undefined) {
+                // If the table row is undefined and an input list exists, the config dialog
+            	// was opened in the input view and all corresponding inputs will be deleted
+                var inputIds = [];
+                for (var i in device_dialog.device.inputs) {
+                    var inputId = device_dialog.device.inputs[i].id;
+                    inputIds.push(parseInt(inputId));
+                }
+                input.delete_multiple(inputIds);
+            }
             $('#device-delete-modal').modal('hide');
         });
     }
