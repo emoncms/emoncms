@@ -202,7 +202,7 @@ if ($log_enabled) {
                     <p>
 <?php
 if(is_writable($log_filename)) {
-                    echo "View last entries on the logfile: ".$log_filename;
+                    echo _('View last entries on the logfile:').$log_filename;
 } else {
                     echo '<div class="alert alert-warn">';
                     echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
