@@ -58,7 +58,7 @@ class CassandraEngine
     {
     	$feedid = (int) $feedid;
         $feedname = $this->feedtableToDrop($feedid);
-        if(feedname){
+        if($feedname){
             $this->execCQL("DROP TABLE $feedname");
         }
     }
