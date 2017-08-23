@@ -57,7 +57,7 @@ function input_controller()
     else if ($route->action == "post") {
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
-            if (isset($_GET['fulljson'])) $result = '{"success": true}';
+            if (isset_prop('fulljson')) $result = '{"success": true}';
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -89,7 +89,7 @@ function input_controller()
     else if ($route->action == "get") {
         $dbinputs = $input->get_inputs_v2($session['userid']);
         
-        if (!$route->subaction && !isset($_GET['node'])) {
+        if (!$route->subaction && !isset_prop('node')) {
             $result = $dbinputs;
         } else {
             // Node
@@ -97,7 +97,7 @@ function input_controller()
             $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
             
             // If no node variable name specified return all node variables
-            if (!$route->subaction2 && !isset($_GET['name'])) {
+            if (!$route->subaction2 && !isset_prop('name')) {
             
                 if (isset($dbinputs[$nodeid])) {
                     $result = $dbinputs[$nodeid];
@@ -127,7 +127,7 @@ function input_controller()
     else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
     else if ($route->action == "clean") $result = $input->clean($session['userid']);
 
-    else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],prop("inputid")))
+    else if (isset_prop('inputid') && $input->belongs_to_user($session['userid'],prop("inputid")))
     {
         if ($route->action == 'set') $result = $input->set_fields(prop('inputid'),prop('fields'));
         else if ($route->action == "delete") $result = $input->delete($session['userid'],prop("inputid"));
@@ -139,10 +139,10 @@ function input_controller()
         }
         
     // Multiple input actions - permissions are checked within model
-    } else if (isset($_GET['inputids'])) {
+    } else if (isset_prop('inputids')) {
     
         if ($route->action == "delete") {
-            $inputids = json_decode($_GET['inputids']);
+            $inputids = json_decode(prop('inputids'));
             if ($inputids!=null) $result = $input->delete_multiple($session['userid'],$inputids);
         }
     }
