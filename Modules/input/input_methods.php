@@ -124,15 +124,13 @@ class InputMethods
         
         if ($route->subaction) {
             $nodeid = $route->subaction;
-        } else if (isset($_GET['node'])) {
-            $nodeid = $_GET['node'];
-        } else if (isset($_POST['node'])) {
-            $nodeid = $_POST['node'];
+        } else if (isset_prop('node')) {
+            $nodeid = prop('node');
         }
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
         
         // Time
-        if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+        if (isset_prop('time')) $time = (int) prop('time'); else $time = time();
 
         // Data
         $datain = false;
@@ -141,15 +139,14 @@ class InputMethods
          * from JSON.  The previous 'json' type is retained for
          * backwards compatibility, since some strings would be parsed
          * differently in the two cases. */
-        if (isset($_GET['json'])) $datain = get('json');
-        else if (isset($_GET['fulljson'])) $datain = get('fulljson');
-        else if (isset($_GET['csv'])) $datain = get('csv');
-        else if (isset($_GET['data'])) $datain = get('data');
-        else if (isset($_POST['data'])) $datain = post('data');
+        if (isset_prop('json')) $datain = prop('json');
+        else if (isset_prop('fulljson')) $datain = prop('fulljson');
+        else if (isset_prop('csv')) $datain = prop('csv');
+        else if (isset_prop('data')) $datain = prop('data');
 
         if ($datain=="") return "Request contains no data via csv, json or data tag";
         
-        if (isset($_GET['fulljson'])) {
+        if (isset_prop('fulljson')) {
             $inputs = json_decode($datain, true, 2);
             if (is_null($inputs)) {
                 return "Error decoding JSON string (invalid or too deeply nested)";
@@ -219,14 +216,7 @@ class InputMethods
     */
     public function bulk($userid)
     {
-        if (!isset($_GET['data']) && isset($_POST['data']))
-        {
-            $data = json_decode(post('data'));
-        }
-        else
-        {
-            $data = json_decode(get('data'));
-        }
+        $data = json_decode(prop('data'));
 
         $len = count($data);
         
@@ -235,22 +225,16 @@ class InputMethods
         if (!isset($data[$len-1][0])) return "Format error, last item in bulk data does not contain any data";
 
         // Sent at mode: input/bulk.json?data=[[45,16,1137],[50,17,1437,3164],[55,19,1412,3077]]&sentat=60
-        if (isset($_GET['sentat'])) {
-            $time_ref = time() - (int) $_GET['sentat'];
-        }  elseif (isset($_POST['sentat'])) {
-            $time_ref = time() - (int) $_POST['sentat'];
+        if (isset_prop('sentat')) {
+            $time_ref = time() - (int) prop('sentat');
         }
         // Offset mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
-        elseif (isset($_GET['offset'])) {
-            $time_ref = time() - (int) $_GET['offset'];
-        } elseif (isset($_POST['offset'])) {
-            $time_ref = time() - (int) $_POST['offset'];
+        elseif (isset_prop('offset')) {
+            $time_ref = time() - (int) prop('offset');
         }
         // Time mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=1387729425
-        elseif (isset($_GET['time'])) {
-            $time_ref = (int) $_GET['time'];
-        } elseif (isset($_POST['time'])) {
-            $time_ref = (int) $_POST['time'];
+        elseif (isset_prop('time')) {
+            $time_ref = (int) prop('time');
         }
         // Legacy mode: input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
         else {

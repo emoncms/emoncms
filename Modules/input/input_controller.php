@@ -93,7 +93,7 @@ function input_controller()
             $result = $dbinputs;
         } else {
             // Node
-            if ($route->subaction) { $nodeid = $route->subaction; } else { $nodeid = get('node'); }
+            if ($route->subaction) { $nodeid = $route->subaction; } else { $nodeid = prop('node'); }
             $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
             
             // If no node variable name specified return all node variables
@@ -107,7 +107,7 @@ function input_controller()
             
             } else {
                 // Property
-                if ($route->subaction2) { $name = $route->subaction2; } else { $name = get('name'); }
+                if ($route->subaction2) { $name = $route->subaction2; } else { $name = prop('name'); }
                 $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
                 
                 if (isset($dbinputs[$nodeid])) {
@@ -127,15 +127,15 @@ function input_controller()
     else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
     else if ($route->action == "clean") $result = $input->clean($session['userid']);
 
-    else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
+    else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],prop("inputid")))
     {
-        if ($route->action == 'set') $result = $input->set_fields(get('inputid'),get('fields'));
-        else if ($route->action == "delete") $result = $input->delete($session['userid'],get("inputid"));
+        if ($route->action == 'set') $result = $input->set_fields(prop('inputid'),prop('fields'));
+        else if ($route->action == "delete") $result = $input->delete($session['userid'],prop("inputid"));
         else if ($route->action == "process")
         {
-            if ($route->subaction == "get") $result = $input->get_processlist(get("inputid"));
-            else if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), post('processlist'));
-            else if ($route->subaction == "reset") $result = $input->reset_processlist(get("inputid"));
+            if ($route->subaction == "get") $result = $input->get_processlist(prop("inputid"));
+            else if ($route->subaction == "set") $result = $input->set_processlist(prop('inputid'), prop('processlist'));
+            else if ($route->subaction == "reset") $result = $input->reset_processlist(prop("inputid"));
         }
         
     // Multiple input actions - permissions are checked within model

@@ -96,12 +96,14 @@ function post($index)
 
 function prop($index)
 {
-    $val = null;
-    if (isset($_GET[$index])) $val = $_GET[$index];
-    if (isset($_POST[$index])) $val = $_POST[$index];
-    
-    if (get_magic_quotes_gpc()) $val = stripslashes($val);
-    return $val;
+    global $input_params;
+    if (isset($input_params[$index])) return $input_params[$index]; else return null;
+}
+
+function isset_prop($index)
+{
+    global $input_params;
+    if (isset($input_params[$index])) return true; else return false;
 }
 
 

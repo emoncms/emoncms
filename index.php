@@ -25,6 +25,18 @@
     $path = get_application_path();
     require "Lib/EmonLogger.php";
 
+    // --------------------------
+    // Decode GET POST parameters
+    // --------------------------
+    $input_params = array();
+    foreach ($_GET as $key=>$val) {
+        if (get_magic_quotes_gpc()) $val = stripslashes($val);
+        $input_params[$key] = $val;
+    }
+    foreach ($_POST as $key=>$val) {
+        if (get_magic_quotes_gpc()) $val = stripslashes($val);
+        $input_params[$key] = $val;
+    }
 
     // 2) Database
     if ($redis_enabled) {
@@ -116,7 +128,7 @@
     } else {
         $session = $user->emon_session_start();
     }
-
+    
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);
