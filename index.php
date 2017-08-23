@@ -25,19 +25,6 @@
     $path = get_application_path();
     require "Lib/EmonLogger.php";
 
-    // --------------------------
-    // Decode GET POST parameters
-    // --------------------------
-    $input_params = array();
-    foreach ($_GET as $key=>$val) {
-        if (get_magic_quotes_gpc()) $val = stripslashes($val);
-        $input_params[$key] = $val;
-    }
-    foreach ($_POST as $key=>$val) {
-        if (get_magic_quotes_gpc()) $val = stripslashes($val);
-        $input_params[$key] = $val;
-    }
-
     // 2) Database
     if ($redis_enabled) {
         $redis = new Redis();
@@ -135,6 +122,49 @@
 
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
+
+    // --------------------------
+    // Decode GET POST parameters
+    // --------------------------
+    $input_params = array();
+    foreach ($_GET as $key=>$val) {
+        if (get_magic_quotes_gpc()) $val = stripslashes($val);
+        $input_params[$key] = $val;
+    }
+    foreach ($_POST as $key=>$val) {
+        if (get_magic_quotes_gpc()) $val = stripslashes($val);
+        $input_params[$key] = $val;
+    }
+    
+    // Decode encrypted parameters
+    if (isset($_GET['userid']) && isset($_GET['secure']) && $_GET['secure']=="AES-128-CBC") {
+    
+        // Load apikey for user
+        $userid = (int) $_GET['userid'];
+        $apikey = $user->get_apikey_write($userid);
+        if ($apikey===false) { echo "User not found"; die; }
+        
+        // Fetch encrypted data from POST body
+        $base64EncryptedData = file_get_contents('php://input');
+        
+        // The base64 is converted from "URL safe" code to standard base64 (RFC2045 etc),
+        // then it is decoded into the binary encrypted data
+        $encryptedData = base64_decode(str_replace(array('-','_'),array('+','/'),$base64EncryptedData));
+
+        // The binary encrypted data is decrypted using the apikey.
+        // Note that the first 16 bytes of the encrypted data string are the IV and
+        // the actual data follows
+        $dataString = @openssl_decrypt(substr($encryptedData,16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData,0,16));
+
+        foreach (explode('&',$dataString) as $chunk) {
+            $param = explode("=", $chunk);
+            if (count($param)==2) {
+                $key = $param[0]; $val = $param[1];
+                $input_params[$key] = $val;
+            }
+        }
+    }
+    // --------------------------------------------------------------------------------------
 
     // Special routes
 
