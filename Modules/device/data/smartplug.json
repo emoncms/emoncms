@@ -1,7 +1,7 @@
 {
 	"name": "Smartplug prototype",
+	"category": "OpenEnergyMonitor",
 	"group": "Smartplug",
-	"origin": "OpenEnergyMonitor",
     "description": "Smartplug prototype",
     "inputs": [
         {

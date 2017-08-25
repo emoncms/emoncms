@@ -5,10 +5,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device_dialog.js"></script>
 
 <style>
-    #device-config-table td:nth-of-type(1) { width:10%; }
-    #device-config-table td:nth-of-type(2) { width:10%; }
-
-    .device-body tr:hover > td {
+    .group-body tr:hover > td {
         background-color: #44b3e2;
     }
 
@@ -18,7 +15,7 @@
     }
 
     .modal-adjust {
-        width: 94%; left:3%; /* (100%-width)/2 */
+        width: 60%; left:20%; /* (100%-width)/2 */
         margin-left: auto; margin-right: auto;
         overflow-y: hidden;
     }
@@ -41,6 +38,15 @@
     #content-wrapper {
         margin-top: -15px;
         margin-left: 250px;
+    }
+    #content-wrapper .divider {
+        *width: 100%;
+        height: 1px;
+        margin: 9px 1px;
+        *margin: -5px 0 5px;
+        overflow: hidden;
+        background-color: #e5e5e5;
+        border-bottom: 1px solid #ffffff;
     }
 
     #template-info .tooltip-inner {
@@ -73,24 +79,22 @@
             </div>
 
             <span id="template-info" style="display:none;">
-                <span id="template-tooltip" data-toggle="tooltip" data-placement="right">
+                <span id="template-description"></span>
+                <span id="template-tooltip" data-toggle="tooltip" data-placement="bottom">
                     <i class="icon-info-sign" style="cursor:pointer; padding-left:6px;"></i>
                 </span>
-                <span id="template-description"></span>
             </span>
 
-            <table id="device-config-table" class="table">
-                <tr>
-                    <th><?php echo _('Node'); ?></th>
-                    <th><?php echo _('Name'); ?></th>
-                    <th><?php echo _('Location'); ?></th>
-                </tr>
-                <tr>
-                    <td><input id="device-config-node" class="input-medium" type="text"></td>
-                    <td><input id="device-config-name" class="input-medium" type="text"></td>
-                    <td><input id="device-config-description" class="input-large" type="text" style="width:97%;"></td>
-                </tr>
-            </table>
+            <div class="divider"></div>
+            
+            <label><b><?php echo _('Node'); ?></b></label>
+            <input id="device-config-node" class="input-medium" type="text">
+                    
+            <label><b><?php echo _('Name'); ?></b></label>
+            <input id="device-config-name" class="input-large" type="text">
+                    
+            <label><b><?php echo _('Location'); ?></b></label>
+            <input id="device-config-description" class="input-large" type="text">
         </div>
     </div>
     <div class="modal-footer">

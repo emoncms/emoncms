@@ -1,7 +1,7 @@
 {
-	"name": "EmonTx: HomeEnergyMonitor",
-	"group": "Energy",
-	"origin": "OpenEnergyMonitor",
+	"name": "HomeEnergyMonitor",
+	"category": "OpenEnergyMonitor",
+	"group": "EmonTx",
     "description": "Basic EmonTx v3 Home Energy Monitor configuration",
     "inputs": [
         {

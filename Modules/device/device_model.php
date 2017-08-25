@@ -371,8 +371,8 @@ class Device
                                 'module'=>$dir[$i]
                         );
                         $device["name"] = ((!isset($value->name) || $value->name == "" ) ? $key : $value->name);
-                        $device["group"] = ((!isset($value->group) || $value->group == "" ) ? "Misc" : $value->group);
-                        $device["origin"] = ((!isset($value->origin) || $value->origin== "" ) ? "Unknown" : $value->origin);
+                        $device["category"] = ((!isset($value->category) || $value->category== "" ) ? "General" : $value->category);
+                        $device["group"] = ((!isset($value->group) || $value->group== "" ) ? "Miscellaneous" : $value->group);
                         $device["description"] = (!isset($value->description) ? "" : $value->description);
                         $device["control"] = (!isset($value->control) ? false : true);
                         $this->templates[$key] = $device;

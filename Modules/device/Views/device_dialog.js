@@ -29,71 +29,80 @@ var device_dialog =
         this.clearConfigModal();
 
         var out = "";
-        out += "<colgroup>";
-        out += "<col span='1'>";
-        out += "</colgroup>";
 
-        var groups = [];
-        var devicesByGroup = {};
+        var categories = [];
+        var devicesByCategory = {};
         for (var id in this.templates) {
             var device = this.templates[id];
             device['id'] = id;
             
-            if (devicesByGroup[device.group] == undefined) {
-                devicesByGroup[device.group] = [];
-                groups.push(device.group);
+            if (devicesByCategory[device.category] == undefined) {
+                devicesByCategory[device.category] = [];
+                categories.push(device.category);
             }
-            devicesByGroup[device.group].push(device);
+            devicesByCategory[device.category].push(device);
         }
-        for (var i in groups.sort()) {
-            var group = groups[i];
-            
-            out += "<tr class='group-header' group='"+group+"' style='background-color:#aaa; cursor:pointer'>";
-            out += "<td style='font-size:12px; padding:4px; padding-left:8px; font-weight:bold'>"+group+"</td>";
-            out += "</tr>";
-            out += "<tbody class='group-body' group='"+group+"' style='display:none'>";
-            
-            var origins = [];
-            var devicesByOrigin = {};
-            for (var i in devicesByGroup[group]) {
-                var origin = devicesByGroup[group][i].origin;
-                if (devicesByOrigin[origin] == undefined) {
-                    devicesByOrigin[origin] = [];
-                    origins.push(origin);
+        // Place OpenEnergyMonitor prominently at first place, while sorting other categories
+        if (categories.indexOf('OpenEnergyMonitor') > -1) {
+        	categories.splice(categories.indexOf('OpenEnergyMonitor'), 1);
+        	categories.sort()
+        	categories = ['OpenEnergyMonitor'].concat(categories);
+        }
+        
+        for (var i in categories) {
+            var category = categories[i];
+
+            var groups = [];
+            var devicesByGroup = {};
+            for (var i in devicesByCategory[category]) {
+                var group = devicesByCategory[category][i].group;
+                if (devicesByGroup[group] == undefined) {
+                    devicesByGroup[group] = [];
+                    groups.push(group);
                 }
-                devicesByOrigin[origin].push(devicesByGroup[group][i]);
+                devicesByGroup[group].push(devicesByCategory[category][i]);
             }
-            for (var i in origins.sort()) {
-                var origin = origins[i];
+            groups.sort();
+            
+            out += "<tbody>"
+            out += "<tr class='category-header' category='"+category+"' style='background-color:#aaa; cursor:pointer'>";
+            out += "<td style='font-size:12px; padding:4px; padding-left:8px; font-weight:bold'>"+category+"</td>";
+            out += "</tr>";
+            out += "</tbody>";
+            
+            for (var i in groups) {
+                var group = groups[i];
                 
-                out += "<tr class='device-header' origin='"+origin+"' group='"+group+"' style='background-color:#ccc; cursor:pointer'>";
-                out += "<td style='font-size:12px; padding:4px; padding-left:16px; font-weight:bold'>"+origin+"</td>";
+                out += "<tbody class='group-header' group='"+group+"' category='"+category+"' style='display:none'>"
+                out += "<tr style='background-color:#ccc; cursor:pointer'>";
+                out += "<td style='font-size:12px; padding:4px; padding-left:16px; font-weight:bold'>"+group+"</td>";
                 out += "</tr>";
-                out += "<tbody class='device-body' origin='"+origin+"' group='"+group+"' style='display:none'>";
+                out += "</tbody>";
                 
-                for (var i in devicesByOrigin[origin]) {
-                    var id = devicesByOrigin[origin][i].id;
-                    var name = devicesByOrigin[origin][i].name;
+                out += "<tbody class='group-body' group='"+group+"' category='"+category+"' style='display:none'>";
+                
+                for (var i in devicesByGroup[group]) {
+                    var id = devicesByGroup[group][i].id;
+                    var name = devicesByGroup[group][i].name;
                     if (name.length > 25) {
                         name = name.substr(0, 25) + "...";
                     }
                     
-                    out += "<tr class='device-row' type='"+id+"' style='cursor:pointer'>";
+                    out += "<tr class='group-row' type='"+id+"' style='cursor:pointer'>";
                     out += "<td>"+name+"</td>";
                     out += "</tr>";
                 }
-                out += "</tbody>";
+                out += "</tbody>";	
             }
-            out += "</tbody>";
         }
         $("#template-table").html(out);
         
         if (this.deviceType != null && this.deviceType != '') {
             var template = this.templates[this.deviceType]
             
-            $(".group-body[group='"+template.group+"']").show();
-            $(".device-body[group='"+template.group+"'][origin='"+template.origin+"']").show();
-            $(".device-row[type='"+this.deviceType+"']").addClass("device-selected");
+            $(".category-body[category='"+template.category+"']").show();
+            $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
+            $(".group-row[type='"+this.deviceType+"']").addClass("device-selected");
             
             $('#template-description').html('<em style="color:#888">'+template.description+'</em>');
             $('#template-info').show();
@@ -101,6 +110,8 @@ var device_dialog =
     },
 
     'clearConfigModal':function() {
+        $("#template-table").text('');
+        
         var tooltip = "Defaults, like inputs and associated feeds will be automaticaly configured together with the device." +
                 "<br><br>" +
                 "Initializing a device usualy should only be done once on installation.<br>" +
@@ -153,29 +164,53 @@ var device_dialog =
 
     'registerConfigEvents':function() {
 
-        $('#template-table .group-header').off('click').on('click', function() {
-            var group = $(this).attr("group");
+        $('#template-table .category-header').off('click').on('click', function() {
+            var category = $(this).attr("category");
             
-            var e = $(".group-body[group='"+group+"']");
+            var e = $(".group-header[category='"+category+"']");
             if (e.is(":visible")) {
-                $(".device-body[group='"+group+"']").hide();
+                $(".group-body[category='"+category+"']").hide();
                 e.hide();
             }
-            else e.show();
+            else {
+            	e.show();
+
+            	// If a device is selected and in the category to uncollapse, show and select it
+                if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
+                    var template = device_dialog.templates[device_dialog.deviceType];
+                    if (category == template.category) {
+                        $(".group-body[category='"+template.category+"'][group='"+template.group+"']").show();
+                        $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
+                    }
+                }
+            }
         });
 
-        $('#template-table .device-header').off('click').on('click', function() {
-            var origin = $(this).attr("origin");
+        $('#template-table .group-header').off('click').on('click', function() {
             var group = $(this).attr("group");
+            var category = $(this).attr("category");
             
-            var e = $(".device-body[origin='"+origin+"'][group='"+group+"']");
-            if (e.is(":visible")) e.hide(); else e.show();
+            var e = $(".group-body[group='"+group+"'][category='"+category+"']");
+            if (e.is(":visible")) {
+                e.hide();
+            }
+            else {
+            	e.show();
+
+            	// If a device is selected and in the category to uncollapse, show and select it
+                if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
+                    var template = device_dialog.templates[device_dialog.deviceType];
+                    if (category == template.category && group == template.group) {
+                        $(".group-row[type='"+device_dialog.deviceType+"']").addClass("device-selected");
+                    }
+                }
+            }
         });
 
-        $("#template-table .device-row").off('click').on('click', function () {
+        $("#template-table .group-row").off('click').on('click', function () {
             var type = $(this).attr("type");
             
-            $(".device-row[type='"+device_dialog.deviceType+"']").removeClass("device-selected");
+            $(".group-row[type='"+device_dialog.deviceType+"']").removeClass("device-selected");
             if (device_dialog.deviceType !== type) {
                 $(this).addClass("device-selected");
                 device_dialog.deviceType = type;

@@ -1,7 +1,7 @@
 {
 	"name": "AMIG",
-	"group": "Datalogger",
-	"origin": "ArchiMetrics",
+	"category": "Datalogger",
+	"group": "ArchiMetrics",
 	"description": "INPUTS & FEEDS for AMIG Logger from archimetrics.co.uk",
 	"inputs": [{
 		"name": "n1T",
