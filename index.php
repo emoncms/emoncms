@@ -87,7 +87,7 @@
         //      GET /resource HTTP/1.1
         //      Host: server.example.com
         //      Authorization: Bearer THE_API_KEY_HERE
-        $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
+        // $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
     }
 
     $device = false;
@@ -137,16 +137,25 @@
     }
     
     // Decode encrypted parameters
-    if (isset($_GET['userid']) && isset($_GET['secure']) && $_GET['secure']=="AES-128-CBC") {
+    $headers = apache_request_headers();
     
-        // Load apikey for user
-        $userid = (int) $_GET['userid'];
+    if (isset($headers["Content-Type"]) && $headers["Content-Type"]=="aes128cbc") {
+
+        // Fetch authorization header
+        if (!isset($headers["Authorization"])) {echo "missing authorization header"; die; }
+        $authorization = explode(":",$headers["Authorization"]);
+        if (count($authorization)!=2) {echo "authorization header format should be userid:hmac"; die; }
+        $userid = $authorization[0];
+        $hmac1 = $authorization[1];
+        
+        // Fetch user
         $apikey = $user->get_apikey_write($userid);
         if ($apikey===false) { echo "User not found"; die; }
-        
+
         // Fetch encrypted data from POST body
         $base64EncryptedData = file_get_contents('php://input');
-        
+        if ($base64EncryptedData=="") {echo "no content in post body"; die; }
+
         // The base64 is converted from "URL safe" code to standard base64 (RFC2045 etc),
         // then it is decoded into the binary encrypted data
         $encryptedData = base64_decode(str_replace(array('-','_'),array('+','/'),$base64EncryptedData));
@@ -155,7 +164,16 @@
         // Note that the first 16 bytes of the encrypted data string are the IV and
         // the actual data follows
         $dataString = @openssl_decrypt(substr($encryptedData,16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData,0,16));
-
+        
+        // HMAC generated from decoded data
+        $hmac2 = hash_hmac('sha256',$dataString,$apikey);
+        
+        if (!hash_equals($hmac1,$hmac2)) {echo "invalid data"; die; }
+        
+        $session["write"] = true;
+        $session["read"] = true;
+        $session["userid"] = $userid;
+        
         foreach (explode('&',$dataString) as $chunk) {
             $param = explode("=", $chunk);
             if (count($param)==2) {
@@ -164,8 +182,8 @@
             }
         }
     }
+    
     // --------------------------------------------------------------------------------------
-
     // Special routes
 
     // Return brief device descriptor for hub detection
@@ -260,14 +278,17 @@
     // 7) Output
     if ($route->format == 'json')
     {
-        header('Content-Type: application/json');
         if ($route->controller=='time') {
+            header('Content-Type: text');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='post') {
+            header('Content-Type: text');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='bulk') {
+            header('Content-Type: text');
             print $output['content'];
         } else {
+            header('Content-Type: application/json');
             print json_encode($output['content']);
         }
     }
