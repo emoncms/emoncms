@@ -70,7 +70,7 @@ function device_controller()
             if ($session['userid']>0 && $session['write']) $result = $device->get_list($session['userid']);
         }
         elseif ($route->action == "create") {
-        	if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"));
+            if ($session['userid']>0 && $session['write']) $result = $device->create($session['userid'],get("nodeid"),get("name"),get("description"),get("type"));
         }
         // Used in conjunction with input name describe to auto create device
         else if ($route->action == "autocreate") {

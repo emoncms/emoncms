@@ -44,9 +44,9 @@ var device_dialog =
         }
         // Place OpenEnergyMonitor prominently at first place, while sorting other categories
         if (categories.indexOf('OpenEnergyMonitor') > -1) {
-        	categories.splice(categories.indexOf('OpenEnergyMonitor'), 1);
-        	categories.sort()
-        	categories = ['OpenEnergyMonitor'].concat(categories);
+            categories.splice(categories.indexOf('OpenEnergyMonitor'), 1);
+            categories.sort()
+            categories = ['OpenEnergyMonitor'].concat(categories);
         }
         
         for (var i in categories) {
@@ -92,7 +92,7 @@ var device_dialog =
                     out += "<td>"+name+"</td>";
                     out += "</tr>";
                 }
-                out += "</tbody>";	
+                out += "</tbody>";    
             }
         }
         $("#template-table").html(out);
@@ -173,9 +173,9 @@ var device_dialog =
                 e.hide();
             }
             else {
-            	e.show();
+                e.show();
 
-            	// If a device is selected and in the category to uncollapse, show and select it
+                // If a device is selected and in the category to uncollapse, show and select it
                 if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
                     var template = device_dialog.templates[device_dialog.deviceType];
                     if (category == template.category) {
@@ -195,9 +195,9 @@ var device_dialog =
                 e.hide();
             }
             else {
-            	e.show();
+                e.show();
 
-            	// If a device is selected and in the category to uncollapse, show and select it
+                // If a device is selected and in the category to uncollapse, show and select it
                 if (device_dialog.deviceType != null && device_dialog.deviceType != '') {
                     var template = device_dialog.templates[device_dialog.deviceType];
                     if (category == template.category && group == template.group) {
@@ -293,12 +293,12 @@ var device_dialog =
             }
         });
 
-		$("#device-delete").off('click').on('click', function () {
-			
-			$('#device-config-modal').modal('hide');
-			
-			device_dialog.loadDelete(device_dialog.device, null);
-		});
+        $("#device-delete").off('click').on('click', function () {
+            
+            $('#device-config-modal').modal('hide');
+            
+            device_dialog.loadDelete(device_dialog.device, null);
+        });
     },
 
     'loadInit': function(device) {
@@ -346,7 +346,7 @@ var device_dialog =
             }
             else if (typeof device_dialog.device.inputs != undefined) {
                 // If the table row is undefined and an input list exists, the config dialog
-            	// was opened in the input view and all corresponding inputs will be deleted
+                // was opened in the input view and all corresponding inputs will be deleted
                 var inputIds = [];
                 for (var i in device_dialog.device.inputs) {
                     var inputId = device_dialog.device.inputs[i].id;
