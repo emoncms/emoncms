@@ -78,21 +78,25 @@
     <div class="input-prepend input-append">
         <span class="add-on" style="width:75px">Start</span>
         <input id="request-start" type="text" style="width:80px" />
+        <br/>
 
         <span class="add-on" style="width:75px">End</span>
         <input id="request-end" type="text" style="width:80px" />
+        <br/>
 
         <span class="add-on" style="width:75px">Interval</span>
         <input id="request-interval" type="text" style="width:60px" />
+        <br/>
 
         <span class="add-on">Skip missing <input id="request-skipmissing" type="checkbox" /></span>
         <span class="add-on">Limit interval <input id="request-limitinterval" type="checkbox" /></span>
-    
+        <br/>
+        <br/>
+
         <button id="resend" class="btn">Resend</button>
     </div>
     
-    <div>GET <a id="request-url"></a></div>
-    <br>
+    <div style="word-break: break-all; margin-bottom: 10px;">GET <a id="request-url"></a></div>  
     
     <button class="btn" id="showcsv" >Show CSV Output</button>
     
