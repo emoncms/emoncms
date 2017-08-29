@@ -6,6 +6,13 @@ var device = {
         return result;
     },
 
+    'get':function(id)
+    {
+        var result = {};
+        $.ajax({ url: path+"device/get.json", data: "id="+id, async: false, success: function(data) {result = data;} });
+        return result;
+    },
+
     'set':function(id, fields)
     {
         var result = {};
@@ -18,22 +25,22 @@ var device = {
         $.ajax({ url: path+"device/delete.json", data: "id="+id, async: false, success: function(data){} });
     },
 
-    'create':function(id)
+    'create':function(nodeid, name, description, type)
     {
-        $.ajax({ url: path+"device/create.json", data: "id="+id, async: false, success: function(data){} });
+        $.ajax({ url: path+"device/create.json", data: "nodeid="+nodeid+"&name="+name+"&description="+description+"&type="+type, async: false, success: function(data){} });
     },
 
     'listtemplates':function()
     {
         var result = {};
-        $.ajax({ url: path+"device/listtemplates.json", dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/template/list.json", dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     },
 
     'inittemplate':function(id)
     {
         var result = {};
-        $.ajax({ url: path+"device/inittemplate.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
+        $.ajax({ url: path+"device/template/init.json", data: "id="+id, dataType: 'json', async: false, success: function(data) {result = data;} });
         return result;
     }
 }

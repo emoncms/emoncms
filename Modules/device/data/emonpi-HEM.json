@@ -1,4 +1,7 @@
-{	"name": "EmonPi: HomeEnergyMonitor",
+{
+	"name": "HomeEnergyMonitor",
+	"category": "OpenEnergyMonitor",
+	"group": "EmonPi",
     "description": "Basic EmonPi Home Energy Monitor configuration",
     "inputs": [
         {

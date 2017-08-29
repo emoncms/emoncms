@@ -2,9 +2,10 @@
 	global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
 <style>
@@ -197,37 +198,9 @@ input[type="checkbox"] { margin:0px; }
 	<div id="input-loader" class="ajax-loader"></div>
 </div>
 
+<?php require "Modules/device/Views/device_dialog.php"; ?>
 <?php require "Modules/input/Views/input_dialog.php"; ?>
-
 <?php require "Modules/process/Views/process_ui.php"; ?>
-
-<div id="deviceConfigureModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="deviceConfigureModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="deviceConfigureModalLabel"><?php echo _('Device configure'); ?></h3>
-    </div>
-    <div class="modal-body">
-
-        <div class="input-prepend input-append">
-		        <span class="add-on" style="width:160px">Description or Location</span>
-		        <input id="device-description-input" type="text" />
-		        <button id="device-description-save" class="btn">Save</button>
-		        <span class="add-on" id="device-description-saved">Saved</span>
-	      </div>
-        
-        <div class="input-prepend input-append">
-		        <span class="add-on" style="width:160px">Device template</span>
-		        <select id="device-type-select"></select>
-		        <button id="device-initialise" class="btn">Initialise</button>
-	      </div>
-	      <p><i>A device can be automatically initialised by including input name "nodename/describe":"template-name"</i></p>
-        
-    </div>
-    <div class="modal-footer">
-        <button id="device-delete" class="btn btn-danger"><i class="icon-trash icon-white"></i> <?php echo _('Delete device'); ?></button>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
-    </div>
-</div>
 
 <script>
 
@@ -241,7 +214,7 @@ var selected_inputs = {};
 var selected_device = false;
 
 var device_templates = {};
-$.ajax({ url: path+"device/listtemplates-short.json", dataType: 'json', async: true, success: function(data) { 
+$.ajax({ url: path+"device/template/listshort.json", dataType: 'json', async: true, success: function(data) { 
     device_templates = data; 
     update();
 }});
@@ -444,50 +417,10 @@ $("#table").on("click",".device-schedule",function(e) {
 
 $("#table").on("click",".device-configure",function(e) {
     e.stopPropagation();
-    selected_device = $(this).parent().attr("node");
-    $('#deviceConfigureModal').modal('show');
-    $("#device-description-input").val(devices[selected_device].description);
-    $("#device-description-saved").hide();
-    
-    var out = "";
-    for (var z in device_templates) out += "<option value='"+z+"'>"+device_templates[z].name+"</option>";
-    $("#device-type-select").html(out);
-});
 
-$("#device-description-input").keyup(function(){
-    $("#device-description-save").show();
-    $("#device-description-saved").hide();
-});
-
-$("#device-description-save").click(function(){
-    $.ajax({ 
-        url: path+"device/set.json", 
-        data: "id="+devices[selected_device].id+"&fields="+JSON.stringify({"description":$("#device-description-input").val()}), 
-        async: true, success: function(data) {
-            $("#device-description-saved").show();
-            $("#device-description-save").hide();
-    }});
-});
-
-$("#device-initialise").click(function(){
-    $.ajax({ url: path+"device/inittemplate.json", data: "id="+devices[selected_device].id+"&type="+$("#device-type-select").val(), dataType: 'json', async: false, success: function(data) {
-        alert("Device '"+selected_device+"' initialised using template '"+$("#device-type-select").val()+"', inputs configured and feeds created");
-    }});
-});
-
-$("#device-delete").click(function(){
-
-    var ids = [];
-	  for (var i in devices[selected_device].inputs) {
-	      var inputid = devices[selected_device].inputs[i].id;
-		    ids.push(parseInt(inputid));
-	  }
-	  input.delete_multiple(ids);
-	  
-    $.ajax({ url: path+"device/delete.json", data: "id="+devices[selected_device].id, dataType: 'json', async: false, success: function(data) {
-        $('#deviceConfigureModal').modal('hide');
-        update();
-    }});
+    // Get device of clicked node
+    var device = devices[$(this).parent().attr("node")];
+	device_dialog.loadConfig(device_templates, device);
 });
 
 $(".input-delete").click(function(){

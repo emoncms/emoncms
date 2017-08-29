@@ -36,11 +36,17 @@
 <table class="table">
     <tr><td><?php echo _('List devices'); ?></td><td><a href="<?php echo $path; ?>device/list.json"><?php echo $path; ?>device/list.json</a></td></tr>
     <tr><td><?php echo _('Get device details'); ?></td><td><a href="<?php echo $path; ?>device/get.json?id=1"><?php echo $path; ?>device/get.json?id=1</a></td></tr>
-    <tr><td><?php echo _('Add a device'); ?></td><td><a href="<?php echo $path; ?>device/create.json"><?php echo $path; ?>device/create.json</a></td></tr>
-    <tr><td><?php echo _('Delete device'); ?></td><td><a href="<?php echo $path; ?>device/delete.json?id=0"><?php echo $path; ?>device/delete.json?id=0</a></td></tr>
-    <tr><td><?php echo _('Update device'); ?></td><td><a href="<?php echo $path; ?>device/set.json?id=0&fields={%22name%22:%22Test%22,%22description%22:%22Room%22,%22nodeid%22:%22House%22,%22type%22:%22test%22}"><?php echo $path; ?>device/set.json?id=0&fields={"name":"Test","description":"Room","nodeid":"House","type":"test"}</a></td></tr>
-    <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/listtemplates.json"><?php echo $path; ?>device/listtemplates.json</a></td></tr>
-    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/inittemplate.json?id=0"><?php echo $path; ?>device/inittemplate.json?id=0</a></td></tr>
+    <tr><td><?php echo _('Add a device'); ?></td><td><a href="<?php echo $path; ?>device/create.json?nodeid=Test&name=Test"><?php echo $path; ?>device/create.json?nodeid=Test&name=Test</a></td></tr>
+    <tr><td><?php echo _('Delete device'); ?></td><td><a href="<?php echo $path; ?>device/delete.json?id=1"><?php echo $path; ?>device/delete.json?id=1</a></td></tr>
+    <tr><td><?php echo _('Update device'); ?></td><td><a href="<?php echo $path; ?>device/set.json?id=1&fields={%22name%22:%22Test%22,%22description%22:%22Room%22,%22nodeid%22:%22House%22,%22type%22:%22test%22}"><?php echo $path; ?>device/set.json?id=1&fields={"name":"Test","description":"Room","nodeid":"House","type":"test"}</a></td></tr>
+</table>
+
+<p><b><?php echo _('Template actions'); ?></b></p>
+<table class="table">
+    <tr><td><?php echo _('List templates'); ?></td><td><a href="<?php echo $path; ?>device/template/list.json"><?php echo $path; ?>device/template/list.json</a></td></tr>
+    <tr><td><?php echo _('List templates short'); ?></td><td><a href="<?php echo $path; ?>device/template/listshort.json"><?php echo $path; ?>device/template/listshort.json</a></td></tr>
+    <tr><td><?php echo _('get template details'); ?></td><td><a href="<?php echo $path; ?>device/template/get.json?device=example"><?php echo $path; ?>device/template/get.json?device=example</a></td></tr>
+    <tr><td><?php echo _('Initialize device'); ?></td><td><a href="<?php echo $path; ?>device/template/init.json?id=1"><?php echo $path; ?>device/template/init.json?id=1</a></td></tr>
 </table>
 
 <a class="anchor" id="expression"></a> 

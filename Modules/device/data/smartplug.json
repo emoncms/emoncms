@@ -1,4 +1,7 @@
-{	"name": "Smartplug prototype",
+{
+	"name": "Smartplug prototype",
+	"category": "OpenEnergyMonitor",
+	"group": "Smartplug",
     "description": "Smartplug prototype",
     "inputs": [
         {

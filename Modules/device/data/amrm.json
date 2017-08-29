@@ -1,5 +1,7 @@
 {
 	"name": "AMRM",
+	"category": "Datalogger",
+	"group": "ArchiMetrics",
 	"description": "INPUTS & FEEDS for AMRM Logger from archimetrics.co.uk",
 	"inputs": [{
 		"name": "n1T",
