@@ -18,6 +18,7 @@
     require "process_settings.php";
     require "core.php";
     require "route.php";
+    require "param.php";
     require "locale.php";
 
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.10 | 2017.08.17";
@@ -122,66 +123,9 @@
 
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
-
-    // --------------------------
-    // Decode GET POST parameters
-    // --------------------------
-    $input_params = array();
-    foreach ($_GET as $key=>$val) {
-        if (get_magic_quotes_gpc()) $val = stripslashes($val);
-        $input_params[$key] = $val;
-    }
-    foreach ($_POST as $key=>$val) {
-        if (get_magic_quotes_gpc()) $val = stripslashes($val);
-        $input_params[$key] = $val;
-    }
     
-    // Decode encrypted parameters
-    $headers = apache_request_headers();
-    
-    if (isset($headers["Content-Type"]) && $headers["Content-Type"]=="aes128cbc") {
-
-        // Fetch authorization header
-        if (!isset($headers["Authorization"])) {echo "missing authorization header"; die; }
-        $authorization = explode(":",$headers["Authorization"]);
-        if (count($authorization)!=2) {echo "authorization header format should be userid:hmac"; die; }
-        $userid = $authorization[0];
-        $hmac1 = $authorization[1];
-        
-        // Fetch user
-        $apikey = $user->get_apikey_write($userid);
-        if ($apikey===false) { echo "User not found"; die; }
-
-        // Fetch encrypted data from POST body
-        $base64EncryptedData = file_get_contents('php://input');
-        if ($base64EncryptedData=="") {echo "no content in post body"; die; }
-
-        // The base64 is converted from "URL safe" code to standard base64 (RFC2045 etc),
-        // then it is decoded into the binary encrypted data
-        $encryptedData = base64_decode(str_replace(array('-','_'),array('+','/'),$base64EncryptedData));
-
-        // The binary encrypted data is decrypted using the apikey.
-        // Note that the first 16 bytes of the encrypted data string are the IV and
-        // the actual data follows
-        $dataString = @openssl_decrypt(substr($encryptedData,16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData,0,16));
-        
-        // HMAC generated from decoded data
-        $hmac2 = hash_hmac('sha256',$dataString,$apikey);
-        
-        if (!hash_equals($hmac1,$hmac2)) {echo "invalid data"; die; }
-        
-        $session["write"] = true;
-        $session["read"] = true;
-        $session["userid"] = $userid;
-        
-        foreach (explode('&',$dataString) as $chunk) {
-            $param = explode("=", $chunk);
-            if (count($param)==2) {
-                $key = $param[0]; $val = $param[1];
-                $input_params[$key] = $val;
-            }
-        }
-    }
+    // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
+    $param = new Param($user);
     
     // --------------------------------------------------------------------------------------
     // Special routes

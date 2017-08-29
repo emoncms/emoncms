@@ -94,19 +94,6 @@ function post($index)
     return $val;
 }
 
-function prop($index)
-{
-    global $input_params;
-    if (isset($input_params[$index])) return $input_params[$index]; else return null;
-}
-
-function isset_prop($index)
-{
-    global $input_params;
-    if (isset($input_params[$index])) return true; else return false;
-}
-
-
 function server($index)
 {
     $val = null;
