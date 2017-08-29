@@ -38,7 +38,7 @@
     <body>
         <div id="wrap">
         
-        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
+        <div id="emoncms-navbar" class="navbar navbar-inverse">
             <div class="navbar-inner">
                     <?php  if ($menucollapses) { ?>
                     <style>
