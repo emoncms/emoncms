@@ -135,6 +135,13 @@ input[type="checkbox"] { margin:0px; }
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
 
+<div id="feed-loader" class="ajax-loader"></div>
+    
+<div id="bottomtoolbar" class="hide">
+    <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
+    <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
+</div>
+
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -202,7 +209,20 @@ input[type="checkbox"] { margin:0px; }
       $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
       
           // Show/hide no feeds alert
-		      if (data.length>0) $("#nofeeds").hide(); else $("#nofeeds").show();
+          $('#feed-loader').hide();
+          if (data.length == 0){
+              $("#nofeeds").show();
+              $("#localheading").hide();
+              $("#apihelphead").hide();
+              $("#bottomtoolbar").show();
+              $("#refreshfeedsize").hide();
+          } else {
+              $("#nofeeds").hide();
+              $("#localheading").show();
+              $("#apihelphead").show();
+              $("#bottomtoolbar").show();
+              $("#refreshfeedsize").show();
+          }
 		      
           feeds = {};
 		      for (var z in data) feeds[data[z].id] = data[z];
@@ -232,7 +252,7 @@ input[type="checkbox"] { margin:0px; }
 				          var feedid = nodes[node][feed].id;
                   out += "<div class='node-feed' feedid="+feedid+">";
                   out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"'/></div></div>";
-                  out += "<div class='name'><div class='ipad'>"+nodes[node][feed].name+"</div></div>";
+                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed].public) publicfeed = "<i class='icon-globe'></i>";
@@ -373,6 +393,10 @@ input[type="checkbox"] { margin:0px; }
 	    }
 	    update();
       $('#feedDeleteModal').modal('hide');
+  });
+  
+  $("#refreshfeedsize").click(function(){
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
   });
 
   // ---------------------------------------------------------------------------------------------
