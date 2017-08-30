@@ -13,8 +13,6 @@ var processlist_ui =
   
   engines_hidden:[],
   has_redis: 0,
-  
-  table: table,
 
   'draw':function(){
     var i = 0;
@@ -597,15 +595,14 @@ var processlist_ui =
     $("#save-processlist").attr('class','btn btn-warning').text("Changed, press to save");
   },
 
-  'saved':function(t){
+  'saved':function(feeds){
     $("#save-processlist").attr('class','btn btn-success').text("Saved");
-    // Update context table immedietly
-    for (z in t.data) {
-      if (t.data[z].id == processlist_ui.contextid) {
-        t.data[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
+
+    for (z in feeds) {
+      if (feeds[z].id == processlist_ui.contextid) {
+        feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    table.draw();
   },
 
   'decode':function(str){
@@ -789,7 +786,7 @@ var processlist_ui =
     processlist_ui.init_done--;
     if (processlist_ui.init_done == 0) {
       processlist_ui.draw();
-      table.draw();
+
       if (processlist_ui.contexttype == 0) {
         $("#process-select").val(1); // default process for input context
       } else {

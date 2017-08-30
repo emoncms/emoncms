@@ -124,6 +124,7 @@ input[type="checkbox"] { margin:0px; }
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
+	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
 	
 	<button id="classic-view" class="btn" style="float:right">Classic</button>
 </div>
@@ -189,6 +190,30 @@ input[type="checkbox"] { margin:0px; }
         <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
 </div>
+
+<div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="newFeedNameModalLabel"><?php echo _('New Virtual Feed'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <label>Feed Name: </label>
+        <input type="text" value="New Virtual Feed" id="newfeed-name">
+        <label>Feed Tag: </label>
+        <input type="text" value="Virtual" id="newfeed-tag">
+        <label>Feed DataType: </label>
+        <select id="newfeed-datatype">
+            <option value=1>Realtime</option>
+            <option value=2>Daily</option>
+        </select>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="newfeed-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
+    </div>
+</div>
+
+<?php require "Modules/process/Views/process_ui.php"; ?>
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
 <script>
   var path = "<?php echo $path; ?>";
@@ -400,6 +425,47 @@ input[type="checkbox"] { margin:0px; }
   });
 
   // ---------------------------------------------------------------------------------------------
+  // Virtual Feed feature
+  // ---------------------------------------------------------------------------------------------
+  $("#newfeed-save").click(function (){
+    var newfeedname = $('#newfeed-name').val();
+    var newfeedtag = $('#newfeed-tag').val();
+    var engine = 7;   // Virtual Engine
+    var datatype = $('#newfeed-datatype').val();
+    var options = {};
+    
+    var result = feed.create(newfeedtag,newfeedname,datatype,engine,options);
+    feedid = result.feedid;
+
+    if (!result.success || feedid<1) {
+      alert('ERROR: Feed could not be created. '+result.message);
+      return false;
+    } else {
+      update(); 
+      $('#newFeedNameModal').modal('hide');
+    }
+  });
+
+  // Process list UI js
+  processlist_ui.init(1); // is virtual feed
+
+  $(".feed-process").click(function() {
+      // There should only ever be one feed that is selected here:
+      var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+      var contextid = feedid;
+      var contextname = "";
+      if (feeds[feedid].name != "") contextname = feeds[feedid].tag + " : " + feeds[feedid].name;
+      else contextname = feeds[feedid].tag + " : " + feeds[feedid].id;    
+      var processlist = processlist_ui.decode(feeds[feedid].processList); // Feed process list
+      processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
+   });
+  
+  $("#save-processlist").click(function (){
+      var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
+      if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+  }); 
+
+  // ---------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------
   function feed_selection() 
   {
@@ -422,7 +488,12 @@ input[type="checkbox"] { margin:0px; }
 	    }
 	    
 	    if (num_selected==1) {
-	        $(".feed-edit").show();	  
+          // There should only ever be one feed that is selected here:
+          var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+          // Only show feed process button for Virtual feeds
+	        if (feeds[feedid].engine==7) $(".feed-process").show(); else $(".feed-process").hide();
+	    
+	        $(".feed-edit").show();
 	    } else {
 		      $(".feed-edit").hide();
 	    }
