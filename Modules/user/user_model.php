@@ -452,7 +452,7 @@ class User
     {
         $userid = intval($userid);
         $result = $this->mysqli->query("SELECT `apikey_read` FROM users WHERE `id`='$userid'");
-        $row = $result->fetch_object();
+        if (!$row = $result->fetch_object()) return false;
         return $row->apikey_read;
     }
 
@@ -460,7 +460,7 @@ class User
     {
         $userid = intval($userid);
         $result = $this->mysqli->query("SELECT `apikey_write` FROM users WHERE `id`='$userid'");
-        $row = $result->fetch_object();
+        if (!$row = $result->fetch_object()) return false;
         return $row->apikey_write;
     }
     

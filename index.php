@@ -18,13 +18,13 @@
     require "process_settings.php";
     require "core.php";
     require "route.php";
+    require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.8 | 2017.07.18";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.10 | 2017.08.17";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
-
 
     // 2) Database
     if ($redis_enabled) {
@@ -88,7 +88,7 @@
         //      GET /resource HTTP/1.1
         //      Host: server.example.com
         //      Authorization: Bearer THE_API_KEY_HERE
-        $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
+        // $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
     }
 
     $device = false;
@@ -116,14 +116,18 @@
     } else {
         $session = $user->emon_session_start();
     }
-
+    
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
-
+    
+    // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
+    $param = new Param($user);
+    
+    // --------------------------------------------------------------------------------------
     // Special routes
 
     // Return brief device descriptor for hub detection
@@ -218,14 +222,17 @@
     // 7) Output
     if ($route->format == 'json')
     {
-        header('Content-Type: application/json');
         if ($route->controller=='time') {
+            header('Content-Type: text');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='post') {
+            header('Content-Type: text');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='bulk') {
+            header('Content-Type: text');
             print $output['content'];
         } else {
+            header('Content-Type: application/json');
             print json_encode($output['content']);
         }
     }

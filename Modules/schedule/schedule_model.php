@@ -74,6 +74,10 @@ class Schedule
         if (isset($schedule_exp_cache[$id])) {
             $get_expression = $schedule_exp_cache[$id]; // Retrieve from static cache
         } else {
+            if (!$this->exist($id)) {
+                $this->log->error("get_expression() Schedule not found. scheduleid=$id time=time");
+                return null;
+            }
             $this->log->info("get_expression() $id");
             $result = $this->mysqli->query("SELECT `expression`, `timezone` FROM schedule WHERE id = '$id'");
             $row = $result->fetch_array();
@@ -142,6 +146,7 @@ class Schedule
     public function match($scheduleid, $time) {
         //$this->log->info("match() $scheduleid, $time");
         $get_expression = $this->get_expression($scheduleid);
+        if ($get_expression == null) return null;
         $expression = $get_expression["expression"];
         $exp_timezone = $get_expression["timezone"];
         return $this->match_engine($expression,$exp_timezone,$time,false);

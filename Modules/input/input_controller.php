@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device, $param;
 
     // Only allow access of user has write access or the input/encrypted api is requested
     if (!$session['write'] && $route->action != "encrypted") return array('content'=>false);
@@ -42,21 +42,13 @@ function input_controller()
     $route->format = "json"; 
 
     // ------------------------------------------------------------------------
-    // AES-128-CBC Encrypted Data method
-    // ------------------------------------------------------------------------
-    if ($route->action == "encrypted") {
-        $route->format = "text";
-        $result = $inputMethods->encrypted();
-        return array('content'=>$result);
-    }
-
-    // ------------------------------------------------------------------------
     // input/post
     // ------------------------------------------------------------------------
-    else if ($route->action == "post") {
+    if ($route->action == "post") {
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
-            if (isset($_GET['fulljson'])) $result = '{"success": true}';
+            if ($param->isset('fulljson')) $result = '{"success": true}';
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -69,7 +61,9 @@ function input_controller()
     // ------------------------------------------------------------------------
     else if ($route->action == 'bulk') {
         $result = $inputMethods->bulk($session['userid']);
-        if ($result!="ok") {
+        if ($result=="ok") {
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
+        } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
             $log->error($result);
@@ -141,7 +135,7 @@ function input_controller()
     } else if (isset($_GET['inputids'])) {
     
         if ($route->action == "delete") {
-            $inputids = json_decode($_GET['inputids']);
+            $inputids = json_decode(get('inputids'));
             if ($inputids!=null) $result = $input->delete_multiple($session['userid'],$inputids);
         }
     }
