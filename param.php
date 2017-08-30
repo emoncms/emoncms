@@ -46,7 +46,7 @@ class Param
         $headers = apache_request_headers();
         
         if (isset($headers["Content-Type"]) && $headers["Content-Type"]=="aes128cbc") {
-
+        
             // Fetch authorization header
             if (!isset($headers["Authorization"])) {echo "missing authorization header"; die; }
             $authorization = explode(":",$headers["Authorization"]);
@@ -72,7 +72,7 @@ class Param
             $dataString = @openssl_decrypt(substr($encryptedData,16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData,0,16));
             
             // HMAC generated from decoded data
-            $hmac2 = hash_hmac('sha256',$dataString,$apikey);
+            $hmac2 = hash_hmac('sha256',$dataString,hex2bin($apikey));
             
             if (!hash_equals($hmac1,$hmac2)) {echo "invalid data"; die; }
             
