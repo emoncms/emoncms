@@ -129,6 +129,12 @@ input[type="checkbox"] { margin:0px; }
 </div>
 
 <div id="table"></div>
+
+<div id="nofeeds" class="alert alert-block hide">
+    <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
+    <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
+</div>
+
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -195,8 +201,12 @@ input[type="checkbox"] { margin:0px; }
   
       $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
       
+          // Show/hide no feeds alert
+		      if (data.length>0) $("#nofeeds").hide(); else $("#nofeeds").show();
+		      
           feeds = {};
 		      for (var z in data) feeds[data[z].id] = data[z];
+		      
           
           var nodes = {};
           for (var z in feeds) {
