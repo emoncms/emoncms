@@ -811,9 +811,13 @@ $("#export").click(function()
     if (export_interval=="") {alert("Please select interval to download."); return false; }
     
     var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
-    var downloadsize = calculate_download_size(ids.length); 
+    var downloadsize = calculate_download_size(ids.length);
     
-    url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
+    if (ids.length>1) {
+        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
+    } else {
+        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
+    }
 
     if (downloadsize>(downloadlimit*1048576)) {
         var r = confirm("Estimated download file size is large.\nServer could take a long time or abort depending on stored data size.\Limit is "+downloadlimit+"MB.\n\nTry exporting anyway?");
