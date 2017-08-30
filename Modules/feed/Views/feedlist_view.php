@@ -712,10 +712,7 @@ $("#save-processlist").click(function (){
 // ---------------------------------------------------------------------------------------------
 // Export feature
 // ---------------------------------------------------------------------------------------------
-
-
 $(".feed-download").click(function(){
-
     var ids = [];
 	  for (var feedid in selected_feeds) {
 		    if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
@@ -724,35 +721,11 @@ $(".feed-download").click(function(){
 	  $("#export").attr('feedcount',ids.length);
 	  calculate_download_size(ids.length);
 	  
-	  /*
-    if (row == undefined) {
-        // is tag group
-        $("#export").attr('export-type',"group");
-        var group = $(this).attr('group');
-        $("#export").attr('group',group);
-        var rows = $(this).attr('rows').split(",");
-        var feedids = [];
-        for (i in rows) { feedids.push(feeds[rows[i]].id); } // get feedids from rowids
-        $("#export").attr('feedids',feedids);
-        $("#export").attr('feedcount',rows.length);
-        $("#SelectedExport").html(group + " tag ("+rows.length+" feeds)");
-        calculate_download_size(rows.length);
-    } else {
-        // is feed
-        $("#export").attr('export-type',"feed");
-        $("#export").attr('feedid',table.data[row].id);
-        var name = table.data[row].tag+": "+table.data[row].name;
-        $("#export").attr('name',name);
-        $("#SelectedExport").html(name);
-        calculate_download_size(1);
-    }
     if ($("#export-timezone-offset").val()=="") {
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
         $("#export-timezone-offset").val(parseInt(timezoneoffset));
-    }*/
-    
-    console.log("here feed download");
+    }
     
     $('#feedExportModal').modal('show');
 });
@@ -814,9 +787,9 @@ $("#export").click(function()
     var downloadsize = calculate_download_size(ids.length);
     
     if (ids.length>1) {
-        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
+        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
     } else {
-        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+$(this).attr('group');
+        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
     }
 
     if (downloadsize>(downloadlimit*1048576)) {
