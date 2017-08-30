@@ -283,7 +283,6 @@
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
   });
 
-
   // Export feature
   $("#table").on("click",".icon-circle-arrow-down,.icon-download", function(){
     var row = $(this).attr('row');
