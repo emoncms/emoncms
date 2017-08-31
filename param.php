@@ -17,14 +17,18 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Param
 {
-
+    private $route;
     private $user;
     private $params = array();
     
+    // Associative array to make search fast
+    private $allowed_apis = array("input/post","input/bulk");
+    
     public $sha256base64_response = false;
 
-    public function __construct($user)
+    public function __construct($route,$user)
     {
+        $this->route = $route;
         $this->user = $user;
         $this->load();
     }
@@ -42,11 +46,16 @@ class Param
             $this->params[$key] = $val;
         }
         
+        // Temporary restriction on allowed api's for encrypted method
+        $allowed_apis = array_flip($this->allowed_apis);
+        $api = $this->route->controller."/".$this->route->action;
+        if (!isset($allowed_apis[$api])) return false; 
+        
         // Decode encrypted parameters
         $headers = apache_request_headers();
         
         if (isset($headers["Content-Type"]) && $headers["Content-Type"]=="aes128cbc") {
-
+        
             // Fetch authorization header
             if (!isset($headers["Authorization"])) {echo "missing authorization header"; die; }
             $authorization = explode(":",$headers["Authorization"]);
@@ -72,7 +81,7 @@ class Param
             $dataString = @openssl_decrypt(substr($encryptedData,16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData,0,16));
             
             // HMAC generated from decoded data
-            $hmac2 = hash_hmac('sha256',$dataString,$apikey);
+            $hmac2 = hash_hmac('sha256',$dataString,hex2bin($apikey));
             
             if (!hash_equals($hmac1,$hmac2)) {echo "invalid data"; die; }
             

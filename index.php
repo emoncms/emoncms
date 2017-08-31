@@ -125,7 +125,7 @@
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
     
     // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
-    $param = new Param($user);
+    $param = new Param($route,$user);
     
     // --------------------------------------------------------------------------------------
     // Special routes
