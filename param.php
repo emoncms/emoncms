@@ -17,14 +17,18 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 class Param
 {
-
+    private $route;
     private $user;
     private $params = array();
     
+    // Associative array to make search fast
+    private $allowed_apis = array("input/post","input/bulk");
+    
     public $sha256base64_response = false;
 
-    public function __construct($user)
+    public function __construct($route,$user)
     {
+        $this->route = $route;
         $this->user = $user;
         $this->load();
     }
@@ -41,6 +45,11 @@ class Param
             if (get_magic_quotes_gpc()) $val = stripslashes($val);
             $this->params[$key] = $val;
         }
+        
+        // Temporary restriction on allowed api's for encrypted method
+        $allowed_apis = array_flip($this->allowed_apis);
+        $api = $this->route->controller."/".$this->route->action;
+        if (!isset($allowed_apis[$api])) return false; 
         
         // Decode encrypted parameters
         $headers = apache_request_headers();
