@@ -29,84 +29,6 @@ class InputMethods
         $this->process = $process;
         $this->device = $device;
     }
-
-    // ------------------------------------------------------------------------------------
-    // AES-128-CBC Encrypted Input Method
-    // ------------------------------------------------------------------------------------
-    public function encrypted()
-    {
-        // Check that username and data parameters are present
-        if (!isset($_POST['username']) || !isset($_POST['data'])) return "Missing username or data parameters";
-        
-        // Load username if exists
-        $username = $_POST['username'];
-        $u = $this->user->get_user_from_username($username);
-        if (!$u || !isset($u->apikey_write)) return "User not found";
-        
-        $apikey = $u->apikey_write;
-        $userid = $u->id;
-
-        // The encrypted data in base64 is passed using the keyword data.
-        $base64EncryptedData = $_POST["data"];
-
-        // The base64 is converted from "URL safe" code to standard base64 (RFC2045 etc),
-        // then it is decoded into the binary encrypted data
-        $encryptedData = base64_decode(str_replace(array('-','_'),array('+','/'),$base64EncryptedData));
-
-        // The binary encrypted data is decrypted using the apikey.
-        // Note that the first 16 bytes of the encrypted data string are the IV and
-        // the actual data follows
-        $jsonstring = @openssl_decrypt(substr($encryptedData,16), 'AES-128-CBC', hex2bin($apikey), OPENSSL_RAW_DATA, substr($encryptedData,0,16));
-        
-        // Decode json data
-        $data = json_decode($jsonstring);
-        if ($data==null) return "Invalid data string or encryption key";
-                
-        $time_ref = 0;
-                    
-        foreach ($data as $item)
-        {
-            if (count($item)>2)
-            {
-                // check for correct time format
-                $itemtime = (int) $item[0];
-
-                $time = $time_ref + (int) $itemtime;
-                if (!is_object($item[1])) {
-                    $nodeid = $item[1]; 
-                } else {
-                    return "Format error, node must not be an object";
-                }
-
-                $inputs = array();
-                $name = 1;
-                for ($i=2; $i<count($item); $i++)
-                {
-                    if (is_object($item[$i]))
-                    {
-                        $value = (float) current($item[$i]);
-                        $inputs[key($item[$i])] = $value;
-                        continue;
-                    }
-                    if (strlen($item[$i]))
-                    {
-                        $value = (float) $item[$i];
-                        $inputs[$name] = $value;
-                    }
-                    $name ++;
-                }
-
-                $result = $this->process_node($userid,$time,$nodeid,$inputs);
-                if ($result!==true) return $result;
-            }
-        }
-        
-        // Now we develop a sha256 hash of the data to send back in the reply as proof
-        // that the recipient was able to decode the message
-        $sha256 = hash("sha256", $jsonstring, true);
-        $sha256base64 = str_replace(array('+','/'),array('-','_'), base64_encode($sha256));
-        return $sha256base64;
-    }
     
     // ------------------------------------------------------------------------------------
     // input/post method
@@ -117,22 +39,20 @@ class InputMethods
     public function post($userid)
     {   
         // Nodeid
-        global $route;
+        global $route,$param;
         
         // Default nodeid is zero
         $nodeid = 0;
         
         if ($route->subaction) {
             $nodeid = $route->subaction;
-        } else if (isset($_GET['node'])) {
-            $nodeid = $_GET['node'];
-        } else if (isset($_POST['node'])) {
-            $nodeid = $_POST['node'];
+        } else if ($param->isset('node')) {
+            $nodeid = $param->val('node');
         }
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
         
         // Time
-        if (isset($_GET['time'])) $time = (int) $_GET['time']; else $time = time();
+        if ($param->isset('time')) $time = (int) $param->val('time'); else $time = time();
 
         // Data
         $datain = false;
@@ -141,15 +61,14 @@ class InputMethods
          * from JSON.  The previous 'json' type is retained for
          * backwards compatibility, since some strings would be parsed
          * differently in the two cases. */
-        if (isset($_GET['json'])) $datain = get('json');
-        else if (isset($_GET['fulljson'])) $datain = get('fulljson');
-        else if (isset($_GET['csv'])) $datain = get('csv');
-        else if (isset($_GET['data'])) $datain = get('data');
-        else if (isset($_POST['data'])) $datain = post('data');
+        if ($param->isset('json')) $datain = $param->val('json');
+        else if ($param->isset('fulljson')) $datain = $param->val('fulljson');
+        else if ($param->isset('csv')) $datain = $param->val('csv');
+        else if ($param->isset('data')) $datain = $param->val('data');
 
         if ($datain=="") return "Request contains no data via csv, json or data tag";
         
-        if (isset($_GET['fulljson'])) {
+        if ($param->isset('fulljson')) {
             $inputs = json_decode($datain, true, 2);
             if (is_null($inputs)) {
                 return "Error decoding JSON string (invalid or too deeply nested)";
@@ -219,14 +138,9 @@ class InputMethods
     */
     public function bulk($userid)
     {
-        if (!isset($_GET['data']) && isset($_POST['data']))
-        {
-            $data = json_decode(post('data'));
-        }
-        else
-        {
-            $data = json_decode(get('data'));
-        }
+        global $param;
+        
+        $data = json_decode($param->val('data'));
 
         $len = count($data);
         
@@ -235,22 +149,16 @@ class InputMethods
         if (!isset($data[$len-1][0])) return "Format error, last item in bulk data does not contain any data";
 
         // Sent at mode: input/bulk.json?data=[[45,16,1137],[50,17,1437,3164],[55,19,1412,3077]]&sentat=60
-        if (isset($_GET['sentat'])) {
-            $time_ref = time() - (int) $_GET['sentat'];
-        }  elseif (isset($_POST['sentat'])) {
-            $time_ref = time() - (int) $_POST['sentat'];
+        if ($param->isset('sentat')) {
+            $time_ref = time() - (int) $param->val('sentat');
         }
         // Offset mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
-        elseif (isset($_GET['offset'])) {
-            $time_ref = time() - (int) $_GET['offset'];
-        } elseif (isset($_POST['offset'])) {
-            $time_ref = time() - (int) $_POST['offset'];
+        elseif ($param->isset('offset')) {
+            $time_ref = time() - (int) $param->val('offset');
         }
         // Time mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=1387729425
-        elseif (isset($_GET['time'])) {
-            $time_ref = (int) $_GET['time'];
-        } elseif (isset($_POST['time'])) {
-            $time_ref = (int) $_POST['time'];
+        elseif ($param->isset('time')) {
+            $time_ref = (int) $param->val('time');
         }
         // Legacy mode: input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
         else {

@@ -35,7 +35,7 @@ class PHPTimeSeries
         }
 
         if (!flock($fh, LOCK_EX)) {
-            $msg = "data file '".$this->dir.$feedname."' is locked by another process";
+            $msg = "data file '".$this->dir."feed_$feedid.MYD"."' is locked by another process";
             $this->log->error("create() ".$msg);
             fclose($fh);
             return $msg;
@@ -290,14 +290,15 @@ class PHPTimeSeries
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
         $date->modify("midnight");
-        $date->modify("+1 day");
+        if ($mode=="weekly") $date->modify("this monday");
+        if ($mode=="monthly") $date->modify("first day of this month");
 
         $fh = fopen($this->dir."feed_$id.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$id.MYD");
 
         $n = 0;
         $array = array("time"=>0, "value"=>0);
-        while($n<10000) // max itterations
+        while($n<10000) // max iterations
         {
             $time = $date->getTimestamp();
             if ($time>$end) break;
@@ -312,7 +313,9 @@ class PHPTimeSeries
             if ($array['time']!=$lastarray['time']) {
                 $data[] = array($array['time']*1000,$array['value']);
             }
-            $date->modify("+1 day");
+            if ($mode=="daily") $date->modify("+1 day");
+            if ($mode=="weekly") $date->modify("+1 week");
+            if ($mode=="monthly") $date->modify("+1 month");
             $n++;
         }
         
@@ -391,8 +394,6 @@ class PHPTimeSeries
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 
-        $pos = $this->binarysearch($fh,$start,$filesize);
-
         $interval = ($end - $start) / $dp;
 
         // Ensure that interval request is less than 1
@@ -401,8 +402,6 @@ class PHPTimeSeries
             $interval = 1;
             $dp = ($end - $start) / $interval;
         }
-
-        $data = array();
 
         $time = 0;
         
