@@ -22,7 +22,10 @@
     margin-right: 0px;
 }
 
-.node {margin-bottom:10px;}
+.node {
+    margin-bottom:10px;
+    border: 1px solid #aaa;
+}
 
 .node-info {
     height:40px;
@@ -259,7 +262,7 @@ function update(){
 	                      if (!data) alert("There was an error creating device: "+inputs[z].nodeid); 
 	                  }});
 	              }
-	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = false;
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
@@ -330,7 +333,7 @@ function draw_devices()
         }
     }
     
-    autowidth(".node-inputs .name",0);
+    autowidth(".node-inputs .name",10);
     autowidth(".node-inputs .value",10);
     resize();
 }
