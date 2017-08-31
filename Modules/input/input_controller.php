@@ -48,7 +48,7 @@ function input_controller()
     if ($route->action == "post") {
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
-            if ($param->isset('fulljson')) $result = '{"success": true}';
+            if ($param->exists('fulljson')) $result = '{"success": true}';
             if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';

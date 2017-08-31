@@ -107,7 +107,7 @@ class Param
         if (isset($this->params[$index])) return $this->params[$index]; else return null;
     }
 
-    public function isset($index)
+    public function exists($index)
     {
         if (isset($this->params[$index])) return true; else return false;
     }  
