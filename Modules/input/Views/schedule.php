@@ -34,7 +34,7 @@ $("#devicename").html(jsUcfirst(device));
 
 var controls = {};
 
-$.ajax({ url: path+"device/gettemplate.json?device="+device, dataType: 'json', async: true, success: function(template) { 
+$.ajax({ url: path+"device/template/get.json?device="+device, dataType: 'json', async: true, success: function(template) { 
     controls = template.control;
     draw_controls();
     update();
