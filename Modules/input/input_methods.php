@@ -241,6 +241,8 @@ class InputMethods
                     'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
                     'sourceid'=>$dbinputs[$nodeid][$name]['id'])
                 );
+
+                if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
             }
         }
 
