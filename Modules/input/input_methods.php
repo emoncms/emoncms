@@ -46,13 +46,13 @@ class InputMethods
         
         if ($route->subaction) {
             $nodeid = $route->subaction;
-        } else if ($param->isset('node')) {
+        } else if ($param->exists('node')) {
             $nodeid = $param->val('node');
         }
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
         
         // Time
-        if ($param->isset('time')) $time = (int) $param->val('time'); else $time = time();
+        if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
 
         // Data
         $datain = false;
@@ -61,14 +61,14 @@ class InputMethods
          * from JSON.  The previous 'json' type is retained for
          * backwards compatibility, since some strings would be parsed
          * differently in the two cases. */
-        if ($param->isset('json')) $datain = $param->val('json');
-        else if ($param->isset('fulljson')) $datain = $param->val('fulljson');
-        else if ($param->isset('csv')) $datain = $param->val('csv');
-        else if ($param->isset('data')) $datain = $param->val('data');
+        if ($param->exists('json')) $datain = $param->val('json');
+        else if ($param->exists('fulljson')) $datain = $param->val('fulljson');
+        else if ($param->exists('csv')) $datain = $param->val('csv');
+        else if ($param->exists('data')) $datain = $param->val('data');
 
         if ($datain=="") return "Request contains no data via csv, json or data tag";
         
-        if ($param->isset('fulljson')) {
+        if ($param->exists('fulljson')) {
             $inputs = json_decode($datain, true, 2);
             if (is_null($inputs)) {
                 return "Error decoding JSON string (invalid or too deeply nested)";
@@ -149,15 +149,15 @@ class InputMethods
         if (!isset($data[$len-1][0])) return "Format error, last item in bulk data does not contain any data";
 
         // Sent at mode: input/bulk.json?data=[[45,16,1137],[50,17,1437,3164],[55,19,1412,3077]]&sentat=60
-        if ($param->isset('sentat')) {
+        if ($param->exists('sentat')) {
             $time_ref = time() - (int) $param->val('sentat');
         }
         // Offset mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&offset=-10
-        elseif ($param->isset('offset')) {
+        elseif ($param->exists('offset')) {
             $time_ref = time() - (int) $param->val('offset');
         }
         // Time mode: input/bulk.json?data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=1387729425
-        elseif ($param->isset('time')) {
+        elseif ($param->exists('time')) {
             $time_ref = (int) $param->val('time');
         }
         // Legacy mode: input/bulk.json?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]
@@ -218,7 +218,7 @@ class InputMethods
 
         if (!isset($dbinputs[$nodeid])) {
             $dbinputs[$nodeid] = array();
-            if ($this->device) $this->device->create($userid,$nodeid);
+            if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
                 
         $tmp = array();
@@ -241,6 +241,8 @@ class InputMethods
                     'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
                     'sourceid'=>$dbinputs[$nodeid][$name]['id'])
                 );
+
+                if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
             }
         }
 

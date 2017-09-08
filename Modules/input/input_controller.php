@@ -47,7 +47,7 @@ function input_controller()
     if ($route->action == "post") {
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
-            if ($param->isset('fulljson')) $result = '{"success": true}';
+            if ($param->exists('fulljson')) $result = '{"success": true}';
             if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
@@ -154,6 +154,9 @@ function input_controller()
     } else if ($route->action == 'view-classic') {
         $route->format = "html";
         $result =  view("Modules/input/Views/input_view_classic.php", array());
+    } else if ($route->action == 'schedule') {
+        $route->format = "html";
+        $result =  view("Modules/input/Views/schedule.php", array());
     }
 
     return array('content'=>$result);

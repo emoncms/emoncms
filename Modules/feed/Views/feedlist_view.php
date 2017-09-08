@@ -5,6 +5,9 @@
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 
+<link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+<script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
+
 <style>
 
 .container-fluid { padding: 0px 10px 0px 10px; }
@@ -124,11 +127,25 @@ input[type="checkbox"] { margin:0px; }
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
+	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
 	
 	<button id="classic-view" class="btn" style="float:right">Classic</button>
 </div>
 
 <div id="table"></div>
+
+<div id="nofeeds" class="alert alert-block hide">
+    <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
+    <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
+</div>
+
+<div id="feed-loader" class="ajax-loader"></div>
+    
+<div id="bottomtoolbar" class="hide">
+    <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
+    <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
+</div>
+
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -153,6 +170,77 @@ input[type="checkbox"] { margin:0px; }
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
 </div>
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!-- FEED EXPORT                                                                                                                                   -->
+<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="feedExportModalLabel"><b><span id="SelectedExport"></span></b> CSV export</h3>
+    </div>
+    <div class="modal-body">
+    <p>Select the time range and interval that you wish to export: </p>
+        <table class="table">
+        <tr>
+            <td>
+                <p><b>Start date & time</b></p>
+                <div id="datetimepicker1" class="input-append date">
+                    <input id="export-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
+                    <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                </div>
+            </td>
+            <td>
+                <p><b>End date & time</b></p>
+                <div id="datetimepicker2" class="input-append date">
+                    <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
+                    <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p><b>Interval</b></p>
+                <select id="export-interval" >
+                    <option value=5>Auto</option>
+                    <option value=5>5s</option>
+                    <option value=10>10s</option>
+                    <option value=30>30s</option>
+                    <option value=60>1 min</option>
+                    <option value=300>5 mins</option>
+                    <option value=600>10 mins</option>
+                    <option value=900>15 mins</option>
+                    <option value=1800>30 mins</option>
+                    <option value=3600>1 hour</option>
+                    <option value=21600>6 hour</option>
+                    <option value=43200>12 hour</option>
+                    <option value=86400>Daily</option>
+                    <option value=604800>Weekly</option>
+                    <option value=2678400>Monthly</option>
+                    <option value=31536000>Annual</option>
+                </select>
+            </td>
+            <td>
+                <p><b>Date time format</b></p>
+                <div class="checkbox">
+                  <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
+                </div>
+                <label>Offset secs (for daily)&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled=""></label>
+            </td>
+        </tr>
+        </table>
+            <div class="alert alert-info">
+                <p>Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.</p>
+                <p>Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.</p>
+            </div>
+    </div>
+    <div class="modal-footer">
+        <div id="downloadsizeplaceholder" style="float: left">Estimated download size: <span id="downloadsize">0</span>MB</div>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
+        <button class="btn" id="export">Export</button>
+    </div>
+</div>
+
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
 <!-- FEED DELETE MODAL                                                                                                                             -->
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
@@ -176,6 +264,33 @@ input[type="checkbox"] { margin:0px; }
         <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
 </div>
+
+<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!-- NEW VIRTUAL FEED                                                                                                                              -->
+<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="newFeedNameModalLabel"><?php echo _('New Virtual Feed'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <label>Feed Name: </label>
+        <input type="text" value="New Virtual Feed" id="newfeed-name">
+        <label>Feed Tag: </label>
+        <input type="text" value="Virtual" id="newfeed-tag">
+        <label>Feed DataType: </label>
+        <select id="newfeed-datatype">
+            <option value=1>Realtime</option>
+            <option value=2>Daily</option>
+        </select>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="newfeed-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
+    </div>
+</div>
+
+<?php require "Modules/process/Views/process_ui.php"; ?>
 <!--------------------------------------------------------------------------------------------------------------------------------------------------->
 <script>
   var path = "<?php echo $path; ?>";
@@ -195,8 +310,25 @@ input[type="checkbox"] { margin:0px; }
   
       $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
       
+          // Show/hide no feeds alert
+          $('#feed-loader').hide();
+          if (data.length == 0){
+              $("#nofeeds").show();
+              $("#localheading").hide();
+              $("#apihelphead").hide();
+              $("#bottomtoolbar").show();
+              $("#refreshfeedsize").hide();
+          } else {
+              $("#nofeeds").hide();
+              $("#localheading").show();
+              $("#apihelphead").show();
+              $("#bottomtoolbar").show();
+              $("#refreshfeedsize").show();
+          }
+		      
           feeds = {};
 		      for (var z in data) feeds[data[z].id] = data[z];
+		      
           
           var nodes = {};
           for (var z in feeds) {
@@ -222,7 +354,7 @@ input[type="checkbox"] { margin:0px; }
 				          var feedid = nodes[node][feed].id;
                   out += "<div class='node-feed' feedid="+feedid+">";
                   out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"'/></div></div>";
-                  out += "<div class='name'><div class='ipad'>"+nodes[node][feed].name+"</div></div>";
+                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed].public) publicfeed = "<i class='icon-globe'></i>";
@@ -364,6 +496,10 @@ input[type="checkbox"] { margin:0px; }
 	    update();
       $('#feedDeleteModal').modal('hide');
   });
+  
+  $("#refreshfeedsize").click(function(){
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
+  });
 
   // ---------------------------------------------------------------------------------------------
   // ---------------------------------------------------------------------------------------------
@@ -388,7 +524,12 @@ input[type="checkbox"] { margin:0px; }
 	    }
 	    
 	    if (num_selected==1) {
-	        $(".feed-edit").show();	  
+          // There should only ever be one feed that is selected here:
+          var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+          // Only show feed process button for Virtual feeds
+	        if (feeds[feedid].engine==7) $(".feed-process").show(); else $(".feed-process").hide();
+	    
+	        $(".feed-edit").show();
 	    } else {
 		      $(".feed-edit").hide();
 	    }
@@ -526,5 +667,169 @@ function list_format_size(bytes) {
     return (bytes/(1024*1024*1024)).toFixed(1)+"GB";
   }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Virtual Feed feature
+// ---------------------------------------------------------------------------------------------
+$("#newfeed-save").click(function (){
+    var newfeedname = $('#newfeed-name').val();
+    var newfeedtag = $('#newfeed-tag').val();
+    var engine = 7;   // Virtual Engine
+    var datatype = $('#newfeed-datatype').val();
+    var options = {};
+    
+    var result = feed.create(newfeedtag,newfeedname,datatype,engine,options);
+    feedid = result.feedid;
+
+    if (!result.success || feedid<1) {
+        alert('ERROR: Feed could not be created. '+result.message);
+        return false;
+    } else {
+        update(); 
+        $('#newFeedNameModal').modal('hide');
+    }
+});
+
+// Process list UI js
+processlist_ui.init(1); // is virtual feed
+
+$(".feed-process").click(function() {
+    // There should only ever be one feed that is selected here:
+    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+    var contextid = feedid;
+    var contextname = "";
+    if (feeds[feedid].name != "") contextname = feeds[feedid].tag + " : " + feeds[feedid].name;
+    else contextname = feeds[feedid].tag + " : " + feeds[feedid].id;    
+    var processlist = processlist_ui.decode(feeds[feedid].processList); // Feed process list
+    processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
+ });
+
+$("#save-processlist").click(function (){
+    var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
+    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+}); 
+
+// ---------------------------------------------------------------------------------------------
+// Export feature
+// ---------------------------------------------------------------------------------------------
+$(".feed-download").click(function(){
+    var ids = [];
+	  for (var feedid in selected_feeds) {
+		    if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+	  }
+	  
+	  $("#export").attr('feedcount',ids.length);
+	  calculate_download_size(ids.length);
+	  
+    if ($("#export-timezone-offset").val()=="") {
+        var timezoneoffset = user.timezoneoffset();
+        if (timezoneoffset==null) timezoneoffset = 0;
+        $("#export-timezone-offset").val(parseInt(timezoneoffset));
+    }
+    
+    $('#feedExportModal').modal('show');
+});
+
+$('#datetimepicker1').datetimepicker({
+    language: 'en-EN'
+});
+
+$('#datetimepicker2').datetimepicker({
+    language: 'en-EN',
+    useCurrent: false //Important! See issue #1075
+});
+
+now = new Date();
+today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 00, 00);
+var picker1 = $('#datetimepicker1').data('datetimepicker');
+var picker2 = $('#datetimepicker2').data('datetimepicker');
+picker1.setLocalDate(today);
+picker2.setLocalDate(today);
+picker1.setEndDate(today);
+picker2.setStartDate(today);
+
+$('#datetimepicker1').on("changeDate", function (e) {
+    $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);
+});
+
+$('#datetimepicker2').on("changeDate", function (e) {
+    $('#datetimepicker1').data("datetimepicker").setEndDate(e.date);
+});
+
+$('#export-interval, #export-timeformat').on('change', function(e) {
+    $("#export-timezone-offset").prop("disabled", $("#export-timeformat").prop('checked'));
+    calculate_download_size($("#export").attr('feedcount')); 
+});
+
+$('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
+    calculate_download_size($("#export").attr('feedcount')); 
+});
+
+$("#export").click(function()
+{
+    var ids = [];
+	  for (var feedid in selected_feeds) {
+		    if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+	  }
+
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var export_timezone_offset = parseInt($("#export-timezone-offset").val());
+    var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
+    if (export_timeformat) { export_timezone_offset = 0; }
+    if (!export_start) {alert("Please enter a valid start date."); return false; }
+    if (!export_end) {alert("Please enter a valid end date."); return false; }
+    if (export_start>=export_end) {alert("Start date must be further back in time than end date."); return false; }
+    if (export_interval=="") {alert("Please select interval to download."); return false; }
+    
+    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    var downloadsize = calculate_download_size(ids.length);
+    
+    if (ids.length>1) {
+        url = path+"feed/csvexport.json?ids="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+    } else {
+        url = path+"feed/csvexport.json?id="+ids.join(",")+"&start="+(export_start+(export_timezone_offset))+"&end="+(export_end+(export_timezone_offset))+"&interval="+export_interval+"&timeformat="+export_timeformat+"&name="+ids.join("_");
+    }
+
+    if (downloadsize>(downloadlimit*1048576)) {
+        var r = confirm("Estimated download file size is large.\nServer could take a long time or abort depending on stored data size.\Limit is "+downloadlimit+"MB.\n\nTry exporting anyway?");
+        if (!r) return false;
+    }
+    window.open(url);
+});
+
+function calculate_download_size(feedcount){
+
+    var export_start = parse_timepicker_time($("#export-start").val());
+    var export_end = parse_timepicker_time($("#export-end").val());
+    var export_interval = $("#export-interval").val();
+    var export_timeformat_size = ($("#export-timeformat").prop('checked') ? 20 : 11); // bytes per timestamp
+    var export_data_size = 7;                                                         // avg bytes per data
+    
+    var downloadsize = 0;
+    if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
+        downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
+    }
+    $("#downloadsize").html((downloadsize/1024/1024).toFixed(2));
+    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
+    
+    return downloadsize;
+}
+
+function parse_timepicker_time(timestr){
+    var tmp = timestr.split(" ");
+    if (tmp.length!=2) return false;
+
+    var date = tmp[0].split("/");
+    if (date.length!=3) return false;
+
+    var time = tmp[1].split(":");
+    if (time.length!=3) return false;
+
+    return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
+}
+
 </script>
 
