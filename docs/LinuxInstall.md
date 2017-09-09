@@ -63,12 +63,21 @@ First cd into the /var/www directory:
 
     cd /var/www/
 
-Set the permissions of the html directory to be owned by your username:
+Change the owner of the html directory to the current user:
+
+    sudo chown $USER html
+    
+If you get an error message "No such file or directory" you'll need to create the directory,
+
+    sudo mkdir html
+    
+then change the owner:
 
     sudo chown $USER html
 
-Cd into html directory
+Change into the html directory. 
 
+    sudo mkdir html
     cd html
 
 Download emoncms using git:
