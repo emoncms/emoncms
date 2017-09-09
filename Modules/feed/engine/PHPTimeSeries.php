@@ -100,80 +100,69 @@ class PHPTimeSeries
     */
     public function post($feedid,$time,$value,$arg=null)
     {
-        $this->log->info("post() feedid=$feedid time=$time value=$value");
-        
-        // Get last value
-        $fh = @fopen($this->dir."feed_$feedid.MYD", 'rb');
-        if (!$fh) {
-            $this->log->warn("post() could not open data file feedid=$feedid");
-            return false;
-        }
-        
+        $this->log->info("PHPTimeSeries:post feedid=$feedid time=$time value=$value");
+
+        $feedid = (int) $feedid;
+        $time = (int) $time;
+        $value = (float) $value;
+                
         clearstatcache($this->dir."feed_$feedid.MYD");
         $filesize = filesize($this->dir."feed_$feedid.MYD");
-
         $csize = round($filesize / 9.0, 0, PHP_ROUND_HALF_DOWN) *9.0;
         if ($csize!=$filesize) {
-        
             $this->log->warn("post() filesize not integer multiple of 9 bytes, correcting feedid=$feedid");
-            // correct corrupt data
-            fclose($fh);
-
+            
             // extend file by required number of bytes
             if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'wb')) return false;
             fseek($fh,$csize);
             fwrite($fh, pack("CIf",249,$time,$value));
-
             fclose($fh);
             return $value;
         }
-
+        
         // If there is data then read last value
         if ($filesize>=9) {
-
-            // read the last value appended to the file
+        
+            // pen the data file to read and write
+            $fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'c+');
+            if (!$fh) {
+                $this->log->warn("post() could not open data file feedid=$feedid");
+                return false;
+            }
+            
+            // Read last value
             fseek($fh,$filesize-9);
             $d = fread($fh,9);
+            if (strlen($d)!=9) {
+                fclose($fh);
+                return false;
+            }
             $array = unpack("x/Itime/fvalue",$d);
 
-            // check if new datapoint is in the future: append if so
-            if ($time>$array['time'])
-            {
-                // append
-                fclose($fh);
-                if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
-            
+            // Check if new datapoint is in the future
+            if ($time>$array['time']) {
+                // if yes: APPEND
                 fwrite($fh, pack("CIf",249,$time,$value));
-                fclose($fh);
-            }
-            else
-            {
-                // if its not in the future then to update the feed
-                // the datapoint needs to exist with the given time
-                // - search for the datapoint
-                // - if it exits update
+            } else {
+                // if no: UPDATE
+                // search for existing datapoint at time
                 $pos = $this->binarysearch_exact($fh,$time,$filesize);
-
-                if ($pos!=-1)
-                {
-                    fclose($fh);
-                    if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'c+')) return false;
+                if ($pos!=-1) {
+                    // update existing datapoint
                     fseek($fh,$pos);
                     fwrite($fh, pack("CIf",249,$time,$value));
-                    fclose($fh);
                 }
             }
+            fclose($fh);
         }
         else
         {
             // If theres no data in the file then we just append a first datapoint
-            // append
-            fclose($fh);
             if (!$fh = $this->fopendata($this->dir."feed_$feedid.MYD", 'a')) return false;
             fwrite($fh, pack("CIf",249,$time,$value));
             fclose($fh);
         }
-
+        
         return $value;
     }
 
