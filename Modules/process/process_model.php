@@ -18,6 +18,7 @@ class ProcessError {
 class ProcessOriginType {
     const INPUT = 1;
     const VIRTUALFEED = 2;
+    const TASK = 3;
 }
 
 class Process
@@ -118,6 +119,9 @@ class Process
                          
                     case ProcessOriginType::VIRTUALFEED:
                          $this->feed->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
+                         break;
+                     case ProcessOriginType::TASK:
+                         $this->task->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
                          break;
                 }
                 return false;
