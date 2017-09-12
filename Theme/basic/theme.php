@@ -106,7 +106,7 @@
                             display: inherit !important ;
                           }
                         }
-                        @media (min-width: 980px) and (max-width: 1200px){
+                        @media (min-width: 980px) and (max-width: <?php if($maxwidth1<981){$maxwidth1=981;} echo $maxwidth1; ?>px){
                           .menu-text {
                             display: none !important;
                           }
