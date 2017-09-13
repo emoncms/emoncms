@@ -34,7 +34,7 @@ Issue the command:
 
     sudo a2enmod rewrite
 
-For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on lines 155 and 166 of `/etc/apache2/apache2.conf`
+For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on, or very close to lines 161 and 172 of `/etc/apache2/apache2.conf`
 
     sudo nano /etc/apache2/apache2.conf
 
