@@ -50,6 +50,7 @@ Emoncms uses a front controller to route requests, modrewrite needs to be config
  sudo sh -c "echo '  Order allow,deny' >> /etc/apache2/sites-available/emoncms.conf"
  sudo sh -c "echo '  Allow from all' >> /etc/apache2/sites-available/emoncms.conf"
  sudo sh -c "echo '</Directory>' >> /etc/apache2/sites-available/emoncms.conf"
+ sudo sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf"
  sudo ln -s /etc/apache2/sites-available/emoncms.conf /etc/apache2/sites-enabled/
  sudo a2ensite emoncms
  sudo service apache2 reload
@@ -101,7 +102,7 @@ Exit mysql by:
 
     mysql> exit
     
-### Create data repositories for emoncms feed engine's
+### Create data repositories for emoncms feed engines
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
