@@ -463,17 +463,6 @@ class User
         if (!$row = $result->fetch_object()) return false;
         return $row->apikey_write;
     }
-    
-    public function get_user_from_username($username)
-    {
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
-        if ($username_out!=$username) return false;
-        
-        $result = $this->mysqli->query("SELECT `id`, `apikey_read`, `apikey_write` FROM users WHERE `username`='$username'");
-        if (!$row = $result->fetch_object()) return false;
-        
-        return $row;
-    }
 
     public function get_lang($userid)
     {
