@@ -1,3 +1,6 @@
+# DRAFT VERSION FOR DISCUSSION  
+See [this post](https://community.openenergymonitor.org/t/raspbian-stretch/5096) in the community forum.
+
 ## Install Emoncms on Raspberry Pi (Raspbian Stretch)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
