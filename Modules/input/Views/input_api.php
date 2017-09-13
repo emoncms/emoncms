@@ -94,12 +94,6 @@ td:nth-of-type(2) { width:4%;}
 <tr><td><?php echo _('Absolute time format:'); ?></td><td>POST</td><td>curl --data "data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=<?php echo time(); ?>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>" "<?php echo $path; ?>input/bulk"</td></tr>
 </table>
 
-<table class="table">
-<tr><th>Description</th><th>Method</th><th>Example</th></tr>
-<tr><td></td><td>GET/POST</td><td>URL: /input/post or /input/bulk<br>HEADER: Authorization: USERID:HMAC_HASH, Content-Type: aes128cbc<br>POST BODY: IV+CIPHERTEXT</td></tr>
-
-</table>
-
 <br>
 
 <h3><?php echo _('Fetching inputs, updating meta data and other actions'); ?></h3>
