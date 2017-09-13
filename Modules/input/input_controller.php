@@ -49,6 +49,7 @@ function input_controller()
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
             if ($param->exists('fulljson')) $result = '{"success": true}';
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -62,7 +63,7 @@ function input_controller()
     else if ($route->action == 'bulk') {
         $result = $inputMethods->bulk($session['userid']);
         if ($result=="ok") {
-            // result ok returned
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
