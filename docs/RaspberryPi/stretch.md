@@ -16,11 +16,31 @@ Start by updating the system repositories and packages:
 sudo apt-get update && sudo apt-get upgrade  
 sudo apt-get dist-upgrade && sudo rpi-update
 ```
+
+#### Raspberry Pi v3 Compatibility
+
+This section only applies to Raspberry Pi v3 and later.  
+To avoid UART conflicts, it's necessary to disable Pi3 Bluetooth and restore UART0/ttyAMA0 over GPIOs 14 & 15;
+
+	sudo nano /boot/config.txt
+	
+Add to the end of the file
+
+	dtoverlay=pi3-disable-bt
+
+We also need to stop the Bluetooth modem trying to use UART
+
+	sudo systemctl disable hciuart
+
+See [RasPi device tree commit](https://github.com/raspberrypi/firmware/commit/845eb064cb52af00f2ea33c0c9c54136f664a3e4) for `pi3-disable-bt` and [forum thread discussion](https://www.raspberrypi.org/forums/viewtopic.php?f=107&t=138223)
+
+### Installation
+
 Install the dependencies:
 
     sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7-curl php-pear php7-dev php7-mcrypt php7-common redis-server php-redis git-core build-essential ufw ntp
 
-Install the pecl dependencies (serial, redis and swift mailer):
+Install the pecl dependencies (serial and swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl install channel://pecl.php.net/dio-0.1.0 swift/swift
@@ -158,6 +178,12 @@ Edit the cmdline.txt file:
     sudo nano /boot/cmdline.txt
 
 by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
+
+Disable serial console boot
+
+    sudo systemctl stop serial-getty@ttyAMA0.service
+    sudo systemctl disable serial-getty@ttyAMA0.service
+
 At this stage, power off your Raspberry Pi:
 
     sudo poweroff
