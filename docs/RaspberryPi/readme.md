@@ -141,6 +141,8 @@ Set write permissions for the emoncms logfile:
 
 [http://localhost/emoncms](http://localhost/emoncms)
 
+- Create an account on Emoncms, the first account to be created will by default be the admin account. 
+
 If you want Emoncms to redirect from web root i.e load Emoncms with `http://localhost` add reference in `index.php` and remove the default apache `index.html` test page:
 
 	sudo su
@@ -178,7 +180,7 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 
 **You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
 
-###System Options
+### System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)

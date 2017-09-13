@@ -91,6 +91,7 @@
         $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
     }
 
+    $device = false;
     if ($apikey) {
         $session = $user->apikey_session($apikey);
         if (empty($session)) {
