@@ -4,7 +4,7 @@ This guide will install the current full version of emoncms onto a Raspberry Pi 
 
 **Highly Recommended: A pre-built Raspberry Pi SD card image (based on Raspbian Jessie lite) is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
 
-An alternative (older) installation guide is [avaliable for Raspbian Wheezy](install_Wheezy.md) - they are different, so ensure that you use the correct guide!  
+An alternative (older) installation guide is avaliable for Raspbian Jessie - they are different, so ensure that you use the correct guide!  
 
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
 Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
@@ -18,39 +18,17 @@ sudo apt-get dist-upgrade && sudo rpi-update
 ```
 Install the dependencies:
 
-    sudo apt-get install -y apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-common php5-redis git-core redis-server build-essential ufw ntp
-
-During the installation, you will be prompted to select a password for the 'MYSQL "root" user', and to confirm it by entering it a second time. Make a note of the password - you will need it later
-
-**March 2016: The version of php5-redis included in the Raspbian Jessie sources (2.2.5-1) caused Apache to crash (segmentation errrors in Apache error log). Installing the latest stable version (2.2.7) of php5-redis from github fixed the issue. This step probably won't be required in the future when the updated version of php5-redis makes it's way into the sources.**
-
-**February 2017: phpredis v3.1.1 has been released supporting both php5 and php7. It can be installed direct from PECL and is called simply: redis. This guide will be updated to reflect this change once tested in due course.**
-
-To check the version in the sources: `sudo apt-cache show php5-redis`
-
-To fix:
-```
-git clone --branch 2.2.7 https://github.com/phpredis/phpredis
-cd phpredis
-(check the version we are about to install:)
-​cat php_redis.h | grep VERSION
-phpize
-./configure 
-sudo make 
-sudo make install
-```
+    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7-curl php-pear php7-dev php7-mcrypt php7-common redis-server php-redis git-core build-essential ufw ntp
 
 Install the pecl dependencies (serial, redis and swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
-    sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
+    sudo pecl install channel://pecl.php.net/dio-0.1.0 swift/swift
 
-Add the pecl modules to php5 config:
+Add the modules to php5 config:
 
-    sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
 
 Issue the command:
 
@@ -76,11 +54,20 @@ Cd into the www directory and git clone emoncms:
 
     cd /var/www && git clone -b stable https://github.com/emoncms/emoncms.git
 
-### Create a MYSQL database
+### Setup the Mariadb server (MYSQL)
 
-    mysql -u root -p
+We need to firstly secure the database server, and then create a database and database user for emoncms to use;
 
-When prompted, enter the 'MYSQL "root" user' password you were prompted for earlier in this procedure.
+    sudo mysql_secure_installation
+    
+This command starts the database wizard, which guides you to create a **root** password, which you will need later so keep it safe.  
+To all of the other options select - Y (yes)
+
+Then login to Mariadb;
+
+   `sudo mysql -u root -p` (NOTE - sudo is required for this step!)
+
+When prompted, enter the 'MYSQL "root" password you created in the previous step.
 Create the emoncms database using utf8 character decoding:
 
     CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
