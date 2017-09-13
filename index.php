@@ -88,7 +88,12 @@
         //      GET /resource HTTP/1.1
         //      Host: server.example.com
         //      Authorization: Bearer THE_API_KEY_HERE
-        // $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
+        
+        if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"]=="aes128cbc") {
+            // If content_type is AES128CBC
+        } else {
+            $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
+        }
     }
 
     $device = false;

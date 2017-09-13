@@ -16,8 +16,8 @@ function input_controller()
 {
     global $mysqli, $redis, $user, $session, $route, $feed_settings, $device, $param;
 
-    // Only allow access of user has write access or the input/encrypted api is requested
-    if (!$session['write'] && $route->action != "encrypted") return array('content'=>false);
+    // There are no actions in the input module that can be performed with less than write privileges
+    if (!$session['write']) return array('content'=>false);
 
     $result = false;
 

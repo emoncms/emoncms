@@ -52,13 +52,12 @@ class Param
         if (!isset($allowed_apis[$api])) return false; 
         
         // Decode encrypted parameters
-        $headers = apache_request_headers();
         
-        if (isset($headers["Content-Type"]) && $headers["Content-Type"]=="aes128cbc") {
+        if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"]=="aes128cbc") {
         
             // Fetch authorization header
-            if (!isset($headers["Authorization"])) {echo "missing authorization header"; die; }
-            $authorization = explode(":",$headers["Authorization"]);
+            if (!isset($_SERVER["HTTP_AUTHORIZATION"])) {echo "missing authorization header"; die; }
+            $authorization = explode(":",$_SERVER["HTTP_AUTHORIZATION"]);
             if (count($authorization)!=2) {echo "authorization header format should be userid:hmac"; die; }
             $userid = $authorization[0];
             $hmac1 = $authorization[1];
