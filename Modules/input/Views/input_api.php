@@ -25,16 +25,13 @@ td:nth-of-type(2) { width:4%;}
 
 <h3><?php echo _('Posting data to EmonCMS'); ?></h3>
 
-<p><?php echo _('The EmonCMS input API provides three ways of sending data to emoncms:'); ?></p>
+<p><?php echo _('The EmonCMS input API provides two ways of sending data to emoncms:'); ?></p>
 <ul>
     <li><?php echo _('<b>input/post</b> - Post a single update from a node.'); ?></li>
     <li><?php echo _('<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a single update.'); ?></li>
-    <li><?php echo _('<b>Encrypted</b> - An encrypted version of both of the above'); ?></li>
 </ul>
 
 <p><?php echo _("If your starting out with EmonCMS 'input/post' is a good starting point for testing, this was the original input method when EmonCMS . The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote emoncms server as this method provides the option to efficiently bulk upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
-
-<p><?php echo _("For applications where HTTPS or TLS is not available, emoncms offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
 
 <h4><?php echo _('input/post'); ?></h4>
 
@@ -96,23 +93,6 @@ td:nth-of-type(2) { width:4%;}
 
 <tr><td><?php echo _('Absolute time format:'); ?></td><td>POST</td><td>curl --data "data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=<?php echo time(); ?>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>" "<?php echo $path; ?>input/bulk"</td></tr>
 </table>
-
-<h4><?php echo _('Encryption'); ?></h4>
-
-<p><?php echo _("For applications where HTTPS or TLS is not available, emoncms offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/input-improvements/docs/input_encrypted.md">PHP Example source code.</a></p>
-
-<p>
-1. Start with a request string conforming with the API options above e.g: node=emontx&data={power1:100,power2:200,power3:300}<br>
-2. Create an initialization vector.<br>
-3. Encrypt using AES-128-CBC.<br>
-4. Create a single string starting with the initialization vector followed by the cipher-text result of the AES-128-CBC encryption.<br>
-5. Convert to a base64 encoded string.<br>
-6. Generate a HMAC_HASH of the data string together, using the emoncms apikey for authorization.<br>
-7. Send the encrypted string in the POST body of a request to either input/post or input/bulk with headers properties 'Content-type' and 'Authorization' set as below<br>
-8. Verify the result. The result is a base64 encoded sha256 hash of the json data string.
-</p>
-
-
 
 <table class="table">
 <tr><th>Description</th><th>Method</th><th>Example</th></tr>
