@@ -19,7 +19,7 @@ In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-r
     
 If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository). 
 
-### Create PHP extension files for the libraries
+### Create PHP extension files
 
 Use **only one** of the following two options;
 
