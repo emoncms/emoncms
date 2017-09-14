@@ -22,7 +22,6 @@ class Input
     {
         $this->mysqli = $mysqli;
         $this->feed = $feed;
-
         $this->redis = $redis;
     }
 
@@ -30,11 +29,14 @@ class Input
     {
         $userid = (int) $userid;
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        // if (strlen($nodeid)>16) return false; // restriction placed on emoncms.org
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
+        // if (strlen($name)>64) return false; // restriction placed on emoncms.org
+        
         $this->mysqli->query("INSERT INTO input (userid,name,nodeid,description,processList) VALUES ('$userid','$name','$nodeid','','')");
         $id = $this->mysqli->insert_id;
 
-        if ($this->redis) {
+        if ($this->redis && $id>0) {
             $this->redis->sAdd("user:inputs:$userid", $id);
             $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
         }
@@ -129,11 +131,11 @@ class Input
         }
     }
 
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     // get_inputs, returns user inputs by node name and input name
     // - last time and value not included
     // - used by input/post, input/bulk input methods
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     public function get_inputs($userid)
     {
         if ($this->redis) {
@@ -151,9 +153,11 @@ class Input
         $dbinputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
 
-        foreach ($inputids as $id)
-        {
-            $row = $this->redis->hGetAll("input:$id");
+        $pipe = $this->redis->multi(Redis::PIPELINE);
+        foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
+        $result = $pipe->exec();
+        
+        foreach ($result as $row) {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
             $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
@@ -176,7 +180,7 @@ class Input
         return $dbinputs;
     }
 
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     // get_inputs_v2, returns user inputs by node name and input name
     // - last time and value is included in the response
     // - input id is not included in the response
@@ -186,7 +190,7 @@ class Input
     //   "2":{"time":TIME,"value":200,"processList":""},
     //   "3":{"time":TIME,"value":300,"processList":""}
     // }}
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     public function get_inputs_v2($userid)
     {
         if ($this->redis) {
@@ -196,7 +200,6 @@ class Input
         }
     }
 
-    // USES: redis input & user
     private function redis_get_inputs_v2($userid)
     {
         $userid = (int) $userid;
@@ -243,9 +246,9 @@ class Input
         return $dbinputs;
     }
 
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     // getlist: returns a list of user inputs (no grouping)
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     public function getlist($userid)
     {
         if ($this->redis) {
@@ -262,12 +265,18 @@ class Input
 
         $inputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
+        
+        $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id)
         {
-            $row = $this->redis->hGetAll("input:$id");
-            $row["description"] = utf8_encode($row["description"]);
-         
-            $lastvalue = $this->redis->hmget("input:lastvalue:$id",array('time','value'));
+            $this->redis->hGetAll("input:$id");
+            $this->redis->hmget("input:lastvalue:$id",array('time','value'));
+        }
+        $result = $pipe->exec();
+        
+        for ($i=0; $i<count($result); $i+=2) {
+            $row = $result[$i];
+            $lastvalue = $result[$i+1];
             if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
                 $row['time'] = null;
             } else {
@@ -292,7 +301,7 @@ class Input
         return $inputs;
     }
     
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
 
     public function get_name($id)
     {
@@ -363,7 +372,7 @@ class Input
 
     public function clean($userid)
     {
-        $result = "";
+        $n = 0;
         $qresult = $this->mysqli->query("SELECT * FROM input WHERE `userid` = '$userid'");
         while ($row = $qresult->fetch_array())
         {
@@ -376,15 +385,15 @@ class Input
                     $this->redis->del("input:$inputid");
                     $this->redis->srem("user:inputs:$userid",$inputid);
                 }
-                $result .= "Deleted input: $inputid <br>";
+                $n++;
             }
         }
-        return $result;
+        return "Deleted $n inputs";
     }
 
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     // Processlist functions
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     public function get_processlist($id)
     {
         $id = (int) $id;
@@ -422,9 +431,9 @@ class Input
         return $this->set_processlist($id, "");
     }
 
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     // Redis cache loaders
-    // -----------------------------------------------------------------------------------------------------------
+    // -----------------------------------------------------------------------------------------
     private function load_input_to_redis($inputid)
     {
         $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");

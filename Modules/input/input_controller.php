@@ -17,6 +17,7 @@ function input_controller()
     global $mysqli, $redis, $user, $session, $route, $feed_settings, $device, $param;
 
     // There are no actions in the input module that can be performed with less than write privileges
+    if (!isset($session['write'])) return array('content'=>false);
     if (!$session['write']) return array('content'=>false);
 
     $result = false;
@@ -116,9 +117,13 @@ function input_controller()
         }
     }
 
+    // --------------------------------------------------------------------------------
+    else if ($route->action == "clean") {
+        $route->format = 'text';
+        $result = $input->clean($session['userid']);
+    }
     else if ($route->action == "list") $result = $input->getlist($session['userid']);
     else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
-    else if ($route->action == "clean") $result = $input->clean($session['userid']);
 
     else if (isset($_GET['inputid']) && $input->belongs_to_user($session['userid'],get("inputid")))
     {
