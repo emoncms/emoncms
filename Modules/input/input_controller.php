@@ -157,7 +157,7 @@ function input_controller()
         $route->format = "html";
         
         global $ui_version_2;
-        if (isset($ui_version_2) && $ui_version_2) {
+        if (isset($ui_version_2) && $ui_version_2 && $device) {
             $result =  view("Modules/input/Views/device_view.php", array());
         } else {
             $result =  view("Modules/input/Views/input_view.php", array());
