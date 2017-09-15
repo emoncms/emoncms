@@ -109,7 +109,6 @@ input[type="checkbox"] { margin:0px; }
 }
 
 </style>
-
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
 
@@ -129,7 +128,6 @@ input[type="checkbox"] { margin:0px; }
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
 	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
 	
-	<button id="classic-view" class="btn" style="float:right">Classic</button>
 </div>
 
 <div id="table"></div>
@@ -429,8 +427,6 @@ input[type="checkbox"] { margin:0px; }
       var feedid = $(this).attr("feedid");
       window.location = path+"graph/"+feedid;
   });
-  
-  $("#classic-view").click(function(){ window.location = path+"feed/list"; });
   
   $(".feed-graph").click(function(){
       var graph_feeds = [];

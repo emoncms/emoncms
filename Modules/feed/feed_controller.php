@@ -25,8 +25,15 @@ function feed_controller()
 
     if ($route->format == 'html')
     {
-        if ($route->action == "list" && $session['write']) $result = view("Modules/feed/Views/feedlist_view.php",array());
-        if ($route->action == "list2" && $session['write']) $result = view("Modules/feed/Views/feedlist_view_v2.php",array());
+        if ($route->action == "list" && $session['write']) {
+        
+            global $ui_version_2;
+            if (isset($ui_version_2) && $ui_version_2) {
+                $result = view("Modules/feed/Views/feedlist_view_v2.php",array());
+            } else {
+                $result = view("Modules/feed/Views/feedlist_view.php",array());
+            }
+        }
         else if ($route->action == "api" && $session['write']) $result = view("Modules/feed/Views/feedapi_view.php",array());
     }
 

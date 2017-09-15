@@ -155,11 +155,13 @@ function input_controller()
         
     } else if ($route->action == 'view') {
         $route->format = "html";
-        $result =  view("Modules/input/Views/input_view.php", array());
         
-    } else if ($device && $route->action == 'view-device') {
-        $route->format = "html";
-        $result =  view("Modules/input/Views/device_view.php", array());
+        global $ui_version_2;
+        if (isset($ui_version_2) && $ui_version_2) {
+            $result =  view("Modules/input/Views/device_view.php", array());
+        } else {
+            $result =  view("Modules/input/Views/input_view.php", array());
+        }
         
     } else if ($device && $route->action == 'schedule') {
         $route->format = "html";
