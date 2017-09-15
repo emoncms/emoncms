@@ -32,8 +32,10 @@ function input_controller()
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
     if (!$device) {
-        require_once "Modules/device/device_model.php";
-        $device = new Device($mysqli,$redis);
+        if (file_exists("Modules/device/device_model.php")) {
+            require_once "Modules/device/device_model.php";
+            $device = new Device($mysqli,$redis);
+        }
     }
     
     require_once "Modules/input/input_methods.php";
@@ -155,11 +157,11 @@ function input_controller()
         $route->format = "html";
         $result =  view("Modules/input/Views/input_view.php", array());
         
-    } else if ($route->action == 'view-device') {
+    } else if ($device && $route->action == 'view-device') {
         $route->format = "html";
         $result =  view("Modules/input/Views/device_view.php", array());
         
-    } else if ($route->action == 'schedule') {
+    } else if ($device && $route->action == 'schedule') {
         $route->format = "html";
         $result =  view("Modules/input/Views/schedule.php", array());
     }
