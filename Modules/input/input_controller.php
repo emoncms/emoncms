@@ -155,9 +155,10 @@ function input_controller()
         $route->format = "html";
         $result =  view("Modules/input/Views/input_view.php", array());
         
-    } else if ($route->action == 'view-classic') {
+    } else if ($route->action == 'view-device') {
         $route->format = "html";
-        $result =  view("Modules/input/Views/input_view_classic.php", array());
+        $result =  view("Modules/input/Views/device_view.php", array());
+        
     } else if ($route->action == 'schedule') {
         $route->format = "html";
         $result =  view("Modules/input/Views/schedule.php", array());
