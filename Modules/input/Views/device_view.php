@@ -353,14 +353,12 @@ function autowidth(element,padding) {
 $("#table").on("click",".node-info",function() {
     var node = $(this).attr('node');
     if (nodes_display[node]) {
-        $(".node-inputs[node='"+node+"']").hide();
         nodes_display[node] = false;
     } else {
-        $(".node-inputs[node='"+node+"']").show();
         nodes_display[node] = true;
     }
-    
-    resize();
+
+    draw_devices();
 });
 
 $("#table").on("click",".input-select",function(e) {
