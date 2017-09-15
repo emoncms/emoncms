@@ -82,8 +82,6 @@ class PHPTimeSeries
         return filesize($this->dir."feed_$feedid.MYD");
     }
 
-
-
     // POST OR UPDATE
     //
     // - fix if filesize is incorrect (not a multiple of 9)
