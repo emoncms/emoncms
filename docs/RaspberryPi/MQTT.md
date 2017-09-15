@@ -3,13 +3,13 @@ MQTT is a "lightweight" messaging protocol, which enables the publishing of data
 
 ### Preparation
 
-Before following this guide, it is essential that emoncms was initially installed by following either the [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guide, or you have used git to install a working version of Emoncms & emonHub on your Raspberry Pi, as well as a MQTT message broker such as [Mosquitto](http://mosquitto.org/) installed and running.
+Before following this guide, it is essential that emoncms was initially installed by following either the Raspbian Stretch, [Raspbian Jessie](readme.md) or [Raspbian Wheezy](install_Wheezy.md) installation guides, or you have used git to install a working version of Emoncms & emonHub on your Raspberry Pi, as well as a MQTT message broker such as [Mosquitto](http://mosquitto.org/) installed and running.
 
 #### Update Emoncms:
 
     cd /var/www/emoncms && git pull
 
-#### Ensure packages are installed
+### Ensure packages are installed
 
 In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-repository]( http://mosquitto.org/2013/01/mosquitto-debian-repository) and [Mosquitto-PHP library](https://github.com/mgdm/Mosquitto-PHP):
 
@@ -19,11 +19,21 @@ In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-r
     
 If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository). 
 
-If PHP extension config files `/etc/php5/cli/conf.d/20-mosquitto.ini` and `/etc/php5/apache2/conf.d/20-mosquitto.ini` don't exist then create with:
+### Create PHP extension files
+
+Use **only one** of the following two options;
+
+**If using php5 (normally Raspbian Jessie or Wheezy)**
 
     sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/cli/conf.d/20-mosquitto.ini'
     sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/apache2/conf.d/20-mosquitto.ini'
+    
+***- OR -***
 
+**If using php7.0 (normally Rasbian Stretch)**
+
+    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php/7.0/cli/conf.d/20-mosquitto.ini'
+    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php/7.0/apache2/conf.d/20-mosquitto.ini'
 
 ### Enable MQTT in Emoncms
 
