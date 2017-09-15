@@ -598,6 +598,9 @@ var processlist_ui =
   'saved':function(feeds){
     $("#save-processlist").attr('class','btn btn-success').text("Saved");
 
+    // compatibility input vs device view transpose
+    if (feeds.data!=undefined) feeds = feeds.data;
+
     for (z in feeds) {
       if (feeds[z].id == processlist_ui.contextid) {
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
@@ -786,6 +789,7 @@ var processlist_ui =
     processlist_ui.init_done--;
     if (processlist_ui.init_done == 0) {
       processlist_ui.draw();
+      if (window.table!=undefined) table.draw();
 
       if (processlist_ui.contexttype == 0) {
         $("#process-select").val(1); // default process for input context
