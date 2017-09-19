@@ -152,7 +152,7 @@ Open the sudoers file :
 and edit the `# User privilege specification` section to be :
 
 ```
- # User privilege specification
+# User privilege specification
 root    ALL=(ALL:ALL) ALL
 www-data   ALL=(ALL) NOPASSWD:/sbin/shutdown
 ```
