@@ -149,9 +149,13 @@ Open the sudoers file :
 
     sudo visudo
     
-and add the following in the '# User privilege specification' section :
+and edit the `# User privilege specification` section to be :
 
-    www-data ALL=(ALL) NOPASSWD:/sbin/shutdown
+```
+ # User privilege specification
+root    ALL=(ALL:ALL) ALL
+www-data   ALL=(ALL) NOPASSWD:/sbin/shutdown
+```
     
 Save & exit 
 
