@@ -102,16 +102,13 @@ Make a note of both the database 'username' ('emoncms') & the 'new_secure_passwo
     CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password';
     GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
     flush privileges;
-
-Exit mysql:
-
     exit
 
 ### Create data repositories for emoncms feed engines:
 
     sudo mkdir /var/lib/{phpfiwa,phpfina,phptimeseries}
 
-and set their permissions
+...and set their permissions
 
     sudo chown www-data:root /var/lib/{phpfiwa,phpfina,phptimeseries}
 
