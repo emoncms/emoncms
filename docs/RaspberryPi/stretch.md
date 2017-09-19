@@ -41,14 +41,14 @@ See [RasPi device tree commit](https://github.com/raspberrypi/firmware/commit/84
 
 Install the dependencies:
 
-    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7-curl php-pear php7-dev php7-mcrypt php7-common redis-server php-redis git-core build-essential ufw ntp
+    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git-core build-essential ufw ntp
 
 Install the pecl dependencies (serial and swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl install channel://pecl.php.net/dio-0.1.0 swift/swift
 
-Add the modules to php5 config:
+Add the modules to php7 config:
 
     sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
     sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
@@ -63,7 +63,7 @@ For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `
 
 Save & exit, then restart Apache:
 
-    sudo /etc/init.d/apache2 restart
+    sudo systemctl restart apache2
 
 ### Install the emoncms application via git
 
@@ -132,7 +132,7 @@ Update your settings to use your Database 'user' & 'password', which will enable
     $username = "emoncms";
     $password = "new_secure_password";
     
-That's also the opportunity to activate redis support if needed :
+Further down in settings is an optional 'data structure store' - Redis, which acts as a cache for the data produced by emoncms, to ensure that it is efficiently written to disk. To activate Redis, change 'false' to 'true'. :
 
 	//2 #### Redis
 	$redis_enabled = true;
@@ -145,8 +145,7 @@ Create a symlink to reference emoncms within the web root folder:
 
 Set write permissions for the emoncms logfile:
 
-`sudo touch /var/log/emoncms.log` followed by  
-`sudo chmod 666 /var/log/emoncms.log`
+`sudo touch /var/log/emoncms.log && sudo chmod 666 /var/log/emoncms.log`
 
 ### In an internet browser, load emoncms:
 
