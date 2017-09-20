@@ -35,6 +35,11 @@ class Route
     /**
      * @var string
      */
+    public $subaction2 = '';
+    
+    /**
+     * @var string
+     */
     public $method = 'GET';
 
     /**
@@ -108,7 +113,10 @@ class Route
         if (count($args) > 2) {
             $this->subaction = $args[2];
         }
-
+        if (count($args) > 3) {
+            $this->subaction2 = $args[3];
+        }
+        
         if (in_array($requestMethod, ['POST', 'DELETE', 'PUT'])) {
             $this->method = $requestMethod;
         }

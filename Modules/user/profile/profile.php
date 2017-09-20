@@ -98,11 +98,11 @@ function languagecode_to_name($langs) {
         <br>
         <div id="account">
           <div class="account-item">
-              <span class="muted"><?php echo _('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn">Copy</button>
+              <span class="muted"><?php echo _('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn"><?php echo _('Copy'); ?></button>
               <span class="writeapikey" id="copyapiwrite"></span>
           </div>
           <div class="account-item">
-              <span class="muted"><?php echo _('Read API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapireadbtn">Copy</button>
+              <span class="muted"><?php echo _('Read API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapireadbtn"><?php echo _('Copy'); ?></button>
               <span class="readapikey" id="copyapiread"></span>
               <span id="msg"></span>
           </div>
@@ -117,9 +117,9 @@ function languagecode_to_name($langs) {
             <table>
             <tr>
               <td style="width:192px">
-                <p>Scan QR code from the iOS or Android app to connect:</p>
+                <p><?php echo _('Scan QR code from the iOS or Android app to connect:');?></p>
                 <div id="qr_apikey"></div>
-                <p style="padding-top:10px">Or using a barcode scanner scan to view MyElectric graph</p>
+                <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
               </td>
               <td style="padding-left:20px">
                 <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
