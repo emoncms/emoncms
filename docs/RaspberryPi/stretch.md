@@ -144,7 +144,7 @@ Set write permissions for the emoncms logfile:
 
 `sudo touch /var/log/emoncms.log && sudo chmod 666 /var/log/emoncms.log`
 
-To enable the emoncms user-interface to reboot or shutdown the system, it's necessary to give the web-server sufficient permissions to do so.  
+To enable the emoncms user-interface to reboot or shutdown the system, it's necessary to give the web-server sufficient privilege to do so.  
 Open the sudoers file :
 
     sudo visudo
