@@ -43,9 +43,10 @@ Install the dependencies:
 
     sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git-core build-essential ufw ntp
 
-Install the pecl dependencies (serial and swift mailer):
+Install the pecl dependencies (swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
+    sudo pecl channel-update pecl.php.net
     sudo pecl install channel://pecl.php.net/dio-0.1.0 swift/swift
 
 Add the modules to php7 config:
@@ -191,7 +192,7 @@ Edit the cmdline.txt file:
 
     sudo nano /boot/cmdline.txt
 
-by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
+by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
 
 Disable serial console boot
 
