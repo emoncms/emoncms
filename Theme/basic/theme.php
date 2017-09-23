@@ -56,35 +56,30 @@
              $nbshortcuts1 ++;
            }
        }
-	echo("test count published dashboard:".$sumlength1." nb:".$nbshortcuts1);
 
         foreach($menu['left'] as $item){
            if(isset($item['name'])) {$name = $item['name'];}
            $sumlength2 += strlen($name);
            $nbshortcuts2 ++;
        }
-	echo("  test count left:".$sumlength2." nb:".$nbshortcuts2);
 
         if(count($menu['dropdown']) && $session['read']){
            $extra['name'] = 'Extra';
            $sumlength3 = strlen($extra['name']);
            $nbshortcuts3 ++;
        }
-	echo("  test count dropdown:".$sumlength3." nb:".$nbshortcuts3);
 
         if(count($menu['dropdownconfig'])){
            $setup['name'] = 'Setup';
            $sumlength4 = strlen($setup['name']);
            $nbshortcuts4 ++;
        }
-	echo("  test count dropdownconfig:".$sumlength4." nb:".$nbshortcuts4);
 
 	    foreach($menu['right'] as $item) {
            if (isset($item['name'])){$name = $item['name'];}
            $sumlength5 += strlen($name);
            $nbshortcuts5 ++;
        }
-	echo("  test count right:".$sumlength5." nb:".$nbshortcuts5);
     $maxwidth1=intval((($sumlength1+$sumlength2+$sumlength3+$sumlength4+$sumlength5)+($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+1)*6)*85/9);
     $maxwidth2=intval(($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+3)*6*75/9);
     if($maxwidth2>$maxwidth1){$maxwidth2=$maxwidth1-1;}
@@ -96,7 +91,7 @@
     <body>
         <div id="wrap">
         
-        <div id="emoncms-navbar" class="navbar navbar-inverse">
+        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                     <?php  if ($menucollapses) { ?>
                     <style>
