@@ -1,6 +1,3 @@
-# DRAFT VERSION FOR DISCUSSION  
-See [this post](https://community.openenergymonitor.org/t/raspbian-stretch/5096) in the community forum.
-
 ## Install Emoncms on Raspberry Pi (Raspbian Stretch)
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
@@ -80,30 +77,21 @@ Cd into the www directory and git clone emoncms:
 
 ### Setup the Mariadb server (MYSQL)
 
-We need to firstly secure the database server, and then create a database and database user for emoncms to use;
+Firstly we should secure the database server, and then create a database and database user for emoncms to use;
 
-    sudo mysql_secure_installation
-    
-This command starts the database wizard, which guides you to create a **root** password, which you will need later so keep it safe.  
-To all of the other options select - Y (yes)
+The following configuration commands gives 'sudoers' Mariadb root privileges from within the local network, to administer all aspects of the databases and users. It also removes an 'example' database and user, which is no longer required. 
 
-Then login to Mariadb;
+```
+sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DELETE FROM mysql.user WHERE User=''; DROP DATABASE IF EXISTS test; DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'; FLUSH PRIVILEGES;"
+``` 
 
-   `sudo mysql -u root -p` (NOTE - sudo is required for this step!)
-
-When prompted, enter the 'MYSQL "root" password you created in the previous step.
 Create the emoncms database using utf8 character decoding:
 
-    CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
+    sudo mysql -e "CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;"
+    
+Add an emoncms database user and set that user's permissions. In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user. Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
 
-Add an emoncms database user and set that user's permissions.
-In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user.
-Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
-
-    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password';
-    GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
-    flush privileges;
-    exit
+    sudo mysql -e "CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password'; GRANT ALL ON emoncms.* TO 'emoncms'@'localhost'; flush privileges;"
 
 ### Create data repositories for emoncms feed engines:
 
