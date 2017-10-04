@@ -193,7 +193,7 @@ At this stage, power off your Raspberry Pi:
 
 Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
 
-**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
+**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](https://community.openenergymonitor.org) giving as much detail as possible.**
 
 ### System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
