@@ -195,7 +195,7 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 
 **You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
 
-###System Options
+### System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
