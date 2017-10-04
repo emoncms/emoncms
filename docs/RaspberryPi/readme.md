@@ -2,12 +2,12 @@
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
 
-**Highly Recommended: A pre-built Raspberry Pi SD card image (based on Raspbian Jessie lite) is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
+**Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
 
-An alternative (older) installation guide is avaliable for Raspbian Jessie - they are different, so ensure that you use the correct guide!  
+An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!  
 
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
-Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
+Before installing emoncms, it is essential you have a working version of Raspbian Stretch installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ### Preparation
 
