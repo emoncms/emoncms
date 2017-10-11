@@ -559,17 +559,16 @@ class User
     // Special methods
     //---------------------------------------------------------------------------------------
 
-    public function get($userid) 
+    public function get($userid)
     {
         $userid = intval($userid);
         $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read,tags FROM users WHERE id=$userid");
-        if (!$result)
-            return array("success" => false, "message" => "Error fetching user data, you may need to run database update");
+        if (!$result) return array("success" => false, "message" => "Error fetching user data, you may need to run database update");
         $data = $result->fetch_object();
         return $data;
     }
 
-    public function set($userid, $data) 
+    public function set($userid,$data)
     {
         // Validation
         $userid = (int) $userid;
@@ -588,7 +587,7 @@ class User
         $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
         $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
         if (!$stmt->execute()) {
-            return array('success' => false, 'message' => _("Error updating user info"));
+            return array('success'=>false, 'message'=>_("Error updating user info"));
         }
     }
 
