@@ -1,67 +1,67 @@
-## Install Emoncms on Raspberry Pi (Raspbian Jessie)
+## Install Emoncms on Raspberry Pi (Raspbian Stretch)
 
-This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Jessie operating system.
+This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
 
-**Highly Recommended: A pre-built Raspberry Pi SD card image (based on Raspbian Jessie lite) is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
+**Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
 
-An alternative (older) installation guide is [avaliable for Raspbian Wheezy](install_Wheezy.md) - they are different, so ensure that you use the correct guide!  
+An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!  
 
 Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
-Before installing emoncms, it is essential you have a working version of Raspbian Jessie installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
+Before installing emoncms, it is essential you have a working version of Raspbian Stretch installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ### Preparation
 
 Start by updating the system repositories and packages:
+```
+sudo apt-get update && sudo apt-get upgrade  
+sudo apt-get dist-upgrade && sudo rpi-update
+```
 
-    sudo apt-get update && sudo apt-get upgrade
+#### Raspberry Pi v3 Compatibility
+
+This section only applies to Raspberry Pi v3 and later.  
+To avoid UART conflicts, it's necessary to disable Pi3 Bluetooth and restore UART0/ttyAMA0 over GPIOs 14 & 15;
+
+	sudo nano /boot/config.txt
+	
+Add to the end of the file
+
+	dtoverlay=pi3-disable-bt
+
+We also need to stop the Bluetooth modem trying to use UART
+
+	sudo systemctl disable hciuart
+
+See [RasPi device tree commit](https://github.com/raspberrypi/firmware/commit/845eb064cb52af00f2ea33c0c9c54136f664a3e4) for `pi3-disable-bt` and [forum thread discussion](https://www.raspberrypi.org/forums/viewtopic.php?f=107&t=138223)
+
+### Installation
 
 Install the dependencies:
 
-    sudo apt-get install -y apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-common php5-redis git-core redis-server build-essential ufw ntp
+    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git-core build-essential ufw ntp
 
-During the installation, you will be prompted to select a password for the 'MYSQL "root" user', and to confirm it by entering it a second time. Make a note of the password - you will need it later
-
-**March 2016: The version of php5-redis included in the Raspbian Jessie sources (2.2.5-1) caused Apache to crash (segmentation errrors in Apache error log). Installing the latest stable version (2.2.7) of php5-redis from github fixed the issue. This step probably won't be required in the future when the updated version of php5-redis makes it's way into the sources.**
-
-**February 2017: phpredis v3.1.1 has been released supporting both php5 and php7. It can be installed direct from PECL and is called simply: redis. This guide will be updated to reflect this change once tested in due course.**
-
-To check the version in the sources: `sudo apt-cache show php5-redis`
-
-To fix:
-```
-git clone --branch 2.2.7 https://github.com/phpredis/phpredis
-cd phpredis
-(check the version we are about to install:)
-​cat php_redis.h | grep VERSION
-phpize
-./configure 
-sudo make 
-sudo make install
-```
-
-Install the pecl dependencies (serial, redis and swift mailer):
+Install the pecl dependencies (swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
-    sudo pecl install channel://pecl.php.net/dio-0.0.6 redis swift/swift
+    sudo pecl channel-update pecl.php.net
+    sudo pecl install channel://pecl.php.net/dio-0.1.0 swift/swift
 
-Add the pecl modules to php5 config:
+Add the modules to php7 config:
 
-    sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
+    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
 
 Issue the command:
 
     sudo a2enmod rewrite
 
-For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on lines 155 and 166 of `/etc/apache2/apache2.conf`
+For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on, or very close to lines 161 and 172 of `/etc/apache2/apache2.conf`
 
     sudo nano /etc/apache2/apache2.conf
 
 Save & exit, then restart Apache:
 
-    sudo /etc/init.d/apache2 restart
+    sudo systemctl restart apache2
 
 ### Install the emoncms application via git
 
@@ -75,32 +75,29 @@ Cd into the www directory and git clone emoncms:
 
     cd /var/www && git clone -b stable https://github.com/emoncms/emoncms.git
 
-### Create a MYSQL database
+### Setup the Mariadb server (MYSQL)
 
-    mysql -u root -p
+Firstly we should secure the database server, and then create a database and database user for emoncms to use;
 
-When prompted, enter the 'MYSQL "root" user' password you were prompted for earlier in this procedure.
+The following configuration commands gives 'sudoers' Mariadb root privileges from within the local network, to administer all aspects of the databases and users. It also removes an 'example' database and user, which is no longer required. 
+
+```
+sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DELETE FROM mysql.user WHERE User=''; DROP DATABASE IF EXISTS test; DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'; FLUSH PRIVILEGES;"
+``` 
+
 Create the emoncms database using utf8 character decoding:
 
-    CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
+    sudo mysql -e "CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;"
+    
+Add an emoncms database user and set that user's permissions. In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user. Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
 
-Add an emoncms database user and set that user's permissions.
-In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user.
-Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
-
-    CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password';
-    GRANT ALL ON emoncms.* TO 'emoncms'@'localhost';
-    flush privileges;
-
-Exit mysql:
-
-    exit
+    sudo mysql -e "CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password'; GRANT ALL ON emoncms.* TO 'emoncms'@'localhost'; flush privileges;"
 
 ### Create data repositories for emoncms feed engines:
 
     sudo mkdir /var/lib/{phpfiwa,phpfina,phptimeseries}
 
-and set their permissions
+...and set their permissions
 
     sudo chown www-data:root /var/lib/{phpfiwa,phpfina,phptimeseries}
 
@@ -121,7 +118,7 @@ Update your settings to use your Database 'user' & 'password', which will enable
     $username = "emoncms";
     $password = "new_secure_password";
     
-That's also the opportunity to activate redis support if needed :
+Further down in settings is an optional 'data structure store' - Redis, which acts as a cache for the data produced by emoncms, to ensure that it is efficiently written to disk. To activate Redis, change 'false' to 'true'. :
 
 	//2 #### Redis
 	$redis_enabled = true;
@@ -134,8 +131,22 @@ Create a symlink to reference emoncms within the web root folder:
 
 Set write permissions for the emoncms logfile:
 
-`sudo touch /var/log/emoncms.log` followed by  
-`sudo chmod 666 /var/log/emoncms.log`
+`sudo touch /var/log/emoncms.log && sudo chmod 666 /var/log/emoncms.log`
+
+To enable the emoncms user-interface to reboot or shutdown the system, it's necessary to give the web-server sufficient privilege to do so.  
+Open the sudoers file :
+
+    sudo visudo
+    
+and edit the `# User privilege specification` section to be :
+
+```
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+www-data   ALL=(ALL) NOPASSWD:/sbin/shutdown
+```
+    
+Save & exit 
 
 ### In an internet browser, load emoncms:
 
@@ -169,16 +180,22 @@ Edit the cmdline.txt file:
 
     sudo nano /boot/cmdline.txt
 
-by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
+by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
+
+Disable serial console boot
+
+    sudo systemctl stop serial-getty@ttyAMA0.service
+    sudo systemctl disable serial-getty@ttyAMA0.service
+
 At this stage, power off your Raspberry Pi:
 
     sudo poweroff
 
 Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
 
-**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](http://openenergymonitor.org/emon/forum) giving as much detail as possible.**
+**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](https://community.openenergymonitor.org) giving as much detail as possible.**
 
-###System Options
+### System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
