@@ -121,8 +121,11 @@ class Process
                          $this->feed->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
                          break;
                      case ProcessOriginType::TASK:
-                         $this->task->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
-                         break;
+                          global $session, $redis;
+                          require_once "Modules/task/task_model.php";
+                          $this->task = new Task($this->mysqli, $redis, null);
+                          $this->task->set_processlist($session['userid'], $options['sourceid'], "process__error_found:0," . $processList);
+                          break;
                 }
                 return false;
             }
