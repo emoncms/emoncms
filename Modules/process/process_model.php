@@ -13,6 +13,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class ProcessError {
     const NONE = 0;
     const TOO_MANY_ITERATIONS = 1;
+    const ACCESS_FORBIDDEN = 2;
 }
 
 class ProcessOriginType {
