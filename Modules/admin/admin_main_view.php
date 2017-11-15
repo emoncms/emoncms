@@ -54,7 +54,7 @@
                  'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
                  'db_server' => $server,
                  'db_ip' => gethostbyname($server),
-                 'db_version' => 'MySQL ' . $mysqli->server_info,
+                 'db_version' => $mysqli->server_info,
                  'db_stat' => $mysqli->stat(),
                  'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
 
@@ -277,7 +277,7 @@ if ($feed_settings['redisbuffer']['enabled']) {
 
               <tr><td><b>HTTP</b></td><td>Server</td><td colspan="2"><?php echo $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']; ?></td></tr>
 
-              <tr><td><b>Database</b></td><td>Version</td><td><?php echo $system['db_version']; ?></td></tr>
+              <tr><td><b>MySQL</b></td><td>Version</td><td><?php echo $system['db_version']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['db_date']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Stats</td><td><?php echo $system['db_stat']; ?></td></tr>
