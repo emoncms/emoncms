@@ -21,7 +21,7 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.10 | 2017.08.17";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.11 | 2017.11.15";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -199,6 +199,14 @@
             $route->controller = $public_profile_controller;
             $route->action = $public_profile_action;
             $output = controller($route->controller);
+
+            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists 
+            if ($output["content"]=="" && $route->subaction=="graph") {
+                $route->controller = "graph";
+                $route->action = "";
+                $_GET['userid'] = $userid;
+                $output = controller($route->controller);
+            }
         }
     }
 
