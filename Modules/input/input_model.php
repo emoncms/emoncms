@@ -49,7 +49,14 @@ class Input
         $result = $this->mysqli->query("SELECT id FROM input WHERE `id` = '$inputid'");
         if ($result->num_rows == 1) return true; else return false;
     }
-    
+
+    public function access($userid,$inputid)
+    {
+        $inputid = (int) $inputid;
+        $result = $this->mysqli->query("SELECT id FROM input WHERE `userid` = '$userid' AND `id` = '$inputid'");
+        if ($result->num_rows == 1) return true; else return false;
+    }
+        
     public function exists_nodeid_name($userid,$nodeid,$name)
     {
         $userid = (int) $userid;
@@ -409,8 +416,34 @@ class Input
         }
     }
 
-    public function set_processlist($id, $processlist)
+    public function set_processlist($userid, $id, $processlist, $process_list)
     {
+        // Validate processlist
+        $pairs = explode(",",$processlist);
+        
+        foreach ($pairs as $pair)
+        {
+            $inputprocess = explode(":", $pair);
+            if (count($inputprocess)==2) {
+                $processid = (int) $inputprocess[0];
+                $arg = (int) $inputprocess[1];
+
+                // Check that feed exists and user has ownership
+                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
+                    if (!$this->feed->access($userid,$arg)) {
+                        return array('success'=>false, 'message'=>_("Invalid feed"));
+                    }
+                }
+
+                // Check that input exists and user has ownership
+                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::INPUTID) {
+                    if (!$this->access($userid,$arg)) {
+                        return array('success'=>false, 'message'=>_("Invalid input"));
+                    }
+                }
+            }
+        }
+    
         $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
         $stmt->bind_param("si", $processlist, $id);
         if (!$stmt->execute()) {

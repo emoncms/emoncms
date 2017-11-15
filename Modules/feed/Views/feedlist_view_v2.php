@@ -301,7 +301,7 @@ input[type="checkbox"] { margin:0px; }
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  //setInterval(update,5000);
+  setInterval(update,5000);
   
   function update() 
   {
@@ -351,11 +351,12 @@ input[type="checkbox"] { margin:0px; }
               for (var feed in nodes[node]) {
 				          var feedid = nodes[node][feed].id;
                   out += "<div class='node-feed' feedid="+feedid+">";
-                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"'/></div></div>";
+                  var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
                   out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
-                  if (nodes[node][feed].public) publicfeed = "<i class='icon-globe'></i>";
+                  if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
                   
                   out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
                   out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
@@ -448,7 +449,8 @@ input[type="checkbox"] { margin:0px; }
 
       $("#feed-name").val(feeds[feedid].name);
       $("#feed-node").val(feeds[feedid].tag);
-      $("#feed-public")[0].checked = feeds[feedid].public;
+      var checked = false; if (feeds[feedid].public==1) checked = true;
+      $("#feed-public")[0].checked = checked;
   });
 
   $("#feed-edit-save").click(function(){

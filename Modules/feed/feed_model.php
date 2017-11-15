@@ -202,6 +202,15 @@ class Feed
         return $feedexist;
     }
     
+    // Check both if feed exists and if the user has access to the feed
+    public function access($userid,$feedid)
+    {
+        $userid = (int) $userid;
+        $feedid = (int) $feedid;
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND id = '$feedid'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return true; } else return false;
+    }
+    
     public function get_id($userid,$name)
     {
         $userid = intval($userid);
@@ -882,8 +891,36 @@ class Feed
     }
 
     // USES: redis feed
-    public function set_processlist($id, $processlist)
+    public function set_processlist($userid, $id, $processlist, $process_list)
     {
+        $userid = (int) $userid;
+        
+        // Validate processlist
+        $pairs = explode(",",$processlist);
+        
+        foreach ($pairs as $pair)
+        {
+            $inputprocess = explode(":", $pair);
+            if (count($inputprocess)==2) {
+                $processid = (int) $inputprocess[0];
+                $arg = (int) $inputprocess[1];
+
+                // Check that feed exists and user has ownership
+                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
+                    if (!$this->access($userid,$arg)) {
+                        return array('success'=>false, 'message'=>_("Invalid feed"));
+                    }
+                }
+
+                // Check that input exists and user has ownership
+                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::INPUTID) {
+                    $inputid = (int) $arg;
+                    $result = $this->mysqli->query("SELECT id FROM input WHERE `userid` = '$userid' AND `id` = '$arg'");
+                    if ($result->num_rows != 1) return array('success'=>false, 'message'=>_("Invalid input"));
+                }
+            }
+        }
+    
         $this->mysqli->query("UPDATE feeds SET processList = '$processlist' WHERE id='$id'");
         if ($this->mysqli->affected_rows>0){
             // CHECK REDIS
