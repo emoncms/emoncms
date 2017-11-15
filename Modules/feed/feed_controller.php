@@ -17,11 +17,17 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-    global $mysqli, $redis, $session, $route, $feed_settings;
+    global $mysqli, $redis, $session, $route, $feed_settings,$user;
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$feed_settings);
+
+    require_once "Modules/input/input_model.php";
+    $input = new Input($mysqli,$redis,$feed);
+    
+    require_once "Modules/process/process_model.php";
+    $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
     if ($route->format == 'html')
     {
@@ -148,7 +154,7 @@ function feed_controller()
                     } else if ($route->action == "process") {
                         if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }
                         else if ($route->subaction == "get") $result = $feed->get_processlist($feedid);
-                        else if ($route->subaction == "set") $result = $feed->set_processlist($feedid, post('processlist'));
+                        else if ($route->subaction == "set") $result = $feed->set_processlist($session['userid'], $feedid, post('processlist'),$process->get_process_list());
                         else if ($route->subaction == "reset") $result = $feed->reset_processlist($feedid);
 
                     // Fast bulk uploader
