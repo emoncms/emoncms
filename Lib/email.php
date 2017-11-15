@@ -13,7 +13,7 @@ class Email {
 
         $this->message = null;
         // include SwiftMailer. path from a PEAR install,
-        $this->have_swift = @include_once ("Swift/swift_required.php");
+        $this->have_swift = @include_once ("swift_required.php");
         // path from module lib
         if (!$this->have_swift) {
            $this->have_swift = @include_once ("Lib/swiftmailer/swift_required.php");
