@@ -38,7 +38,7 @@ class Multigraph
     {
         $id = intval($id);
         $userid = intval($userid);
-        $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
+        $feedlist = preg_replace('/[^\p{L}_\p{N}\s-.",:{}\[\]]/u','',$feedlist);
         $name = preg_replace('/[^\p{L}_\p{N}\s-.]/u','',$name);
 
         $stmt = $this->mysqli->prepare("UPDATE multigraph SET name=?, feedlist=? WHERE id=? AND userid=?");
