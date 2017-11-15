@@ -204,6 +204,14 @@
             $route->controller = $public_profile_controller;
             $route->action = $public_profile_action;
             $output = controller($route->controller);
+
+            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists 
+            if ($output["content"]=="" && $route->subaction=="graph") {
+                $route->controller = "graph";
+                $route->action = "";
+                $_GET['userid'] = $userid;
+                $output = controller($route->controller);
+            }
         }
     }
 
