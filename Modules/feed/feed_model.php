@@ -202,6 +202,15 @@ class Feed
         return $feedexist;
     }
     
+    // Check both if feed exists and if the user has access to the feed
+    public function access($userid,$feedid)
+    {
+        $userid = (int) $userid;
+        $feedid = (int) $feedid;
+        $result = $this->mysqli->query("SELECT id FROM feeds WHERE userid = '$userid' AND id = '$feedid'");
+        if ($result->num_rows>0) { $row = $result->fetch_array(); return true; } else return false;
+    }
+    
     public function get_id($userid,$name)
     {
         $userid = intval($userid);
