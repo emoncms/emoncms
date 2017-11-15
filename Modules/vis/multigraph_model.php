@@ -38,10 +38,16 @@ class Multigraph
     {
         $id = intval($id);
         $userid = intval($userid);
-        $feedlist = preg_replace('/[^\p{L}_\p{N}\s-.",:{}\[\]]/u','',$feedlist);
+        $feedlist = preg_replace('/[^\w\s-.",:{}\[\]]/','',$feedlist);
         $name = preg_replace('/[^\p{L}_\p{N}\s-.]/u','',$name);
-        $this->mysqli->query("UPDATE multigraph SET `name` = '$name', `feedlist` = '$feedlist' WHERE `id`='$id' AND `userid`='$userid'");
-        if ($this->mysqli->affected_rows>0){
+
+        $stmt = $this->mysqli->prepare("UPDATE multigraph SET name=?, feedlist=? WHERE id=? AND userid=?");
+        $stmt->bind_param("ssii", $name, $feedlist, $id, $userid);
+        $stmt->execute();
+        $affected_rows = $stmt->affected_rows;
+        $stmt->close();
+        
+        if ($affected_rows>0){
             return array('success'=>true, 'message'=>'Multigraph updated');
         } else {
             return array('success'=>false, 'message'=>'Multigraph was not updated');
