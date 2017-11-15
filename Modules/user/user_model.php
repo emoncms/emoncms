@@ -440,6 +440,14 @@ class User
         return $row['username'];
     }
 
+    public function get_name($userid)
+    {
+        $userid = intval($userid);
+        $result = $this->mysqli->query("SELECT name FROM users WHERE id = '$userid';");
+        $row = $result->fetch_array();
+        return $row['name'];
+    }
+
     public function get_email($userid)
     {
         $userid = intval($userid);
