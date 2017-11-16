@@ -96,6 +96,8 @@
     
     $connected = false;
     $last_retry = 0;
+    $last_heartbeat = 0;
+    $count = 0;
     
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
@@ -107,7 +109,8 @@
         try { 
             $mqtt_client->loop(); 
         } catch (Exception $e) {
-        
+            $log->warn("Exception!:");
+            $log->warn($e);
         }
         
         if (!$connected && (time()-$last_retry)>5.0) {
@@ -120,11 +123,19 @@
                 $log->warn("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
             } catch (Exception $e) {
-            
+                $log->warn($e);
             }
             //echo "Not connected, retrying connection\n";
             $log->warn("Not connected, retrying connection");
         }
+        
+        if ((time()-$last_heartbeat)>300) {
+            $last_heartbeat = time();
+            $log->warn("$count Messages processed in last 5 minutes");
+            $count = 0;
+        }
+        
+        usleep(1000);
     }
     
 
@@ -162,8 +173,9 @@
         $time = time();
         //echo $topic." ".$value."\n";
         
-        global $mqtt_server, $user, $input, $process, $feed, $device, $log;
-        $log->info($topic." ".$value);
+        global $mqtt_server, $user, $input, $process, $feed, $device, $log, $count;
+        //$log->warn($topic." ".$value);
+        $count ++;
         
         #Emoncms user ID TBD: incorporate on message via authentication mechanism
         global $mqttsettings;
