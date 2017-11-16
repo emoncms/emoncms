@@ -500,7 +500,7 @@ class Input
     {
         $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
         if ($result->num_rows > 0) {
-            $row = $result->fetch_array();
+            $row = $result->fetch_object();
             $userid = $row->userid;
             
             $this->redis->sAdd("user:inputs:$userid", $row->id);
