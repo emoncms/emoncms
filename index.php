@@ -25,6 +25,8 @@
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
+    $log = new EmonLogger(__FILE__);
+    if (isset($_GET['q'])) $log->info($_GET['q']);
 
     // 2) Database
     if ($redis_enabled) {
@@ -98,7 +100,6 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
               print "Invalid API key";
-              $log = new EmonLogger(__FILE__);
               $log->error("Invalid API key '" . $apikey. "'");
               exit();
         }
@@ -109,7 +110,6 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="Device KEY", error="invalid_devicekey", error_description="Invalid device key"');
               print "Invalid device key";
-              $log = new EmonLogger(__FILE__);
               $log->error("Invalid device key '" . $devicekey. "'");
               exit();
         }
@@ -173,7 +173,6 @@
     if ($devicekey && !($route->controller == 'input' && ($route->action == 'bulk' || $route->action == 'post'))) {
         header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
         print "Unauthorized. Device key autentication only permits input post or bulk actions";
-        $log = new EmonLogger(__FILE__);
         $log->error("Unauthorized. Device key autentication only permits input post or bulk actions");
         exit();
     }
