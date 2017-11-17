@@ -514,8 +514,8 @@ class User
     {
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-        $row = $result->fetch_array();
-        return $row['timezone'];
+        $row = $result->fetch_object();
+        return $row->timezone;
     }
 
     // List supported PHP timezones
@@ -611,7 +611,7 @@ class User
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
         $language = preg_replace('/[^\w\s-.]/','',$data->language);
         
-        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?=\/]/u','',$data->startingpage);
+        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?#=\/]/u','',$data->startingpage);
         
         $_SESSION['lang'] = $language;
         
