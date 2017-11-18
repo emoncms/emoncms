@@ -247,35 +247,40 @@ class User
 
         // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
         // without cuasing an error if it has not yet been created in the database.
-        $stmt = $this->mysqli->prepare("SELECT * FROM users WHERE username=?");
+        $stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage FROM users WHERE username=?");
         $stmt->bind_param("s",$username);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $userData = $result->fetch_object();
-        $stmt->close();
-
-        if (!$userData) return array('success'=>false, 'message'=>_("Username does not exist"));
         
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage);
+        $result = $stmt->fetch();
+        $stmt->close();
+        
+        //$result = $stmt->get_result();
+        //$userData = $result->fetch_object();
+        //$stmt->close();
 
-        if ($hash != $userData->password)
+        if (!$result) return array('success'=>false, 'message'=>_("Username does not exist"));
+        
+        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
+
+        if ($hash != $userData_password)
         {
             return array('success'=>false, 'message'=>_("Incorrect password, if your sure its correct try clearing your browser cache"));
         }
         else
         {
             session_regenerate_id();
-            $_SESSION['userid'] = $userData->id;
+            $_SESSION['userid'] = $userData_id;
             $_SESSION['username'] = $username;
             $_SESSION['read'] = 1;
             $_SESSION['write'] = 1;
-            $_SESSION['admin'] = $userData->admin;
-            $_SESSION['lang'] = $userData->language;
-            if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
+            $_SESSION['admin'] = $userData_admin;
+            $_SESSION['lang'] = $userData_language;
+            if (isset($userData_startingpage)) $_SESSION['startingpage'] = $userData_startingpage;
                             
             if ($this->enable_rememberme) {
                 if ($remembermecheck==true) {
-                    if (!$this->rememberme->createCookie($userData->id)) {
+                    if (!$this->rememberme->createCookie($userData_id)) {
                         $this->logout();
                         return array('success'=>false, 'message'=>_("Error creating rememberme cookie, try login without rememberme"));
                     }
@@ -300,18 +305,22 @@ class User
         $stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,apikey_read FROM users WHERE username=?");
         $stmt->bind_param("s",$username);
         $stmt->execute();
-        $result = $stmt->get_result();
-        $userData = $result->fetch_object();
+        //$result = $stmt->get_result();
+        //$userData = $result->fetch_object();
+        //$stmt->close();
+        
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_read_write);
+        $result = $stmt->fetch();
         $stmt->close();
         
-        if (!$userData) return array('success'=>false, 'message'=>_("Incorrect authentication"));
+        if (!$result) return array('success'=>false, 'message'=>_("Incorrect authentication"));
        
-        $hash = hash('sha256', $userData->salt . hash('sha256', $password));
+        $hash = hash('sha256', $userData_salt . hash('sha256', $password));
 
-        if ($hash != $userData->password) {
+        if ($hash != $userData_password) {
             return array('success'=>false, 'message'=>_("Incorrect authentication"));
         } else {
-            return array('success'=>true, 'userid'=>$userData->id, 'apikey_write'=>$userData->apikey_write, 'apikey_read'=>$userData->apikey_read);
+            return array('success'=>true, 'userid'=>$userData_id, 'apikey_write'=>$userData_apikey_write, 'apikey_read'=>$userData_apikey_read);
         }
     }
 
