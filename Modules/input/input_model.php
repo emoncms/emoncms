@@ -348,11 +348,40 @@ class Input
                 $lastvalue = (float) $lastvalue;
             }
             return $lastvalue;
-        } else {
+        }
+        else {
             $result = $this->mysqli->query("SELECT value FROM input WHERE `id` = '$id'");
             $row = $result->fetch_array();
             return $row['value'];
         }
+    }
+
+    public function get_last_timevalue($id)
+    {
+        $id = (int) $id;
+        
+        if ($this->redis) {
+            $lastvalue = $this->redis->hmget("input:lastvalue:$id", array('time','value'));
+            if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
+                $lastvalue['time'] = null;
+            } else {
+                $lastvalue['time'] = (int) $lastvalue['time'];
+            }
+            if (!isset($lastvalue['value']) || !is_numeric($lastvalue['value']) || is_nan($lastvalue['value'])) {
+                $lastvalue['value'] = null;
+            } else {
+                $lastvalue['value'] = (float) $lastvalue['value'];
+            }
+            return $lastvalue;
+        }
+        else {
+            $result = $this->mysqli->query("SELECT time, value FROM input WHERE `id` = '$id'");
+            if ($result->num_rows > 0) {
+                $row = $result->fetch_array();
+                return $lastvalue = array('time'=> (int) $row['time'], 'value'=> (float) $row['value']);
+            }
+        }
+        return null;
     }
 
     public function delete($userid, $inputid)
@@ -470,16 +499,19 @@ class Input
     private function load_input_to_redis($inputid)
     {
         $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
-        $row = $result->fetch_object();
-
-        $this->redis->sAdd("user:inputs:$userid", $row->id);
-        $this->redis->hMSet("input:$row->id",array(
-            'id'=>$row->id,
-            'nodeid'=>$row->nodeid,
-            'name'=>$row->name,
-            'description'=>$row->description,
-            'processList'=>$row->processList
-        ));
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_object();
+            $userid = $row->userid;
+            
+            $this->redis->sAdd("user:inputs:$userid", $row->id);
+            $this->redis->hMSet("input:$row->id",array(
+                'id'=>$row->id,
+                'nodeid'=>$row->nodeid,
+                'name'=>$row->name,
+                'description'=>$row->description,
+                'processList'=>$row->processList
+            ));
+        }
     }
 
     private function load_to_redis($userid)
