@@ -110,7 +110,10 @@
 
   $("#table").bind("onSave", function(e,id,fields_to_update){
     $('#schedule-loader').show();
-    schedule.set(id,fields_to_update);
+    var result = schedule.set(id,fields_to_update);
+    if (!result.success) {
+         alert(result.message);
+    }
     $('#schedule-loader').hide();
   });
 

@@ -512,6 +512,7 @@ class User
     public function get_timezone_offset($userid)
     {
         $userid = (int) $userid;
+        if (!$userid) return false;
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
         $now = new DateTime();
@@ -522,6 +523,7 @@ class User
     public function get_timezone($userid)
     {
         $userid = (int) $userid;
+        if (!$userid) return false;
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
         return $row->timezone;

@@ -20,7 +20,7 @@ function time_controller()
 
     if ($route->action == 'local' && $session['read'])
     {
-        $userid = $session['userid'];
+        $userid = (int) $session['userid'];
         $result = $mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
         
