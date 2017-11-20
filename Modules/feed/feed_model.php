@@ -949,17 +949,25 @@ class Feed
         
         // Validate processlist
         $pairs = explode(",",$processlist);
+        $pairs_out = array();
         
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
+
+                // Verify process id
                 $processid = (int) $inputprocess[0];
-                $arg = (int) $inputprocess[1];
+                if ($processid==0) return array('success'=>false, 'message'=>_("Invalid process id"));
+                
+                // Verify argument
+                if (!is_numeric($inputprocess[1])) return array('success'=>false, 'message'=>_("Invalid arg"));
+                $arg = $inputprocess[1];
 
                 // Check that feed exists and user has ownership
                 if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
-                    if (!$this->access($userid,$arg)) {
+                    $feedid = (int) $arg;
+                    if (!$this->access($userid,$feedid)) {
                         return array('success'=>false, 'message'=>_("Invalid feed"));
                     }
                 }
@@ -970,17 +978,22 @@ class Feed
                     $result = $this->mysqli->query("SELECT id FROM input WHERE `userid` = '$userid' AND `id` = '$inputid'");
                     if ($result->num_rows != 1) return array('success'=>false, 'message'=>_("Invalid input"));
                 }
+
+                if ($processid>0) $pairs_out[] = implode(":",array($processid,$arg));
             }
         }
+        
+        // rebuild processlist from verified content
+        $processlist_out = implode(",",$pairs_out);
 
         $stmt = $this->mysqli->prepare("UPDATE feeds SET processList = ? WHERE id = ?");
-        $stmt->bind_param("si",$processlist,$id);
+        $stmt->bind_param("si",$processlist_out,$id);
         $stmt->execute();
         $affected_rows = $stmt->affected_rows;
         $stmt->close();
         
         if ($affected_rows>0) {
-            if ($this->redis) $this->redis->hset("feed:$id",'processList',$processlist);
+            if ($this->redis) $this->redis->hset("feed:$id",'processList',$processlist_out);
             return array('success'=>true, 'message'=>'Feed processlist updated');
         } else {
             return array('success'=>false, 'message'=>'Feed processlist was not updated');

@@ -447,40 +447,56 @@ class Input
 
     public function set_processlist($userid, $id, $processlist, $process_list)
     {
+        $userid = (int) $userid;
+        
         // Validate processlist
         $pairs = explode(",",$processlist);
+        $pairs_out = array();
         
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
+            
+                // Verify process id
                 $processid = (int) $inputprocess[0];
-                $arg = (int) $inputprocess[1];
-
+                if ($processid==0) return array('success'=>false, 'message'=>_("Invalid process id"));
+                
+                // Verify argument
+                if (!is_numeric($inputprocess[1])) return array('success'=>false, 'message'=>_("Invalid arg"));
+                $arg = $inputprocess[1];
+                
                 // Check that feed exists and user has ownership
                 if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
-                    if (!$this->feed->access($userid,$arg)) {
+                    $feedid = (int) $arg;
+                    if (!$this->feed->access($userid,$feedid)) {
                         return array('success'=>false, 'message'=>_("Invalid feed"));
                     }
                 }
 
                 // Check that input exists and user has ownership
                 if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::INPUTID) {
-                    if (!$this->access($userid,$arg)) {
+                    $inputid = (int) $arg;
+                    if (!$this->access($userid,$inputid)) {
                         return array('success'=>false, 'message'=>_("Invalid input"));
                     }
                 }
+                
+                if ($processid>0) $pairs_out[] = implode(":",array($processid,$arg));
             }
         }
+        
+        // rebuild processlist from verified content
+        $processlist_out = implode(",",$pairs_out);
     
         $stmt = $this->mysqli->prepare("UPDATE input SET processList=? WHERE id=?");
-        $stmt->bind_param("si", $processlist, $id);
+        $stmt->bind_param("si", $processlist_out, $id);
         if (!$stmt->execute()) {
             return array('success'=>false, 'message'=>_("Error setting processlist"));
         }
         
         if ($this->mysqli->affected_rows>0){
-            if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist);
+            if ($this->redis) $this->redis->hset("input:$id",'processList',$processlist_out);
             return array('success'=>true, 'message'=>'Input processlist updated');
         } else {
             return array('success'=>false, 'message'=>'Input processlist was not updated');
