@@ -475,7 +475,7 @@ class Input
     }
 
     public function set_processlist($userid, $id, $processlist, $process_list)
-    {
+    {    
         $userid = (int) $userid;
         
         // Validate processlist
@@ -488,12 +488,12 @@ class Input
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = (int) $inputprocess[0];
-                if ($processid==0) return array('success'=>false, 'message'=>_("Invalid process id"));
+                $processid = $inputprocess[0];
+                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
                 
                 // Verify argument
-                if (!is_numeric($inputprocess[1])) return array('success'=>false, 'message'=>_("Invalid arg"));
                 $arg = $inputprocess[1];
+                if (preg_replace('/[^\p{N}\p{L}_\s.-]/u','',$arg)!=$arg) return array('success'=>false, 'message'=>'Invalid characters in arg');                
                 
                 // Check that feed exists and user has ownership
                 if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
@@ -511,7 +511,7 @@ class Input
                     }
                 }
                 
-                if ($processid>0) $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processid,$arg));
             }
         }
         
