@@ -544,7 +544,7 @@ class Input
     private function load_input_to_redis($inputid)
     {
         $inputid = (int) $inputid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
         if ($result->num_rows > 0) {
             $row = $result->fetch_object();
             $userid = $row->userid;
@@ -563,7 +563,7 @@ class Input
     private function load_to_redis($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:inputs:$userid", $row->id);
