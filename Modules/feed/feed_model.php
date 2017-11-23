@@ -869,7 +869,7 @@ class Feed
         return $this->EngineClass(Engine::PHPFINA)->export($feedid,$start);
     }
 
-
+    
     /*
      Processlist functions
     */
@@ -1014,6 +1014,20 @@ class Feed
             $timezone = "UTC";
         }
         return $timezone;
+    }
+    
+     
+    // Chand and fix data
+    public function check_data($feedid,$start,$end,$max_value,$min_value,$missing_data) {
+        $engine = $this->get_engine($feedid);
+        if ($engine == Engine::PHPFINA)
+            return $this->EngineClass(Engine::PHPFINA)->check_data($feedid,$start,$end,$max_value,$min_value,$missing_data);
+    }
+    
+    public function fix_data($feedid,$start,$end,$max_value,$min_value,$missing_data) {
+        $engine = $this->get_engine($feedid);
+        if ($engine == Engine::PHPFINA)
+            return $this->EngineClass(Engine::PHPFINA)->fix_data($feedid,$start,$end,$max_value,$min_value,$missing_data);
     }
 }
 

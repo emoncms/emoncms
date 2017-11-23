@@ -1249,4 +1249,265 @@ class PHPFina
         
         return true;
     }
+        
+    /**
+     * Returns an associative array with the number of data points to check, number 
+     * of missing data points, number of data points greater than max_value and number 
+     * of data points lower than min_value max value the data for the given time range
+     *
+     * @param integer $feedid The id of the feed to check
+     * @param bool $missing_data if true then the function will count the number of missing data points, used by smoe engines
+     * @param float $max_value if set the function will count the number of data points greater than this number
+     * @param float $min_value if set the function will count the number of data points lower than this number
+     */
+    public function check_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
+        // Initial values
+        $check_missing_data = (bool) $missing_data;
+        $check_max_value = false;
+        $check_min_value = false;
+
+        $start = intval($start / 1000); // time arrived in miliseconds
+        $end = intval($end / 1000);
+        $feedid = (int) $feedid;
+        if ($max_value) {
+            $max_value = (float) $max_value;
+            $check_max_value = true;
+        }
+        if ($min_value) {
+            $min_value = (float) $min_value;
+            $check_min_value = true;
+        }
+
+        $datapoints_missing = 0;
+        $datapoints_greater = 0;
+        $datapoints_lower = 0;
+
+        // Is feed metadata ok?
+        if (!$meta = $this->get_meta($feedid))
+            return array('success' => false, 'message' => "Error reading meta data feedid=$feedid");
+
+        // Are start and end dates in the dataset?
+        if ($start < $meta->start_time)
+            $start = $meta->start_time;
+        $last_value = $this->lastvalue($feedid);
+        if ($end > $last_value['time'])
+            $end = $last_value['time'];
+
+        // Are we checking too many datapoints?
+        $npoints_to_check = ($end - $start) / $meta->interval;
+        if (isset($feed_max_npoints_data_check)) {
+            if ($npoints_to_check > $feed_max_npoints_data_check)
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
+        }else {
+            if ($npoints_to_check > 1051200) // equivalent to a whole year with a 30s interval
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+        }
+
+        // Check datapoints
+        $fh = fopen($this->dir . $feedid . ".dat", 'rb');
+        if (!$fh) {
+            $this->log->warn("post() could not open data file id=$feedid");
+            return array('success' => false, 'message' => "Problems opening file");
+        }
+
+        //$starting_at = microtime(true);
+        $start_pos = floor(($start - $meta->start_time) / $meta->interval);
+        $end_pos = floor(($end - $meta->start_time) / $meta->interval);
+        for ($pos = $start_pos; $pos < $end_pos; $pos++) {
+            fseek($fh, $pos * 4);
+            $val = unpack("f", fread($fh, 4));
+
+            if (is_nan($val[1])) {
+                $datapoints_missing++;
+            }
+            else {
+                $value = (float) $val[1];
+                if ($check_max_value === true && $value > $max_value)
+                    $datapoints_greater++;
+                if ($check_min_value === true && $value < $min_value)
+                    $datapoints_lower++;
+            }
+        }
+        //$finishing_at = microtime(true);
+
+        $data['data_points_checked'] = $end_pos - $start_pos;
+        if ($check_missing_data)
+            $data['data_points_missing'] = $datapoints_missing;
+        if ($check_max_value)
+            $data['datapoints_greater'] = $datapoints_greater;
+        if ($check_min_value)
+            $data['datapoints_lower'] = $datapoints_lower;
+
+        //$microsecs= $finishing_at - $starting_at;
+        //$data['proccess_secs'] = round($microsecs,2);
+        //$data['msecs_per_1000_points'] = round( 1000*1000*$microsecs/ $meta->npoints, 2);
+
+        return $data;
+    }
+
+    /**
+     * Fixes dataset by
+     *  - setting points greater than max_value to max_value
+     *  - setting points lower than min_value to min_value
+     *  - interpolating missing points
+     *
+     * @param integer $feedid The id of the feed to check
+     * @param bool $missing_data if true then the function will fix the missing points by interpolation, used by smoe engines
+     * @param float $max_value if set the function will set data points greater than $max_value to $max_value
+     * @param float $min_value if set the function will set the data points lower than $min_value to $min_value
+     */
+    public function fix_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
+
+        // Initial values
+        $fix_missing_data = $missing_data === "true" ? true : false;
+        $fix_max_value = false;
+        $fix_min_value = false;
+
+        $start = intval($start / 1000); // time was in miliseconds
+        $end = intval($end / 1000);
+        $feedid = (int) $feedid;
+
+        // Are we checking max_value and/or min_value?
+        if ($max_value) {
+            $max_value = (float) $max_value;
+            $fix_max_value = true;
+        }
+        if ($min_value) {
+            $min_value = (float) $min_value;
+            $fix_min_value = true;
+        }
+
+        // Variables to count the mount of points we fix
+        $datapoints_missing_fixed = 0;
+        $datapoints_greater_fixed = 0;
+        $datapoints_lower_fixed = 0;
+
+        // Check that feed meta data is ok
+        if (!$meta = $this->get_meta($feedid))
+            return array('success' => false, 'message' => "Error reading meta data feedid=$feedid");
+
+        // Are start and end dates in the dataset? If not, chnage them to the beginning and end of dataset
+        if ($start < $meta->start_time)
+            $start = $meta->start_time;
+        $last_value = $this->lastvalue($feedid);
+        if ($end > $last_value['time'])
+            $end = $last_value['time'];
+
+        // Are we fixing too many datapoints?
+        $npoints_to_fix = ($end - $start) / $meta->interval;
+        if (isset($feed_max_npoints_data_check)) {
+            if ($npoints_to_fix > $feed_max_npoints_data_check)
+                return array('success' => false, 'message' => "Datapoints to fix = $npoints_to_fix, Maximum = $feed_max_npoints_data_check");
+        }else {
+            if ($npoints_to_fix > 1051200) // equivalent to a whole year with a 30s interval
+                return array('success' => false, 'message' => "Datapoints to fix = $npoints_to_fix, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+        }
+
+        // Open adn lock file
+        $fh = fopen($this->dir . $feedid . ".dat", 'c+');
+        if (!$fh) {
+            $this->log->warn("post() could not open data file id=$feedid");
+            return array('success' => false, 'message' => "Problems opening file");
+        }
+        flock($fh, LOCK_EX);
+
+        //$starting_at = microtime(true);
+        // Calculate star and end position
+        $start_pos = floor(($start - $meta->start_time) / $meta->interval);
+        $end_pos = floor(($end - $meta->start_time) / $meta->interval) - 1;
+
+        // If we are fixing missing data points we need to ensure that it is possible to interpolate
+        if ($fix_missing_data === true) {
+            fseek($fh, $start_pos * 4);
+            $val = unpack("f", fread($fh, 4));
+            if (is_nan($val[1])) {
+                return array('success' => false, 'message' => "The first data point in the period requested is missing, interpolation not possible. Please change the start date");
+            }
+            fseek($fh, $end_pos * 4);
+            $val = unpack("f", fread($fh, 4));
+            if (is_nan($val[1])) {
+                return array('success' => false, 'message' => "The last data point in the period requested is missing, interpolation not possible. Please change the end date");
+            }
+        }
+
+        // Start with the fixing!
+        $interpolation_required = false;
+        for ($pos = $start_pos; $pos <= $end_pos; $pos++) {
+            fseek($fh, $pos * 4);
+            $val = unpack("f", fread($fh, 4));
+            if (is_nan($val[1])) {
+                //fseek($fh, $pos * 4);
+                //fwrite($fh, pack("f", (float) 4000));
+                $interpolation_required = true;
+            }
+            else {
+                $value = (float) $val[1];
+                // Check max limit
+                if ($fix_max_value === true && $value > $max_value) {
+                    fseek($fh, $pos * 4);
+                    $value = $max_value;
+                    fwrite($fh, pack("f", $value));
+                    $datapoints_greater_fixed++;
+                }
+                // Check min limit
+                if ($fix_min_value === true && $value < $min_value) {
+                    fseek($fh, $pos * 4);
+                    $value = $min_value;
+                    fwrite($fh, pack("f", $value));
+                    $datapoints_lower_fixed++;
+                }
+                // Are we interpolating?
+                if ($interpolation_required === false) {
+                    $last_known_value = array($pos, $value);
+                }
+                else { // We only go into this "else" after we have found one or more missing data points ($interpolation_required === true) and the current data point is not missing
+                    $current_value = array($pos, $value);
+                    $asa=$this->linear_interpolation($fh, $last_known_value, $current_value);
+                    $datapoints_missing_fixed += $asa;
+                    $interpolation_required = false;
+                    $last_known_value = $current_value;
+                }
+            }
+        }
+
+        // Release lock and close file
+        flock($fh, LOCK_UN);
+        fclose($fh);
+
+        // Prepare output
+        $data['data_points_checked'] = $end_pos - $start_pos;
+        if ($fix_missing_data === true)
+            $data['data_points_missing_fixed'] = $datapoints_missing_fixed;
+        if ($fix_max_value === true)
+            $data['datapoints_greater_fixed'] = $datapoints_greater_fixed;
+        if ($fix_min_value === true)
+            $data['datapoints_lower_fixed'] = $datapoints_lower_fixed;
+
+        //$finishing_at = microtime(true);
+        //$microsecs= $finishing_at - $starting_at;
+        //$data['proccess_secs'] = round($microsecs,2);
+        //$data['msecs_per_1000_points'] = round( 1000*1000*$microsecs/ $meta->npoints, 2);
+
+        return $data;
+    }
+
+    private function linear_interpolation($fh, $last_known_value, $current_value) {
+        $xa = $last_known_value[0]; // position
+        $ya = $last_known_value[1]; // value
+
+        $xb = $current_value[0];
+        $yb = $current_value[1];
+        
+        $datapoints_fixed = 0;
+
+        for ($x = $xa + 1; $x < $xb; $x++) {
+            $y = $ya + ($yb - $ya) * ($x - $xa) / ($xb - $xa);
+            fseek($fh, 4 * $x);
+            fwrite($fh, pack("f", $y));
+            $datapoints_fixed++;
+        }
+
+        return $datapoints_fixed;
+    }
+    
 }
