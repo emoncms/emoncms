@@ -311,7 +311,7 @@ class User
         //$userData = $result->fetch_object();
         //$stmt->close();
         
-        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_read_write);
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_apikey_read);
         $result = $stmt->fetch();
         $stmt->close();
         
