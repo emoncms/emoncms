@@ -21,7 +21,11 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.22 | 2017.11.20";
+    $json = json_decode(file_get_contents("module.json"));  // Get JSON version information
+    $jsonVersion = $json->{'version'};
+    $jsonDate = $json->{'date'};
+
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "$jsonVersion | $jsonDate";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
