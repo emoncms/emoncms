@@ -20,7 +20,6 @@
     require "route.php";
     require "param.php";
     require "locale.php";
-    require "module.json";
 
     $json = json_decode(file_get_contents("module.json"));  // Get JSON version information
     $jsonVersion = $json->{'version'};
