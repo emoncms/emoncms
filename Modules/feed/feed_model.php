@@ -942,9 +942,8 @@ class Feed
         }
     }
 
-    // USES: redis feed
     public function set_processlist($userid, $id, $processlist, $process_list)
-    {
+    {    
         $userid = (int) $userid;
         
         // Validate processlist
@@ -955,51 +954,79 @@ class Feed
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
-
+            
                 // Verify process id
-                $processid = (int) $inputprocess[0];
-                if ($processid==0) return array('success'=>false, 'message'=>_("Invalid process id"));
+                $processid = $inputprocess[0];
+                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
                 
                 // Verify argument
-                if (!is_numeric($inputprocess[1])) return array('success'=>false, 'message'=>_("Invalid arg"));
                 $arg = $inputprocess[1];
+                
+                // Check argument against process arg type
+                switch($process_list[$processid][1]){
+                
+                    case ProcessArg::FEEDID:
+                        $feedid = (int) $arg;
+                        if (!$this->access($userid,$feedid)) {
+                            return array('success'=>false, 'message'=>_("Invalid feed"));
+                        }
+                        break;
+                        
+                    case ProcessArg::INPUTID:
+                        $inputid = (int) $arg;
+                        if (!$this->input_access($userid,$inputid)) {
+                            return array('success'=>false, 'message'=>_("Invalid input"));
+                        }
+                        break;
 
-                // Check that feed exists and user has ownership
-                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
-                    $feedid = (int) $arg;
-                    if (!$this->access($userid,$feedid)) {
-                        return array('success'=>false, 'message'=>_("Invalid feed"));
-                    }
+                    case ProcessArg::VALUE:
+                        if (!is_numeric($arg)) {
+                            return array('success'=>false, 'message'=>'Value is not numeric'); 
+                        }
+                        break;
+
+                    case ProcessArg::TEXT:
+                        if (preg_replace('/[^\p{N}\p{L}_\s.-]/u','',$arg)!=$arg) 
+                            return array('success'=>false, 'message'=>'Invalid characters in arg'); 
+                        break;
+                                                
+                    case ProcessArg::SCHEDULEID:
+                        $scheduleid = (int) $arg;
+                        if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
+                            return array('success'=>false, 'message'=>'Invalid schedule'); 
+                        }
+                        break;
+                        
+                    case ProcessArg::NONE:
+                        $arg = false;
+                        break;
+                        
+                    default:
+                        $arg = false;
+                        break;
                 }
-
-                // Check that input exists and user has ownership
-                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::INPUTID) {
-                    $inputid = (int) $arg;
-                    $result = $this->mysqli->query("SELECT id FROM input WHERE `userid` = '$userid' AND `id` = '$inputid'");
-                    if ($result->num_rows != 1) return array('success'=>false, 'message'=>_("Invalid input"));
-                }
-
-                if ($processid>0) $pairs_out[] = implode(":",array($processid,$arg));
+                
+                $pairs_out[] = implode(":",array($processid,$arg));
             }
         }
         
         // rebuild processlist from verified content
         $processlist_out = implode(",",$pairs_out);
-
-        $stmt = $this->mysqli->prepare("UPDATE feeds SET processList = ? WHERE id = ?");
-        $stmt->bind_param("si",$processlist_out,$id);
-        $stmt->execute();
-        $affected_rows = $stmt->affected_rows;
-        $stmt->close();
+    
+        $stmt = $this->mysqli->prepare("UPDATE feeds SET processList=? WHERE id=?");
+        $stmt->bind_param("si", $processlist_out, $id);
+        if (!$stmt->execute()) {
+            return array('success'=>false, 'message'=>_("Error setting processlist"));
+        }
         
-        if ($affected_rows>0) {
+        if ($this->mysqli->affected_rows>0){
             if ($this->redis) $this->redis->hset("feed:$id",'processList',$processlist_out);
             return array('success'=>true, 'message'=>'Feed processlist updated');
         } else {
             return array('success'=>false, 'message'=>'Feed processlist was not updated');
         }
     }
-
+    
     public function reset_processlist($id)
     {
         $id = (int) $id;
@@ -1084,6 +1111,34 @@ class Feed
             $timezone = "UTC";
         }
         return $timezone;
+    }
+    
+    // ------------------------------------------
+    
+    private function input_access($userid,$inputid)
+    {
+        $userid = (int) $userid;
+        $inputid = (int) $inputid;
+        $stmt = $this->mysqli->prepare("SELECT id FROM input WHERE userid=? AND id=?");
+        $stmt->bind_param("ii",$userid,$inputid);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $result = $stmt->fetch();
+        $stmt->close();
+        if ($result && $id>0) return true; else return false;
+    }
+    
+    private function schedule_access($userid,$scheduleid)
+    {
+        $userid = (int) $userid;
+        $scheduleid = (int) $scheduleid;
+        $stmt = $this->mysqli->prepare("SELECT id FROM schedule WHERE userid=? AND id=?");
+        $stmt->bind_param("ii",$userid,$scheduleid);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $result = $stmt->fetch();
+        $stmt->close();
+        if ($result && $id>0) return true; else return false;
     }
 }
 

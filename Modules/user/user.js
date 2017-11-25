@@ -3,16 +3,21 @@ var user = {
 
   'login':function(username,password,rememberme)
   {
-    var result ={};
+    var result = {};
     $.ajax({
       type: "POST",
       url: path+"user/login.json",
       data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&rememberme="+encodeURIComponent(rememberme),
-      dataType: "json",
+      dataType: "text",
       async: false,
-      success: function(data)
+      success: function(data_in)
       {
-        result = data;
+         try {
+             result = JSON.parse(data_in);
+             if (result.success==undefined) result = data_in;
+         } catch (e) {
+             result = data_in;
+         }
       } 
     });
     return result;
@@ -25,12 +30,17 @@ var user = {
       type: "POST",
       url: path+"user/register.json",
       data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&email="+encodeURIComponent(email),
-      dataType: "json",
-      async: false, 
-      success: function(data)
+      dataType: "text",
+      async: false,
+      success: function(data_in)
       {
-        result = data;
-      } 
+         try {
+             result = JSON.parse(data_in);
+             if (result.success==undefined) result = data_in;
+         } catch (e) {
+             result = data_in;
+         }
+      }
     });
     return result;
   },

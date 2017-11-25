@@ -247,7 +247,9 @@ class User
 
         // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
         // without cuasing an error if it has not yet been created in the database.
-        $stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage FROM users WHERE username=?");
+        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage FROM users WHERE username=?")) {
+            return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
+        }
         $stmt->bind_param("s",$username);
         $stmt->execute();
         
@@ -309,7 +311,7 @@ class User
         //$userData = $result->fetch_object();
         //$stmt->close();
         
-        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_read_write);
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_apikey_read);
         $result = $stmt->fetch();
         $stmt->close();
         
