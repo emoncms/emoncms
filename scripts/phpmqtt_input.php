@@ -47,6 +47,8 @@
     require "Lib/EmonLogger.php";
     require "process_settings.php";
     
+    set_error_handler('exceptions_error_handler');
+    
     $log = new EmonLogger(__FILE__);
     $log->warn("Starting MQTT Input script");
     
@@ -269,5 +271,15 @@
             
         } catch (Exception $e) {
             $log->error($e);
+        }
+    }
+    
+    
+    function exceptions_error_handler($severity, $message, $filename, $lineno) {
+        if (error_reporting() == 0) {
+            return;
+        }
+        if (error_reporting() & $severity) {
+            throw new ErrorException($message, 0, $severity, $filename, $lineno);
         }
     }
