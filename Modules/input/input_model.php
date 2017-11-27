@@ -119,6 +119,7 @@ class Input
             if ($stmt = $this->mysqli->prepare("UPDATE input SET time = ?, value = ? WHERE id = ?")) {
                 $stmt->bind_param("idi", $time, $value, $id);
                 $stmt->execute();
+                $stmt->close();
             }
         }
     }
