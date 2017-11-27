@@ -50,6 +50,7 @@ class InputMethods
             $nodeid = $param->val('node');
         }
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        if ($nodeid=="") $nodeid = 0;
         
         // Time
         if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
@@ -178,6 +179,7 @@ class InputMethods
                 } else {
                     return "Format error, node must not be an object";
                 }
+                if ($nodeid=="") $nodeid = 0;
 
                 $inputs = array();
                 $name = 1;

@@ -22,7 +22,7 @@ var input = {
     'set':function(id, fields)
     {
         var result = {};
-        $.ajax({ url: path+"input/set.json", data: "inputid="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data){} });
+        $.ajax({ url: path+"input/set.json", data: "inputid="+id+"&fields="+JSON.stringify(fields), async: false, success: function(result){ if (!result.success) alert(result.message); } });
         return result;
     },
 
