@@ -50,7 +50,7 @@
     set_error_handler('exceptions_error_handler');
     
     $log = new EmonLogger(__FILE__);
-    $log->warn("Starting MQTT Input script");
+    $log->info("Starting MQTT Input script");
     
     if (!$mqtt_enabled) {
         //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
@@ -121,7 +121,7 @@
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 $topic = $mqtt_server['basetopic']."/#";
                 //echo "Subscribing to: ".$topic."\n";
-                $log->warn("Subscribing to: ".$topic);
+                $log->info("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
             } catch (Exception $e) {
                 $log->error($e);
@@ -132,7 +132,7 @@
         
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
-            $log->warn("$count Messages processed in last 5 minutes");
+            $log->info("$count Messages processed in last 5 minutes");
             $count = 0;
         }
         
@@ -144,13 +144,13 @@
         global $log, $connected;
         $connected = true;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
-        $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
+        $log->info("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
         global $log, $topic;
         //echo "Subscribed to topic: ".$topic."\n";
-        $log->warn("Subscribed to topic: ".$topic);
+        $log->info("Subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
@@ -163,7 +163,7 @@
         global $connected, $log;
         $connected = false;
         //echo "Disconnected cleanly\n";
-        $log->warn("Disconnected cleanly");
+        $log->info("Disconnected cleanly");
     }
 
     function message($message)
@@ -226,7 +226,6 @@
 	          else{
 		          $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
 	          }
-            
 
             if (!isset($dbinputs[$nodeid])) {
                 $dbinputs[$nodeid] = array();
@@ -246,7 +245,8 @@
                 if (strtolower($name)=="describe") {
                     if ($device && method_exists($device,"autocreate")) {
                         $result = $device->autocreate($userid,$nodeid,$value);
-                        $log->warn(json_encode($result));
+                        $log->info(json_encode($result));
+
                     }
                 }
                 else 
