@@ -47,8 +47,10 @@
     require "Lib/EmonLogger.php";
     require "process_settings.php";
     
+    set_error_handler('exceptions_error_handler');
+    
     $log = new EmonLogger(__FILE__);
-    $log->warn("Starting MQTT Input script");
+    $log->info("Starting MQTT Input script");
     
     if (!$mqtt_enabled) {
         //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
@@ -96,6 +98,8 @@
     
     $connected = false;
     $last_retry = 0;
+    $last_heartbeat = 0;
+    $count = 0;
     
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
@@ -107,7 +111,7 @@
         try { 
             $mqtt_client->loop(); 
         } catch (Exception $e) {
-        
+            $log->error($e);
         }
         
         if (!$connected && (time()-$last_retry)>5.0) {
@@ -117,14 +121,22 @@
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 $topic = $mqtt_server['basetopic']."/#";
                 //echo "Subscribing to: ".$topic."\n";
-                $log->warn("Subscribing to: ".$topic);
+                $log->info("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
             } catch (Exception $e) {
-            
+                $log->error($e);
             }
             //echo "Not connected, retrying connection\n";
             $log->warn("Not connected, retrying connection");
         }
+        
+        if ((time()-$last_heartbeat)>300) {
+            $last_heartbeat = time();
+            $log->info("$count Messages processed in last 5 minutes");
+            $count = 0;
+        }
+        
+        usleep(1000);
     }
     
 
@@ -132,13 +144,13 @@
         global $log, $connected;
         $connected = true;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
-        $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
+        $log->info("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
         global $log, $topic;
         //echo "Subscribed to topic: ".$topic."\n";
-        $log->warn("Subscribed to topic: ".$topic);
+        $log->info("Subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
@@ -151,108 +163,123 @@
         global $connected, $log;
         $connected = false;
         //echo "Disconnected cleanly\n";
-        $log->warn("Disconnected cleanly");
+        $log->info("Disconnected cleanly");
     }
 
     function message($message)
     {
-        $topic = $message->topic;
-        $value = $message->payload;
-        
-        $time = time();
-        //echo $topic." ".$value."\n";
-        
-        global $mqtt_server, $user, $input, $process, $feed, $device, $log;
-        $log->info($topic." ".$value);
-        
-        #Emoncms user ID TBD: incorporate on message via authentication mechanism
-        global $mqttsettings;
-        $userid = $mqttsettings['userid'];
-        
-        $inputs = array();
-        
-        $route = explode("/",$topic);
-	      $basetopic = explode("/",$mqtt_server['basetopic']);
-
-	      /*Iterate over base topic to determine correct sub-topic*/
-	      $st=-1;
-	      foreach ($basetopic as $subtopic) 
-	      {
-		      if(isset($route[$st+1]))
-		      {
-			      if($basetopic[$st+1]==$route[$st+1])
-			      {
-				      $st = $st + 1;
-			      }
-			      else
-			      {
-				      break;
-			      }
-		      }
-		      else
-		      {
-			      $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
-		      }
-	      }
- 
-        if ($st>=0)
-        {
-            if (isset($route[$st+1]))
-            {
-                $nodeid = $route[$st+1];
-                $dbinputs = $input->get_inputs($userid);
+        try {
+            $topic = $message->topic;
+            $value = $message->payload;
             
-                if (isset($route[$st+2]))
+            $time = time();
+            
+            global $mqtt_server, $user, $input, $process, $feed, $device, $log, $count;
+            
+            $log->info($topic." ".$value);
+            $count ++;
+            
+            #Emoncms user ID TBD: incorporate on message via authentication mechanism
+            global $mqttsettings;
+            $userid = $mqttsettings['userid'];
+            
+            $inputs = array();
+            
+            $route = explode("/",$topic);
+	          $basetopic = explode("/",$mqtt_server['basetopic']);
+
+	          /*Iterate over base topic to determine correct sub-topic*/
+	          $st=-1;
+	          foreach ($basetopic as $subtopic) {
+		            if(isset($route[$st+1])) {
+			              if($basetopic[$st+1]==$route[$st+1]) {
+				                $st = $st + 1;
+			              } else {
+				                break;
+			              }
+		            } else {
+			              $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+		            }
+	          }
+     
+            if ($st>=0)
+            {
+                if (isset($route[$st+1]))
                 {
-                    $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
-                }
-                else
-                {
-                    $values = explode(",",$value);
-                    $name = 0;
-                    foreach ($values as $value) {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
+                    $nodeid = $route[$st+1];
+                    $dbinputs = $input->get_inputs($userid);
+                
+                    if (isset($route[$st+2]))
+                    {
+                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
+                    }
+                    else
+                    {
+                        $values = explode(",",$value);
+                        $name = 0;
+                        foreach ($values as $value) {
+                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
+                        }
                     }
                 }
             }
-        }
-	      else{
-		      $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
-	      }
-        
-        $tmp = array();
-        foreach ($inputs as $i)
-        {
-            $userid = $i['userid'];
-            $time = $i['time'];
-            $nodeid = $i['nodeid'];
-            $name = $i['name'];
-            $value = $i['value'];
+	          else{
+		          $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
+	          }
             
-            // Automatic device configuration using device module if 'describe' keyword found
-            if (strtolower($name)=="describe") {
-                if ($device && method_exists($device,"autocreate")) {
-                    $result = $device->autocreate($userid,$nodeid,$value);
-                    $log->warn(json_encode($result));
-                }
-            }
-            else 
+            // Enabled in device-support branch
+            // if (!isset($dbinputs[$nodeid])) {
+            //     $dbinputs[$nodeid] = array();
+            //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
+            // }
+
+            $tmp = array();
+            foreach ($inputs as $i)
             {
-                if (!isset($dbinputs[$nodeid][$name])) {
-                    usleep(100);
-                    $inputid = $input->create_input($userid, $nodeid, $name);
-                    usleep(100);
-                    $dbinputs[$nodeid][$name] = true;
-                    $dbinputs[$nodeid][$name] = array('id'=>$inputid);
-                    $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                } else {
-                    $inputid = $dbinputs[$nodeid][$name]['id'];
-                    $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                    
-                    if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                $userid = $i['userid'];
+                $time = $i['time'];
+                $nodeid = $i['nodeid'];
+                $name = $i['name'];
+                $value = $i['value'];
+                
+                // Automatic device configuration using device module if 'describe' keyword found
+                if (strtolower($name)=="describe") {
+                    if ($device && method_exists($device,"autocreate")) {
+                        $result = $device->autocreate($userid,$nodeid,$value);
+                        $log->info(json_encode($result));
+                    }
+                }
+                else 
+                {
+                    if (!isset($dbinputs[$nodeid][$name])) {
+                        usleep(100);
+                        $inputid = $input->create_input($userid, $nodeid, $name);
+                        usleep(100);
+                        $dbinputs[$nodeid][$name] = true;
+                        $dbinputs[$nodeid][$name] = array('id'=>$inputid);
+                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                    } else {
+                        $inputid = $dbinputs[$nodeid][$name]['id'];
+                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                        
+                        if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                    }
                 }
             }
+            
+            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+            
+        } catch (Exception $e) {
+            $log->error($e);
         }
-        
-        foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+    }
+    
+    
+    function exceptions_error_handler($severity, $message, $filename, $lineno) {
+        if (error_reporting() == 0) {
+            return;
+        }
+        if (error_reporting() & $severity) {
+            throw new ErrorException($message, 0, $severity, $filename, $lineno);
+        }
     }
