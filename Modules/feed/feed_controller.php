@@ -125,7 +125,17 @@ function feed_controller()
                     else if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
                     else if ($route->action == 'kwhatpowers') $result = $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
-                    else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
+                    else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
+
+                    if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
+                        if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));
+                    } elseif ($f['engine']==Engine::PHPTIMESERIES) {
+                        if ($route->action == "export") $result = $feed->phptimeseries_export($feedid,get('start'));
+                    } elseif ($f['engine']==Engine::PHPFIWA) {
+                        if ($route->action == "export") $result = $feed->phpfiwa_export($feedid,get('start'),get('layer'));
+                    } elseif ($f['engine']==Engine::PHPFINA) {
+                        if ($route->action == "export") $result = $feed->phpfina_export($feedid,get('start'));
+                    }
                 }
 
                 // write session required
@@ -168,15 +178,8 @@ function feed_controller()
                     }
 
                     if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
-                        if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));
-                        else if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
+                        if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
                         else if ($route->action == "deletedatarange") $result = $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
-                    } elseif ($f['engine']==Engine::PHPTIMESERIES) {
-                        if ($route->action == "export") $result = $feed->phptimeseries_export($feedid,get('start'));
-                    } elseif ($f['engine']==Engine::PHPFIWA) {
-                        if ($route->action == "export") $result = $feed->phpfiwa_export($feedid,get('start'),get('layer'));
-                    } elseif ($f['engine']==Engine::PHPFINA) {
-                        if ($route->action == "export") $result = $feed->phpfina_export($feedid,get('start'));
                     }
                 }
             }
