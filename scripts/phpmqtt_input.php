@@ -229,7 +229,7 @@
 
             if (!isset($dbinputs[$nodeid])) {
                 $dbinputs[$nodeid] = array();
-                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
+                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
             }
 
             $tmp = array();
