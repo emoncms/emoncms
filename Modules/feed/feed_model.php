@@ -869,7 +869,7 @@ class Feed
         return $this->EngineClass(Engine::PHPFINA)->export($feedid,$start);
     }
 
-    
+
     /*
      Processlist functions
     */
@@ -1016,18 +1016,230 @@ class Feed
         return $timezone;
     }
     
-     
-    // Chand and fix data
-    public function check_data($feedid,$start,$end,$max_value,$min_value,$missing_data) {
+     // Check and and fix data
+    public function check_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
         $engine = $this->get_engine($feedid);
-        if ($engine == Engine::PHPFINA)
-            return $this->EngineClass(Engine::PHPFINA)->check_data($feedid,$start,$end,$max_value,$min_value,$missing_data);
+        if (method_exists($this->EngineClass($engine), "check_data")) {
+            return $this->EngineClass($engine)->check_data($feedid, $start, $end, $max_value, $min_value, $missing_data);
+        }
+        else { // it is recommended to add this method to each engine to optimize the process, but a default one is provided here
+            return $this->check_data_default($feedid, $start, $end, $max_value, $min_value, $missing_data);
+        }
     }
-    
-    public function fix_data($feedid,$start,$end,$max_value,$min_value,$missing_data) {
-        $engine = $this->get_engine($feedid);
-        if ($engine == Engine::PHPFINA)
-            return $this->EngineClass(Engine::PHPFINA)->fix_data($feedid,$start,$end,$max_value,$min_value,$missing_data);
-    }
-}
 
+    public function fix_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
+        $engine = $this->get_engine($feedid);
+        if (method_exists($this->EngineClass($engine), "fix_data")) {
+            return $this->EngineClass($engine)->fix_data($feedid, $start, $end, $max_value, $min_value, $missing_data);
+        }
+        else { // it is recommended to add this method to each engine to optimize the process, but a default one is provided here
+            return $this->fix_data_default($feedid, $start, $end, $max_value, $min_value, $missing_data);
+        }
+    }
+
+    private function check_data_default($feedid, $start, $end, $max_value, $min_value, $missing_data) {
+        // Initial values
+        $check_missing_data = $missing_data === "true" ? true : false;
+        $check_max_value = false;
+        $check_min_value = false;
+
+        $start = (int) $start / 1000;
+        $end = (int) $end / 1000;
+        $feedid = (int) $feedid;
+
+        if ($max_value) {
+            $max_value = (float) $max_value;
+            $check_max_value = true;
+        }
+        if ($min_value) {
+            $min_value = (float) $min_value;
+            $check_min_value = true;
+        }
+
+        $datapoints_checked = 0;
+        $datapoints_missing = 0;
+        $datapoints_greater = 0;
+        $datapoints_lower = 0;
+
+        // Engine object
+        $engine = $this->get_engine($feedid);
+        $engine_obj = $this->EngineClass($engine);
+
+        // Get feed meta data
+        $meta = $engine_obj->get_meta($feedid);
+
+        // Get feed data
+        $dataset = $engine_obj->get_data($feedid, $start * 1000, $end * 1000, $meta->interval, 0, true);
+        if (isset($dataset['success']) && $dataset['success'] == false)
+            return $dataset['message'];
+
+        // Are we checking too many datapoints?
+        $npoints_to_check = count($dataset);
+        if (isset($feed_max_npoints_data_check)) {
+            if ($npoints_to_check > $feed_max_npoints_data_check)
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
+        }else {
+            if ($npoints_to_check > 1051200) // equivalent to a whole year with a 30s interval
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+        }
+
+        // Check datapoints
+        foreach ($dataset as $data_point) {
+            if (is_nan($data_point[1]) || is_null($data_point[1])) {
+                $datapoints_missing++;
+            }
+            else {
+                $value = (float) $data_point[1];
+                if ($check_max_value === true && $value > $max_value)
+                    $datapoints_greater++;
+                if ($check_min_value === true && $value < $min_value)
+                    $datapoints_lower++;
+            }
+            $datapoints_checked++;
+        }
+
+        // Prepare output
+        $data['data_points_checked'] = $datapoints_checked;
+        if ($check_missing_data)
+            $data['data_points_missing'] = $datapoints_missing;
+        if ($check_max_value)
+            $data['datapoints_greater'] = $datapoints_greater;
+        if ($check_min_value)
+            $data['datapoints_lower'] = $datapoints_lower;
+
+        return $data;
+    }
+
+    private function fix_data_default($feedid, $start, $end, $max_value, $min_value, $missing_data) {
+        // Initial values
+        $fix_missing_data = $missing_data === "true" ? true : false;
+        $fix_max_value = false;
+        $fix_min_value = false;
+
+        $start = (int) $start / 1000;
+        $end = (int) $end / 1000;
+        $feedid = (int) $feedid;
+
+        if ($max_value != null) {
+            $max_value = (float) $max_value;
+            $fix_max_value = true;
+        }
+        if ($min_value != null) {
+            $min_value = (float) $min_value;
+            $fix_min_value = true;
+        }
+
+        $datapoints_checked = 0;
+        $datapoints_missing_fixed = 0;
+        $datapoints_greater = 0;
+        $datapoints_lower = 0;
+
+        // Engine object
+        $engine = $this->get_engine($feedid);
+        $engine_obj = $this->EngineClass($engine);
+
+        // Get feed meta data
+        $meta = $engine_obj->get_meta($feedid);
+
+        // Is end time higher than last update time?
+        $last_value = $engine_obj->lastvalue($feedid);
+        if ($end > $last_value['time']) {
+            $end = $last_value['time'];
+        }
+
+        // Get feed data
+        $dataset = $engine_obj->get_data($feedid, $start * 1000, $end * 1000, $meta->interval, 0, true);
+        if (isset($dataset['success']) && $dataset['success'] == false)
+            return $dataset['message'];
+
+        // If we are fixing missing data points we need to ensure that it is possible to interpolate
+        if ($fix_missing_data === true) {
+            if (is_nan($dataset[0][1]) || is_null($dataset[0][1])) {
+                return array('success' => false, 'message' => "The first data point in the period requested is missing, interpolation not possible. Please change the start date");
+            }
+            $last_index = count($dataset) - 1;
+            if (is_nan($dataset[$last_index][1]) || is_null($dataset[$last_index][1])) {
+                return array('success' => false, 'message' => "The last data point in the period requested is missing, interpolation not possible. Please change the end date");
+            }
+        }
+
+        // Are we checking too many datapoints?
+        $npoints_to_check = count($dataset);
+        if (isset($feed_max_npoints_data_check)) {
+            if ($npoints_to_check > $feed_max_npoints_data_check)
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
+        }else {
+            if ($npoints_to_check > 1051200) // equivalent to a whole year with a 30s interval
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+        }
+
+        // Check datapoints
+        $interpolation_required = false;
+        foreach ($dataset as $data_point) {
+            if (is_nan($data_point[1]) || is_null($data_point[1])) {
+                $interpolation_required = true;
+            }
+            else {
+                $time = (int) $data_point[0];
+                $value = (float) $data_point[1];
+                if ($fix_max_value === true && $value > $max_value) {
+                    $fixed = $engine_obj->update($feedid, $time / 1000, $max_value);
+                    $datapoints_greater++;
+                }
+                if ($fix_min_value === true && $value < $min_value) {
+                    $a = $engine_obj->update($feedid, $time / 1000, $min_value);
+                    $datapoints_lower++;
+                }
+                // Are we interpolating?
+                if ($fix_missing_data === true) {
+                    if ($interpolation_required === false) {
+                        $last_known_value = array($time, $value);
+                    }
+                    else { // We only go into this "else" after we have found one or more missing data points ($interpolation_required === true) and the current data point is not missing
+                        $current_value = array($time, $value);
+                        $interpolated_datapoints += $this->linear_interpolation($last_known_value, $current_value);
+                        foreach ($interpolated_datapoints as $data_point_fixing) {
+                            $engine_obj->update($feedid, $data_point_fixing[0] / 1000, $data_point_fixing[1]);
+                            $datapoints_missing_fixed++;
+                        }
+                        $interpolation_required = false;
+                        $last_known_value = $current_value;
+                    }
+                }
+            }
+            $datapoints_checked++;
+        }
+
+        // Prepare output
+        $data['data_points_checked'] = $datapoints_checked;
+        if ($fix_missing_data === true)
+            $data['data_points_missing_fixed'] = $datapoints_missing_fixed;
+        if ($fix_max_value)
+            $data['datapoints_greater_fixed'] = $datapoints_greater;
+        if ($fix_min_value)
+            $data['datapoints_lower_fixed'] = $datapoints_lower;
+
+        return $data;
+        // http://localhost/groups_module/feed/fixdata.json?id=155&missing_data=true&min_value=600&start=1511970130000&end=1511978520000
+    }
+
+    private function linear_interpolation($last_known_value, $current_value) {
+        $xa = $last_known_value[0]; // position
+        $ya = $last_known_value[1]; // value
+
+        $xb = $current_value[0];
+        $yb = $current_value[1];
+
+        $datapoints_fixed = array();
+
+        for ($x = $xa + 1; $x < $xb; $x++) {
+            $y = $ya + ($yb - $ya) * ($x - $xa) / ($xb - $xa);
+            fseek($fh, 4 * $x);
+            fwrite($fh, pack("f", $y));
+            $datapoints_fixed[] = array($x, $y);
+        }
+
+        return $datapoints_fixed;
+    }
+
+}
