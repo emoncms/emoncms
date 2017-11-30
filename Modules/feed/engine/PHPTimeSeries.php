@@ -506,6 +506,189 @@ class PHPTimeSeries
     
     
 // #### \/ Below engine public specific methods
+    
+    /**
+     * Returns an associative array with the number of data points checked,  
+     * number of data points greater than max_value and number of data points 
+     * lower than min_value max value the data for the given time range
+     *
+     * @param integer $feedid The id of the feed to check
+     * @param bool $missing_data if true then the function will count the number of missing data points, used by smoe engines
+     * @param float $max_value if set the function will count the number of data points greater than this number
+     * @param float $min_value if set the function will count the number of data points lower than this number
+     */
+    public function check_data($feedid, $start, $end, $max_value, $min_value, $missing_data = null) {
+        // Initial values
+        $check_max_value = false;
+        $check_min_value = false;
+
+        $start = (int) ($start / 1000); // time arrived in miliseconds
+        $end = (int) ($end / 1000);
+        $feedid = (int) $feedid;
+
+        if ($max_value) {
+            $max_value = (float) $max_value;
+            $check_max_value = true;
+        }
+        if ($min_value) {
+            $min_value = (float) $min_value;
+            $check_min_value = true;
+        }
+
+        $datapoints_checked = 0;
+        $datapoints_greater = 0;
+        $datapoints_lower = 0;
+
+        // Get feed meata data
+        clearstatcache($this->dir . "feed_$feedid.MYD");
+        $filesize = filesize($this->dir . "feed_$feedid.MYD");
+
+        // Open the data file to read
+        $fh = fopen($this->dir . "feed_$feedid.MYD", 'rb');
+        if (!$fh) {
+            return array('success' => false, 'message' => "Problems opening file");
+        }
+
+        // Find start and end position in file
+        $start_pos = $this->binarysearch($fh, $start, $filesize);
+        $end_pos = $this->binarysearch($fh, $end, $filesize);
+
+        // Are we checking too many datapoints?
+        $npoints_to_check = ($end_pos - $start_pos) / 9; // each datapoint uses 9 bytes
+        if (isset($feed_max_npoints_data_check)) {
+            if ($npoints_to_check > $feed_max_npoints_data_check)
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
+        }else {
+            if ($npoints_to_check > 1051200) // equivalent to a whole year with a 30s interval
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+        }
+
+        // Check datapoints
+        //$starting_at = microtime(true);
+        for ($pos = $start_pos; $pos <= $end_pos; $pos += 9) {
+            fseek($fh, $pos);
+            $datapoint = unpack("x/Itime/fvalue", fread($fh, 9));
+
+            $value = (float) $datapoint['value'];
+            if ($check_max_value === true && $value > $max_value)
+                $datapoints_greater++;
+            if ($check_min_value === true && $value < $min_value)
+                $datapoints_lower++;
+            $datapoints_checked++;
+        }
+
+        //$finishing_at = microtime(true);
+
+        $data['data_points_checked'] = $datapoints_checked;
+        if ($check_max_value)
+            $data['datapoints_greater'] = $datapoints_greater;
+        if ($check_min_value)
+            $data['datapoints_lower'] = $datapoints_lower;
+
+        //$microsecs= $finishing_at - $starting_at;
+        //$data['proccess_secs'] = round($microsecs,2);
+        //$data['msecs_per_1000_points'] = round( 1000*1000*$microsecs/ $meta->npoints, 2);
+
+        return $data;
+    }
+
+    // http://localhost/groups_module/feed/checkdata.json?id=200&max_value=500&end=1511455785000
+
+    /**
+     * Fixes dataset by
+     *  - setting points greater than max_value to max_value
+     *  - setting points lower than min_value to min_value
+     *  - interpolating missing points
+     *
+     * @param integer $feedid The id of the feed to check
+     * @param bool $missing_data if true then the function will fix the missing points by interpolation, used by smoe engines
+     * @param float $max_value if set the function will set data points greater than $max_value to $max_value
+     * @param float $min_value if set the function will set the data points lower than $min_value to $min_value
+     */
+    public function fix_data($feedid, $start, $end, $max_value, $min_value, $missing_data = false) {
+
+        // Initial values
+        $fix_max_value = false;
+        $fix_min_value = false;
+
+        $start = intval($start / 1000); // time was in miliseconds
+        $end = intval($end / 1000);
+        $feedid = (int) $feedid;
+
+        // Are we fixing max_value and/or min_value?
+        if ($max_value != null) {
+            $max_value = (float) $max_value;
+            $fix_max_value = true;
+        }
+        if ($min_value != null) {
+            $min_value = (float) $min_value;
+            $fix_min_value = true;
+        }
+
+        // Variables to count the mount of points we fix
+        $datapoints_checked = 0;
+        $datapoints_greater_fixed = 0;
+        $datapoints_lower_fixed = 0;
+
+        // Get feed meata data
+        clearstatcache($this->dir . "feed_$feedid.MYD");
+        $filesize = filesize($this->dir . "feed_$feedid.MYD");
+
+        // Open adn lock file
+        $fh = fopen($this->dir . "feed_$feedid.MYD", 'c+');
+        if (!$fh) {
+            $this->log->warn("post() could not open data file id=$feedid");
+            return array('success' => false, 'message' => "Problems opening file");
+        }
+        flock($fh, LOCK_EX);
+
+        // Find start and end position in file
+        $start_pos = $this->binarysearch($fh, $start, $filesize);
+        $end_pos = $this->binarysearch($fh, $end, $filesize);
+
+        // Are we checking too many datapoints?
+        $npoints_to_check = ($end_pos - $start_pos) / 9; // each datapoint uses 9 bytes
+        if (isset($feed_max_npoints_data_check)) {
+            if ($npoints_to_check > $feed_max_npoints_data_check)
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
+        }else {
+            if ($npoints_to_check > 1051200) // equivalent to a whole year with a 30s interval
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+        }
+
+        // Start with the fixing!
+        for ($pos = $start_pos; $pos <= $end_pos; $pos += 9) {
+            fseek($fh, $pos);
+            $datapoint = unpack("x/Itime/fvalue", fread($fh, 9));
+            $value = (float) $datapoint['value'];
+            $time = (int) $datapoint['time'];
+            if ($fix_max_value === true && $value > $max_value) {
+                fseek($fh, $pos);
+                fwrite($fh, pack("CIf", 249, $time, $max_value));
+                $datapoints_greater_fixed++;
+            }
+            if ($fix_min_value === true && $value < $min_value) {
+                fseek($fh, $pos);
+                fwrite($fh, pack("CIf", 249, $time, $min_value));
+                $datapoints_lower_fixed++;
+            }
+            $datapoints_checked++;
+        }
+
+        // Release lock and close file
+        flock($fh, LOCK_UN);
+        fclose($fh);
+
+        // Prepare output
+        $data['data_points_checked'] = $datapoints_checked;
+        if ($fix_max_value === true)
+            $data['datapoints_greater_fixed'] = $datapoints_greater_fixed;
+        if ($fix_min_value === true)
+            $data['datapoints_lower_fixed'] = $datapoints_lower_fixed;
+
+        return $data;
+    }
+
 
 
 // #### \/ Bellow are engine private methods    
