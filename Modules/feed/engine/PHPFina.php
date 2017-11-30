@@ -1249,8 +1249,12 @@ class PHPFina
         
         return true;
     }
-        
-    /**
+    
+    // -----------------------------------------------------------------------------------
+    // Check and fix data methods
+    // -----------------------------------------------------------------------------------
+
+    /*
      * Returns an associative array with the number of data points to check, number 
      * of missing data points, number of data points greater than max_value and number 
      * of data points lower than min_value max value the data for the given time range
@@ -1262,18 +1266,18 @@ class PHPFina
      */
     public function check_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
         // Initial values
-        $check_missing_data = (bool) $missing_data;
+        $check_missing_data = $missing_data === "true" ? true : false;
         $check_max_value = false;
         $check_min_value = false;
 
         $start = intval($start / 1000); // time arrived in miliseconds
         $end = intval($end / 1000);
         $feedid = (int) $feedid;
-        if ($max_value) {
+        if ($max_value != null) {
             $max_value = (float) $max_value;
             $check_max_value = true;
         }
-        if ($min_value) {
+        if ($min_value != null) {
             $min_value = (float) $min_value;
             $check_min_value = true;
         }
@@ -1317,7 +1321,7 @@ class PHPFina
             fseek($fh, $pos * 4);
             $val = unpack("f", fread($fh, 4));
 
-            if (is_nan($val[1])) {
+            if (is_nan($val[1]) || is_null($val[1])) {
                 $datapoints_missing++;
             }
             else {
@@ -1368,11 +1372,11 @@ class PHPFina
         $feedid = (int) $feedid;
 
         // Are we checking max_value and/or min_value?
-        if ($max_value) {
+        if ($max_value != null) {
             $max_value = (float) $max_value;
             $fix_max_value = true;
         }
-        if ($min_value) {
+        if ($min_value != null) {
             $min_value = (float) $min_value;
             $fix_min_value = true;
         }
@@ -1397,10 +1401,10 @@ class PHPFina
         $npoints_to_fix = ($end - $start) / $meta->interval;
         if (isset($feed_max_npoints_data_check)) {
             if ($npoints_to_fix > $feed_max_npoints_data_check)
-                return array('success' => false, 'message' => "Datapoints to fix = $npoints_to_fix, Maximum = $feed_max_npoints_data_check");
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_fix, Maximum = $feed_max_npoints_data_check");
         }else {
             if ($npoints_to_fix > 1051200) // equivalent to a whole year with a 30s interval
-                return array('success' => false, 'message' => "Datapoints to fix = $npoints_to_fix, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_fix, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
         }
 
         // Open adn lock file
@@ -1420,12 +1424,12 @@ class PHPFina
         if ($fix_missing_data === true) {
             fseek($fh, $start_pos * 4);
             $val = unpack("f", fread($fh, 4));
-            if (is_nan($val[1])) {
+            if (is_nan($val[1]) || is_null($val[1])) {
                 return array('success' => false, 'message' => "The first data point in the period requested is missing, interpolation not possible. Please change the start date");
             }
             fseek($fh, $end_pos * 4);
             $val = unpack("f", fread($fh, 4));
-            if (is_nan($val[1])) {
+            if (is_nan($val[1]) || is_null($val[1])) {
                 return array('success' => false, 'message' => "The last data point in the period requested is missing, interpolation not possible. Please change the end date");
             }
         }
@@ -1435,10 +1439,12 @@ class PHPFina
         for ($pos = $start_pos; $pos <= $end_pos; $pos++) {
             fseek($fh, $pos * 4);
             $val = unpack("f", fread($fh, 4));
-            if (is_nan($val[1])) {
+            if (is_nan($val[1]) || is_null($val[1])) {
                 //fseek($fh, $pos * 4);
                 //fwrite($fh, pack("f", (float) 4000));
-                $interpolation_required = true;
+                if ($fix_missing_data === true) {
+                    $interpolation_required = true;
+                }
             }
             else {
                 $value = (float) $val[1];
@@ -1462,8 +1468,7 @@ class PHPFina
                 }
                 else { // We only go into this "else" after we have found one or more missing data points ($interpolation_required === true) and the current data point is not missing
                     $current_value = array($pos, $value);
-                    $asa=$this->linear_interpolation($fh, $last_known_value, $current_value);
-                    $datapoints_missing_fixed += $asa;
+                    $datapoints_missing_fixed += $this->linear_interpolation($fh, $last_known_value, $current_value);
                     $interpolation_required = false;
                     $last_known_value = $current_value;
                 }
@@ -1497,7 +1502,7 @@ class PHPFina
 
         $xb = $current_value[0];
         $yb = $current_value[1];
-        
+
         $datapoints_fixed = 0;
 
         for ($x = $xa + 1; $x < $xb; $x++) {
@@ -1509,5 +1514,5 @@ class PHPFina
 
         return $datapoints_fixed;
     }
-    
+
 }
