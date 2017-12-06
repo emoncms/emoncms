@@ -1299,6 +1299,9 @@ class PHPFina
 
         // Are we checking too many datapoints?
         $npoints_to_check = ($end - $start) / $meta->interval;
+        if($npoints_to_check <= 0){
+             return array('success' => false, 'message' => "There are no data points for the chosen period");
+        }
         if (isset($feed_max_npoints_data_check)) {
             if ($npoints_to_check > $feed_max_npoints_data_check)
                 return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
