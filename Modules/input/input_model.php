@@ -35,16 +35,17 @@ class Input
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
         
-        $stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')");
-        $stmt->bind_param("iss",$userid,$name,$nodeid);
-        $stmt->execute();
-        $stmt->close();
-        
-        $id = $this->mysqli->insert_id;
+        if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')")) {
+            $stmt->bind_param("iss",$userid,$name,$nodeid);
+            $stmt->execute();
+            $stmt->close();
 
-        if ($this->redis && $id>0) {
-            $this->redis->sAdd("user:inputs:$userid", $id);
-            $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+            $id = $this->mysqli->insert_id;
+
+            if ($this->redis && $id>0) {
+                $this->redis->sAdd("user:inputs:$userid", $id);
+                $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+            }
         }
         return $id;
     }
@@ -528,7 +529,7 @@ class Input
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^\p{N}\p{L}_\s.-]/u','',$arg)!=$arg) 
+                        if (preg_replace('/[^\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in arg'); 
                         break;
                                                 
