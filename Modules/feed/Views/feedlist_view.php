@@ -200,6 +200,7 @@ if (!isset($feedviewpath))
         <div class="alert alert-error" style="margin-top:50px"></div>
     </div>
     <div class="modal-footer">
+        <button class="btn step2" id="back"><?php echo _('Back'); ?></button>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
         <button class="btn step1" id="checkdata"><?php echo _('Check data'); ?></button>
         <button class="btn step2" id="fixdata"><?php echo _('Fix data'); ?></button>
@@ -688,6 +689,11 @@ echo $feed_settings['csvdownloadlimit_mb'];
         }, 0);
     });
 
+    $('#checkDataModal').on('click', '#back', function () {
+        $('#checkDataModal .step1').show();
+        $('#checkDataModal .step2').hide();    
+    });
+    
     $('#checkDataModal').on('click', '#fixdata', function () {
         // Get dates
         $('#checkDataModal .alert').hide();
