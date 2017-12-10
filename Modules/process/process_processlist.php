@@ -663,10 +663,12 @@ class Process_ProcessList
             $time_diff = $time - $last_feed['time'];
             $val_diff = $value - $last_input['value'];
             
-            $power = ($val_diff * 3600) / $time_diff;
+            if ($time_diff>0) {
+                $power = ($val_diff * 3600) / $time_diff;
             
-            if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
-            
+                if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
+            }
+             
             $padding_mode = "join";
             $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
             

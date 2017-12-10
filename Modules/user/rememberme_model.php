@@ -256,33 +256,33 @@ class Rememberme {
     // ---------------------------------------------------------------------------------------------------------
     private function findTriplet($cookieValues) {
         //$this->log->info("findTriplet");
-        //$this->log->info($cookieValues->token." => ".sha1($cookieValues->token));
-
-        if (!$stmt = $stmt = $this->mysqli->prepare("SELECT IF(SHA1(?)=token,1,-1) AS token_match FROM rememberme WHERE userid=? AND persistentToken=SHA1(?) LIMIT 1 ")) {
+        
+        if (!$stmt = $stmt = $this->mysqli->prepare("SELECT token FROM rememberme WHERE userid=? AND persistentToken=? LIMIT 1")) {
             $this->log->warn("findTriplet schema fail");
             return self::TRIPLET_NOT_FOUND;
         }
         
-        $stmt->bind_param("sis",$cookieValues->token,$cookieValues->userid,$cookieValues->persistentToken);
+        $sha1_persistentToken = sha1($cookieValues->persistentToken);
+        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
         if (!$stmt->execute()) {
             $this->log->warn("findTriplet sql fail");
         }
-        $stmt->bind_result($token_match);
+        $stmt->bind_result($sha1_token);
         $stmt->fetch();
         $stmt->close();
         
-        // false will occur when there are no entries
-        if(!$token_match) {
-            $this->log->info("findTriplet TRIPLET_NOT_FOUND");
-            return self::TRIPLET_NOT_FOUND;
-        }
-        // 1 will occur on success
-        elseif ($token_match == 1) {
+        // sha1 of token match: triplet found
+        if ($sha1_token==sha1($cookieValues->token)) {
             $this->log->info("findTriplet TRIPLET_FOUND");
             return self::TRIPLET_FOUND;
-        }
-        // this should be -1
-        else {
+            
+        // false will occur when there are no entries
+        } else if ($sha1_token==false) {
+            $this->log->info("findTriplet TRIPLET_NOT_FOUND");
+            return self::TRIPLET_NOT_FOUND;
+        
+        // token does not match query token
+        } else {
             $this->log->info("findTriplet TRIPLET_INVALID");
             return self::TRIPLET_INVALID;
         }
@@ -295,14 +295,16 @@ class Rememberme {
     private function storeTriplet($cookieValues, $expire=0)
     {
         $date = date("Y-m-d H:i:s", $expire);
-        // $this->log->info($cookieValues->token." => ".sha1($cookieValues->token));
                
-        if (!$stmt = $this->mysqli->prepare("INSERT INTO rememberme (userid, token, persistentToken, expire) VALUES (?, SHA1(?), SHA1(?), ?)")) {
+        if (!$stmt = $this->mysqli->prepare("INSERT INTO rememberme (userid, token, persistentToken, expire) VALUES (?,?,?,?)")) {
             $this->log->warn("storeTriplet schema fail");
             return false;
         }
         
-        $stmt->bind_param("isss",$cookieValues->userid,$cookieValues->token,$cookieValues->persistentToken,$date);
+        $sha1_token = sha1($cookieValues->token);
+        $sha1_persistentToken = sha1($cookieValues->persistentToken);
+        
+        $stmt->bind_param("isss",$cookieValues->userid,$sha1_token,$sha1_persistentToken,$date);
         if ($stmt->execute()) {
             return true;
         } else {
@@ -319,12 +321,13 @@ class Rememberme {
     // ---------------------------------------------------------------------------------------------------------
     private function cleanTriplet($cookieValues)
     {
-        if (!$stmt = $this->mysqli->prepare("DELETE FROM rememberme WHERE userid=? AND persistentToken = SHA1(?)")) {
+        if (!$stmt = $this->mysqli->prepare("DELETE FROM rememberme WHERE userid=? AND persistentToken=?")) {
             $this->log->warn("cleanTriplet schema fail");
             return false;
         }
         
-        $stmt->bind_param("is",$cookieValues->userid,$cookieValues->persistentToken);
+        $sha1_persistentToken = sha1($cookieValues->persistentToken);
+        $stmt->bind_param("is",$cookieValues->userid,$sha1_persistentToken);
         if ($stmt->execute()) {
             $this->log->info("cleanTriplet success");
             $this->cleanExpiredTriplets($cookieValues->userid);

@@ -17,12 +17,14 @@ class Input
     private $mysqli;
     private $feed;
     private $redis;
+    private $log;
 
     public function __construct($mysqli,$redis,$feed)
     {
         $this->mysqli = $mysqli;
         $this->feed = $feed;
         $this->redis = $redis;
+        $this->log = new EmonLogger(__FILE__);
     }
 
     public function create_input($userid, $nodeid, $name)
@@ -33,16 +35,17 @@ class Input
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
         
-        $stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')");
-        $stmt->bind_param("iss",$userid,$name,$nodeid);
-        $stmt->execute();
-        $stmt->close();
-        
-        $id = $this->mysqli->insert_id;
+        if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')")) {
+            $stmt->bind_param("iss",$userid,$name,$nodeid);
+            $stmt->execute();
+            $stmt->close();
 
-        if ($this->redis && $id>0) {
-            $this->redis->sAdd("user:inputs:$userid", $id);
-            $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+            $id = $this->mysqli->insert_id;
+
+            if ($this->redis && $id>0) {
+                $this->redis->sAdd("user:inputs:$userid", $id);
+                $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+            }
         }
         return $id;
     }
@@ -474,8 +477,16 @@ class Input
         }
     }
 
+    // Set_processlist is called from input_controller
+    // a processlist might look something like:
+    // 1:1,2:0.1,1:2,eventp__ifrategtequalskip:10
+    // Historically emoncms has used integer based processid's to reference the desired process function
+    // however emoncms also supports text based process reference and a number of processes
+    // are only available via the text based function reference.
+    // $process_list is a list of processes
+    
     public function set_processlist($userid, $id, $processlist, $process_list)
-    {
+    {    
         $userid = (int) $userid;
         
         // Validate processlist
@@ -488,30 +499,57 @@ class Input
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = (int) $inputprocess[0];
-                if ($processid==0) return array('success'=>false, 'message'=>_("Invalid process id"));
+                $processid = $inputprocess[0];
+                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
                 
                 // Verify argument
-                if (!is_numeric($inputprocess[1])) return array('success'=>false, 'message'=>_("Invalid arg"));
                 $arg = $inputprocess[1];
                 
-                // Check that feed exists and user has ownership
-                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::FEEDID) {
-                    $feedid = (int) $arg;
-                    if (!$this->feed->access($userid,$feedid)) {
-                        return array('success'=>false, 'message'=>_("Invalid feed"));
-                    }
-                }
+                // Check argument against process arg type
+                switch($process_list[$processid][1]){
+                
+                    case ProcessArg::FEEDID:
+                        $feedid = (int) $arg;
+                        if (!$this->feed->access($userid,$feedid)) {
+                            return array('success'=>false, 'message'=>_("Invalid feed"));
+                        }
+                        break;
+                        
+                    case ProcessArg::INPUTID:
+                        $inputid = (int) $arg;
+                        if (!$this->access($userid,$inputid)) {
+                            return array('success'=>false, 'message'=>_("Invalid input"));
+                        }
+                        break;
 
-                // Check that input exists and user has ownership
-                if (isset($process_list[$processid]) && $process_list[$processid][1]==ProcessArg::INPUTID) {
-                    $inputid = (int) $arg;
-                    if (!$this->access($userid,$inputid)) {
-                        return array('success'=>false, 'message'=>_("Invalid input"));
-                    }
+                    case ProcessArg::VALUE:
+                        if (!is_numeric($arg)) {
+                            return array('success'=>false, 'message'=>'Value is not numeric'); 
+                        }
+                        break;
+
+                    case ProcessArg::TEXT:
+                        if (preg_replace('/[^\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                            return array('success'=>false, 'message'=>'Invalid characters in arg'); 
+                        break;
+                                                
+                    case ProcessArg::SCHEDULEID:
+                        $scheduleid = (int) $arg;
+                        if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
+                            return array('success'=>false, 'message'=>'Invalid schedule'); 
+                        }
+                        break;
+                        
+                    case ProcessArg::NONE:
+                        $arg = false;
+                        break;
+                        
+                    default:
+                        $arg = false;
+                        break;
                 }
                 
-                if ($processid>0) $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processid,$arg));
             }
         }
         
@@ -544,7 +582,7 @@ class Input
     private function load_input_to_redis($inputid)
     {
         $inputid = (int) $inputid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
         if ($result->num_rows > 0) {
             $row = $result->fetch_object();
             $userid = $row->userid;
@@ -563,7 +601,7 @@ class Input
     private function load_to_redis($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:inputs:$userid", $row->id);
@@ -577,4 +615,16 @@ class Input
         }
     }
 
+    private function schedule_access($userid,$scheduleid)
+    {
+        $userid = (int) $userid;
+        $scheduleid = (int) $scheduleid;
+        $stmt = $this->mysqli->prepare("SELECT id FROM schedule WHERE userid=? AND id=?");
+        $stmt->bind_param("ii",$userid,$scheduleid);
+        $stmt->execute();
+        $stmt->bind_result($id);
+        $result = $stmt->fetch();
+        $stmt->close();
+        if ($result && $id>0) return true; else return false;
+    }
 }
