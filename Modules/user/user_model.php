@@ -607,8 +607,8 @@ class User
     public function get($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read FROM users WHERE id=$userid");
-        if (!$result) return array("success"=>false, "message"=>"Error fetching user data, you may need to run database update");
+        $result = $this->mysqli->query("SELECT id,username,email,gravatar,name,location,timezone,language,bio,startingpage,apikey_write,apikey_read,tags FROM users WHERE id=$userid");
+        if (!$result) return array("success" => false, "message" => "Error fetching user data, you may need to run database update");
         $data = $result->fetch_object();
         return $data;
     }
@@ -617,19 +617,21 @@ class User
     {
         // Validation
         $userid = (int) $userid;
+
         $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
         $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
         $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
         $language = preg_replace('/[^\w\s-.]/','',$data->language);
+        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s-.]/','', $data->tags);
         
         $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?#=\/]/u','',$data->startingpage);
         
         $_SESSION['lang'] = $language;
-        
-        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ? WHERE id = ?");
-        $stmt->bind_param("sssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $userid);
+
+        $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
+        $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
         if (!$stmt->execute()) {
             $stmt->close();
             return array('success'=>false, 'message'=>_("Error updating user info"));
@@ -672,3 +674,4 @@ class User
         return $row[0];
     }
 }
+
