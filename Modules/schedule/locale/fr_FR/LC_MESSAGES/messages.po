@@ -1,0 +1,260 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-17 16:46+0100\n"
+"PO-Revision-Date: 2017-12-17 18:38+0100\n"
+"Last-Translator: Aymeric THIBAUT\n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 2.0.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../Views/schedule_api.php:6
+msgid "Schedule API"
+msgstr "API Planification"
+
+#: ../../../Views/schedule_api.php:7
+msgid "Apikey authentication"
+msgstr "Authentification clé API"
+
+#: ../../../Views/schedule_api.php:8
+msgid ""
+"If you want to call any of the following actions when your not logged in you "
+"have this options to authenticate with the API key:"
+msgstr ""
+"Si vous souhaitez appeler une des actions suivantes alors que vous n'êtes "
+"pas connecté, vous pouvez vous authentifier avec votre clé API"
+
+#: ../../../Views/schedule_api.php:9
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr "Veuillez ajouter votre clé d'API à la fin de l'url : &apikey=APIKEY"
+
+#: ../../../Views/schedule_api.php:10
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr "Utilisez le paramètre POST \"apikey=APIKEY\""
+
+#: ../../../Views/schedule_api.php:11
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
+
+#: ../../../Views/schedule_api.php:12
+msgid "Read only:"
+msgstr "Lecture uniquement :"
+
+#: ../../../Views/schedule_api.php:15
+msgid "Read & Write:"
+msgstr "Lecture & Écriture :"
+
+#: ../../../Views/schedule_api.php:19
+msgid "Available HTML URLs"
+msgstr "URLs HTML disponibles"
+
+#: ../../../Views/schedule_api.php:21
+msgid "The schedule list view"
+msgstr "La vue de la liste des planifications"
+
+#: ../../../Views/schedule_api.php:22
+msgid "This page"
+msgstr "Cette page"
+
+#: ../../../Views/schedule_api.php:25
+msgid "Available JSON commands"
+msgstr "Commandes JSON disponibles"
+
+#: ../../../Views/schedule_api.php:26
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr "Pour utiliser l'api json, vous devez ajouter .json à la fin de l'url"
+
+#: ../../../Views/schedule_api.php:28
+msgid "Schedule process actions"
+msgstr "Actions de traitement des planifications"
+
+#: ../../../Views/schedule_api.php:30
+msgid "List schedules"
+msgstr "Lister les planifications"
+
+#: ../../../Views/schedule_api.php:31
+msgid "Get schedule details"
+msgstr "Obtenir les détails de la planification"
+
+#: ../../../Views/schedule_api.php:32
+msgid "Get only the expression"
+msgstr "Obtenir uniquement l'expression"
+
+#: ../../../Views/schedule_api.php:33
+msgid "Add a schedule"
+msgstr "Ajouter une planification"
+
+#: ../../../Views/schedule_api.php:34 ../../../Views/schedule_view.php:36
+msgid "Delete schedule"
+msgstr "Supprimer une planification"
+
+#: ../../../Views/schedule_api.php:35
+msgid "Update schedule"
+msgstr "Mettre à jour une planification"
+
+#: ../../../Views/schedule_api.php:36
+msgid "Test the expression"
+msgstr "Tester l'expression"
+
+#: ../../../Views/schedule_api.php:40
+msgid "Expression documentation"
+msgstr "Documentation de l'expression"
+
+#: ../../../Views/schedule_api.php:41
+msgid "Expression is used to specify active range."
+msgstr "L'expression est utilisée pour spécifier une plage active."
+
+#: ../../../Views/schedule_api.php:42
+msgid ""
+"Granularity is day light saving time, month, day, week day, hour and minute."
+msgstr ""
+"La granularité est l'heure d'été, le mois, le jour, le jour de la semaine, "
+"l'heure et les minutes."
+
+#: ../../../Views/schedule_api.php:43
+msgid ""
+"Expression is built mixing basic blocks with operation characters. An hour "
+"is always required. All other basic blocks are optional and can be mixed on "
+"the same expression to build complex schedule rules. Ranges must be ordered "
+"older-newer. White spaces are ignored and can be ommited."
+msgstr ""
+"L'expression est construite en mélangeant des blocs de base avec des "
+"caractères d'opération. Une heure est toujours requise. Tous les autres "
+"blocs de base sont facultatifs et peuvent être mélangés dans la même "
+"expression pour créer des règles de planification complexes. Les plages "
+"doivent être triées des plus anciennes aux plus récentes. Les espaces sont "
+"ignorés et peuvent être omis."
+
+#: ../../../Views/schedule_api.php:44
+msgid ""
+"Timezone of expression is the same of the user account that created or "
+"edited it. If the expression is public, timezones conversions are automatic "
+"taken in account between owner and user."
+msgstr ""
+"Le fuseau horaire de l'expression est identique au compte d'utilisateur qui "
+"l'a créé ou modifié. Si l'expression est publique, les conversions de "
+"fuseaux horaires sont automatiquement pris en compte entre le propriétaire "
+"et l'utilisateur."
+
+#: ../../../Views/schedule_api.php:45
+msgid "Basic blocks:"
+msgstr "Blocs de base :"
+
+#: ../../../Views/schedule_api.php:52
+msgid "Operation characters:"
+msgstr "Caractères d'opération : "
+
+#: ../../../Views/schedule_api.php:59
+msgid "Expression examples:"
+msgstr "Exemples d'expression :"
+
+#: ../../../Views/schedule_view.php:16
+msgid "Schedule Help"
+msgstr "Aide Planification"
+
+#: ../../../Views/schedule_view.php:17
+msgid "Schedules"
+msgstr "Planifications"
+
+#: ../../../Views/schedule_view.php:22
+msgid "No schedules"
+msgstr "Pas de planifications"
+
+#: ../../../Views/schedule_view.php:23
+msgid ""
+"There are no public schedules and you have not created your own yet. Please "
+"add a new schedule.<br><br>For help and examples on how to configure a "
+"schedule, read the <a href=\"api#expression\">Expression documentation</a>."
+msgstr ""
+"Il n'y a pas de planifications publiques et vous n'avez pas encore créé la "
+"vôtre. S'il vous plaît ajoutez une nouvelle planification.<br><br>Pour "
+"obtenir de l'aide et des exemples sur la façon de configurer une "
+"planification, lisez la <a href=\"api#expression\">documentation de "
+"l'expression</a>."
+
+#: ../../../Views/schedule_view.php:29
+msgid "New schedule"
+msgstr "Nouvelle planification"
+
+#: ../../../Views/schedule_view.php:39
+msgid "Deleting a schedule is permanent."
+msgstr "La suppression d'une planification est permanente."
+
+#: ../../../Views/schedule_view.php:41
+msgid ""
+"If you have an Input or Feed Processlist that use this schedule, after "
+"deleting it, review that process list or it will be in error freezing other "
+"process lists."
+msgstr ""
+"Si vous avez une Source ou un Flux qui utilise cette planification, après la "
+"suppression de la Source ou du Flux, examinez cette liste de traitement "
+"sinon elle sera en erreur et gèlera les autres listes de traitement."
+
+#: ../../../Views/schedule_view.php:43
+msgid "Are you sure you want to delete?"
+msgstr "Êtes-vous sûr de vouloir supprimer?"
+
+#: ../../../Views/schedule_view.php:47
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../Views/schedule_view.php:48
+msgid "Delete permanently"
+msgstr "Supprimer de façon permanente"
+
+#: ../../../Views/schedule_view.php:62
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../Views/schedule_view.php:63
+msgid "Expression"
+msgstr "Expression"
+
+#: ../../../Views/schedule_view.php:64
+msgid "Public"
+msgstr "Public"
+
+#: ../../../schedule_menu.php:7
+msgid "Schedule"
+msgstr "Planification"
+
+#: ../../../schedule_processlist.php:43
+msgid "If !schedule, ZERO"
+msgstr "If !schedule, ZERO"
+
+#: ../../../schedule_processlist.php:44
+msgid "If !schedule, NULL"
+msgstr "If !schedule, NULL"
+
+#: ../../../schedule_processlist.php:45
+msgid "If schedule, ZERO"
+msgstr "If schedule, ZERO"
+
+#: ../../../schedule_processlist.php:46
+msgid "If schedule, NULL"
+msgstr "If schedule, NULL"
+
+#~ msgid "en_EN"
+#~ msgstr "English"
+
+#~ msgid "es_ES"
+#~ msgstr "Spanish"
+
+#~ msgid "nl_BE"
+#~ msgstr "Dutch (Belgium)"
+
+#~ msgid "nl_NL"
+#~ msgstr "Dutch (Netherlands)"
+
+#~ msgid "fr_FR"
+#~ msgstr "French"
+
+#~ msgid "AUTODETECTLANGUAGE"
+#~ msgstr "Use language browser"
