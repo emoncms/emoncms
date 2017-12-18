@@ -6,7 +6,8 @@ var event_refresh;
 var showlegend = true;
 var datetimepicker1;
 var datetimepicker2;
-  
+var datatype;
+
 function convert_to_plotlist(multigraph_feedlist) {
   var plotlist = [];
   var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
@@ -17,10 +18,23 @@ function convert_to_plotlist(multigraph_feedlist) {
   view.y2min = (multigraph_feedlist[0]['y2min'] != undefined ? multigraph_feedlist[0]['y2min'] : null);
   view.y2max = (multigraph_feedlist[0]['y2max'] != undefined ? multigraph_feedlist[0]['y2max'] : null);
 
+  datatype=1;
+
   for (z in multigraph_feedlist) {
     var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
     var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
-    if (multigraph_feedlist[z]['datatype']==1) {
+    var barwidth = multigraph_feedlist[z]['barwidth']==undefined ? 1 : multigraph_feedlist[z]['barwidth'];
+
+    if ( multigraph_feedlist[z]['graphtype']==undefined ) {
+      multigraph_feedlist[z]['datatype']==1 ? graphtype="lines" : graphtype="bars";
+    } else {
+      graphtype=multigraph_feedlist[z]['graphtype'];
+    }
+
+    if (multigraph_feedlist[z]['datatype']==2)
+      datatype=2;
+
+    if (graphtype.substring(0, 5)=="lines") {
       plotlist[z] = {
         id: multigraph_feedlist[z]['id'],
         selected: 1,
@@ -36,13 +50,14 @@ function convert_to_plotlist(multigraph_feedlist) {
           },
           lines: {
             show: true,
-            fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
+            fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0,
+            steps: graphtype=="lineswithsteps" ? true : false
           }
         }
       };
     }
 
-    else if (multigraph_feedlist[z]['datatype']==2) {
+    else if (graphtype=='bars') {
       plotlist[z] = {
         id: multigraph_feedlist[z]['id'],
         selected: 1,
@@ -52,12 +67,12 @@ function convert_to_plotlist(multigraph_feedlist) {
           stack: stacked,
           bars: {
             show: true,
-            align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
+            align: "center", barWidth: 3600*24*1000*barwidth, fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
           }
         }
       };
     } else {
-      console.log("ERROR: Unknown plot datatype! Datatype: ", multigraph_feedlist[z]['datatype']);
+      console.log("ERROR: Unknown plot graphtype! Graphtype: ", multigraph_feedlist[z]['graphtype']);
     }
 
     if (multigraph_feedlist[z]['left']==true) {
@@ -113,6 +128,7 @@ function vis_feed_data_ori() {
   datetimepicker2.setLocalDate(new Date(view.end));
   datetimepicker1.setEndDate(new Date(view.end));
   datetimepicker2.setStartDate(new Date(view.start));
+
   clearTimeout(event_vis_feed_data); // Cancel any pending events
   event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
   if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
@@ -124,6 +140,7 @@ function vis_feed_data_delayed() {
   var plotlist = convert_to_plotlist(multigraph_feedlist);
   var npoints = 800;
   interval = Math.round(((view.end - view.start)/npoints)/1000);
+
   for(var i in plotlist) {
     if (plotlist[i].selected) {
       if (!plotlist[i].plot.data) {
@@ -235,40 +252,31 @@ function multigraph_init(element) {
 
   // Tool tip
   var previousPoint = null;
+  var previousSeries = null;
   $(element).bind("plothover", function (event, pos, item) {
     //$("#x").text(pos.x.toFixed(2));
     //$("#y").text(pos.y.toFixed(2));
 
     if ($("#enableTooltip:checked").length > 0) {
       if (item) {
-        if (previousPoint != item.dataIndex) {
+        if (previousPoint != item.dataIndex || previousSeries != item.seriesIndex) {
           previousPoint = item.dataIndex;
+          previousSeries = item.seriesIndex;
 
           $("#tooltip").remove();
           var x = item.datapoint[0].toFixed(2),
-          y = item.datapoint[1].toFixed(2);
+          y=Number(plotdata[item.seriesIndex].data[item.dataIndex][1].toFixed(2));
 
-          // create a new javascript Date object based on the timestamp
-          // This implementation is clumsy, but the js native date.toTimeString() returns
-          // strings like "08:53:35 GMT-0800", and there is no easy way to turn off the "GMT-xxxx" segment
-          // blargh
-          var date = new Date(parseInt(x));
-          var hours = date.getHours();
-          var minutes = date.getMinutes();
-          var seconds = date.getSeconds();
-          if (hours < 10)
-            hours = "0"+hours;
-          if (minutes < 10)
-            minutes = "0"+minutes;
-          if (seconds < 10)
-            seconds = "0"+seconds;
+          if (datatype==1)
+            options = { month:'short', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit'};
+          else
+            options = { month:'short', day:'2-digit'};
 
-          // will display time in 10:30:23 format
-          var formattedTime = hours + ':' + minutes + ':' + seconds;
+          var formattedTime=new Date(parseInt(x));
 
           // I'd like to eventually add colour hinting to the background of the tooltop.
           // This is why showTooltip has the bgColour parameter.
-          tooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y, "#DDDDDD");
+          tooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime.toLocaleDateString("en-GB",options) + " = " + y, "#DDDDDD");
         }
       } else {
         $("#tooltip").remove();

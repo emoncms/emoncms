@@ -17,6 +17,7 @@ var ymin = "auto";
 var ymax = "auto";
 var y2min = "auto";
 var y2max = "auto";
+var detail = "basic";
 
 var baseElement = "#box-options";
 
@@ -53,7 +54,11 @@ function draw_multigraph_feedlist_editor(){
   if (multigraph_feedlist === null) multigraph_feedlist = [];
   
   if (typeof multigraph_feedlist[0] !== 'undefined') {
-      
+      if (multigraph_feedlist[0]['detail'] !== 'undefined')
+        detail=multigraph_feedlist[0]['detail'];
+      else
+        detail="basic";
+
       if (multigraph_feedlist[0]['end'] != 0)
         movingtime=false;
       else
@@ -93,44 +98,84 @@ function draw_multigraph_feedlist_editor(){
         y2max = multigraph_feedlist[0]['y2max'];
       else
         y2max = "auto";
+
+      detail= multigraph_feedlist[0]['detail'] == "advanced" ? "advanced" : "basic";
   }
 
   var out = "";
+  out += "<table style='table-layout:fixed; width:300px; margin-bottom:0px;'><tbody><tr valign='middle'>";
+  out += "<td style='text-align:right;width:144px;padding-bottom:7px;padding-right:5px'>Options :</td>";
+  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!='advanced' ? "checked='checked'" : "") +" style='margin-bottom:5px'> Basic</label></td>";
+  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail=='advanced' ? "checked='checked'" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
+  out += "</tr></tbody></table>";
+
   out += '<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">';
   out += '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 id="myModalLabel">Delete Multigraph</h3></div>';
   out += '<div class="modal-body"><p>Deleting a multigraph is permanent.<br>Make sure no Dashboard continue to use the deleted multigraph<br><br>Are you sure you want to delete?</p></div>';
   out += '<div class="modal-footer"><button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button><button id="confirmdelete" class="btn btn-primary">Delete permanently</button></div></div>';
   
-  out += "<table class='table' style='table-layout:fixed; width:300px;' >";
+  out += "<table class='table' style='table-layout:fixed; width:300px;border-color:transparent;' >";
   out += "<tr><th style='width:130px;' >Feed</th><th style='text-align: center;'>Left</th><th style='text-align: center;'>Right</th><th style='text-align: center;'>Fill</th><th style='padding:0px; width:30px;'></th></tr>";
 
   var publicfeed = 1;
   for (z in multigraph_feedlist) {
-    out += "<tr>";
+    out += "<tr style='border-top: 2px solid black;'>";
     out += "<td style='vertical-align:middle;word-wrap:break-word;'>"+multigraph_feedlist[z]['tag']+": "+multigraph_feedlist[z]['name']+"</td>";
     if (!multigraph_feedlist[z]['left'] && !multigraph_feedlist[z]['right'])  multigraph_feedlist[z]['left'] = true; // Default is left
+    if (typeof multigraph_feedlist[z]['barwidth'] !== 'undefined' && $.isNumeric(multigraph_feedlist[z]['barwidth'])) {
+      barwidth=multigraph_feedlist[z]['barwidth']*100;
+      barwidth>100 ? barwidth=100 : barwidth <1 ? barwidth=1: null ;
+    } else
+      barwidth=100;
+
+    if (typeof multigraph_feedlist[z]['graphtype'] === 'undefined')
+      graphtype=multigraph_feedlist[z]['datatype']==1 ? "lines" : "bars";
+    else
+      graphtype=multigraph_feedlist[z]['graphtype'];
+
     var checked = ""; if (multigraph_feedlist[z]['left']) checked = "checked";
-    out += "<td style='text-align: center;'><input listid='"+z+"' class='left' type='checkbox' "+checked+" /></td>";
+    out += "<td style='text-align: center;'><input listid='"+z+"' class='left' name='xpos"+z+"' type='radio' "+checked+" /></td>";
     var checked = ""; if (multigraph_feedlist[z]['right']) checked = "checked";
-    out += "<td style='text-align: center;'><input listid='"+z+"' class='right' type='checkbox' "+checked+" /></td>";
+    out += "<td style='text-align: center;'><input listid='"+z+"' class='right' name='xpos"+z+"' type='radio' "+checked+" /></td>";
     var checked = ""; if (multigraph_feedlist[z]['fill']) checked = "checked";
     out += "<td style='text-align: center;'><input listid='"+z+"' class='fill' type='checkbox' "+checked+" /></td>";
-    out += "<td><a class='close'><i listid='"+z+"' id='multigraph-feed-remove-button' class='icon-remove'></i></a></td>";
+    out += "<td><a class='close'><i listid='"+z+"' id='multigraph-feed-remove-button' class='icon-remove' style='vertical-align:middle;'></i></a></td>";
     out += "</tr>";
     var setColour = ""; if (multigraph_feedlist[z]['lineColour']) setColour = multigraph_feedlist[z]['lineColour'];
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Line Colour</td>";
-    out += "<td colspan='4' style='vertical-align:middle;'><input id='lineColour' listid='"+z+"' style='width:110px' type='color' value='#"+setColour+"'></td>";
+    out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input id='lineColour' listid='"+z+"' style='width:110px;margin-bottom:0px;' type='color' value='#"+setColour+"'></td>";
     out += "</tr>";
     var checked = "checked"; if (!multigraph_feedlist[z]['skipmissing']) checked = "";
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
-    out += "<td style='text-align: center;vertical-align:middle;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+    out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
     var checked = ""; if (multigraph_feedlist[z]['stacked']) checked = "checked";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
-    out += "<td style='text-align: center;vertical-align:middle;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+    out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
     out += "</tr>";
+    out += "<tr>";
+
+    if (detail=="advanced") {
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Graph Type</td>";
+      out += "<td colspan='4' style='vertical-align:middle;'>";
+      out += "<select id='graphtype-selector' listid='"+z+"' class='options' style='width:140px;margin-bottom:0px;'>";
+      out += "<optgroup label= 'Select Display Type:'>";
+      out += "<option value='lines'"+ (graphtype=='lines' && "selected") +">Lines</option>";
+      out += "<option value='lineswithsteps'"+ (graphtype=='lineswithsteps' && "selected") +">Lines with Steps</option>";
+      out += "<option value='bars'"+ (graphtype=='bars' && "selected") +">Bars</option>";
+      out += "</optgroup> </select>";
+      out += "</td>";
+      out += "</tr>";
+
+      if (graphtype=='bars') {
+        out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Bar Width (%)</td>";
+        out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input listid='"+z+"' style='width:110px' id='barwidth' value='" + barwidth + "'/></td>";
+        out += "</tr>";
+      }
+    }
+
     if (publicfeed == 1) publicfeed = (get_feed_public(multigraph_feedlist[z]['id']));
   }
   var visurl = path+"vis/"+"multigraph?mid="+multigraph_id;
@@ -328,6 +373,41 @@ function load_events(){
   $(baseElement).on("click","#skipmissing",function(event){
     var z = $(this).attr('listid');
     multigraph_feedlist[z]['skipmissing'] = $(this)[0].checked;
+    vis_feed_data();
+    modified();
+  });
+
+  $(baseElement).on("change","#barwidth",function(event){
+    var z = $(this).attr('listid');
+    barwidth = $(this).val();
+    if (!$.isNumeric(barwidth) || barwidth > 100 ) barwidth = 100;
+    else if (barwidth <1 ) barwidth=1;
+    multigraph_feedlist[z]['barwidth'] = barwidth/100;
+    $(this).val(barwidth);
+    vis_feed_data();
+    modified();
+  });
+ 
+  $(baseElement).on("click","#basic",function(event){
+    $(this)[0].checked ? detail="basic" : detail="advanced";
+    multigraph_feedlist[0]['detail'] = detail;
+    draw_multigraph_feedlist_editor();
+    modified();
+  });
+
+  $(baseElement).on("click","#advanced",function(event){
+    $(this)[0].checked ? detail="advanced" : detail="basic";
+    multigraph_feedlist[0]['detail'] = detail;
+    draw_multigraph_feedlist_editor();
+    modified();
+  });
+
+
+  $(baseElement).on("change","#graphtype-selector",function(event){
+    var z = $(this).attr('listid');
+    var graphtype = $(this).val();
+    multigraph_feedlist[z]['graphtype']=graphtype;
+    draw_multigraph_feedlist_editor();
     vis_feed_data();
     modified();
   });
