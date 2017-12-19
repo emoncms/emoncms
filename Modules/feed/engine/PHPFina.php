@@ -1263,6 +1263,12 @@ class PHPFina
      * @param bool $missing_data if true then the function will count the number of missing data points, used by smoe engines
      * @param float $max_value if set the function will count the number of data points greater than this number
      * @param float $min_value if set the function will count the number of data points lower than this number
+     * 
+     * error codes:
+     *      0 - cannot open data file or metadata file
+     *      1 - dataset is empty
+     *      2 - too many datapoints in dataset
+     *      3 - firs or last datapoint is null (interpolation not possible)
      */
     public function check_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
         // Initial values
@@ -1288,7 +1294,7 @@ class PHPFina
 
         // Is feed metadata ok?
         if (!$meta = $this->get_meta($feedid))
-            return array('success' => false, 'message' => "Error reading meta data feedid=$feedid");
+            return array('success' => false, 'error_code'=> 0, 'message' => "Error reading meta data feedid=$feedid");
 
         // Are start and end dates in the dataset?
         if ($start < $meta->start_time)
@@ -1300,21 +1306,21 @@ class PHPFina
         // Are we checking too many datapoints?
         $npoints_to_check = ($end - $start) / $meta->interval;
         if($npoints_to_check <= 0){
-             return array('success' => false, 'message' => "There are no data points for the chosen period");
+             return array('success' => false, 'error_code'=> 1, 'message' => "There are no data points for the chosen period");
         }
         if (isset($feed_max_npoints_data_check)) {
             if ($npoints_to_check > $feed_max_npoints_data_check)
-                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
+                return array('success' => false, 'error_code'=> 2, 'message' => "Datapoints to check = $npoints_to_check, Maximum = $feed_max_npoints_data_check");
         }else {
             if ($npoints_to_check > 1051200) // equivalent to a whole year with a 30s interval
-                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+                return array('success' => false, 'error_code'=> 2, 'message' => "Datapoints to check = $npoints_to_check, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
         }
 
         // Check datapoints
         $fh = fopen($this->dir . $feedid . ".dat", 'rb');
         if (!$fh) {
             $this->log->warn("post() could not open data file id=$feedid");
-            return array('success' => false, 'message' => "Problems opening file");
+            return array('success' => false, 'error_code'=> 0, 'message' => "Problems opening file");
         }
 
         //$starting_at = microtime(true);
@@ -1338,6 +1344,7 @@ class PHPFina
         //$finishing_at = microtime(true);
 
         $data['data_points_checked'] = $end_pos - $start_pos;
+        $data['success'] = true;
         if ($check_missing_data)
             $data['data_points_missing'] = $datapoints_missing;
         if ($check_max_value)
@@ -1362,6 +1369,12 @@ class PHPFina
      * @param bool $missing_data if true then the function will fix the missing points by interpolation, used by smoe engines
      * @param float $max_value if set the function will set data points greater than $max_value to $max_value
      * @param float $min_value if set the function will set the data points lower than $min_value to $min_value
+     * 
+     * error codes:
+     *      0 - cannot open data file or metadata file
+     *      1 - dataset is empty
+     *      2 - too many datapoints in dataset
+     *      3 - firs or last datapoint is null (interpolation not possible)
      */
     public function fix_data($feedid, $start, $end, $max_value, $min_value, $missing_data) {
 
@@ -1391,7 +1404,7 @@ class PHPFina
 
         // Check that feed meta data is ok
         if (!$meta = $this->get_meta($feedid))
-            return array('success' => false, 'message' => "Error reading meta data feedid=$feedid");
+            return array('success' => false, 'error_code'=> 0, 'message' => "Error reading meta data feedid=$feedid");
 
         // Are start and end dates in the dataset? If not, chnage them to the beginning and end of dataset
         if ($start < $meta->start_time)
@@ -1402,19 +1415,22 @@ class PHPFina
 
         // Are we fixing too many datapoints?
         $npoints_to_fix = ($end - $start) / $meta->interval;
+        if($npoints_to_fix <= 0){
+             return array('success' => false, 'error_code'=> 1, 'message' => "There are no data points for the chosen period");
+        }
         if (isset($feed_max_npoints_data_check)) {
             if ($npoints_to_fix > $feed_max_npoints_data_check)
-                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_fix, Maximum = $feed_max_npoints_data_check");
+                return array('success' => false, 'error_code'=> 2, 'message' => "Datapoints to check = $npoints_to_fix, Maximum = $feed_max_npoints_data_check");
         }else {
             if ($npoints_to_fix > 1051200) // equivalent to a whole year with a 30s interval
-                return array('success' => false, 'message' => "Datapoints to check = $npoints_to_fix, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
+                return array('success' => false, 'error_code'=> 2, 'message' => "Datapoints to check = $npoints_to_fix, Maximum = 1051200 ( equivalent to a whole year with a 30s interval). Change start or end dates");
         }
 
         // Open adn lock file
         $fh = fopen($this->dir . $feedid . ".dat", 'c+');
         if (!$fh) {
             $this->log->warn("post() could not open data file id=$feedid");
-            return array('success' => false, 'message' => "Problems opening file");
+            return array('success' => false, 'error_code'=> 0, 'message' => "Problems opening file");
         }
         flock($fh, LOCK_EX);
 
@@ -1428,12 +1444,12 @@ class PHPFina
             fseek($fh, $start_pos * 4);
             $val = unpack("f", fread($fh, 4));
             if (is_nan($val[1]) || is_null($val[1])) {
-                return array('success' => false, 'message' => "The first data point in the period requested is missing, interpolation not possible. Please change the start date");
+                return array('success' => false, 'error_code'=> 3,'message' => "The first data point in the period requested is missing, interpolation not possible. Please change the start date");
             }
             fseek($fh, $end_pos * 4);
             $val = unpack("f", fread($fh, 4));
             if (is_nan($val[1]) || is_null($val[1])) {
-                return array('success' => false, 'message' => "The last data point in the period requested is missing, interpolation not possible. Please change the end date");
+                return array('success' => false, 'error_code'=> 3, 'message' => "The last data point in the period requested is missing, interpolation not possible. Please change the end date");
             }
         }
 
@@ -1484,6 +1500,7 @@ class PHPFina
 
         // Prepare output
         $data['data_points_checked'] = $end_pos - $start_pos;
+        $data['success']=true;
         if ($fix_missing_data === true)
             $data['data_points_missing_fixed'] = $datapoints_missing_fixed;
         if ($fix_max_value === true)
