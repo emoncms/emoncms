@@ -38,6 +38,9 @@ function multigraphDropdown(){
 
 // Multigraph editor interface 
 function drawMultigraphFeedlistEditor(){
+  var barwidth=1;
+  var graphtype;
+
   if (typeof multigraphFeedlist === "undefined"){
     $("#embedcode").val("");
     $("#feedtable").html("");
@@ -123,9 +126,9 @@ function drawMultigraphFeedlistEditor(){
   for (z in multigraphFeedlist) {
     out += "<tr style='border-top: 2px solid black;'>";
     out += "<td style='vertical-align:middle;word-wrap:break-word;'>"+multigraphFeedlist[z]['tag']+": "+multigraphFeedlist[z]['name']+"</td>";
-    if (!multigraphFeedlist[z]['left'] && !multigraphFeedlist[z]['right'])  multigraphFeedlist[z]['left'] = true; // Default is left
-    if (typeof multigraphFeedlist[z]['barwidth'] !== "undefined" && $.isNumeric(multigraphFeedlist[z]['barwidth'])) {
-      barwidth=multigraphFeedlist[z]['barwidth']*100;
+    if (!multigraphFeedlist[z]["left"] && !multigraphFeedlist[z]["right"])  multigraphFeedlist[z]["left"] = true; // Default is left
+    if (typeof multigraphFeedlist[z]["barwidth"] !== "undefined" && $.isNumeric(multigraphFeedlist[z]["barwidth"])) {
+      barwidth=multigraphFeedlist[z]["barwidth"]*100;
       barwidth>100 ? barwidth=100 : barwidth <1 ? barwidth=1: null ;
     } else {
       barwidth=100;
@@ -137,9 +140,9 @@ function drawMultigraphFeedlistEditor(){
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
 
-    var checked = ""; if (multigraphFeedlist[z]['left']) checked = "checked";
+    var checked = ""; if (multigraphFeedlist[z]["left"]) checked = "checked";
     out += "<td style='text-align: center;'><input listid='"+z+"' class='left' name='xpos"+z+"' type='radio' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]['right']) checked = "checked";
+    var checked = ""; if (multigraphFeedlist[z]["right"]) checked = "checked";
     out += "<td style='text-align: center;'><input listid='"+z+"' class='right' name='xpos"+z+"' type='radio' "+checked+" /></td>";
     var checked = ""; if (multigraphFeedlist[z]['fill']) checked = "checked";
     out += "<td style='text-align: center;'><input listid='"+z+"' class='fill' type='checkbox' "+checked+" /></td>";
@@ -300,7 +303,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#add",function(event){
     var feedid = $("#feedselect").val();
-    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),'left':false,'right':false,'fill':false,"end":0,'skipmissing':true});
+    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,'fill':false,"end":0,'skipmissing':true});
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
@@ -386,7 +389,7 @@ function loadEvents(){
     barwidth = $(this).val();
     if (!$.isNumeric(barwidth) || barwidth > 100 ) barwidth = 100;
     else if (barwidth <1 ) barwidth=1;
-    multigraphFeedlist[z]['barwidth'] = barwidth/100;
+    multigraphFeedlist[z]["barwidth"] = barwidth/100;
     $(this).val(barwidth);
     visFeedData();
     modified();
@@ -425,9 +428,9 @@ function loadEvents(){
   
  $(baseElement).on("click",".left",function(event){
     var z = $(this).attr('listid');
-    multigraphFeedlist[z]['left'] = $(this)[0].checked;
-    if (multigraphFeedlist[z]['left'] == true && multigraphFeedlist[z]['right'] == true)
-      multigraphFeedlist[z]['right'] = false;
+    multigraphFeedlist[z]["left"] = $(this)[0].checked;
+    if (multigraphFeedlist[z]["left"] == true && multigraphFeedlist[z]["right"] == true)
+      multigraphFeedlist[z]["right"] = false;
     $(".right[listid="+z+"]").attr("checked",false);
 
     visFeedData();
@@ -436,9 +439,9 @@ function loadEvents(){
 
   $(baseElement).on("click",".right",function(){
     var z = $(this).attr('listid');
-    multigraphFeedlist[z]['right'] = $(this)[0].checked;
-    if (multigraphFeedlist[z]['left'] == true && multigraphFeedlist[z]['right'] == true)
-      multigraphFeedlist[z]['left'] = false;
+    multigraphFeedlist[z]["right"] = $(this)[0].checked;
+    if (multigraphFeedlist[z]["left"] == true && multigraphFeedlist[z]["right"] == true)
+      multigraphFeedlist[z]["left"] = false;
     $(".left[listid="+z+"]").attr("checked",false);
     visFeedData();
     modified();
