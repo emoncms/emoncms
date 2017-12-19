@@ -54,9 +54,9 @@ function drawMultigraphFeedlistEditor(){
   if (multigraphFeedlist === null) multigraphFeedlist = [];
   
   if (typeof multigraphFeedlist[0] !== 'undefined') {
-      if (multigraphFeedlist[0]['detail'] !== 'undefined')
-        detail=multigraphFeedlist[0]['detail'];
-      else
+      if (multigraphFeedlist[0]["detail"] !== 'undefined') {
+        detail=multigraphFeedlist[0]["detail"];
+      } else
         detail="basic";
 
       if (multigraphFeedlist[0]['end'] != 0)
@@ -84,22 +84,22 @@ function drawMultigraphFeedlistEditor(){
       else
         ymin = "auto";
 
-      if (typeof multigraphFeedlist[0]['ymax'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymax']))
+      if (typeof multigraphFeedlist[0]['ymax'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymax'])) {
         ymax = multigraphFeedlist[0]['ymax'];
-      else
+      } else
         ymax = "auto";
     
-      if (typeof multigraphFeedlist[0]['y2min'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2min']))
+      if (typeof multigraphFeedlist[0]['y2min'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2min'])) {
         y2min = multigraphFeedlist[0]['y2min'];
-      else
+      } else
         y2min = "auto";
 
-      if (typeof multigraphFeedlist[0]['y2max'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2max']))
+      if (typeof multigraphFeedlist[0]['y2max'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2max'])) {
         y2max = multigraphFeedlist[0]['y2max'];
-      else
+      } else
         y2max = "auto";
 
-      detail= multigraphFeedlist[0]['detail'] == "advanced" ? "advanced" : "basic";
+      detail= multigraphFeedlist[0]["detail"] === "advanced" ? "advanced" : "basic";
   }
 
   var out = "";
@@ -390,14 +390,14 @@ function loadEvents(){
  
   $(baseElement).on("click","#basic",function(event){
     $(this)[0].checked ? detail="basic" : detail="advanced";
-    multigraphFeedlist[0]['detail'] = detail;
+    multigraphFeedlist[0]["detail"] = detail;
     drawMultigraphFeedlistEditor();
     modified();
   });
 
   $(baseElement).on("click","#advanced",function(event){
     $(this)[0].checked ? detail="advanced" : detail="basic";
-    multigraphFeedlist[0]['detail'] = detail;
+    multigraphFeedlist[0]["detail"] = detail;
     drawMultigraphFeedlistEditor();
     modified();
   });
