@@ -21,13 +21,6 @@ var detail = "basic";
 
 var baseElement = "#box-options";
 
-// Multigraph new and selector interface
-function multigraphGUI(){
-  $("#viewbtn").hide();
-  $(baseElement).html(multigraphDropdown());
-  loadEvents();
-}
-
 function multigraphDropdown(){
   multigraphs_name = [];
   multigraphs = multigraph.getlist();
@@ -43,6 +36,13 @@ function multigraphDropdown(){
   return out+"<button id='multigraph-new-button' class='btn btn-info' style='float:right'>New multigraph</button><div id='feedtable' ></div>";
 }
 
+// Multigraph new and selector interface
+function multigraphGUI(){
+  $("#viewbtn").hide();
+  $(baseElement).html(multigraphDropdown());
+  loadEvents();
+}
+
 // Multigraph editor interface 
 function drawMultigraphFeedlistEditor(){
   if (multigraphFeedlist === undefined){
@@ -56,48 +56,57 @@ function drawMultigraphFeedlistEditor(){
   if (typeof multigraphFeedlist[0] !== 'undefined') {
       if (multigraphFeedlist[0]["detail"] !== 'undefined') {
         detail=multigraphFeedlist[0]["detail"];
-      } else
+      } else {
         detail="basic";
+      }
 
-      if (multigraphFeedlist[0]['end'] != 0)
+      if (multigraphFeedlist[0]['end'] != 0) {
         movingtime=false;
-      else
+      } else {
         movingtime=true;
+      }
 
-      if (typeof multigraphFeedlist[0]['showtag'] !== 'undefined')
+      if (typeof multigraphFeedlist[0]['showtag'] !== 'undefined') {
         showtag = multigraphFeedlist[0]['showtag'];
-      else
+      } else {
         showtag = true;
+      }
 
-      if (typeof multigraphFeedlist[0]['autorefresh'] !== 'undefined')
+      if (typeof multigraphFeedlist[0]['autorefresh'] !== 'undefined') {
         autorefresh = multigraphFeedlist[0]['autorefresh'];
-      else
+      } else {
         autorefresh = 0;
+      }
 
-      if (typeof multigraphFeedlist[0]['showlegend'] !== 'undefined')
+      if (typeof multigraphFeedlist[0]['showlegend'] !== 'undefined') {
         showlegend = multigraphFeedlist[0]['showlegend'];
-      else
+      } else {
         showlegend = true;
+      }
 
-      if (typeof multigraphFeedlist[0]['ymin'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymin']))
+      if (typeof multigraphFeedlist[0]['ymin'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymin'])) {
         ymin = multigraphFeedlist[0]['ymin'];
-      else
+      } else {
         ymin = "auto";
+      }
 
       if (typeof multigraphFeedlist[0]['ymax'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymax'])) {
         ymax = multigraphFeedlist[0]['ymax'];
-      } else
+      } else {
         ymax = "auto";
+      }
     
       if (typeof multigraphFeedlist[0]['y2min'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2min'])) {
         y2min = multigraphFeedlist[0]['y2min'];
-      } else
+      } else {
         y2min = "auto";
+      }
 
       if (typeof multigraphFeedlist[0]['y2max'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2max'])) {
         y2max = multigraphFeedlist[0]['y2max'];
-      } else
+      } else {
         y2max = "auto";
+      }
 
       detail= multigraphFeedlist[0]["detail"] === "advanced" ? "advanced" : "basic";
   }
@@ -125,13 +134,15 @@ function drawMultigraphFeedlistEditor(){
     if (typeof multigraphFeedlist[z]['barwidth'] !== 'undefined' && $.isNumeric(multigraphFeedlist[z]['barwidth'])) {
       barwidth=multigraphFeedlist[z]['barwidth']*100;
       barwidth>100 ? barwidth=100 : barwidth <1 ? barwidth=1: null ;
-    } else
+    } else {
       barwidth=100;
+    }
 
-    if (typeof multigraphFeedlist[z]['graphtype'] === 'undefined')
+    if (typeof multigraphFeedlist[z]['graphtype'] === 'undefined') {
       graphtype=multigraphFeedlist[z]['datatype']==1 ? "lines" : "bars";
-    else
+    } else {
       graphtype=multigraphFeedlist[z]['graphtype'];
+    }
 
     var checked = ""; if (multigraphFeedlist[z]['left']) checked = "checked";
     out += "<td style='text-align: center;'><input listid='"+z+"' class='left' name='xpos"+z+"' type='radio' "+checked+" /></td>";
