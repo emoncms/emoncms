@@ -12,6 +12,7 @@ function convert_to_plotlist(multigraph_feedlist) {
   var plotlist = [];
   var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
   showlegend = (multigraph_feedlist[0]['showlegend']==undefined || multigraph_feedlist[0]['showlegend']);
+  var barwidth = 1;
   
   view.ymin = (multigraph_feedlist[0]['ymin'] != undefined ? multigraph_feedlist[0]['ymin'] : null);
   view.ymax = (multigraph_feedlist[0]['ymax'] != undefined ? multigraph_feedlist[0]['ymax'] : null);
@@ -23,9 +24,9 @@ function convert_to_plotlist(multigraph_feedlist) {
   for (z in multigraph_feedlist) {
     var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
     var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
-    var barwidth = multigraph_feedlist[z]['barwidth']==undefined ? 1 : multigraph_feedlist[z]['barwidth'];
+    barwidth = multigraph_feedlist[z]['barwidth']===undefined ? 1 : multigraph_feedlist[z]['barwidth'];
 
-    if ( multigraph_feedlist[z]['graphtype']==undefined ) {
+    if ( multigraph_feedlist[z]['graphtype']===undefined ) {
       multigraph_feedlist[z]['datatype']==1 ? graphtype="lines" : graphtype="bars";
     } else {
       graphtype=multigraph_feedlist[z]['graphtype'];
