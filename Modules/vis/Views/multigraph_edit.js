@@ -26,7 +26,7 @@ function multigraphDropdown(){
   multigraphs = multigraph.getlist();
   var options = "";
   for (z in multigraphs) {
-    multigraphs_name[multigraphs[z]['id']] = multigraphs[z]['name'];
+    multigraphs_name[multigraphs[z]["id"]] = multigraphs[z]["name"];
     options +="<option value='"+multigraphs[z]['id']+"'>"+multigraphs[z]['id']+": "+multigraphs[z]['name']+"</option>";
   }
   var out = "<div class='alert'>No multigraphs created yet, click new to create one:</div>";
@@ -60,50 +60,50 @@ function drawMultigraphFeedlistEditor(){
         detail="basic";
       }
 
-      if (multigraphFeedlist[0]['end'] != 0) {
+      if (multigraphFeedlist[0]["end"] != 0) {
         movingtime=false;
       } else {
         movingtime=true;
       }
 
-      if (typeof multigraphFeedlist[0]['showtag'] !== 'undefined') {
-        showtag = multigraphFeedlist[0]['showtag'];
+      if (typeof multigraphFeedlist[0]["showtag"] !== 'undefined') {
+        showtag = multigraphFeedlist[0]["showtag"];
       } else {
         showtag = true;
       }
 
-      if (typeof multigraphFeedlist[0]['autorefresh'] !== 'undefined') {
-        autorefresh = multigraphFeedlist[0]['autorefresh'];
+      if (typeof multigraphFeedlist[0]["autorefresh"] !== 'undefined') {
+        autorefresh = multigraphFeedlist[0]["autorefresh"];
       } else {
         autorefresh = 0;
       }
 
-      if (typeof multigraphFeedlist[0]['showlegend'] !== 'undefined') {
-        showlegend = multigraphFeedlist[0]['showlegend'];
+      if (typeof multigraphFeedlist[0]["showlegend"] !== 'undefined') {
+        showlegend = multigraphFeedlist[0]["showlegend"];
       } else {
         showlegend = true;
       }
 
-      if (typeof multigraphFeedlist[0]['ymin'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymin'])) {
-        ymin = multigraphFeedlist[0]['ymin'];
+      if (typeof multigraphFeedlist[0]["ymin"] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]["ymin"])) {
+        ymin = multigraphFeedlist[0]["ymin"];
       } else {
         ymin = "auto";
       }
 
-      if (typeof multigraphFeedlist[0]['ymax'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['ymax'])) {
-        ymax = multigraphFeedlist[0]['ymax'];
+      if (typeof multigraphFeedlist[0]["ymax"] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]["ymax"])) {
+        ymax = multigraphFeedlist[0]["ymax"];
       } else {
         ymax = "auto";
       }
     
-      if (typeof multigraphFeedlist[0]['y2min'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2min'])) {
-        y2min = multigraphFeedlist[0]['y2min'];
+      if (typeof multigraphFeedlist[0]["y2min"] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]["y2min"])) {
+        y2min = multigraphFeedlist[0]["y2min"];
       } else {
         y2min = "auto";
       }
 
-      if (typeof multigraphFeedlist[0]['y2max'] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]['y2max'])) {
-        y2max = multigraphFeedlist[0]['y2max'];
+      if (typeof multigraphFeedlist[0]["y2max"] !== 'undefined' && $.isNumeric(multigraphFeedlist[0]["y2max"])) {
+        y2max = multigraphFeedlist[0]["y2max"];
       } else {
         y2max = "auto";
       }
@@ -138,10 +138,10 @@ function drawMultigraphFeedlistEditor(){
       barwidth=100;
     }
 
-    if (typeof multigraphFeedlist[z]['graphtype'] === 'undefined') {
-      graphtype=multigraphFeedlist[z]['datatype']==1 ? "lines" : "bars";
+    if (typeof multigraphFeedlist[z]["graphtype"] === 'undefined') {
+      graphtype=multigraphFeedlist[z]["datatype"]==1 ? "lines" : "bars";
     } else {
-      graphtype=multigraphFeedlist[z]['graphtype'];
+      graphtype=multigraphFeedlist[z]["graphtype"];
     }
 
     var checked = ""; if (multigraphFeedlist[z]['left']) checked = "checked";
@@ -241,7 +241,7 @@ function drawMultigraphFeedlistEditor(){
 
 function getFeedName(id){
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]['name'];
+    if (feedlist[z]['id'] == id) return feedlist[z]["name"];
   }
 }
 
@@ -253,7 +253,7 @@ function getFeedTag(id){
 
 function getFeedDatatype(id){
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]['datatype'];
+    if (feedlist[z]['id'] == id) return feedlist[z]["datatype"];
   }
 }
 
@@ -268,7 +268,7 @@ function updateMultigraphFeedlistNames(){
     if (typeof multigraphFeedlist[m] !== 'undefined'){
         var feedid = multigraphFeedlist[m]['id'];
         multigraphFeedlist[m]['tag'] = getFeedTag(feedid);
-        multigraphFeedlist[m]['name'] = getFeedName(feedid);
+        multigraphFeedlist[m]["name"] = getFeedName(feedid);
     }
   }
 }
@@ -307,7 +307,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#add",function(event){
     var feedid = $("#feedselect").val();
-    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),'name':getFeedName(feedid),'datatype':getFeedDatatype(feedid),'left':false,'right':false,'fill':false,'end':0,'skipmissing':true});
+    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),'left':false,'right':false,'fill':false,"end":0,'skipmissing':true});
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
@@ -317,7 +317,7 @@ function loadEvents(){
   $(baseElement).on("change","#ymin",function(event){
     ymin = $(this)[0].value;
     if (!$.isNumeric(ymin)) ymin = null;
-    multigraphFeedlist[0]['ymin'] = ymin;
+    multigraphFeedlist[0]["ymin"] = ymin;
     visFeedData();
     modified();
   });
@@ -325,7 +325,7 @@ function loadEvents(){
   $(baseElement).on("change","#ymax",function(event){
     ymax = $(this)[0].value;
     if (!$.isNumeric(ymax)) ymax = null;
-    multigraphFeedlist[0]['ymax'] = ymax;
+    multigraphFeedlist[0]["ymax"] = ymax;
     visFeedData();
     modified();
   });
@@ -333,7 +333,7 @@ function loadEvents(){
   $(baseElement).on("change","#y2min",function(event){
     y2min = $(this)[0].value;
     if (!$.isNumeric(y2min)) y2min = null;
-    multigraphFeedlist[0]['y2min'] = y2min;
+    multigraphFeedlist[0]["y2min"] = y2min;
     visFeedData();
     modified();
   });
@@ -341,7 +341,7 @@ function loadEvents(){
   $(baseElement).on("change","#y2max",function(event){
     y2max = $(this)[0].value;
     if (!$.isNumeric(y2max)) y2max = null;
-    multigraphFeedlist[0]['y2max'] = y2max;
+    multigraphFeedlist[0]["y2max"] = y2max;
     visFeedData();
     modified();
   });
@@ -353,19 +353,19 @@ function loadEvents(){
   });
   $(baseElement).on("click","#showtag",function(event){
     showtag = $(this)[0].checked;
-    multigraphFeedlist[0]['showtag'] = showtag;
+    multigraphFeedlist[0]["showtag"] = showtag;
     visFeedData();
     modified();
   });
   $(baseElement).on("change","#autorefresh",function(event){
     autorefresh = $(this)[0].value;
-    multigraphFeedlist[0]['autorefresh'] = autorefresh;
+    multigraphFeedlist[0]["autorefresh"] = autorefresh;
     // visFeedData(); doesn't affect data
     modified();
   });
   $(baseElement).on("click","#showlegend",function(event){
     showlegend = $(this)[0].checked;
-    multigraphFeedlist[0]['showlegend'] = showlegend;
+    multigraphFeedlist[0]["showlegend"] = showlegend;
     visFeedData();
     modified();
   });
@@ -417,7 +417,7 @@ function loadEvents(){
   $(baseElement).on("change","#graphtype-selector",function(event){
     var z = $(this).attr('listid');
     var graphtype = $(this).val();
-    multigraphFeedlist[z]['graphtype']=graphtype;
+    multigraphFeedlist[z]["graphtype"]=graphtype;
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
