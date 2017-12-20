@@ -29,7 +29,7 @@ function multigraphDropdown(){
   var options = "";
   for (z in multigraphs) {
     multigraphsName[multigraphs[z]["id"]] = multigraphs[z]["name"];
-    options +="<option value='"+multigraphs[z]["id"]+"'>"+multigraphs[z]["id"]+": "+multigraphs[z]['name']+"</option>";
+    options +="<option value='"+multigraphs[z]["id"]+"'>"+multigraphs[z]["id"]+": "+multigraphs[z]["name"]+"</option>";
   }
   var out = "<div class='alert'>No multigraphs created yet, click new to create one:</div>";
   if (options){
@@ -122,8 +122,8 @@ function drawMultigraphFeedlistEditor(){
   var out = "";
   out += "<table style='table-layout:fixed; width:300px; margin-bottom:0px;'><tbody><tr valign='middle'>";
   out += "<td style='text-align:right;width:144px;padding-bottom:7px;padding-right:5px'>Options :</td>";
-  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!=="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Basic</label></td>";
-  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail==="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
+  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!=="advanced" ? "checked" : "") +" style='margin-bottom:5px'> Basic</label></td>";
+  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail==="advanced" ? "checked" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
   out += "</tr></tbody></table>";
 
   out += "<div id='myModal' class='modal hide' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>";
@@ -137,7 +137,7 @@ function drawMultigraphFeedlistEditor(){
   var publicfeed = 1;
   for (z in multigraphFeedlist) {
     out += "<tr style='border-top: 2px solid black;'>";
-    out += "<td style='vertical-align:middle;word-wrap:break-word;'>"+multigraphFeedlist[z]["tag"]+": "+multigraphFeedlist[z]['name']+"</td>";
+    out += "<td style='vertical-align:middle;word-wrap:break-word;'>"+multigraphFeedlist[z]["tag"]+": "+multigraphFeedlist[z]["name"]+"</td>";
     if (!multigraphFeedlist[z]["left"] && !multigraphFeedlist[z]["right"]) {
       multigraphFeedlist[z]["left"] = true; // Default is left
     }
@@ -207,7 +207,7 @@ function drawMultigraphFeedlistEditor(){
   }
 
   out += "<tr>";
-  out += "<td>"+select_feed("feedselect", feedlist, 0)+"</td>";
+  out += "<td>"+selectFeed("feedselect", feedlist, 0)+"</td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td><input id='add' type='button' class='btn' value='Add'/ ></td>";
@@ -291,7 +291,7 @@ function updateMultigraphFeedlistNames(){
 }
 
 function modified(){
-  $(baseElement + ' #save-multigraph-button').attr('class','btn btn-warning').text("Changed, press to save");
+  $(baseElement + " #save-multigraph-button").attr("class","btn btn-warning").text("Changed, press to save");
 }
 
 // Events
@@ -301,8 +301,8 @@ function loadEvents(){
   $(baseElement).on("change","#multigraph-selector",function(event){
     multigraphID = $(this).val();
     if (multigraphID > 0) {
-      multigraphFeedlist = multigraph.get(multigraphID)['feedlist'];
-      updateMultigraphFeedlistNames()
+      multigraphFeedlist = multigraph.get(multigraphID)["feedlist"];
+      updateMultigraphFeedlistNames();
     } else {
       multigraphID=0;
       multigraphFeedlist=undefined;
@@ -318,8 +318,8 @@ function loadEvents(){
   $(baseElement).on("click","#multigraph-new-button",function(event){
     multigraphID = multigraph.new();
     $(baseElement).html(multigraphDropdown());            // Reload all
-    $(baseElement + ' #multigraph-selector').val(multigraphID);  // Refresh
-    $(baseElement + ' #multigraph-selector').change();            // 
+    $(baseElement + " #multigraph-selector").val(multigraphID);  // Refresh
+    $(baseElement + " #multigraph-selector").change();            // 
   });
 
   $(baseElement).on("click","#add",function(event){
@@ -388,8 +388,8 @@ function loadEvents(){
   });
   // Event for every change event in the lineColour input for each line in the plot.
   $(baseElement).on("input","#lineColour",function(event){
-    var z = $(this).attr('listid');
-    multigraphFeedlist[z]["lineColour"] = $(this)[0].value.replace('#','');
+    var z = $(this).attr("listid");
+    multigraphFeedlist[z]["lineColour"] = $(this)[0].value.replace("#","");
     modified();
   });
   // This only fires when the user either deselects the lineColour text-box, or hits enter
@@ -399,14 +399,14 @@ function loadEvents(){
   });
 
   $(baseElement).on("click","#skipmissing",function(event){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     multigraphFeedlist[z]["skipmissing"] = $(this)[0].checked;
     visFeedData();
     modified();
   });
 
   $(baseElement).on("change","#barwidth",function(event){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     barwidth = $(this).val();
     if (!$.isNumeric(barwidth) || barwidth > 100 ) barwidth = 100;
     else if (barwidth <1 ) barwidth=1;
@@ -432,7 +432,7 @@ function loadEvents(){
 
 
   $(baseElement).on("change","#graphtype-selector",function(event){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     var graphtype = $(this).val();
     multigraphFeedlist[z]["graphtype"]=graphtype;
     drawMultigraphFeedlistEditor();
@@ -441,14 +441,14 @@ function loadEvents(){
   });
 
    $(baseElement).on("click","#stacked",function(event){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     multigraphFeedlist[z]["stacked"] = $(this)[0].checked;
     visFeedData();
     modified();
   });
   
  $(baseElement).on("click",".left",function(event){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     multigraphFeedlist[z]["left"] = $(this)[0].checked;
     if (multigraphFeedlist[z]["left"] === true && multigraphFeedlist[z]["right"] === true)
       multigraphFeedlist[z]["right"] = false;
@@ -459,7 +459,7 @@ function loadEvents(){
   });
 
   $(baseElement).on("click",".right",function(){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     multigraphFeedlist[z]["right"] = $(this)[0].checked;
     if (multigraphFeedlist[z]["left"] === true && multigraphFeedlist[z]["right"] === true)
       multigraphFeedlist[z]["left"] = false;
@@ -469,14 +469,14 @@ function loadEvents(){
   });
 
   $(baseElement).on("click",".fill",function(){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     multigraphFeedlist[z]["fill"] = $(this)[0].checked;
     visFeedData();
     modified();
   });
 
   $(baseElement).on("click","#multigraph-feed-remove-button",function(){
-    var z = $(this).attr('listid');
+    var z = $(this).attr("listid");
     multigraphFeedlist.splice(z,1);
     drawMultigraphFeedlistEditor();
     visFeedData();
@@ -484,15 +484,15 @@ function loadEvents(){
   });
 
   $(baseElement).on("click","#delete-multigraph-button",function(){
-    $('#myModal').modal('show');
+    $("#myModal").modal("show");
   });
 
   $(baseElement).on("click","#confirmdelete",function() {
     multigraph.remove(multigraphID);
-    $('#myModal').modal('hide');
+    $("#myModal").modal("hide");
     $(baseElement).html(multigraphDropdown());         // Reload all
-    //$(baseElement + ' #multigraph-selector').val(undefined);  // Refresh
-    $(baseElement + ' #multigraph-selector').change(); // 
+    //$(baseElement + " #multigraph-selector").val(undefined);  // Refresh
+    $(baseElement + " #multigraph-selector").change(); // 
   });
   
   $(baseElement).on("input propertychange paste","#multigraph-name",function(){
@@ -512,11 +512,11 @@ function loadEvents(){
     var result = multigraph.set(multigraphID,multigraphFeedlist,new_name);
     if (result.success) {
         $(baseElement).html(multigraphDropdown());                    // Reload all
-        $(baseElement + ' #multigraph-selector').val(multigraphID);  // Refresh
-        $(baseElement + ' #multigraph-selector').change();            // 
-        $(baseElement + ' #save-multigraph-button').attr('class','btn btn-success').text('Saved');
+        $(baseElement + " #multigraph-selector").val(multigraphID);  // Refresh
+        $(baseElement + " #multigraph-selector").change();            // 
+        $(baseElement + " #save-multigraph-button").attr("class","btn btn-success").text("Saved");
     }
-    else { alert('ERROR: Could not save Multigraph. '+result.message); }
+    else { alert("ERROR: Could not save Multigraph. "+result.message); }
   });
 }
 
