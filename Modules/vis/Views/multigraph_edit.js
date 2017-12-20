@@ -39,8 +39,10 @@ function multigraphDropdown(){
 }
 
 function getFeedPublic(id){
+  var z;
+
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]['public'];
+    if (feedlist[z]["id"] === id) { return feedlist[z]["public"]; }
   }
 }
 
@@ -66,7 +68,7 @@ function drawMultigraphFeedlistEditor(){
         detail="basic";
       }
 
-      if (multigraphFeedlist[0]["end"] != 0) {
+      if (multigraphFeedlist[0]["end"] !== 0) {
         movingtime=false;
       } else {
         movingtime=true;
@@ -120,8 +122,8 @@ function drawMultigraphFeedlistEditor(){
   var out = "";
   out += "<table style='table-layout:fixed; width:300px; margin-bottom:0px;'><tbody><tr valign='middle'>";
   out += "<td style='text-align:right;width:144px;padding-bottom:7px;padding-right:5px'>Options :</td>";
-  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Basic</label></td>";
-  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail=="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
+  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!=="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Basic</label></td>";
+  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail==="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
   out += "</tr></tbody></table>";
 
   out += "<div id='myModal' class='modal hide' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>";
@@ -147,7 +149,7 @@ function drawMultigraphFeedlistEditor(){
     }
 
     if (typeof multigraphFeedlist[z]["graphtype"] === "undefined") {
-      graphtype=multigraphFeedlist[z]["datatype"]==1 ? "lines" : "bars";
+      graphtype=multigraphFeedlist[z]["datatype"]===1 ? "lines" : "bars";
     } else {
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
@@ -176,31 +178,36 @@ function drawMultigraphFeedlistEditor(){
     out += "</tr>";
     out += "<tr>";
 
-    if (detail=="advanced") {
+    if (detail==="advanced") {
       out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Graph Type</td>";
       out += "<td colspan='4' style='vertical-align:middle;'>";
       out += "<select id='graphtype-selector' listid='"+z+"' class='options' style='width:140px;margin-bottom:0px;'>";
       out += "<optgroup label= 'Select Display Type:'>";
-      out += "<option value='lines'"+ (graphtype=="lines" && "selected") +">Lines</option>";
-      out += "<option value='lineswithsteps'"+ (graphtype=="lineswithsteps" && "selected") +">Lines with Steps</option>";
-      out += "<option value='bars'"+ (graphtype=="bars" && "selected") +">Bars</option>";
+      out += "<option value='lines'"+ (graphtype==="lines" && "selected") +">Lines</option>";
+      out += "<option value='lineswithsteps'"+ (graphtype==="lineswithsteps" && "selected") +">Lines with Steps</option>";
+      out += "<option value='bars'"+ (graphtype==="bars" && "selected") +">Bars</option>";
       out += "</optgroup> </select>";
       out += "</td>";
       out += "</tr>";
 
-      if (graphtype=="bars") {
+      if (graphtype==="bars") {
         out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Bar Width (%)</td>";
         out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input listid='"+z+"' style='width:110px' id='barwidth' value='" + barwidth + "'/></td>";
         out += "</tr>";
       }
     }
 
-    if (publicfeed == 1) { publicfeed = (getFeedPublic(multigraphFeedlist[z]['id'])); }
+    if (publicfeed === 1) { publicfeed = (getFeedPublic(multigraphFeedlist[z]["id"])); }
   }
   var visurl = path+"vis/"+"multigraph?mid="+multigraph_id;
-  if (publicfeed == 1) $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>'); else $("#embedcode").val('Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.\n\nTo embed privately:\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
+  if (publicfeed === 1) {
+    $("#embedcode").val("<iframe style='width:580px; height:400px;' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='"+visurl+"&embed=1'></iframe>");
+  } else {
+    $("#embedcode").val("Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.\n\nTo embed privately:\n\n<iframe style='width:580px; height:400px;' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='"+visurl+"&embed=1&apikey="+apikey+"'></iframe>");
+  }
+
   out += "<tr>";
-  out += "<td>"+select_feed('feedselect', feedlist, 0)+"</td>";
+  out += "<td>"+select_feed("feedselect", feedlist, 0)+"</td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td><input id='add' type='button' class='btn' value='Add'/ ></td>";
@@ -249,26 +256,26 @@ function drawMultigraphFeedlistEditor(){
 
 function getFeedName(id){
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]["name"];
+    if (feedlist[z]["id"] === id) return feedlist[z]["name"];
   }
 }
 
 function getFeedTag(id){
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]["tag"];
+    if (feedlist[z]["id"] === id) return feedlist[z]["tag"];
   }
 }
 
 function getFeedDatatype(id){
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]["datatype"];
+    if (feedlist[z]["id"] === id) return feedlist[z]["datatype"];
   }
 }
 
 function updateMultigraphFeedlistNames(){
   for (m in multigraphFeedlist) {
     if (typeof multigraphFeedlist[m] !== "undefined"){
-        var feedid = multigraphFeedlist[m]['id'];
+        var feedid = multigraphFeedlist[m]["id"];
         multigraphFeedlist[m]["tag"] = getFeedTag(feedid);
         multigraphFeedlist[m]["name"] = getFeedName(feedid);
     }
@@ -309,7 +316,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#add",function(event){
     var feedid = $("#feedselect").val();
-    multigraphFeedlist.push({'id':feedid,"tag":getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
+    multigraphFeedlist.push({"id":feedid,"tag":getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
@@ -435,7 +442,7 @@ function loadEvents(){
  $(baseElement).on("click",".left",function(event){
     var z = $(this).attr('listid');
     multigraphFeedlist[z]["left"] = $(this)[0].checked;
-    if (multigraphFeedlist[z]["left"] == true && multigraphFeedlist[z]["right"] == true)
+    if (multigraphFeedlist[z]["left"] === true && multigraphFeedlist[z]["right"] === true)
       multigraphFeedlist[z]["right"] = false;
     $(".right[listid="+z+"]").attr("checked",false);
 
@@ -446,7 +453,7 @@ function loadEvents(){
   $(baseElement).on("click",".right",function(){
     var z = $(this).attr('listid');
     multigraphFeedlist[z]["right"] = $(this)[0].checked;
-    if (multigraphFeedlist[z]["left"] == true && multigraphFeedlist[z]["right"] == true)
+    if (multigraphFeedlist[z]["left"] === true && multigraphFeedlist[z]["right"] === true)
       multigraphFeedlist[z]["left"] = false;
     $(".left[listid="+z+"]").attr("checked",false);
     visFeedData();
@@ -492,7 +499,7 @@ function loadEvents(){
       else multigraphFeedlist[0].end = view.end;
     }
     var new_name=$("#multigraph-name").val();
-    if(new_name=="") new_name="No name";
+    if(new_name==="") new_name="No name";
 
     var result = multigraph.set(multigraph_id,multigraphFeedlist,new_name);
     if (result.success) {
