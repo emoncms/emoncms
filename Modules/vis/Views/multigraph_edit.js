@@ -149,7 +149,7 @@ function drawMultigraphFeedlistEditor(){
     }
 
     if (typeof multigraphFeedlist[z]["graphtype"] === "undefined") {
-      graphtype=multigraphFeedlist[z]["datatype"]===1 ? "lines" : "bars";
+      graphtype=multigraphFeedlist[z]["datatype"]==="1" ? "lines" : "bars";
     } else {
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
@@ -167,18 +167,20 @@ function drawMultigraphFeedlistEditor(){
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Line Colour</td>";
     out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input id='lineColour' listid='"+z+"' style='width:110px;margin-bottom:0px;' type='color' value='#"+setColour+"'></td>";
     out += "</tr>";
-    checked = "checked"; if (!multigraphFeedlist[z]["skipmissing"]) { checked = ""; }
-    out += "<tr>";
-    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
-    out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    checked = ""; if (multigraphFeedlist[z]["stacked"]) { checked = "checked"; }
-    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
-    out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
-    out += "</tr>";
-    out += "<tr>";
+
 
     if (detail==="advanced") {
+      checked = "checked"; if (!multigraphFeedlist[z]["skipmissing"]) { checked = ""; }
+      out += "<tr>";
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
+      out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+      checked = ""; if (multigraphFeedlist[z]["stacked"]) { checked = "checked"; }
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
+      out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
+      out += "</tr>";
+      out += "<tr>";
+
       out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Graph Type</td>";
       out += "<td colspan='4' style='vertical-align:middle;'>";
       out += "<select id='graphtype-selector' listid='"+z+"' class='options' style='width:140px;margin-bottom:0px;'>";
@@ -214,39 +216,42 @@ function drawMultigraphFeedlistEditor(){
   out += "<td></td>";
   out += "</tr>";
 
-  out += "<tr><td style='width:130px;' >Y axes limits</td><td colspan='2' style='text-align: center;'>Min</td><td colspan='2' style='text-align: center;'>Max</td></tr>";
-  out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Left</td>";
-  out += "<td colspan='2'><input style='width:50px' id='ymin' value='" + ymin + "'/></td>";
-  out += "<td colspan='2'><input style='width:50px' id='ymax' value='" + ymax + "'/></td>";
-  out += "</tr>";
-  out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Right</td>";
-  out += "<td colspan='2'><input style='width:50px' id='y2min' value='" + y2min + "'/></td>";
-  out += "<td colspan='2'><input style='width:50px' id='y2max' value='" + y2max + "'/></td>";
-  out += "</tr>";
+  if (detail==="advanced") {
+    out += "<tr><td style='width:130px;' >Y axes limits</td><td colspan='2' style='text-align: center;'>Min</td><td colspan='2' style='text-align: center;'>Max</td></tr>";
+    out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Left</td>";
+    out += "<td colspan='2'><input style='width:50px' id='ymin' value='" + ymin + "'/></td>";
+    out += "<td colspan='2'><input style='width:50px' id='ymax' value='" + ymax + "'/></td>";
+    out += "</tr>";
+    out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Right</td>";
+    out += "<td colspan='2'><input style='width:50px' id='y2min' value='" + y2min + "'/></td>";
+    out += "<td colspan='2'><input style='width:50px' id='y2max' value='" + y2max + "'/></td>";
+    out += "</tr>";
 
-  out += "<tr><td>Floating time</td>";
-  checked = ""; if (movingtime) { checked = "checked"; }
-  out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
-  out += "<td></td>";
-  out += "<td></td>";
-  out += "<td></td></tr>";
-  out += "<tr><td>Auto refresh (secs)</td>";
-  out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
-  out += "<td></td>";
-  out += "<td></td>";
-  out += "<td></td></tr>";
-  out += "<tr><td>Show tag name</td>";
-  checked = ""; if (showtag) { checked = "checked"; }
-  out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
-  out += "<td></td>";
-  out += "<td></td>";
-  out += "<td></td></tr>";
-  out += "<tr><td>Show Legend</td>";
-  checked = ""; if (showlegend) { checked = "checked"; }
-  out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
-  out += "<td></td>";
-  out += "<td></td>";
-  out += "<td></td></tr>";
+    out += "<tr><td>Floating time</td>";
+    checked = ""; if (movingtime) { checked = "checked"; }
+    out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
+    out += "<td></td>";
+    out += "<td></td>";
+    out += "<td></td></tr>";
+    out += "<tr><td>Auto refresh (secs)</td>";
+    out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
+    out += "<td></td>";
+    out += "<td></td>";
+    out += "<td></td></tr>";
+    out += "<tr><td>Show tag name</td>";
+    checked = ""; if (showtag) { checked = "checked"; }
+    out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
+    out += "<td></td>";
+    out += "<td></td>";
+    out += "<td></td></tr>";
+    out += "<tr><td>Show Legend</td>";
+    checked = ""; if (showlegend) { checked = "checked"; }
+    out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
+    out += "<td></td>";
+    out += "<td></td>";
+    out += "<td></td></tr>";
+  }
+
   out += "</table>";
   var name = "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>Name</span><input class='options' id='multigraph-name' value='"+multigraphsName[multigraphID]+"' type='text'></div>";
   out += name+"<button id='delete-multigraph-button' class='btn btn-danger'><i class='icon-trash'></i>Delete</button>";
@@ -296,6 +301,8 @@ function modified(){
 
 // Events
 function loadEvents(){
+  var barwidth=100;
+
   $(baseElement).unbind();
 
   $(baseElement).on("change","#multigraph-selector",function(event){
@@ -333,7 +340,7 @@ function loadEvents(){
   
   $(baseElement).on("change","#ymin",function(event){
     ymin = $(this)[0].value;
-    if (!$.isNumeric(ymin)) ymin = null;
+    if (!$.isNumeric(ymin)) { ymin = null; }
     multigraphFeedlist[0]["ymin"] = ymin;
     visFeedData();
     modified();
@@ -341,7 +348,7 @@ function loadEvents(){
   
   $(baseElement).on("change","#ymax",function(event){
     ymax = $(this)[0].value;
-    if (!$.isNumeric(ymax)) ymax = null;
+    if (!$.isNumeric(ymax)) { ymax = null; }
     multigraphFeedlist[0]["ymax"] = ymax;
     visFeedData();
     modified();
@@ -349,7 +356,7 @@ function loadEvents(){
   
   $(baseElement).on("change","#y2min",function(event){
     y2min = $(this)[0].value;
-    if (!$.isNumeric(y2min)) y2min = null;
+    if (!$.isNumeric(y2min)) { y2min = null; }
     multigraphFeedlist[0]["y2min"] = y2min;
     visFeedData();
     modified();
@@ -357,7 +364,7 @@ function loadEvents(){
   
   $(baseElement).on("change","#y2max",function(event){
     y2max = $(this)[0].value;
-    if (!$.isNumeric(y2max)) y2max = null;
+    if (!$.isNumeric(y2max)) { y2max = null; }
     multigraphFeedlist[0]["y2max"] = y2max;
     visFeedData();
     modified();
