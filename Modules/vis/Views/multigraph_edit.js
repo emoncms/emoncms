@@ -22,6 +22,8 @@ var detail = "basic";
 var baseElement = "#box-options";
 
 function multigraphDropdown(){
+  var z;
+
   multigraphsName = [];
   multigraphs = multigraph.getlist();
   var options = "";
@@ -34,6 +36,12 @@ function multigraphDropdown(){
     out = "<select id='multigraph-selector' class='form-control' style='width:160px'><option>Select multigraph:</option>"+options+"</select>";
   }
   return out+"<button id='multigraph-new-button' class='btn btn-info' style='float:right'>New multigraph</button><div id='feedtable' ></div>";
+}
+
+function getFeedPublic(id){
+  for (z in feedlist){
+    if (feedlist[z]['id'] == id) return feedlist[z]['public'];
+  }
 }
 
 // Multigraph editor interface 
@@ -49,7 +57,7 @@ function drawMultigraphFeedlistEditor(){
     return;
   }
 
-  if (multigraphFeedlist === null) multigraphFeedlist = [];
+  if (multigraphFeedlist === null) { multigraphFeedlist = []; }
   
   if (typeof multigraphFeedlist[0] !== "undefined") {
       if (typeof multigraphFeedlist[0]["detail"] !== "undefined") {
@@ -112,14 +120,14 @@ function drawMultigraphFeedlistEditor(){
   var out = "";
   out += "<table style='table-layout:fixed; width:300px; margin-bottom:0px;'><tbody><tr valign='middle'>";
   out += "<td style='text-align:right;width:144px;padding-bottom:7px;padding-right:5px'>Options :</td>";
-  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!='advanced' ? "checked='checked'" : "") +" style='margin-bottom:5px'> Basic</label></td>";
-  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail=='advanced' ? "checked='checked'" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
+  out += "<td style='width:58px'><label><input name='detail' id='basic' type='radio' "+ (detail!="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Basic</label></td>";
+  out += "<td style='width:88px'><label><input name='detail' id='advanced' type='radio' "+ (detail=="advanced" ? "checked='checked'" : "") +" style='margin-bottom:5px'> Advanced</label></td>";
   out += "</tr></tbody></table>";
 
-  out += '<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">';
-  out += '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button><h3 id="myModalLabel">Delete Multigraph</h3></div>';
-  out += '<div class="modal-body"><p>Deleting a multigraph is permanent.<br>Make sure no Dashboard continue to use the deleted multigraph<br><br>Are you sure you want to delete?</p></div>';
-  out += '<div class="modal-footer"><button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button><button id="confirmdelete" class="btn btn-primary">Delete permanently</button></div></div>';
+  out += "<div id='myModal' class='modal hide' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>";
+  out += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button><h3 id='myModalLabel'>Delete Multigraph</h3></div>";
+  out += "<div class='modal-body'><p>Deleting a multigraph is permanent.<br>Make sure no Dashboard continue to use the deleted multigraph<br><br>Are you sure you want to delete?</p></div>";
+  out += "<div class='modal-footer'><button class='btn' data-dismiss='modal' aria-hidden='true'>Cancel</button><button id='confirmdelete' class='btn btn-primary'>Delete permanently</button></div></div>";
   
   out += "<table class='table' style='table-layout:fixed; width:300px;border-color:transparent;' >";
   out += "<tr><th style='width:130px;' >Feed</th><th style='text-align: center;'>Left</th><th style='text-align: center;'>Right</th><th style='text-align: center;'>Fill</th><th style='padding:0px; width:30px;'></th></tr>";
@@ -161,7 +169,7 @@ function drawMultigraphFeedlistEditor(){
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    checked = ""; if (multigraphFeedlist[z]['stacked']) { checked = "checked"; }
+    checked = ""; if (multigraphFeedlist[z]["stacked"]) { checked = "checked"; }
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
@@ -175,19 +183,19 @@ function drawMultigraphFeedlistEditor(){
       out += "<optgroup label= 'Select Display Type:'>";
       out += "<option value='lines'"+ (graphtype=="lines" && "selected") +">Lines</option>";
       out += "<option value='lineswithsteps'"+ (graphtype=="lineswithsteps" && "selected") +">Lines with Steps</option>";
-      out += "<option value='bars'"+ (graphtype=='bars' && "selected") +">Bars</option>";
+      out += "<option value='bars'"+ (graphtype=="bars" && "selected") +">Bars</option>";
       out += "</optgroup> </select>";
       out += "</td>";
       out += "</tr>";
 
-      if (graphtype=='bars') {
+      if (graphtype=="bars") {
         out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>Bar Width (%)</td>";
         out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input listid='"+z+"' style='width:110px' id='barwidth' value='" + barwidth + "'/></td>";
         out += "</tr>";
       }
     }
 
-    if (publicfeed == 1) publicfeed = (getFeedPublic(multigraphFeedlist[z]['id']));
+    if (publicfeed == 1) { publicfeed = (getFeedPublic(multigraphFeedlist[z]['id'])); }
   }
   var visurl = path+"vis/"+"multigraph?mid="+multigraph_id;
   if (publicfeed == 1) $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>'); else $("#embedcode").val('Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.\n\nTo embed privately:\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
@@ -247,7 +255,7 @@ function getFeedName(id){
 
 function getFeedTag(id){
   for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]['tag'];
+    if (feedlist[z]['id'] == id) return feedlist[z]["tag"];
   }
 }
 
@@ -257,17 +265,11 @@ function getFeedDatatype(id){
   }
 }
 
-function getFeedPublic(id){
-  for (z in feedlist){
-    if (feedlist[z]['id'] == id) return feedlist[z]['public'];
-  }
-}
-
 function updateMultigraphFeedlistNames(){
   for (m in multigraphFeedlist) {
     if (typeof multigraphFeedlist[m] !== "undefined"){
         var feedid = multigraphFeedlist[m]['id'];
-        multigraphFeedlist[m]['tag'] = getFeedTag(feedid);
+        multigraphFeedlist[m]["tag"] = getFeedTag(feedid);
         multigraphFeedlist[m]["name"] = getFeedName(feedid);
     }
   }
@@ -307,7 +309,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#add",function(event){
     var feedid = $("#feedselect").val();
-    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
+    multigraphFeedlist.push({'id':feedid,"tag":getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
@@ -425,7 +427,7 @@ function loadEvents(){
 
    $(baseElement).on("click","#stacked",function(event){
     var z = $(this).attr('listid');
-    multigraphFeedlist[z]['stacked'] = $(this)[0].checked;
+    multigraphFeedlist[z]["stacked"] = $(this)[0].checked;
     visFeedData();
     modified();
   });
