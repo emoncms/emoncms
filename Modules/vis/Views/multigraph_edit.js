@@ -40,6 +40,7 @@ function multigraphDropdown(){
 function drawMultigraphFeedlistEditor(){
   var barwidth=1;
   var graphtype;
+  var z;
 
   if (typeof multigraphFeedlist === "undefined"){
     $("#embedcode").val("");
@@ -126,7 +127,9 @@ function drawMultigraphFeedlistEditor(){
   for (z in multigraphFeedlist) {
     out += "<tr style='border-top: 2px solid black;'>";
     out += "<td style='vertical-align:middle;word-wrap:break-word;'>"+multigraphFeedlist[z]['tag']+": "+multigraphFeedlist[z]['name']+"</td>";
-    if (!multigraphFeedlist[z]["left"] && !multigraphFeedlist[z]["right"])  multigraphFeedlist[z]["left"] = true; // Default is left
+    if (!multigraphFeedlist[z]["left"] && !multigraphFeedlist[z]["right"]) {
+      multigraphFeedlist[z]["left"] = true; // Default is left
+    }
     if (typeof multigraphFeedlist[z]["barwidth"] !== "undefined" && $.isNumeric(multigraphFeedlist[z]["barwidth"])) {
       barwidth=multigraphFeedlist[z]["barwidth"]*100;
       barwidth>100 ? barwidth=100 : barwidth <1 ? barwidth=1: null ;
@@ -140,11 +143,11 @@ function drawMultigraphFeedlistEditor(){
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
 
-    var checked = ""; if (multigraphFeedlist[z]["left"]) checked = "checked";
+    var checked = ""; if (multigraphFeedlist[z]["left"]) { checked = "checked"; }
     out += "<td style='text-align: center;'><input listid='"+z+"' class='left' name='xpos"+z+"' type='radio' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]["right"]) checked = "checked";
+    var checked = ""; if (multigraphFeedlist[z]["right"]) { checked = "checked"; }
     out += "<td style='text-align: center;'><input listid='"+z+"' class='right' name='xpos"+z+"' type='radio' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]['fill']) checked = "checked";
+    var checked = ""; if (multigraphFeedlist[z]['fill']) { checked = "checked"; }
     out += "<td style='text-align: center;'><input listid='"+z+"' class='fill' type='checkbox' "+checked+" /></td>";
     out += "<td><a class='close'><i listid='"+z+"' id='multigraph-feed-remove-button' class='icon-remove' style='vertical-align:middle;'></i></a></td>";
     out += "</tr>";
@@ -153,11 +156,11 @@ function drawMultigraphFeedlistEditor(){
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Line Colour</td>";
     out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input id='lineColour' listid='"+z+"' style='width:110px;margin-bottom:0px;' type='color' value='#"+setColour+"'></td>";
     out += "</tr>";
-    var checked = "checked"; if (!multigraphFeedlist[z]['skipmissing']) checked = "";
+    var checked = "checked"; if (!multigraphFeedlist[z]['skipmissing']) { checked = ""; }
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]['stacked']) checked = "checked";
+    var checked = ""; if (multigraphFeedlist[z]['stacked']) { checked = "checked"; }
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
@@ -206,7 +209,7 @@ function drawMultigraphFeedlistEditor(){
   out += "</tr>";
 
   out += "<tr><td>Floating time</td>";
-  var checked = ""; if (movingtime) checked = "checked";
+  var checked = ""; if (movingtime) { checked = "checked"; }
   out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
@@ -217,13 +220,13 @@ function drawMultigraphFeedlistEditor(){
   out += "<td></td>";
   out += "<td></td></tr>";
   out += "<tr><td>Show tag name</td>";
-  var checked = ""; if (showtag) checked = "checked";
+  var checked = ""; if (showtag) { checked = "checked"; }
   out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
   out += "<tr><td>Show Legend</td>";
-  var checked = ""; if (showlegend) checked = "checked";
+  var checked = ""; if (showlegend) { checked = "checked"; }
   out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
