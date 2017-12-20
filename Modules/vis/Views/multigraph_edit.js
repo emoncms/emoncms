@@ -415,8 +415,11 @@ function loadEvents(){
   $(baseElement).on("change","#barwidth",function(event){
     var z = $(this).attr("listid");
     barwidth = $(this).val();
-    if (!$.isNumeric(barwidth) || barwidth > 100 ) barwidth = 100;
-    else if (barwidth <1 ) barwidth=1;
+    if (!$.isNumeric(barwidth) || barwidth > 100 ) {
+      barwidth = 100;
+    } else if (barwidth <1 ) {
+      barwidth=1;
+    }
     multigraphFeedlist[z]["barwidth"] = barwidth/100;
     $(this).val(barwidth);
     visFeedData();
