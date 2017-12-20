@@ -57,8 +57,8 @@
         {
             if (data['feedlist'] != undefined) multigraphFeedlist = data['feedlist'];
             $("#multigraph_name").replaceWith('<?php echo _("Multigraph:"); ?>' + ' ' + data['name']);
-            multigraph_init("#multigraph");
-            vis_feed_data();
+            multigraphInit("#multigraph");
+            visFeedData();
         }
     });
 
