@@ -41,6 +41,7 @@ function drawMultigraphFeedlistEditor(){
   var barwidth=1;
   var graphtype;
   var z;
+  var checked="";
 
   if (typeof multigraphFeedlist === "undefined"){
     $("#embedcode").val("");
@@ -143,24 +144,24 @@ function drawMultigraphFeedlistEditor(){
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
 
-    var checked = ""; if (multigraphFeedlist[z]["left"]) { checked = "checked"; }
+    checked = ""; if (multigraphFeedlist[z]["left"]) { checked = "checked"; }
     out += "<td style='text-align: center;'><input listid='"+z+"' class='left' name='xpos"+z+"' type='radio' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]["right"]) { checked = "checked"; }
+    checked = ""; if (multigraphFeedlist[z]["right"]) { checked = "checked"; }
     out += "<td style='text-align: center;'><input listid='"+z+"' class='right' name='xpos"+z+"' type='radio' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]['fill']) { checked = "checked"; }
+    checked = ""; if (multigraphFeedlist[z]["fill"]) { checked = "checked"; }
     out += "<td style='text-align: center;'><input listid='"+z+"' class='fill' type='checkbox' "+checked+" /></td>";
     out += "<td><a class='close'><i listid='"+z+"' id='multigraph-feed-remove-button' class='icon-remove' style='vertical-align:middle;'></i></a></td>";
     out += "</tr>";
-    var setColour = ""; if (multigraphFeedlist[z]['lineColour']) setColour = multigraphFeedlist[z]['lineColour'];
+    var setColour = ""; if (multigraphFeedlist[z]["lineColour"]) { setColour = multigraphFeedlist[z]["lineColour"]; }
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Line Colour</td>";
     out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input id='lineColour' listid='"+z+"' style='width:110px;margin-bottom:0px;' type='color' value='#"+setColour+"'></td>";
     out += "</tr>";
-    var checked = "checked"; if (!multigraphFeedlist[z]['skipmissing']) { checked = ""; }
+    checked = "checked"; if (!multigraphFeedlist[z]["skipmissing"]) { checked = ""; }
     out += "<tr>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Skip missing data</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
-    var checked = ""; if (multigraphFeedlist[z]['stacked']) { checked = "checked"; }
+    checked = ""; if (multigraphFeedlist[z]['stacked']) { checked = "checked"; }
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>Stack</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
     out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
@@ -172,8 +173,8 @@ function drawMultigraphFeedlistEditor(){
       out += "<td colspan='4' style='vertical-align:middle;'>";
       out += "<select id='graphtype-selector' listid='"+z+"' class='options' style='width:140px;margin-bottom:0px;'>";
       out += "<optgroup label= 'Select Display Type:'>";
-      out += "<option value='lines'"+ (graphtype=='lines' && "selected") +">Lines</option>";
-      out += "<option value='lineswithsteps'"+ (graphtype=='lineswithsteps' && "selected") +">Lines with Steps</option>";
+      out += "<option value='lines'"+ (graphtype=="lines" && "selected") +">Lines</option>";
+      out += "<option value='lineswithsteps'"+ (graphtype=="lineswithsteps" && "selected") +">Lines with Steps</option>";
       out += "<option value='bars'"+ (graphtype=='bars' && "selected") +">Bars</option>";
       out += "</optgroup> </select>";
       out += "</td>";
@@ -209,7 +210,7 @@ function drawMultigraphFeedlistEditor(){
   out += "</tr>";
 
   out += "<tr><td>Floating time</td>";
-  var checked = ""; if (movingtime) { checked = "checked"; }
+  checked = ""; if (movingtime) { checked = "checked"; }
   out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
@@ -220,13 +221,13 @@ function drawMultigraphFeedlistEditor(){
   out += "<td></td>";
   out += "<td></td></tr>";
   out += "<tr><td>Show tag name</td>";
-  var checked = ""; if (showtag) { checked = "checked"; }
+  checked = ""; if (showtag) { checked = "checked"; }
   out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
   out += "<td></td></tr>";
   out += "<tr><td>Show Legend</td>";
-  var checked = ""; if (showlegend) { checked = "checked"; }
+  checked = ""; if (showlegend) { checked = "checked"; }
   out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
   out += "<td></td>";
   out += "<td></td>";
@@ -306,7 +307,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#add",function(event){
     var feedid = $("#feedselect").val();
-    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,'fill':false,"end":0,'skipmissing':true});
+    multigraphFeedlist.push({'id':feedid,'tag':getFeedTag(feedid),"name":getFeedName(feedid),"datatype":getFeedDatatype(feedid),"left":false,"right":false,"fill":false,"end":0,"skipmissing":true});
     drawMultigraphFeedlistEditor();
     visFeedData();
     modified();
@@ -382,7 +383,7 @@ function loadEvents(){
 
   $(baseElement).on("click","#skipmissing",function(event){
     var z = $(this).attr('listid');
-    multigraphFeedlist[z]['skipmissing'] = $(this)[0].checked;
+    multigraphFeedlist[z]["skipmissing"] = $(this)[0].checked;
     visFeedData();
     modified();
   });
@@ -452,7 +453,7 @@ function loadEvents(){
 
   $(baseElement).on("click",".fill",function(){
     var z = $(this).attr('listid');
-    multigraphFeedlist[z]['fill'] = $(this)[0].checked;
+    multigraphFeedlist[z]["fill"] = $(this)[0].checked;
     visFeedData();
     modified();
   });
