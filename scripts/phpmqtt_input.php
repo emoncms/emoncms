@@ -58,8 +58,12 @@
         die;
     }
     
-    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+    $mysqli = new mysqli($server,$username,$password,$database,$port);
     if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
+
+    // Enable for testing
+    // $mysqli->query("SET interactive_timeout=60;");
+    // $mysqli->query("SET wait_timeout=60;");
 
     if ($redis_enabled) {
         $redis = new Redis();
@@ -98,7 +102,7 @@
     
     $connected = false;
     $last_retry = 0;
-    $last_heartbeat = 0;
+    $last_heartbeat = time();
     $count = 0;
     
     $mqtt_client->onConnect('connect');
@@ -111,7 +115,7 @@
         try { 
             $mqtt_client->loop(); 
         } catch (Exception $e) {
-            $log->error($e);
+            if ($connected) $log->error($e);
         }
         
         if (!$connected && (time()-$last_retry)>5.0) {
@@ -134,6 +138,12 @@
             $last_heartbeat = time();
             $log->info("$count Messages processed in last 5 minutes");
             $count = 0;
+            
+            // Keep mysql connection open with periodic ping
+            if (!$mysqli->ping()) {
+                $log->warn("mysql ping false");
+                die;
+            }
         }
         
         usleep(1000);
@@ -144,7 +154,7 @@
         global $log, $connected;
         $connected = true;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
-        $log->info("Connecting to MQTT server: {$message}: code: {$r}");
+        $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
@@ -252,9 +262,10 @@
                 else 
                 {
                     if (!isset($dbinputs[$nodeid][$name])) {
-                        usleep(100);
                         $inputid = $input->create_input($userid, $nodeid, $name);
-                        usleep(100);
+                        if (!$inputid) {
+                            $log->warn("error creating input"); die;
+                        }
                         $dbinputs[$nodeid][$name] = true;
                         $dbinputs[$nodeid][$name] = array('id'=>$inputid);
                         $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
