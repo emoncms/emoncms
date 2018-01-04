@@ -34,6 +34,7 @@ class Input
         // if (strlen($nodeid)>16) return false; // restriction placed on emoncms.org
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
+        $id = false;
         
         if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')")) {
             $stmt->bind_param("iss",$userid,$name,$nodeid);
@@ -46,6 +47,8 @@ class Input
                 $this->redis->sAdd("user:inputs:$userid", $id);
                 $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
             }
+        } else {
+           $this->log->warn("create_input mysql error");
         }
         return $id;
     }

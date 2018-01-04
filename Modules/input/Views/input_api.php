@@ -38,7 +38,7 @@ td:nth-of-type(2) { width:4%;}
 <p><?php echo _('The "fulljson" format is recommended for new integrations, it uses the PHP JSON decoder and answer is also in json.<br>The "json like" format is based on the CSV input parsing implementation and maintained for backwards compatibility.'); ?><br><?php echo _('A node name can be a name e.g: emontx or a number e.g: 10.'); ?><br><?php echo _('The input/post API is compatible with both GET and POST request methods (POST examples given use curl).'); ?></p>
 
 <table class="table">
-    <tr><th>Description</th><th>Method</th><th>Example</th></tr>
+    <tr><th><?php echo _('Description'); ?></th><th><?php echo _('Method'); ?></th><th><?php echo _('Example'); ?></th></tr>
     
     <tr><td><?php echo _('JSON format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300}</a></td></tr>
     
@@ -62,7 +62,7 @@ td:nth-of-type(2) { width:4%;}
 
 <table class="table">
 
-<tr><th>Description</th><th>Method</th><th>Example</th></tr>
+<tr><th><?php echo _('Description'); ?></th><th><?php echo _('Method'); ?></th><th><?php echo _('Example'); ?></th></tr>
     
 <tr><td><?php echo _('Example request:'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/bulk?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]"><?php echo $path; ?>input/bulk?data=[[0,16,1137],[2,17,1437,3164],[4,19,1412,3077]]</a></td></tr>
 </table>
