@@ -327,7 +327,7 @@ function draw_devices()
     }
 
     for (var node in devices) {
-        if (device_templates[node]!=undefined && device_templates[node].control) {
+        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control) {
             $(".node-info[node='"+node+"'] .device-schedule").show();
         }
     }
@@ -411,7 +411,7 @@ $("#table").on("click",".device-key",function(e) {
 $("#table").on("click",".device-schedule",function(e) {
     e.stopPropagation();
     var node = $(this).parent().attr("node");
-    window.location = path+"input/schedule?node="+node;
+    window.location = path+"demandshaper?node="+node;
     
 });
 
