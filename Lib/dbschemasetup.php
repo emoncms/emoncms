@@ -30,8 +30,9 @@ function db_schema_setup($mysqli, $schema, $apply)
             //-----------------------------------------------------
             while ($field = key($schema[$table]))
             { 
+                $null = false;
                 $type = $schema[$table][$field]['type'];
-                if (isset($schema[$table][$field]['Null'])) $null = $schema[$table][$field]['Null']; else $null = "YES";
+                if (isset($schema[$table][$field]['Null']) && $schema[$table][$field]['Null']==true) $null = true;
                 if (isset($schema[$table][$field]['Key'])) $key = $schema[$table][$field]['Key']; else $key = null;
                 if (isset($schema[$table][$field]['default'])) $default = $schema[$table][$field]['default']; else unset($default);
                 if (isset($schema[$table][$field]['Extra'])) $extra = $schema[$table][$field]['Extra']; else $extra = null;
@@ -41,7 +42,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                 if ($result->num_rows==0)
                 {
                     $query = "ALTER TABLE `$table` ADD `$field` $type";
-                    if ($null) $query .= " NOT NULL";
+                    if (!$null) $query .= " NOT NULL";
                     if (isset($default)) $query .= " DEFAULT '$default'";
                     $operations[] = $query;
                     if ($apply) $mysqli->query($query);
