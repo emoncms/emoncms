@@ -350,7 +350,10 @@ class PHPFina
     public function get_data_DMY($id,$start,$end,$mode,$timezone) 
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
-        
+
+        $increment="+1 day";
+        if ($mode=="weekly") $increment="+1 week";
+        if ($mode=="monthly") $increment="+1 month";
         $start = intval($start/1000);
         $end = intval($end/1000);
                
@@ -371,7 +374,7 @@ class PHPFina
         if ($mode=="monthly") $date->modify("first day of this month");
         
         $n = 0;
-        while($n<10000) // max itterations
+        while($n<10000) // max iterations
         {
             $time = $date->getTimestamp();
             if ($time>$end) break;
@@ -392,13 +395,11 @@ class PHPFina
                     $value = null;
                 }
             }
-            if ($time>=$start && $time<$end) {
+            if ($time>=$start) {
                 $data[] = array($time*1000,$value);
             }
-            
-            if ($mode=="daily") $date->modify("+1 day");
-            if ($mode=="weekly") $date->modify("+1 week");
-            if ($mode=="monthly") $date->modify("+1 month");
+
+            $date->modify($increment);
             $n++;
         }
         
