@@ -351,9 +351,6 @@ class PHPFina
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
-        $increment="+1 day";
-        if ($mode=="weekly") $increment="+1 week";
-        if ($mode=="monthly") $increment="+1 month";
         $start = intval($start/1000);
         $end = intval($end/1000);
                
@@ -370,8 +367,9 @@ class PHPFina
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
         $date->modify("midnight");
-        if ($mode=="weekly") $date->modify("this monday");
-        if ($mode=="monthly") $date->modify("first day of this month");
+        $increment="+1 day";
+        if ($mode=="weekly") { $date->modify("this monday"); $increment="+1 week"; }
+        if ($mode=="monthly") { $date->modify("first day of this month"); $increment="+1 month"; }
         
         $n = 0;
         while($n<10000) // max iterations
