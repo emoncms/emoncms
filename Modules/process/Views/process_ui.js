@@ -40,7 +40,7 @@ var processlist_ui =
         }
 
         if (i < this.contextprocesslist.length-1) {
-          out += '<a class="move-process" title="Move down" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
+          out += "<a class='move-process' title='Move down' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
         }
         out += '</td>';
 
