@@ -259,7 +259,7 @@ if ($allow_emonpi_admin) {
         <td colspan=2>
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
-              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?>&nbsp;<div style="float: right;"><button class="btn btn-info" style="font-size: 12px;line-height: 12px;" id="copyemoncmsinfo" type="button"><?php echo _('Copy in clipboard'); ?></button></div></td></tr>
+              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?>&nbsp;<div style="float: right;"><button class="btn btn-info" style="font-size: 12px;line-height: 12px;" id="copyemoncmsinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
