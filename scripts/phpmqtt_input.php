@@ -194,8 +194,22 @@
                 // JSON is valid - is it an array
                 $jsoninput = true;
                 $log->info("MQTT Valid JSON found ".$value);
-                #TODO If JSON check to see if there is a time value else set to time now.
-                $time = time();
+
+                #If JSON check to see if there is a time value else set to time now.
+                if (array_key_exists('time',$jsondata)){
+                    $time = $jsondata['time'];
+                    if (is_string($time)){
+                        if (($timestamp = strtotime($time)) === false) {
+                            $log->warn("Time string not valid ".$time);
+                        } else {
+                            $time = $timestamp;
+                        }
+                    } else {
+                        //Do nothings as it has been assigned to $time as a value
+                    }
+                } else {
+                    $time = time();
+                }
             } else {
                 $jsoninput = false;
                 $time = time();
