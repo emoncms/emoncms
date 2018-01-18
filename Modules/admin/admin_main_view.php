@@ -169,7 +169,6 @@ pre {
 table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
-
 <h2><?php echo _('Administration'); ?></h2>
 <table class="table table-hover">
     <tr>
@@ -260,7 +259,7 @@ if ($allow_emonpi_admin) {
         <td colspan=2>
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
-              <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
+              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?>&nbsp;<div style="float: right;"><button class="btn btn-info" style="font-size: 12px;line-height: 12px;" id="copyemoncmsinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
@@ -348,8 +347,37 @@ if ($system['mem_info']) {
         </td>
     </tr>
 </table>
-
 <script>
+function copyTextToClipboard(text) {
+  var textArea = document.createElement("textarea");
+  textArea.style.position = 'fixed';
+  textArea.style.top = 0;
+  textArea.style.left = 0;
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+  textArea.style.padding = 0;
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+  textArea.style.background = 'transparent';
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } 
+  catch(err) {
+    window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
+  }
+  document.body.removeChild(textArea);
+}
+var btnCopy = document.getElementById('copyemoncmsinfo');
+btnCopy.addEventListener('click', function(event) {
+  copyTextToClipboard('EMONCMS\nVersion : '+'<?php echo $emoncms_version ?>'+'\nModules : '+'<?php echo str_replace('&nbsp;',' ',$system['emoncms_modules']) ?>');
+});
+
 var path = "<?php echo $path; ?>";
 var logrunning = false;
 

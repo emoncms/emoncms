@@ -8,11 +8,17 @@ You may need to start by updating the system repositories
 
     sudo apt-get update
 
-on 14.04:
+**For Ubuntu 14.04**:
 
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
-    
+<<<<<<< HEAD
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
+
 on 16.04:
+=======
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
+
+**For Ubuntu 16.04**:
+>>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
 
 `sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y`
 
@@ -21,26 +27,22 @@ on 16.04:
 *Not essential, required for mail sending e.g. password recovery*
 
     sudo pear channel-discover pear.swiftmailer.org
-    sudo pecl install swift/swift dio-0.0.9 redis
-    
+    sudo pecl install swift/swift redis
+
 **If running PHP5:** Add pecl modules to php5 config
-    
-    sudo sh -c 'echo "extension=dio.so" > /etc/php5/apache2/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=dio.so" > /etc/php5/cli/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php5/apache2/conf.d/20-redis.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php5/cli/conf.d/20-redis.ini'
- 
+
+    printf "extension=redis.so" | sudo tee /etc/php5/mods-available/redis.ini 1>&2
+    sudo php5enmod redis
+
  **If running PHP7:** Add pecl modules to php7 config
- 
-    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php/7.0/apache2/conf.d/20-redis.ini'
-    sudo sh -c 'echo "extension=redis.so" > /etc/php/7.0/cli/conf.d/20-redis.ini'
+
+   printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
+   sudo phpenmod redis
 
 ### Configure Apache
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
-    
+
 ```
  sudo a2enmod rewrite
  sudo sh -c "echo '<Directory /var/www/html/emoncms>' >> /etc/apache2/sites-available/emoncms.conf"
@@ -55,7 +57,7 @@ Emoncms uses a front controller to route requests, modrewrite needs to be config
  sudo a2ensite emoncms
  sudo service apache2 reload
 ```
-    
+
 ## Install Emoncms
 
 Git is a source code management and revision control system but at this stage we use it to just download and update the emoncms application.
@@ -77,12 +79,12 @@ Download emoncms using git:
 **You may want to install one of the other branches of emoncms here, perhaps to try out a new feature set not yet available in the master branch. See the branch list and descriptions on the [start page](https://github.com/emoncms/emoncms)**
 
     git clone -b stable https://github.com/emoncms/emoncms.git
-    
+
 Once installed you can pull in updates with:
 
     cd /var/www/html/emoncms
     git pull
-    
+
 ## Create a MYSQL database
 
     mysql -u root -p
@@ -91,7 +93,7 @@ Enter the mysql password that you set above.
 Then enter the sql to create a database:
 
     mysql> CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;
-    
+
 Then add a user for emoncms and give it permissions on the new database (think of a nice long password):
 
     mysql> CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'YOUR_SECURE_PASSWORD_HERE';
@@ -101,8 +103,13 @@ Then add a user for emoncms and give it permissions on the new database (think o
 Exit mysql by:
 
     mysql> exit
-    
+<<<<<<< HEAD
+
+### Create data repositories for emoncms feed engine's
+=======
+
 ### Create data repositories for emoncms feed engines
+>>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
@@ -132,17 +139,17 @@ Update your database settings to use your new secure password:
     $password = "YOUR_SECURE_PASSWORD_HERE";
     $server   = "localhost";
     $database = "emoncms";
-    
+
 You will also want to modify SMTP settings and the password reset flag further down in the settings file.
 
 Save (Ctrl-X), type Y and exit
 
 ### Install add-on emoncms modules (optional)
-    
+
     cd /var/www/html/emoncms/Modules
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
- 
+
 The 'modules' need to save their configurations in the emoncms database, so in your browser - update your emoncms database:
 `Setup > Administration > Update database` (you may need to log out, and log back into emoncms to see the Administration menu).
 
@@ -201,17 +208,17 @@ and search for "date.timezone"
 edit date.timezone to your appropriate timezone:
 
     date.timezone = "Europe/Amsterdam"
-    
+
 PHP supported timezones are listed here: http://php.net/manual/en/timezones.php
 
 Now save and close and restart your apache.
 
     sudo service apache2 restart
-    
+
 ## Install Logger
 
    See: https://github.com/emoncms/emoncms/tree/master/scripts/logger
-   
+
 
 ***
 
@@ -224,4 +231,3 @@ Now save and close and restart your apache.
 ### /user/register.json cannot be found
 
 If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates an problem with apache mod_rewrite.
-

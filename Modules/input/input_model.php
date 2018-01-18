@@ -47,6 +47,8 @@ class Input
                 $this->redis->sAdd("user:inputs:$userid", $id);
                 $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
             }
+        } else {
+           $this->log->warn("create_input mysql error");
         }
         return $id;
     }
@@ -274,12 +276,24 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-            $dbinputs[$row['nodeid']][$row['name']] = array('processList'=>$row['processList']);
+            
+            if (!is_numeric($row['time']) || is_nan($row['time'])) {
+                $row['time'] = null;
+            } else {
+                $row['time'] = (int) $row['time'];
+            }
+            if (!is_numeric($row['value']) || is_nan($row['value'])) {
+                $row['value'] = null;
+            } else {
+                $row['value'] = (float) $row['value'];
+            }
+            
+            $dbinputs[$row['nodeid']][$row['name']] = array('time'=>$row['time'], 'value'=>$row['value'], 'processList'=>$row['processList']);
         }
         return $dbinputs;
     }

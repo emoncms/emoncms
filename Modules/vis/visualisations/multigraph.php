@@ -48,17 +48,17 @@
     var path = "<?php echo $path; ?>";
     var embed = <?php echo $embed; ?>;
     var apikey = "<?php echo $apikey; ?>";
-    var multigraph_feedlist = {};
+    var multigraphFeedlist = {};
     
     if (mid==0) $("body").css('background-color','#eee');
 
     $.ajax({ url: path+"vis/multigraph/get.json", data: "&id="+mid, dataType: 'json', async: true,
         success: function(data)
         {
-            if (data['feedlist'] != undefined) multigraph_feedlist = data['feedlist'];
+            if (data['feedlist'] != undefined) multigraphFeedlist = data['feedlist'];
             $("#multigraph_name").replaceWith('<?php echo _("Multigraph:"); ?>' + ' ' + data['name']);
-            multigraph_init("#multigraph");
-            vis_feed_data();
+            multigraphInit("#multigraph");
+            visFeedData();
         }
     });
 
