@@ -69,21 +69,21 @@
 <div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedExportModalLabel"><b><span id="SelectedExport"></span></b> CSV export</h3>
+        <h3 id="feedExportModalLabel"><b><span id="SelectedExport"></span></b> <?php echo _('CSV export'); ?></h3>
     </div>
     <div class="modal-body">
-    <p>Select the time range and interval that you wish to export: </p>
+    <p><?php echo _('Select the time range and interval that you wish to export: '); ?></p>
         <table class="table">
         <tr>
             <td>
-                <p><b>Start date & time</b></p>
+                <p><b><?php echo _('Start date & time'); ?></b></p>
                 <div id="datetimepicker1" class="input-append date">
                     <input id="export-start" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
                     <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
                 </div>
             </td>
             <td>
-                <p><b>End date & time</b></p>
+                <p><b><?php echo _('End date & time ');?></b></b></p>
                 <div id="datetimepicker2" class="input-append date">
                     <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
                     <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
@@ -92,44 +92,44 @@
         </tr>
         <tr>
             <td>
-                <p><b>Interval</b></p>
+                <p><b><?php echo _('Interval');?></b></p>
                 <select id="export-interval" >
-                    <option value=1>Auto</option>
-                    <option value=5>5s</option>
-                    <option value=10>10s</option>
-                    <option value=30>30s</option>
-                    <option value=60>1 min</option>
-                    <option value=300>5 mins</option>
-                    <option value=600>10 mins</option>
-                    <option value=900>15 mins</option>
-                    <option value=1800>30 mins</option>
-                    <option value=3600>1 hour</option>
-                    <option value=21600>6 hour</option>
-                    <option value=43200>12 hour</option>
-                    <option value=86400>Daily</option>
-                    <option value=604800>Weekly</option>
-                    <option value=2678400>Monthly</option>
-                    <option value=31536000>Annual</option>
+                    <option value=1><?php echo _('Auto');?></option>
+                    <option value=5><?php echo _('5s');?></option>
+                    <option value=10><?php echo _('10s');?></option>
+                    <option value=30><?php echo _('30s');?></option>
+                    <option value=60><?php echo _('1 min');?></option>
+                    <option value=300><?php echo _('5 mins');?></option>
+                    <option value=600><?php echo _('10 mins');?></option>
+                    <option value=900><?php echo _('15 mins');?></option>
+                    <option value=1800><?php echo _('30 mins');?></option>
+                    <option value=3600><?php echo _('1 hour');?></option>
+                    <option value=21600><?php echo _('6 hour');?></option>
+                    <option value=43200><?php echo _('12 hour');?></option>
+                    <option value=86400><?php echo _('Daily');?></option>
+                    <option value=604800><?php echo _('Weekly');?></option>
+                    <option value=2678400><?php echo _('Monthly');?></option>
+                    <option value=31536000><?php echo _('Annual');?></option>
                 </select>
             </td>
             <td>
-                <p><b>Date time format</b></p>
+                <p><b><?php echo _('Date time format');?></b></p>
                 <div class="checkbox">
                   <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
                 </div>
-                <label>Offset secs (for daily)&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled=""></label>
+                <label><?php echo _('Offset secs (for daily)');?>&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled=""></label>
             </td>
         </tr>
         </table>
             <div class="alert alert-info">
-                <p>Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.</p>
-                <p>Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.</p>
+                <p><?php echo _('Selecting an interval shorter than the feed interval (or Auto) will use the feed interval instead. Averages are only returned for feed engines with built in averaging.');?></p>
+                <p><?php echo _('Date time in excel format is in user timezone. Offset can be set if exporting in Unix epoch time format.');?></p>
             </div>
     </div>
     <div class="modal-footer">
-        <div id="downloadsizeplaceholder" style="float: left">Estimated download size: <span id="downloadsize">0</span>MB</div>
+        <div id="downloadsizeplaceholder" style="float: left"><?php echo _('Estimated download size: ');?><span id="downloadsize">0</span>MB</div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
-        <button class="btn" id="export">Export</button>
+        <button class="btn" id="export"><?php echo _('Export'); ?></button>
     </div>
 </div>
 
@@ -139,11 +139,11 @@
         <h3 id="newFeedNameModalLabel"><?php echo _('New Virtual Feed'); ?></h3>
     </div>
     <div class="modal-body">
-        <label>Feed Name: </label>
+        <label><?php echo _('Feed Name: '); ?></label>
         <input type="text" value="New Virtual Feed" id="newfeed-name">
-        <label>Feed Tag: </label>
+        <label><?php echo _('Feed Tag: '); ?></label>
         <input type="text" value="Virtual" id="newfeed-tag">
-        <label>Feed DataType: </label>
+        <label><?php echo _('Feed DataType: '); ?></label>
         <select id="newfeed-datatype">
             <option value=1>Realtime</option>
             <option value=2>Daily</option>
@@ -188,7 +188,7 @@
     'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
     'public':{'title':"<?php echo _('Public'); ?>", 'type':"icon", 'trueicon':"icon-globe", 'falseicon':"icon-lock"},
     'datatype':{'title':"<?php echo _('Datatype'); ?>", 'type':"fixedselect", 'options':['','REALTIME','DAILY','HISTOGRAM']},
-    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"fixedselect", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER']},
+    'engine':{'title':"<?php echo _('Engine'); ?>", 'type':"fixedselect", 'options':['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA']},
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
@@ -280,7 +280,7 @@
   });
 
   $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("Total size of used space for feeds: " + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
   });
 
 
@@ -369,10 +369,10 @@
     var export_timezone_offset = parseInt($("#export-timezone-offset").val());
     var export_timeformat = ($("#export-timeformat").prop('checked') ? 1 : 0);
     if (export_timeformat) { export_timezone_offset = 0; }
-    if (!export_start) {alert("Please enter a valid start date."); return false; }
-    if (!export_end) {alert("Please enter a valid end date."); return false; }
-    if (export_start>=export_end) {alert("Start date must be further back in time than end date."); return false; }
-    if (export_interval=="") {alert("Please select interval to download."); return false; }
+    if (!export_start) {alert("<?php echo _('Please enter a valid start date.'); ?>"); return false; }
+    if (!export_end) {alert("<?php echo _('Please enter a valid end date.'); ?>"); return false; }
+    if (export_start>=export_end) {alert("<?php echo _('Start date must be further back in time than end date.'); ?>"); return false; }
+    if (export_interval=="") {alert("<?php echo _('Please select interval to download.'); ?>"); return false; }
     var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
 
     if ($(this).attr('export-type') == 'group') {
@@ -386,7 +386,7 @@
     }
     console.log(url);
     if (downloadsize>(downloadlimit*1048576)) {
-      var r = confirm("Estimated download file size is large.\nServer could take a long time or abort depending on stored data size.\Limit is "+downloadlimit+"MB.\n\nTry exporting anyway?");
+      var r = confirm("<?php echo _('Estimated download file size is large.'); ?>\n<?php echo _('Server could take a long time or abort depending on stored data size.'); ?>\n<?php echo _('Limit is'); ?> "+downloadlimit+"MB.\n\n<?php echo _('Try exporting anyway?'); ?>");
       if (!r) return false;
     }
     window.open(url);
@@ -433,7 +433,7 @@
     feedid = result.feedid;
 
     if (!result.success || feedid<1) {
-      alert('ERROR: Feed could not be created. '+result.message);
+      alert('<?php echo _('ERROR: Feed could not be created.'); ?> '+result.message);
       return false;
     } else {
       update(); 
@@ -458,6 +458,6 @@
   
   $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+    if (result.success) { processlist_ui.saved(table); } else { alert('<?php echo _('ERROR: Could not save processlist.'); ?> '+result.message); }
   }); 
 </script>

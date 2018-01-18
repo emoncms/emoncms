@@ -352,6 +352,10 @@ var table = {
       'edit': function (t,row,child_row,field) { return "<input type='checkbox'>" },
       'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").prop('checked') },
     },
+    
+    'multiselect': {
+      'draw': function (t,row,child_row,field) { return "<input type='checkbox'>" },
+    },
 
     'delete': {
       'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='delete' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-trash' style='cursor:pointer'></i></a>"; }

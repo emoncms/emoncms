@@ -51,14 +51,11 @@ function user_controller()
         if ($route->action == 'newapikeyread' && $session['write']) $result = $user->new_apikey_read($session['userid']);
         if ($route->action == 'newapikeywrite' && $session['write']) $result = $user->new_apikey_write($session['userid']);
 
-        if ($route->action == 'auth' && !$session['read']) $result = $user->get_apikeys_from_login(post('username'),post('password'));
+        if ($route->action == 'auth') $result = $user->get_apikeys_from_login(post('username'),post('password'));
 
         // Get and set - user by profile client
         if ($route->action == 'get' && $session['write']) $result = $user->get($session['userid']);
         if ($route->action == 'set' && $session['write']) $result = $user->set($session['userid'],json_decode(get('data')));
-
-        if ($route->action == 'getconvert' && $session['write']) $result = $user->get_convert_status($session['userid']);
-        if ($route->action == 'setconvert' && $session['write']) $result = $user->set_convert_status($session['userid']);
 
         if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
         if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);

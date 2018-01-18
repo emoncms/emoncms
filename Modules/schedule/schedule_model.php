@@ -30,7 +30,7 @@ class Schedule
 
     public function exist($id)
     {
-        $id = intval($id);
+        $id = (int) $id;
         static $schedule_exists_cache = array(); // Array to hold the cache
         if (isset($schedule_exists_cache[$id])) {
             $scheduleexist = $schedule_exists_cache[$id]; // Retrieve from static cache
@@ -74,6 +74,10 @@ class Schedule
         if (isset($schedule_exp_cache[$id])) {
             $get_expression = $schedule_exp_cache[$id]; // Retrieve from static cache
         } else {
+            if (!$this->exist($id)) {
+                $this->log->error("get_expression() Schedule not found. scheduleid=$id time=time");
+                return null;
+            }
             $this->log->info("get_expression() $id");
             $result = $this->mysqli->query("SELECT `expression`, `timezone` FROM schedule WHERE id = '$id'");
             $row = $result->fetch_array();
@@ -107,23 +111,35 @@ class Schedule
 
         $fields = json_decode(stripslashes($fields));
 
-        $array = array();
-        $array[] = "`timezone` = '".$this->timezone."'";
-
-        // Repeat this line changing the field name to add fields that can be updated:
-        if (isset($fields->name)) $array[] = "`name` = '".preg_replace('/[^\p{L}_\p{N}\s-:]/u','',$fields->name)."'";
-        if (isset($fields->public)) $array[] = "`public` = '".intval($fields->public)."'";
-        if (isset($fields->expression)) {
-            $array[] = "`expression` = '".preg_replace('/[^\/\|\,\w\s-:]/','',$fields->expression)."'"; 
-            if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
+        $success = false;
+        
+        if (isset($fields->name)) {
+            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in schedule name');
+            $stmt = $this->mysqli->prepare("UPDATE schedule SET name = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->name,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
         }
-
-        // Convert to a comma seperated string for the mysql query
-        $fieldstr = implode(",",$array);
-        $this->mysqli->query("UPDATE schedule SET ".$fieldstr." WHERE `id` = '$id'");
-
-
-        if ($this->mysqli->affected_rows>0){
+        
+        if (isset($fields->public)) {
+            $public = (int) $fields->public;
+            if ($public>0) $public = 1;
+            $stmt = $this->mysqli->prepare("UPDATE schedule SET public = ? WHERE id = ?");
+            $stmt->bind_param("ii",$public,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
+        }
+        
+        if (isset($fields->expression)) {
+            if (preg_replace('/[^\/\|\,\w\s-:]/','',$fields->expression)!=$fields->expression) return array('success'=>false, 'message'=>'invalid characters in schedule expression');
+            if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
+            $stmt = $this->mysqli->prepare("UPDATE schedule SET expression = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->expression,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
+        }
+        
+        if ($success){
             return array('success'=>true, 'message'=>'Field updated');
         } else {
             return array('success'=>false, 'message'=>'Field could not be updated');
@@ -142,6 +158,7 @@ class Schedule
     public function match($scheduleid, $time) {
         //$this->log->info("match() $scheduleid, $time");
         $get_expression = $this->get_expression($scheduleid);
+        if ($get_expression == null) return null;
         $expression = $get_expression["expression"];
         $exp_timezone = $get_expression["timezone"];
         return $this->match_engine($expression,$exp_timezone,$time,false);

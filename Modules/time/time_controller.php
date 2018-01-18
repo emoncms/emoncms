@@ -18,20 +18,22 @@ function time_controller()
 
     $result = false;
 
-    if (!isset($session['read'])) return array('content'=>false);
-
     if ($route->action == 'local' && $session['read'])
     {
-        $userid = $session['userid'];
+        $userid = (int) $session['userid'];
         $result = $mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
         $row = $result->fetch_object();
         
         $now = new DateTime();
-        $now->setTimezone(new DateTimeZone($row->timezone));
-        $result = 't'.$now->format("H,i,s");
+        try {
+            $now->setTimezone(new DateTimeZone($row->timezone));
+            $result = 't'.$now->format("H,i,s");
+        } catch (Exception $e) {
+            $result = 't'.date('H,i,s');
+        }
     }
 
-    if ($route->action == 'server' && $session['read'])
+    if ($route->action == 'server')
     {
         $result = 't'.date('H,i,s');
     }

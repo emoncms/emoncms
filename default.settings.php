@@ -62,8 +62,14 @@
         ),
         'phptimeseries'=>array(
             'datadir' => '/var/lib/phptimeseries/'
+        ),
+        'cassandra'=>array(
+            'keyspace' => 'emoncms'
         )
     );
+    
+    // For use with emoncms module that require installation in home directory
+    // $homedir = "/home/username";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
@@ -72,6 +78,8 @@
 //5 #### User Interface settings
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
+    // Theme colour options: "standard", "blue", "sun"
+    $themecolor = "blue";
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon.png";
@@ -158,4 +166,4 @@
     $allow_config_env_vars = false;
 
     // Dont change - developer updates this when the config format changes
-    $config_file_version = "9";
+    $config_file_version = "10";

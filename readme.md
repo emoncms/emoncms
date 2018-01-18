@@ -48,9 +48,11 @@ There are also two screencasts that are specific to optional modules that are in
 - **Inputs:** An incoming datasource. Each input has an associated "node" identifier and a "key" sub-identifier. Inputs are entry points, only the last value and time of the input is recorded. To record historic data a feed needs to be created from an input.
 - **Input: Node:** A grouping identifier for inputs or feeds.
 - **Input: Key:** A sub-identifier for items within each Node.
-- **Input process list (or input processing):** A list of processes performed sequentially on each input value as it is received on that input.
-- **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed.
+- **Input process list (or input processing):** A list of processes* performed sequentially on each input value as it is received on that input.
+- **Process:** A function that can be attached to the process list of an input to change the value or to save the value to a feed*.
 - **Feeds:** (Feed) A place where data is recorded, a time-series of datapoints. The standard time-series databases used by emoncms are PHPFina and PHPTimeSeries and where written as part of the emoncms project.
+
+* For a description of what each input process does in emoncms see the helper note within the emoncms input processing configuration interface.
 
 **4. Emoncms.org API Reference**
 
@@ -115,6 +117,14 @@ There are many other modules such as the event module and openbem (open source b
 * [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms)
 * [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
+### Documentation development
+
+For developers: The following lists the locations of the files that define emoncms's inbuilt documentation for the input and feed API's and input process descriptions:
+
+* The input API helper page [emoncms/Modules/input/Views/input_api.php](https://github.com/emoncms/emoncms/blob/master/Modules/input/Views/input_api.php)
+* The feed API helper page [emoncms/Modules/feed/Views/feedapi_view.php](https://github.com/emoncms/emoncms/blob/master/Modules/feed/Views/feedapi_view.php)
+* Input process descriptions are defined in the process list definition object at the top of the process list definition file here: [emoncms/Modules/process/process_processlist.php](https://github.com/emoncms/emoncms/blob/master/Modules/process/process_processlist.php)
+
 ## Tools
 
 * [PHPFina data file viewer](https://github.com/trystanlea/phpfinaview) - Easily explore phpfina timeseries feed engine data files directly without a full emoncms installation. Useful for checking backup's and archived data.
@@ -124,7 +134,7 @@ There are many other modules such as the event module and openbem (open source b
 *Note: due to ongoing development some docs may now be outdated*
 
 - [Emoncms architecture](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/architecture)
-- [Input processing](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/input-processing)
+- [Input processing implementation](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/input-processing)
 - [Developing a new Module](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/developing-a-new-module)
 - [Global variables in Emoncms](https://learn.openenergymonitor.org/electricity-monitoring/emoncms-internals/global-variables)
 

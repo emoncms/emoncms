@@ -97,30 +97,39 @@ function languagecode_to_name($langs) {
 
         <br>
         <div id="account">
-        <div class="account-item">
-            <span class="muted"><?php echo _('Write API Key'); ?></span> <button class="btn btn-info" id="copyapiwritebtn">Copy API Key</button>
-            <b><i><span class="writeapikey" id="copyapiwrite"></span></b></i>
-        </div>
-        <div class="account-item">
-            <span class="muted"><?php echo _('Read API Key'); ?></span> <button class="btn btn-info" id="copyapireadbtn">Copy API Key</button>
-            <b><i><span class="readapikey" id="copyapiread"></span></b></i>
-            <span id="msg"></span>
-        </div>
-        <div class="account-item">
-            <span class="muted"><?php echo _('Mobile App Integration QR Code'); ?></span>
-            <div id="qr_apikey"></div>
-            <br>
-	        <span class="muted">Scan this QR code from the <a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8">iOS</a> or <a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps&utm_source=global_co&utm_medium=prtnr&utm_content=Mar2515&utm_campaign=PartBadge&pcampaignid=MKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1">
-	            Android</a> App. Or scan using a barcode scanner to directly view your MyElectric graph.</span>
-	        <br><br>
-          <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div><br/>
-	        <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
-        </div>
+          <div class="account-item">
+              <span class="muted"><?php echo _('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn"><?php echo _('Copy'); ?></button>
+              <span class="writeapikey" id="copyapiwrite"></span>
+          </div>
+          <div class="account-item">
+              <span class="muted"><?php echo _('Read API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapireadbtn"><?php echo _('Copy'); ?></button>
+              <span class="readapikey" id="copyapiread"></span>
+              <span id="msg"></span>
+          </div>
         </div>
     </div>
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
+        
+        <h3><?php echo _('Mobile app'); ?></h3>
+        <div class="account-item">
+            <table>
+            <tr>
+              <td style="width:192px">
+                <p><?php echo _('Scan QR code from the iOS or Android app to connect:');?></p>
+                <div id="qr_apikey"></div>
+                <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
+              </td>
+              <td style="padding-left:20px">
+                <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
+                <br/>
+	              <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
+	            </td>
+	          </tr>
+	          </table>
+        </div>    
+         
     </div>
 </div>
 
@@ -164,9 +173,10 @@ function languagecode_to_name($langs) {
         'gravatar':{'title':"<?php echo _('Gravatar'); ?>", 'type':'gravatar'},
         'name':{'title':"<?php echo _('Name'); ?>", 'type':'text'},
         'location':{'title':"<?php echo _('Location'); ?>", 'type':'text'},
+        'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'},
         'timezone':{'title':"<?php echo _('Timezone'); ?>", 'type':'timezone'},
         'language':{'title':"<?php echo _('Language'); ?>", 'type':'language', 'options':lang, 'label':lang_name},
-        'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'}
+        'startingpage':{'title':"<?php echo _('Starting page'); ?>", 'type':'text'}
     }
 
     $.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {

@@ -2,10 +2,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-28 01:39+0100\n"
-"PO-Revision-Date: 2013-05-03 18:40+0100\n"
-"Last-Translator: Baptiste Gaultier <b.gaultier@gmail.com>\n"
-"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste.gaultier@telecom-bretagne.eu>\n"
+"POT-Creation-Date: 2017-12-14 15:52+0100\n"
+"PO-Revision-Date: 2017-12-14 15:57+0100\n"
+"Last-Translator: Aymeric THIBAUT\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
+"gaultier@telecom-bretagne.eu>\n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -13,318 +14,605 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 1.5.5\n"
-"X-Poedit-Language: French\n"
-"X-Poedit-Country: FRANCE\n"
+"X-Generator: Poedit 2.0.4\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../input_menu.php:3
-msgid "Input"
-msgstr "Sources"
-
-#: ../../../process_model.php:39
-msgid "Log to feed"
-msgstr "stocker dans un flux"
-
-#: ../../../process_model.php:60
-msgid "Power to kWh"
-msgstr "watts vers kWh"
-
-#: ../../../process_model.php:67
-msgid "Power to kWh/d"
-msgstr "watts vers kWh/j"
-
-#: ../../../process_model.php:74
-msgid "x input"
-msgstr " × source"
-
-#: ../../../process_model.php:81
-msgid "input on-time"
-msgstr "input on-time"
-
-#: ../../../process_model.php:88
-msgid "kWhinc to kWh/d"
-msgstr "kWhinc vers kWh/j"
-
-#: ../../../process_model.php:95
-msgid "kWh to kWh/d (OLD)"
-msgstr "kWh vers kWh/j"
-
-#: ../../../process_model.php:102
-msgid "update feed @time"
-msgstr "actualiser le flux @date"
-
-#: ../../../process_model.php:109
-msgid "+ input"
-msgstr "+ source"
-
-#: ../../../process_model.php:116
-msgid "/ input"
-msgstr "/ source"
-
-#: ../../../process_model.php:123
-msgid "phaseshift"
-msgstr "déphasage"
-
-#: ../../../process_model.php:130
-msgid "accumulator"
-msgstr "accumulateur"
-
-#: ../../../process_model.php:137
-msgid "rate of change"
-msgstr "variation"
-
-#: ../../../process_model.php:144
-msgid "histogram"
-msgstr "histogramme"
-
-#: ../../../process_model.php:151
-msgid "average"
-msgstr "moyenne"
-
-#: ../../../process_model.php:159
-msgid "heat flux"
-msgstr "flux air chaud"
-
-#: ../../../process_model.php:167
-msgid "power gained to kWh/d"
-msgstr "watts vers kWh/j"
-
-#: ../../../process_model.php:175
-msgid "pulse difference"
-msgstr "différence impulsion"
-
-#: ../../../process_model.php:183
-msgid "KWh to Power"
-msgstr "kWh en puissance"
-
-#: ../../../process_model.php:190
-msgid "- input"
-msgstr " - source"
-
-#: ../../../process_model.php:197
-msgid "kWh to kWh/d"
-msgstr "kWh vers kWh/j"
-
-#: ../../../Views/input_api.php:3
+#: ../../../Views/input_api.php:8
 msgid "Input API"
-msgstr "API Sources"
-
-#: ../../../Views/input_api.php:4
-msgid "Apikey authentication"
-msgstr "Clés d'API"
-
-#: ../../../Views/input_api.php:5
-msgid "If you want to call any of the following actions when your not logged in, add an apikey to the URL of your request: &apikey=APIKEY."
-msgstr "Si vous souhaitez utiliser les liens ci-dessous alors que vous n'êtes pas connecté, veuillez ajouter votre clé d'API à la fin de l'url : <b>&apikey=APIKEY</b>."
-
-#: ../../../Views/input_api.php:6
-msgid "Read only:"
-msgstr "Accès en lecture seule : "
+msgstr "API Source"
 
 #: ../../../Views/input_api.php:9
-msgid "Read & Write:"
-msgstr "Accès en écriture : "
+msgid "Apikey authentication"
+msgstr "Authentification clé API"
+
+#: ../../../Views/input_api.php:10
+msgid ""
+"If you want to call any of the following actions when your not logged in you "
+"can authenticate with your API key:"
+msgstr ""
+"Si vous souhaitez appeler une des actions suivantes alors que vous n'êtes "
+"pas connecté, vous pouvez vous authentifier avec votre clé API"
+
+#: ../../../Views/input_api.php:12
+msgid "Use POST parameter (Recommended): \"apikey=APIKEY\""
+msgstr "Utilisez le paramètre POST (recommandé) \"apikey=APIKEY\"."
 
 #: ../../../Views/input_api.php:13
-msgid "Available HTML URLs"
-msgstr "Liste des pages HTML pour la configuration"
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
 
-#: ../../../Views/input_api.php:15
-msgid "The input list view"
-msgstr "Liste des Sources de données"
-
-#: ../../../Views/input_api.php:16
-msgid "This page"
-msgstr "Cette page (documentation de l'API)"
+#: ../../../Views/input_api.php:14
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr "Veuillez ajouter votre clé d'API à la fin de l'url : &apikey=APIKEY."
 
 #: ../../../Views/input_api.php:17
-msgid "Input processing configuration page"
-msgstr "Page de configuration des traitements "
+msgid ""
+"Alternatively use the encrypted input method to post data with higher "
+"security."
+msgstr ""
+"Alternativement utilisez la méthode d'entrée cryptée pour publier vos "
+"données avec une sécurité accrue."
 
-#: ../../../Views/input_api.php:20
-msgid "Available JSON commands"
-msgstr "Commandes JSON disponibles"
+#: ../../../Views/input_api.php:19
+msgid "Read only:"
+msgstr "Lecture uniquement : "
 
-#: ../../../Views/input_api.php:21
-msgid "To use the json api the request url needs to include .json"
-msgstr "Si vous souhaitez utiliser l'API json, veuillez ajouter <b>.json</b> à la fin de l'url"
-
-#: ../../../Views/input_api.php:23
-msgid "Post data"
-msgstr "Données transmises"
-
-#: ../../../Views/input_api.php:25
-msgid "JSON format:"
-msgstr "Format JSON : "
+#: ../../../Views/input_api.php:22
+msgid "Read & Write:"
+msgstr "Lecture & Écriture : "
 
 #: ../../../Views/input_api.php:26
-msgid "CSV format:"
-msgstr "Format CSV : "
-
-#: ../../../Views/input_api.php:27
-msgid "Assign inputs to a node group"
-msgstr "Associer la source à un nœud"
+msgid "Posting data to EmonCMS"
+msgstr "Publication des données dans EmonCMS"
 
 #: ../../../Views/input_api.php:28
-msgid "Set the input entry time manually"
-msgstr "Modifier manuellement l'horodatage des données"
+msgid "The EmonCMS input API provides two ways of sending data to emoncms:"
+msgstr "L'API Source fournit deux façons d'envoyer les données dans emoncms :"
 
-#: ../../../Views/input_api.php:32
-msgid "To post data from a remote device you will need to include in the request url your write apikey. This give your device write access to your emoncms account, allowing it to post data."
-msgstr "Pour envoyer des données depuis un périphérique distant, vous devez ajouter votre clé d'API à la fin de l'url. Cela permet de donner les accès en écriture à votre périphérique."
+#: ../../../Views/input_api.php:30
+msgid "<b>input/post</b> - Post a single update from a node."
+msgstr ""
+"<b>input/post</b> - Publication d'une simple mise à jour depuis un nœud."
+
+#: ../../../Views/input_api.php:31
+msgid ""
+"<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a "
+"single update."
+msgstr ""
+"<b>input/bulk</b> - Transfert en masse de données historiques provenant de "
+"plusieurs nœuds dans une seule mise à jour."
 
 #: ../../../Views/input_api.php:34
-msgid "For example using the first json type request above just add the apikey to the end like this:"
-msgstr "Par exemple, pour utiliser l'appel json ci-dessus, il suffit d'ajouter la clé API comme suit :"
+msgid ""
+"If your starting out with EmonCMS 'input/post' is a good starting point for "
+"testing, this was the original input method when EmonCMS . The EmonPi/"
+"EmonBase uses the 'input/bulk' input method to post to a remote emoncms "
+"server as this method provides the option to efficiently bulk upload "
+"buffered data after an internet connection outage. Combining multiple "
+"updates in a single input/bulk request also reduces bandwidth requirements. "
+msgstr ""
+"Si votre démarrage avec 'input / post' est un bon point de départ pour des "
+"tests, c'était la méthode d'entrée originale lors de la création de EmonCMS. "
+"EmonPi / EmonBase utilise la méthode d'entrée 'input / bulk' pour envoyer un "
+"message à un serveur emoncms distant car cette méthode offre la possibilité "
+"de charger efficacement les données mises en mémoire tampon après une panne "
+"de connexion Internet. La combinaison de plusieurs mises à jour dans une "
+"seule requête input / bulk réduit également les besoins en bande passante."
 
-#: ../../../Views/input_api.php:37
-msgid "Bulk data"
-msgstr "Données brutes"
+#: ../../../Views/input_api.php:36
+msgid "input/post"
+msgstr "input/post"
 
-#: ../../../Views/input_api.php:39
-msgid "You can provide data using bulk mode"
-msgstr "Vous pouvez transmettre vos données de manière brute avec un appel global"
+#: ../../../Views/input_api.php:38
+msgid ""
+"The \"fulljson\" format is recommended for new integrations, it uses the PHP "
+"JSON decoder and answer is also in json.<br>The \"json like\" format is "
+"based on the CSV input parsing implementation and maintained for backwards "
+"compatibility."
+msgstr ""
+"Le format json \"complet\" est recommandé pour de nouvelles intégrations, il "
+"utilise le décodeur PHP JSON et la réponse est également en json.<br> Le "
+"format json \"ressemblant\" est basé sur une implémentation d'analyse "
+"d'entrée CSV et est maintenu pour une rétrocompatibilité."
 
-#: ../../../Views/input_api.php:42
-msgid "The first number of each node is the time offset, so for the first node it is 0 which means the packet for the first node arrived at 0 seconds. The second node arrived at 2 seconds and 3rd 10 seconds."
-msgstr "Le premier paramètre de chaque nœud est le décalage (exprimé en seconde). Dans cet exemple : le paquet pour le premier nœud est arrivé à 0 seconde. Le second nœud est arrivé à 2 secondes et le 3ème à 10 secondes."
+#: ../../../Views/input_api.php:38
+msgid "A node name can be a name e.g: emontx or a number e.g: 10."
+msgstr "Un nœud peut être un nom par ex : emontx ou un nombre par ex : 10."
 
-#: ../../../Views/input_api.php:43
-msgid "The second number is the node id, this is the unqiue identifer for the wireless node."
-msgstr "Le second nombre est l'idenfiant du n&oelig;ud, c'est l'identifiant unique du capteur sans-fils."
+#: ../../../Views/input_api.php:38
+msgid ""
+"The input/post API is compatible with both GET and POST request methods "
+"(POST examples given use curl)."
+msgstr ""
+"L'API input/post est compatible à la fois avec les méthodes de requête GET "
+"et POST (les exemples POST donnés utilisent curl)"
 
-#: ../../../Views/input_api.php:44
-msgid "All the numbers after the first two are data values. The first node here (node 10) has three data values: 250,100 and 20."
-msgstr "Tous les nombres qui suivent les deux premiers sont les valeurs de chaque mesure à enregistrer. Par exemple, ici le nœud 10 contient 3 valeurs (250,100 et 20)."
-
-#: ../../../Views/input_api.php:48
-msgid "Input actions"
-msgstr "Liste des sources"
-
-#: ../../../Views/input_api.php:50
-msgid "List of inputs"
-msgstr "Liste des sources de données"
-
-#: ../../../Views/input_api.php:51
-msgid "Delete an input"
-msgstr "Supprimer une source de données"
-
-#: ../../../Views/input_api.php:54
-msgid "Input process actions"
-msgstr "Traitements des données reçues"
-
-#: ../../../Views/input_api.php:56
-msgid "Add an input process"
-msgstr "Ajouter un traitement sur les données"
-
-#: ../../../Views/input_api.php:57
-msgid "List input process list"
-msgstr "Liste des processus de traitement"
-
-#: ../../../Views/input_api.php:58
-msgid "Delete input process"
-msgstr "Supprimer un traitement de données"
-
-#: ../../../Views/input_api.php:59
-msgid "Move input process"
-msgstr "Changer la position d'un traitement dans la liste"
-
-#: ../../../Views/input_api.php:60
-msgid "Reset input process list"
-msgstr "Réinitialiser les processus de traitement"
-
-#: ../../../Views/input_node.php:23
-#: ../../../Views/process_list.php:16
-msgid "Input API Help"
-msgstr "Aide de l'API"
-
-#: ../../../Views/input_node.php:26
-msgid "Inputs"
-msgstr "Sources"
-
-#: ../../../Views/input_node.php:30
-msgid "No inputs created"
-msgstr "Aucune source de données n'est disponible"
-
-#: ../../../Views/input_node.php:31
-msgid "Inputs is the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href=\"api\">Input API helper</a> as a guide for generating your request."
-msgstr "Les sources sont le point d'entrée pour vos capteurs. Vos capteurs doivent être configurés pour envoyer leurs données ici, veuillez consulter l'<a href=\"api\">Aide de l'API</a> afin de g&eacute;n&eacute;rer votre requ&ecirc;te."
-
-#: ../../../Views/input_node.php:47
-msgid "Node:"
-msgstr "Nœud"
-
-#: ../../../Views/input_node.php:48
-msgid "name"
-msgstr "Nom"
-
-#: ../../../Views/input_node.php:49
+#: ../../../Views/input_api.php:41 ../../../Views/input_api.php:65
 msgid "Description"
 msgstr "Description"
 
-#: ../../../Views/input_node.php:50
-msgid "Process list"
-msgstr "Traitements"
+#: ../../../Views/input_api.php:41 ../../../Views/input_api.php:65
+msgid "Method"
+msgstr "Méthode"
 
-#: ../../../Views/process_list.php:18
-msgid "Input configuration:   "
-msgstr "Définition des traitements sur vos données n°"
+#: ../../../Views/input_api.php:41 ../../../Views/input_api.php:65
+msgid "Example"
+msgstr "Exemple"
 
-#: ../../../Views/process_list.php:19
-msgid "Input processes are executed sequentially with the result being passed back for further processing by the next processor in the input processing list."
-msgstr "Les processus de traitement de données sont exécutés séquentiellement. Le résultat de chaque étape est passé en entrée de l'étape suivante."
+#: ../../../Views/input_api.php:43
+msgid "JSON format"
+msgstr "Format JSON"
 
-#: ../../../Views/process_list.php:25
-msgid "New"
-msgstr "Nouveau"
+#: ../../../Views/input_api.php:45
+msgid "JSON like format"
+msgstr "Format ressemblant au JSON"
 
-#: ../../../Views/process_list.php:38
-msgid "add"
-msgstr "ajouter"
+#: ../../../Views/input_api.php:47
+msgid "CSV format"
+msgstr "Format CSV"
 
-#: ../../../Views/process_list.php:46
-msgid "Reset process list?"
-msgstr "Réinitialiser la liste des actions"
+#: ../../../Views/input_api.php:49
+msgid "Set the input entry time manually"
+msgstr "Modifier manuellement l'horodatage des données"
 
-#: ../../../Views/process_list.php:52
-msgid "Are you sure you want to delete input: "
-msgstr "Etes vous sûr de vouloir supprimer cette source ? "
+#: ../../../Views/input_api.php:51
+msgid "Node name as sub-action"
+msgstr "Nom de nœud en tant que sous-action"
 
-#: ../../../Views/process_list.php:56
-msgid "Delete input?"
+#: ../../../Views/input_api.php:53
+msgid ""
+"To post data from a remote device you will need to include in the request "
+"url your write apikey. This give your device write access to your emoncms "
+"account, allowing it to post data."
+msgstr ""
+"Pour envoyer des données depuis un périphérique distant, vous devez ajouter "
+"votre clé d'API d'accès en écriture à la fin de l'url. Cela permet de donner "
+"à votre périphérique les accès en écriture sur votre compte emoncms, lui "
+"permettant de poster des données."
+
+#: ../../../Views/input_api.php:53
+msgid ""
+"For example using the first json type request above just add the apikey to "
+"the end like this:"
+msgstr ""
+"Par exemple, pour utiliser l'appel json suivant, il suffit d'ajouter la clé "
+"API comme suit :"
+
+#: ../../../Views/input_api.php:55
+msgid "JSON format:"
+msgstr "Format JSON : "
+
+#: ../../../Views/input_api.php:56
+msgid "CSV format:"
+msgstr "Format CSV : "
+
+#: ../../../Views/input_api.php:59
+msgid "input/bulk"
+msgstr "input/bulk"
+
+#: ../../../Views/input_api.php:61
+msgid "Efficiently upload multiple updates from multiple nodes."
+msgstr ""
+"Télécharge efficacement plusieurs mises à jour à partir de plusieurs nœuds."
+
+#: ../../../Views/input_api.php:67
+msgid "Example request:"
+msgstr "Exemple de requête:"
+
+#: ../../../Views/input_api.php:71
+msgid "The first number of each node is the time offset (see below)."
+msgstr ""
+"Le premier nombre de chaque nœud est le décalage de temps (voir ci-dessous)."
+
+#: ../../../Views/input_api.php:72
+msgid ""
+"The second number is the node id, this is the unique identifier for the "
+"wireless node."
+msgstr ""
+"Le second nombre est l'identifiant du nœud, c'est l'identifiant unique du "
+"nœud sans fil."
+
+#: ../../../Views/input_api.php:73
+msgid ""
+"All the numbers after the first two are data values. The second node here "
+"(node 17) has two data values: 1437 and 3164."
+msgstr ""
+"Tous les nombres qui suivent les deux premiers sont les valeurs de données. "
+"Par exemple, ici le second nœud (nœud 17) a deux valeurs : 1437 et 3164."
+
+#: ../../../Views/input_api.php:74
+msgid ""
+"Optional offset and time parameters allow the sender to set the time "
+"reference for the packets. If none is specified, it is assumed that the last "
+"packet just arrived. The time for the other packets is then calculated "
+"accordingly."
+msgstr ""
+"Les paramètres optionnels de temps et de décalage permettent à l'envoyeur de "
+"définir un temps de référence pour les paquets. Si aucun paramètre n'est "
+"spécifié, il est considéré que le dernier paquet vient juste d'arriver. "
+"L'horodatage pour les autres paquets est alors calculé en conséquence."
+
+#: ../../../Views/input_api.php:78
+msgid ""
+"Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to now):"
+msgstr ""
+"Format par défaut hérité (4 est maintenant, 2 est -2 secondes et 0 est -4 "
+"secondes de maintenant)"
+
+#: ../../../Views/input_api.php:80
+msgid "Time offset format (-6 is -16 seconds to now):"
+msgstr "Format du décalage de temps (-6 est à -16 secondes de maintenant)"
+
+#: ../../../Views/input_api.php:82
+msgid "Sentat format: (useful for sending as positive increasing time index)"
+msgstr ""
+"Format sentat: (utile pour un envoi avec index de temps croissant positif)"
+
+#: ../../../Views/input_api.php:84
+msgid ""
+"Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 "
+"UTC))"
+msgstr ""
+"Format de temps absolu (nombre de secondes depuis 1970-01-01 00:00:00 UTC))"
+
+#: ../../../Views/input_api.php:86
+msgid ""
+"Named feeds (similar to the main example but updates the keys \"data\" and "
+"\"anotherData\" for node 19)"
+msgstr ""
+"Flux nommés (similaire à l'exemple principal mais met à jour les clés \"data"
+"\" et \"anotherData\" pour le nœud 19)"
+
+#: ../../../Views/input_api.php:88
+msgid "Legacy format:"
+msgstr "Format hérité :"
+
+#: ../../../Views/input_api.php:90
+msgid "Time offset format:"
+msgstr "Format de décalage de temps :"
+
+#: ../../../Views/input_api.php:92
+msgid "Sentat format:"
+msgstr "Format Sentat : "
+
+#: ../../../Views/input_api.php:94
+msgid "Absolute time format:"
+msgstr "Format de temps absolu :"
+
+#: ../../../Views/input_api.php:99
+msgid "Fetching inputs, updating meta data and other actions"
+msgstr ""
+"Récupération des sources, mise à jour des métadonnées et autres actions"
+
+#: ../../../Views/input_api.php:102
+msgid "Input get"
+msgstr "Obtention des sources"
+
+#: ../../../Views/input_api.php:104
+msgid "List all nodes and associated inputs:"
+msgstr "Lister tous les nœuds et les sources associées :"
+
+#: ../../../Views/input_api.php:105
+msgid "List inputs for specific node:"
+msgstr "Lister les sources pour un nœud spécifique:"
+
+#: ../../../Views/input_api.php:106
+msgid "Fetch specific input from node:"
+msgstr "Récupérer une source spécifique du nœud :"
+
+#: ../../../Views/input_api.php:110
+msgid "Input actions"
+msgstr "Actions sur les sources"
+
+#: ../../../Views/input_api.php:112
+msgid "List of inputs with latest data"
+msgstr "Lister les sources avec les dernières données"
+
+#: ../../../Views/input_api.php:113
+msgid "Get inputs configuration (last time and value not included)"
+msgstr ""
+"Obtenir la configuration des sources (les derniers temps et valeurs ne sont "
+"pas inclus)"
+
+#: ../../../Views/input_api.php:114
+msgid "Set input fields"
+msgstr "Définir la configuration des sources"
+
+#: ../../../Views/input_api.php:115
+msgid "Delete an input"
+msgstr "Supprimer une source de données"
+
+#: ../../../Views/input_api.php:116
+msgid "Clean inputs without a process list"
+msgstr "Nettoyer les sources sans liste de traitement"
+
+#: ../../../Views/input_api.php:119
+msgid "Input process actions"
+msgstr "Actions sur les traitements des sources de données"
+
+#: ../../../Views/input_api.php:121
+msgid "Get input process list"
+msgstr "Obtenir la liste des traitements de sources"
+
+#: ../../../Views/input_api.php:122
+msgid "Set input process list"
+msgstr "Définir la liste des traitements de sources"
+
+#: ../../../Views/input_api.php:123
+msgid "Reset input process list"
+msgstr "Réinitialiser la liste des traitements de sources"
+
+#: ../../../Views/input_dialog.php:10
+msgid "Delete Input"
 msgstr "Supprimer la source"
 
-#: ../../../Views/process_list.php:99
-msgid "Order"
-msgstr "Ordre"
+#: ../../../Views/input_dialog.php:13
+msgid ""
+"Deleting an Input will lose it name and configured Processlist.<br>A new "
+"blank input is automatic created by API data post if it does not already "
+"exists."
+msgstr ""
+"La suppression d'une source va entrainer la perte de son nom et de sa liste "
+"de traitements configurés. Une nouvelle entrée vide est créée "
+"automatiquement lors de la publication de données API si elle n'existe pas "
+"déjà."
 
-#: ../../../Views/process_list.php:99
-msgid "Process"
-msgstr "Action"
+#: ../../../Views/input_dialog.php:16
+msgid "Are you sure you want to delete?"
+msgstr "Êtes-vous sûr de vouloir supprimer cette source ? "
 
-#: ../../../Views/process_list.php:99
-msgid "Arg"
-msgstr "Param&egrave;tre"
+#: ../../../Views/input_dialog.php:21
+msgid "Cancel"
+msgstr "Annuler"
 
-#: ../../../Views/process_list.php:99
-msgid "Actions"
-msgstr "Actions"
-
-#: ../../../Views/process_list.php:108
-#: ../../../Views/process_list.php:112
-msgid "Move up"
-msgstr "Monter"
-
-#: ../../../Views/process_list.php:117
+#: ../../../Views/input_dialog.php:22
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../../../Views/process_list.php:122
-msgid "You have no processes defined"
-msgstr "Vous n'avez aucun processus défini"
+#: ../../../Views/input_view.php:28
+msgid "Input API Help"
+msgstr "Aide de l'API Source"
 
-#: ../../../Views/process_list.php:151
-msgid "CREATE NEW:"
-msgstr "Créer un nouveau :"
+#: ../../../Views/input_view.php:29 ../../../input_menu.php:7
+msgid "Inputs"
+msgstr "Sources"
 
+#: ../../../Views/input_view.php:34
+msgid "No inputs created"
+msgstr "Aucune source de données n'est disponible"
+
+#: ../../../Views/input_view.php:35
+msgid ""
+"Inputs are the main entry point for your monitoring device. Configure your "
+"device to post values here, you may want to follow the <a href=\"api\">Input "
+"API helper</a> as a guide for generating your request."
+msgstr ""
+"Les sources sont le point d'entrée pour vos appareils de surveillance. Vos "
+"appareils doivent être configurés pour envoyer leurs données ici, veuillez "
+"consulter l'<a href=\"api\">Aide de l'API Source</a> afin de générer votre "
+"requête."
+
+#: ../../../Views/input_view.php:54 ../../../Views/input_view.php:68
+msgid "Process list"
+msgstr "Liste des traitements"
+
+#: ../../../Views/input_view.php:55 ../../../Views/input_view.php:69
+msgid "Updated"
+msgstr "Mise à jour"
+
+#: ../../../Views/input_view.php:65
+msgid "Node"
+msgstr "Nœud"
+
+#: ../../../Views/input_view.php:66
+msgid "Key"
+msgstr "Clé"
+
+#: ../../../Views/input_view.php:67
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../Views/input_view.php:70
+msgid "Value"
+msgstr "Valeur"
+
+#: ../../../input_model.php:503
+msgid "Invalid process"
+msgstr "Traitement non valide"
+
+#: ../../../input_model.php:514
+msgid "Invalid feed"
+msgstr "Champ non valide"
+
+#: ../../../input_model.php:521
+msgid "Invalid input"
+msgstr "Source non valide"
+
+#: ../../../input_model.php:562
+msgid "Error setting processlist"
+msgstr "Erreur lors du paramétrage de la liste des traitements"
+
+#~ msgid "Available HTML URLs"
+#~ msgstr "URLs HTML disponibles"
+
+#~ msgid "The input list view"
+#~ msgstr "Liste des Sources de données"
+
+#~ msgid "This page"
+#~ msgstr "Cette page (documentation de l'API)"
+
+#~ msgid "Input processing configuration page"
+#~ msgstr "Page de configuration des traitements des sources"
+
+#~ msgid "Available JSON commands"
+#~ msgstr "Commandes JSON disponibles"
+
+#~ msgid "Post data (using http get)"
+#~ msgstr "Données POST (utilisant hhtp get)"
+
+#~ msgid "JSON like format (deprecated)"
+#~ msgstr "Format ressemblant à JSON (obsolète)"
+
+#~ msgid "Assign inputs to a node group"
+#~ msgstr "Associer des sources à un groupe de nœuds"
+
+#~ msgid "APIKEY"
+#~ msgstr "APIKEY"
+
+#~ msgid "Bulk data"
+#~ msgstr "Données brutes"
+
+#~ msgid "You can provide data using bulk mode"
+#~ msgstr ""
+#~ "Vous pouvez transmettre vos données de manière brute avec un appel global"
+
+#~ msgid "Post data (using http post)"
+#~ msgstr "Données Post (utilisant http post)"
+
+#~ msgid ""
+#~ "To post data using http post you can use the \"data\" post parameter, it "
+#~ "will accept csv and json formatting. Other parameters need to be provided "
+#~ "as a parameter in the url, the only exception is the apikey which can be "
+#~ "a post parameter as well."
+#~ msgstr ""
+#~ "Pour publier des données à l'aide de http post, vous pouvez utiliser le "
+#~ "paramètre post \"data\", il acceptera le formatage csv et json. D'autres "
+#~ "paramètres doivent être fournis en tant que paramètre dans l'url, la "
+#~ "seule exception est l'apikey qui peut également être un paramètre post."
+
+#~ msgid ""
+#~ "The examples below use curl to post the data to the input api. It is "
+#~ "available "
+#~ msgstr ""
+#~ "L'exemple ci-dessous utilise curl pour publier des données vers l'api "
+#~ "source. Disponible "
+
+#~ msgid "Bulk mode sentat format:"
+#~ msgstr "Format sentat en mode brut :"
+
+#~ msgid "Get inputs configuration"
+#~ msgstr "Obtenir la configuration des sources"
+
+#~ msgid "Log to feed"
+#~ msgstr "stocker dans un flux"
+
+#~ msgid "Power to kWh"
+#~ msgstr "watts vers kWh"
+
+#~ msgid "Power to kWh/d"
+#~ msgstr "watts vers kWh/j"
+
+#~ msgid "input on-time"
+#~ msgstr "input on-time"
+
+#~ msgid "kWhinc to kWh/d"
+#~ msgstr "kWhinc vers kWh/j"
+
+#~ msgid "kWh to kWh/d (OLD)"
+#~ msgstr "kWh vers kWh/j"
+
+#~ msgid "update feed @time"
+#~ msgstr "actualiser le flux @date"
+
+#~ msgid "+ input"
+#~ msgstr "+ source"
+
+#~ msgid "/ input"
+#~ msgstr "/ source"
+
+#~ msgid "phaseshift"
+#~ msgstr "déphasage"
+
+#~ msgid "accumulator"
+#~ msgstr "accumulateur"
+
+#~ msgid "rate of change"
+#~ msgstr "variation"
+
+#~ msgid "histogram"
+#~ msgstr "histogramme"
+
+#~ msgid "average"
+#~ msgstr "moyenne"
+
+#~ msgid "heat flux"
+#~ msgstr "flux air chaud"
+
+#~ msgid "power gained to kWh/d"
+#~ msgstr "watts vers kWh/j"
+
+#~ msgid "pulse difference"
+#~ msgstr "différence impulsion"
+
+#~ msgid "KWh to Power"
+#~ msgstr "kWh en puissance"
+
+#~ msgid "- input"
+#~ msgstr " - source"
+
+#~ msgid "kWh to kWh/d"
+#~ msgstr "kWh vers kWh/j"
+
+#~ msgid "To use the json api the request url needs to include .json"
+#~ msgstr ""
+#~ "Si vous souhaitez utiliser l'API json, veuillez ajouter <b>.json</b> à la "
+#~ "fin de l'url"
+
+#~ msgid "Post data"
+#~ msgstr "Données transmises"
+
+#~ msgid ""
+#~ "The first number of each node is the time offset, so for the first node "
+#~ "it is 0 which means the packet for the first node arrived at 0 seconds. "
+#~ "The second node arrived at 2 seconds and 3rd 10 seconds."
+#~ msgstr ""
+#~ "Le premier paramètre de chaque nœud est le décalage (exprimé en seconde). "
+#~ "Dans cet exemple : le paquet pour le premier nœud est arrivé à 0 seconde. "
+#~ "Le second nœud est arrivé à 2 secondes et le 3ème à 10 secondes."
+
+#~ msgid "Add an input process"
+#~ msgstr "Ajouter un traitement sur les données"
+
+#~ msgid "List input process list"
+#~ msgstr "Liste des processus de traitement"
+
+#~ msgid "name"
+#~ msgstr "Nom"
+
+#~ msgid ""
+#~ "Input processes are executed sequentially with the result being passed "
+#~ "back for further processing by the next processor in the input processing "
+#~ "list."
+#~ msgstr ""
+#~ "Les processus de traitement de données sont exécutés séquentiellement. Le "
+#~ "résultat de chaque étape est passé en entrée de l'étape suivante."
+
+#~ msgid "New"
+#~ msgstr "Nouveau"
+
+#~ msgid "add"
+#~ msgstr "ajouter"
+
+#~ msgid "Reset process list?"
+#~ msgstr "Réinitialiser la liste des actions"
+
+#~ msgid "Order"
+#~ msgstr "Ordre"
+
+#~ msgid "Process"
+#~ msgstr "Action"
+
+#~ msgid "Arg"
+#~ msgstr "Param&egrave;tre"
+
+#~ msgid "Actions"
+#~ msgstr "Actions"
+
+#~ msgid "Move up"
+#~ msgstr "Monter"
+
+#~ msgid "You have no processes defined"
+#~ msgstr "Vous n'avez aucun processus défini"
+
+#~ msgid "CREATE NEW:"
+#~ msgstr "Créer un nouveau :"

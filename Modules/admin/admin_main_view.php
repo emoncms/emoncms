@@ -26,9 +26,20 @@
     }
     $emoncms_modules = "";
     $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);  // Use glob to get all the folder names only
-    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {  // loop through the folders
-        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;&nbsp;&nbsp;";
+    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
+    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
+        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;|&nbsp;";
+        if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
+          $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
+          $jsonAppName = $json->{'name'};
+          $jsonVersion = $json->{'version'};
+          if ($jsonAppName) {
+            $emoncmsModuleFolder = $jsonAppName;
+          }
+          if ($jsonVersion) {
+            $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
+          }
+        }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
 
@@ -43,7 +54,7 @@
                  'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
                  'db_server' => $server,
                  'db_ip' => gethostbyname($server),
-                 'db_version' => 'MySQL ' . $mysqli->server_info,
+                 'db_version' => $mysqli->server_info,
                  'db_stat' => $mysqli->stat(),
                  'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
 
@@ -158,8 +169,7 @@ pre {
 table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
-
-<h2>Administration</h2>
+<h2><?php echo _('Administration'); ?></h2>
 <table class="table table-hover">
     <tr>
         <td>
@@ -191,7 +201,7 @@ if ($log_enabled) {
                     <p>
 <?php
 if(is_writable($log_filename)) {
-                    echo "View last entries on the logfile: ".$log_filename;
+                    echo _('View last entries on the logfile:').$log_filename;
 } else {
                     echo '<div class="alert alert-warn">';
                     echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
@@ -224,8 +234,8 @@ if ($allow_emonpi_admin) {
             <tr>
                 <td style="border-top: 0px">
                     <h3><?php echo _('Update'); ?></h3>
-                    <p><b>emonPi Update:</b> updates emonPi firmware & Emoncms</p>
-                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) & Emoncms</p>
+                    <p><b>emonPi Update:</b> updates emonPi firmware &amp; Emoncms</p>
+                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) &amp; Emoncms</p>
                     <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
                     <p><i>Caution: ensure RFM69Pi is populated with RFM69CW module not RFM12B before running RFM69Pi update: <a href="https://learn.openenergymonitor.org/electricity-monitoring/networking/which-radio-module">Identifying different RF Modules</a>.</i></p>
                 </td>
@@ -249,7 +259,7 @@ if ($allow_emonpi_admin) {
         <td colspan=2>
             <h3><?php echo _('Server Information'); ?></h3>
             <table class="table table-hover table-condensed">
-              <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
+              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?>&nbsp;<div style="float: right;"><button class="btn btn-info" style="font-size: 12px;line-height: 12px;" id="copyemoncmsinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
@@ -266,7 +276,7 @@ if ($feed_settings['redisbuffer']['enabled']) {
 
               <tr><td><b>HTTP</b></td><td>Server</td><td colspan="2"><?php echo $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']; ?></td></tr>
 
-              <tr><td><b>Database</b></td><td>Version</td><td><?php echo $system['db_version']; ?></td></tr>
+              <tr><td><b>MySQL</b></td><td>Version</td><td><?php echo $system['db_version']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['db_date']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Stats</td><td><?php echo $system['db_stat']; ?></td></tr>
@@ -289,10 +299,13 @@ if ($mqtt_enabled) {
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
+}
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
-                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
               }
+              if (isset($emonpiRelease)) {
+                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
 }
 
 // Ram information
@@ -328,14 +341,43 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php while (list($key, $val) = each($system['php_modules'])) { echo "$val &nbsp; "; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
             </table>
             
         </td>
     </tr>
 </table>
-
 <script>
+function copyTextToClipboard(text) {
+  var textArea = document.createElement("textarea");
+  textArea.style.position = 'fixed';
+  textArea.style.top = 0;
+  textArea.style.left = 0;
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+  textArea.style.padding = 0;
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+  textArea.style.background = 'transparent';
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } 
+  catch(err) {
+    window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
+  }
+  document.body.removeChild(textArea);
+}
+var btnCopy = document.getElementById('copyemoncmsinfo');
+btnCopy.addEventListener('click', function(event) {
+  copyTextToClipboard('EMONCMS\nVersion : '+'<?php echo $emoncms_version ?>'+'\nModules : '+'<?php echo str_replace('&nbsp;',' ',$system['emoncms_modules']) ?>');
+});
+
 var path = "<?php echo $path; ?>";
 var logrunning = false;
 
@@ -438,4 +480,25 @@ $("#rebootPi").click(function() {
 $("#noshut").click(function() {
   alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
 });
+
+$("#fs-rw").click(function() {
+  if(confirm('Setting file-system to Read-Write, remember to restore Read-Only when your done..')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=rw", async: true, success: function(result)
+      {
+        // console.log(data);
+      }
+    });
+  }
+});
+
+$("#fs-ro").click(function() {
+  if(confirm('Settings filesystem back to Read Only')) {
+    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=ro", async: true, success: function(result)
+      {
+      // console.log(data);
+      }
+    });
+  }
+});
+
 </script>

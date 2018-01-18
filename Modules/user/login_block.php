@@ -22,13 +22,13 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
     padding: 10px;
   }
 </style>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
-
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=1"></script>
+<br>
 <div class="main">
   <div class="well">
-    <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emoncms_logo.png" alt="Emoncms" width="256" height="46" />
+    <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_login.png" alt="Login" width="256" height="46" />
     <div class="login-container">
-        <form id="login-form" method="post">
+        <form id="login-form" method="post" action="<?php echo $path; ?>">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Email'); ?>
@@ -105,6 +105,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 
 var path = "<?php echo $path; ?>";
 var register_open = false;
+$("body").addClass("body-login");
 
 $(document).ready(function() {
     var passwordreset = "<?php echo $enable_password_reset; ?>";
@@ -179,15 +180,21 @@ function login(){
 
     var result = user.login(username,password,rememberme);
 
-    if (result.success)
-    {
-        $('#login-form').submit();
-        return true;
-    }
-    else
-    {
-        $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+    if (result.success==undefined) {
+        $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
         return false;
+    
+    } else {
+        if (result.success)
+        {
+            $('#login-form').submit();
+            return true;
+        }
+        else
+        {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            return false;
+        }
     }
 }
 
@@ -205,17 +212,23 @@ function register(){
     {
         var result = user.register(username,password,email);
 
-        if (result.success)
-        {
-            result = user.login(username,password);
+        if (result.success==undefined) {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
+            return false;
+        
+        } else {
             if (result.success)
             {
-                window.location.href = path+"user/view";
+                result = user.login(username,password);
+                if (result.success)
+                {
+                    window.location.href = path+"user/view";
+                }
             }
-        }
-        else
-        {
-            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            else
+            {
+                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            }
         }
     }
 }

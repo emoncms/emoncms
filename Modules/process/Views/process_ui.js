@@ -408,6 +408,29 @@ var processlist_ui =
         $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
       } else {
         $("#description").html(processlist_ui.processlist[processid]['desc']);
+
+	var does_modify = "<p><b>Output:</b> Modified value passed onto next process step.</p>";
+	var does_not_modify = "<p><b>Output:</b> Does NOT modify value passed onto next process step.</p>";
+	var redis_required = "<p><b>REDIS:</b> Requires REDIS.</p>";
+	var help = "Click here for additional information about this process.";
+
+	if ('helpurl' in processlist_ui.processlist[processid] &&
+	    typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
+		$("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
+	}
+
+	if ('nochange' in processlist_ui.processlist[processid] &&
+	    processlist_ui.processlist[processid]['nochange'] == true) {
+		$("#description").append(does_not_modify);
+	} else {
+		$("#description").append(does_modify);
+	}
+
+	if ('requireredis' in processlist_ui.processlist[processid] &&
+	    processlist_ui.processlist[processid]['requireredis'] == true) {
+		$("#description").append(redis_required);
+
+	}
       }
       
     });

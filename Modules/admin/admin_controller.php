@@ -225,6 +225,21 @@ function admin_controller()
                     readfile($backup_file);
                     exit;
                 }
+
+                if ($route->subaction == 'fs' && $session['admin'])
+                {
+                  if (isset($_POST['argument'])) {
+                    $argument = $_POST['argument'];
+                    }
+                  if ($argument == 'ro'){
+                    $result = passthru('rpi-ro');
+
+                  }
+                  if ($argument == 'rw'){
+                    $result = passthru('rpi-rw');
+                  }
+                }
+                
             }
         }
         else if ($route->format == 'json')

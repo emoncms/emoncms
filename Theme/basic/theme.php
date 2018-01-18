@@ -9,7 +9,8 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
   */
-  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$favicon;
+  global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$themecolor,$favicon,$menu;
+
 ?>
 <html>
     <head>
@@ -23,15 +24,76 @@
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon.css" rel="stylesheet">
+        
+        <?php if ($themecolor=="blue") { ?>
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css" rel="stylesheet">
+        <?php } else if ($themecolor=="sun") { ?>
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-sun.css" rel="stylesheet">
+        <?php } else { ?>
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css" rel="stylesheet">
+        <?php } ?>
+
+        <?php //compute dynamic @media properties depending on numbers and lengths of shortcuts
+        $maxwidth1=1200;
+        $maxwidth2=480;
+        $maxwidth3=340;
+        $sumlength1 = 0;
+        $sumlength2 = 0;
+        $sumlength3 = 0;
+        $sumlength4 = 0;
+        $sumlength5 = 0;
+        $nbshortcuts1 = 0;
+        $nbshortcuts2 = 0;
+        $nbshortcuts3 = 0;
+        $nbshortcuts4 = 0;
+        $nbshortcuts5 = 0;
+
+        foreach($menu['dashboard'] as $item){
+           if(isset($item['name'])){$name = $item['name'];}
+           if(isset($item['published'])){$published = $item['published'];} //only published dashboards
+           if($name && $published){
+             $sumlength1 += strlen($name);
+             $nbshortcuts1 ++;
+           }
+       }
+
+        foreach($menu['left'] as $item){
+           if(isset($item['name'])) {$name = $item['name'];}
+           $sumlength2 += strlen($name);
+           $nbshortcuts2 ++;
+       }
+
+        if(count($menu['dropdown']) && $session['read']){
+           $extra['name'] = 'Extra';
+           $sumlength3 = strlen($extra['name']);
+           $nbshortcuts3 ++;
+       }
+
+        if(count($menu['dropdownconfig'])){
+           $setup['name'] = 'Setup';
+           $sumlength4 = strlen($setup['name']);
+           $nbshortcuts4 ++;
+       }
+
+	    foreach($menu['right'] as $item) {
+           if (isset($item['name'])){$name = $item['name'];}
+           $sumlength5 += strlen($name);
+           $nbshortcuts5 ++;
+       }
+    $maxwidth1=intval((($sumlength1+$sumlength2+$sumlength3+$sumlength4+$sumlength5)+($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+1)*6)*85/9);
+    $maxwidth2=intval(($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+3)*6*75/9);
+    if($maxwidth2>$maxwidth1){$maxwidth2=$maxwidth1-1;}
+    if($maxwidth3>$maxwidth2){$maxwidth3=$maxwidth2-1;}
+?>
+
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     </head>
     <body>
         <div id="wrap">
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        
+        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
-                <div class="container">
-<?php  if ($menucollapses) { ?>
+                    <?php  if ($menucollapses) { ?>
                     <style>
                         /* this is menu colapsed */
                         @media (max-width: 979px){
@@ -39,7 +101,7 @@
                             display: inherit !important ;
                           }
                         }
-                        @media (min-width: 980px) and (max-width: 1200px){
+                        @media (min-width: 980px) and (max-width: <?php if($maxwidth1<981){$maxwidth1=981;} echo $maxwidth1; ?>px){
                           .menu-text {
                             display: none !important;
                           }
@@ -50,37 +112,35 @@
                     </button>
 
                     <div class="nav-collapse collapse">
-<?php } else { ?>
+                    <?php } else { ?>
                         <style>
-                            @media (max-width: 1200px){
+                            @media (max-width: <?php echo $maxwidth1; ?>px){
                               .menu-text {
                                 display: none !important;
                               }
                             }
-                            @media (max-width: 480px){
+                            @media (max-width: <?php echo $maxwidth2; ?>px){
                               .menu-dashboard {
                                 display: none !important;
                               }
                             }
-
-                            @media (max-width: 320px){
+                            @media (max-width: <?php echo $maxwidth3; ?>px){
                               .menu-extra {
                                 display: none !important;
                               }
                             }
                         </style>
-<?php } ?>
+                    <?php } ?>
                     <?php
                         echo $mainmenu;
                     ?>
-<?php
-    if ($menucollapses) {
-?>
+                    <?php
+                        if ($menucollapses) {
+                    ?>
                     </div>
-<?php
-    }
-?>
-                </div>
+                    <?php
+                        }
+                    ?>
             </div>
         </div>
 

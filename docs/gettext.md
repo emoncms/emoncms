@@ -65,13 +65,16 @@ The supported locales can be found in '/usr/share/i18n/SUPPORTED'. Open the file
 
     $ sudo nano /usr/share/i18n/SUPPORTED
 
-For example there are multiple lines for en\_US
+To change linux language you need to reconfigure the locales and pick from the list the UTF-8 for the desired language 
 
-    en_US.UTF-8 UTF-8
-    en_US ISO-8859-1
-    en_US.ISO-8859-15 ISO-8859-15
+    $ sudo dpkg-reconfigure locales
     
+You will see multiple lines for all the languages, assuming (as an example) you are translating to en\_US you should pick always the UTF-8 (8-bit Unicode Transformation Format):
 
+    [X] en_US.UTF-8 UTF-8
+    [ ] en_US ISO-8859-1
+    [ ] en_US.ISO-8859-15 ISO-8859-15
+    
 To generate the locale for the default character set, run the following:
 
     $ sudo locale-gen en_US
@@ -80,6 +83,12 @@ To generate the locale for the default character set, run the following:
 
     $ sudo /etc/init.d/apache2 restart 
     
+To enable a language as a default for emonCMS you need to edit `locale.php` line 88
+    
+    $ default  : $lang='en_US';
+
+*Note: currently not all Emoncms strings have been translated*
+
 
 This short guide is based on the following useful tutorials and QA:
 

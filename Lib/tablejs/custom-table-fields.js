@@ -5,6 +5,7 @@
   Part of the OpenEnergyMonitor project: http://openenergymonitor.org
   2016-12-20 - Expanded tables by : Nuno Chaveiro  nchaveiro(a)gmail.com  
 */
+
 var customtablefields = {
   'icon': {
     'draw': function(t,row,child_row,field) {
@@ -19,7 +20,23 @@ var customtablefields = {
         var field = $(this).parent().attr('field');
         var t = table;
         if (!t.data[row]['#READ_ONLY#']) {
-          t.data[row][field] = !t.data[row][field];
+          var val = t.data[row][field];
+          if (typeof val === "boolean") {
+            t.data[row][field] = !val;
+          } else {
+            //boolean conversion and negate
+            var boolVal;
+            if(typeof val === "number"){
+                boolVal = val === 0 ? false : true;
+            } else if (typeof val === "string") {
+                boolVal = (val == "0" || val == "false") ? false : true;
+            } else {
+                //neither bool nor number nor string
+                //"strange" value
+                boolVal = false;
+            }
+            t.data[row][field] = !boolVal;  
+          }
 
           var fields = {};
           fields[field] = t.data[row][field];
@@ -122,7 +139,36 @@ var customtablefields = {
       }
       return out;
     }
-  }
+  },
+  
+    'date': {
+        'draw': function (t,row,child_row,field) {
+            var date = new Date();
+            date.setTime(1000 * t.data[row][field]); //from seconds to miliseconds
+            return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes());
+        },
+        'edit':function (t,row,child_row,field) {
+            var date= new Date();
+            date.setTime(1000 * t.data[row][field]); //from seconds to miliseconds
+            var day = date.getDate();
+            var month = date.getMonth() +1; // getMonth() returns 0-11
+            var year = date.getFullYear();
+            var hours= date.getHours();
+            var minutes = date.getMinutes();
+            return '<div class="input-append date" id="'+field +'-'+row+'-'+t.data[row][field]+'" data-format="dd/MM/yyyy hh:mm" data-date="'+day+'/'+month+'/'+year+' '+hours+':'+minutes+'"><input data-format="dd/MM/yyyy hh:mm" value="'+day+'/'+month+'/'+year+' '+hours+':'+minutes+'" type="text" /><span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span></div>';
+        },
+        'save': function (t,row,child_row,field) { 
+            return parse_timepicker_time($("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").val());
+        }    
+    },
+  
+    'fixeddate': {
+        'draw': function (t,row,child_row,field) {
+            var date = new Date();
+            date.setTime(1000 * t.data[row][field]); //from seconds to miliseconds
+            return (date.getDate() + '/' + (date.getMonth() + 1) + '/' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes());
+        }
+    }
 }
 
 
@@ -183,3 +229,16 @@ function list_format_size(bytes) {
     return (bytes/(1024*1024*1024)).toFixed(1)+"GB";
   }
 }
+
+  function parse_timepicker_time(timestr){
+    var tmp = timestr.split(" ");
+    if (tmp.length!=2) return false;
+
+    var date = tmp[0].split("/");
+    if (date.length!=3) return false;
+
+    var time = tmp[1].split(":");
+    if (time.length!=2) return false;
+
+    return new Date(date[2],date[1]-1,date[0],time[0],time[1],0).getTime() / 1000;
+  }

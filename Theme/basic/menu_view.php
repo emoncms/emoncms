@@ -62,15 +62,17 @@
         $desc = false;
         $icon = false;
         $published = false;
+        $divid = "";
         if (isset($item['name'])) $name = $item['name'];
         if (isset($item['desc'])) $desc = $item['desc'];
         if (isset($item['icon'])) $icon = $item['icon'];
         if (isset($item['published'])) $published = $item['published'];
+        if (isset($item['id'])) $divid = "id='".$item['id']."'";
 
         $title = ($desc ? $desc : $name);
         if($name && $published) $name = "<b>".$name."</b>";
 
-        $out = "<div style='display: inline'>";
+        $out = "<div $divid style='display: inline'>";
         if ($icon) $out .= "<i class='".$icon."'" . ($title ? " title='".$title."'" : "") . "></i>";
         if ($name) {
             if ($alwaysshowname || !$icon) {

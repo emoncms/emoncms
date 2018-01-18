@@ -13,12 +13,16 @@
 
   global $path, $embed;
 
-  $power = get('power');
-  $kwhd = get('kwhd');
-  if (isset($_GET['whw'])) {$whw = $_GET['whw'];} else {$whw = 0;}	// Histogram feed
-  $apikey = get('apikey');
+  $power = (int) get('power');
+  $kwhd = (int) get('kwhd');
+  if (isset($_GET['whw'])) {$whw = (int) $_GET['whw'];} else {$whw = 0;}	// Histogram feed
+
   $currency = get('currency')?get('currency'):'&pound;';
+  $currency = preg_replace('/[^\w\s&;]/','',$currency);
+    
   $pricekwh = get('pricekwh')?get('pricekwh'):0.14;
+  $pricekwh = (float) $pricekwh;
+  
   ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
