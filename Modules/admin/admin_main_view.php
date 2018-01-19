@@ -214,6 +214,7 @@ if(is_writable($log_filename)) {
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
                     <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
+                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy to clipboard'); ?></button>
 <?php } ?>
                 </td>
             </tr>
@@ -346,10 +347,7 @@ if ($system['mem_info']) {
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
             </table>
-            <div>
-             <div style="float:left;"><h3><?php echo _('Client Information'); ?></h3></div>
-             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyclientinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
-            </div>
+            <h3><?php echo _('Client Information'); ?></h3>
             <table class="table table-hover table-condensed">
               <tr><td><b>HTTP</b></td><td>Browser</td><td colspan="2"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></td></tr>
               <tr><td><b>Screen</b></td><td>Resolution</td><td colspan="2"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></td></tr>
@@ -384,41 +382,52 @@ function copyTextToClipboard(text) {
   }
   document.body.removeChild(textArea);
 }
-var btnCopy1 = document.getElementById('copyserverinfo');
-btnCopy1.addEventListener('click', function(event) {
-  copyTextToClipboard('<details><summary>SERVER INFORMATION</summary>Emoncms\nVersion : <?php echo $emoncms_version ?>\nModules : <?php echo str_replace('&nbsp;',' ',$system['emoncms_modules']) ?>\nServer\nOS : <?php echo $system['system'] . ' ' . $system['kernel']; ?>\nHost : <?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?>\nDate : <?php echo $system['date']; ?>\nUptime : <?php echo $system['uptime']; ?>\nHTTP\nServer : <?php echo $system['http_server'] . ' ' . $system['http_proto'] . ' ' . $system['http_mode'] . ' ' . $system['http_port']; ?><?php
+var serverInfoDetails = 'Emoncms\nVersion : <?php echo $emoncms_version ?>\nModules : <?php echo str_replace('&nbsp;',' ',$system['emoncms_modules']) ?>\nServer\nOS : <?php echo $system['system'] . ' ' . $system['kernel']; ?>\nHost : <?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?>\nDate : <?php echo $system['date']; ?>\nUptime : <?php echo $system['uptime']; ?>\nHTTP\nServer : <?php echo $system['http_server'] . ' ' . $system['http_proto'] . ' ' . $system['http_mode'] . ' ' . $system['http_port']; ?>\n<?php
               if ($redis_enabled) {
-                echo "\\nRedis\\nVersion : ". $redis->info()['redis_version']."\\Host : ". $system['redis_server'] . ' (' . $system['redis_ip'] . ')\\nSize : '. $redis->dbSize() . " keys  (" . $redis->info()['used_memory_human'].")\\nUptime : ".$redis->info()['uptime_in_days'] . " days";} 
-              ?>\nMySQL\nVersion : <?php echo $system['db_version']; ?>\nHost : <?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?>\nDate : <?php echo $system['db_date']; ?>\nStats : <?php echo $system['db_stat']; ?>\n<?php if ($system['mem_info']) {
+                echo "Redis\\nVersion : ". $redis->info()['redis_version']."\\nHost : ". $system['redis_server'] . ' (' . $system['redis_ip'] . ')\\nSize : '. $redis->dbSize() . " keys  (" . $redis->info()['used_memory_human'].")\\nUptime : ".$redis->info()['uptime_in_days'] . " days\\n";} 
+              ?>MySQL\nVersion : <?php echo $system['db_version']; ?>\nHost : <?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?>\nDate : <?php echo $system['db_date']; ?>\nStats : <?php echo $system['db_stat']; ?>\n<?php if ($system['mem_info']) {
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
               echo "Memory\\nRAM  - Used : ".$sysRamPercent."%";
-              echo " Total: ".formatSize($system['mem_info']['MemTotal'])." Used: ".formatSize($sysRamUsed)." Free: ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."";
+              echo " Total: ".formatSize($system['mem_info']['MemTotal'])." Used: ".formatSize($sysRamUsed)." Free: ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."\\n";}
 
               if ($mqtt_enabled) {
                 echo "MQTT\\nVersion : ";
                 if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*\(build)\''); } } 
-                echo "Host " . $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')';
+                echo "Host " . $system['mqtt_server']. ":" . $system['mqtt_port'] . " (" . $system['mqtt_ip'] . ")\\n";
               }
 
               if ($system['mem_info']['SwapTotal'] > 0) {
                 $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree']; 
                 $sysSwapPercent = sprintf('%.2f',($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100);
-                echo "\\nSwap - Used : ".$sysSwapPercent."%";
-                echo " Total: ".formatSize($system['mem_info']['SwapTotal'])." Used: ".formatSize($sysSwapUsed)." Free: ".formatSize($system['mem_info']['SwapFree'])."";
+                echo "Swap - Used : ".$sysSwapPercent."%";
+                echo " Total: ".formatSize($system['mem_info']['SwapTotal'])." Used: ".formatSize($sysSwapUsed)." Free: ".formatSize($system['mem_info']['SwapFree'])."\\n";
               }
-  }?>\nPHP\nVersion : <?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?>\nModules : <?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " | "; } ?></details>');
-});
-var btnCopy2 = document.getElementById('copyclientinfo');
-btnCopy2.addEventListener('click', function(event) {
-  copyTextToClipboard('<details><summary>CLIENT INFORMATION</summary>HTTP\nBrowser : '+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\nScreen\nResolution : '+ window.screen.width + ' x ' + window.screen.height +'\nWindow\nSize : ' + $( window ).width() + ' x ' + $( window ).height() + '</details>');
-});
-$( window ).resize(function() {
-  $("#windowsize").html( $( window ).width() + " x " + $( window ).height() );
+?>PHP\nVersion : <?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?>\nModules : <?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " | "; } ?>';
+var clientInfoDetails = 'HTTP\nBrowser : '+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\nScreen\nResolution : '+ window.screen.width + ' x ' + window.screen.height +'\nWindow\nSize : ' + $(window).width() + ' x ' + $(window).height();
+
+$("#copyserverinfo").on('click', function(event) {
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('SERVER INFORMATION\n' + serverInfoDetails + '\nCLIENT INFORMATION\n' + clientInfoDetails);
+    } else {
+        copyTextToClipboard('<details><summary>SERVER INFORMATION</summary><br />\n'+ serverInfoDetails.replace(/\n/g,'<br />\n') + '</details><br />\n<details><summary>CLIENT INFORMATION</summary><br />\n'+ clientInfoDetails.replace(/\n/g,'<br />\n') + '</details><br />');
+    }
+} );
+
+var logFileDetails;
+$("#copylogfile").on('click', function(event) {
+    logFileDetails = $("#logreply").text();
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('LAST ENTRIES ON THE LOG FILE\n'+logFileDetails);
+    } else {
+        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n') + '</details><br />\n');
+    }
+} );
+$(window).resize(function() {
+  $("#windowsize").html( $(window).width() + " x " + $(window).height() );
 });
 var path = "<?php echo $path; ?>";
 var logrunning = false;
-
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
 <?php } ?>
