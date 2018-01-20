@@ -420,7 +420,7 @@ $("#copylogfile").on('click', function(event) {
     if ( event.ctrlKey ) {
         copyTextToClipboard('LAST ENTRIES ON THE LOG FILE\n'+logFileDetails);
     } else {
-        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n') + '</details><br />\n');
+        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n').replace(/API key '[\s\S]*?'/g,'API key \'xxxxxxxxx\'') + '</details><br />\n');
     }
 } );
 $(window).resize(function() {
