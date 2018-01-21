@@ -31,7 +31,7 @@ on 16.04:
  **If running PHP7:** Add pecl modules to php7 config
  
     printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
-    sudo php5enmod redis
+    sudo phpenmod redis
 
 ### Configure Apache
 
