@@ -25,14 +25,14 @@ Use **only one** of the following two options;
 
 **If using php5 (normally Raspbian Jessie or Wheezy)**
 
-    printf "extension=mosquitto.so" | sudo tee /etc/php5/mods-available/mosqitto.ini 1>&2
-    sudo php5enmod mosqitto
+    printf "extension=mosquitto.so" | sudo tee /etc/php5/mods-available/mosquitto.ini 1>&2
+    sudo php5enmod mosquitto
     
 ***- OR -***
 
 **If using php7.0 (normally Rasbian Stretch)**
 
-    printf "extension=mosqitto.so" | sudo tee /etc/php/7.0/mods-available/mosquitto.ini 1>&2
+    printf "extension=mosquitto.so" | sudo tee /etc/php/7.0/mods-available/mosquitto.ini 1>&2
     sudo phpenmod mosquitto
 
 ### Enable MQTT in Emoncms
