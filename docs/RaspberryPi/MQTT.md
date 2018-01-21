@@ -16,31 +16,24 @@ In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-r
     sudo apt-get install libmosquitto-dev
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
-
-<<<<<<< HEAD
+    
 If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository).
 
-Install PHP Mosquitto extension:
-
-    printf "extension=mosquitto.so" | sudo tee /etc/php5/mods-available/mosquitto.ini 1>&2
-    sudo php5enmod mosquitto
-=======
 ### Create PHP extension files
 
 Use **only one** of the following two options;
 
 **If using php5 (normally Raspbian Jessie or Wheezy)**
 
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/cli/conf.d/20-mosquitto.ini'
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/apache2/conf.d/20-mosquitto.ini'
+    printf "extension=mosquitto.so" | sudo tee /etc/php5/mods-available/mosqitto.ini 1>&2
+    sudo php5enmod mosqitto
     
 ***- OR -***
 
 **If using php7.0 (normally Rasbian Stretch)**
->>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
 
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php/7.0/cli/conf.d/20-mosquitto.ini'
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php/7.0/apache2/conf.d/20-mosquitto.ini'
+    printf "extension=mosqitto.so" | sudo tee /etc/php/7.0/mods-available/mosquitto.ini 1>&2
+    sudo phpenmod mosquitto
 
 ### Enable MQTT in Emoncms
 
