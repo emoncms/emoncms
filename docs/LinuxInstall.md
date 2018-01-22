@@ -8,17 +8,11 @@ You may need to start by updating the system repositories
 
     sudo apt-get update
 
-**For Ubuntu 14.04**:
+**For Ubuntu 14.04:**
 
-<<<<<<< HEAD
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
-
-on 16.04:
-=======
     sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
 
-**For Ubuntu 16.04**:
->>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
+**For Ubuntu 16.04:**
 
 `sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y`
 
@@ -36,8 +30,8 @@ on 16.04:
 
  **If running PHP7:** Add pecl modules to php7 config
 
-   printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
-   sudo phpenmod redis
+    printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
+    sudo phpenmod redis
 
 ### Configure Apache
 
@@ -103,13 +97,8 @@ Then add a user for emoncms and give it permissions on the new database (think o
 Exit mysql by:
 
     mysql> exit
-<<<<<<< HEAD
-
-### Create data repositories for emoncms feed engine's
-=======
-
+    
 ### Create data repositories for emoncms feed engines
->>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
