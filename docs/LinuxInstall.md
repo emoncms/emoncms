@@ -8,11 +8,11 @@ You may need to start by updating the system repositories
 
     sudo apt-get update
 
-on 14.04:
+**For Ubuntu 14.04:**
 
     sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
 
-on 16.04:
+**For Ubuntu 16.04:**
 
 `sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y`
 
@@ -24,12 +24,12 @@ on 16.04:
     sudo pecl install swift/swift redis
 
 **If running PHP5:** Add pecl modules to php5 config
-    
+
     printf "extension=redis.so" | sudo tee /etc/php5/mods-available/redis.ini 1>&2
     sudo php5enmod redis
- 
+
  **If running PHP7:** Add pecl modules to php7 config
- 
+
     printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
     sudo phpenmod redis
 
