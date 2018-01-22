@@ -14,7 +14,7 @@ You may need to start by updating the system repositories
 
 **For Ubuntu 16.04:**
 
-    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y`
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y
 
 ### Install PHP pecl dependencies
 
