@@ -262,7 +262,7 @@ if ($allow_emonpi_admin) {
              <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
              <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
             </div>
-            <table class="table table-hover table-condensed">
+            <table class="table table-hover table-condensed" id="serverinformationtabular">
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
@@ -382,35 +382,15 @@ function copyTextToClipboard(text) {
   }
   document.body.removeChild(textArea);
 }
-var serverInfoDetails = 'Emoncms\nVersion : <?php echo $emoncms_version ?>\nModules : <?php echo str_replace('&nbsp;',' ',$system['emoncms_modules']) ?>\nServer\nOS : <?php echo $system['system'] . ' ' . $system['kernel']; ?>\nHost : <?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?>\nDate : <?php echo $system['date']; ?>\nUptime : <?php echo $system['uptime']; ?>\nHTTP\nServer : <?php echo $system['http_server'] . ' ' . $system['http_proto'] . ' ' . $system['http_mode'] . ' ' . $system['http_port']; ?>\n<?php
-              if ($redis_enabled) {
-                echo "Redis\\nVersion : ". $redis->info()['redis_version']."\\nHost : ". $system['redis_server'] . ' (' . $system['redis_ip'] . ')\\nSize : '. $redis->dbSize() . " keys  (" . $redis->info()['used_memory_human'].")\\nUptime : ".$redis->info()['uptime_in_days'] . " days\\n";} 
-              ?>MySQL\nVersion : <?php echo $system['db_version']; ?>\nHost : <?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?>\nDate : <?php echo $system['db_date']; ?>\nStats : <?php echo $system['db_stat']; ?>\n<?php if ($system['mem_info']) {
-              $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
-              $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
-              echo "Memory\\nRAM  - Used : ".$sysRamPercent."%";
-              echo " Total: ".formatSize($system['mem_info']['MemTotal'])." Used: ".formatSize($sysRamUsed)." Free: ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."\\n";}
+var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?b>/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|');
 
-              if ($mqtt_enabled) {
-                echo "MQTT\\nVersion : ";
-                if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*\(build)\''); } } 
-                echo "Host " . $system['mqtt_server']. ":" . $system['mqtt_port'] . " (" . $system['mqtt_ip'] . ")\\n";
-              }
-
-              if ($system['mem_info']['SwapTotal'] > 0) {
-                $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree']; 
-                $sysSwapPercent = sprintf('%.2f',($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100);
-                echo "Swap - Used : ".$sysSwapPercent."%";
-                echo " Total: ".formatSize($system['mem_info']['SwapTotal'])." Used: ".formatSize($sysSwapUsed)." Free: ".formatSize($system['mem_info']['SwapFree'])."\\n";
-              }
-?>PHP\nVersion : <?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?>\nModules : <?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo " | "; } ?>';
-var clientInfoDetails = 'HTTP\nBrowser : '+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\nScreen\nResolution : '+ window.screen.width + ' x ' + window.screen.height +'\nWindow\nSize : ' + $(window).width() + ' x ' + $(window).height();
+var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
 
 $("#copyserverinfo").on('click', function(event) {
     if ( event.ctrlKey ) {
-        copyTextToClipboard('SERVER INFORMATION\n' + serverInfoDetails + '\nCLIENT INFORMATION\n' + clientInfoDetails);
+        copyTextToClipboard('SERVER INFORMATION\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nCLIENT INFORMATION\n' + clientInfoDetails.replace(/\|/g,'\t'));
     } else {
-        copyTextToClipboard('<details><summary>SERVER INFORMATION</summary><br />\n'+ serverInfoDetails.replace(/\n/g,'<br />\n') + '</details><br />\n<details><summary>CLIENT INFORMATION</summary><br />\n'+ clientInfoDetails.replace(/\n/g,'<br />\n') + '</details><br />');
+        copyTextToClipboard('<details><summary>SERVER INFORMATION</summary><pre>\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</pre></details>\n<details><summary>CLIENT INFORMATION</summary><pre>\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</pre></details>');
     }
 } );
 
