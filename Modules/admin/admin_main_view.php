@@ -214,6 +214,7 @@ if(is_writable($log_filename)) {
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
                     <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
+                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy to clipboard'); ?></button>
 <?php } ?>
                 </td>
             </tr>
@@ -257,9 +258,12 @@ if ($allow_emonpi_admin) {
 
     <tr colspan=2>
         <td colspan=2>
-            <h3><?php echo _('Server Information'); ?></h3>
-            <table class="table table-hover table-condensed">
-              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?>&nbsp;<div style="float: right;"><button class="btn btn-info" style="font-size: 12px;line-height: 12px;" id="copyemoncmsinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div></td></tr>
+            <div>
+             <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
+             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
+            </div>
+            <table class="table table-hover table-condensed" id="serverinformationtabular">
+              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
@@ -343,7 +347,12 @@ if ($system['mem_info']) {
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
             </table>
-            
+            <h3><?php echo _('Client Information'); ?></h3>
+            <table class="table table-hover table-condensed">
+              <tr><td><b>HTTP</b></td><td>Browser</td><td colspan="2"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></td></tr>
+              <tr><td><b>Screen</b></td><td>Resolution</td><td colspan="2"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></td></tr>
+              <tr><td><b>Window</b></td><td>Size</td><td colspan="2"><span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span></td></tr>
+            </table>
         </td>
     </tr>
 </table>
@@ -373,14 +382,32 @@ function copyTextToClipboard(text) {
   }
   document.body.removeChild(textArea);
 }
-var btnCopy = document.getElementById('copyemoncmsinfo');
-btnCopy.addEventListener('click', function(event) {
-  copyTextToClipboard('EMONCMS\nVersion : '+'<?php echo $emoncms_version ?>'+'\nModules : '+'<?php echo str_replace('&nbsp;',' ',$system['emoncms_modules']) ?>');
-});
+var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?b>/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|');
 
+var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
+
+$("#copyserverinfo").on('click', function(event) {
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('SERVER INFORMATION\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nCLIENT INFORMATION\n' + clientInfoDetails.replace(/\|/g,'\t'));
+    } else {
+        copyTextToClipboard('<details><summary>SERVER INFORMATION</summary><pre>\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</pre></details>\n<details><summary>CLIENT INFORMATION</summary><pre>\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</pre></details>');
+    }
+} );
+
+var logFileDetails;
+$("#copylogfile").on('click', function(event) {
+    logFileDetails = $("#logreply").text();
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('LAST ENTRIES ON THE LOG FILE\n'+logFileDetails);
+    } else {
+        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n').replace(/API key '[\s\S]*?'/g,'API key \'xxxxxxxxx\'') + '</details><br />\n');
+    }
+} );
+$(window).resize(function() {
+  $("#windowsize").html( $(window).width() + " x " + $(window).height() );
+});
 var path = "<?php echo $path; ?>";
 var logrunning = false;
-
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
 <?php } ?>
