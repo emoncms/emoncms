@@ -387,9 +387,9 @@ var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT
 
 $("#copyserverinfo").on('click', function(event) {
     if ( event.ctrlKey ) {
-        copyTextToClipboard('SERVER INFORMATION\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nCLIENT INFORMATION\n' + clientInfoDetails.replace(/\|/g,'\t'));
+        copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
     } else {
-        copyTextToClipboard('<details><summary>SERVER INFORMATION</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</pre></details>\n<details><summary>CLIENT INFORMATION</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</pre></details>');
+        copyTextToClipboard('<details><summary>Server Information</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</pre></details>\n<details><summary>Client Information</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</pre></details>');
     }
 } );
 
