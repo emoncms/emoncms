@@ -1,5 +1,4 @@
 
-
 <?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
 
   // Retrieve server information
@@ -12,7 +11,7 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
-    
+
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
@@ -88,7 +87,7 @@
       $shutdownPi = htmlspecialchars(stripslashes(trim($_POST['shutdownPi'])));
   }
   if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
-  
+
   //Shutdown Command Check
   function chkRebootBtn(){
     $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
@@ -100,7 +99,7 @@
       return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
     }
   }
-  
+
   function disk_list()
   {
       $partitions = array();
@@ -117,7 +116,7 @@
           $column = trim($column);
           if($column != '') $columns[] = $column;
         }
-    
+
         // Only process 6 column rows
         // (This has the bonus of ignoring the first row which is 7)
         if(count($columns) == 6)
@@ -143,7 +142,7 @@
       }
       return $partitions;
   }
- 
+
  ?>
 <style>
 pre {
@@ -316,13 +315,13 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
 if ($system['mem_info']) {
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
-              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used&nbsp;".$sysRamPercent."%</div></div>";
+              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
               echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."</td></tr>\n";
-              
+
               if ($system['mem_info']['SwapTotal'] > 0) {
                 $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree'];
                 $sysSwapPercent = sprintf('%.2f',($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100);
-                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercent."%;'>Used&nbsp;".$sysSwapPercent."%</div></div>";
+                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercent."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
                 echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
               }
 }
@@ -335,10 +334,10 @@ if ($system['mem_info']) {
                         $diskTotal = $fs['Size']['value'];;
                         $diskUsed = $fs['Used']['value'];;
                         $diskPercent = sprintf('%.2f',($diskUsed / $diskTotal) * 100);
-                        
-                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercent."%;'>Used&nbsp;".$diskPercent."%</div></div>";
+ 
+                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercent."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
                         echo "<b>Total:</b> ".formatSize($diskTotal)."<b> Used:</b> ".formatSize($diskUsed)."<b> Free:</b> ".formatSize($diskFree)."</td></tr>\n";
-                        
+
                       }
                     }
                 }
