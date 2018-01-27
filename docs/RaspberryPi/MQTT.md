@@ -17,7 +17,7 @@ In addition to Mosquitto MQTT server we will need to install [mosquitto-debian-r
     sudo pecl install Mosquitto-alpha
     (​Hit enter to autodetect libmosquitto location)
     
-If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository). 
+If you get the error: "E: Unable to locate package libmosquitto-dev" follow the instructions at the top of the [mosquitto Debian package install guide](http://mosquitto.org/2013/01/mosquitto-debian-repository).
 
 ### Create PHP extension files
 
@@ -25,15 +25,15 @@ Use **only one** of the following two options;
 
 **If using php5 (normally Raspbian Jessie or Wheezy)**
 
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/cli/conf.d/20-mosquitto.ini'
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php5/apache2/conf.d/20-mosquitto.ini'
+    printf "extension=mosquitto.so" | sudo tee /etc/php5/mods-available/mosquitto.ini 1>&2
+    sudo php5enmod mosquitto
     
 ***- OR -***
 
 **If using php7.0 (normally Rasbian Stretch)**
 
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php/7.0/cli/conf.d/20-mosquitto.ini'
-    sudo sh -c 'echo "extension=mosquitto.so" > /etc/php/7.0/apache2/conf.d/20-mosquitto.ini'
+    printf "extension=mosquitto.so" | sudo tee /etc/php/7.0/mods-available/mosquitto.ini 1>&2
+    sudo phpenmod mosquitto
 
 ### Enable MQTT in Emoncms
 
@@ -55,7 +55,7 @@ The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. Th
 
 ### Run Emoncms phpmqtt_input script
 
-Install `phpmqtt_input` systemd unit script and make starts on boot: 
+Install `phpmqtt_input` systemd unit script and make starts on boot:
 
 ```
 sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
@@ -75,9 +75,9 @@ View status / log snippet with:
 
 `sudo systemctl status mqtt_input -n50`
 
-*Where -nX is the number of log lines to view* 
+*Where -nX is the number of log lines to view*
 
-Log can be viewed as text and standard text manipulation tools can be applied: 
+Log can be viewed as text and standard text manipulation tools can be applied:
 
 `sudo journalctl -f -u mqtt_input -o cat | grep emonpi`
 
@@ -87,7 +87,7 @@ Or with a datestamp:
 
 There are lots of journalctrl output options: `short, short-iso, short-precise, short-monotonic, verbose,export, json, json-pretty, json-sse, cat`
 
-To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `mqtt_input`. 
+To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `mqtt_input`.
 
 #### An alternative for systems not running systemd
 
