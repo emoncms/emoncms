@@ -81,7 +81,7 @@
 
   var feedlist = [];
   feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
-  feedlist[1] = {id: kwhd, mode:"day", delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
+  feedlist[1] = {id: kwhd, mode:"daily", delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
   $(window).resize(function(){
     $('#graph').width($('#graph_bound').width());

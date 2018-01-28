@@ -44,12 +44,7 @@ Install the pecl dependencies (swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl channel-update pecl.php.net
-    sudo pecl install channel://pecl.php.net/dio-0.1.0 swift/swift
-
-Add the modules to php7 config:
-
-    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/apache2/conf.d/20-dio.ini'
-    sudo sh -c 'echo "extension=dio.so" > /etc/php/7.0/cli/conf.d/20-dio.ini'
+    sudo pecl install swift/swift
 
 Issue the command:
 
