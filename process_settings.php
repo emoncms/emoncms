@@ -14,11 +14,28 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
-// Check if settings.php file exists
-if(file_exists(dirname(__FILE__)."/settings.php"))
+// Locate settings.php file location
+// RaspberryPi
+        if(file_exists("/home/pi/.emoncms/settings.php"))
+        {
+        $settingsPath = "/home/pi/.emoncms";
+        }
+// Emonpi
+        elseif(file_exists("/home/pi/settings.php"))
+        {
+        $settingsPath = "/home/pi";
+        }
+// Fallback & compatibility
+        elseif(file_exists(dirname(__FILE__)."/settings.php"))
+        {
+        $settingsPath = (dirname(__FILE__));
+        }
+
+// Check if the settings path exists
+if(file_exists($settingsPath))
 {
     // Load settings.php
-    require_once('settings.php');
+    require_once($settingsPath ."/settings.php");
 
     if (!isset($allow_config_env_vars)) $allow_config_env_vars = false;
     if ($allow_config_env_vars) {
