@@ -16,14 +16,9 @@ require_once('Lib/enum.php');
 
 // Locate settings.php file location
 // RaspberryPi
-        if(file_exists("/home/pi/.emoncms/settings.php"))
+        if(file_exists("/home/data/emondata/settings.php"))
         {
-        $settingsPath = "/home/pi/.emoncms";
-        }
-// Emonpi
-        elseif(file_exists("/home/pi/settings.php"))
-        {
-        $settingsPath = "/home/pi";
+        $settingsPath = "/home/data/emondata";
         }
 // Fallback & compatibility
         elseif(file_exists(dirname(__FILE__)."/settings.php"))
