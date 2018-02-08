@@ -205,13 +205,16 @@
                             $time = $timestamp;
                         }
                     } else {
+                        $log->info("Valid time string used".$time);
                         //Do nothings as it has been assigned to $time as a value
                     }
                 } else {
+                    $log->info("No time element found in JSON - System time used");
                     $time = time();
                 }
             } else {
                 $jsoninput = false;
+                $log->info("No JSON found - System time used");
                 $time = time();
             }
 
@@ -246,7 +249,7 @@
                     if (isset($route[$st+1])) {
                         $nodeid = $route[$st+1];
                         $result = $inputMethods->process_node($userid,$time,$nodeid,$jsondata);
-                        $log->error("MQTT JSON Input result: ".$result);
+                        $log->log("MQTT JSON Input result: ".$result);
                     } else{
                         $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
                     } 
