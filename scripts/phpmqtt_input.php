@@ -243,7 +243,7 @@
                     $nodeid = $route[$st+1];
                     $dbinputs = $input->get_inputs($userid);
 
-                    if ($jsondata) {
+                    if ($jsoninput) {
                         foreach ($jsondata as $key=>$value) {
                             $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                         }
