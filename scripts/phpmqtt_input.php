@@ -98,6 +98,9 @@
         $device = new Device($mysqli,$redis);
     }
     
+    require_once "Modules/input/input_methods.php";
+    $inputMethods = new InputMethods($mysqli,$redis,$user->get_timezone($mqttsettings['userid']),$input,$feed,$process,$device);
+
     $mqtt_client = new Mosquitto\Client();
     
     $connected = false;
@@ -179,13 +182,39 @@
     function message($message)
     {
         try {
+            $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
             
-            $time = time();
-            
-            global $mqtt_server, $user, $input, $process, $feed, $device, $log, $count;
-            
+            global $mqtt_server, $input, $process, $device, $log, $count, $inputMethods;
+
+            //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
+            $jsondata = json_decode($value,true,2);
+            if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
+                // JSON is valid - is it an array
+                $jsoninput = true;
+                $log->info("MQTT Valid JSON found ".$value);
+
+                #If JSON check to see if there is a time value else set to time now.
+                if (array_key_exists('time',$jsondata)){
+                    $time = $jsondata['time'];
+                    if (is_string($time)){
+                        if (($timestamp = strtotime($time)) === false) {
+                            $log->warn("Time string not valid ".$time);
+                        } else {
+                            $time = $timestamp;
+                        }
+                    } else {
+                        //Do nothings as it has been assigned to $time as a value
+                    }
+                } else {
+                    $time = time();
+                }
+            } else {
+                $jsoninput = false;
+                $time = time();
+            }
+
             $log->info($topic." ".$value);
             $count ++;
             
@@ -194,91 +223,98 @@
             $userid = $mqttsettings['userid'];
             
             $inputs = array();
-            
+
             $route = explode("/",$topic);
-	          $basetopic = explode("/",$mqtt_server['basetopic']);
+	        $basetopic = explode("/",$mqtt_server['basetopic']);
 
-	          /*Iterate over base topic to determine correct sub-topic*/
-	          $st=-1;
-	          foreach ($basetopic as $subtopic) {
-		            if(isset($route[$st+1])) {
-			              if($basetopic[$st+1]==$route[$st+1]) {
-				                $st = $st + 1;
-			              } else {
-				                break;
-			              }
-		            } else {
-			              $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
-		            }
-	          }
+	        /*Iterate over base topic to determine correct sub-topic*/
+	        $st=-1;
+	        foreach ($basetopic as $subtopic) {
+		        if(isset($route[$st+1])) {
+			        if($basetopic[$st+1]==$route[$st+1]) {
+			            $st = $st + 1;
+			        } else {
+			            break;
+			        }
+		        } else {
+			        $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+		        }
+	        }
      
-            if ($st>=0)
-            {
-                if (isset($route[$st+1]))
-                {
-                    $nodeid = $route[$st+1];
-                    $dbinputs = $input->get_inputs($userid);
-                
-                    if (isset($route[$st+2]))
-                    {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
-                    }
-                    else
-                    {
-                        $values = explode(",",$value);
-                        $name = 0;
-                        foreach ($values as $value) {
-                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
-                        }
-                    }
+            if ($jsoninput) {
+                if ($st>=0) {
+                    if (isset($route[$st+1])) {
+                        $nodeid = $route[$st+1];
+                        $result = $inputMethods->process_node($userid,$time,$nodeid,$jsondata);
+                        $log->error("MQTT JSON Input result: ".$result);
+                    } else{
+                        $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
+                    } 
+                } else {
+                    $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
                 }
-            }
-	          else{
-		          $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
-	          }
-            
-            // Enabled in device-support branch
-            // if (!isset($dbinputs[$nodeid])) {
-            //     $dbinputs[$nodeid] = array();
-            //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
-            // }
 
-            $tmp = array();
-            foreach ($inputs as $i)
-            {
-                $userid = $i['userid'];
-                $time = $i['time'];
-                $nodeid = $i['nodeid'];
-                $name = $i['name'];
-                $value = $i['value'];
-                
-                // Automatic device configuration using device module if 'describe' keyword found
-                if (strtolower($name)=="describe") {
-                    if ($device && method_exists($device,"autocreate")) {
-                        $result = $device->autocreate($userid,$nodeid,$value);
-                        $log->info(json_encode($result));
-                    }
-                }
-                else 
-                {
-                    if (!isset($dbinputs[$nodeid][$name])) {
-                        $inputid = $input->create_input($userid, $nodeid, $name);
-                        if (!$inputid) {
-                            $log->warn("error creating input"); die;
+            } else {
+                if ($st>=0) {
+                    if (isset($route[$st+1])) {
+                        $nodeid = $route[$st+1];
+                        $dbinputs = $input->get_inputs($userid);
+                    
+                        if (isset($route[$st+2])) {
+                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
+                        } else {
+                            $values = explode(",",$value);
+                            $name = 0;
+                            foreach ($values as $value) {
+                                $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
+                            }
                         }
-                        $dbinputs[$nodeid][$name] = true;
-                        $dbinputs[$nodeid][$name] = array('id'=>$inputid);
-                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                    } else {
-                        $inputid = $dbinputs[$nodeid][$name]['id'];
-                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-                        
-                        if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                    }
+                } else{
+                    $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
+                }
+                
+                // Enabled in device-support branch
+                // if (!isset($dbinputs[$nodeid])) {
+                //     $dbinputs[$nodeid] = array();
+                //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
+                // }
+                $tmp = array();
+                foreach ($inputs as $i) {
+                    $userid = $i['userid'];
+                    $time = $i['time'];
+                    $nodeid = $i['nodeid'];
+                    $name = $i['name'];
+                    $value = $i['value'];
+                    
+                    // Automatic device configuration using device module if 'describe' keyword found
+                    if (strtolower($name)=="describe") {
+                        if ($device && method_exists($device,"autocreate")) {
+                            $result = $device->autocreate($userid,$nodeid,$value);
+                            $log->info(json_encode($result));
+                        }
+                    }
+                    else {
+                        if (!isset($dbinputs[$nodeid][$name])) {
+                            $inputid = $input->create_input($userid, $nodeid, $name);
+                            if (!$inputid) {
+                                $log->warn("error creating input"); die;
+                            }
+                            $dbinputs[$nodeid][$name] = true;
+                            $dbinputs[$nodeid][$name] = array('id'=>$inputid);
+                            $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                        } else {
+                            $inputid = $dbinputs[$nodeid][$name]['id'];
+                            $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                            
+                            if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                        }
                     }
                 }
-            }
-            
-            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+                
+                foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+
+            } 
             
         } catch (Exception $e) {
             $log->error($e);
