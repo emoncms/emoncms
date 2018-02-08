@@ -194,24 +194,31 @@
                 // JSON is valid - is it an array
                 $jsoninput = true;
                 $log->info("MQTT Valid JSON found ".$value);
+                //Create temporary array and change all keys to lower case to look for a 'time' key
+                $jsondataLC = array_change_key_case($jsondata);
 
                 #If JSON check to see if there is a time value else set to time now.
-                if (array_key_exists('time',$jsondata)){
-                    $time = $jsondata['time'];
+                if (array_key_exists('time',$jsondataLC)){
+                    $time = $jsondataLC['time'];
                     if (is_string($time)){
                         if (($timestamp = strtotime($time)) === false) {
+                            //If time string is not valid, use system time.
+                            $time = time();
                             $log->warn("Time string not valid ".$time);
                         } else {
                             $time = $timestamp;
                         }
                     } else {
+                        $log->info("Valid time string used".$time);
                         //Do nothings as it has been assigned to $time as a value
                     }
                 } else {
+                    $log->info("No time element found in JSON - System time used");
                     $time = time();
                 }
             } else {
                 $jsoninput = false;
+                $log->info("No JSON found - System time used");
                 $time = time();
             }
 
@@ -246,7 +253,7 @@
                     if (isset($route[$st+1])) {
                         $nodeid = $route[$st+1];
                         $result = $inputMethods->process_node($userid,$time,$nodeid,$jsondata);
-                        $log->error("MQTT JSON Input result: ".$result);
+                        $log->log("MQTT JSON Input result: ".$result);
                     } else{
                         $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
                     } 
