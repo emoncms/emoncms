@@ -194,8 +194,8 @@
                 // JSON is valid - is it an array
                 $jsoninput = true;
                 $log->info("MQTT Valid JSON found ".$value);
-		        //Create temporary array and change all keys to lower case to look for a 'time' key
-		        $jsondataLC = array_change_key_case($jsondata);
+                //Create temporary array and change all keys to lower case to look for a 'time' key
+                $jsondataLC = array_change_key_case($jsondata);
 
                 #If JSON check to see if there is a time value else set to time now.
                 if (array_key_exists('time',$jsondataLC)){
