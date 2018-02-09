@@ -1,0 +1,1328 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-17 11:37+0100\n"
+"PO-Revision-Date: 2017-12-17 11:52+0100\n"
+"Last-Translator: Aymeric THIBAUT\n"
+"Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
+"gaultier@telecom-bretagne.eu>\n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 2.0.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../Views/process_api.php:3
+msgid "Process API"
+msgstr "API traitement"
+
+#: ../../../Views/process_api.php:4
+msgid "Apikey authentication"
+msgstr "Authentification clé API"
+
+#: ../../../Views/process_api.php:5
+msgid ""
+"If you want to call any of the following actions when your not logged in you "
+"have this options to authenticate with the API key:"
+msgstr ""
+"Si vous souhaitez appeler une des actions suivantes alors que vous n'êtes "
+"pas connecté, vous pouvez vous authentifier avec votre clé API :"
+
+#: ../../../Views/process_api.php:6
+msgid "Append on the URL of your request: &apikey=APIKEY"
+msgstr "Veuillez ajouter votre clé d'API à la fin de l'url : &apikey=APIKEY"
+
+#: ../../../Views/process_api.php:7
+msgid "Use POST parameter: \"apikey=APIKEY\""
+msgstr "Utilisez le paramètre POST \"apikey=APIKEY\""
+
+#: ../../../Views/process_api.php:8
+msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
+
+#: ../../../Views/process_api.php:9
+msgid "Read only:"
+msgstr "Lecture uniquement : "
+
+#: ../../../Views/process_api.php:12
+msgid "Read & Write:"
+msgstr "Lecture & Écriture : "
+
+#: ../../../Views/process_api.php:16
+msgid "Available HTML URLs"
+msgstr "URLs HTML disponibles"
+
+#: ../../../Views/process_api.php:18
+msgid "This page"
+msgstr "Cette page"
+
+#: ../../../Views/process_api.php:21
+msgid "Available JSON commands"
+msgstr "Commandes JSON disponibles"
+
+#: ../../../Views/process_api.php:22
+msgid "To use the json api the request url needs to include <b>.json</b>"
+msgstr ""
+"Si vous souhaitez utiliser l'API json, veuillez ajouter <b>.json</b> à la "
+"fin de l'url"
+
+#: ../../../Views/process_api.php:25
+msgid "Process actions"
+msgstr "Actions de traitement"
+
+#: ../../../Views/process_api.php:27
+msgid "List all supported process"
+msgstr "Lister tous les traitements supportés"
+
+#: ../../../Views/process_ui.php:37
+msgid "process list setup"
+msgstr "paramétrage liste des traitements"
+
+#: ../../../Views/process_ui.php:40
+msgid ""
+"Processes are executed sequentially with the result value being passed down "
+"for further processing to the next processor on this processing list."
+msgstr ""
+"Les processus sont exécutés séquentiellement avec la valeur de résultat "
+"transmise pour traitement ultérieur au processus suivant sur cette liste de "
+"traitement."
+
+#: ../../../Views/process_ui.php:42
+msgid "You have no processes defined"
+msgstr "Vous n'avez aucun traitement défini"
+
+#: ../../../Views/process_ui.php:47
+msgid "Order"
+msgstr "Ordre"
+
+#: ../../../Views/process_ui.php:48
+msgid "Process"
+msgstr "Traitement"
+
+#: ../../../Views/process_ui.php:49
+msgid "Arg"
+msgstr "Argument"
+
+#: ../../../Views/process_ui.php:51
+msgid "Actions"
+msgstr "Actions"
+
+#: ../../../Views/process_ui.php:58
+msgid "Add process"
+msgstr "Ajouter un traitement"
+
+#: ../../../Views/process_ui.php:59
+msgid "Edit process"
+msgstr "Modifier un traitement"
+
+#: ../../../Views/process_ui.php:67
+msgid "Value"
+msgstr "Valeur"
+
+#: ../../../Views/process_ui.php:68
+msgid "Type value..."
+msgstr "Saisir valeur..."
+
+#: ../../../Views/process_ui.php:74
+msgid "Text"
+msgstr "Texte"
+
+#: ../../../Views/process_ui.php:75
+msgid "Type text..."
+msgstr "Saisir texte..."
+
+#: ../../../Views/process_ui.php:81 ../../../process_processlist.php:88
+#: ../../../process_processlist.php:89 ../../../process_processlist.php:92
+#: ../../../process_processlist.php:93 ../../../process_processlist.php:94
+#: ../../../process_processlist.php:112
+msgid "Input"
+msgstr "Source"
+
+#: ../../../Views/process_ui.php:90
+msgid "Schedule"
+msgstr "Planification"
+
+#: ../../../Views/process_ui.php:99
+msgid "Data"
+msgstr "Données"
+
+#: ../../../Views/process_ui.php:111 ../../../process_processlist.php:120
+#: ../../../process_processlist.php:121 ../../../process_processlist.php:122
+#: ../../../process_processlist.php:123
+msgid "Feed"
+msgstr "Flux"
+
+#: ../../../Views/process_ui.php:114
+msgid "Type feed name..."
+msgstr "Saisir nom du flux..."
+
+#: ../../../Views/process_ui.php:120
+msgid "Engine"
+msgstr "Moteur"
+
+#: ../../../Views/process_ui.php:133
+msgid "Select interval"
+msgstr "Sélectionner intervalle"
+
+#: ../../../Views/process_ui.php:134 ../../../Views/process_ui.php:135
+#: ../../../Views/process_ui.php:136 ../../../Views/process_ui.php:137
+#: ../../../Views/process_ui.php:138 ../../../Views/process_ui.php:139
+msgid "s"
+msgstr "s"
+
+#: ../../../Views/process_ui.php:140 ../../../Views/process_ui.php:141
+#: ../../../Views/process_ui.php:142 ../../../Views/process_ui.php:143
+#: ../../../Views/process_ui.php:144 ../../../Views/process_ui.php:145
+msgid "m"
+msgstr "m"
+
+#: ../../../Views/process_ui.php:146
+msgid "h"
+msgstr "h"
+
+#: ../../../Views/process_ui.php:147
+msgid "d"
+msgstr "j"
+
+#: ../../../Views/process_ui.php:154
+msgid "Add"
+msgstr "Add"
+
+#: ../../../Views/process_ui.php:159
+msgid "Edit"
+msgstr "Modifier"
+
+#: ../../../Views/process_ui.php:162
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../Views/process_ui.php:173
+msgid "Close"
+msgstr "Fermer"
+
+#: ../../../Views/process_ui.php:174
+msgid "Not modified"
+msgstr "Non modifié"
+
+#: ../../../process_processlist.php:56
+msgid "EXIT"
+msgstr "EXIT"
+
+#: ../../../process_processlist.php:56
+msgid ""
+"<p>This was automaticaly added when a loop error was discovered on the "
+"processList or execution took too many steps to process.  Review the usage "
+"of GOTOs or decrease the number of items and delete this entry to resume "
+"execution.</p>"
+msgstr ""
+"<p>Cela a été automatiquement ajouté lorsqu'une erreur de boucle a été "
+"découverte dans la liste des traitements ou que l'exécution a pris trop "
+"d'étapes à traiter. Vérifiez l'utilisation des GOTO ou réduisez le nombre "
+"d'éléments et supprimez cette entrée pour reprendre l'exécution.</p>"
+
+#: ../../../process_processlist.php:83
+msgid "Log to feed "
+msgstr "Log to feed "
+
+#: ../../../process_processlist.php:83 ../../../process_processlist.php:86
+#: ../../../process_processlist.php:126
+msgid "Main"
+msgstr "Principal"
+
+#: ../../../process_processlist.php:83
+msgid ""
+"<p><b>Log to feed:</b> This processor logs to a timeseries feed which can "
+"then be used to explore historic data. This is recommended for logging "
+"power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:"
+"</b><ul><li><b>PHPFina</b> is the recommended feed engine it is a basic "
+"fixed interval timeseries engine.</li><li><b>PHPTimeseries</b> is for data "
+"posted at a non regular interval such as on state change.</li></ul></"
+"p><p><b>Feed interval:</b> When selecting the feed interval select an "
+"interval that is the same as, or longer than the update rate that is set in "
+"your monitoring equipment. Setting the interval rate to be shorter than the "
+"update rate of the equipment causes un-needed disk space to be used up.</p>"
+msgstr ""
+"<p><b>Log to feed:</b> Ce traitement se connecte à un flux de données "
+"temporelles qui peut ensuite être utilisé pour explorer des données "
+"historiques. Ceci est recommandé pour l'enregistrement des données de "
+"puissance, de température, d'humidité, de tension et de courant.</"
+"p><p><b>Feed engine:</b><ul><li><b >PHPFina</b> est le moteur de flux "
+"recommandé, c'est un moteur de base de temps à intervalle de temps fixe.</"
+"li><li><b>PHPTimeseries</b> est pour les données affichées à un intervalle "
+"non régulier, comme lors d'un changement d'état.</li></ul></p><p><b>Feed "
+"interval:</b> Lorsque vous sélectionnez l'intervalle du flux, sélectionnez "
+"un intervalle identique ou supérieur au taux de mise à jour défini dans "
+"votre équipement de surveillance. Un taux d'intervalle inférieur à la "
+"fréquence de mise à jour de l'équipement provoque une utilisation de "
+"l'espace disque non nécessaire.</p>"
+
+#: ../../../process_processlist.php:84
+msgid "x"
+msgstr "x"
+
+#: ../../../process_processlist.php:84 ../../../process_processlist.php:85
+msgid "Calibration"
+msgstr "Calibrage"
+
+#: ../../../process_processlist.php:84
+msgid ""
+"<p>Multiplies current value by given constant. This can be useful for "
+"calibrating a particular variable on the web rather than by reprogramming "
+"hardware.</p>"
+msgstr ""
+"<p>Multiplie la valeur actuelle par la constante donnée. Cela peut être "
+"utile pour étalonner une variable particulière sur le web plutôt qu'une "
+"reprogrammation matérielle.</p>"
+
+#: ../../../process_processlist.php:85
+msgid "+"
+msgstr "+"
+
+#: ../../../process_processlist.php:85
+msgid ""
+"<p>Offset current value by given value. This can again be useful for "
+"calibrating a particular variable on the web rather than by reprogramming "
+"hardware.</p>"
+msgstr ""
+"<p>Décale la valeur actuelle d'une valeur donnée. Cela peut encore être "
+"utile pour calibrer une variable particulière sur le web plutôt qu'une "
+"reprogrammation matérielle.</p>"
+
+#: ../../../process_processlist.php:86
+msgid "Power to kWh"
+msgstr "Power to kWh"
+
+#: ../../../process_processlist.php:86
+msgid ""
+"<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh "
+"feed.<br><br><b>Visualisation tip:</b> Feeds created with this input "
+"processor can be used to generate daily kWh data using the BarGraph "
+"visualisation with the delta property set to 1.<br>See forum thread here for "
+"an example <a href=\"https://openenergymonitor.org/emon/"
+"node/12308\">Creating kWh per day bar graphs from Accumulating kWh </a></p>"
+msgstr ""
+"<p><b>Power to kWh:</b> Convertit une valeur de puissance en Watts en flux "
+"kWh cumulatif.<br><br><b>Astuce de visualisation :</b> Les flux créés avec "
+"ce traitement d'entrée peuvent être utilisés pour générer des données kWh "
+"quotidiennes à l'aide de la visualisation BarGraph avec la propriété delta "
+"définie sur 1.<br>Voir le fil du forum ici pour un exemple <a href=\"https://"
+"openenergymonitor.org/emon/node/12308\">Creating kWh per day bar graphs from "
+"Accumulating kWh </a></p>"
+
+#: ../../../process_processlist.php:87
+msgid "Power to kWh/d"
+msgstr "Power to kWh/d"
+
+#: ../../../process_processlist.php:87 ../../../process_processlist.php:90
+#: ../../../process_processlist.php:98 ../../../process_processlist.php:110
+#: ../../../process_processlist.php:113
+msgid "Power & Energy"
+msgstr "Puissance & Énergie"
+
+#: ../../../process_processlist.php:87
+msgid ""
+"<p>Convert a power value in Watts to a feed that contains an entry for the "
+"total energy used each day (kWh/d)</p>"
+msgstr ""
+"<p>Convertit une valeur de puissance en watts en un flux contenant une "
+"entrée pour l'énergie totale utilisée chaque jour (kWh/j)</p>"
+
+#: ../../../process_processlist.php:88
+msgid "x input"
+msgstr "x input"
+
+#: ../../../process_processlist.php:88
+msgid ""
+"<p>Multiplies the current value with the last value from other input as "
+"selected from the input list.</p>"
+msgstr ""
+"<p>Multiplie la valeur actuelle par la dernière valeur d'une autre entrée "
+"sélectionnée dans la liste d'entrée.</p>"
+
+#: ../../../process_processlist.php:89
+msgid "Input on-time"
+msgstr "Input on-time"
+
+#: ../../../process_processlist.php:89
+msgid ""
+"<p>Counts the amount of time that an input is high in each day and logs the "
+"result to a feed. Created for counting the number of hours a solar hot water "
+"pump is on each day</p>"
+msgstr ""
+"<p>Compte la quantité de temps qu'une entrée est élevée chaque jour et "
+"enregistre le résultat dans un flux. Créé pour compter le nombre d'heures "
+"d'une pompe à eau chaude solaire chaque jour</p>"
+
+#: ../../../process_processlist.php:90
+msgid "Wh increments to kWh/d"
+msgstr "Wh increments to kWh/d"
+
+#: ../../../process_processlist.php:90
+msgid ""
+"<p>Accumulate Wh measurements into kWh/d.<p><b>Input</b>: energy increments "
+"in Wh.</p>"
+msgstr ""
+"<p>Accumule les mesures de Wh en kWh/j.<p><b>Input</b>: incréments d'énergie "
+"en Wh.</p>"
+
+#: ../../../process_processlist.php:91
+msgid "kWh to kWh/d (OLD)"
+msgstr "kWh to kWh/d (OLD)"
+
+#: ../../../process_processlist.php:92
+msgid "Upsert feed at day"
+msgstr "Upsert feed at day"
+
+#: ../../../process_processlist.php:92
+msgid ""
+"<p>Updates or inserts daily value on the specified time (given by the JSON "
+"time parameter from the API) of the specified feed</p>"
+msgstr ""
+"<p>Met à jour ou insère la valeur quotidienne au temps spécifié (donné par "
+"le paramètre de temps JSON de l'API) du flux spécifié</p>"
+
+#: ../../../process_processlist.php:93
+msgid "+ input"
+msgstr "+ input"
+
+#: ../../../process_processlist.php:93
+msgid ""
+"<p>Adds the current value with the last value from other input as selected "
+"from the input list. The result is passed back for further processing by the "
+"next processor in the processing list.</p>"
+msgstr ""
+"<p>Ajoute la valeur actuelle à la dernière valeur de l'autre entrée "
+"sélectionnée dans la liste d'entrée. Le résultat est renvoyé pour traitement "
+"ultérieur par le traitement suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:94
+msgid "/ input"
+msgstr "/ input"
+
+#: ../../../process_processlist.php:94
+msgid ""
+"<p>Divides the current value with the last value from other input as "
+"selected from the input list. The result is passed back for further "
+"processing by the next processor in the processing list.</p>"
+msgstr ""
+"<p>Divise la valeur actuelle à la dernière valeur de l'autre entrée "
+"sélectionnée dans la liste d'entrée. Le résultat est renvoyé pour traitement "
+"ultérieur par le traitement suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:95
+msgid "Phaseshift"
+msgstr "Phaseshift"
+
+#: ../../../process_processlist.php:96
+msgid "Accumulator"
+msgstr "Accumulator"
+
+#: ../../../process_processlist.php:96 ../../../process_processlist.php:97
+#: ../../../process_processlist.php:116 ../../../process_processlist.php:117
+#: ../../../process_processlist.php:118 ../../../process_processlist.php:124
+#: ../../../process_processlist.php:128 ../../../process_processlist.php:130
+#: ../../../process_processlist.php:131 ../../../process_processlist.php:146
+msgid "Misc"
+msgstr "Divers"
+
+#: ../../../process_processlist.php:96
+msgid "<p>Output feed accumulates by input value</p>"
+msgstr "<p>Le flux de sortie s'accumule en fonction de la valeur d'entrée</p>"
+
+#: ../../../process_processlist.php:97
+msgid "Rate of change"
+msgstr "Rate of change"
+
+#: ../../../process_processlist.php:97
+msgid ""
+"<p>Output feed is the difference between the current value and the last</p>"
+msgstr ""
+"<p>Le flux de sortie est la différence entre la valeur actuelle et la "
+"dernière valeur</p>"
+
+#: ../../../process_processlist.php:98
+msgid "Histogram"
+msgstr "Histogram"
+
+#: ../../../process_processlist.php:98
+msgid ""
+"Creates a histogram of energy binned by power ranges. For each power range "
+"on the x-axis, this processor will aggregate the total energy of the stream "
+"while it was in that power range.<p><b>Input</b>: power in Watts.</p>"
+msgstr ""
+"Crée un histogramme de l'énergie regroupée par plages de puissance. Pour "
+"chaque plage de puissance sur l'axe des x, ce traitement va agréger "
+"l'énergie totale du flux alors qu'il se trouvait dans cette plage de "
+"puissance.<p><b>Input</b>: puissance en Watts.</p>"
+
+#: ../../../process_processlist.php:99
+msgid "Daily Average"
+msgstr "Daily Average"
+
+#: ../../../process_processlist.php:102
+msgid "Heat flux"
+msgstr "Heat flux"
+
+#: ../../../process_processlist.php:105
+msgid "Power gained to kWh/d"
+msgstr "Power gained to kWh/d"
+
+#: ../../../process_processlist.php:108
+msgid "Total pulse count to pulse increment"
+msgstr "Total pulse count to pulse increment"
+
+#: ../../../process_processlist.php:108
+msgid "Pulse"
+msgstr "Impulsion"
+
+#: ../../../process_processlist.php:108
+msgid ""
+"<p>Returns the number of pulses incremented since the last update for a "
+"input that is a cumulative pulse count. i.e If the input updates from 23400 "
+"to 23410 the result will be an incremenet of 10.</p>"
+msgstr ""
+"<p>Renvoie le nombre d'incréments d'impulsions depuis la dernière mise à "
+"jour pour une entrée qui est un nombre d'impulsions cumulatif. Par exemple, "
+"si l'entrée est mise à jour de 23400 à 23410, le résultat sera un incrément "
+"de 10.</p>"
+
+#: ../../../process_processlist.php:110
+msgid "kWh to Power"
+msgstr "kWh to Power"
+
+#: ../../../process_processlist.php:110
+msgid "<p>Convert accumulating kWh to instantaneous power</p>"
+msgstr "<p>Convertit les kWh accumulés en puissance instantanée</p>"
+
+#: ../../../process_processlist.php:112
+msgid "- input"
+msgstr "- input"
+
+#: ../../../process_processlist.php:112
+msgid ""
+"<p>Subtracts from the current value the last value from other input as "
+"selected from the input list.</p>"
+msgstr ""
+"<p>Soustrait de la valeur actuelle la dernière valeur de l'autre entrée "
+"sélectionnée dans la liste d'entrée.</p>"
+
+#: ../../../process_processlist.php:113
+msgid "kWh to kWh/d"
+msgstr "kWh to kWh/d"
+
+#: ../../../process_processlist.php:113
+msgid "<p>Upsert kWh to a daily value.</p>"
+msgstr "<p>Ajoute ou met à jour des kWh à la valeur quotidienne.</p>"
+
+#: ../../../process_processlist.php:114
+msgid "Allow positive"
+msgstr "Allow positive"
+
+#: ../../../process_processlist.php:114 ../../../process_processlist.php:115
+msgid "Limits"
+msgstr "Limites"
+
+#: ../../../process_processlist.php:114
+msgid ""
+"<p>Negative values are zeroed for further processing by the next processor "
+"in the processing list.</p>"
+msgstr ""
+"<p>Les valeurs négatives sont mises à zéro pour traitement ultérieur par le "
+"traitement suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:115
+msgid "Allow negative"
+msgstr "Allow negative"
+
+#: ../../../process_processlist.php:115
+msgid ""
+"<p>Positive values are zeroed for further processing by the next processor "
+"in the processing list.</p>"
+msgstr ""
+"<p>Les valeurs positives sont mises à zéro pour traitement ultérieur par le "
+"traitement suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:116
+msgid "Signed to unsigned"
+msgstr "Signed to unsigned"
+
+#: ../../../process_processlist.php:116
+msgid ""
+"<p>Convert a number that was interpreted as a 16 bit signed number to an "
+"unsigned number.</p>"
+msgstr ""
+"<p>Convertit un nombre qui a été interprété comme un nombre signé de 16 bits "
+"à un nombre non signé.</p>"
+
+#: ../../../process_processlist.php:117
+msgid "Max daily value"
+msgstr "Max daily value"
+
+#: ../../../process_processlist.php:117
+msgid ""
+"<p>Maximal daily value. Upserts on the selected daily feed the highest value "
+"reached each day.</p>"
+msgstr ""
+"<p>Valeur quotidienne maximale. Ajoute ou met à jour sur le flux quotidien "
+"sélectionné la valeur la plus élevée atteinte chaque jour.</p>"
+
+#: ../../../process_processlist.php:118
+msgid "Min daily value"
+msgstr "Min daily value"
+
+#: ../../../process_processlist.php:118
+msgid ""
+"<p>Minimal daily value. Upserts on the selected daily feed the lowest value "
+"reached each day.</p>"
+msgstr ""
+"<p>Valeur quotidienne minimale. Ajoute ou met à jour sur le flux quotidien "
+"sélectionné la valeur la plus élevée atteinte chaque jour</p>"
+
+#: ../../../process_processlist.php:120
+msgid " + feed"
+msgstr " + feed"
+
+#: ../../../process_processlist.php:120
+msgid ""
+"<p>Adds the current value with the last value from a feed as selected from "
+"the feed list.</p>"
+msgstr ""
+"<p>Ajoute la valeur actuelle à la dernière valeur d'un flux sélectionnée "
+"dans la liste des flux.</p>"
+
+#: ../../../process_processlist.php:121
+msgid " - feed"
+msgstr " - feed"
+
+#: ../../../process_processlist.php:121
+msgid ""
+"<p>Subtracts from the current value the last value from a feed as selected "
+"from the feed list.</p>"
+msgstr ""
+"<p>Soustrait de la valeur actuelle la dernière valeur d'un flux sélectionné "
+"dans la liste des flux.</p>"
+
+#: ../../../process_processlist.php:122
+msgid " * feed"
+msgstr " * feed"
+
+#: ../../../process_processlist.php:122
+msgid ""
+"<p>Multiplies the current value with the last value from a feed as selected "
+"from the feed list.</p>"
+msgstr ""
+"<p>Multiplie la valeur actuelle la dernière valeur d'un flux sélectionné "
+"dans la liste des flux.</p>"
+
+#: ../../../process_processlist.php:123
+msgid " / feed"
+msgstr " / feed"
+
+#: ../../../process_processlist.php:123
+msgid ""
+"<p>Divides the current value by the last value from a feed as selected from "
+"the feed list.</p>"
+msgstr ""
+"<p>Divise la valeur actuelle la dernière valeur d'un flux sélectionné dans "
+"la liste des flux.</p>"
+
+#: ../../../process_processlist.php:124
+msgid "Reset to ZERO"
+msgstr "Reset to ZERO"
+
+#: ../../../process_processlist.php:124
+msgid ""
+"<p>The value \"0\" is passed back for further processing by the next "
+"processor in the processing list.</p>"
+msgstr ""
+"<p>La valeur \"0\" est renvoyée pour traitement ultérieur par le processeur "
+"suivant dans la liste de traitement.</p>"
+
+#: ../../../process_processlist.php:126
+msgid "Wh Accumulator"
+msgstr "Wh Accumulator"
+
+#: ../../../process_processlist.php:126
+msgid ""
+"<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an "
+"emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending "
+"cumulative watt hours.<br><br>This processor ensures that when the emontx is "
+"reset the watt hour count in emoncms does not reset, it also checks filter's "
+"out spikes in energy use that are larger than a max power threshold set in "
+"the processor, assuming these are error's, the max power threshold is set to "
+"25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input "
+"processor can be used to generate daily kWh data using the BarGraph "
+"visualisation with the delta property set to 1 and scale set to 0.001."
+"<br>See forum thread here for an example <a href=\"https://openenergymonitor."
+"org/emon/node/12308\" Creating kWh per day bar graphs from Accumulating kWh "
+"</a></p>"
+msgstr ""
+"<b>Wh Accumulator:</b>Utilisé avec emontx, emonth ou emonpi pulsecount ou "
+"emontx exécutant le micrologiciel <i> emonTxV3_4_continuous_kwhtotals </ i> "
+"envoyant des watts cumulatifs.br><br>Ce traitement garantit que lorsque "
+"l'emontx est réinitialisé, le nombre de wattheures dans emoncms ne se "
+"réinitialise pas, il vérifie également les pics de consommation d'énergie "
+"supérieurs au seuil de puissance maximale défini dans le processeur, en "
+"supposant qu'il s'agit d'erreurs. Le seuil de puissance maximale est réglé "
+"sur 25 kW.<br><br><b>Astuce de visualistion :</b>Les flux créés avec ce "
+"traitement d'entrée peuvent être utilisés pour générer des données kWh "
+"quotidiennes à l'aide de la visualisation BarGraph avec la propriété delta "
+"définie sur 1 et l'échelle définie sur 0,001.<br> Voir le fil du forum pour "
+"un exemple <a href=\"https://openenergymonitor.org/emon/node/12308\" "
+"Creating kWh per day bar graphs from Accumulating kWh </a></p>"
+
+#: ../../../process_processlist.php:128
+msgid "Publish to MQTT"
+msgstr "Publish to MQTT"
+
+#: ../../../process_processlist.php:128
+msgid "<p>Publishes value to MQTT topic e.g. 'home/power/kitchen'</p>"
+msgstr ""
+"<p>Publie la valeur dans un sujet MQTT par exemple 'maison/puissance/"
+"cuisine'</p>"
+
+#: ../../../process_processlist.php:130
+msgid "Reset to NULL"
+msgstr "Reset to NULL"
+
+#: ../../../process_processlist.php:130
+msgid ""
+"<p>Value is set to NULL.</p><p>Useful for conditional process to work on.</p>"
+msgstr ""
+"<p>La valeur est définie à NULL.</p><p>Utile pour un travail sur processus "
+"conditionnel.</p>"
+
+#: ../../../process_processlist.php:131
+msgid "Reset to Original"
+msgstr "Reset to Original"
+
+#: ../../../process_processlist.php:131
+msgid ""
+"<p>The value is set to the original value at the start of the process list.</"
+"p>"
+msgstr ""
+"<p>La valeur est définie sur la valeur d'origine au début de la liste de "
+"processus.</p>"
+
+#: ../../../process_processlist.php:133
+msgid "If ZERO, skip next"
+msgstr "If ZERO, skip next"
+
+#: ../../../process_processlist.php:133 ../../../process_processlist.php:134
+#: ../../../process_processlist.php:135 ../../../process_processlist.php:136
+msgid "Conditional"
+msgstr "Conditionnel"
+
+#: ../../../process_processlist.php:133
+msgid ""
+"<p>If value from last process is ZERO, process execution will skip execution "
+"of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est ZERO, l'exécution du processus "
+"ignorera l'exécution du processus suivant dans la liste.</p>"
+
+#: ../../../process_processlist.php:134
+msgid "If !ZERO, skip next"
+msgstr "If !ZERO, skip next"
+
+#: ../../../process_processlist.php:134
+msgid ""
+"<p>If value from last process is NOT ZERO, process execution will skip "
+"execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est NOT ZERO, l'exécution du processus "
+"ignorera l'exécution du processus suivant dans la liste.</p>"
+
+#: ../../../process_processlist.php:135
+msgid "If NULL, skip next"
+msgstr "If NULL, skip next"
+
+#: ../../../process_processlist.php:135
+msgid ""
+"<p>If value from last process is NULL, process execution will skip execution "
+"of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est NULL, l'exécution du processus "
+"ignorera l'exécution du processus suivant dans la liste.</p>"
+
+#: ../../../process_processlist.php:136
+msgid "If !NULL, skip next"
+msgstr "If !NULL, skip next"
+
+#: ../../../process_processlist.php:136
+msgid ""
+"<p>If value from last process is NOT NULL, process execution will skip "
+"execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est NOT NULL, l'exécution du processus "
+"ignorera l'exécution du processus suivant dans la liste.</p>"
+
+#: ../../../process_processlist.php:138
+msgid "If >, skip next"
+msgstr "If >, skip next"
+
+#: ../../../process_processlist.php:138 ../../../process_processlist.php:139
+#: ../../../process_processlist.php:140 ../../../process_processlist.php:141
+#: ../../../process_processlist.php:142 ../../../process_processlist.php:143
+msgid "Conditional - User value"
+msgstr "Conditionnel - Valeur utilisateur"
+
+#: ../../../process_processlist.php:138
+msgid ""
+"<p>If value from last process is greater than the specified value, process "
+"execution will skip execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est supérieure à la valeur spécifiée, "
+"l'exécution du processus ignorera l'exécution du processus suivant dans la "
+"liste.</p>"
+
+#: ../../../process_processlist.php:139
+msgid "If >=, skip next"
+msgstr "If >=, skip next"
+
+#: ../../../process_processlist.php:139
+msgid ""
+"<p>If value from last process is greater or equal to the specified value, "
+"process execution will skip execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est supérieure ou égale à la valeur "
+"spécifiée, l'exécution du processus ignorera l'exécution du processus "
+"suivant dans la liste.</p>"
+
+#: ../../../process_processlist.php:140
+msgid "If <, skip next"
+msgstr "If <, skip next"
+
+#: ../../../process_processlist.php:140
+msgid ""
+"<p>If value from last process is lower than the specified value, process "
+"execution will skip execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est inferieure à la valeur spécifiée, "
+"l'exécution du processus ignorera l'exécution du processus suivant dans la "
+"liste.</p>"
+
+#: ../../../process_processlist.php:141
+msgid "If <=, skip next"
+msgstr "If <=, skip next"
+
+#: ../../../process_processlist.php:141
+msgid ""
+"<p>If value from last process is lower or equal to the specified value, "
+"process execution will skip execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est inferieure ou égale à la valeur "
+"spécifiée, l'exécution du processus ignorera l'exécution du processus "
+"suivant dans la liste.</p>"
+
+#: ../../../process_processlist.php:142
+msgid "If =, skip next"
+msgstr "If =, skip next"
+
+#: ../../../process_processlist.php:142
+msgid ""
+"<p>If value from last process is equal to the specified value, process "
+"execution will skip execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus est égale à la valeur spécifiée, "
+"l'exécution du processus ignorera l'exécution du processus suivant dans la "
+"liste.</p>"
+
+#: ../../../process_processlist.php:143
+msgid "If !=, skip next"
+msgstr "If !=, skip next"
+
+#: ../../../process_processlist.php:143
+msgid ""
+"<p>If value from last process is NOT equal to the specified value, process "
+"execution will skip execution of next process in list.</p>"
+msgstr ""
+"<p>Si la valeur du dernier processus n'est PAS égale à la valeur spécifiée, "
+"l'exécution du processus ignorera l'exécution du processus suivant dans la "
+"liste.</p>"
+
+#: ../../../process_processlist.php:146
+msgid "GOTO"
+msgstr "GOTO"
+
+#: ../../../process_processlist.php:146
+msgid ""
+"<p>Jumps the process execution to the specified position.</p><p><b>Warning</"
+"b><br>If you're not careful you can create a goto loop on the process list."
+"<br>When a loop occurs, the API will appear to lock until the server php "
+"times out with an error.</p>"
+msgstr ""
+"<p>Passe l'exécution du processus à la position spécifiée.</"
+"p><p><b>Avertissement</b><br>Si vous ne faites pas attention, vous pouvez "
+"créer une boucle goto dans la liste des processus.<br>Lorsqu'une boucle se "
+"produit, l'API semble se verrouiller jusqu'à ce que le serveur php expire "
+"avec une erreur.</p>"
+
+#: ../../../process_processlist.php:151
+msgid "Source Feed"
+msgstr "Source Feed"
+
+#: ../../../process_processlist.php:151 ../../../process_processlist.php:154
+#: ../../../process_processlist.php:155 ../../../process_processlist.php:156
+#: ../../../process_processlist.php:157 ../../../process_processlist.php:158
+msgid "Virtual"
+msgstr "Virtuel"
+
+#: ../../../process_processlist.php:151
+msgid ""
+"<p><b>Source Feed:</b><br>Virtual feeds should use this processor as the "
+"first one in the process list. It sources data from the selected feed."
+"<br>The sourced value is passed back for further processing by the next "
+"processor in the processing list.<br>You can then add other processors to "
+"apply logic on the passed value for post-processing calculations in realtime."
+"</p><p>Note: This virtual feed process list is executed on visualizations "
+"requests that use this virtual feed.</p>"
+msgstr ""
+"<p><b>Source Feed:</b><br>Les flux virtuels doivent utiliser ce traitement "
+"en tant que premier dans la liste des processus. Il extrait les données du "
+"flux sélectionné.<br>La valeur de la source est renvoyée pour un traitement "
+"ultérieur par le processeur suivant dans la liste de traitement.<br>Vous "
+"pouvez ensuite ajouter d'autres traitements pour appliquer la logique sur la "
+"valeur transmise pour les calculs de post-traitement en temps réel.</"
+"p><p>Remarque : Cette liste de processus de flux virtuel est exécutée sur "
+"les demandes de visualisations qui utilisent ce flux virtuel.</p>"
+
+#: ../../../process_processlist.php:154
+msgid " + source feed"
+msgstr " + source feed"
+
+#: ../../../process_processlist.php:154
+msgid "<p>Add the specified feed.</p>"
+msgstr "<p>Ajoute le flux spécifié.</p>"
+
+#: ../../../process_processlist.php:155
+msgid " - source feed"
+msgstr " - source feed"
+
+#: ../../../process_processlist.php:155
+msgid "<p>Subtract the specified feed.</p>"
+msgstr "<p>Soustrait le flux spécifié.</p>"
+
+#: ../../../process_processlist.php:156
+msgid " * source feed"
+msgstr " * source feed"
+
+#: ../../../process_processlist.php:156
+msgid "<p>Multiply by specified feed.</p>"
+msgstr "<p>Multiplie par le flux spécifié.</p>"
+
+#: ../../../process_processlist.php:157
+msgid " / source feed"
+msgstr " / source feed"
+
+#: ../../../process_processlist.php:157
+msgid "<p>Divide by specified feed. Returns NULL for zero values.</p>"
+msgstr ""
+"<p>Divise par le flux spécifié. Retourne NULL pur les valeurs zéro.</p>"
+
+#: ../../../process_processlist.php:158
+msgid "1/ source feed"
+msgstr "1/ source feed"
+
+#: ../../../process_processlist.php:158
+msgid ""
+"<p>Return the reciprical of the specified feed. Returns NULL for zero values."
+"</p>"
+msgstr ""
+"<p>Renvoie l'inverse du flux spécifié. Renvoie la valeur NULL pour les "
+"valeurs nulles.</p>"
+
+#~ msgid "Input API"
+#~ msgstr "API Source"
+
+#~ msgid ""
+#~ "Alternatively use the encrypted input method to post data with higher "
+#~ "security."
+#~ msgstr ""
+#~ "Alternativement utilisez la méthode d'entrée cryptée pour publier vos "
+#~ "données avec une sécurité accrue."
+
+#~ msgid "Posting data to EmonCMS"
+#~ msgstr "Publication des données dans EmonCMS"
+
+#~ msgid "The EmonCMS input API provides two ways of sending data to emoncms:"
+#~ msgstr ""
+#~ "L'API Source fournit deux façons d'envoyer les données dans emoncms :"
+
+#~ msgid "<b>input/post</b> - Post a single update from a node."
+#~ msgstr ""
+#~ "<b>input/post</b> - Publication d'une simple mise à jour depuis un nœud."
+
+#~ msgid ""
+#~ "<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a "
+#~ "single update."
+#~ msgstr ""
+#~ "<b>input/bulk</b> - Transfert en masse de données historiques provenant "
+#~ "de plusieurs nœuds dans une seule mise à jour."
+
+#~ msgid ""
+#~ "If your starting out with EmonCMS 'input/post' is a good starting point "
+#~ "for testing, this was the original input method when EmonCMS . The EmonPi/"
+#~ "EmonBase uses the 'input/bulk' input method to post to a remote emoncms "
+#~ "server as this method provides the option to efficiently bulk upload "
+#~ "buffered data after an internet connection outage. Combining multiple "
+#~ "updates in a single input/bulk request also reduces bandwidth "
+#~ "requirements. "
+#~ msgstr ""
+#~ "Si votre démarrage avec 'input / post' est un bon point de départ pour "
+#~ "des tests, c'était la méthode d'entrée originale lors de la création de "
+#~ "EmonCMS. EmonPi / EmonBase utilise la méthode d'entrée 'input / bulk' "
+#~ "pour envoyer un message à un serveur emoncms distant car cette méthode "
+#~ "offre la possibilité de charger efficacement les données mises en mémoire "
+#~ "tampon après une panne de connexion Internet. La combinaison de plusieurs "
+#~ "mises à jour dans une seule requête input / bulk réduit également les "
+#~ "besoins en bande passante."
+
+#~ msgid "input/post"
+#~ msgstr "input/post"
+
+#~ msgid ""
+#~ "The \"fulljson\" format is recommended for new integrations, it uses the "
+#~ "PHP JSON decoder and answer is also in json.<br>The \"json like\" format "
+#~ "is based on the CSV input parsing implementation and maintained for "
+#~ "backwards compatibility."
+#~ msgstr ""
+#~ "Le format json \"complet\" est recommandé pour de nouvelles intégrations, "
+#~ "il utilise le décodeur PHP JSON et la réponse est également en json.<br> "
+#~ "Le format json \"ressemblant\" est basé sur une implémentation d'analyse "
+#~ "d'entrée CSV et est maintenu pour une rétrocompatibilité."
+
+#~ msgid "A node name can be a name e.g: emontx or a number e.g: 10."
+#~ msgstr "Un nœud peut être un nom par ex : emontx ou un nombre par ex : 10."
+
+#~ msgid ""
+#~ "The input/post API is compatible with both GET and POST request methods "
+#~ "(POST examples given use curl)."
+#~ msgstr ""
+#~ "L'API input/post est compatible à la fois avec les méthodes de requête "
+#~ "GET et POST (les exemples POST donnés utilisent curl)"
+
+#~ msgid "Description"
+#~ msgstr "Description"
+
+#~ msgid "Method"
+#~ msgstr "Méthode"
+
+#~ msgid "Example"
+#~ msgstr "Exemple"
+
+#~ msgid "JSON format"
+#~ msgstr "Format JSON"
+
+#~ msgid "JSON like format"
+#~ msgstr "Format ressemblant au JSON"
+
+#~ msgid "CSV format"
+#~ msgstr "Format CSV"
+
+#~ msgid "Set the input entry time manually"
+#~ msgstr "Modifier manuellement l'horodatage des données"
+
+#~ msgid "Node name as sub-action"
+#~ msgstr "Nom de nœud en tant que sous-action"
+
+#~ msgid ""
+#~ "To post data from a remote device you will need to include in the request "
+#~ "url your write apikey. This give your device write access to your emoncms "
+#~ "account, allowing it to post data."
+#~ msgstr ""
+#~ "Pour envoyer des données depuis un périphérique distant, vous devez "
+#~ "ajouter votre clé d'API d'accès en écriture à la fin de l'url. Cela "
+#~ "permet de donner à votre périphérique les accès en écriture sur votre "
+#~ "compte emoncms, lui permettant de poster des données."
+
+#~ msgid ""
+#~ "For example using the first json type request above just add the apikey "
+#~ "to the end like this:"
+#~ msgstr ""
+#~ "Par exemple, pour utiliser l'appel json suivant, il suffit d'ajouter la "
+#~ "clé API comme suit :"
+
+#~ msgid "JSON format:"
+#~ msgstr "Format JSON : "
+
+#~ msgid "CSV format:"
+#~ msgstr "Format CSV : "
+
+#~ msgid "input/bulk"
+#~ msgstr "input/bulk"
+
+#~ msgid "Efficiently upload multiple updates from multiple nodes."
+#~ msgstr ""
+#~ "Télécharge efficacement plusieurs mises à jour à partir de plusieurs "
+#~ "nœuds."
+
+#~ msgid "Example request:"
+#~ msgstr "Exemple de requête:"
+
+#~ msgid "The first number of each node is the time offset (see below)."
+#~ msgstr ""
+#~ "Le premier nombre de chaque nœud est le décalage de temps (voir ci-"
+#~ "dessous)."
+
+#~ msgid ""
+#~ "The second number is the node id, this is the unique identifier for the "
+#~ "wireless node."
+#~ msgstr ""
+#~ "Le second nombre est l'identifiant du nœud, c'est l'identifiant unique du "
+#~ "nœud sans fil."
+
+#~ msgid ""
+#~ "All the numbers after the first two are data values. The second node here "
+#~ "(node 17) has two data values: 1437 and 3164."
+#~ msgstr ""
+#~ "Tous les nombres qui suivent les deux premiers sont les valeurs de "
+#~ "données. Par exemple, ici le second nœud (nœud 17) a deux valeurs : 1437 "
+#~ "et 3164."
+
+#~ msgid ""
+#~ "Optional offset and time parameters allow the sender to set the time "
+#~ "reference for the packets. If none is specified, it is assumed that the "
+#~ "last packet just arrived. The time for the other packets is then "
+#~ "calculated accordingly."
+#~ msgstr ""
+#~ "Les paramètres optionnels de temps et de décalage permettent à l'envoyeur "
+#~ "de définir un temps de référence pour les paquets. Si aucun paramètre "
+#~ "n'est spécifié, il est considéré que le dernier paquet vient juste "
+#~ "d'arriver. L'horodatage pour les autres paquets est alors calculé en "
+#~ "conséquence."
+
+#~ msgid ""
+#~ "Legacy default format (4 is now, 2 is -2 seconds and 0 is -4 seconds to "
+#~ "now):"
+#~ msgstr ""
+#~ "Format par défaut hérité (4 est maintenant, 2 est -2 secondes et 0 est -4 "
+#~ "secondes de maintenant)"
+
+#~ msgid "Time offset format (-6 is -16 seconds to now):"
+#~ msgstr "Format du décalage de temps (-6 est à -16 secondes de maintenant)"
+
+#~ msgid ""
+#~ "Sentat format: (useful for sending as positive increasing time index)"
+#~ msgstr ""
+#~ "Format sentat: (utile pour un envoi avec index de temps croissant positif)"
+
+#~ msgid ""
+#~ "Absolute time format (-6 is 1387730121 seconds since 1970-01-01 00:00:00 "
+#~ "UTC))"
+#~ msgstr ""
+#~ "Format de temps absolu (nombre de secondes depuis 1970-01-01 00:00:00 "
+#~ "UTC))"
+
+#~ msgid ""
+#~ "Named feeds (similar to the main example but updates the keys \"data\" "
+#~ "and \"anotherData\" for node 19)"
+#~ msgstr ""
+#~ "Flux nommés (similaire à l'exemple principal mais met à jour les clés "
+#~ "\"data\" et \"anotherData\" pour le nœud 19)"
+
+#~ msgid "Legacy format:"
+#~ msgstr "Format hérité :"
+
+#~ msgid "Time offset format:"
+#~ msgstr "Format de décalage de temps :"
+
+#~ msgid "Sentat format:"
+#~ msgstr "Format Sentat : "
+
+#~ msgid "Absolute time format:"
+#~ msgstr "Format de temps absolu :"
+
+#~ msgid "Fetching inputs, updating meta data and other actions"
+#~ msgstr ""
+#~ "Récupération des sources, mise à jour des métadonnées et autres actions"
+
+#~ msgid "Input get"
+#~ msgstr "Obtention des sources"
+
+#~ msgid "List all nodes and associated inputs:"
+#~ msgstr "Lister tous les nœuds et les sources associées :"
+
+#~ msgid "List inputs for specific node:"
+#~ msgstr "Lister les sources pour un nœud spécifique:"
+
+#~ msgid "Fetch specific input from node:"
+#~ msgstr "Récupérer une source spécifique du nœud :"
+
+#~ msgid "Input actions"
+#~ msgstr "Actions sur les sources"
+
+#~ msgid "List of inputs with latest data"
+#~ msgstr "Lister les sources avec les dernières données"
+
+#~ msgid "Get inputs configuration (last time and value not included)"
+#~ msgstr ""
+#~ "Obtenir la configuration des sources (les derniers temps et valeurs ne "
+#~ "sont pas inclus)"
+
+#~ msgid "Set input fields"
+#~ msgstr "Définir la configuration des sources"
+
+#~ msgid "Delete an input"
+#~ msgstr "Supprimer une source de données"
+
+#~ msgid "Clean inputs without a process list"
+#~ msgstr "Nettoyer les sources sans liste de traitement"
+
+#~ msgid "Get input process list"
+#~ msgstr "Obtenir la liste des traitements de sources"
+
+#~ msgid "Set input process list"
+#~ msgstr "Définir la liste des traitements de sources"
+
+#~ msgid "Reset input process list"
+#~ msgstr "Réinitialiser la liste des traitements de sources"
+
+#~ msgid "Delete Input"
+#~ msgstr "Supprimer la source"
+
+#~ msgid ""
+#~ "Deleting an Input will lose it name and configured Processlist.<br>A new "
+#~ "blank input is automatic created by API data post if it does not already "
+#~ "exists."
+#~ msgstr ""
+#~ "La suppression d'une source va entrainer la perte de son nom et de sa "
+#~ "liste de traitements configurés. Une nouvelle entrée vide est créée "
+#~ "automatiquement lors de la publication de données API si elle n'existe "
+#~ "pas déjà."
+
+#~ msgid "Are you sure you want to delete?"
+#~ msgstr "Êtes-vous sûr de vouloir supprimer cette source ? "
+
+#~ msgid "Delete"
+#~ msgstr "Supprimer"
+
+#~ msgid "Input API Help"
+#~ msgstr "Aide de l'API Source"
+
+#~ msgid "No inputs created"
+#~ msgstr "Aucune source de données n'est disponible"
+
+#~ msgid ""
+#~ "Inputs are the main entry point for your monitoring device. Configure "
+#~ "your device to post values here, you may want to follow the <a href=\"api"
+#~ "\">Input API helper</a> as a guide for generating your request."
+#~ msgstr ""
+#~ "Les sources sont le point d'entrée pour vos appareils de surveillance. "
+#~ "Vos appareils doivent être configurés pour envoyer leurs données ici, "
+#~ "veuillez consulter l'<a href=\"api\">Aide de l'API Source</a> afin de "
+#~ "générer votre requête."
+
+#~ msgid "Updated"
+#~ msgstr "Mise à jour"
+
+#~ msgid "Node"
+#~ msgstr "Nœud"
+
+#~ msgid "Key"
+#~ msgstr "Clé"
+
+#~ msgid "Name"
+#~ msgstr "Nom"
+
+#~ msgid "Invalid process"
+#~ msgstr "Traitement non valide"
+
+#~ msgid "Invalid feed"
+#~ msgstr "Champ non valide"
+
+#~ msgid "Invalid input"
+#~ msgstr "Source non valide"
+
+#~ msgid "Error setting processlist"
+#~ msgstr "Erreur lors du paramétrage de la liste des traitements"
+
+#~ msgid "The input list view"
+#~ msgstr "Liste des Sources de données"
+
+#~ msgid "Input processing configuration page"
+#~ msgstr "Page de configuration des traitements des sources"
+
+#~ msgid "Post data (using http get)"
+#~ msgstr "Données POST (utilisant hhtp get)"
+
+#~ msgid "JSON like format (deprecated)"
+#~ msgstr "Format ressemblant à JSON (obsolète)"
+
+#~ msgid "Assign inputs to a node group"
+#~ msgstr "Associer des sources à un groupe de nœuds"
+
+#~ msgid "APIKEY"
+#~ msgstr "APIKEY"
+
+#~ msgid "Bulk data"
+#~ msgstr "Données brutes"
+
+#~ msgid "You can provide data using bulk mode"
+#~ msgstr ""
+#~ "Vous pouvez transmettre vos données de manière brute avec un appel global"
+
+#~ msgid "Post data (using http post)"
+#~ msgstr "Données Post (utilisant http post)"
+
+#~ msgid ""
+#~ "To post data using http post you can use the \"data\" post parameter, it "
+#~ "will accept csv and json formatting. Other parameters need to be provided "
+#~ "as a parameter in the url, the only exception is the apikey which can be "
+#~ "a post parameter as well."
+#~ msgstr ""
+#~ "Pour publier des données à l'aide de http post, vous pouvez utiliser le "
+#~ "paramètre post \"data\", il acceptera le formatage csv et json. D'autres "
+#~ "paramètres doivent être fournis en tant que paramètre dans l'url, la "
+#~ "seule exception est l'apikey qui peut également être un paramètre post."
+
+#~ msgid ""
+#~ "The examples below use curl to post the data to the input api. It is "
+#~ "available "
+#~ msgstr ""
+#~ "L'exemple ci-dessous utilise curl pour publier des données vers l'api "
+#~ "source. Disponible "
+
+#~ msgid "Bulk mode sentat format:"
+#~ msgstr "Format sentat en mode brut :"
+
+#~ msgid "Get inputs configuration"
+#~ msgstr "Obtenir la configuration des sources"
+
+#~ msgid "update feed @time"
+#~ msgstr "actualiser le flux @date"
+
+#~ msgid "pulse difference"
+#~ msgstr "différence impulsion"
+
+#~ msgid "Post data"
+#~ msgstr "Données transmises"
+
+#~ msgid ""
+#~ "The first number of each node is the time offset, so for the first node "
+#~ "it is 0 which means the packet for the first node arrived at 0 seconds. "
+#~ "The second node arrived at 2 seconds and 3rd 10 seconds."
+#~ msgstr ""
+#~ "Le premier paramètre de chaque nœud est le décalage (exprimé en seconde). "
+#~ "Dans cet exemple : le paquet pour le premier nœud est arrivé à 0 seconde. "
+#~ "Le second nœud est arrivé à 2 secondes et le 3ème à 10 secondes."
+
+#~ msgid "name"
+#~ msgstr "Nom"
+
+#~ msgid "New"
+#~ msgstr "Nouveau"
+
+#~ msgid "Reset process list?"
+#~ msgstr "Réinitialiser la liste des actions"
+
+#~ msgid "Move up"
+#~ msgstr "Monter"
+
+#~ msgid "CREATE NEW:"
+#~ msgstr "Créer un nouveau :"
