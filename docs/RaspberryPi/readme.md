@@ -4,9 +4,10 @@ This guide will install the current full version of emoncms onto a Raspberry Pi 
 
 **Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
 
-An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!  
+An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!
 
-Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)
+
 Before installing emoncms, it is essential you have a working version of Raspbian Stretch installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ### Preparation
@@ -23,7 +24,7 @@ This section only applies to Raspberry Pi v3 and later.
 To avoid UART conflicts, it's necessary to disable Pi3 Bluetooth and restore UART0/ttyAMA0 over GPIOs 14 & 15;
 
 	sudo nano /boot/config.txt
-	
+
 Add to the end of the file
 
 	dtoverlay=pi3-disable-bt
@@ -74,37 +75,45 @@ Cd into the www directory and git clone emoncms:
 
 Firstly we should secure the database server, and then create a database and database user for emoncms to use;
 
-The following configuration commands gives 'sudoers' Mariadb root privileges from within the local network, to administer all aspects of the databases and users. It also removes an 'example' database and user, which is no longer required. 
+The following configuration commands gives 'sudoers' Mariadb root privileges from within the local network, to administer all aspects of the databases and users. It also removes an 'example' database and user, which is no longer required.
 
 ```
 sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DELETE FROM mysql.user WHERE User=''; DROP DATABASE IF EXISTS test; DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'; FLUSH PRIVILEGES;"
-``` 
+```
 
 Create the emoncms database using utf8 character decoding:
 
     sudo mysql -e "CREATE DATABASE emoncms DEFAULT CHARACTER SET utf8;"
-    
+
 Add an emoncms database user and set that user's permissions. In the command below, we're creating the database 'user' named 'emoncms', and you should create a new secure password of your choice for that user. Make a note of both the database 'username' ('emoncms') & the 'new_secure_password'. They will be inserted into the settings.php file in a later step:
 
     sudo mysql -e "CREATE USER 'emoncms'@'localhost' IDENTIFIED BY 'new_secure_password'; GRANT ALL ON emoncms.* TO 'emoncms'@'localhost'; flush privileges;"
 
 ### Create data repositories for emoncms feed engines:
 
-    sudo mkdir /var/lib/{phpfiwa,phpfina,phptimeseries}
+    sudo mkdir -p /var/lib/emondata/{phpfiwa,phpfina,phptimeseries}
 
-...and set their permissions
+...and set their ownership
 
-    sudo chown www-data:root /var/lib/{phpfiwa,phpfina,phptimeseries}
+    sudo chown -R www-data:root /var/lib/emondata
 
-### Configure emoncms database settings
+### Configure emoncms settings
+
+Firstly, create a directory to store emoncms settings:
+
+		sudo mkdir /etc/emoncms
 
 Make a copy of default.settings.php and call it settings.php:
 
-    cd /var/www/emoncms && cp default.settings.php settings.php
+		sudo cp /var/www/emoncms/default.settings.php /etc/emoncms/settings.php
+
+Set the ownership of the settings file
+
+		sudo chown www-data:root /etc/emoncms/settings.php
 
 Open settings.php in an editor:
 
-    nano settings.php
+    sudo nano /etc/emoncms/settings.php
 
 Update your settings to use your Database 'user' & 'password', which will enable emoncms to access the database:
 
@@ -112,7 +121,7 @@ Update your settings to use your Database 'user' & 'password', which will enable
     $database = "emoncms";
     $username = "emoncms";
     $password = "new_secure_password";
-    
+
 Further down in settings is an optional 'data structure store' - Redis, which acts as a cache for the data produced by emoncms, to ensure that it is efficiently written to disk. To activate Redis, change 'false' to 'true'. :
 
 	//2 #### Redis
@@ -132,7 +141,7 @@ To enable the emoncms user-interface to reboot or shutdown the system, it's nece
 Open the sudoers file :
 
     sudo visudo
-    
+
 and edit the `# User privilege specification` section to be :
 
 ```
@@ -140,8 +149,8 @@ and edit the `# User privilege specification` section to be :
 root    ALL=(ALL:ALL) ALL
 www-data   ALL=(ALL) NOPASSWD:/sbin/shutdown
 ```
-    
-Save & exit 
+
+Save & exit
 
 ### In an internet browser, load emoncms:
 
@@ -175,7 +184,7 @@ Edit the cmdline.txt file:
 
     sudo nano /boot/cmdline.txt
 
-by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
+by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`
 
 Disable serial console boot
 
@@ -188,12 +197,12 @@ At this stage, power off your Raspberry Pi:
 
 Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add-on board, ensuring it's positioned correctly (see the photos in the OEM shop pages).
 
-**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM forum](https://community.openenergymonitor.org) giving as much detail as possible.**
+**You should now have a fully working version of emoncms installed on your Raspberry Pi, if at this stage you don't, you may wish to check the emoncms log - 'Setup > Administration > Logger' or report the issue in the [OEM Community forum](https://community.openenergymonitor.org) giving as much detail as possible.**
 
 ### System Options
 * [Move the operating system partition (root) to an USB HDD](USB_HDD.md)
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
 * [Installing emoncms Modules](general.md#module-installation)
-* [Updating emoncms](general.md#updating-emoncms-via-git)  
+* [Updating emoncms](general.md#updating-emoncms-via-git)
 * [System Logs](general.md#system-logs)

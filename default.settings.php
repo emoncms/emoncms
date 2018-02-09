@@ -55,19 +55,19 @@
         // On windows or shared hosting you will likely need to specify a different data directory--
         // Make sure that emoncms has write permission's to the datadirectory folders
         'phpfiwa'=>array(
-            'datadir' => '/var/lib/phpfiwa/'
+            'datadir' => '/var/Lib/emondata/phpfiwa/'
         ),
         'phpfina'=>array(
-            'datadir' => '/var/lib/phpfina/'
+            'datadir' => '/var/lib/emondata/phpfina/'
         ),
         'phptimeseries'=>array(
-            'datadir' => '/var/lib/phptimeseries/'
+            'datadir' => '/var/lib/emondata/phptimeseries/'
         ),
         'cassandra'=>array(
             'keyspace' => 'emoncms'
         )
     );
-    
+
     // For use with emoncms module that require installation in home directory
     // $homedir = "/home/username";
 
@@ -127,7 +127,7 @@
     $public_profile_enabled = true;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
-    
+
     // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
     $feedviewpath = "vis/auto?feedid=";
 
@@ -161,7 +161,7 @@
 
     // field separator
     $csv_field_separator = ",";
-	
+
     // set true on docker installations
     $allow_config_env_vars = false;
 
