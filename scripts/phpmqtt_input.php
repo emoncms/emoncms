@@ -190,25 +190,33 @@
             if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
                 // JSON is valid - is it an array
                 $jsoninput = true;
-                $log->info("MQTT Valid JSON found ".$value);
+                $log->info("MQTT Valid JSON found ");
+                //Create temporary array and change all keys to lower case to look for a 'time' key
+                $jsondataLC = array_change_key_case($jsondata);
 
                 #If JSON check to see if there is a time value else set to time now.
-                if (array_key_exists('time',$jsondata)){
-                    $time = $jsondata['time'];
+                if (array_key_exists('time',$jsondataLC)){
+                    $time = $jsondataLC['time'];
                     if (is_string($time)){
                         if (($timestamp = strtotime($time)) === false) {
+                            //If time string is not valid, use system time.
+                            $time = time();
                             $log->warn("Time string not valid ".$time);
                         } else {
+                            $log->info("Valid time string used ".$time);
                             $time = $timestamp;
                         }
                     } else {
+                        $log->info("Valid time in seconds used ".$time);
                         //Do nothings as it has been assigned to $time as a value
                     }
                 } else {
+                    $log->info("No time element found in JSON - System time used");
                     $time = time();
                 }
             } else {
                 $jsoninput = false;
+                $log->info("No JSON found - System time used");
                 $time = time();
             }
 
@@ -243,7 +251,7 @@
                     $nodeid = $route[$st+1];
                     $dbinputs = $input->get_inputs($userid);
 
-                    if ($jsondata) {
+                    if ($jsoninput) {
                         foreach ($jsondata as $key=>$value) {
                             $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                         }
