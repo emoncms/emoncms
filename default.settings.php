@@ -41,6 +41,7 @@
             //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
+            //,Engine::CASSANDRA    // 10 Apache Cassandra
         ),
 
         // Redis Low-write mode
