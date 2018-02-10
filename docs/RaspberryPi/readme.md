@@ -101,19 +101,15 @@ Add an emoncms database user and set that user's permissions. In the command bel
 
 Firstly, create a directory to store emoncms settings:
 
-		sudo mkdir /etc/emoncms
+    sudo mkdir /etc/emoncms && cd /etc/emoncms
 
 Make a copy of default.settings.php and call it settings.php:
 
-		sudo cp /var/www/emoncms/default.settings.php /etc/emoncms/settings.php
+    sudo cp /var/www/emoncms/default.settings.php settings.php
 
-Set the ownership of the settings file
+Set the ownership & configure the settings file
 
-		sudo chown www-data:root /etc/emoncms/settings.php
-
-Open settings.php in an editor:
-
-    sudo nano /etc/emoncms/settings.php
+    sudo chown www-data:root settings.php && sudo nano settings.php
 
 Update your settings to use your Database 'user' & 'password', which will enable emoncms to access the database:
 
