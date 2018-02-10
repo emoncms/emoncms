@@ -55,7 +55,7 @@
         // On windows or shared hosting you will likely need to specify a different data directory--
         // Make sure that emoncms has write permission's to the datadirectory folders
         'phpfiwa'=>array(
-            'datadir' => '/var/Lib/emondata/phpfiwa/'
+            'datadir' => '/var/lib/emondata/phpfiwa/'
         ),
         'phpfina'=>array(
             'datadir' => '/var/lib/emondata/phpfina/'
