@@ -18,7 +18,7 @@ $schema['users'] = array(
     'timezone' => array('type'=>'varchar(64)', 'default'=>'UTC'),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
     'bio' => array('type' => 'text', 'default'=>''),
-    'tags' => array('type' => 'text', 'Null'=>true),
+    'tags' => array('type' => 'text', 'default'=>NULL),
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list')
 );
 
