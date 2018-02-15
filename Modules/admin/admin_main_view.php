@@ -315,13 +315,13 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
 if ($system['mem_info']) {
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
               $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
-              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
+              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".str_replace(',','.',$sysRamPercent)."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
               echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."</td></tr>\n";
 
               if ($system['mem_info']['SwapTotal'] > 0) {
                 $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree'];
                 $sysSwapPercent = sprintf('%.2f',($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100);
-                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercent."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
+                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".str_replace(',','.',$sysSwapPercent)."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
                 echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
               }
 }
@@ -335,7 +335,7 @@ if ($system['mem_info']) {
                         $diskUsed = $fs['Used']['value'];;
                         $diskPercent = sprintf('%.2f',($diskUsed / $diskTotal) * 100);
  
-                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercent."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
+                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".str_replace(',','.',$diskPercent)."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
                         echo "<b>Total:</b> ".formatSize($diskTotal)."<b> Used:</b> ".formatSize($diskUsed)."<b> Free:</b> ".formatSize($diskFree)."</td></tr>\n";
 
                       }
