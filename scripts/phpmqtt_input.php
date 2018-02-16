@@ -228,7 +228,7 @@
             $userid = $mqttsettings['userid'];
             
             $inputs = array();
-
+            
             $route = explode("/",$topic);
             $basetopic = explode("/",$mqtt_server['basetopic']);
 
@@ -245,9 +245,11 @@
                     $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
                 }
             }
-
-            if ($st>=0) {
-                if (isset($route[$st+1])) {
+     
+            if ($st>=0)
+            {
+                if (isset($route[$st+1]))
+                {
                     $nodeid = $route[$st+1];
                     $dbinputs = $input->get_inputs($userid);
 
@@ -257,7 +259,9 @@
                         }
                     } else if (isset($route[$st+2])) {
                         $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
-                    } else {
+                    }
+                    else
+                    {
                         $values = explode(",",$value);
                         $name = 0;
                         foreach ($values as $value) {
@@ -265,7 +269,7 @@
                         }
                     }
                 }
-            } else{
+            } else {
                 $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
             
@@ -274,9 +278,10 @@
             //     $dbinputs[$nodeid] = array();
             //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
             // }
-            
+
             $tmp = array();
-            foreach ($inputs as $i) {
+            foreach ($inputs as $i)
+            {
                 $userid = $i['userid'];
                 $time = $i['time'];
                 $nodeid = $i['nodeid'];
@@ -290,7 +295,8 @@
                         $log->info(json_encode($result));
                     }
                 }
-                else {
+                else 
+                {
                     if (!isset($dbinputs[$nodeid][$name])) {
                         $inputid = $input->create_input($userid, $nodeid, $name);
                         if (!$inputid) {
@@ -309,7 +315,7 @@
             }
             
             foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
-        
+            
         } catch (Exception $e) {
             $log->error($e);
         }
