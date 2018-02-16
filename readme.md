@@ -14,9 +14,9 @@ Emoncms is an open-source web application for processing, logging and visualisin
 - PHP (5.6 - 7 recomended) 
 - MYSQL (14.14 recomended) 
 - Apache (2.4 recomended)
-- Redis recommended*
+- Redis (recommended)*
 
-_*If you can install redis then it is recommended to do so. The way redis is used in emoncms reduces disk write load prolonging disk life (noticably on SD cards). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
+_*Redis is recommended to reduces disk write load prolonging disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
 
 ## Using Emoncms
 
@@ -24,15 +24,15 @@ _*If you can install redis then it is recommended to do so. The way redis is use
 
 **1. Screencasts/Videos**
 
-These screencasts where put together to accompany the [EmonPi/EmonBase setup guide](http://guide.openenergymonitor.org/setup) and do therefore contain a number of references that are EmonPi/EmonBase/RaspberryPi specific. They do however give a useful overview of some of the core parts of emoncms including configuring inputs, creating feeds and dashboards.
+These screencasts where put together to accompany the [emonPi/emonBase setup guide](http://guide.openenergymonitor.org/setup) and do therefore contain a number of references that are EmonPi/EmonBase/RaspberryPi specific. They do however give a useful overview of some of the core parts of Emoncms including configuring inputs, creating feeds and dashboards.
 
-- [YouTube: Logging data locally with emoncms on the EmonPi/Emonbase](https://www.youtube.com/watch?v=8nVP0Hgkuuc)
-- [YouTube: Viewing data and creating dashboards on the EmonPi/Emonbase](https://www.youtube.com/watch?v=eqN9rc9VnqI)
+- [Screencast: Logging data locally with emoncms on the emonPi/emonBase](https://www.youtube.com/watch?v=8nVP0Hgkuuc)
+- [Screencast: Viewing data and creating dashboards on the emonPi/emonBase](https://www.youtube.com/watch?v=eqN9rc9VnqI)
 
 There are also two screencasts that are specific to optional modules that are included on the EmonPi/Emonbase standard SD card install but are not part of the standard install if you follow the installation guides below.
 
-- [YouTube: Connecting to WIFI using the emoncms WIFI module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
-- [YouTube: Data backup and import using emoncms backup module on the EmonPi/Emonbase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
+- [Screencast: Connecting to WiFi using the emoncms WiFi module on the emonPi/emonBase](https://www.youtube.com/watch?v=77WEj9Q6JEE)
+- [Screencast: Data backup and import using emoncms backup module on the emonPi/emonBase](https://www.youtube.com/watch?v=5U_tOlsWjXM)
 
 **2. From the Guide**
 
@@ -68,6 +68,7 @@ Recommended:
 * [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Raspberry Pi](docs/RaspberryPi/readme.md)
   * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
+  * [Purchase pre-loaded SD card](http://shop.openenergymonitor.com/emonsd-pre-loaded-raspberry-pi-sd-card/)
 
 Experimental:
 
@@ -96,9 +97,9 @@ There are many other modules such as the event module and openbem (open source b
 
 ## Branches
 
-* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk! All pull-requests should be made to the *master* branch.  [EmonCMS 9.x forum thread](http://openenergymonitor.org/emon/node/11009)
+* [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk! All pull-requests should be made to the *master* branch.
 
-* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See change log](https://github.com/emoncms/emoncms/releases)
+* [stable](https://github.com/emoncms/emoncms/tree/stable) - emonPi/emonBase release branch, regularly merged from master. Slightly more tried and tested. [See release change log.](https://github.com/emoncms/emoncms/releases)
 
 * ARCHIVE [low-write (v8.5)](https://github.com/emoncms/emoncms/tree/low-write) - Old emonpi/emonbase emoncms version ([July 15 emonSD ready-to-go SD card image](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)). Low-write mode is now available in v9.0. The low write version of emoncms is designed for running on SD cards. This is a cut down version of emoncms supports only the phpfina and phptimeseries feed engines (no in built feed averaging or histograms) and a reduced input processor set. **Archived branch**
 
@@ -158,7 +159,7 @@ For developers: The following lists the locations of the files that define emonc
 
 - Cloud hosted platform - http://emoncms.org
 - [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
-- [OpenEnergyMonitor Labs page](http://openenergymonitor.org/emon/labs)
+- [OpenEnergyMonitor Homepage](https://openenergymonitor.org)
 
 ## Standard Emoncms and Emoncms.org
 
