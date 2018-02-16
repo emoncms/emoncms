@@ -33,9 +33,12 @@ var processlist_ui =
         out += '<td>';
         if (i > 0) {
           out += '<a class="move-process" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
+        } else {
+          out += "<span style='display: inline-block; width:14px; ' />";
         }
+
         if (i < this.contextprocesslist.length-1) {
-          out += '<a class="move-process" title="Move up" processid='+i+' moveby=1 ><i class="icon-arrow-down"></i></a>';
+          out += "<a class='move-process' title='Move down' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
         }
         out += '</td>';
 
