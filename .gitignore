@@ -6,6 +6,7 @@ emoncms.log
 .idea
 .vagrant/
 .env
+.vscode/*
 
 # Ignore all modules except core ones
 Modules/*
