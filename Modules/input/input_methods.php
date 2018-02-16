@@ -39,7 +39,7 @@ class InputMethods
     public function post($userid)
     {   
         // Nodeid
-        global $route,$param;
+        global $route,$param,$log;
         
         // Default nodeid is zero
         $nodeid = 0;
@@ -53,7 +53,49 @@ class InputMethods
         if ($nodeid=="") $nodeid = 0;
         
         // Time
-        if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
+        //if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
+        if ($param->exists('time')) {
+            $inputtime = $param->val('time');
+
+            // validate time
+            if (is_numeric($inputtime)){
+                // add zero to force a string to a number
+                $inputtime +=0;
+                if ($inputtime > time()){
+                    // check if time is milliseconds
+                    if ($inputtime/1000 > time()){
+                        #time is still in future
+                        $log->warn("Time not valid ".$inputtime);
+                        $time = time();
+                    } else {
+                        $log->info("Valid time in milliseconds used ".$inputtime);
+                        $time = $inputtime/1000;
+                    }
+                } else {
+                    $log->info("Valid time in seconds used ".$inputtime);
+                    $time = $inputtime;
+                }
+            } elseif (is_string($inputtime)){
+                if (($timestamp = strtotime($inputtime)) === false) {
+                    //If time string is not valid, use system time.
+                    $log->warn("Time string not valid ".$inputtime);
+                    $time = time();
+                } else {
+                    if ($timestamp > time()){
+                        $log->warn("Time is in the future ".$inputtime);
+                        $time = time();
+                    } else {
+                        $log->info("Valid time string used ".$inputtime);
+                        $time = $timestamp;
+                    }
+                }
+            } else {
+                $log->warn("Time not valid ".$inputtime);
+                $time = time();
+            }
+        } else {
+            $time = time();
+        }
 
         // Data
         $datain = false;
