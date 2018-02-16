@@ -196,21 +196,21 @@
             $inputs = array();
             
             $route = explode("/",$topic);
-	          $basetopic = explode("/",$mqtt_server['basetopic']);
+            $basetopic = explode("/",$mqtt_server['basetopic']);
 
-	          /*Iterate over base topic to determine correct sub-topic*/
-	          $st=-1;
-	          foreach ($basetopic as $subtopic) {
-		            if(isset($route[$st+1])) {
-			              if($basetopic[$st+1]==$route[$st+1]) {
-				                $st = $st + 1;
-			              } else {
-				                break;
-			              }
-		            } else {
-			              $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
-		            }
-	          }
+            /*Iterate over base topic to determine correct sub-topic*/
+            $st=-1;
+            foreach ($basetopic as $subtopic) {
+                if(isset($route[$st+1])) {
+                    if($basetopic[$st+1]==$route[$st+1]) {
+                        $st = $st + 1;
+                    } else {
+                        break;
+                    }
+                } else {
+                    $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
+                }
+            }
      
             if ($st>=0)
             {
@@ -232,10 +232,9 @@
                         }
                     }
                 }
+            } else {
+                $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
-	          else{
-		          $log->error("No matching MQTT topics! None or null inputs will be recorded!");	
-	          }
             
             // Enabled in device-support branch
             // if (!isset($dbinputs[$nodeid])) {
