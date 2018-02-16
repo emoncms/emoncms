@@ -183,7 +183,7 @@
             $topic = $message->topic;
             $value = $message->payload;
             
-            global $mqtt_server, $input, $process, $device, $log, $count, $inputMethods;
+            global $mqtt_server, $user, $input, $process, $device, $log, $count;
 
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
             $jsondata = json_decode($value,true,2);
