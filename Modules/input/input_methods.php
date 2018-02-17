@@ -59,38 +59,19 @@ class InputMethods
 
             // validate time
             if (is_numeric($inputtime)){
-                // add zero to force a string to a number
-                $inputtime +=0;
-                if ($inputtime > time()){
-                    // check if time is milliseconds
-                    if ($inputtime/1000 > time()){
-                        #time is still in future
-                        $log->warn("Time not valid ".$inputtime);
-                        $time = time();
-                    } else {
-                        $log->info("Valid time in milliseconds used ".$inputtime);
-                        $time = $inputtime/1000;
-                    }
-                } else {
-                    $log->info("Valid time in seconds used ".$inputtime);
-                    $time = $inputtime;
-                }
+                $log->info("Valid time in seconds used ".$inputtime);
+                $time = (int) $inputtime;
             } elseif (is_string($inputtime)){
                 if (($timestamp = strtotime($inputtime)) === false) {
                     //If time string is not valid, use system time.
                     $log->warn("Time string not valid ".$inputtime);
                     $time = time();
                 } else {
-                    if ($timestamp > time()){
-                        $log->warn("Time is in the future ".$inputtime);
-                        $time = time();
-                    } else {
-                        $log->info("Valid time string used ".$inputtime);
-                        $time = $timestamp;
-                    }
+                    $log->info("Valid time string used ".$inputtime);
+                    $time = $timestamp;
                 }
             } else {
-                $log->warn("Time not valid ".$inputtime);
+                $log->warn("Time parameter not valid ".$inputtime);
                 $time = time();
             }
         } else {
@@ -112,11 +93,46 @@ class InputMethods
         if ($datain=="") return "Request contains no data via csv, json or data tag";
         
         if ($param->exists('fulljson')) {
-            $inputs = json_decode($datain, true, 2);
-            if (is_null($inputs)) {
-                return "Error decoding JSON string (invalid or too deeply nested)";
-            } else if (!is_array($inputs)) {
-                return "Input must be a JSON object";
+            $jsondata = null;
+            $jsondata = json_decode($datain,true,2);
+            if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
+                // JSON is valid - is it an array
+                //$jsoninput = true;
+                $log->info("Valid JSON found ");
+                //Create temporary array and change all keys to lower case to look for a 'time' key
+                $jsondataLC = array_change_key_case($jsondata);
+
+                // If JSON, check to see if there is a time value else set to time now.
+                // Time set as a parameter takes precedence.
+                if ($param->exists('time')) {
+                    $log->info("Time from parameter used");
+                } elseif (array_key_exists('time',$jsondataLC)){
+                    $inputtime = $jsondataLC['time'];
+
+                    // validate time
+                    if (is_numeric($inputtime)){
+                        $log->info("Valid time in seconds used ".$inputtime);
+                        $time = (int) $inputtime;
+                    } elseif (is_string($inputtime)){
+                        if (($timestamp = strtotime($inputtime)) === false) {
+                            //If time string is not valid, use system time.
+                            $log->warn("Time string not valid ".$inputtime);
+                            $time = time();
+                        } else {
+                            $log->info("Valid time string used ".$inputtime);
+                            $time = $timestamp;
+                        }
+                    } else {
+                        $log->warn("Time not valid ".$inputtime);
+                        $time = time();
+                    }
+                } else {
+                    $log->info("No time element found in JSON - System time used");
+                    $time = time();
+                }
+                $inputs = $jsondata;
+            } else {
+                return "Input in not a valid JSON object";
             }
         } else {
             $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);

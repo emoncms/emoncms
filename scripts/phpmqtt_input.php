@@ -201,38 +201,19 @@
 
                     // validate time
                     if (is_numeric($inputtime)){
-                        // add zero to force a string to a number
-                        $inputtime +=0;
-                        if ($inputtime > time()){
-                            // check if time is milliseconds
-                            if ($inputtime/1000 > time()){
-                                #time is still in future
-                                $log->warn("Time not valid ".$inputtime);
-                                $time = time();
-                            } else {
-                                $log->info("Valid time in milliseconds used ".$inputtime);
-                                $time = $inputtime/1000;
-                            }
-                        } else {
-                            $log->info("Valid time in seconds used ".$inputtime);
-                            $time = $inputtime;
-                        }
+                        $log->info("Valid time in seconds used ".$inputtime);
+                        $time = (int) $inputtime;
                     } elseif (is_string($inputtime)){
                         if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
                             $log->warn("Time string not valid ".$inputtime);
                             $time = time();
                         } else {
-                            if ($timestamp > time()){
-                                $log->warn("Time is in the future ".$inputtime);
-                                $time = time();
-                            } else {
-                                $log->info("Valid time string used ".$inputtime);
-                                $time = $timestamp;
-                            }
+                            $log->info("Valid time string used ".$inputtime);
+                            $time = $timestamp;
                         }
                     } else {
-                        $log->warn("Time not valid ".$inputtime);
+                        $log->warn("Time value not valid ".$inputtime);
                         $time = time();
                     }
                 } else {
