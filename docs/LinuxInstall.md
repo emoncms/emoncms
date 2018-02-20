@@ -38,19 +38,19 @@ You may need to start by updating the system repositories
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
 ```
- sudo a2enmod rewrite
- sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
- <Directory /var/www/html/emoncms>
-	Options FollowSymLinks
-	AllowOverride All
-	DirectoryIndex index.php
-	Order allow,deny
-	Allow from all
- </Directory>
- EOF
- sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
- sudo a2ensite emoncms
- sudo service apache2 reload
+sudo a2enmod rewrite
+sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
+<Directory /var/www/html/emoncms>
+    Options FollowSymLinks
+    AllowOverride All
+    DirectoryIndex index.php
+    Order allow,deny
+    Allow from all
+</Directory>
+EOF
+sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+sudo a2ensite emoncms
+sudo service apache2 reload
 ```
 
 ## Install Emoncms
