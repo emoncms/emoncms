@@ -38,9 +38,8 @@ You may need to start by updating the system repositories
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
 ```
- sudo su
- a2enmod rewrite
- cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
+ sudo a2enmod rewrite
+ sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
  <Directory /var/www/html/emoncms>
 	Options FollowSymLinks
 	AllowOverride All
@@ -49,10 +48,9 @@ Emoncms uses a front controller to route requests, modrewrite needs to be config
 	Allow from all
  </Directory>
  EOF
- echo 'ServerName localhost' >> /etc/apache2/apache2.conf
- a2ensite emoncms
- service apache2 reload
- exit
+ sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+ sudo a2ensite emoncms
+ sudo service apache2 reload
 ```
 
 ## Install Emoncms
@@ -103,15 +101,13 @@ Exit mysql by:
     
 ### Create data repositories for emoncms feed engines
 
-    sudo su
-    mkdir /var/lib/phpfiwa
-    mkdir /var/lib/phpfina
-    mkdir /var/lib/phptimeseries
+    sudo mkdir /var/lib/phpfiwa
+    sudo mkdir /var/lib/phpfina
+    sudo mkdir /var/lib/phptimeseries
 
-    chown www-data:root /var/lib/phpfiwa
-    chown www-data:root /var/lib/phpfina
-    chown www-data:root /var/lib/phptimeseries
-    exit
+    sudo chown www-data:root /var/lib/phpfiwa
+    sudo chown www-data:root /var/lib/phpfina
+    sudo chown www-data:root /var/lib/phptimeseries
 
 ## Setup Emoncms settings
 
