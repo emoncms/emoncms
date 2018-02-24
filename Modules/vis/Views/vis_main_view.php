@@ -145,7 +145,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     // if the vis type is multigraph then we construct
     // the visurl with multigraph?id=1
     if (vistype=="multigraph") {
-      visurl = "multigraph?mid="+multigraph_id;
+      visurl = "multigraph?mid="+multigraphID;
     } else {
       visurl += path+"vis/"+vistype;
       var options = [];
