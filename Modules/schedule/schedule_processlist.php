@@ -10,6 +10,10 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
+$domain4 = "schedule_messages";
+bindtextdomain($domain4, "Modules/schedule/locale");
+bind_textdomain_codeset($domain4, 'UTF-8');
+
 // Schedule Processlist Module
 class Schedule_ProcessList
 {
@@ -40,10 +44,10 @@ class Schedule_ProcessList
         // Processors that write or update a feed are not supported and hidden from the gui on the context of virtual feeds.
 
         // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true | 'nochange'=>true  | 'helpurl'=>"http://..."
-        $list[] = array(_("If !schedule, ZERO"), ProcessArg::SCHEDULEID, "if_not_schedule_zero", 0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>Validates if time is NOT in range of schedule. If NOT in schedule, value is ZEROed.</p><p>You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list</p>");
-        $list[] = array(_("If !schedule, NULL"), ProcessArg::SCHEDULEID, "if_not_schedule_null", 0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>Validates if time is NOT in range of schedule. If NOT in schedule, value is NULLed.</p><p>You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list</p>");
-        $list[] = array(_("If schedule, ZERO"),  ProcessArg::SCHEDULEID, "if_schedule_zero",     0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>Validates if time is in range of schedule. If in schedule, value is ZEROed.</p><p>You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list</p>");
-        $list[] = array(_("If schedule, NULL"),  ProcessArg::SCHEDULEID, "if_schedule_null",     0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>Validates if time is in range of schedule. If in schedule, value is NULLed.</p><p>You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list</p>");
+        $list[] = array(dgettext("schedule_messages","If !schedule, ZERO"), ProcessArg::SCHEDULEID, "if_not_schedule_zero", 0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>".dgettext("schedule_messages","Validates if time is NOT in range of schedule. If NOT in schedule, value is ZEROed.")."</p><p>".dgettext("schedule_messages","You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list")."</p>");
+        $list[] = array(dgettext("schedule_messages","If !schedule, NULL"), ProcessArg::SCHEDULEID, "if_not_schedule_null", 0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>".dgettext("schedule_messages","Validates if time is NOT in range of schedule. If NOT in schedule, value is NULLed.")."</p><p>".dgettext("schedule_messages","You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list")."</p>");
+        $list[] = array(dgettext("schedule_messages","If schedule, ZERO"),  ProcessArg::SCHEDULEID, "if_schedule_zero",     0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>".dgettext("schedule_messages","Validates if time is in range of schedule. If in schedule, value is ZEROed.")."</p><p>".dgettext("schedule_messages","You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list")."</p>");
+        $list[] = array(dgettext("schedule_messages","If schedule, NULL"),  ProcessArg::SCHEDULEID, "if_schedule_null",     0, DataType::UNDEFINED, "Schedule", 'desc'=>"<p>".dgettext("schedule_messages","Validates if time is in range of schedule. If in schedule, value is NULLed.")."</p><p>".dgettext("schedule_messages","You can use this to get a feed for each of the multi-rate tariff rate your provider gives. Add the 'Reset to Original' process before this process to log the input value to a different feed for each schedule on the same processing list")."</p>");
         return $list;
     }
 
