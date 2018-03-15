@@ -55,13 +55,12 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
+    var feedid = <?php echo $feedid; ?>;
     var feedname = "<?php echo $feedidname; ?>";
     var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";
     var embed = <?php echo $embed; ?>;
     var valid = "<?php echo $valid; ?>";
-
-    var feedid = urlParams.feedid;
 
     var interval = urlParams.interval;
     if (interval==undefined || interval=='') interval = 3600*24;
