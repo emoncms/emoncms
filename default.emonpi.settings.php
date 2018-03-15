@@ -41,7 +41,7 @@
             //Engine::PHPTIMESERIES, // 2
             //Engine::PHPFINA,       // 5
             Engine::PHPFIWA,         // 6  PHPFIWA disabled for compatibility with Low-write mode
-            Engine::CASSANDRA		 // 10 Disabled by default, enable if you wish to use
+            Engine::CASSANDRA        // 10 Apache Cassandra disabled by default for emonpi, enable if you wish to use
         ),
 
         // Redis Low-write mode
@@ -63,6 +63,9 @@
         ),
         'phptimeseries'=>array(
             'datadir' => '/home/pi/data/phptimeseries/'
+        ),
+        'cassandra'=>array(
+            'keyspace' => 'emoncms'
         )
     );
 
@@ -75,7 +78,8 @@
 //5 #### User Interface settings
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
-    $themecolor = "standard";
+    // Theme colour options: "standard", "blue", "sun"
+    $themecolor = "blue";
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon_emonpi.png";

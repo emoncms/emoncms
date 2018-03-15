@@ -1,32 +1,48 @@
 var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
-var event_vis_feed_data;
+var event_visFeedData;
 var event_refresh;
 var showlegend = true;
 var datetimepicker1;
 var datetimepicker2;
-  
-function convert_to_plotlist(multigraph_feedlist) {
-  var plotlist = [];
-  var showtag = (multigraph_feedlist[0]['showtag'] != undefined ? multigraph_feedlist[0]['showtag'] : true);
-  showlegend = (multigraph_feedlist[0]['showlegend']==undefined || multigraph_feedlist[0]['showlegend']);
-  
-  view.ymin = (multigraph_feedlist[0]['ymin'] != undefined ? multigraph_feedlist[0]['ymin'] : null);
-  view.ymax = (multigraph_feedlist[0]['ymax'] != undefined ? multigraph_feedlist[0]['ymax'] : null);
-  view.y2min = (multigraph_feedlist[0]['y2min'] != undefined ? multigraph_feedlist[0]['y2min'] : null);
-  view.y2max = (multigraph_feedlist[0]['y2max'] != undefined ? multigraph_feedlist[0]['y2max'] : null);
+var datatype;
 
-  for (z in multigraph_feedlist) {
-    var tag = (showtag && multigraph_feedlist[z]['tag']!=undefined && multigraph_feedlist[z]['tag']!="" ? multigraph_feedlist[z]['tag']+": " : "");
-    var stacked = (multigraph_feedlist[z]['stacked']!=undefined && multigraph_feedlist[z]['stacked']);
-    if (multigraph_feedlist[z]['datatype']==1) {
+function convertToPlotlist(multigraphFeedlist) {
+  var plotlist = [];
+  var showtag = (multigraphFeedlist[0]["showtag"] != undefined ? multigraphFeedlist[0]["showtag"] : true);
+  showlegend = (multigraphFeedlist[0]["showlegend"]==undefined || multigraphFeedlist[0]["showlegend"]);
+  var barwidth = 1;
+  var grpahtype;
+  
+  view.ymin = (multigraphFeedlist[0]["ymin"] != undefined ? multigraphFeedlist[0]["ymin"] : null);
+  view.ymax = (multigraphFeedlist[0]["ymax"] != undefined ? multigraphFeedlist[0]["ymax"] : null);
+  view.y2min = (multigraphFeedlist[0]["y2min"] != undefined ? multigraphFeedlist[0]["y2min"] : null);
+  view.y2max = (multigraphFeedlist[0]["y2max"] != undefined ? multigraphFeedlist[0]["y2max"] : null);
+
+  datatype=1;
+
+  for (z in multigraphFeedlist) {
+    var tag = (showtag && multigraphFeedlist[z]["tag"]!=undefined && multigraphFeedlist[z]["tag"]!="" ? multigraphFeedlist[z]["tag"]+": " : "");
+    var stacked = (multigraphFeedlist[z]["stacked"]!=undefined && multigraphFeedlist[z]["stacked"]);
+    barwidth = multigraphFeedlist[z]["barwidth"]===undefined ? 1 : multigraphFeedlist[z]["barwidth"];
+
+    if ( multigraphFeedlist[z]["graphtype"]===undefined ) {
+      multigraphFeedlist[z]["datatype"]==1 ? graphtype="lines" : graphtype="bars";
+    } else {
+      graphtype=multigraphFeedlist[z]["graphtype"];
+    }
+
+    if (multigraphFeedlist[z]["datatype"]==2)
+      datatype=2;
+
+    if (graphtype.substring(0, 5)=="lines") {
       plotlist[z] = {
-        id: multigraph_feedlist[z]['id'],
+        id: multigraphFeedlist[z]["id"],
         selected: 1,
         plot: {
           data: null,
-          label: tag + multigraph_feedlist[z]['name'],
+          label: tag + multigraphFeedlist[z]["name"],
           stack: stacked,
           points: { 
             show: true,
@@ -36,50 +52,51 @@ function convert_to_plotlist(multigraph_feedlist) {
           },
           lines: {
             show: true,
-            fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
+            fill: multigraphFeedlist[z]["fill"] ? (stacked ? 1.0 : 0.5) : 0.0,
+            steps: graphtype=="lineswithsteps" ? true : false
           }
         }
       };
     }
 
-    else if (multigraph_feedlist[z]['datatype']==2) {
+    else if (graphtype=="bars") {
       plotlist[z] = {
-        id: multigraph_feedlist[z]['id'],
+        id: multigraphFeedlist[z]["id"],
         selected: 1,
         plot: {
           data: null,
-          label: tag + multigraph_feedlist[z]['name'],
+          label: tag + multigraphFeedlist[z]["name"],
           stack: stacked,
           bars: {
             show: true,
-            align: "left", barWidth: 3600*24*1000, fill: multigraph_feedlist[z]['fill'] ? (stacked ? 1.0 : 0.5) : 0.0
+            align: "center", barWidth: 3600*24*1000*barwidth, fill: multigraphFeedlist[z]["fill"] ? (stacked ? 1.0 : 0.5) : 0.0
           }
         }
       };
     } else {
-      console.log("ERROR: Unknown plot datatype! Datatype: ", multigraph_feedlist[z]['datatype']);
+      console.log("ERROR: Unknown plot graphtype! Graphtype: ", multigraphFeedlist[z]["graphtype"]);
     }
 
-    if (multigraph_feedlist[z]['left']==true) {
+    if (multigraphFeedlist[z]["left"]==true) {
       plotlist[z].plot.yaxis = 1;
-    } else if (multigraph_feedlist[z]['right']==true) {
+    } else if (multigraphFeedlist[z]["right"]==true) {
       plotlist[z].plot.yaxis = 2;
     } else {
-      console.log("ERROR: Unknown plot alignment! Alignment setting: ", multigraph_feedlist[z]['right']);
+      console.log("ERROR: Unknown plot alignment! Alignment setting: ", multigraphFeedlist[z]["right"]);
     }
 
     // Only set the plotcolour variable if we have a value to set it with
-    if (multigraph_feedlist[z]["lineColour"]) {
+    if (multigraphFeedlist[z]["lineColour"]) {
       // Some browsers really want the leading "#". It works without in chrome, not in IE and opera.
       // What the hell, people?
-      if (multigraph_feedlist[z]["lineColour"].indexOf("#") == -1) {
-        plotlist[z].plot.color = "#" + multigraph_feedlist[z]["lineColour"];
+      if (multigraphFeedlist[z]["lineColour"].indexOf("#") == -1) {
+        plotlist[z].plot.color = "#" + multigraphFeedlist[z]["lineColour"];
       } else {
-        plotlist[z].plot.color = multigraph_feedlist[z]["lineColour"];
+        plotlist[z].plot.color = multigraphFeedlist[z]["lineColour"];
       }
     }
 
-    if (multigraph_feedlist[z]['left']==false && multigraph_feedlist[z]['right']==false) {
+    if (multigraphFeedlist[z]["left"]==false && multigraphFeedlist[z]["right"]==false) {
       plotlist[z].selected = 0;
     }
   }
@@ -89,65 +106,67 @@ function convert_to_plotlist(multigraph_feedlist) {
 /*
  Handle Feeds
 */
-function vis_feed_data() {
-    if (multigraph_feedlist !== undefined && multigraph_feedlist[0] != undefined && multigraph_feedlist[0]['autorefresh'] != undefined) {
+function visFeedData() {
+    if (multigraphFeedlist !== undefined && multigraphFeedlist[0] != undefined && multigraphFeedlist[0]["autorefresh"] != undefined) {
         var now = new Date().getTime();
         var timeWindow = view.end - view.start;
-        if (now - view.end < 2000 * multigraph_feedlist[0]['autorefresh']) {
+        if (now - view.end < 2000 * multigraphFeedlist[0]["autorefresh"]) {
         view.end = now;
         view.start = view.end - timeWindow;
-            vis_feed_data_ori();
+            visFeedDataOri();
             clearTimeout(event_refresh); // Cancel any pending event
-            event_refresh = setTimeout(vis_feed_data, 1000 * multigraph_feedlist[0]['autorefresh']);
+            event_refresh = setTimeout(visFeedData, 1000 * multigraphFeedlist[0]["autorefresh"]);
         } else {        
-            vis_feed_data_ori();
+            visFeedDataOri();
         }
     } else {        
-        vis_feed_data_ori();
+        visFeedDataOri();
     }
 }
 
 // Ignore load request spurts
-function vis_feed_data_ori() {
+function visFeedDataOri() {
   datetimepicker1.setLocalDate(new Date(view.start));
   datetimepicker2.setLocalDate(new Date(view.end));
   datetimepicker1.setEndDate(new Date(view.end));
   datetimepicker2.setStartDate(new Date(view.start));
-  clearTimeout(event_vis_feed_data); // Cancel any pending events
-  event_vis_feed_data = setTimeout(function() { vis_feed_data_delayed(); }, 500);
-  if (multigraph_feedlist !== undefined && multigraph_feedlist.length != plotdata.length) plotdata = [];
+
+  clearTimeout(event_visFeedData); // Cancel any pending events
+  event_visFeedData = setTimeout(function() { visFeedDataDelayed(); }, 500);
+  if (multigraphFeedlist !== undefined && multigraphFeedlist.length != plotdata.length) plotdata = [];
   plot();
 }
   
 // Load relevant feed data asynchronously
-function vis_feed_data_delayed() {
-  var plotlist = convert_to_plotlist(multigraph_feedlist);
+function visFeedDataDelayed() {
+  var plotlist = convertToPlotlist(multigraphFeedlist);
   var npoints = 800;
   interval = Math.round(((view.end - view.start)/npoints)/1000);
+
   for(var i in plotlist) {
     if (plotlist[i].selected) {
       if (!plotlist[i].plot.data) {
-        var skipmissing = 0; if (multigraph_feedlist[i]['skipmissing']) skipmissing = 1;
+        var skipmissing = 0; if (multigraphFeedlist[i]["skipmissing"]) skipmissing = 1;
 
         if (plotdata[i] === undefined) plotdata[i] = [];
 
-        if (typeof ajaxAsyncXdr[i] !== 'undefined') { 
+        if (typeof ajaxAsyncXdr[i] !== "undefined") { 
           ajaxAsyncXdr[i].abort(); // Abort pending loads
           ajaxAsyncXdr[i]=undefined;
         }
         var context = {index:i, plotlist:plotlist[i]}; 
-        ajaxAsyncXdr[i] = get_feed_data_async(vis_feed_data_callback,context,plotlist[i].id,view.start,view.end,interval,skipmissing,1);
+        ajaxAsyncXdr[i] = get_feed_data_async(visFeedDataCallback,context,plotlist[i].id,view.start,view.end,interval,skipmissing,1);
       }
     }
   }
 }
   
 //load feed data to multigraph plot
-function vis_feed_data_callback(context,data) {
-  var i = context['index'];
-  context['plotlist'].plot.data = data;
-  if (context['plotlist'].plot.data) {
-    plotdata[i] = context['plotlist'].plot;
+function visFeedDataCallback(context,data) {
+  var i = context["index"];
+  context["plotlist"].plot.data = data;
+  if (context["plotlist"].plot.data) {
+    plotdata[i] = context["plotlist"].plot;
   }
   plot();
 }
@@ -166,9 +185,9 @@ function plot() {
   });
 }
 
-function multigraph_init(element) {
+function multigraphInit(element) {
   // Get start and end time of multigraph view
-  // end time and timewindow is stored in the first multigraph_feedlist item.
+  // end time and timewindow is stored in the first multigraphFeedlist item.
   // start time is calculated from end - timewindow
   plotdata = [];
   var timeWindow = (3600000*24.0*7);
@@ -176,11 +195,11 @@ function multigraph_init(element) {
   view.start = now - timeWindow;
   view.end = now;
 
-  if (multigraph_feedlist !== undefined && multigraph_feedlist[0] != undefined) {
-    view.end = multigraph_feedlist[0].end;
+  if (multigraphFeedlist !== undefined && multigraphFeedlist[0] != undefined) {
+    view.end = multigraphFeedlist[0].end;
     if (view.end==0) view.end = now;
-    if (multigraph_feedlist[0].timeWindow) {
-        view.start = view.end - multigraph_feedlist[0].timeWindow;
+    if (multigraphFeedlist[0].timeWindow) {
+        view.start = view.end - multigraphFeedlist[0].timeWindow;
     }
   }
 
@@ -235,40 +254,35 @@ function multigraph_init(element) {
 
   // Tool tip
   var previousPoint = null;
+  var previousSeries = null;
   $(element).bind("plothover", function (event, pos, item) {
     //$("#x").text(pos.x.toFixed(2));
     //$("#y").text(pos.y.toFixed(2));
 
     if ($("#enableTooltip:checked").length > 0) {
       if (item) {
-        if (previousPoint != item.dataIndex) {
+        if (previousPoint != item.dataIndex || previousSeries != item.seriesIndex) {
           previousPoint = item.dataIndex;
+          previousSeries = item.seriesIndex;
 
           $("#tooltip").remove();
-          var x = item.datapoint[0].toFixed(2),
-          y = item.datapoint[1].toFixed(2);
+          var x = item.datapoint[0].toFixed(2);
+          if (typeof(item.datapoint[2])==="undefined") {
+            y=Number(item.datapoint[1].toFixed(2));
+          } else {
+            y=Number((item.datapoint[1]-item.datapoint[2]).toFixed(2));
+          }
 
-          // create a new javascript Date object based on the timestamp
-          // This implementation is clumsy, but the js native date.toTimeString() returns
-          // strings like "08:53:35 GMT-0800", and there is no easy way to turn off the "GMT-xxxx" segment
-          // blargh
-          var date = new Date(parseInt(x));
-          var hours = date.getHours();
-          var minutes = date.getMinutes();
-          var seconds = date.getSeconds();
-          if (hours < 10)
-            hours = "0"+hours;
-          if (minutes < 10)
-            minutes = "0"+minutes;
-          if (seconds < 10)
-            seconds = "0"+seconds;
+          if (datatype==1)
+            options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
+          else
+            options = { month:"short", day:"2-digit"};
 
-          // will display time in 10:30:23 format
-          var formattedTime = hours + ':' + minutes + ':' + seconds;
+          var formattedTime=new Date(parseInt(x));
 
           // I'd like to eventually add colour hinting to the background of the tooltop.
           // This is why showTooltip has the bgColour parameter.
-          tooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime   + " = " + y, "#DDDDDD");
+          tooltip(item.pageX, item.pageY, item.series.label + " at " + formattedTime.toLocaleDateString("en-GB",options) + " = " + y, "#DDDDDD");
         }
       } else {
         $("#tooltip").remove();
@@ -277,13 +291,13 @@ function multigraph_init(element) {
     }
   });
 
-  $('#graph').width($('#graph_bound').width());
-  $('#graph').height($('#graph_bound').height());
-  if (embed) $('#graph').height($(window).height());
+  $("#graph").width($("#graph_bound").width());
+  $("#graph").height($("#graph_bound").height());
+  if (embed) $("#graph").height($(window).height());
 
   $(window).resize(function() {
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
+    $("#graph").width($("#graph_bound").width());
+    if (embed) $("#graph").height($(window).height());
     plot();
   });
 
@@ -291,22 +305,22 @@ function multigraph_init(element) {
   $("#graph").bind("plotselected", function (event, ranges) {
      view.start = ranges.xaxis.from; 
      view.end = ranges.xaxis.to;
-     vis_feed_data();
+     visFeedData();
   });
 
   // Navigation actions
-  $("#zoomout").click(function () {view.zoomout(); vis_feed_data();});
-  $("#zoomin").click(function () {view.zoomin(); vis_feed_data();});
-  $('#right').click(function () {view.panright(); vis_feed_data();});
-  $('#left').click(function () {view.panleft(); vis_feed_data();});
-  $('.graph-time').click(function () {view.timewindow($(this).attr("time")); vis_feed_data();});
+  $("#zoomout").click(function () {view.zoomout(); visFeedData();});
+  $("#zoomin").click(function () {view.zoomin(); visFeedData();});
+  $("#right").click(function () {view.panright(); visFeedData();});
+  $("#left").click(function () {view.panleft(); visFeedData();});
+  $(".graph-time").click(function () {view.timewindow($(this).attr("time")); visFeedData();});
   
-  $('.graph-timewindow').click(function () {
+  $(".graph-timewindow").click(function () {
      $("#graph-buttons-timemanual").show();
      $("#graph-buttons-normal").hide();
   });
 
-  $('.graph-timewindow-set').click(function () {
+  $(".graph-timewindow-set").click(function () {
     var timewindow_start = parse_timepicker_time($("#timewindow-start").val());
     var timewindow_end = parse_timepicker_time($("#timewindow-end").val());
     if (!timewindow_start) {alert("Please enter a valid start date."); return false; }
@@ -317,52 +331,52 @@ function multigraph_init(element) {
     $("#graph-buttons-normal").show();
     view.start = timewindow_start * 1000;
     view.end = timewindow_end *1000;
-    vis_feed_data();
+    visFeedData();
   });
 
-  $('#datetimepicker1').datetimepicker({
+  $("#datetimepicker1").datetimepicker({
     language: 'en-EN'
   });
 
-  $('#datetimepicker2').datetimepicker({
+  $("#datetimepicker2").datetimepicker({
     language: 'en-EN',
     useCurrent: false //Important! See issue #1075
   });
 
-  $('#datetimepicker1').on("changeDate", function (e) {
+  $("#datetimepicker1").on("changeDate", function (e) {
     if (view.datetimepicker_previous == null) view.datetimepicker_previous = view.start;
     if (Math.abs(view.datetimepicker_previous - e.date.getTime()) > 1000*60*60*24)
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
         var out = d;    
-		$('#datetimepicker1').data("datetimepicker").setDate(out);
+		$("#datetimepicker1").data("datetimepicker").setDate(out);
     } else {
         var out = e.date;
     }
     view.datetimepicker_previous = e.date.getTime();
 
-    $('#datetimepicker2').data("datetimepicker").setStartDate(out);
+    $("#datetimepicker2").data("datetimepicker").setStartDate(out);
   });
 
-  $('#datetimepicker2').on("changeDate", function (e) {
+  $("#datetimepicker2").on("changeDate", function (e) {
     if (view.datetimepicker_previous == null) view.datetimepicker_previous = view.end;
     if (Math.abs(view.datetimepicker_previous - e.date.getTime()) > 1000*60*60*24)
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
         var out = d;    
-		$('#datetimepicker2').data("datetimepicker").setDate(out);
+		$("#datetimepicker2").data("datetimepicker").setDate(out);
     } else {
         var out = e.date;
     }
     view.datetimepicker_previous = e.date.getTime();
 
-    $('#datetimepicker1').data("datetimepicker").setEndDate(out);
+    $("#datetimepicker1").data("datetimepicker").setEndDate(out);
   });
 
-  datetimepicker1 = $('#datetimepicker1').data('datetimepicker');
-  datetimepicker2 = $('#datetimepicker2').data('datetimepicker');
+  datetimepicker1 = $("#datetimepicker1").data("datetimepicker");
+  datetimepicker2 = $("#datetimepicker2").data("datetimepicker");
 
   // Navigation and zooming buttons for mouse and touch
   $("#graph").mouseenter(function() {
@@ -386,6 +400,6 @@ function multigraph_init(element) {
     $("#stats").stop().fadeIn();
     view.start = ranges.xaxis.from; 
     view.end = ranges.xaxis.to;
-    vis_feed_data();
+    visFeedData();
   });
 }
