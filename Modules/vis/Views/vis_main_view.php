@@ -21,6 +21,8 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
 
+<script type="text/javascript"><?php require "Modules/vis/vis_langjs.php"; ?></script>
+
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/vis.helper.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph/multigraph.js"></script>
@@ -143,7 +145,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     // if the vis type is multigraph then we construct
     // the visurl with multigraph?id=1
     if (vistype=="multigraph") {
-      visurl = "multigraph?mid="+multigraph_id;
+      visurl = "multigraph?mid="+multigraphID;
     } else {
       visurl += path+"vis/"+vistype;
       var options = [];
@@ -177,7 +179,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
       var type = box_options[z][2];
 
       if (type == 0 || type == 1 || type == 2 || type == 3) {
-        options_html += select_feed(box_options[z][0], feedlist, type);
+        options_html += selectFeed(box_options[z][0], feedlist, type);
       } else if (type == 4)  { // boolean
         options_html += "<select class='options' id='"+box_options[z][0]+"'><option value='0'" + (box_options[z][3] == 0 ? " selected" : "") + "><?php echo _("Off")?></option><option value='1'" + (box_options[z][3] == 1 ? " selected" : "") + "><?php echo _("On")?></option></select>";
       } else if (type == 9)  { // colour
@@ -193,7 +195,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
   }
 
   // Create a drop down select box with a list of feeds.
-  function select_feed(id, feedlist, type) {
+  function selectFeed(id, feedlist, type) {
     var feedgroups = [];
     for (z in feedlist) {
       if (feedlist[z].datatype == type || (type == 0 && (feedlist[z].datatype == 1 || feedlist[z].datatype == 2))) {

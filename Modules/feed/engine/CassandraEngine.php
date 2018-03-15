@@ -8,6 +8,7 @@
  */
 class CassandraEngine
 {
+    const ONE_TABLE_PER_FEED = false;
     protected $cluster;
     protected $session;
     protected $log;
@@ -42,8 +43,8 @@ class CassandraEngine
      */
     public function create($feedid,$options)
     {
-    		$feedid = (int) $feedid;
-        $feedname = "feed_".trim($feedid)."";
+    	$feedid = (int) $feedid;
+        $feedname = $this->feedtable($feedid);
         $this->execCQL("CREATE TABLE IF NOT EXISTS $feedname (feed_id int, day int, time bigint, data float, PRIMARY KEY ((feed_id,day), time)) WITH CLUSTERING ORDER BY (time ASC)");
         return true;
     }
@@ -55,8 +56,11 @@ class CassandraEngine
     */
     public function delete($feedid)
     {
-    		$feedid = (int) $feedid;
-        $this->execCQL("DROP TABLE feed_".$feedid);
+    	$feedid = (int) $feedid;
+        $feedname = $this->feedtableToDrop($feedid);
+        if($feedname){
+            $this->execCQL("DROP TABLE $feedname");
+        }
     }
 
     /**
@@ -66,7 +70,7 @@ class CassandraEngine
     */
     public function get_meta($feedid)
     {
-    		$feedid = (int) $feedid;
+    	$feedid = (int) $feedid;
         $meta = new stdClass();
         $meta->id = $feedid;
         $meta->start_time = 0;
@@ -84,7 +88,7 @@ class CassandraEngine
     public function get_feed_size($feedid)
     {
         $feedid = (int) $feedid;
-        $tablesize = 0; // FIXME
+        $tablesize = 0;
         return $tablesize;
     }
 
@@ -105,7 +109,7 @@ class CassandraEngine
         $time = (int) $time;
         $value = (float) $value;
         
-        $feedname = "feed_".trim($feedid)."";
+        $feedname = $this->feedtable($feedid);
         $day = $this->unixtoday($time);
         
         $this->execCQL("INSERT INTO $feedname(feed_id,day,time,data) VALUES($feedid,$day,$time,$value)");
@@ -124,7 +128,7 @@ class CassandraEngine
         $time = (int) $time;
         $value = (float) $value;
         
-        $feedname = "feed_".trim($feedid)."";
+        $feedname = $this->feedtable($feedid);
         $day = $this->unixtoday($time);
         $this->execCQL("UPDATE $feedname SET data = $value WHERE feed_id = $feedid AND day = $day AND time = $time");
         return $value;
@@ -138,7 +142,7 @@ class CassandraEngine
     public function lastvalue($feedid)
     {
         $feedid = (int) $feedid;
-        $feedname = "feed_".trim($feedid)."";
+        $feedname = $this->feedtable($feedid);
 
         $result = $this->execCQL("SELECT max(day) AS max_day FROM $feedname WHERE feed_id=$feedid");
         if ($result && count($result)>0){
@@ -173,7 +177,7 @@ class CassandraEngine
         $start = round($start/1000);
         $end = round($end/1000);
         $interval = intval($interval);
-        $feedname = "feed_$feedid";
+        $feedname = $this->feedtable($feedid);
         // Minimum interval
         if ($interval<1) $interval = 1;
         // Maximum request size
@@ -203,8 +207,8 @@ class CassandraEngine
 
     public function export($feedid,$start)
     {
-    		$feedid = (int) $feedid;
-    		$start = (int) $start;
+        $feedid = (int) $feedid;
+        $start = (int) $start;
         $this->log->info("export($feedid,$start)");
         // TODO implement
     }
@@ -230,7 +234,7 @@ class CassandraEngine
         $time = (int) $time;
         $day = $this->unixtoday($time);
 
-        $feedname = "feed_".trim($feedid)."";
+        $feedname = $this->feedtable($feedid);
         $this->execCQL("DELETE FROM $feedname WHERE feed_id = $feedid AND day = $day AND time = $time");
     }
 
@@ -241,7 +245,7 @@ class CassandraEngine
         $end = intval($end/1000.0);
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
 
-        $feedname = "feed_".trim($feedid)."";
+        $feedname = $this->feedtable($feedid);
         $this->execCQL("DELETE FROM $feedname WHERE feed_id=$feedid AND day IN (".implode($day_range,',').") AND time >= $start AND time <= $end");
         return true;
     }
@@ -259,6 +263,24 @@ class CassandraEngine
     private function unixtoday($unixtime)
     {
         return floor($unixtime/86400);
+    }
+
+    private function feedtable($feedid)
+    {
+        $feedid = (int) $feedid;
+        if($this::ONE_TABLE_PER_FEED){
+            return "feed_".trim($feedid)."";
+        }
+        return "feed";
+    }
+
+    private function feedtableToDrop($feedid)
+    {
+        $feedid = (int) $feedid;
+        if($this::ONE_TABLE_PER_FEED){
+            return "feed_".trim($feedid)."";
+        }
+        return false;
     }
 
 }

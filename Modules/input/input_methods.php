@@ -50,6 +50,7 @@ class InputMethods
             $nodeid = $param->val('node');
         }
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        if ($nodeid=="") $nodeid = 0;
         
         // Time
         if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
@@ -87,10 +88,10 @@ class InputMethods
 
                 if (isset($keyvalue[1])) {
                     if ($keyvalue[0]=='') return "Format error, json key missing or invalid character";
-                    if (!is_numeric($keyvalue[1])) return "Format error, json value is not numeric";
+                    if (!is_numeric($keyvalue[1]) && $keyvalue[1]!='null') return "Format error, json value is not numeric";
                     $inputs[$keyvalue[0]] = (float) $keyvalue[1];
                 } else {
-                    if (!is_numeric($keyvalue[0])) return "Format error: csv value is not numeric";
+                    if (!is_numeric($keyvalue[0]) && $keyvalue[0]!='null') return "Format error: csv value is not numeric";
                     $inputs[$csvi+1] = (float) $keyvalue[0];
                     $csvi ++;
                 }
@@ -178,6 +179,7 @@ class InputMethods
                 } else {
                     return "Format error, node must not be an object";
                 }
+                if ($nodeid=="") $nodeid = 0;
 
                 $inputs = array();
                 $name = 1;

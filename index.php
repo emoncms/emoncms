@@ -21,10 +21,12 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.10 | 2017.08.17";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.28 | 2018.01.27";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
+    $log = new EmonLogger(__FILE__);
+    if (isset($_GET['q'])) $log->info($_GET['q']);
 
     // 2) Database
     if ($redis_enabled) {
@@ -88,7 +90,12 @@
         //      GET /resource HTTP/1.1
         //      Host: server.example.com
         //      Authorization: Bearer THE_API_KEY_HERE
-        $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
+        
+        if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"]=="aes128cbc") {
+            // If content_type is AES128CBC
+        } else {
+            $apikey = str_replace('Bearer ', '', $_SERVER["HTTP_AUTHORIZATION"]);
+        }
     }
 
     $device = false;
@@ -98,7 +105,6 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
               print "Invalid API key";
-              $log = new EmonLogger(__FILE__);
               $log->error("Invalid API key '" . $apikey. "'");
               exit();
         }
@@ -109,7 +115,6 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="Device KEY", error="invalid_devicekey", error_description="Invalid device key"');
               print "Invalid device key";
-              $log = new EmonLogger(__FILE__);
               $log->error("Invalid device key '" . $devicekey. "'");
               exit();
         }
@@ -173,7 +178,6 @@
     if ($devicekey && !($route->controller == 'input' && ($route->action == 'bulk' || $route->action == 'post'))) {
         header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
         print "Unauthorized. Device key autentication only permits input post or bulk actions";
-        $log = new EmonLogger(__FILE__);
         $log->error("Unauthorized. Device key autentication only permits input post or bulk actions");
         exit();
     }
@@ -199,6 +203,14 @@
             $route->controller = $public_profile_controller;
             $route->action = $public_profile_action;
             $output = controller($route->controller);
+
+            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists 
+            if ($output["content"]=="" && $route->subaction=="graph") {
+                $route->controller = "graph";
+                $route->action = "";
+                $_GET['userid'] = $userid;
+                $output = controller($route->controller);
+            }
         }
     }
 

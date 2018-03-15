@@ -50,6 +50,7 @@ function input_controller()
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
             if ($param->exists('fulljson')) $result = '{"success": true}';
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -63,7 +64,7 @@ function input_controller()
     else if ($route->action == 'bulk') {
         $result = $inputMethods->bulk($session['userid']);
         if ($result=="ok") {
-            // result ok returned
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -132,7 +133,7 @@ function input_controller()
         else if ($route->action == "process")
         {
             if ($route->subaction == "get") $result = $input->get_processlist(get("inputid"));
-            else if ($route->subaction == "set") $result = $input->set_processlist(get('inputid'), post('processlist'));
+            else if ($route->subaction == "set") $result = $input->set_processlist($session['userid'], get('inputid'), post('processlist'),$process->get_process_list());
             else if ($route->subaction == "reset") $result = $input->reset_processlist(get("inputid"));
         }
         

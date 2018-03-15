@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-29 22:19+0200\n"
-"PO-Revision-Date: 2017-07-29 22:20+0200\n"
+"POT-Creation-Date: 2018-02-14 23:41+0100\n"
+"PO-Revision-Date: 2018-02-14 23:45+0100\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../admin_controller.php:18
@@ -54,35 +54,35 @@ msgstr "Nom"
 msgid "Status"
 msgstr "Statut"
 
-#: ../../../admin_main_view.php:97
+#: ../../../admin_main_view.php:96
 msgid "Shutdown"
 msgstr "Éteindre"
 
-#: ../../../admin_main_view.php:97
+#: ../../../admin_main_view.php:96
 msgid "Reboot"
 msgstr "Redémarrer"
 
-#: ../../../admin_main_view.php:100
+#: ../../../admin_main_view.php:99
 msgid "Shutdown Unsupported"
 msgstr "Redémarrage non supporté"
 
-#: ../../../admin_main_view.php:173 ../../../admin_menu.php:7
+#: ../../../admin_main_view.php:171 ../../../admin_menu.php:7
 msgid "Administration"
 msgstr "Administration"
 
-#: ../../../admin_main_view.php:177 ../../../admin_main_view.php:181
+#: ../../../admin_main_view.php:175 ../../../admin_main_view.php:179
 msgid "Users"
 msgstr "Utilisateurs"
 
-#: ../../../admin_main_view.php:178
+#: ../../../admin_main_view.php:176
 msgid "Administer user accounts"
 msgstr "Administration des comptes utilisateurs"
 
-#: ../../../admin_main_view.php:186 ../../../update_view.php:21
+#: ../../../admin_main_view.php:184 ../../../update_view.php:21
 msgid "Update database"
 msgstr "Mise à jour de la base de données"
 
-#: ../../../admin_main_view.php:187
+#: ../../../admin_main_view.php:185
 msgid ""
 "Run this after updating emoncms, after installing a new module or to check "
 "emoncms database status."
@@ -90,35 +90,39 @@ msgstr ""
 "Lancez cette commande après une mise à jour de Emoncms, après l'installation "
 "d'un nouveau module ou pour tester l'intégrité de la base de données."
 
-#: ../../../admin_main_view.php:190
+#: ../../../admin_main_view.php:188
 msgid "Update & check"
 msgstr "Mise à jour & Analyse"
 
-#: ../../../admin_main_view.php:201
+#: ../../../admin_main_view.php:199
 msgid "Logger"
 msgstr "Enregistreur"
 
-#: ../../../admin_main_view.php:205
+#: ../../../admin_main_view.php:203
 msgid "View last entries on the logfile:"
 msgstr "Vue des dernières entrées dans le fichier journal : "
 
-#: ../../../admin_main_view.php:216
+#: ../../../admin_main_view.php:214
 msgid "Auto refresh"
 msgstr "Rafraîchissement automatique"
 
-#: ../../../admin_main_view.php:217 ../../../admin_main_view.php:246
+#: ../../../admin_main_view.php:215 ../../../admin_main_view.php:245
 msgid "Download Log"
 msgstr "Télécharger le journal"
 
-#: ../../../admin_main_view.php:237
+#: ../../../admin_main_view.php:216 ../../../admin_main_view.php:262
+msgid "Copy to clipboard"
+msgstr "Copier dans presse-papier"
+
+#: ../../../admin_main_view.php:236
 msgid "Update"
 msgstr "Mise à jour"
 
-#: ../../../admin_main_view.php:244
+#: ../../../admin_main_view.php:243
 msgid "emonPi Update"
 msgstr "Mise à jour emonPi"
 
-#: ../../../admin_main_view.php:245
+#: ../../../admin_main_view.php:244
 msgid "emonBase Update"
 msgstr "Mise à jour emonBase"
 
@@ -126,21 +130,25 @@ msgstr "Mise à jour emonBase"
 msgid "Server Information"
 msgstr "Informations serveur"
 
-#: ../../../admin_main_view.php:263
-msgid "Version"
-msgstr "Version"
-
-#: ../../../admin_main_view.php:289
+#: ../../../admin_main_view.php:291
 msgid "Flush"
 msgstr ""
 
-#: ../../../admin_main_view.php:309
+#: ../../../admin_main_view.php:311
 msgid "Read-Write"
 msgstr "Lecture-Écriture"
 
-#: ../../../admin_main_view.php:309
+#: ../../../admin_main_view.php:311
 msgid "Read-Only"
 msgstr "Lecture-seulement"
+
+#: ../../../admin_main_view.php:349
+msgid "Client Information"
+msgstr "Informations Client"
+
+#: ../../../admin_main_view.php:380
+msgid "Copy to clipboard: Ctrl+C, Enter"
+msgstr "Copier dans le presse-papier : Ctrl+C, Entrée"
 
 #: ../../../update_view.php:26
 msgid "Apply changes"
@@ -169,6 +177,9 @@ msgstr "Nom utilisateur"
 #: ../../../userlist_view.php:31
 msgid "Email"
 msgstr "Courriel"
+
+#~ msgid "Version"
+#~ msgstr "Version"
 
 #~ msgid "Admin"
 #~ msgstr "Admin"

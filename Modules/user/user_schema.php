@@ -1,7 +1,7 @@
 <?php
 
 $schema['users'] = array(
-    'id' => array('type' => 'int(11)', 'Null'=>'NO', 'Key'=>'PRI', 'Extra'=>'auto_increment'),
+    'id' => array('type' => 'int(11)', 'Null'=>false, 'Key'=>'PRI', 'Extra'=>'auto_increment'),
     'username' => array('type' => 'varchar(30)'),
     'email' => array('type' => 'varchar(30)'),
     'password' => array('type' => 'varchar(64)'),
@@ -9,7 +9,7 @@ $schema['users'] = array(
     'apikey_write' => array('type' => 'varchar(64)'),
     'apikey_read' => array('type' => 'varchar(64)'),
     'lastlogin' => array('type' => 'datetime'),
-    'admin' => array('type' => 'int(11)', 'Null'=>'NO'),
+    'admin' => array('type' => 'int(11)', 'Null'=>false),
 
     // User profile fields
     'gravatar' => array('type' => 'varchar(30)', 'default'=>''),
@@ -18,11 +18,13 @@ $schema['users'] = array(
     'timezone' => array('type'=>'varchar(64)', 'default'=>'UTC'),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
     'bio' => array('type' => 'text', 'default'=>''),
+    'tags' => array('type' => 'text', 'default'=>NULL),
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list')
 );
 
 $schema['rememberme'] = array(
     'userid' => array('type' => 'int(11)'),
     'token' => array('type' => 'varchar(40)'),
+    'persistentToken' => array('type' => 'varchar(40)'),
     'expire' => array('type' => 'datetime')
 );

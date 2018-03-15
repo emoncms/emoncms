@@ -41,6 +41,7 @@
             //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
+            //,Engine::CASSANDRA    // 10 Apache Cassandra
         ),
 
         // Redis Low-write mode
@@ -68,7 +69,8 @@
         )
     );
     
-    $homedir = "/home/pi";
+    // For use with emoncms module that require installation in home directory
+    // $homedir = "/home/username";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
@@ -77,7 +79,8 @@
 //5 #### User Interface settings
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
-    $themecolor = "standard";
+    // Theme colour options: "standard", "blue", "sun"
+    $themecolor = "blue";
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon.png";

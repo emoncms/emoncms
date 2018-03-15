@@ -27,6 +27,7 @@ class MysqlTimeSeries
     */
     public function create($feedid,$options)
     {
+        $feedid= (int) $feedid;
         $feedname = "feed_".trim($feedid)."";
 
         $result = $this->mysqli->query("CREATE TABLE $feedname (time INT UNSIGNED NOT NULL, data FLOAT NOT NULL, UNIQUE (time)) ENGINE=MYISAM");
@@ -40,6 +41,7 @@ class MysqlTimeSeries
     */
     public function delete($feedid)
     {
+        $feedid= (int) $feedid;
         $this->mysqli->query("DROP TABLE feed_".$feedid);
     }
 
@@ -50,6 +52,7 @@ class MysqlTimeSeries
     */
     public function get_meta($feedid)
     {
+        $feedid= (int) $feedid;
         $meta = new stdClass();
         $meta->id = $feedid;
         $meta->start_time = 0;
@@ -66,6 +69,7 @@ class MysqlTimeSeries
     */
     public function get_feed_size($feedid)
     {
+        $feedid= (int) $feedid;
         $feedname = "feed_".$feedid;
         $result = $this->mysqli->query("SHOW TABLE STATUS LIKE '$feedname'");
         $row = $result->fetch_array();
@@ -80,6 +84,7 @@ class MysqlTimeSeries
      * @param integer $time The unix timestamp of the data point, in seconds
      * @param float $value The value of the data point
      * @param arg $value optional padding mode argument
+     * $feedname, $time and $value are all typecased in feed->insert and feed->update
     */
     public function post($feedid,$time,$value,$arg=null)
     {
