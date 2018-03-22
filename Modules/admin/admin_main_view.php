@@ -1,5 +1,4 @@
 
-
 <?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
 
   // Retrieve server information
@@ -12,7 +11,7 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
-    
+
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
@@ -88,7 +87,7 @@
       $shutdownPi = htmlspecialchars(stripslashes(trim($_POST['shutdownPi'])));
   }
   if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
-  
+
   //Shutdown Command Check
   function chkRebootBtn(){
     $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
@@ -100,7 +99,7 @@
       return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
     }
   }
-  
+
   function disk_list()
   {
       $partitions = array();
@@ -117,7 +116,7 @@
           $column = trim($column);
           if($column != '') $columns[] = $column;
         }
-    
+
         // Only process 6 column rows
         // (This has the bonus of ignoring the first row which is 7)
         if(count($columns) == 6)
@@ -143,7 +142,7 @@
       }
       return $partitions;
   }
- 
+
  ?>
 <style>
 pre {
@@ -169,7 +168,6 @@ pre {
 table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
-
 <h2><?php echo _('Administration'); ?></h2>
 <table class="table table-hover">
     <tr>
@@ -215,6 +213,7 @@ if(is_writable($log_filename)) {
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
                     <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
+                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy to clipboard'); ?></button>
 <?php } ?>
                 </td>
             </tr>
@@ -258,9 +257,12 @@ if ($allow_emonpi_admin) {
 
     <tr colspan=2>
         <td colspan=2>
-            <h3><?php echo _('Server Information'); ?></h3>
-            <table class="table table-hover table-condensed">
-              <tr><td><b>Emoncms</b></td><td><?php echo _('Version'); ?></td><td><?php echo $emoncms_version; ?></td></tr>
+            <div>
+             <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
+             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
+            </div>
+            <table class="table table-hover table-condensed" id="serverinformationtabular">
+              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
@@ -300,26 +302,32 @@ if ($mqtt_enabled) {
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
               echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
-}
+    if (glob('/boot/emonSD-*')) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
               if (isset($emonpiRelease)) {
                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
+              }
+      }
 }
 
 // Ram information
 if ($system['mem_info']) {
               $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
-              $sysRamPercent = sprintf('%.2f',($sysRamUsed / $system['mem_info']['MemTotal']) * 100);
-              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercent."%;'>Used&nbsp;".$sysRamPercent."%</div></div>";
+              $sysRamPercentRaw = ($sysRamUsed / $system['mem_info']['MemTotal']) * 100;
+              $sysRamPercent = sprintf('%.2f',$sysRamPercentRaw);
+              $sysRamPercentTable = number_format(round($sysRamPercentRaw, 2), 2, '.', '');
+              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercentTable."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
               echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."</td></tr>\n";
-              
+
               if ($system['mem_info']['SwapTotal'] > 0) {
                 $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree'];
-                $sysSwapPercent = sprintf('%.2f',($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100);
-                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercent."%;'>Used&nbsp;".$sysSwapPercent."%</div></div>";
+                $sysSwapPercentRaw = ($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100;
+                $sysSwapPercent = sprintf('%.2f',$sysSwapPercentRaw);
+                $sysSwapPercentTable = number_format(round($sysSwapPercentRaw, 2), 2, '.', '');
+                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercentTable."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
                 echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
               }
 }
@@ -329,13 +337,15 @@ if ($system['mem_info']) {
                     foreach($system['partitions'] as $fs) {
                       if (!$fs['Temporary']['bool'] && $fs['FileSystem']['text']!= "none" && $fs['FileSystem']['text']!= "udev") {
                         $diskFree = $fs['Free']['value'];
-                        $diskTotal = $fs['Size']['value'];;
-                        $diskUsed = $fs['Used']['value'];;
-                        $diskPercent = sprintf('%.2f',($diskUsed / $diskTotal) * 100);
-                        
-                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercent."%;'>Used&nbsp;".$diskPercent."%</div></div>";
+                        $diskTotal = $fs['Size']['value'];
+                        $diskUsed = $fs['Used']['value'];
+                        $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
+                        $diskPercent = sprintf('%.2f',$diskPercentRaw);
+                        $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
+
+                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercentTable."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
                         echo "<b>Total:</b> ".formatSize($diskTotal)."<b> Used:</b> ".formatSize($diskUsed)."<b> Free:</b> ".formatSize($diskFree)."</td></tr>\n";
-                        
+
                       }
                     }
                 }
@@ -344,15 +354,67 @@ if ($system['mem_info']) {
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
             </table>
-            
+            <h3><?php echo _('Client Information'); ?></h3>
+            <table class="table table-hover table-condensed">
+              <tr><td><b>HTTP</b></td><td>Browser</td><td colspan="2"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></td></tr>
+              <tr><td><b>Screen</b></td><td>Resolution</td><td colspan="2"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></td></tr>
+              <tr><td><b>Window</b></td><td>Size</td><td colspan="2"><span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span></td></tr>
+            </table>
         </td>
     </tr>
 </table>
-
 <script>
+function copyTextToClipboard(text) {
+  var textArea = document.createElement("textarea");
+  textArea.style.position = 'fixed';
+  textArea.style.top = 0;
+  textArea.style.left = 0;
+  textArea.style.width = '2em';
+  textArea.style.height = '2em';
+  textArea.style.padding = 0;
+  textArea.style.border = 'none';
+  textArea.style.outline = 'none';
+  textArea.style.boxShadow = 'none';
+  textArea.style.background = 'transparent';
+  textArea.value = text;
+  document.body.appendChild(textArea);
+  textArea.select();
+  try {
+    var successful = document.execCommand('copy');
+    var msg = successful ? 'successful' : 'unsuccessful';
+    console.log('Copying text command was ' + msg);
+  } 
+  catch(err) {
+    window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
+  }
+  document.body.removeChild(textArea);
+}
+var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|');
+
+var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
+
+$("#copyserverinfo").on('click', function(event) {
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
+    } else {
+        copyTextToClipboard('<details><summary>Server Information</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</pre></details>\n<details><summary>Client Information</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</pre></details>');
+    }
+} );
+
+var logFileDetails;
+$("#copylogfile").on('click', function(event) {
+    logFileDetails = $("#logreply").text();
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('LAST ENTRIES ON THE LOG FILE\n'+logFileDetails);
+    } else {
+        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n').replace(/API key '[\s\S]*?'/g,'API key \'xxxxxxxxx\'') + '</details><br />\n');
+    }
+} );
+$(window).resize(function() {
+  $("#windowsize").html( $(window).width() + " x " + $(window).height() );
+});
 var path = "<?php echo $path; ?>";
 var logrunning = false;
-
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
 <?php } ?>

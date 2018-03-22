@@ -22,7 +22,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
     padding: 10px;
   }
 </style>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=1"></script>
 <br>
 <div class="main">
   <div class="well">
@@ -180,15 +180,21 @@ function login(){
 
     var result = user.login(username,password,rememberme);
 
-    if (result.success)
-    {
-        $('#login-form').submit();
-        return true;
-    }
-    else
-    {
-        $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+    if (result.success==undefined) {
+        $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
         return false;
+    
+    } else {
+        if (result.success)
+        {
+            $('#login-form').submit();
+            return true;
+        }
+        else
+        {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            return false;
+        }
     }
 }
 
@@ -206,17 +212,23 @@ function register(){
     {
         var result = user.register(username,password,email);
 
-        if (result.success)
-        {
-            result = user.login(username,password);
+        if (result.success==undefined) {
+            $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
+            return false;
+        
+        } else {
             if (result.success)
             {
-                window.location.href = path+"user/view";
+                result = user.login(username,password);
+                if (result.success)
+                {
+                    window.location.href = path+"user/view";
+                }
             }
-        }
-        else
-        {
-            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            else
+            {
+                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            }
         }
     }
 }
