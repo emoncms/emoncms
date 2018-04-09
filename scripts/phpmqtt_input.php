@@ -182,7 +182,8 @@
             $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
-            
+            $time = time();
+
             global $mqtt_server, $user, $input, $process, $device, $log, $count;
 
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
@@ -194,21 +195,26 @@
                 //Create temporary array and change all keys to lower case to look for a 'time' key
                 $jsondataLC = array_change_key_case($jsondata);
 
-                #If JSON check to see if there is a time value else set to time now.
+                // If JSON, check to see if there is a time value else set to time now.
                 if (array_key_exists('time',$jsondataLC)){
-                    $time = $jsondataLC['time'];
-                    if (is_string($time)){
-                        if (($timestamp = strtotime($time)) === false) {
+                    $inputtime = $jsondataLC['time'];
+
+                    // validate time
+                    if (is_numeric($inputtime)){
+                        $log->info("Valid time in seconds used ".$inputtime);
+                        $time = (int) $inputtime;
+                    } elseif (is_string($inputtime)){
+                        if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
+                            $log->warn("Time string not valid ".$inputtime);
                             $time = time();
-                            $log->warn("Time string not valid ".$time);
                         } else {
-                            $log->info("Valid time string used ".$time);
+                            $log->info("Valid time string used ".$inputtime);
                             $time = $timestamp;
                         }
                     } else {
-                        $log->info("Valid time in seconds used ".$time);
-                        //Do nothings as it has been assigned to $time as a value
+                        $log->warn("Time value not valid ".$inputtime);
+                        $time = time();
                     }
                 } else {
                     $log->info("No time element found in JSON - System time used");
@@ -216,7 +222,6 @@
                 }
             } else {
                 $jsoninput = false;
-                $log->info("No JSON found - System time used");
                 $time = time();
             }
 
