@@ -123,15 +123,17 @@
             try {
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
-                $topic = $mqtt_server['basetopic']."/#";
-                //echo "Subscribing to: ".$topic."\n";
-                $log->info("Subscribing to: ".$topic);
-                $mqtt_client->subscribe($topic,2);
+                // check and see if the onConnect callback was successful.
+                if ($connected) {
+                    $topic = $mqtt_server['basetopic']."/#";
+                    $log->info("Subscribing to: ".$topic);
+                    $mqtt_client->subscribe($topic,2);
+                } else {
+                    $log->warn("Not connected, retrying connection");
+                }
             } catch (Exception $e) {
                 $log->error($e);
             }
-            //echo "Not connected, retrying connection\n";
-            $log->warn("Not connected, retrying connection");
         }
         
         if ((time()-$last_heartbeat)>300) {
@@ -145,15 +147,13 @@
                 die;
             }
         }
-        
         usleep(1000);
     }
     
-
     function connect($r, $message) {
         global $log, $connected;
-        $connected = true;
-        //echo "Connected to MQTT server with code {$r} and message {$message}\n";
+        // set connected flag if CONNACK is 0 (success)
+        $connected = ($r == 0);
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
