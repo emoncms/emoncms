@@ -98,7 +98,8 @@
         $device = new Device($mysqli,$redis);
     }
     
-    $mqtt_client = new Mosquitto\Client();
+    // Currently uses the "userid 1" write apikey key as a client id for a "persistent" MQTT connection.
+    $mqtt_client = new Mosquitto\Client($id=$user->get_apikey_write($mqttsettings['userid'],$cleanSession=false));
     
     $connected = false;
     $last_retry = 0;
