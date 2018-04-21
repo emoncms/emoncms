@@ -12,11 +12,11 @@
 ####Installation:
 Update your emoncms installation to ensure that the necessary files are downloaded:
 
-    cd /var/www/emoncms && git pull
+    cd /var/www/html/emoncms && git pull
 
 Make the installation script executable:
 
-    cd /var/www/emoncms/scripts/logger/ && sudo chmod +x install.sh
+    cd /var/www/html/emoncms/scripts/logger/ && sudo chmod +x install.sh
 
 Run the installation script:
 
