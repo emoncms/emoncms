@@ -572,8 +572,10 @@ class Process_ProcessList
             $kwhinc = $value - $lastvalue['value'];
             $joules = $kwhinc * 3600000.0;
             $timeelapsed = ($time - $lastvalue['time']);
-            $power = $joules / $timeelapsed;
-            $this->feed->insert_data($feedid, $time, $time, $power);
+            if ($timeelapsed>0) {     //This only avoids a crash, it's not ideal to return "power = 0" to the next process.
+                $power = $joules / $timeelapsed;
+                $this->feed->insert_data($feedid, $time, $time, $power);
+            } // should have else { log error message }
         }
         $redis->hMset("process:kwhtopower:$feedid", array('time' => $time, 'value' => $value));
 
