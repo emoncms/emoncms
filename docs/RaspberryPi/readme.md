@@ -38,17 +38,19 @@ See [RasPi device tree commit](https://github.com/raspberrypi/firmware/commit/84
 
 Install the dependencies:
 
-    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git-core build-essential ufw ntp
+    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server git build-essential
 
 Install the pecl dependencies (swift mailer):
 
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl channel-update pecl.php.net
-    sudo pecl install swift/swift
+    sudo pecl install swift/swift redis
 
 Issue the command:
 
     sudo a2enmod rewrite
+    printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
+    sudo phpenmod redis
 
 For `<Directory />` and `<Directory /var/www/>` change `AllowOverride None` to `AllowOverride All`. This should be on, or very close to lines 161 and 172 of `/etc/apache2/apache2.conf`
 
