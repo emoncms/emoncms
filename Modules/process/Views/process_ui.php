@@ -20,6 +20,7 @@
     text-align: right;
    }
 </style>
+<script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
 
 <script>
