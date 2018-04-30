@@ -1,6 +1,9 @@
-﻿<?php
+<?php
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $feed_settings, $redis_enabled;
+    $domain2 = "process_messages";
+    bindtextdomain($domain2, "Modules/process/locale");
+    bind_textdomain_codeset($domain2, 'UTF-8');
 ?>
 <style>
   .modal-processlist {
@@ -17,6 +20,7 @@
     text-align: right;
    }
 </style>
+<script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
 
 <script>
@@ -31,29 +35,29 @@
 <div id="processlistModal" class="modal hide keyboard modal-processlist" tabindex="-1" role="dialog" aria-labelledby="processlistModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" id="close">×</button>
-        <h3><b><span id="contextname"></span></b> process list setup</h3>
+        <h3><b><span id="contextname"></span></b> <?php echo dgettext('process_messages','process list setup'); ?></h3>
     </div>
     <div class="modal-body" id="processlist-ui">
-        <p><?php echo _('Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
+        <p><?php echo dgettext('process_messages','Processes are executed sequentially with the result value being passed down for further processing to the next processor on this processing list.'); ?></p>
         
-            <div id="noprocess" class="alert"><?php echo _('You have no processes defined'); ?></div>
+            <div id="noprocess" class="alert"><?php echo dgettext('process_messages','You have no processes defined'); ?></div>
             
             <table id="process-table" class="table table-hover">
                 <tr>
                     <th style='width:5%;'></th>
-                    <th style='width:5%;'><?php echo _('Order'); ?></th>
-                    <th><?php echo _('Process'); ?></th>
-                    <th><?php echo _('Arg'); ?></th>
+                    <th style='width:5%;'><?php echo dgettext('process_messages','Order'); ?></th>
+                    <th><?php echo dgettext('process_messages','Process'); ?></th>
+                    <th><?php echo dgettext('process_messages','Arg'); ?></th>
                     <th></th>
-                    <th colspan='2'><?php echo _('Actions'); ?></th>
+                    <th colspan='2'><?php echo dgettext('process_messages','Actions'); ?></th>
                 </tr>
                 <tbody id="process-table-elements"></tbody>
             </table>
 
             <table class="table">
             <tr><th>
-                <span id="process-header-add"><?php echo _('Add process'); ?>:</span>
-                <span id="process-header-edit"><?php echo _('Edit process'); ?>:</span>
+                <span id="process-header-add"><?php echo dgettext('process_messages','Add process'); ?>:</span>
+                <span id="process-header-edit"><?php echo dgettext('process_messages','Edit process'); ?>:</span>
             </th></tr>
             <tr>
                 <td>
@@ -61,21 +65,21 @@
 
                         <span id="type-value" style="display:none">
                             <div class="input-prepend">
-                                <span class="add-on value-select-label">Value</span>
-                                <input type="text" id="value-input" class="input-medium" placeholder="Type value..." />
+                                <span class="add-on value-select-label"><?php echo dgettext('process_messages','Value'); ?></span>
+                                <input type="text" id="value-input" class="input-medium" placeholder="<?php echo dgettext('process_messages','Type value...'); ?>" />
                             </div>
                         </span>
                         
                         <span id="type-text" style="display:none">
                             <div class="input-prepend">
-                                <span class="add-on text-select-label">Text</span>
-                                <input type="text" id="text-input" class="input-large" placeholder="Type text..." />
+                                <span class="add-on text-select-label"><?php echo dgettext('process_messages','Text'); ?></span>
+                                <input type="text" id="text-input" class="input-large" placeholder="<?php echo dgettext('process_messages','Type text...'); ?>" />
                             </div>
                         </span>
 
                         <span id="type-input" style="display:none">
                             <div class="input-prepend">
-                                <span class="add-on input-select-label">Input</span>                   
+                                <span class="add-on input-select-label"><?php echo dgettext('process_messages','Input'); ?></span>                   
                                 <div class="btn-group">
                                     <select id="input-select" class="input-medium"></select>
                                 </div>
@@ -84,7 +88,7 @@
 
                         <span id="type-schedule" style="display:none">
                             <div class="input-prepend">
-                                <span class="add-on schedule-select-label">Schedule</span>
+                                <span class="add-on schedule-select-label"><?php echo dgettext('process_messages','Schedule'); ?></span>
                                 <div class="btn-group">
                                     <select id="schedule-select" class="input-large"></select>
                                 </div>
@@ -93,7 +97,7 @@
                         
                         <span id="type-feed"> 
                             <div class="input-prepend">
-                                <span class="add-on feed-select-label">Data</span>
+                                <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Data'); ?></span>
                                 <div class="btn-group">
                                     <select id="feed-data-type" class="input-medium" style="width: 105px;" readonly>
                                         <option value=0>Any type</option>
@@ -105,16 +109,16 @@
                             </div>
 
                             <div class="input-prepend">
-                                <span class="add-on feed-select-label">Feed</span>
+                                <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Feed'); ?></span>
                                 <div class="btn-group">
                                     <select id="feed-select" class="input-medium"></select>
-                                    <input type="text" id="new-feed-name" style="width:140px" placeholder="Type feed name..." />
+                                    <input type="text" id="new-feed-name" style="width:140px" placeholder="<?php echo dgettext('process_messages','Type feed name...'); ?>" />
                                     <input type="hidden" id="new-feed-tag"/>
                                 </div>
                             </div>
                             
                             <div class="input-prepend">
-                                <span class="add-on feed-engine-label"><?php echo _('Engine'); ?></span>
+                                <span class="add-on feed-engine-label"><?php echo dgettext('process_messages','Engine'); ?></span>
                                 <div class="btn-group">
                                     <select id="feed-engine" class="input-medium">
 <?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
@@ -127,36 +131,36 @@
                                     </select>
 
                                     <select id="feed-interval" class="input-mini">
-                                        <option value=""><?php echo _('Select interval'); ?></option>
-                                        <option value=5>5<?php echo _('s'); ?></option>
-                                        <option value=10>10<?php echo _('s'); ?></option>
-                                        <option value=15>15<?php echo _('s'); ?></option>
-                                        <option value=20>20<?php echo _('s'); ?></option>
-                                        <option value=30>30<?php echo _('s'); ?></option>
-                                        <option value=60>60<?php echo _('s'); ?></option>
-                                        <option value=120>2<?php echo _('m'); ?></option>
-                                        <option value=300>5<?php echo _('m'); ?></option>
-                                        <option value=600>10<?php echo _('m'); ?></option>
-                                        <option value=900>15<?php echo _('m'); ?></option>
-                                        <option value=1200>20<?php echo _('m'); ?></option>
-                                        <option value=1800>30<?php echo _('m'); ?></option>
-                                        <option value=3600>1<?php echo _('h'); ?></option>
-                                        <option value=86400>1<?php echo _('d'); ?></option>
+                                        <option value=""><?php echo dgettext('process_messages','Select interval'); ?></option>
+                                        <option value=5>5<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value=10>10<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value=15>15<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value=20>20<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value=30>30<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value=60>60<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value=120>2<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value=300>5<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value=600>10<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value=900>15<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value=1200>20<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value=1800>30<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value=3600>1<?php echo dgettext('process_messages','h'); ?></option>
+                                        <option value=86400>1<?php echo dgettext('process_messages','d'); ?></option>
                                     </select>
                                 </div>
                             </div>
                         </span>
                         <span id="type-btn-add">
                             <div class="input-prepend">
-                                <button id="process-add" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Add'); ?></button>
+                                <button id="process-add" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages','Add'); ?></button>
                             </div>
                         </span>
                         <span id="type-btn-edit" style="display:none">
                             <div class="input-prepend">
-                                <button id="process-edit" class="btn btn-info" style="border-radius: 4px;"><?php echo _('Edit'); ?></button>
+                                <button id="process-edit" class="btn btn-info" style="border-radius: 4px;"><?php echo dgettext('process_messages','Edit'); ?></button>
                             </div>
                             <div class="input-prepend">
-                                <button id="process-cancel" class="btn" style="border-radius: 4px;"><?php echo _('Cancel'); ?></button>
+                                <button id="process-cancel" class="btn" style="border-radius: 4px;"><?php echo dgettext('process_messages','Cancel'); ?></button>
                             </div>
                         </span>
                 </td>
@@ -167,7 +171,7 @@
             </table>
     </div>
     <div class="modal-footer">
-        <button class="btn" id="close"><?php echo _('Close'); ?></button>
-        <button id="save-processlist" class="btn btn-success" style="float:right"><?php echo _('Not modified'); ?></button>
+        <button class="btn" id="close"><?php echo dgettext('process_messages','Close'); ?></button>
+        <button id="save-processlist" class="btn btn-success" style="float:right"><?php echo dgettext('process_messages','Not modified'); ?></button>
     </div>
 </div>
