@@ -39,6 +39,10 @@
                         }
                     }
                 }
+                
+                $show = true; if (isset($item['hideinactive']) && $item['hideinactive']) $show = false;
+                if (is_active($item)) $show = true;
+                
                 if ($i > 0) {
                     $out .= '<li class="dropdown' . ($subactive ? " active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . '">';
                     $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . drawNameIcon($item,false) . '<b class="caret"></b></a>';
@@ -47,7 +51,7 @@
                     $out .= '</ul></li>';
                 }
                 else if (isset($item['path']) && isset($item['name'])) {
-                    $out .= "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . "'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
+                    if ($show) $out .= "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") ."'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
                 }
             }
         } else {

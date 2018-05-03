@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-29 13:13+0200\n"
-"PO-Revision-Date: 2017-07-29 14:42+0200\n"
+"POT-Creation-Date: 2018-01-09 11:12+0100\n"
+"PO-Revision-Date: 2018-01-09 11:15+0100\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,26 +14,26 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.5\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/vis_main_view.php:33
+#: ../../../Views/vis_main_view.php:35
 msgid "Visualisations"
 msgstr "Visualisations"
 
-#: ../../../Views/vis_main_view.php:38
+#: ../../../Views/vis_main_view.php:40
 msgid "Select visualisation:"
 msgstr "Type de visualisation :"
 
-#: ../../../Views/vis_main_view.php:43
+#: ../../../Views/vis_main_view.php:45
 msgid "Set options:"
 msgstr "Options :"
 
-#: ../../../Views/vis_main_view.php:45
+#: ../../../Views/vis_main_view.php:47
 msgid "Note:"
 msgstr "Remarque :"
 
-#: ../../../Views/vis_main_view.php:45
+#: ../../../Views/vis_main_view.php:47
 msgid ""
 "If a feed does not appear in the selection box, check that the type has been "
 "set on the feeds page."
@@ -41,19 +41,19 @@ msgstr ""
 "Si un flux n'apparait pas dans la liste, vérifiez que vous avez défini son "
 "type dans la page \"Flux\"."
 
-#: ../../../Views/vis_main_view.php:50
+#: ../../../Views/vis_main_view.php:52
 msgid "View"
 msgstr "Afficher"
 
-#: ../../../Views/vis_main_view.php:51
+#: ../../../Views/vis_main_view.php:53
 msgid "Full screen"
 msgstr "Plein écran"
 
-#: ../../../Views/vis_main_view.php:56
+#: ../../../Views/vis_main_view.php:58
 msgid "Embed in your website:"
 msgstr "Intégration dans votre site Web :"
 
-#: ../../../Views/vis_main_view.php:135
+#: ../../../Views/vis_main_view.php:137 ../../../vis_langjs.php:64
 msgid ""
 "Some of the feeds selected are not public, to embed a visualisation publicly "
 "first make the feeds that you want to use public."
@@ -62,15 +62,15 @@ msgstr ""
 "visualisation publique, rendez d'abord publics les flux que vous voulez "
 "utiliser."
 
-#: ../../../Views/vis_main_view.php:135
+#: ../../../Views/vis_main_view.php:137 ../../../vis_langjs.php:66
 msgid "To embed privately:"
 msgstr "Pour une intégration privée :"
 
-#: ../../../Views/vis_main_view.php:182
+#: ../../../Views/vis_main_view.php:184
 msgid "Off"
 msgstr "Off"
 
-#: ../../../Views/vis_main_view.php:182
+#: ../../../Views/vis_main_view.php:184
 msgid "On"
 msgstr "On"
 
@@ -89,6 +89,160 @@ msgstr "ou"
 #: ../../../vis_controller.php:121
 msgid "Authentication not valid"
 msgstr "Authentification non valide"
+
+#: ../../../vis_langjs.php:28
+msgid "Add"
+msgstr "Ajouter"
+
+#: ../../../vis_langjs.php:29
+msgid "Advanced"
+msgstr "Avancé"
+
+#: ../../../vis_langjs.php:30 ../../../visualisations/editrealtime.php:76
+msgid "Are you sure you want to delete?"
+msgstr "Êtes-vous sûr de vouloir supprimer?"
+
+#: ../../../vis_langjs.php:31
+msgid "Auto refresh (secs)"
+msgstr "Rafraichissement auto (secs)"
+
+#: ../../../vis_langjs.php:32
+msgid "Axis"
+msgstr "Axe"
+
+#: ../../../vis_langjs.php:33
+msgid "Bars"
+msgstr "Barres"
+
+#: ../../../vis_langjs.php:34
+msgid "Bar Width (%)"
+msgstr "Largeur de la barre (%)"
+
+#: ../../../vis_langjs.php:35
+msgid "Basic"
+msgstr "Basique"
+
+#: ../../../vis_langjs.php:36 ../../../visualisations/editrealtime.php:80
+msgid "Cancel"
+msgstr "Annuler"
+
+#: ../../../vis_langjs.php:37
+msgid "Changed, press to save"
+msgstr "Modifié, cliquer pour sauvegarder"
+
+#: ../../../vis_langjs.php:38
+msgid "Colour"
+msgstr "Couleur"
+
+#: ../../../vis_langjs.php:39 ../../../visualisations/editdaily.php:60
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ../../../vis_langjs.php:40
+msgid "Delete Multigraph"
+msgstr "Supprimer Multigraph"
+
+#: ../../../vis_langjs.php:41 ../../../visualisations/editrealtime.php:81
+msgid "Delete permanently"
+msgstr "Supprimer de manière permanente"
+
+#: ../../../vis_langjs.php:42
+msgid "Deleting a multigraph is permanent."
+msgstr "La suppression d'un multigraph est permanente."
+
+#: ../../../vis_langjs.php:43
+msgid "Feeds"
+msgstr "Flux"
+
+#: ../../../vis_langjs.php:44
+msgid "Fill"
+msgstr "Remplir"
+
+#: ../../../vis_langjs.php:45
+msgid "Floating time"
+msgstr "Temps flottant"
+
+#: ../../../vis_langjs.php:46
+msgid "Graph Type"
+msgstr "Type de graphique"
+
+#: ../../../vis_langjs.php:47
+msgid "Left"
+msgstr "Gauche"
+
+#: ../../../vis_langjs.php:48
+msgid "Lines"
+msgstr "Lignes"
+
+#: ../../../vis_langjs.php:49
+msgid "Lines with Steps"
+msgstr "Lignes avec Étapes"
+
+#: ../../../vis_langjs.php:50
+msgid "Make sure no Dashboard continue to use the deleted multigraph"
+msgstr ""
+"S'assurer qu'aucun Tableau de Bord continue à utiliser le multigraph supprimé"
+
+#: ../../../vis_langjs.php:51
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../vis_langjs.php:52
+msgid "New multigraph"
+msgstr "Nouveau multigraph"
+
+#: ../../../vis_langjs.php:53
+msgid "No multigraphs created yet, click new to create one:"
+msgstr ""
+"Aucun multigraph créé pour le moment, cliquez sur nouveau pour en créer un :"
+
+#: ../../../vis_langjs.php:54
+msgid "Not modified"
+msgstr "Non modifié"
+
+#: ../../../vis_langjs.php:55
+msgid "Options :"
+msgstr "Options :"
+
+#: ../../../vis_langjs.php:56
+msgid "Remove feed"
+msgstr "Retirer le flux"
+
+#: ../../../vis_langjs.php:57
+msgid "Right"
+msgstr "Droite"
+
+#: ../../../vis_langjs.php:58
+msgid "Saved"
+msgstr "Enregistré"
+
+#: ../../../vis_langjs.php:59
+msgid "Select Display Type:"
+msgstr "Sélectionner un type de graphique : "
+
+#: ../../../vis_langjs.php:60
+msgid "Select multigraph:"
+msgstr "Sélectionner multigraph :"
+
+#: ../../../vis_langjs.php:61
+msgid "Show Legend"
+msgstr "Afficher légende"
+
+#: ../../../vis_langjs.php:62
+msgid "Show tag name"
+msgstr "Afficher nom étiquette"
+
+#: ../../../vis_langjs.php:63
+msgid "Skip missing data"
+msgstr "Ignorer données manquantes"
+
+#: ../../../vis_langjs.php:65
+msgid "Stack"
+msgstr "Empiler"
+
+#: ../../../vis_langjs.php:67
+msgid "Y axes limits"
+msgstr "Limites axes Y"
 
 #: ../../../vis_menu.php:7
 msgid "Visualization"
@@ -259,7 +413,6 @@ msgid "kwh"
 msgstr "kwh"
 
 #: ../../../vis_object.php:102
-#| msgid "Order"
 msgid "OrderBars"
 msgstr "OrderBars"
 
@@ -276,7 +429,6 @@ msgid "EditDaily"
 msgstr "EditDaily"
 
 #: ../../../vis_object.php:122
-#| msgid "Multigraph"
 msgid "MultiGraph"
 msgstr "MultiGraph"
 
@@ -401,10 +553,6 @@ msgstr "nouvelle valeur :"
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ../../../visualisations/editdaily.php:60
-msgid "Delete"
-msgstr "Supprimer"
-
 #: ../../../visualisations/editrealtime.php:60
 msgid "Delete data in window"
 msgstr "Supprimer les données dans la fenêtre"
@@ -423,18 +571,6 @@ msgstr ""
 "ATTENTION ! La suppression des données du flux dans cette fenêtre est "
 "permanente ."
 
-#: ../../../visualisations/editrealtime.php:76
-msgid "Are you sure you want to delete?"
-msgstr "Êtes-vous sûr de vouloir supprimer?"
-
-#: ../../../visualisations/editrealtime.php:80
-msgid "Cancel"
-msgstr "Annuler"
-
-#: ../../../visualisations/editrealtime.php:81
-msgid "Delete permanently"
-msgstr "Supprimer de manière permanente"
-
 #: ../../../visualisations/histgraph.php:39
 msgid "Histogram:"
 msgstr ""
@@ -444,7 +580,6 @@ msgid "Multigraph:"
 msgstr ""
 
 #: ../../../visualisations/orderbars.php:25
-#| msgid "Bar graph (ordered by height)"
 msgid "Bar graph (ordered by height):"
 msgstr "Bar graph (trié par hauteur):"
 
@@ -512,7 +647,6 @@ msgid "kWh/d Zoomer"
 msgstr ""
 
 #: ../../../visualisations/zoom.php:131
-#| msgid "Total: "
 msgid "Total:"
 msgstr "Total:"
 
@@ -588,9 +722,6 @@ msgstr "Prix unitaire :"
 #~ "Voici les visulations disponibles dans emoncms3. Veuillez entrer un "
 #~ "identifiant de flux dans les champs ci-dessous puis cliquer sur >"
 
-#~ msgid "Name"
-#~ msgstr "Nom"
-
 #~ msgid "URL"
 #~ msgstr "Lien"
 
@@ -626,10 +757,6 @@ msgstr "Prix unitaire :"
 
 #~ msgid " to the URL"
 #~ msgstr "&agrave; l'adresse"
-
-#, fuzzy
-#~ msgid "Reset Multigraph"
-#~ msgstr "Graphiques multiples"
 
 #, fuzzy
 #~ msgid "The multigraph can be reset using the &clear=1 attribute."
@@ -766,9 +893,6 @@ msgstr "Prix unitaire :"
 
 #~ msgid "Inputs"
 #~ msgstr "Sources"
-
-#~ msgid "Feeds"
-#~ msgstr "Flux"
 
 #~ msgid "Dashboards"
 #~ msgstr "Tableaux de bord"
@@ -964,9 +1088,6 @@ msgstr "Prix unitaire :"
 #~ msgid "Description"
 #~ msgstr "Description"
 
-#~ msgid "Select graph type:"
-#~ msgstr "S&eacute;lectionner un type de graphique : "
-
 #~ msgid "Raw data"
 #~ msgstr "Donn&eacute;es brutes"
 
@@ -984,9 +1105,6 @@ msgstr "Prix unitaire :"
 
 #~ msgid "Tag feed"
 #~ msgstr "Tag du flux"
-
-#~ msgid "Rename feed"
-#~ msgstr "Renommer le flux"
 
 #~ msgid "Rename"
 #~ msgstr "Renommer"
@@ -1032,9 +1150,6 @@ msgstr "Prix unitaire :"
 
 #~ msgid "Arg"
 #~ msgstr "Param&egrave;tre"
-
-#~ msgid "add"
-#~ msgstr "ajouter"
 
 #~ msgid "Reset process list?"
 #~ msgstr "R&eacute;initialis&eacute; les actions : "
@@ -1122,15 +1237,6 @@ msgstr "Prix unitaire :"
 #~ msgid "Select Feeds"
 #~ msgstr "Seleccionar Fuentes"
 
-#~ msgid "Left"
-#~ msgstr "Izquierda"
-
-#~ msgid "Right"
-#~ msgstr "Derecha"
-
-#~ msgid "Fill"
-#~ msgstr "Rellenar"
-
 #~ msgid "Loading...  please wait about 5s"
 #~ msgstr "Cargando... por favor espere unos 5s"
 
@@ -1178,6 +1284,3 @@ msgstr "Prix unitaire :"
 
 #~ msgid "Last:"
 #~ msgstr "Último:"
-
-#~ msgid "Graph"
-#~ msgstr "Gráfico"
