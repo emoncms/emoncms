@@ -168,3 +168,7 @@
 
     // Dont change - developer updates this when the config format changes
     $config_file_version = "10";
+    
+    // Set to true to run database update without logging in
+    // URL Example: http://localhost/emoncms/admin/db
+    $updatelogin = false;
