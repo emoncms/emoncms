@@ -63,12 +63,24 @@ class PHPTimeSeries
     */
     public function get_meta($feedid)
     {
+    
+        $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
+        $npoints = floor(filesize($this->dir."feed_$feedid.MYD") / 9.0);
+        
+        $start_time = 0;
+        if ($npoints) {
+            $array = unpack("x/Itime/fvalue",fread($fh,9));
+            $start_time = $array["time"];
+        }
+        fclose($fh);
+    
         $meta = new stdClass();
         $meta->id = $feedid;
-        $meta->start_time = 0; // tbd
-        $meta->nlayers = 1;
-        $meta->npoints = -1;
+        $meta->start_time = $start_time;
+        // $meta->nlayers = 1;
+        $meta->npoints = $npoints;
         $meta->interval = 1;
+        
         return $meta;
     }
 

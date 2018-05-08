@@ -62,6 +62,7 @@ function controller($controller_name)
 
             require_once $controllerScript;
             $output = $controller();
+            if (!is_array($output) || !isset($output["content"])) $output = array("content"=>$output);
         }
     }
     return $output;
@@ -150,5 +151,9 @@ function load_menu()
     }
 
     return array('dashboard'=>$menu_dashboard, 'left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
+}
+
+function emoncms_error($message) {
+    return array("success"=>false, "message"=>$message);
 }
 
