@@ -64,7 +64,7 @@
   $('#graph').width($('#graph_bound').width());
   $('#graph').height($('#graph_bound').height());
 
-  var feedid = "<?php echo $feedid; ?>";
+  var feedid = <?php echo $feedid; ?>;
   var feedname = "<?php echo $feedidname; ?>";
   var type = "<?php echo $type; ?>";
   var path = "<?php echo $path; ?>";
