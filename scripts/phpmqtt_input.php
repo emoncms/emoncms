@@ -167,18 +167,18 @@
     function subscribe() {
         global $log, $topic;
         //echo "Subscribed to topic: ".$topic."\n";
-//        $log->info("Subscribed to topic: ".$topic);
+        $log->info("Callback subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
-        global $log, $topic;
+        global $log, $topic, $subscribed;
         //echo "Unsubscribed from topic:".$topic."\n";
         $subscribed = 0;
         $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
-        global $connected, $log;
+        global $connected, $log, $subscribed;
         $subscribed = 0;
         $connected = false;
         //echo "Disconnected cleanly\n";
