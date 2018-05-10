@@ -763,5 +763,21 @@ class User
         $row = $result->fetch_row();
         return $row[0];
     }
+    
+    public function get_usernames_by_email($email) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+        $stmt = $this->mysqli->prepare("SELECT id,username FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();        
+        $stmt->bind_result($id,$username);
+        
+        $users = array();
+        while ($stmt->fetch()) {
+            $users[] = array("id"=>$id,"username"=>$username);
+        }
+        $stmt->close();
+        
+        return $users;
+    }
 }
 
