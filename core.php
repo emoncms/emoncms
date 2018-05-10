@@ -175,6 +175,7 @@ function http_request($method,$url,$data) {
     $resp = curl_exec($curl);
     curl_close($curl);
     return $resp;
+}
 
 function emoncms_error($message) {
     return array("success"=>false, "message"=>$message);
