@@ -217,13 +217,18 @@ class User
 
         $hash = hash('sha256', $password);
         $salt = md5(uniqid(mt_rand(), true));
-        $password = hash('sha256', $salt . $hash);
+        $hash = hash('sha256', $salt . $hash);
 
+        // Apikeys
         $apikey_write = md5(uniqid(mt_rand(), true));
         $apikey_read = md5(uniqid(mt_rand(), true));
+        
+        // MQTT hash
+        include "Lib/mqtt_hash.php";
+        $mqtthash = create_hash($password);
 
-        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin) VALUES (?,?,?,?,?,?,0)");
-        $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
+        $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, mqtthash, admin) VALUES (?,?,?,?,?,?,?,0)");
+        $stmt->bind_param("sssssss", $username, $hash, $email, $salt, $apikey_read, $apikey_write, $mqtthash);
         if (!$stmt->execute()) {
             $stmt->close();
             return array('success'=>false, 'message'=>_("Error creating user"));
@@ -233,6 +238,14 @@ class User
         $userid = $this->mysqli->insert_id;
         if ($userid == 1) $this->mysqli->query("UPDATE users SET admin = 1 WHERE id = '1'");
         $stmt->close();
+        
+        // Set MQTT ACL's
+        $topic = "user/$userid/#";
+        $stmt = $this->mysqli->prepare("INSERT INTO mqtt_acls (username,topic,rw) VALUES (?,?,2)");
+        $stmt->bind_param("ss", $username, $topic);
+        if (!$stmt->execute()) {
+            return array("success"=>false, "Error setting MQTT ACL entry");
+        }
         
         // Email verification
         if ($this->email_verification) {
@@ -445,10 +458,14 @@ class User
             // 2) Save new password
             $hash = hash('sha256', $new);
             $salt = md5(uniqid(rand(), true));
-            $password = hash('sha256', $salt . $hash);
+            $hash = hash('sha256', $salt . $hash);
+            
+            // MQTT hash
+            include "Lib/mqtt_hash.php";
+            $mqtthash = create_hash($new);
 
-            $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $password, $salt, $userid);
+            $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ?, mqtthash = ? WHERE id = ?");
+            $stmt->bind_param("sssi", $hash, $salt, $mqtthash, $userid);
             $stmt->execute();
             $stmt->close();
             

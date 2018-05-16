@@ -22,7 +22,9 @@ $schema['users'] = array(
     'tags' => array('type' => 'text', 'default'=>NULL),
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int(11)', 'default'=>0),
-    'verification_key' => array('type' => 'varchar(64)', 'default'=>'')
+    'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
+    
+    'mqtthash' => array('type' => 'varchar(67)')
 );
 
 $schema['rememberme'] = array(
@@ -30,4 +32,11 @@ $schema['rememberme'] = array(
     'token' => array('type' => 'varchar(40)'),
     'persistentToken' => array('type' => 'varchar(40)'),
     'expire' => array('type' => 'datetime')
+);
+
+$schema['mqtt_acls'] = array(
+    'id' => array('type' => 'int(11)', 'Null'=>false, 'Key'=>'PRI', 'Extra'=>'auto_increment'),
+    'username' => array('type' => 'varchar(30)'),
+    'topic' => array('type' => 'varchar(32)'),
+    'rw' => array('type' => 'int(11)', 'default'=>0)
 );
