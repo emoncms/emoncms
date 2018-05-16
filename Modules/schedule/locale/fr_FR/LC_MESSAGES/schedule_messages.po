@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-17 16:46+0100\n"
-"PO-Revision-Date: 2017-12-17 18:38+0100\n"
+"POT-Creation-Date: 2018-03-03 18:09+0100\n"
+"PO-Revision-Date: 2018-03-03 18:09+0100\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -12,7 +12,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
-"X-Generator: Poedit 2.0.4\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/schedule_api.php:6
@@ -225,21 +225,64 @@ msgstr "Public"
 msgid "Schedule"
 msgstr "Planification"
 
-#: ../../../schedule_processlist.php:43
+#: ../../../schedule_processlist.php:47
 msgid "If !schedule, ZERO"
 msgstr "If !schedule, ZERO"
 
-#: ../../../schedule_processlist.php:44
+#: ../../../schedule_processlist.php:47
+msgid ""
+"Validates if time is NOT in range of schedule. If NOT in schedule, value is "
+"ZEROed."
+msgstr ""
+"Valide si l'heure n'est PAS dans la plage de la planification. Si PAS dans "
+"la planification, la valeur est mise à ZERO."
+
+#: ../../../schedule_processlist.php:47 ../../../schedule_processlist.php:48
+#: ../../../schedule_processlist.php:49 ../../../schedule_processlist.php:50
+msgid ""
+"You can use this to get a feed for each of the multi-rate tariff rate your "
+"provider gives. Add the 'Reset to Original' process before this process to "
+"log the input value to a different feed for each schedule on the same "
+"processing list"
+msgstr ""
+"Vous pouvez l'utiliser pour obtenir un flux pour chacun des taux tarifaires "
+"multi-taux que votre fournisseur vous donne. Ajoutez le processus \"Reset to "
+"Original\" avant ce processus pour consigner la valeur d'entrée dans un flux "
+"différent pour chaque planification de la même liste de traitement."
+
+#: ../../../schedule_processlist.php:48
 msgid "If !schedule, NULL"
 msgstr "If !schedule, NULL"
 
-#: ../../../schedule_processlist.php:45
+#: ../../../schedule_processlist.php:48
+msgid ""
+"Validates if time is NOT in range of schedule. If NOT in schedule, value is "
+"NULLed."
+msgstr ""
+"Valide si l'heure n'est PAS dans la plage de la planification, la valeur est "
+"mise à NULL."
+
+#: ../../../schedule_processlist.php:49
 msgid "If schedule, ZERO"
 msgstr "If schedule, ZERO"
 
-#: ../../../schedule_processlist.php:46
+#: ../../../schedule_processlist.php:49
+msgid ""
+"Validates if time is in range of schedule. If in schedule, value is ZEROed."
+msgstr ""
+"Valide si l'heure est dans la plage de la planification. Si dans la "
+"planification, la valeur est mise à ZERO."
+
+#: ../../../schedule_processlist.php:50
 msgid "If schedule, NULL"
 msgstr "If schedule, NULL"
+
+#: ../../../schedule_processlist.php:50
+msgid ""
+"Validates if time is in range of schedule. If in schedule, value is NULLed."
+msgstr ""
+"Valide si l'heure est dans la plage de la planification. Si dans la "
+"planification, la valeur est mise à NULL."
 
 #~ msgid "en_EN"
 #~ msgstr "English"

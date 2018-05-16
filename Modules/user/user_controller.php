@@ -16,7 +16,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function user_controller()
 {
-    global $user, $path, $session, $route , $enable_multi_user;
+    global $user, $path, $session, $route , $enable_multi_user, $email_verification;
 
     $result = false;
 
@@ -29,9 +29,18 @@ function user_controller()
     // Load html,css,js pages to the client
     if ($route->format == 'html')
     {
-        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister));
+        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>array()));
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
-        if ($route->action == 'logout' && $session['read']) {$user->logout(); header('Location: '.$path);}
+        
+        if ($route->action == 'logout' && $session['read']) {
+            $user->logout(); 
+            header('Location: '.$path);
+        }
+        
+        if ($route->action == 'verify' && $email_verification && !$session['read'] && isset($_GET['key'])) { 
+            $verify = $user->verify_email($_GET['email'], $_GET['key']);
+            $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
+        }
     }
 
     // JSON API
@@ -41,6 +50,8 @@ function user_controller()
         if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
         if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) $user->logout();
+        
+        if ($route->action == 'resend-verify' && $email_verification) $result = $user->send_verification_email(get('username'));
 
         if ($route->action == 'changeusername' && $session['write']) $result = $user->change_username($session['userid'],get('username'));
         if ($route->action == 'changeemail' && $session['write']) $result = $user->change_email($session['userid'],get('email'));

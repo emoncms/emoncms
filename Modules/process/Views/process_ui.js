@@ -32,13 +32,13 @@ var processlist_ui =
         // Move process up or down
         out += '<td>';
         if (i > 0) {
-          out += '<a class="move-process" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
+          out += '<a class="move-process" title="'+_Tr("Move up")+'" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
         } else {
           out += "<span style='display: inline-block; width:14px; ' />";
         }
 
         if (i < this.contextprocesslist.length-1) {
-          out += "<a class='move-process' title='Move down' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
+          out += "<a class='move-process' title='"+_Tr("Move down")+"' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
         }
         out += '</td>';
 
@@ -62,7 +62,7 @@ var processlist_ui =
             // Check ProcessArg Type
             switch(this.processlist[processkey][1]) {
               case 0: // VALUE
-                arg += "<span class='label label-info' title='Value'>";
+                arg += "<span class='label label-info' title='"+_Tr("Value")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
@@ -71,12 +71,12 @@ var processlist_ui =
               case 1: //INPUTID
                 var inpid = this.contextprocesslist[z][1];
                 if (this.inputlist[inpid]!=undefined) {
-                arg += "<span class='label label-info' title='Input "+inpid+"'>";
+                arg += "<span class='label label-info' title='"+_Tr("Input")+" "+inpid+"'>";
                 arg += "<i class='icon-signal icon-white'></i> ";
                 arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
                 if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
                 arg += "</span>";
-                lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
+                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("input last value:")+" "+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
                 } else {
                   arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
                 }
@@ -85,19 +85,19 @@ var processlist_ui =
               case 2: //FEEDID
                 var feedid = this.contextprocesslist[z][1];
                 if (this.feedlist[feedid]!=undefined) {
-                arg += "<a class='label label-info' title='Feed "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
+                arg += "<a class='label label-info' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
                 arg += "<i class='icon-list-alt icon-white'></i> ";
                 if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
                 arg += this.feedlist[feedid].name;
                 arg += "</a>";
-                lastvalue = "<span style='color:#888; font-size:12px'>(feed last value:"+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
+                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("feed last value:")+" "+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
                 } else {
                   arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
                 }
                 break;
 
               case 4: // TEXT
-                arg += "<span class='label label-info' title='Text'>";
+                arg += "<span class='label label-info' title='"+_Tr("Text")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
@@ -106,7 +106,7 @@ var processlist_ui =
               case 5: // SCHEDULEID
                 var schid = this.contextprocesslist[z][1];
                 if (this.schedulelist[schid]!=undefined) {
-                arg += "<span class='label label-info' title='Schedule "+schid+"' >";
+                arg += "<span class='label label-info' title='"+_Tr("Schedule")+" "+schid+"' >";
                 arg += "<i class='icon-time icon-white'></i> ";
                 arg += this.schedulelist[schid].name;
                 arg += "</span>";
@@ -125,8 +125,8 @@ var processlist_ui =
         out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
      
         // Delete process button (icon)
-        out += '<td><a class="edit-process" title="Edit" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
-        out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
+        out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
+        out += '<td><a class="delete-process" title="'+_Tr("Delete")+'" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
         out += '</tr>';
         
         i++; // process id
@@ -410,10 +410,10 @@ var processlist_ui =
       } else {
         $("#description").html(processlist_ui.processlist[processid]['desc']);
 
-	var does_modify = "<p><b>Output:</b> Modified value passed onto next process step.</p>";
-	var does_not_modify = "<p><b>Output:</b> Does NOT modify value passed onto next process step.</p>";
-	var redis_required = "<p><b>REDIS:</b> Requires REDIS.</p>";
-	var help = "Click here for additional information about this process.";
+	var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
+	var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
+	var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
+	var help = _Tr("Click here for additional information about this process.");
 
 	if ('helpurl' in processlist_ui.processlist[processid] &&
 	    typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
@@ -595,7 +595,7 @@ var processlist_ui =
   },
 
   'modified':function(){
-    $("#save-processlist").attr('class','btn btn-warning').text("Changed, press to save");
+    $("#save-processlist").attr('class','btn btn-warning').text(_Tr("Changed, press to save"));
   },
 
   'saved':function(feeds){
@@ -816,7 +816,7 @@ var processlist_ui =
     $("#type-btn-edit").hide();
     processlist_ui.scrollto($('#processlist-ui'));
     this.draw();
-    $("#save-processlist").attr('class','btn btn-success').text("Not modified");
+    $("#save-processlist").attr('class','btn btn-success').text(_Tr("Not modified"));
     $("#processlist-ui #process-select").change(); // Force a refresh
     $("#processlistModal").modal('show');          // Show
     this.adjustmodal();

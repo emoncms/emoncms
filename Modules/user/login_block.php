@@ -21,14 +21,20 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
     margin: 0 auto;
     padding: 10px;
   }
+  
 </style>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=1"></script>
 <br>
+
+
+
+
 <div class="main">
   <div class="well">
     <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_login.png" alt="Login" width="256" height="46" />
+        
     <div class="login-container">
-        <form id="login-form" method="post" action="<?php echo $path; ?>">
+        <div id="login-form">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
                     <label><?php echo _('Email'); ?>
@@ -95,7 +101,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                 <a id="passwordreset-link-cancel" href="#"><?php echo _('login'); ?></a>
             </div>
             <div id="passwordresetmessage"></div>
-        </form>
+        </div>
     </div>
   </div>
 </div>
@@ -104,8 +110,18 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 "use strict";
 
 var path = "<?php echo $path; ?>";
+var verify = <?php echo json_encode($verify); ?>;
 var register_open = false;
 $("body").addClass("body-login");
+
+if (verify.success!=undefined) {
+    if (verify.success) {
+        $("#loginmessage").html("<div class='alert alert-success'> "+verify.message+"</div>");
+    } else {
+        $("#loginmessage").html("<div class='alert alert-error'> "+verify.message+"</div>");
+    }
+}
+
 
 $(document).ready(function() {
     var passwordreset = "<?php echo $enable_password_reset; ?>";
@@ -157,21 +173,22 @@ $("#cancel-link").click(function(){
     return false;
 });
 
-$('input[type=text]').on('keypress', function(e) {
+$('input').on('keypress', function(e) {
     //login or register when pressing enter
     if (e.which == 13) {
         e.preventDefault();
         if ( register_open ) {
             register();
         } else {
-            return login();
+            login();
         }
     }
 });
 
-$('#login').click(function() {
-  return login();
-});
+$('#login').click(function() { login(); });
+$('#register').click(function() { register(); });
+
+$("#loginmessage").on("click", ".resend-verify", function(){ resend_verify(); });
 
 function login(){
     var username = $("input[name='username']").val();
@@ -187,12 +204,16 @@ function login(){
     } else {
         if (result.success)
         {
-            $('#login-form').submit();
+            window.location.href = path+result.startingpage;
             return true;
         }
         else
         {
-            $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            if (result.message=="Please verify email address") {
+                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"<br><br><button class='btn resend-verify' style='float:right'>Resend</button>Click to resend<br>verification email:</div>");
+            } else {
+                $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+            }
             return false;
         }
     }
@@ -217,21 +238,39 @@ function register(){
             return false;
         
         } else {
-            if (result.success)
-            {
-                result = user.login(username,password);
-                if (result.success)
-                {
-                    window.location.href = path+"user/view";
+            if (result.success) {
+                if (result.verifyemail) {
+                    $(".login-item").show();
+                    $(".register-item").hide();
+                    $("#loginmessage").html("");
+                    register_open = false;
+                    $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
+                } else {
+                    login();
                 }
-            }
-            else
-            {
+                
+            } else {
                 $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
             }
         }
     }
 }
 
-$("#register").click(register);
+function resend_verify()
+{
+    var username = $("input[name='username']").val();
+    
+    $.ajax({
+      url: path+"user/resend-verify.json",
+      data: "&username="+encodeURIComponent(username),
+      dataType: "json",
+      success: function(result) {
+         if (result.success) {
+             $("#loginmessage").html("<div class='alert alert-success'>"+result.message+"</div>");
+         } else {
+             $("#loginmessage").html("<div class='alert alert-error'>"+result.message+"</div>");
+         }
+      } 
+    });
+}
 </script>

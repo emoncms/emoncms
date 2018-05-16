@@ -54,7 +54,7 @@ function input_controller()
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
-            $log->error($result);
+            $log->error($result." for User: ".$session['userid']);
         }
     }
 
@@ -68,7 +68,7 @@ function input_controller()
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
-            $log->error($result);
+            $log->error($result." for User: ".$session['userid']);
         }
     }
     

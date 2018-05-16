@@ -33,7 +33,7 @@ class Email {
     }
 
     function from($from) {
-        if ($this.check()) $this->message->setFrom($from);
+        if ($this->check()) $this->message->setFrom($from);
     }
 
     function to($to) {
