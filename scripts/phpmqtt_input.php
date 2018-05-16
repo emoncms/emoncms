@@ -1,11 +1,5 @@
 <?php
 
-    // TBD: support user target in message schema
-    $mqttsettings = array(
-        'userid' => 1
-    );
-
-
     /*
     
     **MQTT input interface script**
@@ -90,7 +84,7 @@
     $input = new Input($mysqli,$redis, $feed);
 
     require_once "Modules/process/process_model.php";
-    $process = new Process($mysqli,$input,$feed,$user->get_timezone($mqttsettings['userid']));
+    $process = new Process($mysqli,$input,$feed,'UTC');
 
     $device = false;
     if (file_exists("Modules/device/device_model.php")) {
@@ -98,7 +92,7 @@
         $device = new Device($mysqli,$redis);
     }
     
-    $mqtt_client = new Mosquitto\Client();
+    $mqtt_client = new Mosquitto\Client("phpmqtt_input");
     
     $connected = false;
     $last_retry = 0;
@@ -223,10 +217,6 @@
             $log->info($topic." ".$value);
             $count ++;
             
-            #Emoncms user ID TBD: incorporate on message via authentication mechanism
-            global $mqttsettings;
-            $userid = $mqttsettings['userid'];
-            
             $inputs = array();
             
             $route = explode("/",$topic);
@@ -248,17 +238,18 @@
      
             if ($st>=0)
             {
-                if (isset($route[$st+1]))
+                if (isset($route[$st+1]) && isset($route[$st+2]))
                 {
-                    $nodeid = $route[$st+1];
+                    $userid = $route[$st+1];
+                    $nodeid = $route[$st+2];
                     $dbinputs = $input->get_inputs($userid);
 
                     if ($jsoninput) {
                         foreach ($jsondata as $key=>$value) {
                             $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                         }
-                    } else if (isset($route[$st+2])) {
-                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
+                    } else if (isset($route[$st+3])) {
+                        $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+3], "value"=>$value);
                     }
                     else
                     {
@@ -287,6 +278,8 @@
                 $nodeid = $i['nodeid'];
                 $name = $i['name'];
                 $value = $i['value'];
+                
+                $process->timezone = $user->get_timezone($userid);
                 
                 // Automatic device configuration using device module if 'describe' keyword found
                 if (strtolower($name)=="describe") {

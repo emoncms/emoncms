@@ -3,7 +3,7 @@ import paho.mqtt.client as mqtt
 
 userid = 2
 mqtt_user = "test"
-mqtt_passwd = "password"
+mqtt_passwd = "test"
 mqtt_host = "localhost"
 mqtt_port = 1883
 
@@ -35,7 +35,7 @@ time.sleep(1)
 
 # Loop
 while 1:
-    topic = basetopic+"/power"
+    topic = basetopic+"/emontx/power"
     value = 150
 
     print "publish: "+topic+":"+str(value)
