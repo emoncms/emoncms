@@ -37,10 +37,10 @@ function input_controller()
             $device = new Device($mysqli,$redis);
         }
     }
-    
+
     require_once "Modules/input/input_methods.php";
     $inputMethods = new InputMethods($mysqli,$redis,$user,$input,$feed,$process,$device);
-    
+
     // Change default route to json
     $route->format = "json"; 
 
@@ -57,14 +57,14 @@ function input_controller()
             $log->error($result);
         }
     }
-    
+
     // ------------------------------------------------------------------------
     // input/bulk
     // ------------------------------------------------------------------------
     else if ($route->action == 'bulk') {
         $result = $inputMethods->bulk($session['userid']);
         if ($result=="ok") {
-            // result ok returned
+            if ($param->exists('fulljson')) $result = '{"success": true}';
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -157,7 +157,7 @@ function input_controller()
         $route->format = "html";
         
         global $ui_version_2;
-        if (isset($ui_version_2) && $ui_version_2 && $device) {
+        if ($device && !(isset($ui_version_2) && !$ui_version_2)) {
             $result =  view("Modules/input/Views/device_view.php", array());
         } else {
             $result =  view("Modules/input/Views/input_view.php", array());

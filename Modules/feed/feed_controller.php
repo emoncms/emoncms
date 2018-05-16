@@ -17,7 +17,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-    global $mysqli, $redis, $session, $route, $feed_settings,$user;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device;
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
@@ -29,12 +29,19 @@ function feed_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
+    if (!$device) {
+        if (file_exists("Modules/device/device_model.php")) {
+            require_once "Modules/device/device_model.php";
+            $device = new Device($mysqli,$redis);
+        }
+    }
+
     if ($route->format == 'html')
     {
         if ($route->action == "list" && $session['write']) {
         
             global $ui_version_2;
-            if (isset($ui_version_2) && $ui_version_2) {
+            if ($device && !(isset($ui_version_2) && !$ui_version_2)) {
                 $result = view("Modules/feed/Views/feedlist_view_v2.php",array());
             } else {
                 $result = view("Modules/feed/Views/feedlist_view.php",array());
