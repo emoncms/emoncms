@@ -1,0 +1,470 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-10-18 18:43+0100\n"
+"PO-Revision-Date: 2012-11-16 21:13+0100\n"
+"Last-Translator: Alco <nightcrawler28@live.nl>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../api_view.php:29
+msgid "API Helper"
+msgstr "API helper"
+
+#: ../../../api_view.php:31
+msgid ""
+"API keys are used to give authenticated access without login in via a normal "
+"session."
+msgstr ""
+"API sleutels worden gebruikt om bewaakte toegang te geven zonder handmatig "
+"aan te melden."
+
+#: ../../../api_view.php:34
+msgid "Read only access: "
+msgstr "Alleen lezen rechten:"
+
+#: ../../../api_view.php:36
+msgid "Allows to access in read only mode"
+msgstr "Geeft toegang tot alleen lezen methode"
+
+#: ../../../api_view.php:40 ../../../api_view.php:53
+msgid "new"
+msgstr "nieuw"
+
+#: ../../../api_view.php:47
+msgid "Write only access: "
+msgstr "Alleen schrijfrechten:"
+
+#: ../../../api_view.php:49
+#, fuzzy
+msgid "Keep secret. Write mode access"
+msgstr "Beperkte toegang"
+
+#: ../../../api_view.php:59
+msgid "Post API"
+msgstr "Verstuur API"
+
+#: ../../../api_view.php:70
+#, fuzzy
+msgid ""
+"Example: Click or copy this to your web browser or send from your monitoring "
+"hardware"
+msgstr ""
+"Voorbeeld: Kopiëer dit naar u web browser of stuur het vanaf een nanode:"
+
+#: ../../../api_view.php:77 ../../../api_view.php:90
+msgid "try me"
+msgstr "probeer mij"
+
+#: ../../../api_view.php:82
+msgid "Using Node addressing"
+msgstr "Gebruikte Node adressering"
+
+#: ../../../api_view.php:87
+msgid "Change node_id from URL with the node identification"
+msgstr "Wijzig Node_id vanuit de URL met het Node indentificatie nr"
+
+#: ../../../api_view.php:95
+msgid "Visualisation API"
+msgstr "Weergave API"
+
+#: ../../../api_view.php:96
+msgid ""
+"These are all the visualisations that are available in emoncms3. To view a "
+"visualisation enter in a relevant feedid in the underlined boxes below and "
+"then click on the > button."
+msgstr ""
+"Dit zijn alle beschikbare visualisaties in Emoncms3. Voer een relevant "
+"Bericht_ID in de onderstreepte vakjes om een visuealisatie te zien en klik "
+"op de > knop."
+
+#: ../../../api_view.php:101
+msgid "Name"
+msgstr "Naam"
+
+#: ../../../api_view.php:104
+msgid "URL"
+msgstr "Adres"
+
+#: ../../../api_view.php:107
+msgid "View"
+msgstr "Toon"
+
+#: ../../../api_view.php:113
+msgid "Real-time graph"
+msgstr "Actuele weergave"
+
+#: ../../../api_view.php:128
+msgid "Raw data graph"
+msgstr "Raw data grafiek"
+
+#: ../../../api_view.php:143
+msgid "Bar graph"
+msgstr "Staaf diagram"
+
+#: ../../../api_view.php:158
+msgid "Smoothie"
+msgstr "Overgang"
+
+#: ../../../api_view.php:173
+msgid "All time histogram"
+msgstr "Historisch histogram"
+
+#: ../../../api_view.php:188
+msgid "Daily histogram"
+msgstr "Dagelijks histogram"
+
+#: ../../../api_view.php:207
+msgid "Zoom"
+msgstr "Vergroot"
+
+#: ../../../api_view.php:223
+#, fuzzy
+msgid "kWh/d Comparison"
+msgstr "Kwh/d Inzoom"
+
+#: ../../../api_view.php:244
+#, fuzzy
+msgid "Stacked"
+msgstr "KWh/d Gestapeld"
+
+#: ../../../api_view.php:261
+msgid "Threshold"
+msgstr "Standaard"
+
+#: ../../../api_view.php:280
+msgid "Simple zoom"
+msgstr "Simpele vergroting"
+
+#: ../../../api_view.php:297
+msgid "Bar graph (ordered by height)"
+msgstr "Staaf grafiek (gesorteerd naar hoogte)"
+
+#: ../../../api_view.php:312
+msgid "Threshold ordered by height"
+msgstr "Dempelwaarde gesorteerd naar hoogte "
+
+#: ../../../api_view.php:332
+msgid "Multigraph"
+msgstr "Multigrafiek"
+
+#: ../../../api_view.php:346
+msgid "Datapoint Editor"
+msgstr "Datapunten aanpassen"
+
+#: ../../../api_view.php:360
+msgid "Other options:"
+msgstr "Overige opties:"
+
+#: ../../../api_view.php:365
+msgid "Hide menu"
+msgstr "Verberg menu"
+
+#: ../../../api_view.php:367
+msgid ""
+"Hide the top menu and footer by adding the attribute &embed=1 to the URL."
+msgstr ""
+"Verberg het bovenste menu en voetnoot door het volgende attribuut aan de URL "
+"toe te voegen \"&embed=1\""
+
+#: ../../../api_view.php:372
+msgid "Share"
+msgstr "Deel"
+
+#: ../../../api_view.php:374
+msgid "To share a visualisation use your read apikey. Add the attribute "
+msgstr ""
+"Om een visualisatie te delen kan je de lees API sleutel gebruiken. Voeg het "
+"attribuut"
+
+#: ../../../api_view.php:374
+msgid " to the URL"
+msgstr "aan de URL"
+
+#: ../../../api_view.php:379
+msgid "Embed"
+msgstr "Ingebakken (Embed)"
+
+#: ../../../api_view.php:386
+#, fuzzy
+msgid "Reset Multigraph"
+msgstr "Multigrafiek"
+
+#: ../../../api_view.php:388
+msgid "The multigraph can be reset using the &clear=1 attribute."
+msgstr ""
+"De multigrafiek kan worden gereset door &clear=1 aan de URL toe te voegen."
+
+#: ../../../vis_controller.php:24
+msgid "Restricted access"
+msgstr "Beperkte toegang"
+
+#~ msgid "Sorry, you need a valid apikey or be logged in to see this page"
+#~ msgstr ""
+#~ "Sorry, je moet een geldige API sleutel invoeren of aangemeld zijn om deze "
+#~ "pagina te bezoeken"
+
+#~ msgid "Continue to emoncms"
+#~ msgstr "Ga naar emoncms"
+
+#~ msgid "to run script uncomment runnable"
+#~ msgstr "om dit script te draaien haal de comments weg"
+
+#~ msgid "dashboards new"
+#~ msgstr "Nieuw dashboard"
+
+#~ msgid "dashboard set"
+#~ msgstr "dashboard ingesteld"
+
+#~ msgid "dashboard set configuration"
+#~ msgstr "dashboard configuratie instelling"
+
+#~ msgid "Feed type changed"
+#~ msgstr "Berich type aangepast"
+
+#~ msgid "Feed does not exist"
+#~ msgstr "Bericht bestaat niet"
+
+#~ msgid "Feed tag changed"
+#~ msgstr "Bericht label gewijzigd"
+
+#~ msgid "Feed renamed"
+#~ msgstr "Bericht hernoemd"
+
+#~ msgid "Feed "
+#~ msgstr "Bericht"
+
+#~ msgid " deleted"
+#~ msgstr "verwijderd"
+
+#~ msgid "Input deleted"
+#~ msgstr "Invoer verwijderen"
+
+#~ msgid "Process list has been reset"
+#~ msgstr "Proceslijst is hersteld"
+
+#~ msgid "Invalid username or password"
+#~ msgstr "Ongeldige gebruikersnaam of wachtwoord"
+
+#~ msgid "Welcome, you are now logged in"
+#~ msgstr "Welkom, je bent nu aangemeld"
+
+#~ msgid "Sorry username already exists"
+#~ msgstr "Sorry maar deze gebruikersnaam bestaat al"
+
+#~ msgid "Please enter a username that is 4 to 30 characters long"
+#~ msgstr "Voer een gebruikersnaam tussen de 4 en 30 characters in"
+
+#~ msgid "Please enter a password that is 4 to 30 characters long"
+#~ msgstr "Voer een wachtwoord in tussen de 4 en 30 characters lang"
+
+#~ msgid "Your new account has been created"
+#~ msgstr "U nieuwe account is aangemaakt"
+
+#~ msgid "Your password has been changed"
+#~ msgstr "U wachtwoord is aangepast"
+
+#~ msgid "Invalid old password"
+#~ msgstr "Ongeldig oud wachtwoord"
+
+#~ msgid "New read apikey: "
+#~ msgstr "Nieuwe lees API sleutel"
+
+#~ msgid "New write apikey: "
+#~ msgstr "Nieuwe schrijf API sleutel:"
+
+#~ msgid "You are logged out"
+#~ msgstr "U bent afgemeld"
+
+#~ msgid "Invalid token"
+#~ msgstr "Ontbrekende token"
+
+#~ msgid "Message successfully sent!"
+#~ msgstr "Bericht succesvol verzonden!"
+
+#~ msgid " is"
+#~ msgstr "is"
+
+#~ msgid " is inactive"
+#~ msgstr "inactief"
+
+#~ msgid "Log to feed"
+#~ msgstr "Bewaar naar feed"
+
+#~ msgid "Power to kWh"
+#~ msgstr "Energie naar kWh"
+
+#~ msgid "Power to kWh/d"
+#~ msgstr "Energie naar Kwh/d"
+
+#~ msgid "x input"
+#~ msgstr "Invoer"
+
+#~ msgid "input on-time"
+#~ msgstr "invoer op tijdsbasis"
+
+# don't get the explination of this function. code says:
+#    // Get last value
+#     $last = get_feed_timevalue($feedid);
+#     $last_kwh = $last['value'];
+#     $kwh_inc = $value / 1000.0;
+#     $new_kwh = $last_kwh + $kwh_inc;
+# ----
+# So it's the last kwh reading divide by 1000?
+#~ msgid "kWhinc to kWh/d"
+#~ msgstr "kWhper. naar kWh/d"
+
+#~ msgid "kWh to kWh/d"
+#~ msgstr "Kwh naar Kwh/d"
+
+#~ msgid "update feed @time"
+#~ msgstr "update feed @tijd"
+
+#~ msgid "+ input"
+#~ msgstr "+ invoer"
+
+#~ msgid "/ input"
+#~ msgstr "/ invoer"
+
+#~ msgid "phaseshift"
+#~ msgstr "faseverschuiving"
+
+#~ msgid "accumulator"
+#~ msgstr "accumulator"
+
+#~ msgid "rate of change"
+#~ msgstr "wisselkoers"
+
+#~ msgid "histogram"
+#~ msgstr "histogram"
+
+#, fuzzy
+#~ msgid "average"
+#~ msgstr "| Gemiddelde:"
+
+#~ msgid "Yes please"
+#~ msgstr "Alsublieft!"
+
+#~ msgid "Edit"
+#~ msgstr "Wijzigen"
+
+#~ msgid "Edit dashboard"
+#~ msgstr "Wijzig dashboard"
+
+#~ msgid "Configuration"
+#~ msgstr "Configuratie"
+
+#~ msgid "Preview"
+#~ msgstr "Voorvertoning"
+
+#~ msgid "Dashboard name: "
+#~ msgstr "Dashboard naam:"
+
+#~ msgid "Description: "
+#~ msgstr "Omschrijving"
+
+#~ msgid "Main dashboard: "
+#~ msgstr "Hoofd dashboard:"
+
+#~ msgid "Inputs"
+#~ msgstr "Invoeren"
+
+#~ msgid "Feeds"
+#~ msgstr "Berichten"
+
+#~ msgid "Vis"
+#~ msgstr "Grafisch"
+
+#~ msgid "Account"
+#~ msgstr "Account"
+
+#~ msgid "Dashboard"
+#~ msgstr "Dashboard"
+
+#~ msgid "Dashboards"
+#~ msgstr "Dashboards"
+
+#~ msgid "Notify settings"
+#~ msgstr "Waarschuwingsinstellingen"
+
+#~ msgid "Notification recipiants (To): "
+#~ msgstr "Notificatie ontvangers (Aan):"
+
+#~ msgid "Notify "
+#~ msgstr "Notificatie"
+
+#~ msgid "Setup feed notifications"
+#~ msgstr "instellen bericht waarschuwingen"
+
+#~ msgid "Notify when feed = value: "
+#~ msgstr "Waarschuw wanneer Bericht = waarde:"
+
+#~ msgid "Notify when feed is inactive "
+#~ msgstr "Waarschuw wanneer bericht inactief is"
+
+#~ msgid "Notify feed status periodically "
+#~ msgstr "Waarschuw berichten status periodiek"
+
+#~ msgid "Edit mail settings"
+#~ msgstr "Wijzig e-mail instellingen"
+
+#~ msgid "User: "
+#~ msgstr "Gebruiker"
+
+#~ msgid "Language"
+#~ msgstr "Taal"
+
+#~ msgid "Select preferred language:"
+#~ msgstr "Selecteer voorkeurstaal:"
+
+#~ msgid "API keys"
+#~ msgstr "API sleutels"
+
+#~ msgid "Change password"
+#~ msgstr "Wijzig wachtwoord"
+
+#~ msgid "Old password:"
+#~ msgstr "Oude wachtwoord:"
+
+#~ msgid "New password:"
+#~ msgstr "Nieuw wachtwoord:"
+
+#~ msgid "Change"
+#~ msgstr "Wijzig"
+
+#~ msgid "Account Statistics"
+#~ msgstr "Account Statistieken"
+
+#~ msgid "Disk space use:"
+#~ msgstr "Schrijfruimte ingebruik:"
+
+#~ msgid "Up hits:"
+#~ msgstr "Hoog hits:"
+
+#~ msgid "Down hits:"
+#~ msgstr "Laag hits:"
+
+#~ msgid "Admin panel"
+#~ msgstr "Administratie paneel"
+
+#~ msgid "Total feed data disk space use: "
+#~ msgstr "Totaal gebruik van hardeschijfruimte voor feeds:"
+
+#~ msgid "Users"
+#~ msgstr "Gebruikers"
+
+#~ msgid "registered users"
+#~ msgstr "geregistreerde gebruikers"
+
+#~ msgid "Username"
+#~ msgstr "Gebruikersnaam"
+
+#~ msgid "Up hits"
+#~ msgstr "Hoog hits"
