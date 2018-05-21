@@ -50,7 +50,7 @@ get_js_file($dir);
  foreach ($translation as $file=>$tr){
   echo "\n// ".$file."\n";
    foreach ($tr as $t){
-     echo "LANG_JS_VIS[\"$t\"] = '<?php echo addslashes(dgettext('vis_messages','$t')); ?>';\n";
+     echo "LANG_JS_VIS[\"$t\"] = '<?php echo addslashes(dgettext('vis_messages',\"$t\")); ?>';\n";
    }
  }
 ?>
