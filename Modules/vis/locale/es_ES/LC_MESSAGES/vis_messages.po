@@ -1,0 +1,1332 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-03 17:56+0100\n"
+"PO-Revision-Date: 2015-09-03 17:56+0100\n"
+"Last-Translator: ilde <i.martinez@ismsolar.com>\n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 1.7.5\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../Views/vis_main_view.php:22
+msgid "Visualisations"
+msgstr "Visualizaciones"
+
+#: ../../../Views/vis_main_view.php:27
+msgid "Select visualisation:"
+msgstr "Selecciona una visualización:"
+
+#: ../../../Views/vis_main_view.php:32
+msgid "Set options:"
+msgstr "Establecer opciones:"
+
+#: ../../../Views/vis_main_view.php:34
+msgid "Note:"
+msgstr "Nota:"
+
+#: ../../../Views/vis_main_view.php:34
+msgid ""
+"If a feed does not appear in the selection box, check that the type has been "
+"set on the feeds page."
+msgstr ""
+"Si una fuente no aparece en la caja de selección, compruebe que el tipo ha "
+"sido establecido en la página de las fuentes."
+
+#: ../../../Views/vis_main_view.php:39
+msgid "View"
+msgstr "Vista"
+
+#: ../../../Views/vis_main_view.php:40
+msgid "Full screen"
+msgstr "Pantalla completa"
+
+#: ../../../Views/vis_main_view.php:45
+msgid "Embed in your website:"
+msgstr "Insertar en tu página web:"
+
+#: ../../../Views/vis_main_view.php:124
+msgid ""
+"Some of the feeds selected are not public, to embed a visualisation publicly "
+"first make the feeds that you want to use public."
+msgstr ""
+"Algunas de las fuentes seleccionadas no son públicas, y para insertar una "
+"visualización públicamente primero necesitará hacer las fuentes que quiere "
+"usar públicas."
+
+#: ../../../Views/vis_main_view.php:124
+msgid "To embed privately:"
+msgstr "Para insertar de forma privada:"
+
+#: ../../../vis_controller.php:11
+msgid "Restricted access"
+msgstr "Acceso restringido"
+
+#: ../../../vis_controller.php:119
+msgid "Not configured"
+msgstr "Sin configurar"
+
+#: ../../../vis_controller.php:119
+msgid "or"
+msgstr "o"
+
+#: ../../../vis_controller.php:119
+msgid "Authentication not valid"
+msgstr "Autentificación inválida"
+
+#: ../../../vis_menu.php:7
+msgid "Visualization"
+msgstr "Visualización"
+
+#: ../../../vis_object.php:19
+msgid "RealTime"
+msgstr "Tiempo Real"
+
+#: ../../../vis_object.php:20 ../../../vis_object.php:25
+#: ../../../vis_object.php:34 ../../../vis_object.php:44
+#: ../../../vis_object.php:49 ../../../vis_object.php:54
+#: ../../../vis_object.php:81 ../../../vis_object.php:92
+#: ../../../vis_object.php:96 ../../../vis_object.php:103
+#: ../../../vis_object.php:107 ../../../vis_object.php:120
+msgid "feed"
+msgstr "fuente"
+
+#: ../../../vis_object.php:24
+msgid "RawData"
+msgstr "Datos sin procesar"
+
+#: ../../../vis_object.php:26
+msgid "fill"
+msgstr "rellenar"
+
+#: ../../../vis_object.php:27 ../../../vis_object.php:35
+msgid "colour"
+msgstr "color"
+
+#: ../../../vis_object.php:28 ../../../vis_object.php:37
+#: ../../../vis_object.php:45
+msgid "units"
+msgstr "unidades"
+
+#: ../../../vis_object.php:29 ../../../vis_object.php:38
+msgid "dp"
+msgstr "dp"
+
+#: ../../../vis_object.php:30 ../../../vis_object.php:39
+msgid "scale"
+msgstr "escala"
+
+#: ../../../vis_object.php:33
+msgid "BarGraph"
+msgstr "Gráfico de barras"
+
+#: ../../../vis_object.php:36
+msgid "interval"
+msgstr "Intervalo"
+
+#: ../../../vis_object.php:40
+msgid "delta"
+msgstr "delta"
+
+#: ../../../vis_object.php:43
+msgid "Daily from Multiple (BETA)"
+msgstr "Valores diarios de múltiples fuentes (BETA)"
+
+#: ../../../vis_object.php:48 ../../../visualisations/smoothie.php:15
+msgid "Smoothie"
+msgstr "Smoothie"
+
+#: ../../../vis_object.php:50
+msgid "ufac"
+msgstr "ufac"
+
+#: ../../../vis_object.php:53
+msgid "Histgraph"
+msgstr "Histograma"
+
+#: ../../../vis_object.php:55
+msgid "barwidth"
+msgstr "Ancho de las barras"
+
+#: ../../../vis_object.php:56
+msgid "start"
+msgstr "comienzo"
+
+#: ../../../vis_object.php:57
+msgid "end"
+msgstr "fin"
+
+#: ../../../vis_object.php:61
+msgid "Zoom"
+msgstr "Zoom"
+
+#: ../../../vis_object.php:62 ../../../vis_object.php:87
+#: ../../../vis_object.php:97
+msgid "power"
+msgstr "potencia"
+
+#: ../../../vis_object.php:63 ../../../vis_object.php:88
+msgid "kwhd"
+msgstr "kwhd"
+
+#: ../../../vis_object.php:64
+msgid "currency"
+msgstr "moneda"
+
+#: ../../../vis_object.php:65
+msgid "currency_after_val"
+msgstr "currency_after_val"
+
+#: ../../../vis_object.php:66
+msgid "pricekwh"
+msgstr "pricekwh"
+
+#: ../../../vis_object.php:70 ../../../visualisations/stacked.php:22
+#: ../../../visualisations/stackedsolar.php:22
+msgid "Stacked"
+msgstr "Apliada"
+
+#: ../../../vis_object.php:71
+msgid "bottom"
+msgstr "inferior"
+
+#: ../../../vis_object.php:72
+msgid "top"
+msgstr "superior"
+
+#: ../../../vis_object.php:75
+msgid "StackedSolar"
+msgstr "Solar Superpuestos"
+
+#: ../../../vis_object.php:76
+msgid "solar"
+msgstr "solar"
+
+#: ../../../vis_object.php:77
+msgid "consumption"
+msgstr "consumo"
+
+#: ../../../vis_object.php:80 ../../../visualisations/threshold.php:23
+msgid "Threshold"
+msgstr "Threshold"
+
+#: ../../../vis_object.php:82 ../../../vis_object.php:98
+msgid "thresholdA"
+msgstr "límiteA"
+
+#: ../../../vis_object.php:83 ../../../vis_object.php:99
+msgid "thresholdB"
+msgstr "límiteB"
+
+#: ../../../vis_object.php:86
+msgid "SimpleZoom"
+msgstr "Zoom simple"
+
+#: ../../../vis_object.php:91
+msgid "OrderBars"
+msgstr "Barras ordenadas"
+
+#: ../../../vis_object.php:95
+msgid "OrderThreshold"
+msgstr "Límites Ordenados"
+
+#: ../../../vis_object.php:102
+msgid "EditRealtime"
+msgstr "Editar valores en tiempo real"
+
+#: ../../../vis_object.php:106
+msgid "EditDaily"
+msgstr "Editar valores diarios"
+
+#: ../../../vis_object.php:110
+msgid "MultiGraph"
+msgstr "Gráfico múltiple"
+
+#: ../../../vis_object.php:111
+msgid "mid"
+msgstr "mitad"
+
+#: ../../../vis_object.php:114
+msgid "Compare"
+msgstr "Comparar"
+
+#: ../../../vis_object.php:115
+msgid "Feed A"
+msgstr "Feed A"
+
+#: ../../../vis_object.php:116
+msgid "Feed B"
+msgstr "Feed B"
+
+#: ../../../vis_object.php:119
+msgid "Graph (BETA)"
+msgstr "Gráfico (BETA)"
+
+#: ../../../visualisations/bargraph.php:125
+msgid "Bar graph:"
+msgstr "Gráfico de barras:"
+
+#: ../../../visualisations/compare.php:26
+msgid "Feed calibration and comparison tool"
+msgstr "Calibración de fuentes y herramienta de comparación"
+
+#: ../../../visualisations/compare.php:27
+msgid ""
+"Use this tool to compare two feeds: FeedA and FeedB. Enter feed ids for "
+"comparison below. If there is a difference between feed values adjust the "
+"calibration to see if the difference can be removed."
+msgstr ""
+"Utiliza esta herramienta para comparar dos fuentes: FuenteA y FuenteB. "
+"Introduzca los ids de las fuentes para compararlas abajo. Si hay diferencias "
+"entre los valores de las fuentes ajuste la calibración para ver si la "
+"diferencia puede ser eliminada."
+
+#: ../../../visualisations/compare.php:30
+msgid "Feed A ID"
+msgstr "ID del Feed A"
+
+#: ../../../visualisations/compare.php:35
+msgid "Feed B ID"
+msgstr "ID del Feed B"
+
+#: ../../../visualisations/compare.php:37
+msgid "Load"
+msgstr "Cargar"
+
+#: ../../../visualisations/compare.php:41
+msgid "Feed B Calibration"
+msgstr "Calibración Fuente B"
+
+#: ../../../visualisations/compare.php:43
+msgid "Update"
+msgstr "Actualizar"
+
+#: ../../../visualisations/compare.php:69
+msgid "Difference between feeds (FeedB calibration applied - FeedA)"
+msgstr ""
+"Diferencia entre fuentes (calibración de la FuenteB aplicada - FuenteA) "
+
+#: ../../../visualisations/compare.php:72
+msgid "FeedA vs FeedB"
+msgstr "FeedA vs FeedB"
+
+#: ../../../visualisations/compare.php:73
+msgid "Relationship should be linear if measurements are the same"
+msgstr "La relación debe ser lineal si las medidas son iguales"
+
+#: ../../../visualisations/editdaily.php:25
+#: ../../../visualisations/editrealtime.php:26
+msgid "Datapoint editor:"
+msgstr "Editor punto a punto:"
+
+#: ../../../visualisations/editdaily.php:26
+#: ../../../visualisations/editrealtime.php:27
+msgid ""
+"Click on a datapoint to select, then in the edit box below the graph enter "
+"in the new value. You can also add another datapoint by changing the time to "
+"a point in time that does not yet have a datapoint."
+msgstr ""
+"Haga click en un punto para seleccionarlo, y entonces edite la caja debajo "
+"del gráfico para introducir un nuevo valor. También puede añadir un nuevo "
+"punto cambiando la fecha hasta un punto que no tenga aún datos."
+
+#: ../../../visualisations/editdaily.php:52
+#: ../../../visualisations/editrealtime.php:52
+msgid "Edit feed_"
+msgstr "Editar fuente_"
+
+#: ../../../visualisations/editdaily.php:52
+#: ../../../visualisations/editrealtime.php:52
+msgid "@ time:"
+msgstr "@ instante:"
+
+#: ../../../visualisations/editdaily.php:52
+#: ../../../visualisations/editrealtime.php:52
+msgid "new value:"
+msgstr "nuevo valor:"
+
+#: ../../../visualisations/editdaily.php:54
+#: ../../../visualisations/editrealtime.php:54
+#: ../../../visualisations/editrealtime.php:60
+msgid "Save"
+msgstr "Guardar"
+
+#: ../../../visualisations/editdaily.php:55
+msgid "Delete"
+msgstr "Borrar"
+
+#: ../../../visualisations/editrealtime.php:55
+msgid "Delete data in window"
+msgstr "Borrar datos en ventana"
+
+#: ../../../visualisations/editrealtime.php:59
+msgid "Multiply data in window by:"
+msgstr "Multiplicar los datos en la ventana por:"
+
+#: ../../../visualisations/editrealtime.php:66
+msgid "Delete feed data"
+msgstr "Borrar datos de la fuente"
+
+#: ../../../visualisations/editrealtime.php:69
+msgid "Deleting feed data in this window is permanent."
+msgstr "Borrar valores de la fuente en esta ventana es permanente."
+
+#: ../../../visualisations/editrealtime.php:71
+msgid "Are you sure you want to delete?"
+msgstr "¿Está seguro que quiere borrarlo?"
+
+#: ../../../visualisations/editrealtime.php:75
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../../../visualisations/editrealtime.php:76
+msgid "Delete permanently"
+msgstr "Borrar permanentemente"
+
+#: ../../../visualisations/histgraph.php:33
+msgid "Histogram:"
+msgstr "Histograma:"
+
+#: ../../../visualisations/multigraph.php:46
+msgid "Multigraph:"
+msgstr "Gráfico múltiple:"
+
+#: ../../../visualisations/orderbars.php:20
+msgid "Bar graph (ordered by height):"
+msgstr "Gráfico de barras (ordenado por altura):"
+
+#: ../../../visualisations/orderthreshold.php:25
+msgid "Threshold Order"
+msgstr "Orden de los valores límite"
+
+#: ../../../visualisations/orderthreshold.php:32
+msgid "Reload"
+msgstr "Recargar"
+
+#: ../../../visualisations/rawdata.php:51
+msgid "Mean:"
+msgstr "Media:"
+
+#: ../../../visualisations/rawdata.php:52
+msgid "Min:"
+msgstr "Mín:"
+
+#: ../../../visualisations/rawdata.php:53
+msgid "Max:"
+msgstr "Máx:"
+
+#: ../../../visualisations/rawdata.php:54
+msgid "Standard deviation:"
+msgstr "Desviación estándar:"
+
+#: ../../../visualisations/rawdata.php:55
+msgid "Datapoints in view:"
+msgstr "Número de puntos en la vista:"
+
+#: ../../../visualisations/rawdata.php:111
+msgid "Raw:"
+msgstr "Sin procesar:"
+
+#: ../../../visualisations/realtime.php:18
+msgid "Realtime data:"
+msgstr "Datos en tiempo real:"
+
+#: ../../../visualisations/realtime.php:24
+msgid "hour"
+msgstr "hora"
+
+#: ../../../visualisations/realtime.php:25
+#: ../../../visualisations/realtime.php:26
+#: ../../../visualisations/realtime.php:27
+#: ../../../visualisations/realtime.php:28
+msgid "min"
+msgstr "min"
+
+#: ../../../visualisations/simplezoom.php:24
+msgid "Simpler kWh/d zoomer"
+msgstr "Zoom kWh/d simple"
+
+#: ../../../visualisations/timestoredaily.php:88
+msgid "Timestore Daily:"
+msgstr "Diario (Timestore):"
+
+#: ../../../visualisations/zoom.php:28
+msgid "kWh/d Zoomer"
+msgstr "Zoom kWh/d"
+
+#: ../../../visualisations/zoom.php:109
+msgid "Total:"
+msgstr "Total:"
+
+#: ../../../visualisations/zoom.php:109 ../../../visualisations/zoom.php:157
+msgid "kWh"
+msgstr "kWh"
+
+#: ../../../visualisations/zoom.php:109 ../../../visualisations/zoom.php:157
+msgid "Average:"
+msgstr "Media:"
+
+#: ../../../visualisations/zoom.php:109
+msgid "a week"
+msgstr "por semana"
+
+#: ../../../visualisations/zoom.php:109
+msgid "a year"
+msgstr "por año"
+
+#: ../../../visualisations/zoom.php:109
+msgid "Unit price:"
+msgstr "Precio por unidad:"
+
+#~ msgid "API Helper"
+#~ msgstr "API Helper"
+
+#~ msgid ""
+#~ "API keys are used to give authenticated access without login in via a "
+#~ "normal session."
+#~ msgstr ""
+#~ "Las siguientes claves son usadas para permitir acceso autenticado sin "
+#~ "necesidad de login."
+
+#~ msgid "Read only access: "
+#~ msgstr "Acceso de solo lectura:"
+
+#~ msgid "Allows to access in read only mode"
+#~ msgstr "Permite el acceso en modo de sólo lectura"
+
+#~ msgid "new"
+#~ msgstr "nuevo"
+
+#~ msgid "Write only access: "
+#~ msgstr "Acceso en modo escritura:"
+
+#~ msgid "Keep secret. Write mode access"
+#~ msgstr "Mentener en secreto. Acceso en modo escritura"
+
+#~ msgid "Post API"
+#~ msgstr "Post API"
+
+#~ msgid ""
+#~ "Example: Click or copy this to your web browser or send from your "
+#~ "monitoring hardware"
+#~ msgstr ""
+#~ "Por ejemplo: Pulsa o copia la siguiente url en el navegador or mándala "
+#~ "desde tu hardware de monitorización"
+
+#~ msgid "try me"
+#~ msgstr "pruébame"
+
+#~ msgid "Using Node addressing"
+#~ msgstr "Usando direccionamiento del nodo"
+
+#~ msgid "Change node_id from URL with the node identification"
+#~ msgstr "Cambiar el node_id desde la URL con la identificación del nodo"
+
+#~ msgid "Visualisation API"
+#~ msgstr "API para visualización"
+
+#~ msgid ""
+#~ "These are all the visualisations that are available in emoncms3. To view "
+#~ "a visualisation enter in a relevant feedid in the underlined boxes below "
+#~ "and then click on the > button."
+#~ msgstr ""
+#~ "Estas son todas la formas de visualización disponibles en Emoncms3. Para "
+#~ "ejecutar una vista introduce los datos apropiados en las cajas de texto y "
+#~ "pulsa en el boton >."
+
+#~ msgid "Name"
+#~ msgstr "Nombre"
+
+#~ msgid "URL"
+#~ msgstr "Enlace"
+
+#~ msgid "Real-time graph"
+#~ msgstr "Gráfico en tiempo real"
+
+#~ msgid "Raw data graph"
+#~ msgstr "Gráfico de datos brutos"
+
+#~ msgid "Bar graph"
+#~ msgstr "Gráfico de barras"
+
+#~ msgid "All time histogram"
+#~ msgstr "Histograma completo"
+
+#~ msgid "Daily histogram"
+#~ msgstr "Histograma diario"
+
+#~ msgid "kWh/d Comparison"
+#~ msgstr "kWh/d Comparison"
+
+#~ msgid "Simple zoom"
+#~ msgstr "Zoom sencillo"
+
+#~ msgid "Bar graph (ordered by height)"
+#~ msgstr "Bar graph (ordered by height)"
+
+#~ msgid "Threshold ordered by height"
+#~ msgstr "Threshold ordered by height"
+
+#~ msgid "Multigraph"
+#~ msgstr "Gráfico múltiple"
+
+#~ msgid "Datapoint Editor"
+#~ msgstr "Editor de datos"
+
+#~ msgid "Other options:"
+#~ msgstr "Otras opciones:"
+
+#~ msgid "Hide menu"
+#~ msgstr "Ocultar menu"
+
+#~ msgid ""
+#~ "Hide the top menu and footer by adding the attribute &embed=1 to the URL."
+#~ msgstr ""
+#~ "Puedes ocultar el menu superior y el pié añadiendo el atributo &embed=1 "
+#~ "en la URL. "
+
+#~ msgid "Share"
+#~ msgstr "Compartir"
+
+#~ msgid "To share a visualisation use your read apikey. Add the attribute "
+#~ msgstr ""
+#~ "Para compartir una vista utiliza tu clave de lectura. Añade el atributo "
+
+#~ msgid " to the URL"
+#~ msgstr " en la URL"
+
+#~ msgid "Embed"
+#~ msgstr "Incrustar"
+
+#~ msgid "Reset Multigraph"
+#~ msgstr "Inicializar Multigráfico"
+
+#~ msgid "The multigraph can be reset using the &clear=1 attribute."
+#~ msgstr ""
+#~ "El multigráfico puede ser inicializado usando el atributo &clear=1 en la "
+#~ "URL."
+
+#~ msgid "Emoncms database setup script"
+#~ msgstr "Script de creación de la base de datos de Emoncms"
+
+#~ msgid "Continue to emoncms"
+#~ msgstr "Continuar a emoncms"
+
+#~ msgid "to run script uncomment runnable"
+#~ msgstr "para ejecutar el código descomenta 'runnable'"
+
+#~ msgid "dashboards new"
+#~ msgstr "Nuevo panel"
+
+#~ msgid "Logout"
+#~ msgstr "Desconectar"
+
+#~ msgid "dashboard set"
+#~ msgstr "establecer panel"
+
+#~ msgid "dashboard set configuration"
+#~ msgstr "establecer configuración del panel"
+
+#~ msgid "Feed type changed"
+#~ msgstr "Tipo de fuente cambiada"
+
+#~ msgid "Feed does not exist"
+#~ msgstr "La fuente no existe"
+
+#~ msgid "Feed tag changed"
+#~ msgstr "Etiqueta de la fuente cambiada"
+
+#~ msgid "Feed renamed"
+#~ msgstr "Fuente renombrada"
+
+#~ msgid "Feed "
+#~ msgstr "Fuente"
+
+#~ msgid " deleted"
+#~ msgstr " borrado"
+
+#~ msgid "Input deleted"
+#~ msgstr "Entrada borrada"
+
+#~ msgid "Process list has been reset"
+#~ msgstr "La lista de procesos ha sido reseteada"
+
+#~ msgid "Invalid username or password"
+#~ msgstr "Usuario o contraseña inválidos"
+
+#~ msgid "Welcome, you are now logged in"
+#~ msgstr "Bienvenido, ya estás conectado"
+
+#~ msgid "Sorry username already exists"
+#~ msgstr "El usuario ya existe"
+
+#~ msgid "Please enter a username that is 4 to 30 characters long"
+#~ msgstr "Por favor introduzca un nombre de usuario de 4 a 40 caracteres"
+
+#~ msgid "Please enter a password that is 4 to 30 characters long"
+#~ msgstr "Por favor introduzca una contraseña de 4 a 30 caracteres"
+
+#~ msgid "Your new account has been created"
+#~ msgstr "Tu nueva cuenta ha sido creada"
+
+#~ msgid "Your password has been changed"
+#~ msgstr "Tu contraseña ha sido cambiada"
+
+#~ msgid "Invalid password"
+#~ msgstr "Contraseña inválida"
+
+#~ msgid "No email address present"
+#~ msgstr "Email no presente"
+
+#~ msgid "New read apikey: "
+#~ msgstr "Nueva clave de lectura (API):"
+
+#~ msgid "New write apikey: "
+#~ msgstr "Nueva clave de escritura (API):"
+
+#~ msgid "You are logged out"
+#~ msgstr "Te has desconectado"
+
+#~ msgid "Invalid token"
+#~ msgstr "Token inválido"
+
+#~ msgid "BD Settings error"
+#~ msgstr "Error en la configuración de la conexión a la base de datos"
+
+#~ msgid "Please, check database settings.php file"
+#~ msgstr "Deberías revisar el fichero settings.php"
+
+#~ msgid "No settings.php file found"
+#~ msgstr "No se ha encontrado el fichero settings.php"
+
+#~ msgid ""
+#~ "Copy and modify Includes/default.settings.php to Includes/settings.php"
+#~ msgstr ""
+#~ "Copia y modifica Includes/default.settings.php en Includes/settings.php"
+
+#~ msgid " clone"
+#~ msgstr " clonar"
+
+#~ msgid "Message successfully sent!"
+#~ msgstr "¡Mensaje enviado correctamente!"
+
+#~ msgid " is"
+#~ msgstr "está"
+
+#~ msgid " is inactive"
+#~ msgstr "está inactivo"
+
+#~ msgid "Log to feed"
+#~ msgstr "Enviar a una fuente"
+
+#~ msgid "Power to kWh"
+#~ msgstr "Power to kWh"
+
+#~ msgid "Power to kWh/d"
+#~ msgstr "Power to kWh/d"
+
+#~ msgid "x input"
+#~ msgstr "entrada x"
+
+#~ msgid "input on-time"
+#~ msgstr "input on-time"
+
+#~ msgid "kWhinc to kWh/d"
+#~ msgstr "kWhinc to kWh/d"
+
+#~ msgid "kWh to kWh/d"
+#~ msgstr "kWh to kWh/d"
+
+#~ msgid "update feed @time"
+#~ msgstr "Actualizar fuente @tiempo"
+
+#~ msgid "+ input"
+#~ msgstr "+ input"
+
+#~ msgid "/ input"
+#~ msgstr "/ input"
+
+#~ msgid "phaseshift"
+#~ msgstr "phaseshift"
+
+#~ msgid "accumulator"
+#~ msgstr "acumulador"
+
+#~ msgid "rate of change"
+#~ msgstr "ratio de cambio"
+
+#~ msgid "histogram"
+#~ msgstr "histograma"
+
+#~ msgid "average"
+#~ msgstr "media"
+
+#~ msgid "heat flux"
+#~ msgstr "flujo de calor"
+
+#~ msgid "power gained to kWh/d"
+#~ msgstr "potencia obtenida a kWh/d"
+
+#~ msgid "Yes please"
+#~ msgstr "Sí"
+
+#~ msgid "Inputs"
+#~ msgstr "Entradas"
+
+#~ msgid "Feeds"
+#~ msgstr "Fuentes"
+
+#~ msgid "Dashboards"
+#~ msgstr "Paneles"
+
+#~ msgid "API"
+#~ msgstr "API"
+
+#~ msgid "Admin"
+#~ msgstr "Administrar"
+
+#~ msgid "Account"
+#~ msgstr "Cuenta"
+
+#~ msgid "Notify settings"
+#~ msgstr "Configuración de notificaciones"
+
+#~ msgid "Notification recipiants (To): "
+#~ msgstr "Destinatarios de las notificaciones (To):"
+
+#~ msgid "Notify "
+#~ msgstr "Notificar"
+
+#~ msgid "Setup feed notifications"
+#~ msgstr "Establecer notificaciones de la fuente"
+
+#~ msgid "Notify when feed = value: "
+#~ msgstr "Notificar cuando la fuente = valor:"
+
+#~ msgid "Notify when feed is inactive"
+#~ msgstr "Notificar cuando esta fuente esté inactiva"
+
+#~ msgid "Notify feed status periodically"
+#~ msgstr "Notificar el estado de la fuente de manera periódica"
+
+#~ msgid "Edit mail settings"
+#~ msgstr "Editar preferencias de correo"
+
+#~ msgid "Ok"
+#~ msgstr "Ok"
+
+#~ msgid "User: "
+#~ msgstr "Usuario:"
+
+#~ msgid "Select preferred language"
+#~ msgstr "Selecciona el idioma por defecto:"
+
+#~ msgid "Browser language"
+#~ msgstr "Lenguaje del navegador"
+
+#~ msgid "Local time"
+#~ msgstr "Hora local"
+
+#~ msgid "Time offset in hours:"
+#~ msgstr "Diferencia horario en horas:"
+
+#~ msgid "Set"
+#~ msgstr "Establecer"
+
+#~ msgid "Change details"
+#~ msgstr "Cambiar detalles"
+
+#~ msgid "Username:"
+#~ msgstr "Nombre de usuario:"
+
+#~ msgid "Email:"
+#~ msgstr "Correo:"
+
+#~ msgid "Change"
+#~ msgstr "Cambiar"
+
+#~ msgid "Change password"
+#~ msgstr "Cambiar contraseña"
+
+#~ msgid "Current password:"
+#~ msgstr "Contraseña actual:"
+
+#~ msgid "New password:"
+#~ msgstr "Nueva contraseña:"
+
+#~ msgid "Account Statistics"
+#~ msgstr "Estadísticas de Cuenta"
+
+#~ msgid "Disk space use:"
+#~ msgstr "Uso de espacio en disco:"
+
+#~ msgid "Up hits:"
+#~ msgstr "Up hits:"
+
+#~ msgid "Down hits:"
+#~ msgstr "Down hits:"
+
+#~ msgid "en_EN"
+#~ msgstr "Inglés"
+
+#~ msgid "es_ES"
+#~ msgstr "Español"
+
+#~ msgid "nl_BE"
+#~ msgstr "Belga"
+
+#~ msgid "nl_NL"
+#~ msgstr "Holandés"
+
+#~ msgid "fr_FR"
+#~ msgstr "Francés"
+
+#~ msgid "Admin panel"
+#~ msgstr "Panel de administración"
+
+#~ msgid "Total feed data disk space use: "
+#~ msgstr "Total de espacio de disco usado por la fuente de datos:"
+
+#~ msgid "Users"
+#~ msgstr "Usuarios"
+
+#~ msgid "registered users"
+#~ msgstr "usuarios registrados"
+
+#~ msgid "Username"
+#~ msgstr "Nombre de usuario"
+
+#~ msgid "Up hits"
+#~ msgstr "Up hits"
+
+#~ msgid "Dn hits"
+#~ msgstr "Dn hits"
+
+#~ msgid "Memory use"
+#~ msgstr "Uso de memoria"
+
+#~ msgid "Dashboard name: "
+#~ msgstr "Nombre del panel:"
+
+#~ msgid "Description: "
+#~ msgstr "Descripción"
+
+#~ msgid "Main: "
+#~ msgstr "Principal:"
+
+#~ msgid "Published: "
+#~ msgstr "Publicado:"
+
+#~ msgid "Public: "
+#~ msgstr "Público:"
+
+#~ msgid "Dashboard Configuration"
+#~ msgstr "Configuración del panel"
+
+#~ msgid "Menu name: (lowercase a-z only)"
+#~ msgstr "Nombre para el menu: (sólo letras de la \"a\" a la \"z\")"
+
+#~ msgid "Make this dashboard the first shown"
+#~ msgstr "Hacer este panel como el primero que se muestra"
+
+#~ msgid "Main"
+#~ msgstr "Principal"
+
+#~ msgid "Activate this dashboard"
+#~ msgstr "Activar este panel"
+
+#~ msgid "Published"
+#~ msgstr "Publicado"
+
+#~ msgid "Anyone with the URL can see this dashboard"
+#~ msgstr "Cualquiera con la dirección URL puede ver este panel"
+
+#~ msgid "Public"
+#~ msgstr "Público"
+
+#~ msgid ""
+#~ "Shows dashboard description on mouse over dashboard name in menu project"
+#~ msgstr ""
+#~ "Muestra la descripción del panel cuando se pasa el ratón sobre su nombre "
+#~ "en el menú del proyecto"
+
+#~ msgid "Show description"
+#~ msgstr "Mostrar descripción"
+
+#~ msgid "Close"
+#~ msgstr "Cerrar"
+
+#~ msgid "Save changes"
+#~ msgstr "Guardar cambios"
+
+#~ msgid "Options"
+#~ msgstr "Opciones"
+
+#~ msgid "Saved"
+#~ msgstr "Guardar"
+
+#~ msgid "New dashboard"
+#~ msgstr "Nuevo panel"
+
+#~ msgid "Thumb view"
+#~ msgstr "Formato iconos"
+
+#~ msgid "Id"
+#~ msgstr "Id"
+
+#~ msgid "Dashboard"
+#~ msgstr "Panel"
+
+#~ msgid "Actions"
+#~ msgstr "Acciones"
+
+#~ msgid "This is the main dashboard"
+#~ msgstr "Este es el panel principal del proyecto"
+
+#~ msgid "Set main dashboard"
+#~ msgstr "Establecer panel principal"
+
+#~ msgid "Unpublish dashboard"
+#~ msgstr "Despublicar panel"
+
+#~ msgid "Publish dashboard"
+#~ msgstr "Publicar panel"
+
+#~ msgid "Make dashboard private"
+#~ msgstr "Hacer panel privado"
+
+#~ msgid "Make dashboard public"
+#~ msgstr "Hacer panel público"
+
+#~ msgid "Draw"
+#~ msgstr "Diseñar"
+
+#~ msgid "Clone"
+#~ msgstr "Clonar"
+
+#~ msgid "Public share URL"
+#~ msgstr "URL pública"
+
+#~ msgid "Private share URL"
+#~ msgstr "URL privada"
+
+#~ msgid "Dashboards:"
+#~ msgstr "Paneles:"
+
+#~ msgid "Draw Editor"
+#~ msgstr "Diseñador"
+
+#~ msgid "View mode"
+#~ msgstr "Vista"
+
+#~ msgid "Config"
+#~ msgstr "Configuración"
+
+#~ msgid "New"
+#~ msgstr "Nuevo"
+
+#~ msgid "List view"
+#~ msgstr "Formato lista"
+
+#~ msgid "Explore Public Dashboards"
+#~ msgstr "Explorar paneles públicos"
+
+#~ msgid "User"
+#~ msgstr "Usuario"
+
+#~ msgid "Alias"
+#~ msgstr "Alias"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Select graph type:"
+#~ msgstr "Seleccione un tipo de gráfico:"
+
+#~ msgid "Real-time"
+#~ msgstr "Tiempo real"
+
+#~ msgid "Raw data"
+#~ msgstr "Datos brutos"
+
+#~ msgid "Histogram"
+#~ msgstr "Histograma"
+
+#~ msgid "Feed type"
+#~ msgstr "Tipo de fuente"
+
+#~ msgid "Undefined"
+#~ msgstr "Indefinido"
+
+#~ msgid "Real-time data"
+#~ msgstr "Datos en tiempo real"
+
+#~ msgid "Daily data"
+#~ msgstr "Datos diarios"
+
+#~ msgid "Histogram data"
+#~ msgstr "Datos de histograma"
+
+#~ msgid "Tag feed"
+#~ msgstr "Etiqueta de la fuente"
+
+#~ msgid "Rename feed"
+#~ msgstr "Renombrar fuente"
+
+#~ msgid "Rename"
+#~ msgstr "Renombrar"
+
+#~ msgid "Notify"
+#~ msgstr "Notificar"
+
+#~ msgid "Set notifications"
+#~ msgstr "Establecer notificaciones"
+
+#~ msgid "Set notification behavior for this feed"
+#~ msgstr "Establecer notificaciones para esta fuente"
+
+#~ msgid "Delete feed?"
+#~ msgstr "¿Borrar fuente?"
+
+#~ msgid "Are you sure you want to delete feed: "
+#~ msgstr "¿Estás seguro de que quieres borrar la fuente?:"
+
+#~ msgid "feed/delete"
+#~ msgstr "fuente/borrar"
+
+#~ msgid "Deleted feeds"
+#~ msgstr "Fuentes borradas"
+
+#~ msgid "Delete feeds permanently"
+#~ msgstr "¿Borrar fuentes de manera permanente?"
+
+#~ msgid "Sync feeds"
+#~ msgstr "Sincronizar fuentes"
+
+#~ msgid "Tag"
+#~ msgstr "Etiqueta"
+
+#~ msgid "Size"
+#~ msgstr "Tamaño"
+
+#~ msgid "Updated"
+#~ msgstr "Actualizado"
+
+#~ msgid "Value"
+#~ msgstr "Valor"
+
+#~ msgid "You have no feeds"
+#~ msgstr "No existen fuentes"
+
+#~ msgid "s ago"
+#~ msgstr " s atrás"
+
+#~ msgid " mins ago"
+#~ msgstr " minutros atrás"
+
+#~ msgid " hours ago"
+#~ msgstr " horas atrás"
+
+#~ msgid "inactive"
+#~ msgstr "inactivo"
+
+#~ msgid "Node view"
+#~ msgstr "Vista de nodos"
+
+#~ msgid "Node"
+#~ msgstr "Nodo"
+
+#~ msgid "Autoconfigure inputs"
+#~ msgstr "Configura entradas automaticamente"
+
+#~ msgid "Nodes"
+#~ msgstr "Nodos"
+
+#~ msgid "Node Identification"
+#~ msgstr "Identificación del nodo"
+
+#~ msgid "Input configuration:   "
+#~ msgstr "Configuración de entrada:"
+
+#~ msgid ""
+#~ "Input processes are executed sequentially with the result being passed "
+#~ "back for further processing by the next processor in the input processing "
+#~ "list."
+#~ msgstr ""
+#~ "Los procesos de entrada son ejecutados de manera secuencial y el "
+#~ "resultado es pasado para ser procesador por el siguiente proceso de la "
+#~ "lista de procesos de entrada."
+
+#~ msgid "add"
+#~ msgstr "añadir"
+
+#~ msgid "Reset process list?"
+#~ msgstr "¿Inicializar la lista de procesos?"
+
+#~ msgid "Are you sure you want to delete input: "
+#~ msgstr "¿Estás seguro de que quieres borrar la entrada:"
+
+#~ msgid "Delete input?"
+#~ msgstr "¿Borrar entrada?"
+
+#~ msgid "Order"
+#~ msgstr "Ordenar"
+
+#~ msgid "Process"
+#~ msgstr "Procesar"
+
+#~ msgid "Arg"
+#~ msgstr "Argumento"
+
+#~ msgid "Move up"
+#~ msgstr "Mover arriba"
+
+#~ msgid "You have no processes defined"
+#~ msgstr "No existen procesos definidos"
+
+#~ msgid "Powered by "
+#~ msgstr "Creado con "
+
+#~ msgid "Password:"
+#~ msgstr "Contraseña:"
+
+#~ msgid "Login"
+#~ msgstr "Entrar"
+
+#~ msgid ""
+#~ "Or if you are new enter a username and password above and click register"
+#~ msgstr ""
+#~ "O si eres un nuevo usuario introduce un nombre de usuario y contraseña y "
+#~ "pulsa en registarse"
+
+#~ msgid "Register"
+#~ msgstr "Registrase"
+
+#~ msgid "Old password:"
+#~ msgstr "Contraseña antigua:"
+
+#~ msgid "CKEditor"
+#~ msgstr "CKEditor"
+
+#~ msgid "delete"
+#~ msgstr "borrar"
+
+#~ msgid "AUTODETECTLANGUAGE"
+#~ msgstr "Browser language"
+
+#~ msgid "Sorry, you need a valid apikey or be logged in to see this page"
+#~ msgstr ""
+#~ "Lo siento, necesitas una clave válida o estar loggeado para ver esta "
+#~ "página"
+
+#~ msgid "Language"
+#~ msgstr "Lenguaje"
+
+#~ msgid "API keys"
+#~ msgstr "Claves API"
+
+#~ msgid "converted feed: "
+#~ msgstr "fuente convertida:"
+
+#~ msgid "feed: "
+#~ msgstr "fuente:"
+
+#~ msgid " already converted"
+#~ msgstr " ya convertido"
+
+#~ msgid "Embed this graph"
+#~ msgstr "Incrustar este gráfico"
+
+#~ msgid "Realtime: "
+#~ msgstr "Tiempo real:"
+
+#~ msgid "Raw data: "
+#~ msgstr "Datos brutos:"
+
+#~ msgid "Bar graph view: "
+#~ msgstr "Vista de gráfico de barras:"
+
+#~ msgid "English"
+#~ msgstr "Inglés"
+
+#~ msgid "Spanish"
+#~ msgstr "Español"
+
+#~ msgid "updated"
+#~ msgstr "actualizado"
+
+#~ msgid "Save current configuration"
+#~ msgstr "Guardar configuración actual"
+
+#~ msgid "Left"
+#~ msgstr "Izquierda"
+
+#~ msgid "Right"
+#~ msgstr "Derecha"
+
+#~ msgid "Fill"
+#~ msgstr "Rellenar"
+
+#~ msgid "Loading...  please wait about 5s"
+#~ msgstr "Cargando... por favor espere unos 5s"
+
+#~ msgid "Loading..."
+#~ msgstr "Cargando..."
+
+#~ msgid "2 Months"
+#~ msgstr "2 Meses"
+
+#~ msgid "Month"
+#~ msgstr "Mes"
+
+#~ msgid "Week"
+#~ msgstr "Semana"
+
+#~ msgid "Day"
+#~ msgstr "Día"
+
+#~ msgid "Hour"
+#~ msgstr "Hora"
+
+#~ msgid "Left vs"
+#~ msgstr "Izquierda vs"
+
+#~ msgid "Loading a feed can take time.. "
+#~ msgstr "Cargar una fuente puede llevar tiempo..."
+
+#~ msgid "1 day"
+#~ msgstr "1 día"
+
+#~ msgid "12 hours"
+#~ msgstr "12 horas"
+
+#~ msgid "1 hour"
+#~ msgstr "1 hora"
+
+#~ msgid "Date / Time"
+#~ msgstr "Fecha / Hora"
+
+#~ msgid "Total: "
+#~ msgstr "Total:"
+
+#~ msgid " kWh : pounds"
+#~ msgstr "kWh: libras"
+
+#~ msgid " a week, pounds"
+#~ msgstr "una semana, libras"
+
+#~ msgid " a year | Unit price: pounds"
+#~ msgstr "un año | Unidad: libras"
+
+#~ msgid "Last:"
+#~ msgstr "Último:"
+
+#~ msgid "Graph"
+#~ msgstr "Gráfico"
