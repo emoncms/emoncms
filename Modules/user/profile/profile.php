@@ -14,6 +14,7 @@
 defined('EMONCMS_EXEC') or die('Restricted access');
 
     global $path;
+    $v=1;
 
     $languages = get_available_languages();
     $languages_name = languagecode_to_name($languages);
@@ -41,17 +42,21 @@ function languagecode_to_name($langs) {
 
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js?v=<?php echo $v; ?>"></script>
 
 <div class="row-fluid">
     <div class="span4">
         <h3><?php echo _('My account'); ?></h3>
 
         <div id="account">
+            <div class="account-item">
+                <span class="muted"><?php echo _('User ID'); ?></span><br><span class="userid"></span>
+            </div>
+
             <div class="account-item">
                 <span class="muted"><?php echo _('Username'); ?></span>
                 <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
