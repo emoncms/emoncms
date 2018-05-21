@@ -20,9 +20,9 @@ function extract_translation($filejs){
    $lines = explode("\n", file_get_contents($file));
    $tr=array();
    foreach ($lines as $line){ 
-     $pos = strpos($line, '_Tr(');
+     $pos = strpos($line, '_Tr_Vis(');
       if ($pos !== false) {
-          $r = explode('_Tr("', $line);
+          $r = explode('_Tr_Vis("', $line);
           unset($r[0]);
           foreach ($r as $key=>$val){
             $rr= explode('")', $val);
@@ -50,7 +50,7 @@ get_js_file($dir);
  foreach ($translation as $file=>$tr){
   echo "\n// ".$file."\n";
    foreach ($tr as $t){
-     echo "LANG_JS[\"$t\"] = '<?php echo addslashes(_(\"$t\")); ?>';\n";
+     echo "LANG_JS_VIS[\"$t\"] = '<?php echo addslashes(dgettext('vis_messages','$t')); ?>';\n";
    }
  }
 ?>
