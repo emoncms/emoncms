@@ -107,6 +107,11 @@ function languagecode_to_name($langs) {
               <span id="msg"></span>
           </div>
         </div>
+	<br>
+        <div class="account-item">
+            <button class="btn btn-danger" id="deleteall">Delete my account</button>
+        </div>
+
     </div>
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
@@ -130,6 +135,34 @@ function languagecode_to_name($langs) {
 	          </table>
         </div>    
          
+    </div>
+</div>
+
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"><?php echo _('WARNING deleting an account is permanent'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <div class="delete-account-s1">
+        <p><?php echo _('Are you sure you want to delete your account?'); ?></p>
+        </div>
+
+        <div class="delete-account-s2" style="display:none">
+        <p><b>Your account has been successfully deleted.</b></p>
+        </div>
+        
+        <pre id="deleteall-output"></pre>
+        
+        <div class="delete-account-s1">
+            <p>Confirm password to delete:<br>
+            <input id="delete-account-password" type="password" /></p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo _('Logout'); ?></button>
     </div>
 </div>
 
@@ -195,6 +228,7 @@ function languagecode_to_name($langs) {
     //------------------------------------------------------
     // Username
     //------------------------------------------------------
+    $(".userid").html(list.data['id']);
     $(".username").html(list.data['username']);
     $("#input-username").val(list.data['username']);
 
@@ -307,8 +341,9 @@ function languagecode_to_name($langs) {
         else
         {
             $.ajax({
+                type: 'POST',
                 url: path+"user/changepassword.json",
-                data: "old="+oldpassword+"&new="+newpassword,
+                data: "old="+encodeURIComponent(oldpassword)+"&new="+encodeURIComponent(newpassword),
                 dataType: 'json',
                 success: function(result)
                 {
@@ -340,6 +375,37 @@ function languagecode_to_name($langs) {
         $("#change-password-form").hide();
         $("#changedetails").show();
     });
+    
+    
+    $("#deleteall").click(function(){
+        $('#myModal').modal('show');
+        
+        $.ajax({type:"POST",url: path+"user/deleteall.json", data: "mode=dryrun", dataType: 'text', success: function(result){
+            $("#deleteall-output").html(result);
+        }});
+    });
 
+    $("#confirmdelete").click(function() {
+        
+        var password = $("#delete-account-password").val();
+        
+        $.ajax({type:"POST", url: path+"user/deleteall.json", data: "mode=permanentdelete&password="+encodeURIComponent(password), dataType: 'text', success: function(result){
+            $("#deleteall-output").html(result);
+            
+            if (result!="invalid password") {
+                $("#canceldelete").hide();
+                $("#confirmdelete").hide();
+                $("#logoutdelete").show();
+                $(".delete-account-s1").hide();
+                $(".delete-account-s2").show();
+            }
+        }});
+    });
+    
+    $("#logoutdelete").click(function() {
+        $.ajax({url: path+"user/logout.json", dataType: 'text', success: function(result){
+            window.location = path;
+        }});
+    });
 
 </script>
