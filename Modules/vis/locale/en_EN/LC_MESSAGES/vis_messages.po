@@ -1,0 +1,466 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 8.4.0 - Vis\n"
+"POT-Creation-Date: 2015-02-04 02:49+0100\n"
+"PO-Revision-Date: 2015-02-04 02:50+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.4\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../vis_controller.php:14
+msgid "Restricted access"
+msgstr ""
+
+#: ../../../vis_controller.php:116
+msgid "Authentication not valid"
+msgstr ""
+
+#: ../../../vis_main_view.php:26
+msgid "Visualisations"
+msgstr ""
+
+#: ../../../vis_main_view.php:33
+msgid "Select visualisation:"
+msgstr ""
+
+#: ../../../vis_main_view.php:43
+msgid "Set options:"
+msgstr ""
+
+#: ../../../vis_main_view.php:45
+msgid "Note:"
+msgstr ""
+
+#: ../../../vis_main_view.php:45
+msgid ""
+"If a feed does not appear in the selection box, check that the type has been "
+"set on the feeds page."
+msgstr ""
+
+#: ../../../vis_main_view.php:53
+msgid "View"
+msgstr ""
+
+#: ../../../vis_main_view.php:54
+msgid "Full screen"
+msgstr ""
+
+#: ../../../vis_main_view.php:62
+msgid "Embed in your website:"
+msgstr ""
+
+#: ../../../vis_main_view.php:141
+msgid ""
+"Some of the feeds selected are not public, to embed a visualisation publicly "
+"first make the feeds that you want to use public."
+msgstr ""
+
+#: ../../../vis_main_view.php:141
+msgid "To embed privately:"
+msgstr ""
+
+#: ../../../vis_menu.php:7
+msgid "Vis"
+msgstr ""
+
+#: ../../../vis_object.php:16
+msgid "RealTime"
+msgstr ""
+
+#: ../../../vis_object.php:17 ../../../vis_object.php:22
+#: ../../../vis_object.php:31 ../../../vis_object.php:41
+#: ../../../vis_object.php:46 ../../../vis_object.php:51
+#: ../../../vis_object.php:78 ../../../vis_object.php:89
+#: ../../../vis_object.php:93 ../../../vis_object.php:100
+#: ../../../vis_object.php:104
+msgid "feedid"
+msgstr ""
+
+#: ../../../vis_object.php:21
+msgid "RawData"
+msgstr ""
+
+#: ../../../vis_object.php:23
+msgid "fill"
+msgstr ""
+
+#: ../../../vis_object.php:24 ../../../vis_object.php:32
+msgid "colour"
+msgstr ""
+
+#: ../../../vis_object.php:25 ../../../vis_object.php:34
+#: ../../../vis_object.php:42
+msgid "units"
+msgstr ""
+
+#: ../../../vis_object.php:26 ../../../vis_object.php:35
+msgid "dp"
+msgstr ""
+
+#: ../../../vis_object.php:27 ../../../vis_object.php:36
+msgid "scale"
+msgstr ""
+
+#: ../../../vis_object.php:30
+msgid "BarGraph"
+msgstr ""
+
+#: ../../../vis_object.php:33
+msgid "interval"
+msgstr ""
+
+#: ../../../vis_object.php:37
+msgid "delta"
+msgstr ""
+
+#: ../../../vis_object.php:40
+msgid "TimestoreDaily"
+msgstr ""
+
+#: ../../../vis_object.php:45 ../../../visualisations/smoothie.php:22
+msgid "Smoothie"
+msgstr ""
+
+#: ../../../vis_object.php:47
+msgid "ufac"
+msgstr ""
+
+#: ../../../vis_object.php:50
+msgid "Histgraph"
+msgstr ""
+
+#: ../../../vis_object.php:52
+msgid "barwidth"
+msgstr ""
+
+#: ../../../vis_object.php:53
+msgid "start"
+msgstr ""
+
+#: ../../../vis_object.php:54
+msgid "end"
+msgstr ""
+
+#: ../../../vis_object.php:58
+msgid "Zoom"
+msgstr ""
+
+#: ../../../vis_object.php:59 ../../../vis_object.php:84
+#: ../../../vis_object.php:94
+msgid "power"
+msgstr ""
+
+#: ../../../vis_object.php:60 ../../../vis_object.php:85
+msgid "kwhd"
+msgstr ""
+
+#: ../../../vis_object.php:61
+msgid "currency"
+msgstr ""
+
+#: ../../../vis_object.php:62
+msgid "currency_after_val"
+msgstr ""
+
+#: ../../../vis_object.php:63
+msgid "pricekwh"
+msgstr ""
+
+#: ../../../vis_object.php:67 ../../../visualisations/stacked.php:25
+#: ../../../visualisations/stackedsolar.php:26
+msgid "Stacked"
+msgstr ""
+
+#: ../../../vis_object.php:68
+msgid "bottom"
+msgstr ""
+
+#: ../../../vis_object.php:69
+msgid "top"
+msgstr ""
+
+#: ../../../vis_object.php:72
+msgid "StackedSolar"
+msgstr ""
+
+#: ../../../vis_object.php:73
+msgid "solar"
+msgstr ""
+
+#: ../../../vis_object.php:74
+msgid "consumption"
+msgstr ""
+
+#: ../../../vis_object.php:77 ../../../visualisations/threshold.php:25
+msgid "Threshold"
+msgstr ""
+
+#: ../../../vis_object.php:79 ../../../vis_object.php:95
+msgid "thresholdA"
+msgstr ""
+
+#: ../../../vis_object.php:80 ../../../vis_object.php:96
+msgid "thresholdB"
+msgstr ""
+
+#: ../../../vis_object.php:83
+msgid "SimpleZoom"
+msgstr ""
+
+#: ../../../vis_object.php:88
+msgid "OrderBars"
+msgstr ""
+
+#: ../../../vis_object.php:92
+msgid "OrderThreshold"
+msgstr ""
+
+#: ../../../vis_object.php:99
+msgid "EditRealtime"
+msgstr ""
+
+#: ../../../vis_object.php:103
+msgid "EditDaily"
+msgstr ""
+
+#: ../../../vis_object.php:107
+msgid "MultiGraph"
+msgstr ""
+
+#: ../../../vis_object.php:107
+msgid "mid"
+msgstr ""
+
+#: ../../../vis_object.php:109
+msgid "Compare"
+msgstr ""
+
+#: ../../../vis_object.php:110
+msgid "powerx"
+msgstr ""
+
+#: ../../../vis_object.php:111
+msgid "powery"
+msgstr ""
+
+#: ../../../visualisations/bargraph.php:130
+msgid "Bar graph:"
+msgstr ""
+
+#: ../../../visualisations/compare.php:28
+msgid "Feed calibration and comparison tool"
+msgstr ""
+
+#: ../../../visualisations/compare.php:29
+msgid ""
+"Use this tool to compare two feeds: PowerX and PowerY. Designed for "
+"calibration and comparison of different emontx versions (to see if feeds "
+"match up in parallel tests). Enter feed ids for comparison below. If there "
+"is a difference between feed values adjust the calibration to see if the "
+"difference can be removed."
+msgstr ""
+
+#: ../../../visualisations/compare.php:32
+msgid "PowerX Feed ID"
+msgstr ""
+
+#: ../../../visualisations/compare.php:37
+msgid "PowerY Feed ID"
+msgstr ""
+
+#: ../../../visualisations/compare.php:39
+msgid "Load"
+msgstr ""
+
+#: ../../../visualisations/compare.php:43
+msgid "PowerY Calibration"
+msgstr ""
+
+#: ../../../visualisations/compare.php:45
+msgid "Update"
+msgstr ""
+
+#: ../../../visualisations/compare.php:69
+msgid "Difference between feeds (powerY calibration applied - powerX)"
+msgstr ""
+
+#: ../../../visualisations/compare.php:72
+msgid "PowerX vs PowerY"
+msgstr ""
+
+#: ../../../visualisations/compare.php:73
+msgid "Relationship should be linear if measurements are the same"
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:27
+#: ../../../visualisations/editrealtime.php:28
+msgid "Datapoint editor:"
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:28
+#: ../../../visualisations/editrealtime.php:29
+msgid ""
+"Click on a datapoint to select, then in the edit box below the graph enter "
+"in the new value. You can also add another datapoint by changing the time to "
+"a point in time that does not yet have a datapoint."
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:51
+#: ../../../visualisations/editrealtime.php:52
+msgid "Edit feed_"
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:51
+#: ../../../visualisations/editrealtime.php:52
+msgid "@ time:"
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:51
+#: ../../../visualisations/editrealtime.php:52
+msgid "new value:"
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:53
+#: ../../../visualisations/editrealtime.php:54
+#: ../../../visualisations/editrealtime.php:60
+msgid "Save"
+msgstr ""
+
+#: ../../../visualisations/editdaily.php:54
+msgid "Delete"
+msgstr ""
+
+#: ../../../visualisations/editrealtime.php:55
+msgid "Delete data in window"
+msgstr ""
+
+#: ../../../visualisations/editrealtime.php:59
+msgid "Multiply data in window by:"
+msgstr ""
+
+#: ../../../visualisations/editrealtime.php:66
+msgid "WARNING deleting feed data is permanent"
+msgstr ""
+
+#: ../../../visualisations/editrealtime.php:69
+msgid "Are you sure you want to delete the data in this window?"
+msgstr ""
+
+#: ../../../visualisations/editrealtime.php:72
+msgid "Cancel"
+msgstr ""
+
+#: ../../../visualisations/editrealtime.php:73
+msgid "Delete permanently"
+msgstr ""
+
+#: ../../../visualisations/histgraph.php:37
+msgid "Histogram:"
+msgstr ""
+
+#: ../../../visualisations/multigraph.php:25
+msgid "Multigraph:"
+msgstr ""
+
+#: ../../../visualisations/orderbars.php:26
+msgid "Bar graph (ordered by height):"
+msgstr ""
+
+#: ../../../visualisations/orderthreshold.php:27
+msgid "Threshold Order"
+msgstr ""
+
+#: ../../../visualisations/orderthreshold.php:32
+msgid "Reload"
+msgstr ""
+
+#: ../../../visualisations/rawdata.php:50
+msgid "Mean:"
+msgstr ""
+
+#: ../../../visualisations/rawdata.php:51
+msgid "Min:"
+msgstr ""
+
+#: ../../../visualisations/rawdata.php:52
+msgid "Max:"
+msgstr ""
+
+#: ../../../visualisations/rawdata.php:53
+msgid "Standard deviation:"
+msgstr ""
+
+#: ../../../visualisations/rawdata.php:54
+msgid "Datapoints in view:"
+msgstr ""
+
+#: ../../../visualisations/rawdata.php:110
+msgid "Graph Raw Data:"
+msgstr ""
+
+#: ../../../visualisations/realtime.php:30
+msgid "Realtime data:"
+msgstr ""
+
+#: ../../../visualisations/realtime.php:36
+msgid "hour"
+msgstr ""
+
+#: ../../../visualisations/realtime.php:37
+#: ../../../visualisations/realtime.php:38
+#: ../../../visualisations/realtime.php:39
+#: ../../../visualisations/realtime.php:40
+msgid "min"
+msgstr ""
+
+#: ../../../visualisations/simplezoom.php:26
+msgid "Simpler kWh/d zoomer"
+msgstr ""
+
+#: ../../../visualisations/timestoredaily.php:111
+msgid "Timestore Daily:"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:36
+msgid "kWh/d Zoomer"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:42
+msgid ": Hover on bar for info, press to zoom in"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:47
+msgid "Date / Time"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:106
+msgid "Total:"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:106 ../../../visualisations/zoom.php:140
+msgid "kWh"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:106 ../../../visualisations/zoom.php:140
+msgid "Average:"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:106
+msgid "a week"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:106
+msgid "a year"
+msgstr ""
+
+#: ../../../visualisations/zoom.php:106
+msgid "Unit price:"
+msgstr ""
