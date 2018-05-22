@@ -731,15 +731,6 @@ class User
         }
         $stmt->close();
     }
-    public function delete($userid) {
-        $stmt = $this->mysqli->prepare("DELETE FROM users WHERE id = ?");
-        $stmt->bind_param('i', $userid);
-        $stmt->execute();
-        $stmt->close();
-        //@todo: delete user data from redis store
-        return array('success'=>true);
-    }
-
 
     // Generates a new random read apikey
     public function new_apikey_read($userid)
