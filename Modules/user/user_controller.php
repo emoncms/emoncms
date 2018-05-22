@@ -75,16 +75,6 @@ function user_controller()
         if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
         if ($route->action == 'gettimezones' && $session['read']) $result = $user->get_timezones();
         
-<<<<<<< HEAD
-        if ($route->method == 'DELETE' && $session['write']){
-            parse_str(file_get_contents("php://input"),$_DELETE);//create array with posted (DELETE method) values          
-            $user_id = $_DELETE['user_id'];
-            if(empty($user_id)) $user_id = (int) $route->subaction;
-            if(!empty($user_id)){
-                $result = $user->delete($user_id);
-            }
-        } 
-=======
         if ($route->action == "deleteall" && $session['write']) {
             $route->format = "text";
             $userid = $session['userid'];
@@ -121,7 +111,6 @@ function user_controller()
                 $result = "missing mode field";
             }
         }
->>>>>>> 53b0242e6a9c97407edd8e8a2f21de2707972acd
     }
 
     return array('content'=>$result);
