@@ -1,4 +1,6 @@
 .project
+.buildpath
+.settings*
 debian/emoncms*
 settings.php
 old.settings.php

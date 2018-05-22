@@ -125,7 +125,7 @@ class Route
             $this->subaction2 = $args[3];
         }
         
-        if (in_array($requestMethod, ['POST', 'DELETE', 'PUT'])) {
+        if (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
         }
     }
