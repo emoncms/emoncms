@@ -113,6 +113,25 @@ function server($index)
     return $val;
 }
 
+function delete($index) {
+    parse_str(file_get_contents("php://input"),$_DELETE);//create array with posted (DELETE) method) values
+    $val = null;
+    if (isset($_DELETE[$index])) $val = $_DELETE[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    return $val;
+}
+function put($index) {
+    parse_str(file_get_contents("php://input"),$_PUT);//create array with posted (PUT method) values
+    $val = null;
+    if (isset($_PUT[$index])) $val = $_PUT[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    return $val;
+}
+
+
+
 function load_db_schema()
 {
     $schema = array();

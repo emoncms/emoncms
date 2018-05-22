@@ -71,6 +71,15 @@ function user_controller()
         if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
         if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
         if ($route->action == 'gettimezones' && $session['read']) $result = $user->get_timezones();
+        
+        if ($route->method == 'DELETE' && $session['write']){
+            parse_str(file_get_contents("php://input"),$_DELETE);//create array with posted (DELETE method) values          
+            $user_id = $_DELETE['user_id'];
+            if(empty($user_id)) $user_id = (int) $route->subaction;
+            if(!empty($user_id)){
+                $result = $user->delete($user_id);
+            }
+        } 
     }
 
     return array('content'=>$result);
