@@ -20,7 +20,24 @@ function admin_controller()
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
     // after the update is complete.
-    if ($updatelogin || $session['admin']) {
+    if ($updatelogin===true) {
+        $route->format = 'html';
+        if ($route->action == 'db')
+        {
+            $applychanges = false;
+            if (isset($_GET['apply']) && $_GET['apply']==true) $applychanges = true;
+
+            require_once "Lib/dbschemasetup.php";
+            $updates = array(array(
+                'title'=>"Database schema", 'description'=>"",
+                'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+            ));
+
+            return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
+        }
+    }
+    
+    if ($session['admin']) {
         
         if ($route->format == 'html') {
             if ($route->action == 'view') $result = view("Modules/admin/admin_main_view.php", array());

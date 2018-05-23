@@ -41,6 +41,7 @@
             //Engine::PHPTIMESERIES // 2
             //,Engine::PHPFINA      // 5
             //,Engine::PHPFIWA      // 6
+            //,Engine::CASSANDRA    // 10 Apache Cassandra
         ),
 
         // Redis Low-write mode
@@ -167,3 +168,7 @@
 
     // Dont change - developer updates this when the config format changes
     $config_file_version = "10";
+    
+    // Set to true to run database update without logging in
+    // URL Example: http://localhost/emoncms/admin/db
+    $updatelogin = false;

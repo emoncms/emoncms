@@ -8,19 +8,13 @@ You may need to start by updating the system repositories
 
     sudo apt-get update
 
-**For Ubuntu 14.04**:
+**For Ubuntu 14.04:**
 
-<<<<<<< HEAD
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp
+    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential -y
 
-on 16.04:
-=======
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential ufw ntp -y
+**For Ubuntu 16.04:**
 
-**For Ubuntu 16.04**:
->>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
-
-`sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential ufw ntp -y`
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential -y
 
 ### Install PHP pecl dependencies
 
@@ -36,26 +30,27 @@ on 16.04:
 
  **If running PHP7:** Add pecl modules to php7 config
 
-   printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
-   sudo phpenmod redis
+    printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
+    sudo phpenmod redis
 
 ### Configure Apache
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
 
 ```
- sudo a2enmod rewrite
- sudo sh -c "echo '<Directory /var/www/html/emoncms>' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  Options FollowSymLinks' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  AllowOverride All' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  DirectoryIndex index.php' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  Order allow,deny' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '  Allow from all' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo '</Directory>' >> /etc/apache2/sites-available/emoncms.conf"
- sudo sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf"
- sudo ln -s /etc/apache2/sites-available/emoncms.conf /etc/apache2/sites-enabled/
- sudo a2ensite emoncms
- sudo service apache2 reload
+sudo a2enmod rewrite
+sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
+<Directory /var/www/html/emoncms>
+    Options FollowSymLinks
+    AllowOverride All
+    DirectoryIndex index.php
+    Order allow,deny
+    Allow from all
+</Directory>
+EOF
+sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+sudo a2ensite emoncms
+sudo service apache2 reload
 ```
 
 ## Install Emoncms
@@ -103,13 +98,8 @@ Then add a user for emoncms and give it permissions on the new database (think o
 Exit mysql by:
 
     mysql> exit
-<<<<<<< HEAD
-
-### Create data repositories for emoncms feed engine's
-=======
-
+    
 ### Create data repositories for emoncms feed engines
->>>>>>> 2c38b02253e3edc8fbb18582f970946dbeac5830
 
     sudo mkdir /var/lib/phpfiwa
     sudo mkdir /var/lib/phpfina
