@@ -1,5 +1,5 @@
 <?php
-
+    defined('EMONCMS_EXEC') or die('Restricted access');
     $domain = "messages";
     bindtextdomain($domain, "Modules/admin/locale");
     bind_textdomain_codeset($domain, 'UTF-8');

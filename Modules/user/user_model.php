@@ -196,6 +196,7 @@ class User
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
+        if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
 
         return $session;
     }
