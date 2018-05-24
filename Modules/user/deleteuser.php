@@ -46,7 +46,7 @@ function delete_user($userid,$mode) {
             if ($mode=="permanentdelete") $redis->del("writeapikey:$apikey");
         }
         
-        $tables = array("app_config","autoconfig","dashboard","emailreport","graph","multigraph","myip","node","statico","rememberme","group_users","assessment","assessment_access","organisation_membership","mhep_library_access");
+        $tables = array("app_config","autoconfig","dashboard","emailreport","graph","multigraph","myip","node","statico","rememberme");
         foreach ($tables as $tablename) {
             $result .= delete_entry_in_table($tablename,$userid,$mode);
         }
