@@ -157,3 +157,20 @@ function emoncms_error($message) {
     return array("success"=>false, "message"=>$message);
 }
 
+function call_hook($function_name, $args){
+    $dir = scandir("Modules");
+    for ($i=2; $i<count($dir); $i++)
+    {
+        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link')
+        {
+            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_hooks.php"))
+            {
+                require "Modules/".$dir[$i]."/".$dir[$i]."_hooks.php";
+                if (function_exists($dir[$i].'_'.$function_name)==true){
+                    $hook = $dir[$i].'_'.$function_name;
+                    return $hook($args);
+                }
+            }   
+        }
+    }
+}
