@@ -35,13 +35,13 @@ function delete_user($userid,$mode) {
         }
         
         $apikey = $user_row->apikey_read;
-        if ($redis->exists("readapikey:$apikey")) {
+        if ($redis!= false && $redis->exists("readapikey:$apikey")) {
             $result .= "- readapikey from redis\n";
             if ($mode=="permanentdelete") $redis->del("readapikey:$apikey");
         }
         
         $apikey = $user_row->apikey_write;
-        if ($redis->exists("writeapikey:$apikey")) {
+        if ($redis!= false && $redis->exists("writeapikey:$apikey")) {
             $result .= "- writeapikey from redis\n";
             if ($mode=="permanentdelete") $redis->del("writeapikey:$apikey");
         }
