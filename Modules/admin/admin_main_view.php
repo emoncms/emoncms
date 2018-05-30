@@ -88,16 +88,9 @@
   }
   if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
 
-  //Shutdown Command Check
-  function chkRebootBtn(){
-    $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
-    if (stripos($chkReboot, "scheduled ") > 0) {
-      shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
+  //Shutdown button
+  function RebootBtn(){
       return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
-    }
-    else {
-      return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
-    }
   }
 
   function disk_list()
@@ -301,7 +294,7 @@ if ($mqtt_enabled) {
 
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
-              echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
+              echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".RebootBtn()."</td></tr>\n";
     if (glob('/boot/emonSD-*')) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
