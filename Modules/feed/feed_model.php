@@ -305,13 +305,11 @@ class Feed
     public function get_user_feeds($userid)
     {
         $userid = (int) $userid;
-
         if ($this->redis) {
             $feeds = $this->redis_get_user_feeds($userid);
         } else {
             $feeds = $this->mysql_get_user_feeds($userid);
         }
-
         return $feeds;
     }
 
@@ -327,7 +325,6 @@ class Feed
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:feeds:$userid")) $this->load_to_redis($userid);
-
         $feeds = array();
         $feedids = $this->redis->sMembers("user:feeds:$userid");
         foreach ($feedids as $id)
@@ -346,7 +343,7 @@ class Feed
     {
         $userid = (int) $userid;
         $feeds = array();
-        $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,time,value,processList FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT id,name,userid,tag,datatype,public,size,engine,time,value,processList,unit FROM feeds WHERE `userid` = '$userid'");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['engine'] == Engine::VIRTUALFEED) { //if virtual get it now
@@ -767,6 +764,16 @@ class Feed
             $stmt->close();
             
             if ($this->redis) $this->redis->hset("feed:$id",'tag',$fields->tag);
+        }
+
+        if (isset($fields->unit)) {
+            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed tag');
+            $stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?");
+            $stmt->bind_param("si",$fields->unit,$id);
+            if ($stmt->execute()) $success = true;
+            $stmt->close();
+            
+            if ($this->redis) $this->redis->hset("feed:$id",'unit',$fields->unit);
         }
 
         if (isset($fields->public)) {

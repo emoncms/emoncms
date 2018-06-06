@@ -192,6 +192,7 @@
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
+    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"select", 'options':'|W|C|K|kWh|A|V|%'.split('|')},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
