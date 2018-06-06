@@ -97,9 +97,11 @@
             <td>
                 <p><b><?php echo _('Interval');?></b></p>
                 <select id="export-interval" >
-                    <option value=1><?php echo _('Auto');?></option>
+                    <option value="10"><?php echo _('Auto');?></option>
                     <option value=5><?php echo _('5s');?></option>
                     <option value=10><?php echo _('10s');?></option>
+                    <option value=15><?php echo _('15s');?></option>
+                    <option value=20><?php echo _('20s');?></option>
                     <option value=30><?php echo _('30s');?></option>
                     <option value=60><?php echo _('1 min');?></option>
                     <option value=300><?php echo _('5 mins');?></option>
