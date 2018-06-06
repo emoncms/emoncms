@@ -198,7 +198,7 @@
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
-    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"select", 'options':{"":"","W":"W","C":"C","K":"K","kWh":"kWh","A":"A","V":"V","%":"%"}},
+    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"select", 'options':{"":"","W":"W","C":"°C","K":"K","kWh":"kWh","A":"A","V":"V","%":"%"}},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
