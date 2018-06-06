@@ -62,7 +62,12 @@ var list = {
     {
         'text':
         {
-          'draw':function(value) { return value; },
+          'draw':function(value) { 
+            //clean user input that is rendered in the DOM
+            tmp = document.createElement('DIV');
+            tmp.innerHTML = value;
+            return tmp.textContent || tmp.innerText || "";
+          },
           'edit':function(field,value) { return "<input type='text' value='"+(value||'')+"' / >"; },
           'save':function(field) { return $(list.element+' tr[field='+field+'] td[type=value] input').val();}
         },
