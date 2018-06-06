@@ -748,43 +748,43 @@ class Feed
 
         if (isset($fields->name)) {
             if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in feed name');
-            $stmt = $this->mysqli->prepare("UPDATE feeds SET name = ? WHERE id = ?");
-            $stmt->bind_param("si",$fields->name,$id);
-            if ($stmt->execute()) $success = true;
-            $stmt->close();
-            
-            if ($this->redis) $this->redis->hset("feed:$id",'name',$fields->name);
+            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET name = ? WHERE id = ?")) {
+                $stmt->bind_param("si",$fields->name,$id);
+                if ($stmt->execute()) $success = true;
+                $stmt->close();
+                if ($this->redis) $this->redis->hset("feed:$id",'name',$fields->name);
+            }
         }
         
         if (isset($fields->tag)) {
             if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->tag)!=$fields->tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
-            $stmt = $this->mysqli->prepare("UPDATE feeds SET tag = ? WHERE id = ?");
-            $stmt->bind_param("si",$fields->tag,$id);
-            if ($stmt->execute()) $success = true;
-            $stmt->close();
-            
-            if ($this->redis) $this->redis->hset("feed:$id",'tag',$fields->tag);
+            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET tag = ? WHERE id = ?")) {
+                $stmt->bind_param("si",$fields->tag,$id);
+                if ($stmt->execute()) $success = true;
+                $stmt->close();
+                if ($this->redis) $this->redis->hset("feed:$id",'tag',$fields->tag);
+            }
         }
 
         if (isset($fields->unit)) {
             if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed tag');
-            $stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?");
-            $stmt->bind_param("si",$fields->unit,$id);
-            if ($stmt->execute()) $success = true;
-            $stmt->close();
-            
-            if ($this->redis) $this->redis->hset("feed:$id",'unit',$fields->unit);
+            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
+                $stmt->bind_param("si",$fields->unit,$id);
+                if ($stmt->execute()) $success = true;
+                $stmt->close();
+                if ($this->redis) $this->redis->hset("feed:$id",'unit',$fields->unit);
+            }
         }
 
         if (isset($fields->public)) {
             $public = (int) $fields->public;
             if ($public>0) $public = 1;
-            $stmt = $this->mysqli->prepare("UPDATE feeds SET public = ? WHERE id = ?");
-            $stmt->bind_param("ii",$public,$id);
-            if ($stmt->execute()) $success = true;
-            $stmt->close();
-            
-            if ($this->redis) $this->redis->hset("feed:$id",'public',$public);
+            if ($stmt = $this->mysqli->prepare("UPDATE feeds SET public = ? WHERE id = ?")) {
+                $stmt->bind_param("ii",$public,$id);
+                if ($stmt->execute()) $success = true;
+                $stmt->close();
+                if ($this->redis) $this->redis->hset("feed:$id",'public',$public);
+            }
         }
 
         if ($success){
@@ -1044,7 +1044,7 @@ class Feed
     /* Redis helpers */
     private function load_to_redis($userid)
     {
-        $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine,processList FROM feeds WHERE `userid` = '$userid'");
+        $result = $this->mysqli->query("SELECT * FROM feeds WHERE `userid` = '$userid'");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:feeds:$userid", $row->id);
@@ -1057,14 +1057,15 @@ class Feed
             'public'=>$row->public,
             'size'=>$row->size,
             'engine'=>$row->engine,
-            'processList'=>$row->processList
+            'processList'=>$row->processList,
+            'unit'=> !empty($row->unit) ? $row->unit : ''
             ));
         }
     }
 
     private function load_feed_to_redis($id)
     {
-        $result = $this->mysqli->query("SELECT id,userid,name,datatype,tag,public,size,engine,processList FROM feeds WHERE `id` = '$id'");
+        $result = $this->mysqli->query("SELECT * FROM feeds WHERE `id` = '$id'");
         $row = $result->fetch_object();
         if (!$row) {
             $this->log->warn("Feed model: Requested feed does not exist feedid=$id");
@@ -1079,7 +1080,8 @@ class Feed
             'public'=>$row->public,
             'size'=>$row->size,
             'engine'=>$row->engine,
-            'processList'=>$row->processList
+            'processList'=>$row->processList,
+            'unit'=> !empty($row->unit) ? $row->unit : ''
         ));
         return true;
     }

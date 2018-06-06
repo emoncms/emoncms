@@ -14,17 +14,20 @@
          width: 88%;
 }
 
-#table td:nth-of-type(5) { width:14px; text-align: center; }
-#table th:nth-of-type(8), td:nth-of-type(8) { text-align: right; }
-#table th:nth-of-type(9), td:nth-of-type(9) { text-align: right; }
-#table th:nth-of-type(10), td:nth-of-type(10) { text-align: right; }
-#table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; text-align: right; }
-#table th[fieldg="processList"] { font-weight:normal; text-align: left; }
-#table td:nth-of-type(11) { width:14px; text-align: center; }
-#table td:nth-of-type(12) { width:14px; text-align: center; }
-#table td:nth-of-type(13) { width:14px; text-align: center; }
-#table td:nth-of-type(14) { width:14px; text-align: center; }
-#table td:nth-of-type(15) { width:14px; text-align: center; }
+#table th { text-align: left; }
+#table td { text-align: left; }
+
+#table td[field="unit"] { text-align: left; }
+#table td[field="unit"] select { width:60px !important; }
+
+#table td[field="edit-action"] { width:14px; text-align: center; }
+#table td[field="delete-action"] { width:14px; text-align: center; }
+#table td[field="view-action"] { width:14px; text-align: center; }
+#table td[field="export-action"] { width:14px; text-align: center; }
+
+#table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; }
+#table th[fieldg="processList"] { font-weight:normal; }
+
 </style>
 
 <div>
@@ -177,6 +180,7 @@
     'dummy-11':{'title':'', 'type':"blank"},
     'dummy-12':{'title':'', 'type':"blank"},
     'dummy-13':{'title':'', 'type':"blank"},
+    'dummy-14':{'title':'', 'type':"blank"},
     'exportall-action':{'title':'', 'type':"group-iconbasic", 'icon':'icon-circle-arrow-down'}
   }
 
@@ -192,7 +196,7 @@
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
-    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"select", 'options':'|W|C|K|kWh|A|V|%'.split('|')},
+    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"select", 'options':{"":"","W":"W","C":"C","K":"K","kWh":"kWh","A":"A","V":"V","%":"%"}},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
