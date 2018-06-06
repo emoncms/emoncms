@@ -28,7 +28,7 @@ class Process_ProcessList
 
     private $log;
     private $mqtt = false;
-
+    
     // Module required constructor, receives parent as reference
     public function __construct(&$parent)
     {
@@ -44,12 +44,18 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $mqtt_server, $mqtt;
-        if ($mqtt_enabled == true && $mqtt == false)
+        global $mqtt_enabled, $mqtt_server, $log;
+        
+        if ($mqtt_enabled && !$this->mqtt)
         {
-            require("Lib/phpMQTT.php");
-            $mqtt = new phpMQTT($mqtt_server['host'], $mqtt_server['port'], "Emoncms Publisher");
-            $this->mqtt = $mqtt;
+            // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+            $mqtt_client = new Mosquitto\Client();
+            
+            $mqtt_client->onDisconnect(function($responseCode) use ($log) {
+                if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
+            });
+
+            $this->mqtt = $mqtt_client;
         }
     }
     
@@ -686,13 +692,30 @@ class Process_ProcessList
     
     public function publish_to_mqtt($topic, $time, $value)
     {
-        global $mqtt_server;
+        global $mqtt_server, $log;
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        if ($this->mqtt && $this->mqtt->connect(true,NULL,$mqtt_server['user'],$mqtt_server['password'])) {
-            $this->mqtt->publish($topic,$value,0);
-            $this->mqtt->close();
+        if ($this->mqtt){
+            $msg = 'mqtt error:';
+            $this->mqtt->setCredentials($mqtt_server['user'], $mqtt_server['password']);
+            $this->mqtt->onConnect(function($responseCode, $message) use ($log, $topic, $value) {
+                /*
+                0 	Success
+                1 	Connection refused (unacceptable protocol version)
+                2 	Connection refused (identifier rejected)
+                3 	Connection refused (broker unavailable )
+                */
+                //log errors connecting to mqtt
+                if ($responseCode > 0) $log->info($msg.$message);
+                $this->mqtt->publish($topic, $value);
+                $this->mqtt->disconnect();//stop the loopForever()
+            });
+            try {
+                $this->mqtt->connect($mqtt_server['host'], $mqtt_server['port']);
+                $this->mqtt->loopForever();
+            } catch (Exception $e) {
+                $log->error($msg.$e->getMessage());
+            }
         }
-        
         return $value;
     }
     

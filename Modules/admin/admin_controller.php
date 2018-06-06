@@ -56,8 +56,8 @@ function admin_controller()
                     'description'=>"",
                     'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
                 );
-
-                $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));
+                $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
+                $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
             }
 
             else if ($route->action == 'users' && $session['write'])
@@ -112,11 +112,11 @@ function admin_controller()
                         while ($linecounter > 0) {
                           $t = " ";
                           while ($t != "\n") {
-                            if(fseek($handle, $pos, SEEK_END) == -1) {
+                            if(!empty($handle) && fseek($handle, $pos, SEEK_END) == -1) {
                             $beginning = true;
                             break;
                             }
-                          $t = fgetc($handle);
+                          if(!empty($handle)) $t = fgetc($handle);
                           $pos --;
                           }
                         $linecounter --;
