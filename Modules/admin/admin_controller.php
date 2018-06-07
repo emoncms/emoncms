@@ -163,6 +163,7 @@ function admin_controller()
                     }
                     
                     $redis->rpush("service-runner","$update_script $argument>$update_logfile");
+                    $result = "service-runner trigger sent";
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
