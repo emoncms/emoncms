@@ -161,14 +161,8 @@ function admin_controller()
                     if (isset($_POST['argument'])) {
                       $argument = $_POST['argument'];
                     }
-                    $fh = @fopen($update_flag,"w");
-                    if (!$fh) {
-                        $result = "ERROR: Can't write the flag $update_flag.";
-                    } else {
-                        fwrite($fh,"$update_script $argument>$update_logfile");
-                        $result = "Update flag set";
-                    }
-                    @fclose($fh);
+                    
+                    $redis->rpush("service-runner","$update_script $argument>$update_logfile");
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -201,6 +195,7 @@ function admin_controller()
                 
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) {
                     $route->format = "text";
+                    
                     $fh = @fopen($backup_flag,"w");
                     if (!$fh) $result = "ERROR: Can't write the flag $backup_flag.";
                     else $result = "Update flag file $backup_flag created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
