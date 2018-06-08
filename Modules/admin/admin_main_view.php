@@ -345,7 +345,15 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php 
+              natcasesort($system['php_modules']);// sort case insensitive
+              $modules = [];// empty list
+              foreach($system['php_modules'] as $ver=>$extension){
+                $module_version = phpversion($extension);// returns false if no version information
+                $modules[] = $module_version ? "$extension v$module_version" : $extension; // show version if available
+              }
+              echo implode(' | ', $modules);//isplay list with | separator
+              ?></td></tr>
             </table>
             <h3><?php echo _('Client Information'); ?></h3>
             <table class="table table-hover table-condensed">
