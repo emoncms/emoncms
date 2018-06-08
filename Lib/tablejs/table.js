@@ -352,13 +352,13 @@ var table = {
           options += "<option value='"+option+"' "+selected+" >"+t.fields[field].options[option]+"</option>";
         }
         // add the additional "Other option". make this selected if the current value is not in the list
-        other_selected = Object.keys(t.fields[field].options).indexOf(t.data[row][field]) < 0;
+        other_selected = Object.keys(t.fields[field].options).indexOf(t.data[row][field]||'') < 0;
         selected = other_selected ? 'selected' : '';
         display = other_selected ? 'inline-block' : 'none';
 
         options += "<option value='_custom' "+selected+" >Other</option>";
         return '<select>'+options+'</select>'+
-        '<input type="text" name="other" style="display:'+display+'" value="'+t.data[row][field]+'">';
+        '<input type="text" name="other" style="display:'+display+'" value="'+(t.data[row][field]||'')+'">';
       },
       'save': function (t,row,child_row,field) { 
         var value = $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] select").val();
