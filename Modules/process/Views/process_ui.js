@@ -677,8 +677,11 @@ var processlist_ui =
       processlist_ui.processlist = result;
       var processgroups = [];
       for (z in processlist_ui.processlist) {
-        if (processlist_ui.contexttype == 1 && processlist_ui.processlist[z]['feedwrite'] == true) {
-          continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
+        if (processlist_ui.contexttype == 1 &&
+          processlist_ui.processlist[z]['feedwrite'] == true && 
+          processlist_ui.processlist[z][2] != "publish_to_mqtt" && 
+          processlist_ui.processlist[z][2] != "sendEmail") {
+            continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
         var group = processlist_ui.processlist[z][5];
         if (processlist_ui.contexttype == 0 && group=="Virtual") { 
