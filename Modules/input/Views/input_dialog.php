@@ -15,6 +15,7 @@
         <p>
            <?php echo _('Are you sure you want to delete?'); ?>
         </p>
+		<div id="inputs-to-delete"></div>
 		<div id="inputDelete-loader" class="ajax-loader" style="display:none;"></div>
     </div>
     <div class="modal-footer">

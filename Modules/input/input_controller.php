@@ -31,11 +31,12 @@ function input_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
-    // Device module not yet included
-    // if (!$device) {
-    //    require_once "Modules/device/device_model.php";
-    //    $device = new Device($mysqli,$redis);
-    // }
+    if (!$device) {
+        if (file_exists("Modules/device/device_model.php")) {
+            require_once "Modules/device/device_model.php";
+            $device = new Device($mysqli,$redis);
+        }
+    }
     
     require_once "Modules/input/input_methods.php";
     $inputMethods = new InputMethods($mysqli,$redis,$user,$input,$feed,$process,$device);
@@ -50,7 +51,6 @@ function input_controller()
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
             if ($param->exists('fulljson')) $result = '{"success": true}';
-            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -64,7 +64,7 @@ function input_controller()
     else if ($route->action == 'bulk') {
         $result = $inputMethods->bulk($session['userid']);
         if ($result=="ok") {
-            if ($param->sha256base64_response) $result = $param->sha256base64_response;
+            // result ok returned
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
@@ -155,7 +155,17 @@ function input_controller()
         
     } else if ($route->action == 'view') {
         $route->format = "html";
-        $result =  view("Modules/input/Views/input_view.php", array());
+        
+        global $ui_version_2;
+        if (isset($ui_version_2) && $ui_version_2 && $device) {
+            $result =  view("Modules/input/Views/device_view.php", array());
+        } else {
+            $result =  view("Modules/input/Views/input_view.php", array());
+        }
+        
+    } else if ($device && $route->action == 'schedule') {
+        $route->format = "html";
+        $result =  view("Modules/input/Views/schedule.php", array());
     }
 
     return array('content'=>$result);
