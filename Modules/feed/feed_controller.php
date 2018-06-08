@@ -127,7 +127,24 @@ function feed_controller()
 
                     // Set feed meta fields
                     if ($route->action == 'set') {
-                        $result = $feed->set_feed_fields($feedid,get('fields'));
+                        // if tag or name changed check new combination is unique
+                        $fields = json_decode(get('fields'), true);
+                        if (!empty($fields['tag']) || !empty($fields['name'])) {
+                            $unique = true; // defaults to true ?!
+                            foreach($feed->get_user_feed_ids($session['userid']) as $_feed_id) {
+                                $original_name = $feed->get_field($_feed_id, 'name');
+                                $original_tag = $feed->get_field($_feed_id, 'tag');
+                                $new_name = !empty($fields['name']) ? $fields['name'] : $original_name;
+                                $new_tag = !empty($fields['tag']) ? $fields['tag'] : $original_tag;
+                                $unique = $new_name != $original_name || $new_tag != $original_tag;
+                                if (!$unique) break;
+                            }
+                            // update if tag:name unique else return error;
+                            $result = $unique ? $feed->set_feed_fields($feedid, get('fields')) : array('success'=>false, 'message'=>'fields tag:name must be unique');
+                        }else{
+                            // update if no tag/name change
+                            $result = $feed->set_feed_fields($feedid, get('fields'));
+                        }
 
                     // Insert datapoint
                     } else if ($route->action == "insert") { 
