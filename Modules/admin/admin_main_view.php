@@ -1,4 +1,3 @@
-
 <?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
 
   // Retrieve server information
@@ -294,14 +293,68 @@ if ($mqtt_enabled) {
 
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
-              echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".RebootBtn()."</td></tr>\n";
+
+    $rpi_info = array();
+    $rpi_info['model'] = "Unknown";
+    if (@is_readable('/proc/cpuinfo')) {
+      //load model information
+      $rpi_revision = array();
+      if (@is_readable(__DIR__."/pi-model.json")) { 
+        $rpi_revision = json_decode(file_get_contents(__DIR__."/pi-model.json"), true);  
+        foreach ($rpi_revision as $k => $rev) {
+          if(empty($rev['Code'])) continue;
+          $rpi_revision[$rev['Code']] = $rev;
+          unset($rpi_revision[$k]);
+        }
+      }
+      //get cpu info
+      preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
+      $rpi_info['hw'] = "Broadcom ".$matches[2][0];
+      $rpi_info['rev'] = $matches[2][1];
+      $rpi_info['sn'] = $matches[2][2];
+      //build model string
+      if(!empty($rpi_revision[$rpi_info['rev']]))  {
+        $model_info = $rpi_revision[$rpi_info['rev']];
+        $rpi_info['model'] = "Raspberry Pi ";
+        $model = $model_info['Model'];
+        if (ctype_digit($model[0])) { //Raspberry Pi >= 2
+           $ver = $model[0];
+           $model = substr($model, 1);
+           $rpi_info['model'] .= $ver." Model ".$model;
+        }
+        else if (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
+           $rpi_info['model'] .= " Compute Module";
+           if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2]; 
+        }
+        else { //Raspberry Pi
+           $rpi_info['model'] .= " Model ".$model;
+        }
+        $rpi_info['model'] .= " Rev ".$model_info['Revision']." - ".$model_info['RAM']." (".$model_info['Manufacturer'].")";
+      }
+    }
+              echo "<tr><td><b>Pi</b></td><td>Model</td><td>".$rpi_info['model']."</td></tr>\n";
+              if(!empty($rpi_info['hw'])) echo "<tr><td class=\"subinfo\"></td><td>SoC</td><td>".$rpi_info['hw']."</td></tr>\n";
+              if(!empty($rpi_info['sn'])) echo "<tr><td class=\"subinfo\"></td><td>Serial num.</td><td>".strtoupper(ltrim($rpi_info['sn'], '0'))."</td></tr>\n";
+              $cputmp = number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
+              $gputmp = @exec('/opt/vc/bin/vcgencmd measure_temp');
+              if(strpos($gputmp, 'temp=' ) !== false ){
+                $gputmp = " - GPU: ".str_replace("temp=","", $gputmp);
+              }
+               echo "<tr><td class=\"subinfo\"></td><td>Temperature</td><td>CPU: ".$cputmp.$gputmp.RebootBtn()."</td></tr>\n";
     if (glob('/boot/emonSD-*')) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
               if (isset($emonpiRelease)) {
+                $currentfs = "<b>read-only</b>";  
+                exec('mount', $resexec);
+                $matches = null;
+                preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
+                if (!empty($matches)) {
+                    $currentfs = "<b>read-write</b>"; 
+                } 
                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
+                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
               }
       }
 }
