@@ -721,8 +721,11 @@ class Process_ProcessList
                 3 	Connection refused (broker unavailable )
                 */
                 //log errors connecting to mqtt
-                if ($responseCode > 0) $log->info($msg.$message);
-                $this->mqtt->publish($topic, $value);
+                if ($responseCode > 0){
+                    $log->info($msg.$message);
+                } else { 
+                    $this->mqtt->publish($topic, $value);
+                }
                 $this->mqtt->disconnect();//stop the loopForever()
             });
             try {
