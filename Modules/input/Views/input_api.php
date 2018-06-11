@@ -25,7 +25,7 @@ td:nth-of-type(2) { width:4%;}
 
 <h3><?php echo _('Posting data to EmonCMS'); ?></h3>
 
-<p><?php echo _('The EmonCMS input API provides three ways of sending data to emoncms:'); ?></p>
+<p><?php echo _('The EmonCMS input API provides two ways of sending data to emoncms:'); ?></p>
 <ul>
     <li><?php echo _('<b>input/post</b> - Post a single update from a node.'); ?></li>
     <li><?php echo _('<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a single update.'); ?></li>
@@ -33,8 +33,6 @@ td:nth-of-type(2) { width:4%;}
 </ul>
 
 <p><?php echo _("If your starting out with EmonCMS 'input/post' is a good starting point for testing, this was the original input method when EmonCMS . The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote emoncms server as this method provides the option to efficiently bulk upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
-
-<p><?php echo _("For applications where HTTPS or TLS is not available, emoncms offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
 
 <h4><?php echo _('input/post'); ?></h4>
 
