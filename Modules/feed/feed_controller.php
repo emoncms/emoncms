@@ -131,12 +131,22 @@ function feed_controller()
                         $fields = json_decode(get('fields'), true);
                         if (!empty($fields['tag']) || !empty($fields['name'])) {
                             $unique = true; // defaults to true ?!
-                            foreach($feed->get_user_feed_ids($session['userid']) as $_feed_id) {
-                                $original_name = $feed->get_field($_feed_id, 'name');
-                                $original_tag = $feed->get_field($_feed_id, 'tag');
-                                $new_name = !empty($fields['name']) ? $fields['name'] : $original_name;
-                                $new_tag = !empty($fields['tag']) ? $fields['tag'] : $original_tag;
-                                $unique = $new_name != $original_name || $new_tag != $original_tag;
+                            $user_feed_ids = $feed->get_user_feed_ids($session['userid']);
+                            $user_feeds = array();
+                            $user_feed_tag_names = array();
+                            foreach ($user_feed_ids as $_feed_id) {
+                                $name = $feed->get_field($_feed_id, 'name');
+                                $tag = $feed->get_field($_feed_id, 'tag');
+                                $user_feeds[$_feed_id] = array('tag'=>$tag,'name'=>$name); // used to get default values if only tag or name edited
+                                $user_feed_tag_names[] = "$tag:$name"; // used for unique $tag:name comparison
+                            }
+                            error_log(var_export($user_feed_tag_names,1));
+                            foreach ($user_feeds as $key=>$value) {
+                                $new_name = !empty($fields['name']) ? $fields['name'] : $value['name'];
+                                $new_tag = !empty($fields['tag']) ? $fields['tag'] : $value['tag'];
+                                error_log("$new_tag:$new_name not in array ? ");
+                                error_log(var_export(!in_array("$new_tag:$new_name",$user_feed_tag_names),1));
+                                $unique = !in_array("$new_tag:$new_name",$user_feed_tag_names);
                                 if (!$unique) break;
                             }
                             // update if tag:name unique else return error;
