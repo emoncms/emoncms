@@ -389,51 +389,53 @@ var processlist_ui =
       $("#type-schedule").hide();
 
       // Check ProcessArg Type
-      switch(processlist_ui.processlist[processid][1]) {
-        case 0: // VALUE
-          $("#type-value").show();
-          break;
-        case 1: //INPUTID
-          $("#type-input").show();
-          break;
-        case 2: //FEEDID
-          $("#type-feed").show();
-          processlist_ui.showfeedoptions(processid);
-          break;
-        case 4: // TEXT
-          $("#type-text").show();
-          break;
-        case 5: // SCHEDULEID
-          $("#type-schedule").show();
-          break;
-      }
-      if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
-        $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
-      } else {
-        $("#description").html(processlist_ui.processlist[processid]['desc']);
+      if (processid) {
+        switch(processlist_ui.processlist[processid][1]) {
+          case 0: // VALUE
+            $("#type-value").show();
+            break;
+          case 1: //INPUTID
+            $("#type-input").show();
+            break;
+          case 2: //FEEDID
+            $("#type-feed").show();
+            processlist_ui.showfeedoptions(processid);
+            break;
+          case 4: // TEXT
+            $("#type-text").show();
+            break;
+          case 5: // SCHEDULEID
+            $("#type-schedule").show();
+            break;
+        }
+        if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
+          $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
+        } else {
+          $("#description").html(processlist_ui.processlist[processid]['desc']);
 
-	var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
-	var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
-	var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
-	var help = _Tr("Click here for additional information about this process.");
+          var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
+          var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
+          var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
+          var help = _Tr("Click here for additional information about this process.");
 
-	if ('helpurl' in processlist_ui.processlist[processid] &&
-	    typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
-		$("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
-	}
+          if ('helpurl' in processlist_ui.processlist[processid] &&
+              typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
+            $("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
+          }
 
-	if ('nochange' in processlist_ui.processlist[processid] &&
-	    processlist_ui.processlist[processid]['nochange'] == true) {
-		$("#description").append(does_not_modify);
-	} else {
-		$("#description").append(does_modify);
-	}
+          if ('nochange' in processlist_ui.processlist[processid] &&
+              processlist_ui.processlist[processid]['nochange'] == true) {
+            $("#description").append(does_not_modify);
+          } else {
+            $("#description").append(does_modify);
+          }
 
-	if ('requireredis' in processlist_ui.processlist[processid] &&
-	    processlist_ui.processlist[processid]['requireredis'] == true) {
-		$("#description").append(redis_required);
+          if ('requireredis' in processlist_ui.processlist[processid] &&
+              processlist_ui.processlist[processid]['requireredis'] == true) {
+            $("#description").append(redis_required);
 
-	}
+          }
+        }//end of if proccessid
       }
       
     });
@@ -677,10 +679,12 @@ var processlist_ui =
       processlist_ui.processlist = result;
       var processgroups = [];
       for (z in processlist_ui.processlist) {
+        //hide sendEmail and Publish to MQTT from virtual feeds
         if (processlist_ui.contexttype == 1 &&
-          processlist_ui.processlist[z]['feedwrite'] == true && 
-          processlist_ui.processlist[z][2] != "publish_to_mqtt" && 
-          processlist_ui.processlist[z][2] != "sendEmail") {
+          processlist_ui.processlist[z]['feedwrite'] == true ||
+          processlist_ui.processlist[z][2] == "sendEmail" || 
+          processlist_ui.processlist[z][2] == "publish_to_mqtt")
+        {
             continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
         var group = processlist_ui.processlist[z][5];
