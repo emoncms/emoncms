@@ -340,6 +340,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
               if(strpos($gputmp, 'temp=' ) !== false ){
                 $gputmp = " - GPU: ".str_replace("temp=","", $gputmp);
               }
+              else $gputmp = " - GPU: n/a"."(to show gpu temp you have to launch this command from the console \"sudo usermod -G video www-data\" )";
                echo "<tr><td class=\"subinfo\"></td><td>Temperature</td><td>CPU: ".$cputmp.$gputmp.RebootBtn()."</td></tr>\n";
     if (glob('/boot/emonSD-*')) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
