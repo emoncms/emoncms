@@ -969,7 +969,16 @@ class Feed
                 
                 // Verify argument
                 $arg = $inputprocess[1];
-                
+
+                // Stop virtual feeds from adding email and mqtt processes.
+                $isVirtual = $this->get($id)['engine']==7;
+                $proccess_name = $process_list[$processid][2];
+                $not_for_virtual_feeds = array('publish_to_mqtt','sendEmail');
+                if (in_array($proccess_name, $not_for_virtual_feeds) && $isVirtual) {
+                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
+                    return array('success'=>false, 'message'=>_("Invalid proccess for Virtual Feed, try another."));
+                }
+
                 // Check argument against process arg type
                 switch($process_list[$processid][1]){
                 
