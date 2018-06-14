@@ -35,41 +35,55 @@ class Feed
     {
         $e = (string)$e;
         static $engines = array();
+        if (!Engine::is_valid($e)) {
+            $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
+            return array('success'=>false, 'message'=>"ABORTED: Engine id $d is not supported.");
+        }
         if (isset($engines[$e])) {
             //$this->log->info("EngineClass() reused instance of '".get_class($engines[$e])."' id '".$e."'.");
             return $engines[$e];
         }
         else {
             // Load different storage engines
-            if ($e == (string)Engine::MYSQL) {
+            switch ($e) {
+                case (string)Engine::MYSQL :
                     require "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
                     $engines[$e] = new MysqlTimeSeries($this->mysqli);
-            } else if ($e == (string)Engine::VIRTUALFEED) {
+                    break;
+                case (string)Engine::VIRTUALFEED :
                     require "Modules/feed/engine/VirtualFeed.php";      // Takes care of Virtual Feeds
                     $engines[$e] =  new VirtualFeed($this->mysqli,$this->redis,$this);
-            } else if ($e == (string)Engine::PHPFINA) {
+                    break;
+                case (string)Engine::PHPFINA :
                     require "Modules/feed/engine/PHPFina.php";          // Fixed interval no averaging
                     $engines[$e] =  new PHPFina($this->settings['phpfina']);
-            } else if ($e == (string)Engine::PHPFIWA) {
+                    break;
+                case (string)Engine::PHPFIWA :
                     require "Modules/feed/engine/PHPFiwa.php";          // Fixed interval with averaging
                     $engines[$e] = new PHPFiwa($this->settings['phpfiwa']);
-            } else if ($e == (string)Engine::REDISBUFFER) {
+                    break;
+                case (string)Engine::REDISBUFFER :
                     require "Modules/feed/engine/RedisBuffer.php";      // Redis buffer for low-write mode
                     $engines[$e] = new RedisBuffer($this->redis,$this->settings['redisbuffer'],$this);
-            } else if ($e == (string)Engine::PHPTIMESERIES) {
+                    break;
+                case (string)Engine::PHPTIMESERIES :
                     require "Modules/feed/engine/PHPTimeSeries.php";    // Variable interval no averaging
-                    $engines[$e] =  new PHPTimeSeries($this->settings['phptimeseries']);
-            } else if ($e == (string)Engine::MYSQLMEMORY) {
+                    $engines[$e] = new PHPTimeSeries($this->settings['phptimeseries']);
+                    break;
+                case (string)Engine::MYSQLMEMORY : 
                     require_once "Modules/feed/engine/MysqlTimeSeries.php";  // Mysql engine
                     require "Modules/feed/engine/MysqlMemory.php";           // Mysql Memory engine
-                    $engines[$e] =  new MysqlMemory($this->mysqli);
-            } else if ($e == "histogram") {
+                    $engines[$e] = new MysqlMemory($this->mysqli);
+                    break;
+                case "histogram" :
                     require "Modules/feed/engine/Histogram.php";        // Histogram, depends on mysql
                     $engines[$e] = new Histogram($this->mysqli);
-            } else if ($e == (string)Engine::CASSANDRA) {
+                    break;
+                case (string)Engine::CASSANDRA :
                     require "Modules/feed/engine/CassandraEngine.php";  // Cassandra engine
-                    $engines[$e] =  new CassandraEngine($this->settings['cassandra']);
-            } else {
+                    $engines[$e] = new CassandraEngine($this->settings['cassandra']);
+                    break;
+                default :
                     $this->log->error("EngineClass() Engine id '".$e."' is not supported.");
                     throw new Exception("ABORTED: Engine id '".$e."' is not supported.");
             }
@@ -91,6 +105,11 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
+
+        if (!ENGINE::is_valid($engine)) {
+            $this->log->error("Engine id '".$engine."' is not supported.");
+            return array('success'=>false, 'message'=>"ABORTED: Engine id $engine is not supported.");
+        }
 
         // If feed of given name by the user already exists
         if ($this->exists_tag_name($userid,$tag,$name)) return array('success'=>false, 'message'=>'feed already exists');
@@ -767,7 +786,8 @@ class Feed
         }
 
         if (isset($fields->unit)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed tag');
+            if (preg_replace('/[^\p{N}\p{L}_°%\s-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed unit');
+            if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->unit,$id);
                 if ($stmt->execute()) $success = true;
@@ -968,7 +988,16 @@ class Feed
                 
                 // Verify argument
                 $arg = $inputprocess[1];
-                
+
+                // Stop virtual feeds from adding email and mqtt processes.
+                $isVirtual = $this->get($id)['engine']==7;
+                $proccess_name = $process_list[$processid][2];
+                $not_for_virtual_feeds = array('publish_to_mqtt','sendEmail');
+                if (in_array($proccess_name, $not_for_virtual_feeds) && $isVirtual) {
+                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
+                    return array('success'=>false, 'message'=>_("Invalid proccess for Virtual Feed, try another."));
+                }
+
                 // Check argument against process arg type
                 switch($process_list[$processid][1]){
                 

@@ -18,7 +18,8 @@
 #table td { text-align: left; }
 
 #table td[field="unit"] { text-align: left; }
-#table td[field="unit"] select { width:60px !important; }
+#table td[field="unit"] select { width:70px !important; }
+#table td[field="unit"] input[type="text"] { width:85px !important; }
 
 #table td[field="edit-action"] { width:14px; text-align: center; }
 #table td[field="delete-action"] { width:14px; text-align: center; }
@@ -98,6 +99,7 @@
                 <p><b><?php echo _('Interval');?></b></p>
                 <select id="export-interval" >
                     <option value="10"><?php echo _('Auto');?></option>
+                    <option value=1><?php echo _('1s');?></option>
                     <option value=5><?php echo _('5s');?></option>
                     <option value=10><?php echo _('10s');?></option>
                     <option value=15><?php echo _('15s');?></option>
@@ -198,7 +200,21 @@
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
-    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"select", 'options':{"":"","W":"W","C":"°C","K":"K","kWh":"kWh","A":"A","V":"V","%":"%"}},
+    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"selectWithOther", 'options': {
+      "":"",
+      W:"W",
+      kWh:"kWh",
+      V:"V",
+      VA: "VA",
+      A:"A",
+      "°C":"°C",
+      K:"K",
+      "°F": "°F",
+      "%":"%",
+      Hz: "Hz",
+      pulses: "pulses",
+      dB: "dB"
+    }},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
@@ -290,6 +306,19 @@
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
   });
 
+  //show the input field when "custom" selected in units
+  $(document).on('change', '#table td[field="unit"] select', function(event){
+    var value = event.target.value;
+    if(value=='_custom') {
+      $(event.target).parent().find('input').show();
+    }else{
+      $(event.target).parent().find('input').hide();
+    }
+  });
+  //truncate custom units to 10 characters
+  $(document).on('keyup', '#table td[field="unit"] input:text', function(event){
+    event.target.value = event.target.value.substring(0,10);
+  });
 
   // Export feature
   $("#table").on("click",".icon-circle-arrow-down,.icon-download", function(){
@@ -447,7 +476,6 @@
       $('#newFeedNameModal').modal('hide');
     }
   });
-
 
   // Process list UI js
   processlist_ui.init(1); // is virtual feed

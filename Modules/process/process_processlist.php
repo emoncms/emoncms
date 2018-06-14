@@ -49,13 +49,15 @@ class Process_ProcessList
         if ($mqtt_enabled && !$this->mqtt)
         {
             // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
-            $mqtt_client = new Mosquitto\Client();
-            
-            $mqtt_client->onDisconnect(function($responseCode) use ($log) {
-                if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
-            });
+            if (class_exists("Mosquitto\Client")) {
+                $mqtt_client = new Mosquitto\Client();
+                
+                $mqtt_client->onDisconnect(function($responseCode) use ($log) {
+                    if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
+                });
 
-            $this->mqtt = $mqtt_client;
+                $this->mqtt = $mqtt_client;
+            }
         }
     }
     
@@ -719,8 +721,11 @@ class Process_ProcessList
                 3 	Connection refused (broker unavailable )
                 */
                 //log errors connecting to mqtt
-                if ($responseCode > 0) $log->info($msg.$message);
-                $this->mqtt->publish($topic, $value);
+                if ($responseCode > 0){
+                    $log->info($msg.$message);
+                } else { 
+                    $this->mqtt->publish($topic, $value);
+                }
                 $this->mqtt->disconnect();//stop the loopForever()
             });
             try {
