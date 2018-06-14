@@ -122,7 +122,7 @@
             $last_retry = time();
             try {
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
-                $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
+                $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 60);
                 $topic = $mqtt_server['basetopic']."/#";
                 //echo "Subscribing to: ".$topic."\n";
                 $log->info("Subscribing to: ".$topic);
