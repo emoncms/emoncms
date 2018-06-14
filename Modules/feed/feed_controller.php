@@ -130,25 +130,13 @@ function feed_controller()
                         // if tag or name changed check new combination is unique
                         $fields = json_decode(get('fields'), true);
                         if (!empty($fields['tag']) || !empty($fields['name'])) {
-                            $unique = true; // defaults to true ?!
-                            $user_feed_ids = $feed->get_user_feed_ids($session['userid']);
-                            $user_feeds = array();
-                            $user_feed_tag_names = array();
-                            foreach ($user_feed_ids as $_feed_id) {
-                                $name = $feed->get_field($_feed_id, 'name');
-                                $tag = $feed->get_field($_feed_id, 'tag');
-                                $user_feeds[$_feed_id] = array('tag'=>$tag,'name'=>$name); // used to get default values if only tag or name edited
-                                $user_feed_tag_names[] = "$tag:$name"; // used for unique $tag:name comparison
-                            }
-                            error_log(var_export($user_feed_tag_names,1));
-                            foreach ($user_feeds as $key=>$value) {
-                                $new_name = !empty($fields['name']) ? $fields['name'] : $value['name'];
-                                $new_tag = !empty($fields['tag']) ? $fields['tag'] : $value['tag'];
-                                error_log("$new_tag:$new_name not in array ? ");
-                                error_log(var_export(!in_array("$new_tag:$new_name",$user_feed_tag_names),1));
-                                $unique = !in_array("$new_tag:$new_name",$user_feed_tag_names);
-                                if (!$unique) break;
-                            }
+                            $original_name = $feed->get_field($feedid, 'name');
+                            $original_tag = $feed->get_field($feedid, 'tag');
+                            // use original tag/name if no new value given
+                            $new_name = !empty($fields['name']) ? $fields['name'] : $original_name;
+                            $new_tag = !empty($fields['tag']) ? $fields['tag'] : $original_tag;
+                            // exists_tag_name returns false if not found
+                            $unique = $feed->exists_tag_name($session['userid'], $new_tag, $new_name) === false;
                             // update if tag:name unique else return error;
                             $result = $unique ? $feed->set_feed_fields($feedid, get('fields')) : array('success'=>false, 'message'=>'fields tag:name must be unique');
                         }else{
