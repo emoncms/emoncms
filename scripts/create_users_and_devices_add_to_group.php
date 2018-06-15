@@ -138,9 +138,9 @@ else {
 //***********************************
 // Check group and device are valid
 //***********************************
-if ($device_support && !is_file("Modules/device/data/" . $device_template . ".json"))
+if ($device_support && isset($device_template) && !is_file("Modules/device/data/" . $device_template . ".json"))
     die("\033[31mDevice template not valid, die :( \033[0m\n\n");
-if ($group_support && !$group->exists_name($group_name))
+if ($group_support && isset($group_name) && !$group->exists_name($group_name))
     die("\033[31mGroup doesn't exist, die :( \033[0m\n\n");
 
 
@@ -148,7 +148,7 @@ if ($group_support && !$group->exists_name($group_name))
 // Create users and devices and add user to group
 //************************************************
 $out = "username, userid, password, apikey_read, apikey_write";
-if ($device_support)
+if ($device_support && isset($device_template))
     $out .= ", devicekey";
 $out .= "\n";
 
