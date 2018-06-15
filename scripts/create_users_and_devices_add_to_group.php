@@ -22,8 +22,9 @@ $email_domain = "carbon.coop";
 //********************
 // Help
 //********************
-$help_string = "Script for bulk creation of users, create one device for the user and add user to a group. The script outputs a csv table including: username, userid, password, apikey_read, apikey_write, device_key.\n"
-        . "Arguments:\n"
+$help_string = "Script for bulk creation of users. If device module is installed it can create one device for the user. If group module is installed it can add the user to a group as a passive member.\n"
+        . "The script outputs a csv table including: username, userid, password, apikey_read, apikey_write, device_key. This table can be copied and pasted into a csv file for importing into a spreadsheet.\n"
+        . "\nArguments:\n"
         . "     -h          shows this help\n"
         . "     -d:         followed by device template. Used if device module is installed. If 'device template' doesn't exist, the script will finish\n"
         . "     -dnode:     followed by device node. Used if device module is installed\n"
