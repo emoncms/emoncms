@@ -16,7 +16,7 @@
 //********************
 // User configuration
 //********************
-$email_domain = "carbon.coop";
+$email_domain = "mydomain.xxx"; // The user's email will be created dinamically adding the username to this domain. Verification email is disabled before registering the users. Once a user logs in they may want to update their email address
 
 
 //********************
