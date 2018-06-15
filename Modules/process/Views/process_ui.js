@@ -568,9 +568,14 @@ var processlist_ui =
       }
       out += "</optgroup>";
     }
-    //overwrite feed list
+    // overwrite feed list
+    $feedSelect.data('value',$feedSelect.val());// store previous value before <select> changes
     $feedSelect.html(out);
-    $feedSelect.data('value') = $feedSelect.val();
+    // recall the old value if available
+    if($feedSelect.data('value')!=""){
+      $feedSelect.val($feedSelect.data('value'));
+      $feedSelect.data('value','');    
+    }
     $feedTypeSelect.find("option").hide();  // Start by hiding all feed engine options
     $feedTypeSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
     $feedTypeSelect.val(datatype); // select datatype
