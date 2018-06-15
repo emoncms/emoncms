@@ -26,7 +26,7 @@ $help_string = "Script for bulk creation of users. If device module is installed
         . "The script outputs a csv table including: username, userid, password, apikey_read, apikey_write, device_key. This table can be copied and pasted into a csv file for importing into a spreadsheet.\n"
         . "\nArguments:\n"
         . "     -h         shows this help\n"
-        . "     -u         followed by a user name. At least one user name must be present. To create more than one user add as many -u as needed"
+        . "     -u         followed by a user name. At least one user name must be present. To create more than one user add as many -u as needed\n"
         . "     -d         followed by device template. Used if device module is installed. If 'device template' doesn't exist, the script will finish\n"
         . "     -dnode     followed by device node. Used if device module is installed\n"
         . "     -dname     followed by device name. Used if device module is installed.\n"
