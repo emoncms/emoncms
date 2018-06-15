@@ -31,11 +31,11 @@ function multigraphDropdown(){
     multigraphsName[multigraphs[z]["id"]] = multigraphs[z]["name"];
     options +="<option value='"+multigraphs[z]["id"]+"'>"+multigraphs[z]["id"]+": "+multigraphs[z]["name"]+"</option>";
   }
-  var out = "<div class='alert'>"+_Tr("No multigraphs created yet, click new to create one:")+"</div>";
+  var out = "<div class='alert'>"+_Tr_Vis("No multigraphs created yet, click new to create one:")+"</div>";
   if (options){
-    out = "<select id='multigraph-selector' class='form-control' style='width:190px'><option>"+_Tr("Select multigraph:")+"</option>"+options+"</select>";
+    out = "<select id='multigraph-selector' class='form-control' style='width:190px'><option>"+_Tr_Vis("Select multigraph:")+"</option>"+options+"</select>";
   }
-  return out+"<button id='multigraph-new-button' class='btn btn-info' style='float:right'>"+_Tr("New multigraph")+"</button><div id='feedtable' ></div>";
+  return out+"<button id='multigraph-new-button' class='btn btn-info' style='float:right'>"+_Tr_Vis("New multigraph")+"</button><div id='feedtable' ></div>";
 }
 
 function getFeedPublic(id){
@@ -121,24 +121,24 @@ function drawMultigraphFeedlistEditor(){
 
   var out = "";
   out += "<table style='table-layout:fixed; width:300px; margin-bottom:0px;'><tbody><tr valign='middle'>";
-  out += "<td style='text-align:left;width:50px;padding-bottom:7px;padding-left:5px'>"+_Tr("Options :")+"</td>";
-  out += "<td style='width:70px'><label><input name='detail' id='basic' type='radio' "+ (detail!=="advanced" ? "checked" : "") +" style='margin-bottom:5px'> "+_Tr("Basic")+"</label></td>";
-  out += "<td style='width:70px'><label><input name='detail' id='advanced' type='radio' "+ (detail==="advanced" ? "checked" : "") +" style='margin-bottom:5px'> "+_Tr("Advanced")+"</label></td>";
+  out += "<td style='text-align:left;width:50px;padding-bottom:7px;padding-left:5px'>"+_Tr_Vis("Options :")+"</td>";
+  out += "<td style='width:70px'><label><input name='detail' id='basic' type='radio' "+ (detail!=="advanced" ? "checked" : "") +" style='margin-bottom:5px'> "+_Tr_Vis("Basic")+"</label></td>";
+  out += "<td style='width:70px'><label><input name='detail' id='advanced' type='radio' "+ (detail==="advanced" ? "checked" : "") +" style='margin-bottom:5px'> "+_Tr_Vis("Advanced")+"</label></td>";
   out += "</tr></tbody></table>";
 
   out += "<div id='myModal' class='modal hide' tabindex='-1' role='dialog' aria-labelledby='myModalLabel' aria-hidden='true' data-backdrop='static'>";
-  out += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button><h3 id='myModalLabel'>"+_Tr("Delete Multigraph")+"</h3></div>";
-  out += "<div class='modal-body'><p>"+_Tr("Deleting a multigraph is permanent.")+"<br>"+_Tr("Make sure no Dashboard continue to use the deleted multigraph")+"<br><br>"+_Tr("Are you sure you want to delete?")+"</p></div>";
-  out += "<div class='modal-footer'><button class='btn' data-dismiss='modal' aria-hidden='true'>"+_Tr("Cancel")+"</button><button id='confirmdelete' class='btn btn-primary'>"+_Tr("Delete permanently")+"</button></div></div>";
+  out += "<div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>×</button><h3 id='myModalLabel'>"+_Tr_Vis("Delete Multigraph")+"</h3></div>";
+  out += "<div class='modal-body'><p>"+_Tr_Vis("Deleting a multigraph is permanent.")+"<br>"+_Tr_Vis("Make sure no Dashboard continue to use the deleted multigraph")+"<br><br>"+_Tr_Vis("Are you sure you want to delete?")+"</p></div>";
+  out += "<div class='modal-footer'><button class='btn' data-dismiss='modal' aria-hidden='true'>"+_Tr_Vis("Cancel")+"</button><button id='confirmdelete' class='btn btn-primary'>"+_Tr_Vis("Delete permanently")+"</button></div></div>";
   
   out += "<table class='table' style='table-layout:fixed; width:300px;border-color:transparent; ' >";
-  out += "<tr><th style='width:125px;' >"+_Tr("Feeds")+"</th><td style='text-align: left;'>&nbsp;</td><td style='text-align: center;'>&nbsp;</td><td style='text-align: right;'>&nbsp;</td><th style='padding:0px; width:30px;'></th></tr>";
+  out += "<tr><th style='width:125px;' >"+_Tr_Vis("Feeds")+"</th><td style='text-align: left;'>&nbsp;</td><td style='text-align: center;'>&nbsp;</td><td style='text-align: right;'>&nbsp;</td><th style='padding:0px; width:30px;'></th></tr>";
 
   var publicfeed = 1;
   for (z in multigraphFeedlist) {
     out += "<tr style='border-top: 2px solid black;'>";
     out += "<td colspan='4' style='vertical-align:middle;word-wrap:break-word;'>"+multigraphFeedlist[z]["tag"]+":"+multigraphFeedlist[z]["name"]+"</td>";
-    out += "<td><a class='close' title='"+_Tr("Remove feed")+"'><i listid='"+z+"' id='multigraph-feed-remove-button' class='icon-remove' style='vertical-align:middle;'></i></a></td></tr>";
+    out += "<td><a class='close' title='"+_Tr_Vis("Remove feed")+"'><i listid='"+z+"' id='multigraph-feed-remove-button' class='icon-remove' style='vertical-align:middle;'></i></a></td></tr>";
     if (!multigraphFeedlist[z]["left"] && !multigraphFeedlist[z]["right"]) {
       multigraphFeedlist[z]["left"] = true; // Default is left
     }
@@ -156,20 +156,20 @@ function drawMultigraphFeedlistEditor(){
     }
 
     out += "<tr >";
-    out += "<td style='text-align: right;'>"+_Tr("Axis")+"</td>";
+    out += "<td style='text-align: right;'>"+_Tr_Vis("Axis")+"</td>";
     checked = ""; if (multigraphFeedlist[z]["left"]) { checked = "checked"; }
-    out += "<td colspan='2' valign='middle'><label><input listid='"+z+"' class='left' style='margin-bottom:5px' name='xpos"+z+"' type='radio' "+checked+" /> "+_Tr("Left")+"</label></td>";
+    out += "<td colspan='2' valign='middle'><label><input listid='"+z+"' class='left' style='margin-bottom:5px' name='xpos"+z+"' type='radio' "+checked+" /> "+_Tr_Vis("Left")+"</label></td>";
     checked = ""; if (multigraphFeedlist[z]["right"]) { checked = "checked"; }
-    out += "<td colspan='2' ><label><input listid='"+z+"' class='right' style='margin-bottom:5px' name='xpos"+z+"' type='radio' "+checked+" /> "+_Tr("Right")+"</label></td>";
+    out += "<td colspan='2' ><label><input listid='"+z+"' class='right' style='margin-bottom:5px' name='xpos"+z+"' type='radio' "+checked+" /> "+_Tr_Vis("Right")+"</label></td>";
     out += "</tr>";
     checked = ""; if (multigraphFeedlist[z]["fill"]) { checked = "checked"; }
-    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Fill")+"</td>";
+    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Fill")+"</td>";
     out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input listid='"+z+"' class='fill' type='checkbox' "+checked+" /></td>";
     out += "<td colspan='3' style='text-align: center;vertical-align:middle;border-color:transparent;'>&nbsp;</td>";
     out += "</tr>";
     var setColour = ""; if (multigraphFeedlist[z]["lineColour"]) { setColour = multigraphFeedlist[z]["lineColour"]; }
     out += "<tr>";
-    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Colour")+"</td>";
+    out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Colour")+"</td>";
     out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input id='lineColour' listid='"+z+"' style='width:110px;margin-bottom:0px;' type='color' value='#"+setColour+"'></td>";
     out += "</tr>";
 
@@ -177,28 +177,28 @@ function drawMultigraphFeedlistEditor(){
     if (detail==="advanced") {
       checked = "checked"; if (!multigraphFeedlist[z]["skipmissing"]) { checked = ""; }
       out += "<tr>";
-      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Skip missing data")+"</td>";
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Skip missing data")+"</td>";
       out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='skipmissing'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
       checked = ""; if (multigraphFeedlist[z]["stacked"]) { checked = "checked"; }
-      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Stack")+"</td>";
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Stack")+"</td>";
       out += "<td style='text-align: center;vertical-align:middle;border-color:transparent;'><input id='stacked'  listid='"+z+"' type='checkbox' "+checked+" /></td>";
       out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'></td>";
       out += "</tr>";
       out += "<tr>";
 
-      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Graph Type")+"</td>";
+      out += "<td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Graph Type")+"</td>";
       out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'>";
       out += "<select id='graphtype-selector' listid='"+z+"' class='options' style='width:140px;margin-bottom:0px;'>";
-      out += "<optgroup label= '"+_Tr("Select Display Type:")+"'>";
-      out += "<option value='lines'"+ (graphtype==="lines" && "selected") +">"+_Tr("Lines")+"</option>";
-      out += "<option value='lineswithsteps'"+ (graphtype==="lineswithsteps" && "selected") +">"+_Tr("Lines with Steps")+"</option>";
-      out += "<option value='bars'"+ (graphtype==="bars" && "selected") +">"+_Tr("Bars")+"</option>";
+      out += "<optgroup label= '"+_Tr_Vis("Select Display Type:")+"'>";
+      out += "<option value='lines'"+ (graphtype==="lines" && "selected") +">"+_Tr_Vis("Lines")+"</option>";
+      out += "<option value='lineswithsteps'"+ (graphtype==="lineswithsteps" && "selected") +">"+_Tr_Vis("Lines with Steps")+"</option>";
+      out += "<option value='bars'"+ (graphtype==="bars" && "selected") +">"+_Tr_Vis("Bars")+"</option>";
       out += "</optgroup> </select>";
       out += "</td>";
       out += "</tr>";
 
       if (graphtype==="bars") {
-        out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Bar Width (%)")+"</td>";
+        out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Bar Width (%)")+"</td>";
         out += "<td colspan='4' style='vertical-align:middle;border-color:transparent;'><input listid='"+z+"' style='width:110px' id='barwidth' value='" + barwidth + "'/></td>";
         out += "</tr>";
       }
@@ -210,46 +210,46 @@ function drawMultigraphFeedlistEditor(){
   if (publicfeed === 1) {
     $("#embedcode").val("<iframe style='width:580px; height:400px;' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='"+visurl+"&embed=1'></iframe>");
   } else {
-    $("#embedcode").val(_Tr("Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.")+"\n\n"+_Tr("To embed privately:")+"\n\n<iframe style='width:580px; height:400px;' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='"+visurl+"&embed=1&apikey="+apikey+"'></iframe>");
+    $("#embedcode").val(_Tr_Vis("Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.")+"\n\n"+_Tr_Vis("To embed privately:")+"\n\n<iframe style='width:580px; height:400px;' frameborder='0' scrolling='no' marginheight='0' marginwidth='0' src='"+visurl+"&embed=1&apikey="+apikey+"'></iframe>");
   }
 
   out += "<tr>";
   out += "<td>"+selectFeed("feedselect", feedlist, 0)+"</td>";
   out += "<td></td>";
   out += "<td></td>";
-  out += "<td><input id='add' type='button' class='btn' value='"+_Tr("Add")+"'/ ></td>";
+  out += "<td><input id='add' type='button' class='btn' value='"+_Tr_Vis("Add")+"'/ ></td>";
   out += "<td></td>";
   out += "</tr>";
 
   if (detail==="advanced") {
-    out += "<tr><td style='width:130px;' >"+_Tr("Y axes limits")+"</td><td colspan='2' style='text-align: center;'>Min</td><td colspan='2' style='text-align: center;'>Max</td></tr>";
-    out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Left")+"</td>";
+    out += "<tr><td style='width:130px;' >"+_Tr_Vis("Y axes limits")+"</td><td colspan='2' style='text-align: center;'>Min</td><td colspan='2' style='text-align: center;'>Max</td></tr>";
+    out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Left")+"</td>";
     out += "<td colspan='2'><input style='width:50px' id='ymin' value='" + ymin + "'/></td>";
     out += "<td colspan='2'><input style='width:50px' id='ymax' value='" + ymax + "'/></td>";
     out += "</tr>";
-    out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr("Right")+"</td>";
+    out += "<tr><td style='text-align: right;vertical-align:middle;border-color:transparent;'>"+_Tr_Vis("Right")+"</td>";
     out += "<td colspan='2'><input style='width:50px' id='y2min' value='" + y2min + "'/></td>";
     out += "<td colspan='2'><input style='width:50px' id='y2max' value='" + y2max + "'/></td>";
     out += "</tr>";
 
-    out += "<tr><td>"+_Tr("Floating time")+"</td>";
+    out += "<tr><td>"+_Tr_Vis("Floating time")+"</td>";
     checked = ""; if (movingtime) { checked = "checked"; }
     out += "<td><input id='movingtime' type='checkbox' "+checked+" /></td>";
     out += "<td></td>";
     out += "<td></td>";
     out += "<td></td></tr>";
-    out += "<tr><td>"+_Tr("Auto refresh (secs)")+"</td>";
+    out += "<tr><td>"+_Tr_Vis("Auto refresh (secs)")+"</td>";
     out += "<td><input style='width:110px' id='autorefresh' value='" + autorefresh + "'/></td>";
     out += "<td></td>";
     out += "<td></td>";
     out += "<td></td></tr>";
-    out += "<tr><td>"+_Tr("Show tag name")+"</td>";
+    out += "<tr><td>"+_Tr_Vis("Show tag name")+"</td>";
     checked = ""; if (showtag) { checked = "checked"; }
     out += "<td><input id='showtag' type='checkbox' "+checked+" /></td>";
     out += "<td></td>";
     out += "<td></td>";
     out += "<td></td></tr>";
-    out += "<tr><td>"+_Tr("Show Legend")+"</td>";
+    out += "<tr><td>"+_Tr_Vis("Show Legend")+"</td>";
     checked = ""; if (showlegend) { checked = "checked"; }
     out += "<td><input id='showlegend' type='checkbox' "+checked+" /></td>";
     out += "<td></td>";
@@ -258,9 +258,9 @@ function drawMultigraphFeedlistEditor(){
   }
 
   out += "</table>";
-  var name = "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+_Tr("Name")+"</span><input class='options' id='multigraph-name' value='"+multigraphsName[multigraphID]+"' type='text'></div>";
-  out += name+"<button id='delete-multigraph-button' class='btn btn-danger'><i class='icon-trash'></i>"+_Tr("Delete")+"</button>";
-  out += "<button id='save-multigraph-button' class='btn btn-success' style='width: 140px;float:right'>"+_Tr("Not modified")+"</button>";
+  var name = "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+_Tr_Vis("Name")+"</span><input class='options' id='multigraph-name' value='"+multigraphsName[multigraphID]+"' type='text'></div>";
+  out += name+"<button id='delete-multigraph-button' class='btn btn-danger'><i class='icon-trash'></i>"+_Tr_Vis("Delete")+"</button>";
+  out += "<button id='save-multigraph-button' class='btn btn-success' style='width: 140px;float:right'>"+_Tr_Vis("Not modified")+"</button>";
   $("#feedtable").html(out);
 }
 
@@ -301,7 +301,7 @@ function updateMultigraphFeedlistNames(){
 }
 
 function modified(){
-  $(baseElement + " #save-multigraph-button").attr("class","btn btn-warning").text(_Tr("Changed, press to save"));
+  $(baseElement + " #save-multigraph-button").attr("class","btn btn-warning").text(_Tr_Vis("Changed, press to save"));
 }
 
 // Events
@@ -529,7 +529,7 @@ function loadEvents(){
         $(baseElement).html(multigraphDropdown());                    // Reload all
         $(baseElement + " #multigraph-selector").val(multigraphID);  // Refresh
         $(baseElement + " #multigraph-selector").change();            // 
-        $(baseElement + " #save-multigraph-button").attr("class","btn btn-success").text(_Tr("Saved"));
+        $(baseElement + " #save-multigraph-button").attr("class","btn btn-success").text(_Tr_Vis("Saved"));
     }
     else { alert("ERROR: Could not save Multigraph. "+result.message); }
   });
