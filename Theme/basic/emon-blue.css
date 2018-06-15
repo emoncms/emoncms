@@ -106,7 +106,7 @@ input[type=text][class=variable-name-edit] {
 
 .scrollable-menu {
   height: auto;
-  max-height: 250px;
+  max-height: 333px;
   overflow-y: auto;
 }
 

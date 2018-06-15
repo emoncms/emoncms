@@ -391,6 +391,12 @@ class Feed
         return $feeds;
     }
 
+    /**
+     * get array of feed ids by associated to user
+     *
+     * @param [int] $userid
+     * @return array
+     */
     public function get_user_feed_ids($userid)
     {
         $userid = (int) $userid;
