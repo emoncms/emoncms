@@ -25,17 +25,18 @@ $email_domain = "carbon.coop";
 $help_string = "Script for bulk creation of users. If device module is installed it can create one device for the user. If group module is installed it can add the user to a group as a passive member.\n"
         . "The script outputs a csv table including: username, userid, password, apikey_read, apikey_write, device_key. This table can be copied and pasted into a csv file for importing into a spreadsheet.\n"
         . "\nArguments:\n"
-        . "     -h          shows this help\n"
-        . "     -d:         followed by device template. Used if device module is installed. If 'device template' doesn't exist, the script will finish\n"
-        . "     -dnode:     followed by device node. Used if device module is installed\n"
-        . "     -dname:     followed by device name. Used if device module is installed.\n"
-        . "     -g:         followed by group name. Used if groups module is installed.  If there isn't a group with 'group name', the script will finish\n"
+        . "     -h         shows this help\n"
+        . "     -u         followed by a user name. At least one user name must be present. To create more than one user add as many -u as needed"
+        . "     -d         followed by device template. Used if device module is installed. If 'device template' doesn't exist, the script will finish\n"
+        . "     -dnode     followed by device node. Used if device module is installed\n"
+        . "     -dname     followed by device name. Used if device module is installed.\n"
+        . "     -g         followed by group name. Used if groups module is installed.  If there isn't a group with 'group name', the script will finish\n"
         . "\n Typical uses:\n"
-        . "     php create_users_and_devices_add_to_group.php Ben Matt\n"
-        . "     php create_users_and_devices_add_to_group.php -d:emonth Ben Matt\n"
-        . "     php create_users_and_devices_add_to_group.php -d:emonth -dnode:emontx -dname:my_device Ben Matt\n"
-        . "     php create_users_and_devices_add_to_group.php -g:my_group Ben Matt\n"
-        . "     php create_users_and_devices_add_to_group.php -d:emonth -g:my_group -dnode:emontx -dname:my_device Ben Matt\n\n";
+        . "     php create_users_and_devices_add_to_group.php -u Ben -u Matt\n"
+        . "     php create_users_and_devices_add_to_group.php -d emonth -u Ben -u Matt\n"
+        . "     php create_users_and_devices_add_to_group.php -d emonth -dnode emontx -dname my_device -u Ben -u Matt\n"
+        . "     php create_users_and_devices_add_to_group.php -g my_group -u Ben -u Matt\n"
+        . "     php create_users_and_devices_add_to_group.php -d emonth -g my_group -dnode emontx -dname my_device -u Ben -u Matt\n\n";
 
 
 //********************
@@ -87,24 +88,29 @@ else {
 //********************
 // Extract arguments
 //********************
-$usernames = [];
-array_shift($argv); // first element in the array is the script name, we remove it
-foreach ($argv as $arg) {
-    if (substr($arg, 0, 2) == '-h')
-        die($help_string);
-    elseif (substr($arg, 0, 3) == '-d:')
-        $device_template = substr($arg, 3);
-    elseif (substr($arg, 0, 7) == '-dnode:')
-        $device_node = substr($arg, 7);
-    elseif (substr($arg, 0, 7) == '-dname:')
-        $device_name = substr($arg, 7);
-    elseif (substr($arg, 0, 3) == '-g:')
-        $group_name = substr($arg, 3);
-    elseif (substr($arg, 0, 1) == '-')
-        echo "\033[31m" . $arg . " is not a valid argument\033[0m\n";
-    else
-        array_push($usernames, $arg);
+$args = getopt('u:d:dnode:dname:g:h');
+if (array_key_exists('h', $args))
+    die($help_string);
+if (!array_key_exists('u', $args))
+    die("\033[31mMissing usernames.\033[0m Run -h to get some help\n\n");
+else {
+    $usernames = [];
+    if (!is_array($args['u']))
+        array_push($usernames, $args['u']);
+    else {
+        foreach ($args['u'] as $user)
+            array_push($usernames, $user);
+    }
 }
+if (array_key_exists('d', $args))
+    $device_template = $args['d'];
+if (array_key_exists('dnode', $args))
+    $device_node = $args['dnode'];
+if (array_key_exists('dname', $args))
+    $device_name = $args['dname'];
+if (array_key_exists('g', $args))
+    $group_name = $args['g'];
+
 
 //***************
 // Models to use
@@ -114,7 +120,7 @@ $email_verification = false;
 require("Modules/user/user_model.php");
 $user = new User($mysqli, $redis, null);
 
-if (!is_file("Modules/device/device_model.php")) {
+if (isset($device_template) && !is_file("Modules/device/device_model.php")) {
     echo "\033[31mDevice module not installed, no device will be created\033[0m\n";
     $device_support = false;
 }
@@ -125,7 +131,7 @@ else {
 }
 
 
-if (!is_file("Modules/group/group_model.php")) {
+if (isset($group_name) && !is_file("Modules/group/group_model.php")) {
     $group_support = false;
     echo "\033[31mGroup module not installed, users won't be added to group\033[0m\n";
 }
