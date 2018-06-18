@@ -262,7 +262,7 @@
     }
     else if ($route->format == 'text')
     {
-        header('Content-Type: text');
+        header('Content-Type: text/plain');
         print $output['content'];
     }
     else {
