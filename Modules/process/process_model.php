@@ -95,15 +95,18 @@ class Process
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
             }
-
             $arg = 0;
             if (isset($inputprocess[1])) $arg = $inputprocess[1];          // Can be value or feed id
-
+            
             $process_function = $processkey;                               // get process key 'module.function'
             if (strpos($processkey, '__') === FALSE)
                 $process_function = $process_list[$processkey][2];         // for backward compatibility -> get process function name
-            $value = $this->$process_function($arg,$time,$value,$options); // execute process function
-
+                $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
+                if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
+                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
+                } else {
+                    $value = $this->$process_function($arg,$time,$value,$options); // execute process function
+                }
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; $this->proc_goto++;
             }

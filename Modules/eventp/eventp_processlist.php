@@ -59,7 +59,7 @@ class Eventp_ProcessList
         global $user, $session;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
-        $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
+        if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
         $timeformated = $timeformated->format("Y-m-d H:i:s");
 
         $tag = array("{id}","{type}","{time}","{value}");
