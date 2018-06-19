@@ -27,7 +27,16 @@ class JsonApi
      * @var array
      */
     public $request = array();
-
+    /**
+     * request status (not the http status but the controller->action() status)
+     * @var array
+     */
+    public $success = "";
+    /**
+     * message to show to the user
+     * @var string
+     */
+    public $message = "";
     /**
      * the data to be returned
      * @var array
@@ -52,17 +61,22 @@ class JsonApi
         $this->data = $data['content'];
         $this->request = array(
             'type' => 'text/plain',
-            'params' => $param->params
+            'params' => property_exists((object) $param,'params') ? $param->params : ""
         );
         $this->route = $data['route']->getDetails();
         $this->links = $links;
+        $this->success = !isset($this->data['success']) || (isset($this->data['success']) && $this->data['success']===TRUE);
+        $this->message = isset($this->data['message']) ? $this->data['message'] : "";
     }
     public function json()
     {
+        global $appname;
         $output = array(
             "meta" => array(
+                "appname"=>$appname,
                 "version"=>$this->version,
-                "status"=>200,
+                "success"=>$this->success,
+                "message"=>$this->message,
                 "request"=>$this->request,
                 "route"=>$this->route
             ),
