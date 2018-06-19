@@ -19,8 +19,7 @@ class Param
 {
     private $route;
     private $user;
-    private $params = array();
-    
+    public $params = array();
     // Associative array to make search fast
     private $allowed_apis = array("input/post","input/bulk");
     
@@ -45,7 +44,8 @@ class Param
             if (get_magic_quotes_gpc()) $val = stripslashes($val);
             $this->params[$key] = $val;
         }
-        
+        $this->params['_json_body'] = json_decode(file_get_contents('php://input'), TRUE);
+
         // Temporary restriction on allowed api's for encrypted method
         $allowed_apis = array_flip($this->allowed_apis);
         $api = $this->route->controller."/".$this->route->action;

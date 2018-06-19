@@ -137,4 +137,16 @@ class Route
     {
         return empty($this->controller) && empty($this->action);
     }
+
+    public function getDetails(){
+        return array(
+           'controller'=>$this->controller,
+           'action'=>$this->action,
+           'subaction'=>$this->subaction,
+           'subaction2'=>$this->subaction2,
+           'method'=>$this->method,
+           'format'=>$this->format,
+           'is_ajax'=>$this->is_ajax,
+        );
+    }
 }

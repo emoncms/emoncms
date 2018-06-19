@@ -20,6 +20,7 @@
     require "route.php";
     require "param.php";
     require "locale.php";
+    require "jsonApi.php";
 
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.30 | 2018.05.08";
 
@@ -63,6 +64,7 @@
         }
         die();
     }
+
     // Set charset to utf8
     $mysqli->set_charset("utf8");
 
@@ -245,7 +247,22 @@
             print $output['content'];
         } else {
             header('Content-Type: application/json');
-            print json_encode($output['content']);
+            $parent = explode('/',"//{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+            array_pop($parent);
+            $links = array();
+            if (!empty($parent[6])) {
+                $links = array("related" => array(
+                    "href"=>implode('/',$parent),
+                    "meta"=>array(
+                        "node"=>$parent[6],
+                        "inputs"=>3
+                    )
+                ));
+            }
+            //pass the processed data, the input data, and the url links to the jsonAPI formatter
+            $openApi = new JsonApi($output,$param,$links);
+            print $openApi->json();
+            //print json_encode($output['content']);
         }
     }
     else if ($route->format == 'html')
