@@ -102,14 +102,9 @@ global $path, $feedviewpath;
             <tr>
                 <td>
                 <p><b><?php echo _('Interval');?></b></p>
-<<<<<<< HEAD
-                    <select id="export-interval" >
-                    <option value=1><?php echo _('Auto');?></option>
-=======
                 <select id="export-interval" >
                     <option value="10"><?php echo _('Auto');?></option>
                     <option value=1><?php echo _('1s');?></option>
->>>>>>> emoncms_repo/master
                     <option value=5><?php echo _('5s');?></option>
                     <option value=10><?php echo _('10s');?></option>
                     <option value=15><?php echo _('15s');?></option>
@@ -258,16 +253,6 @@ global $path, $feedviewpath;
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
-<<<<<<< HEAD
-        // Actions
-        'edit-action': {'title': '', 'type': "edit"},
-        'delete-action': {'title': '', 'type': "delete"},
-        'view-action': {'title': '', 'type': "iconlink", 'link': path + feedviewpath},
-        'processlist-action': {'title': '', 'type': "iconconfig", 'icon': 'icon-wrench'},
-        'checkdata-action': {'title': '', 'type': "iconbasic", 'icon': 'icon-check'},
-        'export-action': {'title': '', 'type': "iconbasic", 'icon': 'icon-download'}
-    }
-=======
     'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"selectWithOther", 'options': {
       "":"",
       W:"W",
@@ -288,9 +273,9 @@ global $path, $feedviewpath;
     'delete-action':{'title':'', 'type':"delete"},
     'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
     'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
+    'checkdata-action': {'title': '', 'type': "iconbasic", 'icon': 'icon-check'},
     'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
   }
->>>>>>> emoncms_repo/master
 
     update();
 
@@ -546,14 +531,8 @@ global $path, $feedviewpath;
         }
     });
 
-<<<<<<< HEAD
-
-    // Process list UI js
-    processlist_ui.init(1); // is virtual feed
-=======
   // Process list UI js
   processlist_ui.init(1); // is virtual feed
->>>>>>> emoncms_repo/master
 
   $("#table").on('click', '.icon-wrench', function() {
         var i = table.data[$(this).attr('row')];
