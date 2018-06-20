@@ -46,6 +46,7 @@ function db_check($mysqli,$database)
 
 function controller($controller_name)
 {
+    global $session;
     $output = array('content'=>"#UNDEFINED#");
 
     if ($controller_name)
@@ -54,12 +55,11 @@ function controller($controller_name)
         $controllerScript = "Modules/".$controller_name."/".$controller.".php";
         if (is_file($controllerScript))
         {
-            // Load language files for module
-            $domain = "messages";
-            bindtextdomain($domain, "Modules/".$controller_name."/locale");
-            bind_textdomain_codeset($domain, 'UTF-8');
-            textdomain($domain);
-
+            // Load language files for module mo file
+            $domain = $controller_name;
+            $mofile= "Modules/".$controller_name."/languages/".$domain."-".$session['lang'].".mo";
+            load_translation_file($mofile, $domain);
+            
             require_once $controllerScript;
             $output = $controller();
             if (!is_array($output) || !isset($output["content"])) $output = array("content"=>$output);
@@ -151,6 +151,8 @@ function load_db_schema()
 
 function load_menu()
 {
+    global $session;
+
     $menu_dashboard = array(); // Published Dashboards
     $menu_left = array();  // Left
     $menu_dropdown = array(); // Extra
@@ -164,6 +166,10 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
+                 // Load language files for module mo file
+                $domain = $dir[$i];
+                $mofile= "Modules/".$dir[$i]."/languages/".$domain."-".$session['lang'].".mo";
+                load_translation_file($mofile, $domain);
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
