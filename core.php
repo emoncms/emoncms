@@ -62,6 +62,7 @@ function controller($controller_name)
 
             require_once $controllerScript;
             $output = $controller();
+            if (!is_array($output) || !isset($output["content"])) $output = array("content"=>$output);
         }
     }
     return $output;
@@ -112,6 +113,25 @@ function server($index)
     return $val;
 }
 
+function delete($index) {
+    parse_str(file_get_contents("php://input"),$_DELETE);//create array with posted (DELETE) method) values
+    $val = null;
+    if (isset($_DELETE[$index])) $val = $_DELETE[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    return $val;
+}
+function put($index) {
+    parse_str(file_get_contents("php://input"),$_PUT);//create array with posted (PUT method) values
+    $val = null;
+    if (isset($_PUT[$index])) $val = $_PUT[$index];
+    
+    if (get_magic_quotes_gpc()) $val = stripslashes($val);
+    return $val;
+}
+
+
+
 function load_db_schema()
 {
     $schema = array();
@@ -150,5 +170,9 @@ function load_menu()
     }
 
     return array('dashboard'=>$menu_dashboard, 'left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
+}
+
+function emoncms_error($message) {
+    return array("success"=>false, "message"=>$message);
 }
 

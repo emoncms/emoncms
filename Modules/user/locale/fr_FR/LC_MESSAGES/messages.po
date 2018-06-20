@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-30 20:57+0200\n"
-"PO-Revision-Date: 2017-07-30 20:58+0200\n"
+"POT-Creation-Date: 2018-05-20 23:53+0200\n"
+"PO-Revision-Date: 2018-05-21 00:05+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,47 +14,47 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../login_block.php:34 ../../../profile/profile.php:65
+#: ../../../login_block.php:40 ../../../profile/profile.php:65
 msgid "Email"
 msgstr "Adresse email"
 
-#: ../../../login_block.php:40 ../../../profile/profile.php:56
+#: ../../../login_block.php:46 ../../../profile/profile.php:56
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../../../login_block.php:47
+#: ../../../login_block.php:53
 msgid "Password"
 msgstr "Mot de passe"
 
-#: ../../../login_block.php:53
+#: ../../../login_block.php:59
 msgid "Confirm password"
 msgstr "Confirmation du mot de passe"
 
-#: ../../../login_block.php:64
+#: ../../../login_block.php:70
 msgid "Remember me"
 msgstr "Se souvenir de moi"
 
-#: ../../../login_block.php:68
+#: ../../../login_block.php:74
 msgid "Login"
 msgstr "Connexion"
 
-#: ../../../login_block.php:69 ../../../login_block.php:76
-#: ../../../login_block.php:94
+#: ../../../login_block.php:75 ../../../login_block.php:82
+#: ../../../login_block.php:100
 msgid "or"
 msgstr "ou"
 
-#: ../../../login_block.php:70
+#: ../../../login_block.php:76
 msgid "register"
 msgstr "s'inscrire"
 
-#: ../../../login_block.php:75
+#: ../../../login_block.php:81
 msgid "Register"
 msgstr "S'inscrire"
 
-#: ../../../login_block.php:77 ../../../login_block.php:95
+#: ../../../login_block.php:83 ../../../login_block.php:101
 msgid "login"
 msgstr "connexion"
 
@@ -164,43 +164,70 @@ msgstr "Déconnexion"
 msgid "Log In"
 msgstr "Connexion"
 
-#: ../../../user_model.php:183
+#: ../../../user_model.php:207
 msgid "Missing username, password or email parameter"
 msgstr "Il manque le nom d'utilisateur, le mot de passe ou l'adresse email"
 
-#: ../../../user_model.php:185 ../../../user_model.php:395
+#: ../../../user_model.php:208 ../../../user_model.php:523
 msgid "Username must only contain a-z and 0-9 characters"
 msgstr ""
 "Le nom d'utilisateur doit contenir uniquement des chiffres [0-9] et des "
 "lettres [a-z]"
 
-#: ../../../user_model.php:189 ../../../user_model.php:406
+#: ../../../user_model.php:209 ../../../user_model.php:537
 msgid "Username already exists"
 msgstr "Désolé, ce nom d'utilisateur existe déjà"
 
-#: ../../../user_model.php:191 ../../../user_model.php:338
-#: ../../../user_model.php:415
+#: ../../../user_model.php:211 ../../../user_model.php:303
+#: ../../../user_model.php:466 ../../../user_model.php:546
 msgid "Email address format error"
 msgstr "Le format de l'adresse email est incorrect"
 
-#: ../../../user_model.php:193 ../../../user_model.php:393
+#: ../../../user_model.php:213 ../../../user_model.php:521
 msgid "Username length error"
 msgstr "La longueur du nom d'utilisateur est incorrecte"
 
-#: ../../../user_model.php:194 ../../../user_model.php:312
-#: ../../../user_model.php:313
+#: ../../../user_model.php:214 ../../../user_model.php:435
+#: ../../../user_model.php:436
 msgid "Password length error"
 msgstr "La longueur du mot de passe est incorrect"
 
-#: ../../../user_model.php:208
+#: ../../../user_model.php:229
 msgid "Error creating user"
 msgstr "Erreur lors de la création de l'utilisateur"
 
-#: ../../../user_model.php:222 ../../../user_model.php:275
+#: ../../../user_model.php:249
+msgid "Invalid username"
+msgstr "Nom utilisateur non valide"
+
+#: ../../../user_model.php:253 ../../../user_model.php:343
+msgid "Database error, you may need to run database update"
+msgstr ""
+"Erreur de base de données, vous devrez peut-être exécuter la mise à jour de "
+"base de données"
+
+#: ../../../user_model.php:263 ../../../user_model.php:356
+msgid "Username does not exist"
+msgstr "Cet utilisateur n'existe pas"
+
+#: ../../../user_model.php:265
+msgid "Email already verified"
+msgstr "Email déjà vérifié"
+
+#: ../../../user_model.php:298
+msgid "Email verification email sent, please check your inbox"
+msgstr ""
+"Email de vérification envoyé, veuillez vérifier votre boîte de réception"
+
+#: ../../../user_model.php:304
+msgid "Invalid verification key"
+msgstr "Clé de vérification non valide"
+
+#: ../../../user_model.php:332 ../../../user_model.php:396
 msgid "Username or password empty"
 msgstr "L'identifiant ou le mot de passe saisi est vide"
 
-#: ../../../user_model.php:228
+#: ../../../user_model.php:338
 msgid ""
 "Username must only contain a-z 0-9 dash and underscore, if you created an "
 "account before this rule was in place enter your username without the non a-"
@@ -213,36 +240,42 @@ msgstr ""
 "passe habituel et éventuellement modifier votre nom d'utilisateur depuis la "
 "page de configuration de votre profil."
 
-#: ../../../user_model.php:238
-msgid "Username does not exist"
-msgstr "Cet utilisateur n'existe pas"
+#: ../../../user_model.php:357
+msgid "Please verify email address"
+msgstr "S'il vous plaît vérifier l'adresse e-mail"
 
-#: ../../../user_model.php:245
+#: ../../../user_model.php:363
 msgid ""
 "Incorrect password, if your sure its correct try clearing your browser cache"
 msgstr ""
 "Mot de passe incorrect, si vous êtes sûr de votre mot de passe, "
 "rafraîchissez le cache de votre navigateur"
 
-#: ../../../user_model.php:266
+#: ../../../user_model.php:380
+msgid "Error creating rememberme cookie, try login without rememberme"
+msgstr ""
+"Erreur lors de la création du cookie de connexion automatique, essayez de "
+"vous connecter sans l'option se souvenir de moi"
+
+#: ../../../user_model.php:387
 msgid "Login successful"
 msgstr "Connexion réussie"
 
-#: ../../../user_model.php:278
+#: ../../../user_model.php:398
 msgid "Username must only contain a-z 0-9 dash and underscore"
 msgstr ""
 "Le nom d'utilisateur doit contenir uniquement des chiffres [0-9], des "
 "lettres [a-z], des tirets et des soulignés"
 
-#: ../../../user_model.php:285 ../../../user_model.php:292
+#: ../../../user_model.php:411 ../../../user_model.php:416
 msgid "Incorrect authentication"
 msgstr "Authentification incorrecte"
 
-#: ../../../user_model.php:331
+#: ../../../user_model.php:459
 msgid "Old password incorect"
 msgstr "Ancien mot de passe incorrect"
 
-#: ../../../user_model.php:390
+#: ../../../user_model.php:518
 msgid ""
 "As you are using a cookie based remember me login, please logout and log "
 "back in to change username"
@@ -250,11 +283,11 @@ msgstr ""
 "La connexion automatique est basée sur des cookies. Pour prendre en compte "
 "le changement de nom d'utilisateur il suffit de se déconnecter et reconnecter"
 
-#: ../../../user_model.php:402
+#: ../../../user_model.php:533
 msgid "Username updated"
 msgstr "Nom d'utilisateur mis à jour"
 
-#: ../../../user_model.php:412
+#: ../../../user_model.php:543
 msgid ""
 "As you are using a cookie based remember me login, please logout and log "
 "back in to change email"
@@ -262,11 +295,11 @@ msgstr ""
 "La connexion automatique est basée sur des cookies. Pour prendre en compte "
 "le changement d'adresse email il suffit de se déconnecter et reconnecter"
 
-#: ../../../user_model.php:420
+#: ../../../user_model.php:552
 msgid "Email updated"
 msgstr "Email mis à jour"
 
-#: ../../../user_model.php:589
+#: ../../../user_model.php:729
 msgid "Error updating user info"
 msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
@@ -320,9 +353,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
 #~ msgid "You are logged out"
 #~ msgstr "Vous &ecirc;tes d&eacute;connect&eacute;"
-
-#~ msgid "Invalid token"
-#~ msgstr "Jeton invalide"
 
 #~ msgid "User: "
 #~ msgstr "Identifiant : "
@@ -849,9 +879,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
 #~ msgid "feed: "
 #~ msgstr "fuente:"
-
-#~ msgid " already converted"
-#~ msgstr " ya convertido"
 
 #~ msgid "Embed this graph"
 #~ msgstr "Incrustar este gráfico"

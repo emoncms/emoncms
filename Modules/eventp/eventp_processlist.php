@@ -11,6 +11,10 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
+$domain3 = "eventp_messages";
+bindtextdomain($domain3, "Modules/eventp/locale");
+bind_textdomain_codeset($domain3, 'UTF-8');
+
 // Schedule Processlist Module
 class Eventp_ProcessList
 {
@@ -40,11 +44,11 @@ class Eventp_ProcessList
 
         // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'desc'=>Description | 'requireredis'=>true | 'nochange'=>true  | 'helpurl'=>"http://..."
 	
-        $list[] = array(_("If rate >=, skip next"), ProcessArg::VALUE, "ifRateGtEqualSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.</p>");
-        $list[] = array(_("If rate <, skip next"), ProcessArg::VALUE, "ifRateLtSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.</p>");
-        $list[] = array(_("If Mute, skip next"), ProcessArg::VALUE, "ifMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.</p>");
-        $list[] = array(_("If !Mute, skip next"), ProcessArg::VALUE, "ifNotMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.</p>");
-        $list[] = array(_("Send Email"), ProcessArg::TEXT, "sendEmail", 0, DataType::UNDEFINED, "Event", 'nochange'=>true, 'desc'=>"<p>Send an email to the user with the specified body.</p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}</p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.</p>");
+        $list[] = array(dgettext("eventp_messages","If rate >=, skip next"), ProcessArg::VALUE, "ifRateGtEqualSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.")."</p>");
+        $list[] = array(dgettext("eventp_messages","If rate <, skip next"), ProcessArg::VALUE, "ifRateLtSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.")."</p>");
+        $list[] = array(dgettext("eventp_messages","If Mute, skip next"), ProcessArg::VALUE, "ifMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.")."</p>");
+        $list[] = array(dgettext("eventp_messages","If !Mute, skip next"), ProcessArg::VALUE, "ifNotMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.")."</p>");
+        $list[] = array(dgettext("eventp_messages","Send Email"), ProcessArg::TEXT, "sendEmail", 0, DataType::UNDEFINED, "Event", 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","Send an email to the user with the specified body.")."</p><p>".dgettext("eventp_messages","Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}")."</p><p>".dgettext("eventp_messages","Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.")."</p>");
         return $list;
     }
 
@@ -55,7 +59,7 @@ class Eventp_ProcessList
         global $user, $session;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
-        $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
+        if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
         $timeformated = $timeformated->format("Y-m-d H:i:s");
 
         $tag = array("{id}","{type}","{time}","{value}");
