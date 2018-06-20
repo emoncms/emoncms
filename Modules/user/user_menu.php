@@ -3,19 +3,19 @@
 global $session;
 
 $menu['right'][] = array(
-    'text' => _("Add Bookmark"),
+    'text' => __("Add Bookmark"),
     'icon' => 'plus',
     'path' => 'user/bookmarks/add',
     'order' => 0
 );
 $menu['user'][] = array(
-    'text' => _("Bookmarks"),
+    'text' => __("Bookmarks"),
     'path' => 'user/bookmarks',
     'icon' => 'star',
     'order' => 2
 );
 $menu['user'][] = array(
-    'text' => _("My Account"),
+    'text' => __("My Account"),
     'icon' => 'user',
     'path' => 'user/view',
     'order' => 1
@@ -26,7 +26,7 @@ $menu['user'][] = array(
     'order' => 3
 );
 $menu['user'][] = array(
-    'text' => _("Logout"),
+    'text' => __("Logout"),
     'icon' => 'logout',
     'path' => 'user/logout',
     'order' => 4,
@@ -34,8 +34,8 @@ $menu['user'][] = array(
 );
 
 $menu['user'][] = array(
-    'title' => _("Login"),
-    // 'text' => _("Login"),
+    'title' => __("Login"),
+    // 'text' => __("Login"),
     'icon' => 'enter',
     'path' => '/',
     'public' => true,
