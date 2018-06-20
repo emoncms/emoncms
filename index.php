@@ -14,11 +14,12 @@ http://openenergymonitor.org
 define('EMONCMS_EXEC', 1);
 
 // 1) Load settings and core scripts
+require __DIR__ . '/vendor/autoload.php';
+require "locale.php";
 require "process_settings.php";
 require "core.php";
 require "route.php";
 require "param.php";
-require "locale.php";
 
 $emoncms_version = ($settings['feed']['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
@@ -150,6 +151,9 @@ if (!isset($session['lang'])) {
     $session['lang']='';
 }
 set_emoncms_lang($session['lang']);
+use Gettext\Translator;
+$t = new Translator(); //Create the translator instance
+$t->register(); //register helper functions
 
 // 5) Get route and load controller
 
