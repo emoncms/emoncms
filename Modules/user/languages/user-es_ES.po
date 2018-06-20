@@ -1,0 +1,1081 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-09-03 18:16+0100\n"
+"PO-Revision-Date: 2015-09-03 18:18+0100\n"
+"Last-Translator: Ildefonso Martínez Marchena <i.martinezamarchena@gmail."
+"com>\n"
+"Language-Team: \n"
+"Language: es_ES\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.7.5\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../login_block.php:34 ../../../profile/profile.php:63
+msgid "Email"
+msgstr "Correo"
+
+#: ../../../login_block.php:40 ../../../profile/profile.php:54
+msgid "Username"
+msgstr "Nombre de usuario"
+
+#: ../../../login_block.php:47
+msgid "Password"
+msgstr "Contraseña"
+
+#: ../../../login_block.php:53
+msgid "Confirm password"
+msgstr "Confirmar contraseña"
+
+#: ../../../login_block.php:64
+msgid "Remember me"
+msgstr "Recordarme"
+
+#: ../../../login_block.php:68
+msgid "Login"
+msgstr "Entrar"
+
+#: ../../../login_block.php:69 ../../../login_block.php:76
+#: ../../../login_block.php:95
+msgid "or"
+msgstr "o"
+
+#: ../../../login_block.php:70
+msgid "register"
+msgstr "regístrate"
+
+#: ../../../login_block.php:75
+msgid "Register"
+msgstr "Registrarse"
+
+#: ../../../login_block.php:77 ../../../login_block.php:96
+msgid "login"
+msgstr "loguear"
+
+#: ../../../profile/profile.php:50
+msgid "My account"
+msgstr "Mi cuenta"
+
+#: ../../../profile/profile.php:55 ../../../profile/profile.php:64
+msgid "Edit"
+msgstr "Editar"
+
+#: ../../../profile/profile.php:58 ../../../profile/profile.php:67
+#: ../../../profile/profile.php:92
+msgid "Save"
+msgstr "Guardar"
+
+#: ../../../profile/profile.php:73
+msgid "Change Password"
+msgstr "Cambiar contraseña"
+
+#: ../../../profile/profile.php:80
+msgid "Current password"
+msgstr "Contraseña actual"
+
+#: ../../../profile/profile.php:84
+msgid "New password"
+msgstr "Nueva contraseña"
+
+#: ../../../profile/profile.php:88
+msgid "Repeat new password"
+msgstr "Confirma la contraseña"
+
+#: ../../../profile/profile.php:93
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: ../../../profile/profile.php:99
+msgid "Write API Key"
+msgstr "Clave API para la escritura"
+
+#: ../../../profile/profile.php:104
+msgid "Read API Key"
+msgstr "Clave API para la lectura"
+
+#: ../../../profile/profile.php:112
+msgid "My Profile"
+msgstr "Perfil"
+
+#: ../../../profile/profile.php:135
+msgid "Gravatar"
+msgstr "Gravatar"
+
+#: ../../../profile/profile.php:136
+msgid "Name"
+msgstr "Nombre"
+
+#: ../../../profile/profile.php:137
+msgid "Location"
+msgstr "Ubicación"
+
+#: ../../../profile/profile.php:138
+msgid "Timezone"
+msgstr "Zona horaria"
+
+#: ../../../profile/profile.php:139
+msgid "Language"
+msgstr "Lenguaje"
+
+#: ../../../profile/profile.php:140
+msgid "Bio"
+msgstr "Sobre mí"
+
+#: ../../../profile/profile.php:266
+msgid "Passwords do not match"
+msgstr "Las contraseñas no concuerdan"
+
+#: ../../../user_menu.php:8
+msgid "My Account"
+msgstr "Mi Cuenta"
+
+#: ../../../user_menu.php:9
+msgid "Logout"
+msgstr "Desconectar"
+
+#: ../../../user_model.php:159
+msgid "Missing username, password or email parameter"
+msgstr "Falta el usuario, la contraseña o el email"
+
+#: ../../../user_model.php:161 ../../../user_model.php:380
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "El usuario debe contener caracteres a-z y 0-9 exclusivamente"
+
+#: ../../../user_model.php:165 ../../../user_model.php:391
+msgid "Username already exists"
+msgstr "El usuario ya existe"
+
+#: ../../../user_model.php:167 ../../../user_model.php:310
+#: ../../../user_model.php:400
+msgid "Email address format error"
+msgstr "Dirección de correo electrónico no válida"
+
+#: ../../../user_model.php:169 ../../../user_model.php:378
+msgid "Username length error"
+msgstr "Error en la longitud del usuario"
+
+#: ../../../user_model.php:170 ../../../user_model.php:284
+#: ../../../user_model.php:285
+msgid "Password length error"
+msgstr "Error en la longitud de la contraseña"
+
+#: ../../../user_model.php:182
+msgid "Error creating user"
+msgstr "Error creando usuario"
+
+#: ../../../user_model.php:196 ../../../user_model.php:245
+msgid "Username or password empty"
+msgstr "Usuario o contraseña vacios"
+
+#: ../../../user_model.php:202
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
+"El usuario debe contener caracteres a-z y 0-9, guiones o barrabajas "
+"exclusivamente, si creo una cuenta antes de que esta norma se estableciese "
+"introduzca su usuario sin los caracteres no permitidos para hacer login y "
+"cambie, si lo desea, su usuario en la página de perfil."
+
+#: ../../../user_model.php:209
+msgid "Username does not exist"
+msgstr "Usuario no existente"
+
+#: ../../../user_model.php:216
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
+"Contraseña incorrecta, si está seguro de que es correcta intente ahora "
+"limpiar la caché de su navegador"
+
+#: ../../../user_model.php:236
+msgid "Login successful"
+msgstr "Login correcto"
+
+#: ../../../user_model.php:248
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr ""
+"El usuario debe contener caracteres a-z y 0-9, guiones o barrabajas "
+"exclusivamente"
+
+#: ../../../user_model.php:255 ../../../user_model.php:262
+msgid "Incorrect authentication"
+msgstr "Auntentificación incorrecta"
+
+#: ../../../user_model.php:303
+msgid "Old password incorect"
+msgstr "Contraseña antigua incorrecta"
+
+#: ../../../user_model.php:375
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change username"
+msgstr ""
+"Como está usando un login basado en cookies, por favor desconéctese y entre "
+"de nuevo para cambiar el nombre de usuario"
+
+#: ../../../user_model.php:387
+msgid "Username updated"
+msgstr "Nombre de usuario actualizado"
+
+#: ../../../user_model.php:397
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change email"
+msgstr ""
+"Como está usando un login basado en cookies, por favor desconéctese y entre "
+"de nuevo para cambiar el email"
+
+#: ../../../user_model.php:403
+msgid "Email updated"
+msgstr "Dirección de email actualizada"
+
+#~ msgid ""
+#~ "As your using a cookie based remember me login, please logout and log "
+#~ "back in to change username"
+#~ msgstr ""
+#~ "Como esta usando un login de tipo Recordarme basado en cookies, por favor "
+#~ "desconectese (logout) y entre de nuevo para cambiar el usuario"
+
+#~ msgid ""
+#~ "As your using a cookie based remember me login, please logout and log "
+#~ "back in to change email"
+#~ msgstr ""
+#~ "Como esta usando un login de tipo Recordarme basado en cookies, por favor "
+#~ "desconectese (logout) y entre de nuevo para cambiar el email"
+
+#~ msgid "Username:"
+#~ msgstr "Nombre de usuario:"
+
+#~ msgid "Email:"
+#~ msgstr "Correo:"
+
+#~ msgid "Password:"
+#~ msgstr "Contraseña:"
+
+#~ msgid "Confirm password:"
+#~ msgstr "Confirma la contraseña:"
+
+#~ msgid "cancel"
+#~ msgstr "cancelar"
+
+#~ msgid "es_ES"
+#~ msgstr "Español"
+
+#~ msgid "fr_FR"
+#~ msgstr "Francés"
+
+#~ msgid "Account"
+#~ msgstr "Mi cuenta"
+
+#~ msgid "Missing username, password or email paramater"
+#~ msgstr ""
+#~ "Por favor, indica el nombre de usuario, la clave y la dirección de correo "
+#~ "electrónica"
+
+#, fuzzy
+#~ msgid "Incorrect password"
+#~ msgstr "Contraseña actual:"
+
+#~ msgid ""
+#~ "Or if you are new enter a username and password above and click register"
+#~ msgstr ""
+#~ "O si eres un nuevo usuario introduce un nombre de usuario y contraseña y "
+#~ "pulsa en registarse"
+
+#~ msgid "Welcome, you are now logged in"
+#~ msgstr "Bienvenido, ya estás conectado"
+
+#~ msgid "Please enter a username that is 4 to 30 characters long"
+#~ msgstr "Por favor introduzca un nombre de usuario de 4 a 40 caracteres"
+
+#~ msgid "Please enter a password that is 4 to 30 characters long"
+#~ msgstr "Por favor introduzca una contraseña de 4 a 30 caracteres"
+
+#~ msgid "Your new account has been created"
+#~ msgstr "Tu nueva cuenta ha sido creada"
+
+#~ msgid "Your password has been changed"
+#~ msgstr "Tu contraseña ha sido cambiada"
+
+#~ msgid "Invalid password"
+#~ msgstr "Contraseña inválida"
+
+#~ msgid "New read apikey: "
+#~ msgstr "Nueva clave de lectura (API):"
+
+#~ msgid "New write apikey: "
+#~ msgstr "Nueva clave de escritura (API):"
+
+#~ msgid "You are logged out"
+#~ msgstr "Te has desconectado"
+
+#~ msgid "Invalid token"
+#~ msgstr "Token inválido"
+
+#~ msgid "User: "
+#~ msgstr "Usuario:"
+
+#~ msgid "Select preferred language"
+#~ msgstr "Selecciona el idioma por defecto:"
+
+#~ msgid "Browser language"
+#~ msgstr "Lenguaje del navegador"
+
+#~ msgid "Time offset in hours:"
+#~ msgstr "Diferencia horario en horas:"
+
+#~ msgid "Set"
+#~ msgstr "Establecer"
+
+#~ msgid "Change details"
+#~ msgstr "Cambiar detalles"
+
+#~ msgid "Change"
+#~ msgstr "Cambiar"
+
+#~ msgid "en_EN"
+#~ msgstr "Inglés"
+
+#~ msgid "nl_BE"
+#~ msgstr "Belga"
+
+#~ msgid "nl_NL"
+#~ msgstr "Holandés"
+
+#~ msgid "Emoncms database setup script"
+#~ msgstr "Script de creación de la base de datos de Emoncms"
+
+#~ msgid "Continue to emoncms"
+#~ msgstr "Continuar a emoncms"
+
+#~ msgid "to run script uncomment runnable"
+#~ msgstr "para ejecutar el código descomenta 'runnable'"
+
+#~ msgid "dashboards new"
+#~ msgstr "Nuevo panel"
+
+#~ msgid "dashboard set"
+#~ msgstr "establecer panel"
+
+#~ msgid "dashboard set configuration"
+#~ msgstr "establecer configuración del panel"
+
+#~ msgid "Feed type changed"
+#~ msgstr "Tipo de fuente cambiada"
+
+#~ msgid "Feed tag changed"
+#~ msgstr "Etiqueta de la fuente cambiada"
+
+#~ msgid "Feed renamed"
+#~ msgstr "Fuente renombrada"
+
+#~ msgid "Feed "
+#~ msgstr "Fuente"
+
+#~ msgid " deleted"
+#~ msgstr " borrado"
+
+#~ msgid "Input deleted"
+#~ msgstr "Entrada borrada"
+
+#~ msgid "Process list has been reset"
+#~ msgstr "La lista de procesos ha sido reseteada"
+
+#~ msgid "Restricted access"
+#~ msgstr "Acceso restringido"
+
+#~ msgid "BD Settings error"
+#~ msgstr "Error en la configuración de la conexión a la base de datos"
+
+#~ msgid "Please, check database settings.php file"
+#~ msgstr "Deberías revisar el fichero settings.php"
+
+#~ msgid "No settings.php file found"
+#~ msgstr "No se ha encontrado el fichero settings.php"
+
+#~ msgid ""
+#~ "Copy and modify Includes/default.settings.php to Includes/settings.php"
+#~ msgstr ""
+#~ "Copia y modifica Includes/default.settings.php en Includes/settings.php"
+
+#~ msgid " clone"
+#~ msgstr " clonar"
+
+#~ msgid "Message successfully sent!"
+#~ msgstr "¡Mensaje enviado correctamente!"
+
+#~ msgid " is"
+#~ msgstr "está"
+
+#~ msgid " is inactive"
+#~ msgstr "está inactivo"
+
+#~ msgid "Log to feed"
+#~ msgstr "Enviar a una fuente"
+
+#~ msgid "Power to kWh"
+#~ msgstr "Power to kWh"
+
+#~ msgid "Power to kWh/d"
+#~ msgstr "Power to kWh/d"
+
+#~ msgid "x input"
+#~ msgstr "entrada x"
+
+#~ msgid "input on-time"
+#~ msgstr "input on-time"
+
+#~ msgid "kWhinc to kWh/d"
+#~ msgstr "kWhinc to kWh/d"
+
+#~ msgid "kWh to kWh/d"
+#~ msgstr "kWh to kWh/d"
+
+#~ msgid "update feed @time"
+#~ msgstr "Actualizar fuente @tiempo"
+
+#~ msgid "+ input"
+#~ msgstr "+ input"
+
+#~ msgid "/ input"
+#~ msgstr "/ input"
+
+#~ msgid "phaseshift"
+#~ msgstr "phaseshift"
+
+#~ msgid "accumulator"
+#~ msgstr "acumulador"
+
+#~ msgid "rate of change"
+#~ msgstr "ratio de cambio"
+
+#~ msgid "histogram"
+#~ msgstr "histograma"
+
+#~ msgid "average"
+#~ msgstr "media"
+
+#~ msgid "heat flux"
+#~ msgstr "flujo de calor"
+
+#~ msgid "power gained to kWh/d"
+#~ msgstr "potencia obtenida a kWh/d"
+
+#~ msgid "API Helper"
+#~ msgstr "API Helper"
+
+#~ msgid ""
+#~ "API keys are used to give authenticated access without login in via a "
+#~ "normal session."
+#~ msgstr ""
+#~ "Las siguientes claves son usadas para permitir acceso autenticado sin "
+#~ "necesidad de login."
+
+#~ msgid "Read only access: "
+#~ msgstr "Acceso de solo lectura:"
+
+#~ msgid "Allows to access in read only mode"
+#~ msgstr "Permite el acceso en modo de sólo lectura"
+
+#~ msgid "new"
+#~ msgstr "nuevo"
+
+#~ msgid "Write only access: "
+#~ msgstr "Acceso en modo escritura:"
+
+#~ msgid "Keep secret. Write mode access"
+#~ msgstr "Mentener en secreto. Acceso en modo escritura"
+
+#~ msgid "Post API"
+#~ msgstr "Post API"
+
+#~ msgid ""
+#~ "Example: Click or copy this to your web browser or send from your "
+#~ "monitoring hardware"
+#~ msgstr ""
+#~ "Por ejemplo: Pulsa o copia la siguiente url en el navegador or mándala "
+#~ "desde tu hardware de monitorización"
+
+#~ msgid "try me"
+#~ msgstr "pruébame"
+
+#~ msgid "Using Node addressing"
+#~ msgstr "Usando direccionamiento del nodo"
+
+#~ msgid "Change node_id from URL with the node identification"
+#~ msgstr "Cambiar el node_id desde la URL con la identificación del nodo"
+
+#~ msgid "Visualisation API"
+#~ msgstr "API para visualización"
+
+#~ msgid ""
+#~ "These are all the visualisations that are available in emoncms3. To view "
+#~ "a visualisation enter in a relevant feedid in the underlined boxes below "
+#~ "and then click on the > button."
+#~ msgstr ""
+#~ "Estas son todas la formas de visualización disponibles en Emoncms3. Para "
+#~ "ejecutar una vista introduce los datos apropiados en las cajas de texto y "
+#~ "pulsa en el boton >."
+
+#~ msgid "URL"
+#~ msgstr "Enlace"
+
+#~ msgid "View"
+#~ msgstr "Vista"
+
+#~ msgid "Real-time graph"
+#~ msgstr "Gráfico en tiempo real"
+
+#~ msgid "Raw data graph"
+#~ msgstr "Gráfico de datos brutos"
+
+#~ msgid "Bar graph"
+#~ msgstr "Gráfico de barras"
+
+#~ msgid "Smoothie"
+#~ msgstr "Smoothie"
+
+#~ msgid "All time histogram"
+#~ msgstr "Histograma completo"
+
+#~ msgid "Daily histogram"
+#~ msgstr "Histograma diario"
+
+#~ msgid "Zoom"
+#~ msgstr "Zoom"
+
+#~ msgid "kWh/d Comparison"
+#~ msgstr "kWh/d Comparison"
+
+#~ msgid "Stacked"
+#~ msgstr "Apliada"
+
+#~ msgid "Threshold"
+#~ msgstr "Threshold"
+
+#~ msgid "Simple zoom"
+#~ msgstr "Zoom sencillo"
+
+#~ msgid "Bar graph (ordered by height)"
+#~ msgstr "Bar graph (ordered by height)"
+
+#~ msgid "Threshold ordered by height"
+#~ msgstr "Threshold ordered by height"
+
+#~ msgid "Multigraph"
+#~ msgstr "Gráfico múltiple"
+
+#~ msgid "Datapoint Editor"
+#~ msgstr "Editor de datos"
+
+#~ msgid "Other options:"
+#~ msgstr "Otras opciones:"
+
+#~ msgid "Hide menu"
+#~ msgstr "Ocultar menu"
+
+#~ msgid ""
+#~ "Hide the top menu and footer by adding the attribute &embed=1 to the URL."
+#~ msgstr ""
+#~ "Puedes ocultar el menu superior y el pié añadiendo el atributo &embed=1 "
+#~ "en la URL. "
+
+#~ msgid "Share"
+#~ msgstr "Compartir"
+
+#~ msgid "To share a visualisation use your read apikey. Add the attribute "
+#~ msgstr ""
+#~ "Para compartir una vista utiliza tu clave de lectura. Añade el atributo "
+
+#~ msgid " to the URL"
+#~ msgstr " en la URL"
+
+#~ msgid "Embed"
+#~ msgstr "Incrustar"
+
+#~ msgid "Reset Multigraph"
+#~ msgstr "Inicializar Multigráfico"
+
+#~ msgid "The multigraph can be reset using the &clear=1 attribute."
+#~ msgstr ""
+#~ "El multigráfico puede ser inicializado usando el atributo &clear=1 en la "
+#~ "URL."
+
+#~ msgid "Yes please"
+#~ msgstr "Sí"
+
+#~ msgid "Inputs"
+#~ msgstr "Entradas"
+
+#~ msgid "Feeds"
+#~ msgstr "Fuentes"
+
+#~ msgid "Dashboards"
+#~ msgstr "Paneles"
+
+#~ msgid "API"
+#~ msgstr "API"
+
+#~ msgid "Admin"
+#~ msgstr "Administrar"
+
+#~ msgid "Notify settings"
+#~ msgstr "Configuración de notificaciones"
+
+#~ msgid "Notification recipiants (To): "
+#~ msgstr "Destinatarios de las notificaciones (To):"
+
+#~ msgid "Notify "
+#~ msgstr "Notificar"
+
+#~ msgid "Setup feed notifications"
+#~ msgstr "Establecer notificaciones de la fuente"
+
+#~ msgid "Notify when feed = value: "
+#~ msgstr "Notificar cuando la fuente = valor:"
+
+#~ msgid "Notify when feed is inactive"
+#~ msgstr "Notificar cuando esta fuente esté inactiva"
+
+#~ msgid "Notify feed status periodically"
+#~ msgstr "Notificar el estado de la fuente de manera periódica"
+
+#~ msgid "Edit mail settings"
+#~ msgstr "Editar preferencias de correo"
+
+#~ msgid "Ok"
+#~ msgstr "Ok"
+
+#~ msgid "Account Statistics"
+#~ msgstr "Estadísticas de Cuenta"
+
+#~ msgid "Disk space use:"
+#~ msgstr "Uso de espacio en disco:"
+
+#~ msgid "Up hits:"
+#~ msgstr "Up hits:"
+
+#~ msgid "Down hits:"
+#~ msgstr "Down hits:"
+
+#~ msgid "Admin panel"
+#~ msgstr "Panel de administración"
+
+#~ msgid "Total feed data disk space use: "
+#~ msgstr "Total de espacio de disco usado por la fuente de datos:"
+
+#~ msgid "Users"
+#~ msgstr "Usuarios"
+
+#~ msgid "registered users"
+#~ msgstr "usuarios registrados"
+
+#~ msgid "Up hits"
+#~ msgstr "Up hits"
+
+#~ msgid "Dn hits"
+#~ msgstr "Dn hits"
+
+#~ msgid "Memory use"
+#~ msgstr "Uso de memoria"
+
+#~ msgid "Dashboard name: "
+#~ msgstr "Nombre del panel:"
+
+#~ msgid "Description: "
+#~ msgstr "Descripción"
+
+#~ msgid "Main: "
+#~ msgstr "Principal:"
+
+#~ msgid "Published: "
+#~ msgstr "Publicado:"
+
+#~ msgid "Public: "
+#~ msgstr "Público:"
+
+#~ msgid "Dashboard Configuration"
+#~ msgstr "Configuración del panel"
+
+#~ msgid "Menu name: (lowercase a-z only)"
+#~ msgstr "Nombre para el menu: (sólo letras de la \"a\" a la \"z\")"
+
+#~ msgid "Make this dashboard the first shown"
+#~ msgstr "Hacer este panel como el primero que se muestra"
+
+#~ msgid "Main"
+#~ msgstr "Principal"
+
+#~ msgid "Activate this dashboard"
+#~ msgstr "Activar este panel"
+
+#~ msgid "Published"
+#~ msgstr "Publicado"
+
+#~ msgid "Anyone with the URL can see this dashboard"
+#~ msgstr "Cualquiera con la dirección URL puede ver este panel"
+
+#~ msgid "Public"
+#~ msgstr "Público"
+
+#~ msgid ""
+#~ "Shows dashboard description on mouse over dashboard name in menu project"
+#~ msgstr ""
+#~ "Muestra la descripción del panel cuando se pasa el ratón sobre su nombre "
+#~ "en el menú del proyecto"
+
+#~ msgid "Show description"
+#~ msgstr "Mostrar descripción"
+
+#~ msgid "Close"
+#~ msgstr "Cerrar"
+
+#~ msgid "Save changes"
+#~ msgstr "Guardar cambios"
+
+#~ msgid "Options"
+#~ msgstr "Opciones"
+
+#~ msgid "Delete"
+#~ msgstr "Borrar"
+
+#~ msgid "Saved"
+#~ msgstr "Guardar"
+
+#~ msgid "New dashboard"
+#~ msgstr "Nuevo panel"
+
+#~ msgid "Thumb view"
+#~ msgstr "Formato iconos"
+
+#~ msgid "Id"
+#~ msgstr "Id"
+
+#~ msgid "Dashboard"
+#~ msgstr "Panel"
+
+#~ msgid "Actions"
+#~ msgstr "Acciones"
+
+#~ msgid "This is the main dashboard"
+#~ msgstr "Este es el panel principal del proyecto"
+
+#~ msgid "Set main dashboard"
+#~ msgstr "Establecer panel principal"
+
+#~ msgid "Unpublish dashboard"
+#~ msgstr "Despublicar panel"
+
+#~ msgid "Publish dashboard"
+#~ msgstr "Publicar panel"
+
+#~ msgid "Make dashboard private"
+#~ msgstr "Hacer panel privado"
+
+#~ msgid "Make dashboard public"
+#~ msgstr "Hacer panel público"
+
+#~ msgid "Draw"
+#~ msgstr "Diseñar"
+
+#~ msgid "Clone"
+#~ msgstr "Clonar"
+
+#~ msgid "Public share URL"
+#~ msgstr "URL pública"
+
+#~ msgid "Private share URL"
+#~ msgstr "URL privada"
+
+#~ msgid "Dashboards:"
+#~ msgstr "Paneles:"
+
+#~ msgid "Draw Editor"
+#~ msgstr "Diseñador"
+
+#~ msgid "View mode"
+#~ msgstr "Vista"
+
+#~ msgid "Config"
+#~ msgstr "Configuración"
+
+#~ msgid "New"
+#~ msgstr "Nuevo"
+
+#~ msgid "List view"
+#~ msgstr "Formato lista"
+
+#~ msgid "Explore Public Dashboards"
+#~ msgstr "Explorar paneles públicos"
+
+#~ msgid "User"
+#~ msgstr "Usuario"
+
+#~ msgid "Alias"
+#~ msgstr "Alias"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Select graph type:"
+#~ msgstr "Seleccione un tipo de gráfico:"
+
+#~ msgid "Real-time"
+#~ msgstr "Tiempo real"
+
+#~ msgid "Raw data"
+#~ msgstr "Datos brutos"
+
+#~ msgid "Histogram"
+#~ msgstr "Histograma"
+
+#~ msgid "Feed type"
+#~ msgstr "Tipo de fuente"
+
+#~ msgid "Undefined"
+#~ msgstr "Indefinido"
+
+#~ msgid "Real-time data"
+#~ msgstr "Datos en tiempo real"
+
+#~ msgid "Daily data"
+#~ msgstr "Datos diarios"
+
+#~ msgid "Histogram data"
+#~ msgstr "Datos de histograma"
+
+#~ msgid "Tag feed"
+#~ msgstr "Etiqueta de la fuente"
+
+#~ msgid "Rename feed"
+#~ msgstr "Renombrar fuente"
+
+#~ msgid "Rename"
+#~ msgstr "Renombrar"
+
+#~ msgid "Notify"
+#~ msgstr "Notificar"
+
+#~ msgid "Set notifications"
+#~ msgstr "Establecer notificaciones"
+
+#~ msgid "Set notification behavior for this feed"
+#~ msgstr "Establecer notificaciones para esta fuente"
+
+#~ msgid "Delete feed?"
+#~ msgstr "¿Borrar fuente?"
+
+#~ msgid "Are you sure you want to delete feed: "
+#~ msgstr "¿Estás seguro de que quieres borrar la fuente?:"
+
+#~ msgid "feed/delete"
+#~ msgstr "fuente/borrar"
+
+#~ msgid "Deleted feeds"
+#~ msgstr "Fuentes borradas"
+
+#~ msgid "Delete feeds permanently"
+#~ msgstr "¿Borrar fuentes de manera permanente?"
+
+#~ msgid "Sync feeds"
+#~ msgstr "Sincronizar fuentes"
+
+#~ msgid "Tag"
+#~ msgstr "Etiqueta"
+
+#~ msgid "Size"
+#~ msgstr "Tamaño"
+
+#~ msgid "Updated"
+#~ msgstr "Actualizado"
+
+#~ msgid "Value"
+#~ msgstr "Valor"
+
+#~ msgid "You have no feeds"
+#~ msgstr "No existen fuentes"
+
+#~ msgid "s ago"
+#~ msgstr " s atrás"
+
+#~ msgid " mins ago"
+#~ msgstr " minutros atrás"
+
+#~ msgid " hours ago"
+#~ msgstr " horas atrás"
+
+#~ msgid "inactive"
+#~ msgstr "inactivo"
+
+#~ msgid "Node view"
+#~ msgstr "Vista de nodos"
+
+#~ msgid "Node"
+#~ msgstr "Nodo"
+
+#~ msgid "Autoconfigure inputs"
+#~ msgstr "Configura entradas automaticamente"
+
+#~ msgid "Nodes"
+#~ msgstr "Nodos"
+
+#~ msgid "Node Identification"
+#~ msgstr "Identificación del nodo"
+
+#~ msgid "Input configuration:   "
+#~ msgstr "Configuración de entrada:"
+
+#~ msgid ""
+#~ "Input processes are executed sequentially with the result being passed "
+#~ "back for further processing by the next processor in the input processing "
+#~ "list."
+#~ msgstr ""
+#~ "Los procesos de entrada son ejecutados de manera secuencial y el "
+#~ "resultado es pasado para ser procesador por el siguiente proceso de la "
+#~ "lista de procesos de entrada."
+
+#~ msgid "add"
+#~ msgstr "añadir"
+
+#~ msgid "Reset process list?"
+#~ msgstr "¿Inicializar la lista de procesos?"
+
+#~ msgid "Are you sure you want to delete input: "
+#~ msgstr "¿Estás seguro de que quieres borrar la entrada:"
+
+#~ msgid "Delete input?"
+#~ msgstr "¿Borrar entrada?"
+
+#~ msgid "Order"
+#~ msgstr "Ordenar"
+
+#~ msgid "Process"
+#~ msgstr "Procesar"
+
+#~ msgid "Arg"
+#~ msgstr "Argumento"
+
+#~ msgid "Move up"
+#~ msgstr "Mover arriba"
+
+#~ msgid "You have no processes defined"
+#~ msgstr "No existen procesos definidos"
+
+#~ msgid "Powered by "
+#~ msgstr "Creado con "
+
+#~ msgid "delete"
+#~ msgstr "borrar"
+
+#~ msgid "AUTODETECTLANGUAGE"
+#~ msgstr "Browser language"
+
+#~ msgid "Sorry, you need a valid apikey or be logged in to see this page"
+#~ msgstr ""
+#~ "Lo siento, necesitas una clave válida o estar loggeado para ver esta "
+#~ "página"
+
+#~ msgid "API keys"
+#~ msgstr "Claves API"
+
+#~ msgid "converted feed: "
+#~ msgstr "fuente convertida:"
+
+#~ msgid "feed: "
+#~ msgstr "fuente:"
+
+#~ msgid " already converted"
+#~ msgstr " ya convertido"
+
+#~ msgid "Embed this graph"
+#~ msgstr "Incrustar este gráfico"
+
+#~ msgid "Realtime: "
+#~ msgstr "Tiempo real:"
+
+#~ msgid "Raw data: "
+#~ msgstr "Datos brutos:"
+
+#~ msgid "Bar graph view: "
+#~ msgstr "Vista de gráfico de barras:"
+
+#~ msgid "English"
+#~ msgstr "Inglés"
+
+#~ msgid "Spanish"
+#~ msgstr "Español"
+
+#~ msgid "Save current configuration"
+#~ msgstr "Guardar configuración actual"
+
+#~ msgid "Left"
+#~ msgstr "Izquierda"
+
+#~ msgid "Right"
+#~ msgstr "Derecha"
+
+#~ msgid "Fill"
+#~ msgstr "Rellenar"
+
+#~ msgid "Loading...  please wait about 5s"
+#~ msgstr "Cargando... por favor espere unos 5s"
+
+#~ msgid "Loading..."
+#~ msgstr "Cargando..."
+
+#~ msgid "2 Months"
+#~ msgstr "2 Meses"
+
+#~ msgid "Month"
+#~ msgstr "Mes"
+
+#~ msgid "Week"
+#~ msgstr "Semana"
+
+#~ msgid "Day"
+#~ msgstr "Día"
+
+#~ msgid "Left vs"
+#~ msgstr "Izquierda vs"
+
+#~ msgid "Loading a feed can take time.. "
+#~ msgstr "Cargar una fuente puede llevar tiempo..."
+
+#~ msgid "1 day"
+#~ msgstr "1 día"
+
+#~ msgid "12 hours"
+#~ msgstr "12 horas"
+
+#~ msgid "1 hour"
+#~ msgstr "1 hora"
+
+#~ msgid "Date / Time"
+#~ msgstr "Fecha / Hora"
+
+#~ msgid "Total: "
+#~ msgstr "Total:"
+
+#~ msgid " kWh : pounds"
+#~ msgstr "kWh: libras"
+
+#~ msgid " a week, pounds"
+#~ msgstr "una semana, libras"
+
+#~ msgid " a year | Unit price: pounds"
+#~ msgstr "un año | Unidad: libras"
+
+#~ msgid "Last:"
+#~ msgstr "Último:"
+
+#~ msgid "Graph"
+#~ msgstr "Gráfico"
