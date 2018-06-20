@@ -207,19 +207,12 @@ class Process_ProcessList
         return $value;
     }
     
-<<<<<<< HEAD
-    public function max_value_allowed($arg, $time, $value)
-=======
      public function max_value_allowed($arg, $time, $value)
->>>>>>> emoncms_repo/master
     {
         if ($value>$arg) $value = $arg;
         return $value;
     }
-<<<<<<< HEAD
-=======
-    
->>>>>>> emoncms_repo/master
+
     public function min_value_allowed($arg, $time, $value)
     {
         if ($value<$arg) $value = $arg;
