@@ -51,13 +51,19 @@ function db_check($mysqli, $database)
 
 function controller($controller_name)
 {
+    global $session;
     $output = array('content'=>EMPTY_ROUTE);
 
     if ($controller_name) {
         $controller = $controller_name."_controller";
         $controllerScript = "Modules/".$controller_name."/".$controller.".php";
+
         if (is_file($controllerScript)) {
-            load_language_files("Modules/".$controller_name."/locale");
+
+            // Load language files for module mo file
+            $domain = $controller_name;
+            $mofile= "Modules/".$controller_name."/languages/".$domain."-".$session['lang'].".mo";
+            load_translation_file($mofile, $domain);
 
             require_once $controllerScript;
             $output = $controller();
@@ -227,11 +233,16 @@ function load_language_files($path, $domain = 'messages')
 
 function load_menu()
 {
+    global $session;
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++) {
         if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php")) {
                 load_language_files("Modules/".$dir[$i]."/locale");
+                 // Load language files for module mo file
+                $domain = $dir[$i];
+                $mofile= "Modules/".$dir[$i]."/languages/".$domain."-".$session['lang'].".mo";
+                load_translation_file($mofile, $domain);
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
