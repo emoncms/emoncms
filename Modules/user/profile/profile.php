@@ -50,64 +50,64 @@ function languagecode_to_name($langs) {
 
 <div class="row-fluid">
     <div class="span4">
-        <h3><?php echo _('My account'); ?></h3>
+        <h3><?php _e('My account'); ?></h3>
 
         <div id="account">
             <div class="account-item">
-                <span class="muted"><?php echo _('User ID'); ?></span><br><span class="userid"></span>
+                <span class="muted"><?php _e('User ID'); ?></span><br><span class="userid"></span>
             </div>
 
             <div class="account-item">
-                <span class="muted"><?php echo _('Username'); ?></span>
-                <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
+                <span class="muted"><?php _e('Username'); ?></span>
+                <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php _e('Edit'); ?></a></span>
                 <div id="edit-username-form" class="input-append" style="display:none">
                     <input class="span2" type="text" style="width:150px">
-                    <button class="btn" type="button"><?php echo _('Save'); ?></button>
+                    <button class="btn" type="button"><?php _e('Save'); ?></button>
                 </div>
                 <div id="change-username-error" class="alert alert-error" style="display:none; width:170px"></div>
             </div>
             <div class="account-item">
-                <span class="muted"><?php echo _('Email'); ?></span>
-                <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php echo _('Edit'); ?></a></span>
+                <span class="muted"><?php _e('Email'); ?></span>
+                <span id="email-view"><br><span class="email"></span> <a id="edit-email" style="float:right"><?php _e('Edit'); ?></a></span>
                 <div id="edit-email-form" class="input-append" style="display:none">
                     <input class="span2" type="text" style="width:150px">
-                    <button class="btn" type="button"><?php echo _('Save'); ?></button>
+                    <button class="btn" type="button"><?php _e('Save'); ?></button>
                 </div>
                 <div id="change-email-error" class="alert alert-error" style="display:none; width:170px"></div>
             </div>
 
             <div class="account-item">
-                <a id="changedetails"><?php echo _('Change Password'); ?></a>
+                <a id="changedetails"><?php _e('Change Password'); ?></a>
             </div>
 
         </div>
 
         <div id="change-password-form" style="display:none">
             <div class="account-item">
-                <span class="muted"><?php echo _('Current password'); ?></span>
+                <span class="muted"><?php _e('Current password'); ?></span>
                 <br><input id="oldpassword" type="password" />
             </div>
             <div class="account-item">
-                <span class="muted"><?php echo _('New password'); ?></span>
+                <span class="muted"><?php _e('New password'); ?></span>
                 <br><input id="newpassword" type="password" />
             </div>
             <div class="account-item">
-                <span class="muted"><?php echo _('Repeat new password'); ?></span>
+                <span class="muted"><?php _e('Repeat new password'); ?></span>
                 <br><input id="repeatnewpassword" type="password" />
             </div>
             <div id="change-password-error" class="alert alert-error" style="display:none; width:170px"></div>
-            <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
-            <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
+            <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php _e('Save'); ?>" />
+            <input id="change-password-cancel" type="submit" class="btn" value="<?php _e('Cancel'); ?>" />
         </div>
 
         <br>
         <div id="account">
           <div class="account-item">
-              <span class="muted"><?php echo _('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn"><?php echo _('Copy'); ?></button>
+              <span class="muted"><?php _e('Write API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapiwritebtn"><?php _e('Copy'); ?></button>
               <span class="writeapikey" id="copyapiwrite"></span>
           </div>
           <div class="account-item">
-              <span class="muted"><?php echo _('Read API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapireadbtn"><?php echo _('Copy'); ?></button>
+              <span class="muted"><?php _e('Read API Key'); ?></span> <button style="float:right" class="btn btn-small" id="copyapireadbtn"><?php _e('Copy'); ?></button>
               <span class="readapikey" id="copyapiread"></span>
               <span id="msg"></span>
           </div>
@@ -119,17 +119,17 @@ function languagecode_to_name($langs) {
 
     </div>
     <div class="span8">
-        <h3><?php echo _('My Profile'); ?></h3>
+        <h3><?php _e('My Profile'); ?></h3>
         <div id="table"></div>
         
-        <h3><?php echo _('Mobile app'); ?></h3>
+        <h3><?php _e('Mobile app'); ?></h3>
         <div class="account-item">
             <table>
             <tr>
               <td style="width:192px">
-                <p><?php echo _('Scan QR code from the iOS or Android app to connect:');?></p>
+                <p><?php _e('Scan QR code from the iOS or Android app to connect:');?></p>
                 <div id="qr_apikey"></div>
-                <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
+                <p style="padding-top:10px"><?php _e('Or using a barcode scanner scan to view MyElectric graph');?></p>
               </td>
               <td style="padding-left:20px">
                 <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
@@ -146,11 +146,11 @@ function languagecode_to_name($langs) {
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"><?php echo _('WARNING deleting an account is permanent'); ?></h3>
+        <h3 id="myModalLabel"><?php _e('WARNING deleting an account is permanent'); ?></h3>
     </div>
     <div class="modal-body">
         <div class="delete-account-s1">
-        <p><?php echo _('Are you sure you want to delete your account?'); ?></p>
+        <p><?php _e('Are you sure you want to delete your account?'); ?></p>
         </div>
 
         <div class="delete-account-s2" style="display:none">
@@ -165,9 +165,9 @@ function languagecode_to_name($langs) {
         </div>
     </div>
     <div class="modal-footer">
-        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
-        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo _('Logout'); ?></button>
+        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php _e('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php _e('Delete permanently'); ?></button>
+        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php _e('Logout'); ?></button>
     </div>
 </div>
 
@@ -208,13 +208,13 @@ function languagecode_to_name($langs) {
     var currentlanguage = list.data.language;
 
     list.fields = {
-        'gravatar':{'title':"<?php echo _('Gravatar'); ?>", 'type':'gravatar'},
-        'name':{'title':"<?php echo _('Name'); ?>", 'type':'text'},
-        'location':{'title':"<?php echo _('Location'); ?>", 'type':'text'},
-        'bio':{'title':"<?php echo _('Bio'); ?>", 'type':'text'},
-        'timezone':{'title':"<?php echo _('Timezone'); ?>", 'type':'timezone'},
-        'language':{'title':"<?php echo _('Language'); ?>", 'type':'language', 'options':lang, 'label':lang_name},
-        'startingpage':{'title':"<?php echo _('Starting page'); ?>", 'type':'text'}
+        'gravatar':{'title':"<?php _e('Gravatar'); ?>", 'type':'gravatar'},
+        'name':{'title':"<?php _e('Name'); ?>", 'type':'text'},
+        'location':{'title':"<?php _e('Location'); ?>", 'type':'text'},
+        'bio':{'title':"<?php _e('Bio'); ?>", 'type':'text'},
+        'timezone':{'title':"<?php _e('Timezone'); ?>", 'type':'timezone'},
+        'language':{'title':"<?php _e('Language'); ?>", 'type':'language', 'options':lang, 'label':lang_name},
+        'startingpage':{'title':"<?php _e('Starting page'); ?>", 'type':'text'}
     }
 
     $.ajax({ url: path+"user/gettimezones.json", dataType: 'json', async: true, success: function(result) {
@@ -341,7 +341,7 @@ function languagecode_to_name($langs) {
 
         if (newpassword != repeatnewpassword)
         {
-            $("#change-password-error").html("<?php echo _('Passwords do not match'); ?>").show();
+            $("#change-password-error").html("<?php _e('Passwords do not match'); ?>").show();
         }
         else
         {
