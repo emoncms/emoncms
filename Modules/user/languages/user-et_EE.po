@@ -1,0 +1,275 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 9.x - User\n"
+"POT-Creation-Date: 2015-02-04 02:44+0100\n"
+"PO-Revision-Date: 2015-11-10 12:24+0200\n"
+"Last-Translator: Kristo Kaasan <kristo@kaasan.ee>\n"
+"Language-Team: Environ <kristo@kaasan.ee>\n"
+"Language: et_EE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.6\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../login_block.php:30
+msgid "Username:"
+msgstr "Kasutajanimi:"
+
+#: ../../../login_block.php:36
+msgid "Email:"
+msgstr "E-post:"
+
+#: ../../../login_block.php:42
+msgid "Password:"
+msgstr "Parool:"
+
+#: ../../../login_block.php:48
+msgid "Confirm password:"
+msgstr "Kinnita parool:"
+
+#: ../../../login_block.php:56
+msgid "Remember me"
+msgstr "Mäleta mind"
+
+#: ../../../login_block.php:57
+msgid "Login"
+msgstr "Sisene"
+
+#: ../../../login_block.php:58 ../../../login_block.php:62
+msgid "or"
+msgstr "või"
+
+#: ../../../login_block.php:58
+msgid "register"
+msgstr "registreeri"
+
+#: ../../../login_block.php:62
+msgid "Register"
+msgstr "Registreeri"
+
+#: ../../../login_block.php:63
+msgid "cancel"
+msgstr "tühista"
+
+#: ../../../profile/profile.php:34
+msgid "Welsh (United Kingdom)"
+msgstr "walesi keel (Ühendkuningriik)"
+
+#: ../../../profile/profile.php:35
+msgid "Danish (Denmark)"
+msgstr "taani keel (Taani)"
+
+#: ../../../profile/profile.php:36
+msgid "English"
+msgstr "inglise keel"
+
+#: ../../../profile/profile.php:37
+msgid "Spanish (Spain)"
+msgstr "hispaania keel (Hispaania)"
+
+#: ../../../profile/profile.php:38
+msgid "French (France)"
+msgstr "prantsuse keel (Prantsusmaa)"
+
+#: ../../../profile/profile.php:39
+msgid "Italian (Italy)"
+msgstr "itaalia keel (Itaalia)"
+
+#: ../../../profile/profile.php:40
+msgid "Dutch (Belgium)"
+msgstr "hollandi keel (Belgia)"
+
+#: ../../../profile/profile.php:41
+msgid "Dutch (Netherlands)"
+msgstr "hollandi keel (Holland)"
+
+#: ../../../profile/profile.php:57
+msgid "My account"
+msgstr "Minu konto"
+
+#: ../../../profile/profile.php:61
+msgid "Username"
+msgstr "Kasutajanimi"
+
+#: ../../../profile/profile.php:62 ../../../profile/profile.php:71
+msgid "Edit"
+msgstr "Muuda"
+
+#: ../../../profile/profile.php:65 ../../../profile/profile.php:74
+#: ../../../profile/profile.php:99
+msgid "Save"
+msgstr "Salvesta"
+
+#: ../../../profile/profile.php:70
+msgid "Email"
+msgstr "E-post"
+
+#: ../../../profile/profile.php:80
+msgid "Change Password"
+msgstr "Muuda Parool"
+
+#: ../../../profile/profile.php:87
+msgid "Current password"
+msgstr "Kehtiv parool"
+
+#: ../../../profile/profile.php:91
+msgid "New password"
+msgstr "Uus parool"
+
+#: ../../../profile/profile.php:95
+msgid "Repeat new password"
+msgstr "Korda uut parooli"
+
+#: ../../../profile/profile.php:100
+msgid "Cancel"
+msgstr "Tühista"
+
+#: ../../../profile/profile.php:106
+msgid "Write API Key"
+msgstr "Kirjutamise API võti"
+
+#: ../../../profile/profile.php:111
+msgid "Read API Key"
+msgstr "Lugemise API võti"
+
+#: ../../../profile/profile.php:120
+msgid "My Profile"
+msgstr "Minu Profiil"
+
+#: ../../../profile/profile.php:144
+msgid "Gravatar"
+msgstr "Gravatar"
+
+#: ../../../profile/profile.php:145
+msgid "Name"
+msgstr "Nimi"
+
+#: ../../../profile/profile.php:146
+msgid "Location"
+msgstr "Asukoht"
+
+#: ../../../profile/profile.php:147
+msgid "Timezone"
+msgstr "Ajavöönd"
+
+#: ../../../profile/profile.php:148
+msgid "Language"
+msgstr "Keel"
+
+#: ../../../profile/profile.php:149
+msgid "Bio"
+msgstr "Biograafia"
+
+#: ../../../profile/profile.php:271
+msgid "Passwords do not match"
+msgstr "Paroolid ei ühti"
+
+#: ../../../user_menu.php:7
+msgid "Account"
+msgstr "Konto"
+
+#: ../../../user_menu.php:8
+msgid "Logout"
+msgstr "Logi välja"
+
+#: ../../../user_model.php:153
+msgid "Missing username, password or email parameter"
+msgstr "Puudub kasutajanimi, parool või E-post"
+
+#: ../../../user_model.php:155 ../../../user_model.php:381
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "Kasutajanimi tohib sisaldada ainult a-z ja 0-9 sümboleid"
+
+#: ../../../user_model.php:159 ../../../user_model.php:392
+msgid "Username already exists"
+msgstr "Kasutajanimi juba olemas"
+
+#: ../../../user_model.php:161 ../../../user_model.php:310
+#: ../../../user_model.php:401
+msgid "Email address format error"
+msgstr "Vigane E-posti formaat"
+
+#: ../../../user_model.php:163 ../../../user_model.php:379
+msgid "Username length error"
+msgstr "Viga kasutajanime pikkuses"
+
+#: ../../../user_model.php:164 ../../../user_model.php:283
+#: ../../../user_model.php:284
+msgid "Password length error"
+msgstr "Viga parooli pikkuses"
+
+#: ../../../user_model.php:177
+msgid "Error creating user"
+msgstr "Viga kasutaja loomisel"
+
+#: ../../../user_model.php:191 ../../../user_model.php:241
+msgid "Username or password empty"
+msgstr "Kasutajanimi või parool on tühi"
+
+#: ../../../user_model.php:197
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
+"Kasutajanimi tohib sisaldada ainult a-z ja 0-9 sümboleid, side- ja "
+"alakriipsu, kui te lõite konto ennem, kui see reegel oli rakendatud, siis "
+"palun muutke oma kasutajanimi profiili muutmise leheküljelt."
+
+#: ../../../user_model.php:204
+msgid "Username does not exist"
+msgstr "Kasutajanime ei eksisteeri"
+
+#: ../../../user_model.php:211
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
+"Vale parool, kui oled kindel, et sisestasid parooli õigesti, proovi "
+"tühjendada sirviku vahemälu"
+
+#: ../../../user_model.php:232
+msgid "Login successful"
+msgstr "Sisenemine õnnestus"
+
+#: ../../../user_model.php:244
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr ""
+"Kasutajanimi tohib sisaldada ainult a-z ja 0-9 sümboleid ning side- ja "
+"alakriipsu"
+
+#: ../../../user_model.php:251 ../../../user_model.php:258
+msgid "Incorrect authentication"
+msgstr "Vale kasutajainfo"
+
+#: ../../../user_model.php:303
+msgid "Old password incorect"
+msgstr "Vana parool ei ole õige"
+
+#: ../../../user_model.php:376
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change username"
+msgstr ""
+"Kuna kasutate küpsise põhist kasutajakonto meeldejätmist, palun logige "
+"välja ja sisenege uuesti, et muuta kasutajanimi."
+
+#: ../../../user_model.php:388
+msgid "Username updated"
+msgstr "Kasutajanimi uuendatud"
+
+#: ../../../user_model.php:398
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change email"
+msgstr ""
+"Kuna kasutate küpsise põhist kasutajakonto meeldejätmist, palun logige "
+"välja ja sisenege uuesti, et muuta E-posti aadress."
+
+#: ../../../user_model.php:404
+msgid "Email updated"
+msgstr "E-post uuendatud"

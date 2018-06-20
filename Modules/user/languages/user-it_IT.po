@@ -1,0 +1,275 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Emoncms 8.4.0 - User\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-02-04 02:53+0100\n"
+"PO-Revision-Date: 2015-02-04 02:53+0100\n"
+"Last-Translator: \n"
+"Language-Team: Gabriele Lauricella <gab.lau@gmail.com>\n"
+"Language: it_IT\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.7.4\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: _;__;_e;_n:1,2;_n_noop:1,2;_nx:1,2;_nx_noop:1,2\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../login_block.php:30
+msgid "Username:"
+msgstr "Nome utente:"
+
+#: ../../../login_block.php:36
+msgid "Email:"
+msgstr "Email:"
+
+#: ../../../login_block.php:42
+msgid "Password:"
+msgstr "Password:"
+
+#: ../../../login_block.php:48
+msgid "Confirm password:"
+msgstr "Conferma password:"
+
+#: ../../../login_block.php:56
+msgid "Remember me"
+msgstr "Ricordami"
+
+#: ../../../login_block.php:57
+msgid "Login"
+msgstr "Accedi"
+
+#: ../../../login_block.php:58 ../../../login_block.php:62
+msgid "or"
+msgstr "o"
+
+#: ../../../login_block.php:58
+msgid "register"
+msgstr "Registrati"
+
+#: ../../../login_block.php:62
+msgid "Register"
+msgstr "Registrati"
+
+#: ../../../login_block.php:63
+msgid "cancel"
+msgstr "annulla"
+
+#: ../../../profile/profile.php:34
+msgid "Welsh (United Kingdom)"
+msgstr "Gallese (Regno Unito)"
+
+#: ../../../profile/profile.php:35
+msgid "Danish (Denmark)"
+msgstr "Danese (Danimarca)"
+
+#: ../../../profile/profile.php:36
+msgid "English"
+msgstr "Inglese"
+
+#: ../../../profile/profile.php:37
+msgid "Spanish (Spain)"
+msgstr "Spagnolo (Spagna)"
+
+#: ../../../profile/profile.php:38
+msgid "French (France)"
+msgstr "Francese (Francia)"
+
+#: ../../../profile/profile.php:39
+msgid "Italian (Italy)"
+msgstr "Italiano (Italia)"
+
+#: ../../../profile/profile.php:40
+msgid "Dutch (Belgium)"
+msgstr "Olandese (Belgio)"
+
+#: ../../../profile/profile.php:41
+msgid "Dutch (Netherlands)"
+msgstr "Olandese (Paesi Bassi)"
+
+#: ../../../profile/profile.php:57
+msgid "My account"
+msgstr "Il mio account"
+
+#: ../../../profile/profile.php:61
+msgid "Username"
+msgstr "Nome utente"
+
+#: ../../../profile/profile.php:62 ../../../profile/profile.php:71
+msgid "Edit"
+msgstr "Modifica"
+
+#: ../../../profile/profile.php:65 ../../../profile/profile.php:74
+#: ../../../profile/profile.php:99
+msgid "Save"
+msgstr "Salva"
+
+#: ../../../profile/profile.php:70
+msgid "Email"
+msgstr "Indirizzo email"
+
+#: ../../../profile/profile.php:80
+msgid "Change Password"
+msgstr "Cambia password"
+
+#: ../../../profile/profile.php:87
+msgid "Current password"
+msgstr "Password attuale"
+
+#: ../../../profile/profile.php:91
+msgid "New password"
+msgstr "Nuova password"
+
+#: ../../../profile/profile.php:95
+msgid "Repeat new password"
+msgstr "Ripeti nuova password"
+
+#: ../../../profile/profile.php:100
+msgid "Cancel"
+msgstr "Annulla"
+
+#: ../../../profile/profile.php:106
+msgid "Write API Key"
+msgstr "Write API Key"
+
+#: ../../../profile/profile.php:111
+msgid "Read API Key"
+msgstr "Read API Key"
+
+#: ../../../profile/profile.php:120
+msgid "My Profile"
+msgstr "Il mio profilo"
+
+#: ../../../profile/profile.php:144
+msgid "Gravatar"
+msgstr "Gravatar"
+
+#: ../../../profile/profile.php:145
+msgid "Name"
+msgstr "Nome"
+
+#: ../../../profile/profile.php:146
+msgid "Location"
+msgstr "Luogo"
+
+#: ../../../profile/profile.php:147
+msgid "Timezone"
+msgstr "Fuso orario"
+
+#: ../../../profile/profile.php:148
+msgid "Language"
+msgstr "Lingua interfaccia"
+
+#: ../../../profile/profile.php:149
+msgid "Bio"
+msgstr "Bio"
+
+#: ../../../profile/profile.php:271
+msgid "Passwords do not match"
+msgstr "Le password non coincidono"
+
+#: ../../../user_menu.php:7
+msgid "Account"
+msgstr "Account"
+
+#: ../../../user_menu.php:8
+msgid "Logout"
+msgstr "Esci"
+
+#: ../../../user_model.php:153
+msgid "Missing username, password or email parameter"
+msgstr "Manca il nome utente, la password o l'indirizzo email"
+
+#: ../../../user_model.php:155 ../../../user_model.php:381
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "Il Nome Utente può contenere solo i caratteri a-z e 0-9"
+
+#: ../../../user_model.php:159 ../../../user_model.php:392
+msgid "Username already exists"
+msgstr "Nome utente già esistente"
+
+#: ../../../user_model.php:161 ../../../user_model.php:310
+#: ../../../user_model.php:401
+msgid "Email address format error"
+msgstr "Indirizzo email non corretto"
+
+#: ../../../user_model.php:163 ../../../user_model.php:379
+msgid "Username length error"
+msgstr "Errore lunghezza Nome Utente"
+
+#: ../../../user_model.php:164 ../../../user_model.php:283
+#: ../../../user_model.php:284
+msgid "Password length error"
+msgstr "Errore lunghezza Password"
+
+#: ../../../user_model.php:177
+msgid "Error creating user"
+msgstr "Errore creazione utente"
+
+#: ../../../user_model.php:191 ../../../user_model.php:241
+msgid "Username or password empty"
+msgstr "Nome utente o password vuoti"
+
+#: ../../../user_model.php:197
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr ""
+"Il Nome Utente deve contenere solo i caratteri a-z e 0-9 . e _ se è stato "
+"creato un account prima di questa regola, all'accesso, inserire il nome "
+"utente senza i caratteri non validi, poi sentitevi liberi di modificare il "
+"nome utente nella pagina del profilo."
+
+#: ../../../user_model.php:204
+msgid "Username does not exist"
+msgstr "Il Nome Utente non esiste"
+
+#: ../../../user_model.php:211
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
+"Password non valida, se siete sicuri che sia corretta provare a cancellare "
+"la cache del browser"
+
+#: ../../../user_model.php:232
+msgid "Login successful"
+msgstr "Accesso completato"
+
+#: ../../../user_model.php:244
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr "Il Nome Utente deve contenere solo i caratteri a-z e 0-9 . e _"
+
+#: ../../../user_model.php:251 ../../../user_model.php:258
+msgid "Incorrect authentication"
+msgstr "Autenticazione fallita"
+
+#: ../../../user_model.php:303
+msgid "Old password incorect"
+msgstr "Vecchia password non valida"
+
+#: ../../../user_model.php:376
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change username"
+msgstr ""
+"Se stai utilizzando la funzione Ricordami, disconnettersi e riconnettersi "
+"per cambiare il nome utente"
+
+#: ../../../user_model.php:388
+msgid "Username updated"
+msgstr "Nome utente aggiornato"
+
+#: ../../../user_model.php:398
+msgid ""
+"As your using a cookie based remember me login, please logout and log back "
+"in to change email"
+msgstr ""
+"Se stai utilizzando la funzione Ricordami, disconnettersi e riconnettersi "
+"per cambiare l'indirizzo email"
+
+#: ../../../user_model.php:404
+msgid "Email updated"
+msgstr "Email aggiornata"

@@ -1,0 +1,223 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-09-25 19:03+0100\n"
+"PO-Revision-Date: 2013-09-25 19:23+0100\n"
+"Last-Translator: Troels Leegaard <tleegaard@gmail.com>\n"
+"Language-Team: \n"
+"Language: da_DK\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../login_block.php:30
+msgid "Username:"
+msgstr "Brugernavn:"
+
+#: ../../../login_block.php:35
+msgid "Email:"
+msgstr "E-mail:"
+
+#: ../../../login_block.php:40
+msgid "Password:"
+msgstr "Adgangskode:"
+
+#: ../../../login_block.php:45
+msgid "Confirm password:"
+msgstr "Bekræft adgangskode:"
+
+#: ../../../login_block.php:52
+msgid "Remember me"
+msgstr "Husk mit login"
+
+#: ../../../login_block.php:53
+msgid "Login"
+msgstr "Log ind"
+
+#: ../../../login_block.php:54
+#: ../../../login_block.php:58
+msgid "or"
+msgstr "eller"
+
+#: ../../../login_block.php:54
+msgid "register"
+msgstr "registrér"
+
+#: ../../../login_block.php:58
+msgid "Register"
+msgstr "Registrér"
+
+#: ../../../login_block.php:59
+msgid "cancel"
+msgstr "annullér"
+
+#: ../../../user_model.php:132
+msgid "Missing username, password or email paramater"
+msgstr "Manglende brugernavn, adgangskode eller e-mail"
+
+#: ../../../user_model.php:134
+#: ../../../user_model.php:263
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "Brugernavn må kun indeholde karaktererne a-z og 0-9"
+
+#: ../../../user_model.php:138
+#: ../../../user_model.php:274
+msgid "Username already exists"
+msgstr "Brugernavnet eksisterer allerede"
+
+#: ../../../user_model.php:140
+#: ../../../user_model.php:283
+msgid "Email address format error"
+msgstr "E-mail-adressen er forkert"
+
+#: ../../../user_model.php:142
+#: ../../../user_model.php:261
+msgid "Username length error"
+msgstr "Fejl i brugernavnets længde"
+
+#: ../../../user_model.php:143
+#: ../../../user_model.php:232
+#: ../../../user_model.php:233
+msgid "Password length error"
+msgstr "Fejl i adgangskodens længde"
+
+#: ../../../user_model.php:156
+msgid "Error creating user"
+msgstr "Fejl ved oprettelse af bruger"
+
+#: ../../../user_model.php:170
+msgid "Username or password empty"
+msgstr "Brugernavn eller adganskode er tom"
+
+#: ../../../user_model.php:176
+msgid "Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."
+msgstr "Brugernavnet må kun bestå af karaktererne a-z, 0-9, \"_\" og \"-\". Hvis du har oprettet en konto før denne regel tiltrådte skal du indtaste dit brugernavn og udelade karaktererne der ikke længere er tilladte. Efter login bedes du ændre dit brugernavn på din profilside."
+
+#: ../../../user_model.php:183
+msgid "Username does not exist"
+msgstr "Brugernavn eksisterer ikke"
+
+#: ../../../user_model.php:190
+msgid "Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr "Forkert adgangskode. Hvis du er sikker på at adgangskoden er indtastet korrekt, kan du evt. prøve at slette din browsers cache"
+
+#: ../../../user_model.php:211
+msgid "Login successful"
+msgstr "Succesfuldt login"
+
+#: ../../../user_model.php:252
+msgid "Old password incorect"
+msgstr "Gammel adgangskode er forkert"
+
+#: ../../../user_model.php:258
+msgid "As your using a cookie based remember me login, please logout and log back in to change username"
+msgstr "Da din browser husker dit login, bedes du logge ud og efterfølgende logge ind igen for at ændre dit brugernavn"
+
+#: ../../../user_model.php:270
+msgid "Username updated"
+msgstr "Brugernavn opdateret"
+
+#: ../../../user_model.php:280
+msgid "As your using a cookie based remember me login, please logout and log back in to change email"
+msgstr "Da din browser husker dit login, bedes du logge ud og efterfølgende logge ind igen for at ændre din e-mail"
+
+#: ../../../user_model.php:286
+msgid "Email updated"
+msgstr "E-mail opdateret"
+
+#: ../../../user_menu.php:7
+msgid "Account"
+msgstr "Konto"
+
+#: ../../../user_menu.php:8
+msgid "Logout"
+msgstr "Log ud"
+
+#: ../../../profile/profile.php:22
+msgid "es_ES"
+msgstr "Spansk"
+
+#: ../../../profile/profile.php:23
+msgid "fr_FR"
+msgstr "Fransk"
+
+#: ../../../profile/profile.php:35
+msgid "My account"
+msgstr "Min konto"
+
+#: ../../../profile/profile.php:39
+msgid "Username"
+msgstr "Brugernavn"
+
+#: ../../../profile/profile.php:40
+#: ../../../profile/profile.php:49
+msgid "Edit"
+msgstr "Redigér"
+
+#: ../../../profile/profile.php:43
+#: ../../../profile/profile.php:52
+#: ../../../profile/profile.php:75
+msgid "Save"
+msgstr "Gem"
+
+#: ../../../profile/profile.php:48
+msgid "Email"
+msgstr "E-mail"
+
+#: ../../../profile/profile.php:57
+msgid "Change Password"
+msgstr "Skift adgangskode"
+
+#: ../../../profile/profile.php:63
+msgid "Current password"
+msgstr "Nuværende adgangskode"
+
+#: ../../../profile/profile.php:67
+msgid "New password"
+msgstr "Ny adgangskode"
+
+#: ../../../profile/profile.php:71
+msgid "Repeat new password"
+msgstr "Gentag ny adgangskode"
+
+#: ../../../profile/profile.php:76
+msgid "Cancel"
+msgstr "Annullér"
+
+#: ../../../profile/profile.php:82
+msgid "My Profile"
+msgstr "Min profil"
+
+#: ../../../profile/profile.php:98
+msgid "Gravatar"
+msgstr "Gravatar"
+
+#: ../../../profile/profile.php:99
+msgid "Name"
+msgstr "Navn"
+
+#: ../../../profile/profile.php:100
+msgid "Location"
+msgstr "Bosted"
+
+#: ../../../profile/profile.php:101
+msgid "Timezone"
+msgstr "Tidszone"
+
+#: ../../../profile/profile.php:102
+msgid "Language"
+msgstr "Sprog"
+
+#: ../../../profile/profile.php:103
+msgid "Bio"
+msgstr "Om mig"
+
+#: ../../../profile/profile.php:225
+msgid "Passwords do not match"
+msgstr "Adganskoder matcher ikke"
+
