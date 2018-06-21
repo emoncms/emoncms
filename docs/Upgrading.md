@@ -45,7 +45,7 @@ Enter in your database settings.
     $server   = "localhost";
     $database = "emoncms";
 
-## 4) Upgrading to v8 from older versions
+### 4) Upgrading to v8 from older versions
 
 Create data repositories for emoncms feed engine's:
 
@@ -57,7 +57,7 @@ Create data repositories for emoncms feed engine's:
     sudo chown www-data:root /var/lib/phpfiwa
     sudo chown www-data:root /var/lib/phpfina
     sudo chown www-data:root /var/lib/phptimeseries
-    
+
 ### 5) Update database
 
 Make sure you have a backup of your emoncms meta data before updating the database this can be done by using mysqldump:
@@ -66,15 +66,25 @@ Make sure you have a backup of your emoncms meta data before updating the databa
 
 Log in with the administrator account (first account created)
 
-Click on the *Admin* tab (top-right) and run database update.
+Click on the *Admin* tab (top-right)
+    
+    http://localhost/emoncms/admin/view
+    
+In the *Update database* section and click the *Update & check* button to launch the database update script.
 
-If you cant login, use the authentication bypass to run the updater:
+You should now see a list of changes to be performed on your existing emoncms database.
+
+Click on apply changes to apply these changes.
+
+#### 5.1) If you can't login
+
+If you can't login, use the authentication bypass to run the updater.
 
 Add the following line to the bottom of *settings.php* to enable a special database update only session, be sure to remove this line from settings.php once complete:
 
     $updatelogin = true;
     
-In your internet browser open the admin/view page and click on the database update and check button to launch the database update script.
+In your internet browser open directly the admin/db page to launch the database update script.
 
     http://localhost/emoncms/admin/db
     
