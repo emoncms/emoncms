@@ -76,7 +76,7 @@ Add the following line to the bottom of *settings.php* to enable a special datab
     
 In your internet browser open the admin/view page and click on the database update and check button to launch the database update script.
 
-    http://localhost/emoncms/admin/view
+    http://localhost/emoncms/admin/db
     
 You should now see a list of changes to be performed on your existing emoncms database.
 
