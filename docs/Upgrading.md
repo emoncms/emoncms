@@ -70,7 +70,7 @@ Click on the *Admin* tab (top-right)
     
     http://localhost/emoncms/admin/view
     
-In the *Update database* section and click the *Update & check* button to launch the database update script.
+In the *Update database* section click the *Update & check* button to launch the database update script.
 
 You should now see a list of changes to be performed on your existing emoncms database.
 
