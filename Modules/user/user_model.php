@@ -20,6 +20,8 @@ class User
     private $email_verification = false;
     private $redis;
     private $log;
+    
+    public $appname = "emoncms";
 
     public function __construct($mysqli,$redis)
     {
@@ -194,6 +196,7 @@ class User
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
+        if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
 
         return $session;
     }
@@ -284,8 +287,8 @@ class User
         require "Lib/email.php";
         $emailer = new Email();
         $emailer->to(array($email));
-        $emailer->subject('Emoncms email verification');
-        $emailer->body("<p>To complete emoncms registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>");
+        $emailer->subject(ucfirst($this->appname).' email verification');
+        $emailer->body("<p>To complete ".$this->appname." registration please verify your email by following this link: <a href='$verification_link'>$verification_link</a></p>");
         $result = $emailer->send();
         if (!$result['success']) {
             $this->log->error("Email send returned error. emailto=" + $email . " message='" . $result['message'] . "'");
@@ -493,8 +496,8 @@ class User
                 require "Lib/email.php";
                 $email = new Email();
                 $email->to($emailto);
-                $email->subject('Emoncms password reset');
-                $email->body("<p>A password reset was requested for your emoncms account.</p><p>You can now login with password: $newpass </p>");
+                $email->subject(ucfirst($this->appname).' password reset');
+                $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
                 $result = $email->send();
                 if (!$result['success']) {
                     $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
@@ -762,6 +765,22 @@ class User
         $result = $this->mysqli->query("SELECT COUNT(*) FROM users");
         $row = $result->fetch_row();
         return $row[0];
+    }
+    
+    public function get_usernames_by_email($email) {
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
+        $stmt = $this->mysqli->prepare("SELECT id,username FROM users WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();        
+        $stmt->bind_result($id,$username);
+        
+        $users = array();
+        while ($stmt->fetch()) {
+            $users[] = array("id"=>$id,"username"=>$username);
+        }
+        $stmt->close();
+        
+        return $users;
     }
 }
 

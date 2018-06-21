@@ -29,7 +29,7 @@ td:nth-of-type(2) { width:4%;}
 <ul>
     <li><?php echo _('<b>input/post</b> - Post a single update from a node.'); ?></li>
     <li><?php echo _('<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a single update.'); ?></li>
-    <li><?php echo _('<b>Encrypted</b> - An encrypted version of both of the above'); ?></li>
+    <li><?php echo _('<b>encryption</b> - An encrypted version of both of the above.'); ?></li>
 </ul>
 
 <p><?php echo _("If your starting out with EmonCMS 'input/post' is a good starting point for testing, this was the original input method when EmonCMS . The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote emoncms server as this method provides the option to efficiently bulk upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
@@ -97,7 +97,7 @@ td:nth-of-type(2) { width:4%;}
 <tr><td><?php echo _('Absolute time format:'); ?></td><td>POST</td><td>curl --data "data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=<?php echo time(); ?>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>" "<?php echo $path; ?>input/bulk"</td></tr>
 </table>
 
-<h4><?php echo _('Encryption'); ?></h4>
+<h4><?php echo _('encryption'); ?></h4>
 
 <p><?php echo _("For applications where HTTPS or TLS is not available, emoncms offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/input-improvements/docs/input_encrypted.md">PHP Example source code.</a></p>
 
@@ -115,7 +115,7 @@ td:nth-of-type(2) { width:4%;}
 
 
 <table class="table">
-<tr><th>Description</th><th>Method</th><th>Example</th></tr>
+<tr><th><?php echo _('Description'); ?></th><th><?php echo _('Method'); ?></th><th><?php echo _('Example'); ?></th></tr>
 <tr><td></td><td>GET/POST</td><td>URL: /input/post or /input/bulk<br>HEADER: Authorization: USERID:HMAC_HASH, Content-Type: aes128cbc<br>POST BODY: IV+CIPHERTEXT</td></tr>
 
 </table>

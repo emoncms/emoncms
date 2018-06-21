@@ -1,0 +1,69 @@
+/* -------------------------------------------------------------------
+Page wrapper
+--------------------------------------------------------------------*/
+#wrapper {
+  padding:0px;
+  margin:0 auto;
+  padding-left: 0px;
+  max-width:1150px;
+}
+
+/* -------------------------------------------------------------------
+Side nav
+--------------------------------------------------------------------*/
+.sidenav {
+  margin-top:0px;
+  margin-left: -250px;
+  left: 250px;
+  width: 250px;
+  background: #333;
+  position: fixed;
+  overflow-y: auto;
+  z-index: 1000; 
+}
+
+.sidenav-inner {
+  padding-top:20px;
+}
+
+.sidenav-open {
+  float:left;
+  margin-right:10px;
+}
+
+.sidenav-close {
+  float:right; 
+  cursor:pointer; 
+  padding:10px;
+}
+
+/* The navigation menu links */
+.sidenav a {
+  text-decoration: none;
+  color: #fff;
+  display: block;
+  padding:15px;
+  transition: 0.3s
+  
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+  color: #f1f1f1;
+}
+
+/* -------------------------------------------------------------------
+Side nav: app list
+--------------------------------------------------------------------*/
+.sidenav-menu {
+  list-style: none;
+  margin:0px;
+  padding:0px;
+}
+
+.sidenav-menu li {
+}
+
+.sidenav-menu li:hover {
+  background-color: #444;
+}

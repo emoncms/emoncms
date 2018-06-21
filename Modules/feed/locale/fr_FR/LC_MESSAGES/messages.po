@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-09-05 22:51+0200\n"
-"PO-Revision-Date: 2017-09-05 22:51+0200\n"
+"POT-Creation-Date: 2018-05-20 23:10+0200\n"
+"PO-Revision-Date: 2018-05-20 23:19+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,7 +14,7 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.0.7\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
 #: ../../../Views/feedapi_view.php:19
@@ -30,8 +30,8 @@ msgid ""
 "If you want to call any of the following actions when your not logged in you "
 "have this options to authenticate with the API key:"
 msgstr ""
-"Si vous voulez appeler une des actions suivantes sans être connecté, il "
-"suffit d'ajouter votre clé API sur l'url : <b>&apikey=APIKEY</b>"
+"Si vous voulez appeler une des actions suivantes sans être connecté, vous "
+"avez ces options pour vous authentifier avec la clé API :"
 
 #: ../../../Views/feedapi_view.php:23
 msgid "Append on the URL of your request: &apikey=APIKEY"
@@ -42,8 +42,14 @@ msgid "Use POST parameter: \"apikey=APIKEY\""
 msgstr "Utilisez le paramètre POST : <b>\"apikey=APIKEY\"</b>"
 
 #: ../../../Views/feedapi_view.php:25
-msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
-msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
+msgid ""
+"Add the HTTP header: \"Authorization: Bearer APIKEY\" e.g. curl "
+"http://127.0.0.1/emoncms/feed/value.json?id=1 -H \"Authorization: Bearer "
+"APIKEY\""
+msgstr ""
+"Ajoutez l'en-tête HTTP : <b>\"Authorization: Bearer APIKEY\"</b> par exemple "
+"curl http://127.0.0.1/emoncms/feed/value.json?id=1 -H \"Authorization: "
+"Bearer APIKEY\""
 
 #: ../../../Views/feedapi_view.php:26
 msgid "Read only:"
@@ -508,6 +514,25 @@ msgstr "ERREUR : Le flux ne peut pas être créé."
 msgid "ERROR: Could not save processlist."
 msgstr "ERREUR : Impossible de sauvegarder la liste des traitements."
 
+#: ../../../feed_model.php:960
+msgid "Invalid process"
+msgstr "Traitement non valide"
+
+#: ../../../feed_model.php:971
+msgid "Invalid feed"
+msgstr "Flux non valide"
+
+#: ../../../feed_model.php:978
+msgid "Invalid input"
+msgstr "Source non valide"
+
+#: ../../../feed_model.php:1019
+msgid "Error setting processlist"
+msgstr "Erreur définition liste de traitement"
+
+#~ msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
+#~ msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
+
 #~ msgid "returns id of a feed given by name"
 #~ msgstr "Retourne l'id d'un flux à partir de son nom"
 
@@ -589,9 +614,6 @@ msgstr "ERREUR : Impossible de sauvegarder la liste des traitements."
 
 #~ msgid "You are logged out"
 #~ msgstr "Vous &ecirc;tes d&eacute;connect&eacute;"
-
-#~ msgid "Invalid token"
-#~ msgstr "Jeton invalide"
 
 #~ msgid "Restricted access"
 #~ msgstr "Acc&egrave;s restreint"

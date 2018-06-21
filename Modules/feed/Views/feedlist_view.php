@@ -14,17 +14,21 @@
          width: 88%;
 }
 
-#table td:nth-of-type(5) { width:14px; text-align: center; }
-#table th:nth-of-type(8), td:nth-of-type(8) { text-align: right; }
-#table th:nth-of-type(9), td:nth-of-type(9) { text-align: right; }
-#table th:nth-of-type(10), td:nth-of-type(10) { text-align: right; }
-#table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; text-align: right; }
-#table th[fieldg="processList"] { font-weight:normal; text-align: left; }
-#table td:nth-of-type(11) { width:14px; text-align: center; }
-#table td:nth-of-type(12) { width:14px; text-align: center; }
-#table td:nth-of-type(13) { width:14px; text-align: center; }
-#table td:nth-of-type(14) { width:14px; text-align: center; }
-#table td:nth-of-type(15) { width:14px; text-align: center; }
+#table th { text-align: left; }
+#table td { text-align: left; }
+
+#table td[field="unit"] { text-align: left; }
+#table td[field="unit"] select { width:70px !important; }
+#table td[field="unit"] input[type="text"] { width:85px !important; }
+
+#table td[field="edit-action"] { width:14px; text-align: center; }
+#table td[field="delete-action"] { width:14px; text-align: center; }
+#table td[field="view-action"] { width:14px; text-align: center; }
+#table td[field="export-action"] { width:14px; text-align: center; }
+
+#table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; }
+#table th[fieldg="processList"] { font-weight:normal; }
+
 </style>
 
 <div>
@@ -94,9 +98,12 @@
             <td>
                 <p><b><?php echo _('Interval');?></b></p>
                 <select id="export-interval" >
-                    <option value=1><?php echo _('Auto');?></option>
+                    <option value="10"><?php echo _('Auto');?></option>
+                    <option value=1><?php echo _('1s');?></option>
                     <option value=5><?php echo _('5s');?></option>
                     <option value=10><?php echo _('10s');?></option>
+                    <option value=15><?php echo _('15s');?></option>
+                    <option value=20><?php echo _('20s');?></option>
                     <option value=30><?php echo _('30s');?></option>
                     <option value=60><?php echo _('1 min');?></option>
                     <option value=300><?php echo _('5 mins');?></option>
@@ -177,6 +184,7 @@
     'dummy-11':{'title':'', 'type':"blank"},
     'dummy-12':{'title':'', 'type':"blank"},
     'dummy-13':{'title':'', 'type':"blank"},
+    'dummy-14':{'title':'', 'type':"blank"},
     'exportall-action':{'title':'', 'type':"group-iconbasic", 'icon':'icon-circle-arrow-down'}
   }
 
@@ -192,6 +200,22 @@
     'size':{'title':"<?php echo _('Size'); ?>", 'type':"size"},
     'time':{'title':"<?php echo _('Updated'); ?>", 'type':"updated"},
     'value':{'title':"<?php echo _('Value'); ?>",'type':"value"},
+    'unit':{'title':"<?php echo _('Unit'); ?>", 'type':"selectWithOther", 'options': {
+      "":"",
+      W:"W",
+      kWh:"kWh",
+      Wh:"Wh",
+      V:"V",
+      VA: "VA",
+      A:"A",
+      "°C":"°C",
+      K:"K",
+      "°F": "°F",
+      "%":"%",
+      Hz: "Hz",
+      pulses: "pulses",
+      dB: "dB"
+    }},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
@@ -283,6 +307,19 @@
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
   });
 
+  //show the input field when "custom" selected in units
+  $(document).on('change', '#table td[field="unit"] select', function(event){
+    var value = event.target.value;
+    if(value=='_custom') {
+      $(event.target).parent().find('input').show();
+    }else{
+      $(event.target).parent().find('input').hide();
+    }
+  });
+  //truncate custom units to 10 characters
+  $(document).on('keyup', '#table td[field="unit"] input:text', function(event){
+    event.target.value = event.target.value.substring(0,10);
+  });
 
   // Export feature
   $("#table").on("click",".icon-circle-arrow-down,.icon-download", function(){
@@ -440,7 +477,6 @@
       $('#newFeedNameModal').modal('hide');
     }
   });
-
 
   // Process list UI js
   processlist_ui.init(1); // is virtual feed
