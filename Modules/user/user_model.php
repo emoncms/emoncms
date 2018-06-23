@@ -619,9 +619,12 @@ class User
     {
         $userid = (int) $userid;
         if (!$userid) return false;
-        $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
-        $row = $result->fetch_object();
-        return $row->timezone;
+        if ($result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';")) {
+            if ($row = $result->fetch_object()) {
+                return $row->timezone;
+            }
+        }
+        return false;
     }
 
     // List supported PHP timezones

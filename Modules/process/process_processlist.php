@@ -28,7 +28,7 @@ class Process_ProcessList
 
     private $log;
     private $mqtt = false;
-
+    
     // Module required constructor, receives parent as reference
     public function __construct(&$parent)
     {
@@ -44,12 +44,20 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $mqtt_server, $mqtt;
-        if ($mqtt_enabled == true && $mqtt == false)
+        global $mqtt_enabled, $mqtt_server, $log;
+        
+        if ($mqtt_enabled && !$this->mqtt)
         {
-            require("Lib/phpMQTT.php");
-            $mqtt = new phpMQTT($mqtt_server['host'], $mqtt_server['port'], "Emoncms Publisher");
-            $this->mqtt = $mqtt;
+            // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+            if (class_exists("Mosquitto\Client")) {
+                $mqtt_client = new Mosquitto\Client();
+                
+                $mqtt_client->onDisconnect(function($responseCode) use ($log) {
+                    if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
+                });
+
+                $this->mqtt = $mqtt_client;
+            }
         }
     }
     
@@ -58,6 +66,8 @@ class Process_ProcessList
         $list = array();
         // 0=>Name | 1=>Arg type | 2=>function | 3=>No. of datafields if creating feed | 4=>Datatype | 5=>Group | 6=>Engines | 'requireredis'=>true | 'desc'=>Description | 'internalerror'=>true | 'internalerror_reason'=>true
         $list[] = array(dgettext("process_messages","EXIT"), ProcessArg::NONE, "error_found", 0, DataType::UNDEFINED, "Hidden", 'desc'=>"".dgettext("process_messages",'<p>This was automaticaly added when a loop error was discovered on the processList or execution took too many steps to process.  Review the usage of GOTOs or decrease the number of items and delete this entry to resume execution.</p>'), 'internalerror'=>true,'internalerror_reason'=>"HAS ERRORS",'internalerror_desc'=>'Processlist disabled due to errors found during execution.');
+        $list[] = array(dgettext("process_messages","Max value allowed"), ProcessArg::VALUE, "max_value_allowed", 0, DataType::UNDEFINED, "Limits", 'desc'=>"".dgettext("process_messages","<p>If value is greater than <i>max value allowed</i> then the value passed to following process will be the <i>max value allowed</i></p>"),'requireredis'=>false,'nochange'=>false);
+        $list[] = array(dgettext("process_messages","Min value allowed"), ProcessArg::VALUE, "min_value_allowed", 0, DataType::UNDEFINED, "Limits", 'desc'=>"".dgettext("process_messages","<p>If value is lower than <i>min value allowed</i> then the value passed to following process will be the <i>min value allowed</i></p>"),'requireredis'=>false,'nochange'=>false);
         return $list;
     }
 
@@ -194,6 +204,18 @@ class Process_ProcessList
     public function allownegative($arg, $time, $value)
     {
         if ($value>0) $value = 0;
+        return $value;
+    }
+    
+     public function max_value_allowed($arg, $time, $value)
+    {
+        if ($value>$arg) $value = $arg;
+        return $value;
+    }
+    
+    public function min_value_allowed($arg, $time, $value)
+    {
+        if ($value<$arg) $value = $arg;
         return $value;
     }
 
@@ -686,13 +708,33 @@ class Process_ProcessList
     
     public function publish_to_mqtt($topic, $time, $value)
     {
-        global $mqtt_server;
+        global $mqtt_server, $log;
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        if ($this->mqtt && $this->mqtt->connect(true,NULL,$mqtt_server['user'],$mqtt_server['password'])) {
-            $this->mqtt->publish($topic,$value,0);
-            $this->mqtt->close();
+        if ($this->mqtt){
+            $msg = 'mqtt error:';
+            $this->mqtt->setCredentials($mqtt_server['user'], $mqtt_server['password']);
+            $this->mqtt->onConnect(function($responseCode, $message) use ($log, $topic, $value) {
+                /*
+                0 	Success
+                1 	Connection refused (unacceptable protocol version)
+                2 	Connection refused (identifier rejected)
+                3 	Connection refused (broker unavailable )
+                */
+                //log errors connecting to mqtt
+                if ($responseCode > 0){
+                    $log->info($msg.$message);
+                } else { 
+                    $this->mqtt->publish($topic, $value);
+                }
+                $this->mqtt->disconnect();//stop the loopForever()
+            });
+            try {
+                $this->mqtt->connect($mqtt_server['host'], $mqtt_server['port']);
+                $this->mqtt->loopForever();
+            } catch (Exception $e) {
+                $log->error($msg.$e->getMessage());
+            }
         }
-        
         return $value;
     }
     
