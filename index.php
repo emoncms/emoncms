@@ -21,8 +21,7 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version_number = file_get_contents('./version.txt');
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . $emoncms_version_number . " | 2018.06.21";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version() . " | 2018.06.21";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -138,6 +137,8 @@
 
     // Return brief device descriptor for hub detection
     if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
+    // read the version file and return the value;
+    if ($route->controller=="version") { header('Content-Type: text'); echo version(); die; }
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
