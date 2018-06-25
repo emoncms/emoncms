@@ -21,7 +21,7 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version() . " | 2018.06.21";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -154,7 +154,7 @@
                     $default_controller = "setup";
                     $default_action = "";
                     // Provide special setup access to WIFI module functions
-                    $_SESSION['setup_access'] = true; 
+                    $_SESSION['setup_access'] = true;
                 }
             }
         }
@@ -206,7 +206,7 @@
             $route->action = $public_profile_action;
             $output = controller($route->controller);
 
-            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists 
+            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists
             if ($output["content"]=="" && $route->subaction=="graph") {
                 $route->controller = "graph";
                 $route->action = "";
