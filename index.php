@@ -22,7 +22,7 @@
     require "locale.php";
     require "jsonApi.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.30";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.31 | 2018.06.21";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
