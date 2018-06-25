@@ -174,6 +174,7 @@ class User
                             $_SESSION['write'] = 1;
                             //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
                             $_SESSION['lang'] = $userData->language;
+                            $_SESSION['timezone'] = $userData->timezone;
                             if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
                             // There is a chance that an attacker has stolen the login token, so we store
                             // the fact that the user was logged in via RememberMe (instead of login form)
@@ -193,6 +194,7 @@ class User
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
+        if (isset($_SESSION['timezone'])) $session['timezone'] = $_SESSION['timezone']; else $session['timezone'] = '';
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
@@ -340,13 +342,13 @@ class User
 
         // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
         // without cuasing an error if it has not yet been created in the database.
-        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified FROM users WHERE username=?")) {
+        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified,timezone FROM users WHERE username=?")) {
             return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
         }
         $stmt->bind_param("s",$username);
         $stmt->execute();
         
-        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified);
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified,$userData_timezone);
         $result = $stmt->fetch();
         $stmt->close();
         
@@ -372,6 +374,7 @@ class User
             $_SESSION['write'] = 1;
             $_SESSION['admin'] = $userData_admin;
             $_SESSION['lang'] = $userData_language;
+            $_SESSION['timezone'] = $userData_timezone;
             $_SESSION['startingpage'] = $userData_startingpage;
                             
             if ($this->enable_rememberme) {
@@ -711,8 +714,12 @@ class User
 
     public function set($userid,$data)
     {
+        global $default_language;
+        $default_locale = !empty($default_language) ? $default_language : 'en_GB';
+        $default_timezone = 'Europe/London';
         // Validation
         $userid = (int) $userid;
+        if(!$data || $userid < 1) return array('success'=>false, 'message'=>_("Error updating user info"));
 
         $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
@@ -721,10 +728,10 @@ class User
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
         $language = preg_replace('/[^\w\s-.]/','',$data->language);
         $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s-.]/','', $data->tags);
-        
         $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?#=\/]/u','',$data->startingpage);
         
-        $_SESSION['lang'] = $language;
+        $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
+        $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;
 
         $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
         $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
