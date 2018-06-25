@@ -22,7 +22,7 @@
     require "locale.php";
     require "jsonApi.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.30 | 2018.05.08";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.30";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -259,10 +259,15 @@
                     )
                 ));
             }
-            //pass the processed data, the input data, and the url links to the jsonAPI formatter
-            $openApi = new JsonApi($output,$param,$links);
-            print $openApi->json();
-            //print json_encode($output['content']);
+            // @todo: should allow for certain routes to request the fuller response.
+            // currently all requests are basic. would need clear documentation for developers
+            if(get('output_type')==='full'){
+                //pass the processed data, the input data, and the url links to the jsonAPI formatter
+                $openApi = new JsonApi($output,$param,$links);
+                print $openApi->json();
+            }else{
+                print json_encode($output['content']);
+            }
         }
     }
     else if ($route->format == 'html')

@@ -23,6 +23,11 @@ class JsonApi
      */
     public $version = "";
     /**
+     * version reported by the git tag
+     * @var string
+     */
+    public $errors = array();
+    /**
      * all the data returned from the controller
      * @var array
      */
@@ -54,10 +59,11 @@ class JsonApi
      * @param array $param all parameters passed
      * @param array $links links to provide the api response (keys: [self,first,prev,next,last] or [related])
      */
-    public function __construct($data=array(),$param=array(),$links=array())
+    public function __construct($data=array(),$param=array(),$links=array(),$errors=array())
     {
-        exec("git describe --tags --abbrev=0", $git_tags);
-        $this->version = implode('', $git_tags);
+        global $emoncms_version_number, $appname;
+        $this->version = !empty($emoncms_version_number) ? $emoncms_version_number : "unknown";
+        $this->appname = !empty($appname) ? $appname: 'EmonCMS';
         $this->data = $data['content'];
         $this->request = array(
             'type' => 'text/plain',
@@ -67,13 +73,13 @@ class JsonApi
         $this->links = $links;
         $this->success = !isset($this->data['success']) || (isset($this->data['success']) && $this->data['success']===TRUE);
         $this->message = isset($this->data['message']) ? $this->data['message'] : "";
+        $this->errors = $errors;
     }
     public function json()
     {
-        global $appname;
         $output = array(
             "meta" => array(
-                "appname"=>$appname,
+                "appname"=>$this->appname,
                 "version"=>$this->version,
                 "success"=>$this->success,
                 "message"=>$this->message,
@@ -81,13 +87,14 @@ class JsonApi
                 "route"=>$this->route
             ),
             "data" => $this->data,
-            "links" => $this->links
+            "links" => $this->links,
+            "errors" => $this->errors
         );
         return json_encode($output);
     }
 }
 /*
-
+Example of what an error array should contain.
 http://jsonapi.org/examples/
 {
   "errors": [
