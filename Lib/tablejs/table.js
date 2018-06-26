@@ -321,18 +321,16 @@ var table = {
     'text': {
       'draw': function (t,row,child_row,field) { 
         value = t.data[row][field];
-        // tmp = document.createElement('DIV');
-        // tmp.innerHTML = t.data[row][field];
-        // value = tmp.textContent || tmp.innerText || "";
-        // document.removeChild(tmp);
+        tmp = document.createElement('DIV');
+        tmp.innerHTML = t.data[row][field];
+        value = tmp.textContent || tmp.innerText || "";
         return value;
       },
       'edit': function (t,row,child_row,field) { 
         value = t.data[row][field];
-        //tmp = document.createElement('DIV');
-        //tmp.innerHTML = t.data[row][field];
-        //value = tmp.textContent || tmp.innerText || "";
-        //document.removeChild(tmp);        
+        tmp = document.createElement('DIV');
+        tmp.innerHTML = t.data[row][field];
+        value = tmp.textContent || tmp.innerText || "";
         return '<input type="text" value="'+value+'" / >';
       },
       'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").val() },
