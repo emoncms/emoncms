@@ -389,6 +389,7 @@ var processlist_ui =
       $("#type-schedule").hide();
 
       // Check ProcessArg Type
+      // console.log(processlist_ui.processlist[processid][0]);
       if (processid) {
         switch(processlist_ui.processlist[processid][1]) {
           case 0: // VALUE
@@ -680,10 +681,10 @@ var processlist_ui =
       var processgroups = [];
       for (z in processlist_ui.processlist) {
         //hide sendEmail and Publish to MQTT from virtual feeds
-        if (processlist_ui.contexttype == 1 &&
+        if (processlist_ui.contexttype == 1 && (
           processlist_ui.processlist[z]['feedwrite'] == true ||
           processlist_ui.processlist[z][2] == "sendEmail" || 
-          processlist_ui.processlist[z][2] == "publish_to_mqtt")
+          processlist_ui.processlist[z][2] == "publish_to_mqtt"))
         {
             continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
