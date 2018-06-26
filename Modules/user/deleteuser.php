@@ -59,12 +59,11 @@ function delete_user($userid,$mode) {
         $result = "user does not exist";
     }
     
-    if ($mode=="permanentdelete") {
-        $fh = fopen("/var/log/emoncms/userdelete.log","a");
-        fwrite($fh,$result);
-        fclose($fh);
-    }
-    
+    // if ($mode=="permanentdelete") {
+    //    $fh = fopen("/var/log/emoncms/userdelete.log","a");
+    //    fwrite($fh,$result);
+    //    fclose($fh);
+    // } 
     
     return $result;
 }
