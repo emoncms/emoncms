@@ -1036,8 +1036,8 @@ class Feed
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
-                            return array('success'=>false, 'message'=>'Invalid characters in arg'); 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                            return array('success'=>false, 'message'=>'Invalid characters in argx'); 
                         break;
                                                 
                     case ProcessArg::SCHEDULEID:
