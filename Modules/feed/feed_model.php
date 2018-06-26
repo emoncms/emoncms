@@ -772,12 +772,20 @@ class Feed
         $success = false;
 
         if (isset($fields->name)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in feed name');
+            //remove illegal characters
+            $fields->name = trim(filter_var($fields->name, FILTER_SANITIZE_STRING));
+            //prepare an sql statement that cannot be altered by sql injection
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET name = ? WHERE id = ?")) {
-                $stmt->bind_param("si",$fields->name,$id);
-                if ($stmt->execute()) $success = true;
+                $stmt->bind_param("si",$fields->name, $id);
+                if (false === $stmt->execute()) {
+                    return array('success'=>false, 'message'=>'field update failed');
+                } else {
+                    $success = true;
+                }
                 $stmt->close();
                 if ($this->redis) $this->redis->hset("feed:$id",'name',$fields->name);
+            } else {
+                return array('success'=>false, 'message'=>'error setting up database update');
             }
         }
         
