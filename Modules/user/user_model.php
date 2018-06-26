@@ -226,8 +226,9 @@ class User
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin) VALUES (?,?,?,?,?,?,0)");
         $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
         if (!$stmt->execute()) {
+            $error = $this->mysqli->error;
             $stmt->close();
-            return array('success'=>false, 'message'=>_("Error creating user"));
+            return array('success'=>false, 'message'=>_("Error creating user, mysql error: ".$error));
         }
 
         // Make the first user an admin
