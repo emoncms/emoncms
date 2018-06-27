@@ -56,7 +56,7 @@ class Eventp_ProcessList
     // \/ Below are functions of this module processlist, same name must exist on process_list()
     
     public function sendEmail($emailbody, $time, $value, $options) {
-        global $user, $session;
+        global $user, $session, $default_emailto;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
         if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
@@ -75,18 +75,24 @@ class Eventp_ProcessList
             // Not suported for VIRTUAL FEEDS
         }
 
-        $emailto = $user->get_email($session['userid']);
-        require_once "Lib/email.php";
-        $email = new Email();
-        //$email->from(from);
-        $email->to($emailto);
-        $email->subject('Emoncms event alert');
-        $email->body($emailbody);
-        $result = $email->send();
-        if (!$result['success']) {
-            $this->log->error("Email send returned error. message='" . $result['message'] . "'");
+        //need to get an email address from the config file or the form ?
+        $emailto = $default_emailto;
+
+        if (!empty($emailto)) { 
+            require_once "Lib/email.php";
+            $email = new Email();
+            //$email->from(from);
+            $email->to($emailto);
+            $email->subject('Emoncms event alert');
+            $email->body($emailbody);
+            $result = $email->send();
+            if (!$result['success']) {
+                $this->log->error("Email send returned error. message='" . $result['message'] . "'");
+            } else {
+                $this->log->info("Email sent to $emailto");
+            }
         } else {
-            $this->log->info("Email sent to $emailto");
+            $this->log->error("No email address specified");
         }
     }
     

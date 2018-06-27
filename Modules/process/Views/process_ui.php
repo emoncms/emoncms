@@ -1,6 +1,6 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $feed_settings, $redis_enabled;
+    global $path, $feed_settings, $redis_enabled,$default_emailto;
     $domain2 = "process_messages";
     bindtextdomain($domain2, "Modules/process/locale");
     bind_textdomain_codeset($domain2, 'UTF-8');
@@ -74,6 +74,13 @@
                             <div class="input-prepend">
                                 <span class="add-on text-select-label"><?php echo dgettext('process_messages','Text'); ?></span>
                                 <input type="text" id="text-input" class="input-large" placeholder="<?php echo dgettext('process_messages','Type text...'); ?>" />
+                            </div>
+                        </span>
+
+                        <span id="type-email" style="display:none">
+                            <div class="input-prepend disabled">
+                                <span class="add-on text-select-label"><?php echo dgettext('process_messages','Email'); ?></span>
+                                <input disabled type="text" id="text-input" class="input-large" placeholder="<?php echo dgettext('process_messages',$default_emailto); ?>" />
                             </div>
                         </span>
 
