@@ -77,13 +77,6 @@
                             </div>
                         </span>
 
-                        <span id="type-email" style="display:none">
-                            <div class="input-prepend disabled">
-                                <span class="add-on text-select-label"><?php echo dgettext('process_messages','Email'); ?></span>
-                                <input disabled type="text" id="text-input" class="input-large" placeholder="<?php echo dgettext('process_messages',$default_emailto); ?>" />
-                            </div>
-                        </span>
-
                         <span id="type-input" style="display:none">
                             <div class="input-prepend">
                                 <span class="add-on input-select-label"><?php echo dgettext('process_messages','Input'); ?></span>                   

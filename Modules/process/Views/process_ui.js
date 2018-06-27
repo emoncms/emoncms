@@ -384,7 +384,6 @@ var processlist_ui =
       $("#description").html("");
       $("#type-value").hide();
       $("#type-text").hide();
-      $("#type-email").hide();
       $("#type-input").hide();
       $("#type-feed").hide();
       $("#type-schedule").hide();
@@ -409,10 +408,6 @@ var processlist_ui =
           case 5: // SCHEDULEID
             $("#type-schedule").show();
             break;
-        }
-        //show email field if sendEmail process selected
-        if (processlist_ui.processlist[processid][2]=='sendEmail'){
-          $("#type-email").show();
         }
 
         if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
