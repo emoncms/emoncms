@@ -11,7 +11,7 @@
     **MQTT input interface script**
     
     SERVICE INSTALL INSTRUCTIONS:
-    https://github.com/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+    https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
     
     EXAMPLES:
     
@@ -82,7 +82,7 @@
     
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
-
+    
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $feed_settings);
 

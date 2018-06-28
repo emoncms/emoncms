@@ -130,6 +130,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
       die;
     }
 
+    if (!isset($default_emailto)) $default_emailto = 'pi@localhost';
 
     // Set display errors
     if (isset($display_errors) && ($display_errors)) {
