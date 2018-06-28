@@ -15,11 +15,13 @@
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
+    require "Lib/gettext/src/autoloader.php";
+    require "Lib/cldr-to-gettext-plural-rules/src/autoloader.php";
+    require "locale.php";
     require "process_settings.php";
     require "core.php";
     require "route.php";
     require "param.php";
-    require "locale.php";
 
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.31 | 2018.06.21";
 
@@ -125,6 +127,9 @@
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);
+    use Gettext\Translator;
+    $t = new Translator(); //Create the translator instance
+    $t->register(); //register helper functions
 
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));

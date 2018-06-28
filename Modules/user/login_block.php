@@ -37,26 +37,26 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
         <div id="login-form">
             <div id="loginblock">
                 <div class="form-group register-item" style="display:none">
-                    <label><?php echo _('Email'); ?>
+                    <label><?php echo __('Email'); ?>
                         <input type="text" name="email" tabindex="1"/>
                     </label>
                 </div>
 
                 <div class="form-group">
-                    <label><?php echo _('Username'); ?>
+                    <label><?php echo __('Username'); ?>
                         <input type="text" tabindex="2" autocomplete="on" name="username"  />
                     </label>
                 </div>
 
                 <div class="form-group">
                     <a id="passwordreset-link" class="pull-right" href="#">Forgot password?</a>
-                    <label><?php echo _('Password'); ?>
+                    <label><?php echo __('Password'); ?>
                         <input type="password" tabindex="3" autocomplete="on" name="password" />
                     </label>
                 </div>
 
                 <div class="form-group register-item" style="display:none">
-                    <label><?php echo _('Confirm password'); ?>
+                    <label><?php echo __('Confirm password'); ?>
                         <input id="confirm-password" type="password" name="confirm-password" tabindex="4"/>
                     </label>
                 </div>
@@ -67,20 +67,20 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                     <?php if ($enable_rememberme) { ?>
                         <div class="checkbox">
                             <label>
-                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?>
+                                <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'.__('Remember me'); ?>
                             </label>
                         </div>
                     <?php } ?>
-                    <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo _('Login'); ?></button>
-                    <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp;' ?>
-                        <a id="register-link" href="#"><?php echo _('register'); ?></a>
+                    <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo __('Login'); ?></button>
+                    <?php if ($allowusersregister) { echo '&nbsp;'.__('or').'&nbsp;' ?>
+                        <a id="register-link" href="#"><?php echo __('register'); ?></a>
                     <?php } ?>
                 </div>
 
                 <div class="form-group register-item" style="display:none">
-                    <button id="register" class="btn btn-primary" type="button"><?php echo _('Register'); ?></button>
-                    <?php echo '&nbsp;'._('or').'&nbsp;' ?>
-                    <a id="cancel-link" href="#"><?php echo _('login'); ?></a>
+                    <button id="register" class="btn btn-primary" type="button"><?php echo __('Register'); ?></button>
+                    <?php echo '&nbsp;'.__('or').'&nbsp;' ?>
+                    <a id="cancel-link" href="#"><?php echo __('login'); ?></a>
                 </div>
 
             </div>
@@ -97,8 +97,8 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                     </label>
                 </div>
                 <button id="passwordreset-submit" class="btn btn-primary" type="button">Recover</button>
-                <?php echo '&nbsp;'._('or').'&nbsp;' ?>
-                <a id="passwordreset-link-cancel" href="#"><?php echo _('login'); ?></a>
+                <?php echo '&nbsp;'.__('or').'&nbsp;' ?>
+                <a id="passwordreset-link-cancel" href="#"><?php echo __('login'); ?></a>
             </div>
             <div id="passwordresetmessage"></div>
         </div>
