@@ -1,9 +1,11 @@
 <?php
-
 // This timeseries engine implements:
 // Fixed Interval No Averaging
 
-class PHPFina
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
@@ -83,7 +85,9 @@ class PHPFina
         unlink($this->dir.$feedid.".dat");
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
+    public function get_meta3($feedid){
 
+    }
     /**
      * Gets engine metadata
      *
@@ -1248,4 +1252,51 @@ class PHPFina
         
         return true;
     }
+
+    public function clear($feedid) {
+        // clear code...
+        // 1. clear feedid.dat
+        // 2. set start_time to 0 in feedid.meta, keep interval the same
+    }
+    
+    public function trim($feedid,$start_time) {
+        // trim code...
+        // 1. system level trim command? as discussed?
+        // 2. change start_time in feedid.meta to new $start_time
+    }
+
+    /**
+     * adjust the .meta file to have different start_time
+     *
+     * @param [int] $feedid
+     * @param [timestamp] $start_time
+     * @return void
+     */
+    public function set_start_date($feedid, $start_time)
+    {
+        exit(time());
+        $meta = $this->get_meta($feedid);
+        $feedname = $feedid . ".meta";
+        $metafile = @fopen($this->dir.$feedname, 'wb');
+        
+        if (!$metafile) {
+            $msg = "could not write meta data file " . error_get_last()['message'];
+            $this->log->error("create_meta() ".$msg);
+            return $msg;
+        }
+        if (!flock($metafile, LOCK_EX)) {
+            $msg = "meta data file '".$this->dir.$feedname."' is locked by another process";
+            $this->log->error("create_meta() ".$msg);
+            fclose($metafile);
+            return $msg;
+        }
+        
+        fwrite($metafile,pack("I",0));
+        fwrite($metafile,pack("I",0));
+        fwrite($metafile,pack("I",$meta->interval));
+        fwrite($metafile,pack("I",$start_time));
+        fclose($metafile);
+        return true;
+    }
+
 }

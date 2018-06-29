@@ -2,7 +2,12 @@
 // Internal engine for low-write functionality
 // Maintains a buffer in redis with latest feed data
 // Written by: Chaveiro Portugal Jul-2015
-class RedisBuffer
+// edited by: emrys@openenergymonitor.org Jun-2018
+
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class RedisBuffer implements engine_methods
 {
     private $log;
     private $redis;

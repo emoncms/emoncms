@@ -29,6 +29,9 @@ function feed_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
+    header('Content-Type: text');
+    exit(var_export($feed->get_meta(get('id')),1));
+
     if ($route->format == 'html')
     {
         if ($route->action == "list" && $session['write']) $result = view("Modules/feed/Views/feedlist_view.php",array());
@@ -113,6 +116,7 @@ function feed_controller()
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
+                    else if ($route->action == "setstartdate") $result = $feed->set_start_date($feedid,get('startdate'));
 
                     else if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
