@@ -476,24 +476,19 @@ class User
         
         if ($userid!==false && $userid>0)
         {
-            // Generate new random password
-            $newpass = hash('sha256',md5(uniqid(rand(), true)));
-            $newpass = substr($newpass, 0, 10);
-
-            // Hash and salt
-            $hash = hash('sha256', $newpass);
-            $salt = md5(uniqid(rand(), true));
-            $password = hash('sha256', $salt . $hash);
-
-            // Save password and salt
-            $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $password, $salt, $userid);
-            $stmt->execute();
-            $stmt->close();
-            //------------------------------------------------------------------------------
             global $enable_password_reset;
             if ($enable_password_reset==true)
             {
+                // Generate new random password
+                $newpass = hash('sha256',md5(uniqid(rand(), true)));
+                $newpass = substr($newpass, 0, 10);
+
+                // Hash and salt
+                $hash = hash('sha256', $newpass);
+                $salt = md5(uniqid(rand(), true));
+                $password = hash('sha256', $salt . $hash);
+                
+                // Sent email with $newpass to $email
                 require "Lib/email.php";
                 $email = new Email();
                 $email->to($emailto);
@@ -501,15 +496,17 @@ class User
                 $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
                 $result = $email->send();
                 if (!$result['success']) {
-                    $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
+                    $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
                 } else {
                     $this->log->info("Email sent to $emailto");
-                }
+                    // Save password and salt
+                    $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
+                    $stmt->bind_param("ssi", $password, $salt, $userid);
+                    $stmt->execute();
+                    $stmt->close();
+                    return array('success'=>true, 'message'=>"Password recovery email sent!");
+                }                
             }
-            //------------------------------------------------------------------------------
-
-            // Sent email with $newpass to $email
-            return array('success'=>true, 'message'=>"Password recovery email sent!");
         }
 
         return array('success'=>false, 'message'=>"An error occured");
