@@ -1,9 +1,11 @@
 <?php
-
 // This timeseries engine implements:
 // Fixed Interval With Averaging
 
-class PHPFiwa
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class PHPFiwa implements engine_methods
 {
     private $dir = "/var/lib/phpfiwa/";
     private $log;
