@@ -121,12 +121,24 @@
         if (!$connected && (time()-$last_retry)>5.0) {
             $last_retry = time();
             try {
+                // SUBSCRIBE
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 $topic = $mqtt_server['basetopic']."/#";
                 //echo "Subscribing to: ".$topic."\n";
                 $log->info("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
+
+                // PUBLISH
+                // loop through all queued items in redis
+                $queue_topic = 'mqtt-pub-queue';
+                for ($i=0; $i<$redis->llen($queue_topic); $i++) {
+                    if ($data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
+                        // publish values to 
+                        $mqtt_client->publish($data['topic'], $data['value']);
+                    }
+                }
+
             } catch (Exception $e) {
                 $log->error($e);
             }

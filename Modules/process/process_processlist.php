@@ -713,40 +713,12 @@ class Process_ProcessList
     
     public function publish_to_mqtt($topic, $time, $value)
     {
-        global $mqtt_server, $log;
-        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        global $redis;
+        // saves value to redis
+        // phpmqtt_input.php is then used to publish the values
         if ($this->mqtt){
-            $msg = 'mqtt error:';
-            $this->mqtt->setCredentials($mqtt_server['user'], $mqtt_server['password']);
-            $this->mqtt->onConnect(function($responseCode, $message) use ($log, $topic, $value) {
-                /*
-                0 	Success
-                1 	Connection refused (unacceptable protocol version)
-                2 	Connection refused (identifier rejected)
-                3 	Connection refused (broker unavailable )
-                */
-                //log errors connecting to mqtt
-                if ($responseCode > 0){
-                    $log->info($msg.$message);
-                } else { 
-                    $this->mqtt->publish($topic, $value);
-                }
-            });
-            try {
-                $this->mqtt->connect($mqtt_server['host'], $mqtt_server['port']);
-                // $this->mqtt->loopForever(); // infinite blocking loop
-                for($i=0; $i++; $i<=10){
-                    /* The main network loop for the client. 
-                    You must call this frequently in order to keep communications 
-                    between the client and broker working*/
-                    $this->mqtt->loop(); 
-                    usleep(200000); // .2s
-                    // @ todo: what happens if this doesn't complete by the last loop iteration??
-                }
-                $this->mqtt->disconnect();//stop the loopForever()
-            } catch (Exception $e) {
-                $log->error($msg.$e->getMessage());
-            }
+            $data = array('topic'=>$topic,'value'=>$value,'timestamp'=>$time);
+            $redis->rpush('mqtt-pub-queue', json_encode($data));
         }
         return $value;
     }
