@@ -129,23 +129,23 @@
                 $log->info("Subscribing to: ".$topic);
                 $mqtt_client->subscribe($topic,2);
 
-                // PUBLISH
-                // loop through all queued items in redis
-                $queue_topic = 'mqtt-pub-queue';
-                for ($i=0; $i<$redis->llen($queue_topic); $i++) {
-                    if ($data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
-                        // publish values to 
-                        $mqtt_client->publish($data['topic'], $data['value']);
-                    }
-                }
-
             } catch (Exception $e) {
                 $log->error($e);
             }
             //echo "Not connected, retrying connection\n";
             $log->warn("Not connected, retrying connection");
         }
-        
+
+        // PUBLISH
+        // loop through all queued items in redis
+        $queue_topic = 'mqtt-pub-queue';
+        for ($i=0; $i<$redis->llen($queue_topic); $i++) {
+            if ($data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
+                // publish values to 
+                $mqtt_client->publish($data['topic'], $data['value']);
+            }
+        }
+
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
             $log->info("$count Messages processed in last 5 minutes");
