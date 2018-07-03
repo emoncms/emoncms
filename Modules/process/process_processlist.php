@@ -50,7 +50,12 @@ class Process_ProcessList
         {
             // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
             if (class_exists("Mosquitto\Client")) {
-                $mqtt_client = new Mosquitto\Client();
+                /*
+                    new Mosquitto\Client($id,$cleanSession)
+                    $id (string) – The client ID. If omitted or null, one will be generated at random.
+                    $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
+                 */ 
+                $mqtt_client = new Mosquitto\Client(null,true);
                 
                 $mqtt_client->onDisconnect(function($responseCode) use ($log) {
                     if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
@@ -726,11 +731,19 @@ class Process_ProcessList
                 } else { 
                     $this->mqtt->publish($topic, $value);
                 }
-                $this->mqtt->disconnect();//stop the loopForever()
             });
             try {
                 $this->mqtt->connect($mqtt_server['host'], $mqtt_server['port']);
-                $this->mqtt->loopForever();
+                // $this->mqtt->loopForever(); // infinite blocking loop
+                for($i=0; $i++; $i<=10){
+                    /* The main network loop for the client. 
+                    You must call this frequently in order to keep communications 
+                    between the client and broker working*/
+                    $this->mqtt->loop(); 
+                    usleep(200000); // .2s
+                    // @ todo: what happens if this doesn't complete by the last loop iteration??
+                }
+                $this->mqtt->disconnect();//stop the loopForever()
             } catch (Exception $e) {
                 $log->error($msg.$e->getMessage());
             }
