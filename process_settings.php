@@ -117,7 +117,9 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($csv_field_separator) || $csv_field_separator=="") $csv_field_separator = ',';
 
     if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
-
+    
+    if (!isset($appname)) $appname = 'emoncms';
+    
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
 
