@@ -1262,18 +1262,41 @@ class PHPFina implements engine_methods
     public function clear($feedid) {
         $feedid = (int)$feedid;
         $meta = $this->get_meta($feedid);
+        var_dump($meta);
+        return false;
         if (!$meta) return false;
-        $meta->start_time = time();
+        $meta->start_time = 0;
         unlink($this->dir.$feedid.".meta");
         unlink($this->dir.$feedid.".dat");
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
-        $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating blank one
+        $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
         $this->create($feedid);
         return true;
     }
     
+    /**
+     * clear out data from file before $start_time
+     *
+     * @param integer $feedid
+     * @param integer $start_time new timestamp to start the feed data from
+     * @return boolean
+     */
     public function trim($feedid,$start_time) {
+        $meta = $this->get_meta($feedid); // get .dat meta info
+        $bytesize = $meta->npoints * 4.0; // total .dat file size
+        if($start_time < $meta->start_time) return false; //new start_time out of range
+        
+        $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
+        $datFileName = $this->dir.$feedid.'.dat';
+        $tmpFileName = $this->dir.'temp-trim.tmp';
+        exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName)); // save byte safe output of tail to temp file
+        exec(sprintf("mv %s to %s", $tmpFileName, $datFileName));// overwrite original .dat file with temp file
+        $this->log->info(".data file trimmed to ".$bytesize - $start_bytes." bytes");
 
+        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        $meta->start_time = $start_time;
+        $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
+        return true;
     }
 
     /**

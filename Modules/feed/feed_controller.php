@@ -78,7 +78,6 @@ function feed_controller()
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
             // First we load the meta data for the feed that we want
-
             if ($feed->exist($feedid)) // if the feed exists
             {
                 $f = $feed->get($feedid);
@@ -157,6 +156,16 @@ function feed_controller()
                     // Delete feed
                     } else if ($route->action == "delete") {
                         $result = $feed->delete($feedid);
+                    
+                    // Clear feed
+                    } else if ($route->action == "clear") {
+                        $result = $feed->clear($feedid);
+                    
+                    // Trim feed
+                    } else if ($route->action == "trim") {
+                        if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
+                        $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
+                        $result = $feed->trim($feedid, $start_time);
                     
                     // Process
                     } else if ($route->action == "process") {

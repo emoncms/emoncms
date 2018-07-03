@@ -218,9 +218,11 @@ class VirtualFeed implements engine_methods
     }
     public function clear($feedid) {
         // clear all feed data but keep meta.
+        return;
     }
     
     public function trim($feedid,$start_time) {
         // clear all data upto a start_time
+        return;
     }
 }
