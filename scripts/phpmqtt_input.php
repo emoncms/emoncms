@@ -98,9 +98,10 @@
         $device = new Device($mysqli,$redis);
     }
     
-    $mqtt_client = new Mosquitto\Client();
-    
+    $mqtt_client = new Mosquitto\Client($id=$user->get_apikey_write($mqttsettings['userid'],$cleanSession=false));
+
     $connected = false;
+    $subscribed = 0;
     $last_retry = 0;
     $last_heartbeat = time();
     $count = 0;
@@ -119,21 +120,29 @@
         }
         
         if (!$connected && (time()-$last_retry)>5.0) {
+            $subscribed = 0;
             $last_retry = time();
             try {
+                $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
-                $topic = $mqtt_server['basetopic']."/#";
-                //echo "Subscribing to: ".$topic."\n";
-                $log->info("Subscribing to: ".$topic);
-                $mqtt_client->subscribe($topic,2);
             } catch (Exception $e) {
                 $log->error($e);
             }
-            //echo "Not connected, retrying connection\n";
-            $log->warn("Not connected, retrying connection");
         }
-        
+
+        if ($connected && ($subscribed == 0)) {
+            try {
+                $topic = $mqtt_server['basetopic']."/#";
+                $log->info("Subscribing to: ".$topic);
+                $subscribed = $mqtt_client->subscribe($topic,2);
+                $log->info("Subscribed to: ".$topic." ID - ".$subscribed);
+            } catch (Exception $e) {
+                $log->error($e);
+                $subscribed = 0;
+            }
+        }
+
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
             $log->info("$count Messages processed in last 5 minutes");
@@ -145,32 +154,32 @@
                 die;
             }
         }
-        
         usleep(1000);
     }
     
-
     function connect($r, $message) {
         global $log, $connected;
-        $connected = true;
-        //echo "Connected to MQTT server with code {$r} and message {$message}\n";
+        // set connected flag if CONNACK is 0 (success)
+        $connected = ($r == 0);
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
     }
 
     function subscribe() {
         global $log, $topic;
         //echo "Subscribed to topic: ".$topic."\n";
-        $log->info("Subscribed to topic: ".$topic);
+        $log->info("Callback subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
-        global $log, $topic;
+        global $log, $topic, $subscribed;
         //echo "Unsubscribed from topic:".$topic."\n";
+        $subscribed = 0;
         $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
-        global $connected, $log;
+        global $connected, $log, $subscribed;
+        $subscribed = 0;
         $connected = false;
         //echo "Disconnected cleanly\n";
         $log->info("Disconnected cleanly");
