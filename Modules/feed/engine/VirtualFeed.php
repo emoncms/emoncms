@@ -2,17 +2,7 @@
 // engine_methods interface in shared_helper.php
 ;include_once dirname(__FILE__) . '/shared_helper.php';
 
-// virtualfeed has these additional methods
-interface virtualfeed_methods extends engine_methods{
-    /**
-     * Get array with last time and value from a feed
-     *
-     * @param integer $feedid The id of the feed
-    */
-    public function lastvalue($feedid);
-}
-
-class VirtualFeed implements virtualfeed_methods
+class VirtualFeed implements engine_methods
 {
 
     private $mysqli;
@@ -226,5 +216,11 @@ class VirtualFeed implements virtualfeed_methods
         fclose($exportfh);
         exit;
     }
-
+    public function clear($feedid) {
+        // clear all feed data but keep meta.
+    }
+    
+    public function trim($feedid,$start_time) {
+        // clear all data upto a start_time
+    }
 }

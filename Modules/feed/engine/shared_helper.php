@@ -112,17 +112,7 @@ interface engine_methods{
      * @see http://php.net/manual/en/timezones.php
      * @return void
      */
-    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone);
-
-    public function get_average_DMY($feedid,$start,$end,$mode,$timezone);
-    public function get_average($feedid,$start,$end,$outinterval);
-
-    public function get_data_DMY_time_of_day($feedid,$start,$end,$mode,$timezone,$split);
-    public function get_data_DMY($feedid,$start,$end,$mode,$timezone);
-
-    public function upload_fixed_interval($feedid,$start,$interval,$npoints);
-    public function upload_variable_interval($feedid,$npoints);
-    
+    public function csv_export($feedid,$start,$end,$outinterval,$usertimezone);    
     
     /**
      * delete all past data for a feed. keeping all the feed settings the same
@@ -133,7 +123,6 @@ interface engine_methods{
      * @return void
      */
     public function clear($feedid);
-    
     
     /**
      * delete past data for a feed up to a point.

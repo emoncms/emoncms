@@ -29,9 +29,6 @@ function feed_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
-    header('Content-Type: text');
-    exit(var_export($feed->get_meta(get('id')),1));
-
     if ($route->format == 'html')
     {
         if ($route->action == "list" && $session['write']) $result = view("Modules/feed/Views/feedlist_view.php",array());
