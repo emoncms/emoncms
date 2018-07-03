@@ -50,7 +50,12 @@ class Process_ProcessList
         {
             // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
             if (class_exists("Mosquitto\Client")) {
-                $mqtt_client = new Mosquitto\Client();
+                /*
+                    new Mosquitto\Client($id,$cleanSession)
+                    $id (string) – The client ID. If omitted or null, one will be generated at random.
+                    $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
+                 */ 
+                $mqtt_client = new Mosquitto\Client(null,true);
                 
                 $mqtt_client->onDisconnect(function($responseCode) use ($log) {
                     if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
@@ -708,32 +713,12 @@ class Process_ProcessList
     
     public function publish_to_mqtt($topic, $time, $value)
     {
-        global $mqtt_server, $log;
-        // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
+        global $redis;
+        // saves value to redis
+        // phpmqtt_input.php is then used to publish the values
         if ($this->mqtt){
-            $msg = 'mqtt error:';
-            $this->mqtt->setCredentials($mqtt_server['user'], $mqtt_server['password']);
-            $this->mqtt->onConnect(function($responseCode, $message) use ($log, $topic, $value) {
-                /*
-                0 	Success
-                1 	Connection refused (unacceptable protocol version)
-                2 	Connection refused (identifier rejected)
-                3 	Connection refused (broker unavailable )
-                */
-                //log errors connecting to mqtt
-                if ($responseCode > 0){
-                    $log->info($msg.$message);
-                } else { 
-                    $this->mqtt->publish($topic, $value);
-                }
-                $this->mqtt->disconnect();//stop the loopForever()
-            });
-            try {
-                $this->mqtt->connect($mqtt_server['host'], $mqtt_server['port']);
-                $this->mqtt->loopForever();
-            } catch (Exception $e) {
-                $log->error($msg.$e->getMessage());
-            }
+            $data = array('topic'=>$topic,'value'=>$value,'timestamp'=>$time);
+            $redis->rpush('mqtt-pub-queue', json_encode($data));
         }
         return $value;
     }
