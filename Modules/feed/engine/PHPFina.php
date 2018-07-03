@@ -1253,16 +1253,27 @@ class PHPFina implements engine_methods
         return true;
     }
 
+    /**
+     * delete feed .dat, re-create blank .dat and .meta with same interval
+     *
+     * @param integer $feedid
+     * @return boolean true == success
+     */
     public function clear($feedid) {
-        // clear code...
-        // 1. clear feedid.dat
-        // 2. set start_time to 0 in feedid.meta, keep interval the same
+        $feedid = (int)$feedid;
+        $meta = $this->get_meta($feedid);
+        if (!$meta) return false;
+        $meta->start_time = time();
+        unlink($this->dir.$feedid.".meta");
+        unlink($this->dir.$feedid.".dat");
+        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating blank one
+        $this->create($feedid);
+        return true;
     }
     
     public function trim($feedid,$start_time) {
-        // trim code...
-        // 1. system level trim command? as discussed?
-        // 2. change start_time in feedid.meta to new $start_time
+
     }
 
     /**
