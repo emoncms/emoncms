@@ -173,3 +173,6 @@
     // Set to true to run database update without logging in
     // URL Example: http://localhost/emoncms/admin/db
     $updatelogin = false;
+
+    // Applicaton name
+    $appname = "emoncms";

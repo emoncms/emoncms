@@ -21,14 +21,15 @@ class User
     private $redis;
     private $log;
     
-    public $appname = "emoncms";
+    public $appname;
 
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
-        global $enable_rememberme, $email_verification;
+        global $enable_rememberme, $email_verification, $appname;
         $this->enable_rememberme = $enable_rememberme;
         $this->email_verification = $email_verification;
+        $this->appname = $appname;
 
         $this->mysqli = $mysqli;
 
