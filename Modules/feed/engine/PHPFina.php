@@ -1289,9 +1289,11 @@ class PHPFina implements engine_methods
         $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
         $datFileName = $this->dir.$feedid.'.dat';
         $tmpFileName = $this->dir.'temp-trim.tmp';
-        exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName)); // save byte safe output of tail to temp file
-        exec(sprintf("mv %s to %s", $tmpFileName, $datFileName));// overwrite original .dat file with temp file
-        $this->log->info(".data file trimmed to ".$bytesize - $start_bytes." bytes");
+        exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
+        exec(sprintf("cat %s > %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
+        exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
+        print_r($exec);
+        $this->log->info(".data file trimmed to ".($bytesize - $start_bytes)." bytes");
 
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
         $meta->start_time = $start_time;
@@ -1308,7 +1310,66 @@ class PHPFina implements engine_methods
      */
     public function set_start_date($feedid, $start_time)
     {
-        exit(time());
+        $date = date('Y-m-d',$start_time);
+        $hour = date('H',$start_time);
+        $minute = date('i',$start_time);
+        $second = date('s',$start_time);
+        $start_microtime =$start_time*1000;
+        $meta[] = print_r($this->get_meta($feedid),1);
+        $meta[] = print_r($this->get_field($feedid,'name'),1);
+        $html = <<<EOT
+        <div class="row">
+            <div class="w-6">
+                <h1>Shift feed #$feedid to new start date</h1>
+                <form>
+                <input id="timestamp" name="start_time" value="$start_microtime"> <button>Submit</button><br>
+                <input type="hidden" value="$feedid" name="id">
+                <fieldset>
+                    <legend>Change</legend>
+                    <label for="date">Date<label>
+                    <input id="date" value="$date" type="date" onchange="setTimestamp()"><br>
+                    <label for="hour">Hour<label>
+                    <input id="hour" value="$hour" onchange="setTimestamp()" type="number" class="w-3"> :
+                    <label for="minute">Minute<label>
+                    <input id="minute" value="$minute" onchange="setTimestamp()" type="number" class="w-3"> :
+                    <label for="second">Second<label>
+                    <input id="second" value="$second" onchange="setTimestamp()" type="number" class="w-3">
+                </fieldset>
+                </form>
+                </div>
+            <div>
+                <pre>$meta</pre>
+            </div>
+        </div>
+        <style>
+        .w-2{width:4em}
+        .w-6{width:40em} 
+        .row>*{float:left}
+        .row:before,
+        .row:after {
+            content: "";
+            display: table;
+        } 
+        .row:after {
+            clear: both;
+        }
+        </style>
+        <script>
+        function setTimestamp(){
+            document.getElementById('timestamp').value = getTimestamp();
+        }
+        function getTimestamp(){
+            date = document.getElementById('date').value
+            hour = document.getElementById('hour').value
+            minute = document.getElementById('minute').value
+            second = document.getElementById('second').value
+            time = [hour,minute,second];
+            return new Date(date+' '+time.join(':')).valueOf()
+        }
+        </script>
+EOT;
+        echo $html;
+        exit();
         $meta = $this->get_meta($feedid);
         $feedname = $feedid . ".meta";
         $metafile = @fopen($this->dir.$feedname, 'wb');

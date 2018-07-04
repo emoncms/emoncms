@@ -166,6 +166,12 @@ function feed_controller()
                         if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
                         $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
                         $result = $feed->trim($feedid, $start_time);
+
+                    // Shift feed
+                    } else if ($route->action == "shift") {
+                        if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
+                        $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
+                        $result = $feed->shift($feedid, $start_time);
                     
                     // Process
                     } else if ($route->action == "process") {
