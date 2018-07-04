@@ -23,6 +23,9 @@
 
 #table td[field="edit-action"] { width:14px; text-align: center; }
 #table td[field="delete-action"] { width:14px; text-align: center; }
+#table td[field="trim-action"] { width:14px; text-align: center; }
+#table td[field="clear-action"] { width:14px; text-align: center; }
+#table td[field="shift-action"] { width:14px; text-align: center; }
 #table td[field="view-action"] { width:14px; text-align: center; }
 #table td[field="export-action"] { width:14px; text-align: center; }
 
@@ -67,6 +70,23 @@
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+    </div>
+</div>
+
+<div id="feedClearModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedClearModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="feedClearModalLabel"><?php echo _('Clear all feed data'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <h4><?php echo _('Deleting feed data is permanent!'); ?></h4>
+        <br><br>
+        <p><?php echo _('Are you sure you want to clear all the feed data?'); ?></p>
+        <div id="feedClear-loader" class="ajax-loader" style="display:none;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="feedClear-confirm" class="btn btn-primary"><?php echo _('Delete all feed data permanently'); ?></button>
     </div>
 </div>
 
@@ -216,9 +236,13 @@
       pulses: "pulses",
       dB: "dB"
     }},
+    'start_time':{title:"<?php echo _('Days'); ?>",type:'fixed'},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
+    'clear-action':{'title':'', 'type':"clear"},
+    'trim-action':{'title':'', 'type':"trim"},
+    'shift-action':{'title':'', 'type':"shift"},
     'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
     'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
     'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
@@ -262,7 +286,7 @@
     updater = null;
     if (interval > 0) updater = setInterval(func, interval);
   }
-  updaterStart(update, 5000);
+  // updaterStart(update, 5000);
 
   $("#table").bind("onEdit", function(e){
     updaterStart(update, 0);
@@ -300,6 +324,23 @@
     update();
 
     $('#feedDeleteModal').modal('hide');
+    updaterStart(update, 5000);
+  });
+
+  $("#table").bind("onClear", function(e,id,row){
+    updaterStart(update, 0);
+    $modal = $('#feedClearModal')
+    $modal.modal('show');
+    $modal.attr('the_id',id);
+    $modal.attr('the_row',row);
+  });
+
+  $("#feedClear-confirm").click(function(){
+    $modal = $('#feedClearModal')
+    var id = $modal.attr('the_id');
+    feed.clear(id);
+    update();
+    $('#feedClearModal').modal('hide');
     updaterStart(update, 5000);
   });
 

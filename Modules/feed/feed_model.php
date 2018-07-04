@@ -410,6 +410,11 @@ class Feed
             $lastvalue = $this->get_timevalue($id);
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
+            $meta = $this->get_meta($id);
+            $row['start_time'] = round((time()-$meta->start_time) / (60 * 60 * 24));
+            var_dump($meta);
+            $row['start_time'] = round($meta->npoints * $meta->interval * 60 * 60 * 24);
+
             $feeds[] = $row;
         }
 
@@ -428,6 +433,8 @@ class Feed
                 $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
                 $row['time'] = $lastvirtual['time'];
                 $row['value'] = $lastvirtual['value'];
+                $meta = $this->get_meta($row['id']);
+                $row['start_time'] = $meta->start_time;
             }
             $feeds[] = $row;
         }

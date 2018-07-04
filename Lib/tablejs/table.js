@@ -230,6 +230,17 @@ var table = {
       }
       $(table.element).trigger("onDeleteExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
     });
+    // Event: clear row
+    $(table.element).on('click', 'a[type=clear]', function() {
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      if (table.cleardata) table.remove($(this).attr('row'), $(this).attr('child_row') );
+      if (child_row == "root") {
+        $(table.element).trigger("onClear",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
+      }
+      $(table.element).trigger("onClearExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
+    });
 
     // Event: inline edit
     $(table.element).on('click', 'a[type=edit]', function() {
@@ -396,6 +407,18 @@ var table = {
 
     'delete': {
       'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='delete' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-trash' style='cursor:pointer'></i></a>"; }
+    },
+
+    'trim': {
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='trim' title='Trim feed data to new start time' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-calendar' style='cursor:pointer'></i></a>"; }
+    },
+
+    'clear': {
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='clear' title='Clear all feed data' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-remove-circle' style='cursor:pointer'></i></a>"; }
+    },
+
+    'shift': {
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='shift' title='Shift feed start date' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-step-forward' style='cursor:pointer'></i></a>"; }
     },
 
     'edit': {
