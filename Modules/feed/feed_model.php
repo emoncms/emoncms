@@ -411,10 +411,7 @@ class Feed
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
             $meta = $this->get_meta($id);
-            $row['start_time'] = round((time()-$meta->start_time) / (60 * 60 * 24));
-            var_dump($meta);
-            $row['start_time'] = round($meta->npoints * $meta->interval * 60 * 60 * 24);
-
+            $row['start_time'] = $meta->start_time;
             $feeds[] = $row;
         }
 

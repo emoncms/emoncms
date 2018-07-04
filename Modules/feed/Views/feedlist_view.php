@@ -32,6 +32,14 @@
 #table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; }
 #table th[fieldg="processList"] { font-weight:normal; }
 
+input[type="range"]{
+  padding: .35em .5em;
+  border: 1px solid #ddd;
+  border-right-width: 1px;
+}
+.input-append > input[type="range"]{
+  border-right-width: 0;
+}
 </style>
 
 <div>
@@ -76,17 +84,63 @@
 <div id="feedClearModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedClearModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedClearModalLabel"><?php echo _('Clear all feed data'); ?></h3>
+        <h3 id="feedClearModalLabel"><?php echo _('Clear feed data'); ?></h3>
     </div>
     <div class="modal-body">
+        <p><i class="icon-fire"></i> <?php echo _('Delete all the data, keep the feed.'); ?> </p>
         <h4><?php echo _('Deleting feed data is permanent!'); ?></h4>
         <br><br>
+
         <p><?php echo _('Are you sure you want to clear all the feed data?'); ?></p>
         <div id="feedClear-loader" class="ajax-loader" style="display:none;"></div>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feedClear-confirm" class="btn btn-primary"><?php echo _('Delete all feed data permanently'); ?></button>
+    </div>
+</div>
+
+<div id="feedTrimModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedTrimModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="feedTrimModalLabel"><?php echo _('Clear out old feed data'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <h4><?php echo _('Deleting feed data is permanent!'); ?></h4>
+        <br>
+        <div id="feed_trim_datetimepicker" class="input-append date">
+            <input id="trim_start_time" data-format="dd/MM/yyyy hh:mm:ss" type="text">
+            <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
+        </div>
+        <p><?php echo _('Are you sure you want to clear all the feed data up to the date?'); ?></p>
+        <div id="feedTrim-loader" class="ajax-loader" style="display:none;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="feedTrim-confirm" class="btn btn-primary"><?php echo _('Delete feed data permanently'); ?></button>
+    </div>
+</div>
+
+<div id="feedShiftModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedShiftModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="feedShiftModalLabel"><?php echo _('Change feed start time'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <p><i class='icon-resize-full'></i> <?php echo _('Select a new start date/time for this feed. No data is deleted'); ?></p>
+        <label>Shift start time</label>
+        <div id="feed_shift_datetimepicker" class="input-append">
+          <input min="-4380" max="4380" value="0" id="trim_start_time_slider" type="range" oninput="showNewStartTime(event)" onchange="showNewStartTime(event)">
+          <span id="feed_shift_slider_value" class="add-on">0</span>
+        </div>
+        <br>
+        <br>
+        <p><?php echo _('Are you sure you want shift the start date?'); ?></p>
+        <div id="feedShift-loader" class="ajax-loader" style="display:none;"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="feedShift-confirm" class="btn btn-primary"><?php echo _('Delete all feed data permanently'); ?></button>
     </div>
 </div>
 
@@ -236,7 +290,7 @@
       pulses: "pulses",
       dB: "dB"
     }},
-    'start_time':{title:"<?php echo _('Days'); ?>",type:'fixed'},
+    'start_time':{title:"<?php echo _('Days'); ?>",type:'relative_days'},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
@@ -286,7 +340,7 @@
     updater = null;
     if (interval > 0) updater = setInterval(func, interval);
   }
-  // updaterStart(update, 5000);
+  updaterStart(update, 5000);
 
   $("#table").bind("onEdit", function(e){
     updaterStart(update, 0);
@@ -327,6 +381,7 @@
     updaterStart(update, 5000);
   });
 
+
   $("#table").bind("onClear", function(e,id,row){
     updaterStart(update, 0);
     $modal = $('#feedClearModal')
@@ -334,7 +389,6 @@
     $modal.attr('the_id',id);
     $modal.attr('the_row',row);
   });
-
   $("#feedClear-confirm").click(function(){
     $modal = $('#feedClearModal')
     var id = $modal.attr('the_id');
@@ -343,6 +397,49 @@
     $('#feedClearModal').modal('hide');
     updaterStart(update, 5000);
   });
+
+
+  $("#table").bind("onTrim", function(e,id,row){
+    updaterStart(update, 0);
+    $modal = $('#feedTrimModal')
+    $modal.modal('show');
+    $modal.attr('the_id',id);
+    $modal.attr('the_row',row);
+    console.log(e,id,row);
+    $modal.data('start_time',row);
+  });
+  $("#feedTrim-confirm").click(function(){
+    $modal = $('#feedTrimModal')
+    var id = $modal.attr('the_id');
+    var start_date = $modal.find('[name="new_start_date"]').val();
+    feed.trim(id, start_date);
+    update();
+    $('#feedTrimModal').modal('hide');
+    updaterStart(update, 5000);
+  });
+
+
+  $("#table").bind("onShift", function(e,id,row){
+    updaterStart(update, 0);
+    let $modal = $('#feedShiftModal')
+    let start_time = 123
+    console.log(e.currentTarget,e.target)
+    $modal.modal('show');
+    $modal.attr('the_id',id);
+    $modal.attr('the_row',row);
+    $modal.data('start_time',start_time)
+  });
+  $("#feedShift-confirm").click(function(){
+    $modal = $('#feedShiftModal')
+    var id = $modal.attr('the_id');
+    var start_date = $modal.find('[name="new_start_date"]').val();
+    feed.shift(id, start_date);
+    update();
+    $('#feedShiftModal').modal('hide');
+    updaterStart(update, 5000);
+  });
+
+
 
   $("#refreshfeedsize").click(function(){
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
@@ -536,5 +633,14 @@
   $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('<?php echo _('ERROR: Could not save processlist.'); ?> '+result.message); }
-  }); 
+  });
+
+/**
+ * triggered on input change
+ */
+  function showNewStartTime(event){
+    let input = event.target
+    let new_start_time = input.value
+    document.getElementById('feed_shift_slider_value').innerText = new_start_time
+  }
 </script>

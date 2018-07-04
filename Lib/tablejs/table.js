@@ -230,7 +230,7 @@ var table = {
       }
       $(table.element).trigger("onDeleteExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
     });
-    // Event: clear row
+    // Event: clear all feed data
     $(table.element).on('click', 'a[type=clear]', function() {
       var child_row = $(this).attr('child_row');
       if (child_row == "root") { t=table; }
@@ -240,6 +240,28 @@ var table = {
         $(table.element).trigger("onClear",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
       }
       $(table.element).trigger("onClearExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
+    });
+    // Event: trim feed data to a start_time
+    $(table.element).on('click', 'a[type=trim]', function() {
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      if (table.cleardata) table.remove($(this).attr('row'), $(this).attr('child_row') );
+      if (child_row == "root") {
+        $(table.element).trigger("onTrim",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
+      }
+      $(table.element).trigger("onTrimExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
+    });
+    // Event: shift feed start_date to given timestamp
+    $(table.element).on('click', 'a[type=shift]', function() {
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      if (table.cleardata) table.remove($(this).attr('row'), $(this).attr('child_row') );
+      if (child_row == "root") {
+        $(table.element).trigger("onShift",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
+      }
+      $(table.element).trigger("onShiftExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
     });
 
     // Event: inline edit
@@ -328,7 +350,6 @@ var table = {
     'fixed': {
       'draw': function (t,row,child_row,field) { return t.data[row][field] }
     },
-
     'text': {
       'draw': function (t,row,child_row,field) { 
         value = t.data[row][field];
@@ -410,15 +431,15 @@ var table = {
     },
 
     'trim': {
-      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='trim' title='Trim feed data to new start time' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-calendar' style='cursor:pointer'></i></a>"; }
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='trim' title='Trim down the data' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-resize-small' style='cursor:pointer'></i></a>"; }
     },
 
     'clear': {
-      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='clear' title='Clear all feed data' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-remove-circle' style='cursor:pointer'></i></a>"; }
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='clear' title='Clear feed data' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-fire' style='cursor:pointer'></i></a>"; }
     },
 
     'shift': {
-      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='shift' title='Shift feed start date' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-step-forward' style='cursor:pointer'></i></a>"; }
+      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='shift' title='Shift feed start date' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-resize-full' style='cursor:pointer'></i></a>"; }
     },
 
     'edit': {
@@ -429,6 +450,13 @@ var table = {
       'draw': function (t,row,child_row,field) { return "<a type='expand' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row][t.expandByField]+"' mode='" + (t.expand[t.data[row][t.expandByField]] == undefined || !t.expand[t.data[row][t.expandByField]].expanded ? "expand":"close") + "'><i class='" + (t.expand[t.data[row][t.expandByField]] == undefined || !t.expand[t.data[row][t.expandByField]].expanded ? "icon-chevron-down":"icon-chevron-up") + "' style='cursor:pointer'></i></a>"; },
     },
     
+    'relative_days': {
+      'draw': function (t,row,child_row,field) {
+        let value = t.data[row][field]
+        return value == 0 ? 0 : Math.round(((new Date().getTime()/1000) - value) / 60 / 60 / 24)
+      }
+    },
+
     'blank': {
       'draw': function (t,row,child_row,field) { return ""; }
     }
