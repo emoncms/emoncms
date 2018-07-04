@@ -164,7 +164,7 @@
     
 
     function connect($r, $message) {
-        global $log, $connected, $mqtt_client;
+        global $log, $connected, $mqtt_server, $mqtt_client;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
         if( $r==0 ) {
