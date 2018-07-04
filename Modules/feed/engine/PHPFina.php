@@ -1308,15 +1308,30 @@ class PHPFina implements engine_methods
      * @param [timestamp] $start_time
      * @return void
      */
-    public function set_start_date($feedid, $start_time)
+    public function set_start_date($feedid, $start_time, $feed)
     {
+        $meta = $this->get_meta($feedid);
+
         $date = date('Y-m-d',$start_time);
         $hour = date('H',$start_time);
         $minute = date('i',$start_time);
         $second = date('s',$start_time);
-        $start_microtime =$start_time*1000;
-        $meta[] = print_r($this->get_meta($feedid),1);
-        $meta[] = print_r($this->get_field($feedid,'name'),1);
+        $start_microtime =$start_time;
+
+        $data['id'] = $feed->get_field($feedid,'id');
+        $data['id'] = $feed->get_field($feedid,'id');
+        $data['name'] = $feed->get_field($feedid,'name');
+        $data['tag'] = $feed->get_field($feedid,'tag');
+        $data['size'] = $feed->get_field($feedid,'size');
+        $data['unit'] = $feed->get_field($feedid,'unit');
+        $data['meta'] = $meta;
+
+        if($meta->start_time!==$start_time) {
+            $meta->start_time = $start_time;
+            $this->create_meta($feedid, $meta);
+        }
+        $output = print_r($data,1);
+
         $html = <<<EOT
         <div class="row">
             <div class="w-6">
@@ -1338,7 +1353,7 @@ class PHPFina implements engine_methods
                 </form>
                 </div>
             <div>
-                <pre>$meta</pre>
+                <pre>$output</pre>
             </div>
         </div>
         <style>
@@ -1364,7 +1379,7 @@ class PHPFina implements engine_methods
             minute = document.getElementById('minute').value
             second = document.getElementById('second').value
             time = [hour,minute,second];
-            return new Date(date+' '+time.join(':')).valueOf()
+            return new Date(date+' '+time.join(':')).valueOf()/1000
         }
         </script>
 EOT;

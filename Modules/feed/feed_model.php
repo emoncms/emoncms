@@ -213,7 +213,7 @@ class Feed
         }
 
         // Call to engine shift method
-        $this->EngineClass($engine)->set_start_date($feedid, $start_time);
+        $this->EngineClass($engine)->set_start_date($feedid, $start_time, $this);
         if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
 
