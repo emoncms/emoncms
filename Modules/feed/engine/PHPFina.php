@@ -1311,102 +1311,13 @@ class PHPFina implements engine_methods
     public function set_start_date($feedid, $start_time, $feed)
     {
         $meta = $this->get_meta($feedid);
-
-        $date = date('Y-m-d',$start_time);
-        $hour = date('H',$start_time);
-        $minute = date('i',$start_time);
-        $second = date('s',$start_time);
-        $start_microtime =$start_time;
-
-        $data['id'] = $feed->get_field($feedid,'id');
-        $data['id'] = $feed->get_field($feedid,'id');
-        $data['name'] = $feed->get_field($feedid,'name');
-        $data['tag'] = $feed->get_field($feedid,'tag');
-        $data['size'] = $feed->get_field($feedid,'size');
-        $data['unit'] = $feed->get_field($feedid,'unit');
-        $data['meta'] = $meta;
-
-        if($meta->start_time!==$start_time) {
+        if ($meta->start_time!==$start_time) {
             $meta->start_time = $start_time;
             $this->create_meta($feedid, $meta);
+            return true;
+        } else {
+            return array('success'=>false,'message'=>'feed start_date not adjusted');
         }
-        $output = print_r($data,1);
-
-        $html = <<<EOT
-        <div class="row">
-            <div class="w-6">
-                <h1>Shift feed #$feedid to new start date</h1>
-                <form>
-                <input id="timestamp" name="start_time" value="$start_microtime"> <button>Submit</button><br>
-                <input type="hidden" value="$feedid" name="id">
-                <fieldset>
-                    <legend>Change</legend>
-                    <label for="date">Date<label>
-                    <input id="date" value="$date" type="date" onchange="setTimestamp()"><br>
-                    <label for="hour">Hour<label>
-                    <input id="hour" value="$hour" onchange="setTimestamp()" type="number" class="w-3"> :
-                    <label for="minute">Minute<label>
-                    <input id="minute" value="$minute" onchange="setTimestamp()" type="number" class="w-3"> :
-                    <label for="second">Second<label>
-                    <input id="second" value="$second" onchange="setTimestamp()" type="number" class="w-3">
-                </fieldset>
-                </form>
-                </div>
-            <div>
-                <pre>$output</pre>
-            </div>
-        </div>
-        <style>
-        .w-2{width:4em}
-        .w-6{width:40em} 
-        .row>*{float:left}
-        .row:before,
-        .row:after {
-            content: "";
-            display: table;
-        } 
-        .row:after {
-            clear: both;
-        }
-        </style>
-        <script>
-        function setTimestamp(){
-            document.getElementById('timestamp').value = getTimestamp();
-        }
-        function getTimestamp(){
-            date = document.getElementById('date').value
-            hour = document.getElementById('hour').value
-            minute = document.getElementById('minute').value
-            second = document.getElementById('second').value
-            time = [hour,minute,second];
-            return new Date(date+' '+time.join(':')).valueOf()/1000
-        }
-        </script>
-EOT;
-        echo $html;
-        exit();
-        $meta = $this->get_meta($feedid);
-        $feedname = $feedid . ".meta";
-        $metafile = @fopen($this->dir.$feedname, 'wb');
-        
-        if (!$metafile) {
-            $msg = "could not write meta data file " . error_get_last()['message'];
-            $this->log->error("create_meta() ".$msg);
-            return $msg;
-        }
-        if (!flock($metafile, LOCK_EX)) {
-            $msg = "meta data file '".$this->dir.$feedname."' is locked by another process";
-            $this->log->error("create_meta() ".$msg);
-            fclose($metafile);
-            return $msg;
-        }
-        
-        fwrite($metafile,pack("I",0));
-        fwrite($metafile,pack("I",0));
-        fwrite($metafile,pack("I",$meta->interval));
-        fwrite($metafile,pack("I",$start_time));
-        fclose($metafile);
-        return true;
     }
 
 }
