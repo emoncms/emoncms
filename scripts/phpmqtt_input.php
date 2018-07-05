@@ -138,13 +138,27 @@
         }
 
         // PUBLISH
-        // loop through all queued items in redis
         $queue_topic = 'mqtt-pub-queue';
-        for ($i=0; $i<$redis->llen($queue_topic); $i++) {
-            if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
-                // publish values to 
-                $mqtt_client->publish($data['topic'], $data['value']);
+        $queue_length = $redis->llen($queue_topic);
+        $pub_qos = 0;
+        $qos0_limit = 120; // number of seconds before old data is concidered too stale to publish without a timestamp
+        // If the queue length is not 0 publish a single item
+        if ($queue_length) {
+            // TODO report queue length to log, throttle the entries using timer, log level determined by urgency of quue length
+            if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {                
+                if ($pub_qos) {     // if the QoS is 0 we only publish current "status" data
+                    if (data['timestamp'] > (time()-$qos0_limit)) {
+                        $mqtt_client->publish($data['topic'], $data['value'],0);
+                    }
+                } else {            // otherwise include a timestamped payload of someform
+                    // TODO: finalise payload format and maybe use a proper JSON function.
+                    $payload = '{"value":'.$data['value'].',"timestamp":'.$data['timestamp'].'}';
+                    $mqtt_client->publish($data['topic'], $payload, $pub_qos);
+                }
             }
+        } else {
+            // if there is no queue do not loop too fast
+            usleep(1000);
         }
 
         if ((time()-$last_heartbeat)>300) {
@@ -158,8 +172,6 @@
                 die;
             }
         }
-        
-        usleep(1000);
     }
     
 

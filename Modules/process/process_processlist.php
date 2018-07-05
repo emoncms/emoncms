@@ -44,26 +44,26 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $mqtt_server, $log;
+        global $mqtt_enabled, $log;
         
-        if ($mqtt_enabled && !$this->mqtt)
-        {
-            // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
-            if (class_exists("Mosquitto\Client")) {
-                /*
-                    new Mosquitto\Client($id,$cleanSession)
-                    $id (string) – The client ID. If omitted or null, one will be generated at random.
-                    $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
-                 */ 
-                $mqtt_client = new Mosquitto\Client(null, true);
+        // if ($mqtt_enabled && !$this->mqtt)
+        // {
+        //     // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+        //     if (class_exists("Mosquitto\Client")) {
+        //         /*
+        //             new Mosquitto\Client($id,$cleanSession)
+        //             $id (string) – The client ID. If omitted or null, one will be generated at random.
+        //             $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
+        //          */ 
+        //         $mqtt_client = new Mosquitto\Client(null, true);
                 
-                $mqtt_client->onDisconnect(function($responseCode) use ($log) {
-                    if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
-                });
+        //         $mqtt_client->onDisconnect(function($responseCode) use ($log) {
+        //             if ($responseCode > 0) $log->info('unexpected disconnect from mqtt server');
+        //         });
 
-                $this->mqtt = $mqtt_client;
-            }
-        }
+        //         $this->mqtt = $mqtt_client;
+        //     }
+        // }
     }
     
     // Module required process configuration, return $list array
