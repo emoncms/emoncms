@@ -158,14 +158,14 @@
                     // TODO: finalise payload format and maybe use a proper JSON function.
                     $payload = '{"value":'.$data['value'].',"timestamp":'.$data['timestamp'].'}';
                     $mqtt_client->publish($data['topic'], $payload, $mqtt_server['pub_qos']);
-                    $log->info("Publishing ".$payload." to ".$data['topic']." QoS ".$mqtt_server['pub_qos']);
+                    $log->info("Publishing 'datapoint' value ".$payload." to ".$data['topic']." QoS ".$mqtt_server['pub_qos']);
                 } else {                            // otherwise we only publish current "status" data
                     if ($data['timestamp'] > (time() - $mqtt_server['qos0_limit'])) {
 
                         $log->info("Timestamp is ".$data['timestamp']." and qos0_limit is ".$data['qos0_limit']." and time() is ".time());
                         
                         $mqtt_client->publish($data['topic'], $data['value'],0);
-                        $log->info("Publishing ".$data['value']." to ".$data['topic']." QoS 0");
+                        $log->info("Publishing 'status' value ".$data['value']." to ".$data['topic']." QoS 0");
                     }
                 }
             }
