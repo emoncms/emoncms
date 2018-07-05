@@ -26,7 +26,11 @@
                           'port'     => 1883,
                           'user'     => '',
                           'password' => '',
-                          'basetopic'=> 'emon'
+                          'basetopic'=> 'emon',
+                          'clientid' => '',
+                          'sub_qos'  => 2,
+                          'pub_qos'  => 0,
+                          'qos0_limit'=> 120
                           );
 
 

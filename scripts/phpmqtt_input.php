@@ -102,7 +102,7 @@
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
     */ 
-    $mqtt_client = new Mosquitto\Client('emoncms',true);
+    $mqtt_client = new Mosquitto\Client($mqtt_server['clientid'],($mqtt_server['clientid'] && $mqtt_server['sub_qos']) ? 'false' : 'true';);
     
     $connected = false;
     $last_retry = 0;
@@ -140,21 +140,18 @@
         // PUBLISH
         $queue_topic = 'mqtt-pub-queue';
         $queue_length = $redis->llen($queue_topic);
-        $pub_qos = 0;
-        $qos0_limit = 120; // number of seconds before old data is concidered too stale to publish without a timestamp
         // If the queue length is not 0 publish a single item
         if ($queue_length) {
             // TODO report queue length to log, throttle the entries using timer, log level determined by urgency of quue length
             if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {                
-                if ($pub_qos) {     // if the QoS is 0 we only publish current "status" data
-                    if (data['timestamp'] > (time()-$qos0_limit)) {
-                        $mqtt_client->publish($data['topic'], $data['value'],0);
-                    }
-                } else {            // otherwise include a timestamped payload of someform
+                if ($mqtt_server['pub_qos']) {            // otherwise include a timestamped payload of someform
                     // TODO: finalise payload format and maybe use a proper JSON function.
                     $payload = '{"value":'.$data['value'].',"timestamp":'.$data['timestamp'].'}';
-                    $mqtt_client->publish($data['topic'], $payload, $pub_qos);
-                }
+                    $mqtt_client->publish($data['topic'], $payload, $mqtt_server['pub_qos']);
+                } else {     // if the QoS is 0 we only publish current "status" data
+                    if ($data['timestamp'] > (time()-$mqtt_server['qos0_limit'])) {
+                        $mqtt_client->publish($data['topic'], $data['value'],0);
+                    }
             }
         } else {
             // if there is no queue do not loop too fast
