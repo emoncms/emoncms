@@ -199,26 +199,7 @@ class Feed
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
         $this->log->info("delete() feedid=$feedid");
     }
-    
-    public function shift($feedid,$start_time)
-    {
-        $feedid = (int) $feedid;
-        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
-        $engine = $this->get_engine($feedid);
-
-        if ($this->settings['redisbuffer']['enabled']) {
-            // Call to buffer delete
-            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
-        }
-
-        // Call to engine shift method
-        $this->EngineClass($engine)->set_start_date($feedid, $start_time, $this);
-        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
-        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
-
-        $this->log->info("shift() feedid=$feedid");
-    }
     public function trim($feedid,$start_time)
     {
         $feedid = (int) $feedid;

@@ -86,13 +86,6 @@ var feed = {
     }
     $.ajax({ url: path+"feed/trim.json", data: data, async: false, success: function(data){} });
   },
-  'shift':function(id, start_time){
-    let data = {
-      id: id,
-      start_time: start_time
-    }
-    $.ajax({ url: path+"feed/shift.json", data: data, async: false, success: function(data){} });
-  },
 
   'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){
     var feedIn = [];

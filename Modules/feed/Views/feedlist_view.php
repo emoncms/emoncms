@@ -106,6 +106,7 @@ input[type="range"]{
         <h3 id="feedTrimModalLabel"><?php echo _('Clear out old feed data'); ?></h3>
     </div>
     <div class="modal-body">
+        <p><i class="icon-resize-small"></i> Empty all data up to the date below:</p>
         <h4><?php echo _('Deleting feed data is permanent!'); ?></h4>
         <br>
         <div id="feed_trim_datetimepicker" class="input-append date">
@@ -118,29 +119,6 @@ input[type="range"]{
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feedTrim-confirm" class="btn btn-primary"><?php echo _('Delete feed data permanently'); ?></button>
-    </div>
-</div>
-
-<div id="feedShiftModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedShiftModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedShiftModalLabel"><?php echo _('Change feed start time'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <p><i class='icon-resize-full'></i> <?php echo _('Select a new start date/time for this feed. No data is deleted'); ?></p>
-        <label>Shift start time</label>
-        <div id="feed_shift_datetimepicker" class="input-append">
-          <input min="-4380" max="4380" value="0" id="trim_start_time_slider" type="range" oninput="showNewStartTime(event)" onchange="showNewStartTime(event)">
-          <span id="feed_shift_slider_value" class="add-on">0</span>
-        </div>
-        <br>
-        <br>
-        <p><?php echo _('Are you sure you want shift the start date?'); ?></p>
-        <div id="feedShift-loader" class="ajax-loader" style="display:none;"></div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="feedShift-confirm" class="btn btn-primary"><?php echo _('Delete all feed data permanently'); ?></button>
     </div>
 </div>
 
@@ -296,7 +274,6 @@ input[type="range"]{
     'delete-action':{'title':'', 'type':"delete"},
     'clear-action':{'title':'', 'type':"clear"},
     'trim-action':{'title':'', 'type':"trim"},
-    'shift-action':{'title':'', 'type':"shift"},
     'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
     'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
     'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
@@ -405,40 +382,24 @@ input[type="range"]{
     $modal.modal('show');
     $modal.attr('the_id',id);
     $modal.attr('the_row',row);
-    console.log(e,id,row);
-    $modal.data('start_time',row);
   });
+
   $("#feedTrim-confirm").click(function(){
     $modal = $('#feedTrimModal')
     var id = $modal.attr('the_id');
-    var start_date = $modal.find('[name="new_start_date"]').val();
-    feed.trim(id, start_date);
-    update();
-    $('#feedTrimModal').modal('hide');
-    updaterStart(update, 5000);
+    var input_date_string = $modal.find("#trim_start_time").val();
+    // dont submit if nothing selected
+    if (input_date_string!="") {
+      // convert uk dd/mm/yyyy h:m:s to RFC2822 date
+      let start_date = new Date(input_date_string.replace( /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/, "$3-$2-$1T$4:$5:$6"))
+      // set to seconds from milliseconds
+      let start_time = start_date.getTime()/1000;
+      feed.trim(id, start_time);
+      update();
+      $('#feedTrimModal').modal('hide');
+      updaterStart(update, 5000);
+    }
   });
-
-
-  $("#table").bind("onShift", function(e,id,row){
-    updaterStart(update, 0);
-    let $modal = $('#feedShiftModal')
-    let start_time = 123
-    console.log(e.currentTarget,e.target)
-    $modal.modal('show');
-    $modal.attr('the_id',id);
-    $modal.attr('the_row',row);
-    $modal.data('start_time',start_time)
-  });
-  $("#feedShift-confirm").click(function(){
-    $modal = $('#feedShiftModal')
-    var id = $modal.attr('the_id');
-    var start_date = $modal.find('[name="new_start_date"]').val();
-    feed.shift(id, start_date);
-    update();
-    $('#feedShiftModal').modal('hide');
-    updaterStart(update, 5000);
-  });
-
 
 
   $("#refreshfeedsize").click(function(){
@@ -499,6 +460,8 @@ input[type="range"]{
     language: 'en-EN',
     useCurrent: false //Important! See issue #1075
   });
+  $('#feed_trim_datetimepicker').datetimepicker({language: 'en-EN'});
+  
 
   $('#datetimepicker1').on("changeDate", function (e) {
     $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);

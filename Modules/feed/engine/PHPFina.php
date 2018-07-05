@@ -1262,15 +1262,17 @@ class PHPFina implements engine_methods
     public function clear($feedid) {
         $feedid = (int)$feedid;
         $meta = $this->get_meta($feedid);
-        var_dump($meta);
-        return false;
         if (!$meta) return false;
         $meta->start_time = 0;
-        unlink($this->dir.$feedid.".meta");
-        unlink($this->dir.$feedid.".dat");
+        $datafilePath = $this->dir.$feedid.".dat";
+        $f = @fopen($datafilePath, "r+");
+        if ($f !== false) {
+            ftruncate($f, 0);
+            fclose($f);
+        }
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
         $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
-        $this->create($feedid);
+        $this->create($feedid,array('interval'=>$meta->interval));
         return true;
     }
     
@@ -1292,32 +1294,12 @@ class PHPFina implements engine_methods
         exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
         exec(sprintf("cat %s > %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
         exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
-        print_r($exec);
         $this->log->info(".data file trimmed to ".($bytesize - $start_bytes)." bytes");
 
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
         $meta->start_time = $start_time;
         $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
         return true;
-    }
-
-    /**
-     * adjust the .meta file to have different start_time
-     *
-     * @param [int] $feedid
-     * @param [timestamp] $start_time
-     * @return void
-     */
-    public function set_start_date($feedid, $start_time, $feed)
-    {
-        $meta = $this->get_meta($feedid);
-        if ($meta->start_time!==$start_time) {
-            $meta->start_time = $start_time;
-            $this->create_meta($feedid, $meta);
-            return true;
-        } else {
-            return array('success'=>false,'message'=>'feed start_date not adjusted');
-        }
     }
 
 }
