@@ -17,8 +17,6 @@
 // User configuration
 //********************
 $email_domain = "mydomain.xxx"; // The user's email will be created dinamically adding the username to this domain. Verification email is disabled before registering the users. Once a user logs in they may want to update their email address
-
-
 //********************
 // Help
 //********************
@@ -88,7 +86,7 @@ else {
 //********************
 // Extract arguments
 //********************
-$args = getopt('u:d:dnode:dname:g:h',['dnode:','dname:']);
+$args = getopt('u:d:dnode:dname:g:h', ['dnode:', 'dname:']);
 if (array_key_exists('h', $args))
     die($help_string);
 if (!array_key_exists('u', $args))
@@ -145,8 +143,23 @@ else {
 //***********************************
 // Check group and device are valid
 //***********************************
-if ($device_support && isset($device_template) && !is_file("Modules/device/data/" . $device_template . ".json"))
-    die("\033[31mDevice template not valid, die :( \033[0m\n\n");
+if ($device_support && isset($device_template)) {
+    $template_found = false;
+    if (is_file("Modules/device/data/" . $device_template . ".json"))
+        $template_found = true;
+    else {
+        $dir = scandir("Modules/device/data/");
+        for ($i = 2; $i < count($dir); $i++) {
+            if (filetype("Modules/device/data/" . $dir[$i]) == 'dir' || filetype("Modules/device/data/" . $dir[$i]) == 'link') {
+                if (is_file("Modules/device/data/" . $dir[$i] . "/" . $device_template . ".json")) {
+                    $template_found = true;
+                }
+            }
+        }
+    }
+    if (!$template_found)
+        die("\033[31mDevice template not valid, die :( \033[0m\n\n");
+}
 if ($group_support && isset($group_name) && !$group->exists_name($group_name))
     die("\033[31mGroup doesn't exist, die :( \033[0m\n\n");
 
