@@ -153,12 +153,12 @@
             }
 
             if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {                
-                if ($mqtt_server['pub_qos']) {            // otherwise include a timestamped payload of someform
+                if ($mqtt_server['pub_qos']) {      // If the QoS is not 0, include a timestamped payload of someform
                     // TODO: finalise payload format and maybe use a proper JSON function.
                     $payload = '{"value":'.$data['value'].',"timestamp":'.$data['timestamp'].'}';
                     $mqtt_client->publish($data['topic'], $payload, $mqtt_server['pub_qos']);
                     $log->info("Publishing ".$payload." to ".$data['topic']." QoS ".$mqtt_server['pub_qos']);
-                } else {     // if the QoS is 0 we only publish current "status" data
+                } else {                            // otherwise we only publish current "status" data
                     if ($data['timestamp'] > (time()-$mqtt_server['qos0_limit'])) {
                         $mqtt_client->publish($data['topic'], $data['value'],0);
                         $log->info("Publishing ".$data['value']." to ".$data['topic']." QoS 0");
