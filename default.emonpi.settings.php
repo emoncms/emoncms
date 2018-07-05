@@ -30,7 +30,7 @@
                           'clientid' => '',
                           'sub_qos'  => 2,
                           'pub_qos'  => 0,
-                          'pub_limit'=> 120
+                          'qos0_limit'=> 120
                           );
 
 
