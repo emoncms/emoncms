@@ -167,6 +167,7 @@
                         $mqtt_client->publish($data['topic'], $data['value'],0);
                         $log->info("Publishing ".$data['value']." to ".$data['topic']." QoS 0");
                     }
+                }
             }
         } else {
             // if there is no queue do not loop too fast
