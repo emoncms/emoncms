@@ -142,15 +142,26 @@
         $queue_length = $redis->llen($queue_topic);
         // If the queue length is not 0 publish a single item
         if ($queue_length) {
-            // TODO report queue length to log, throttle the entries using timer, log level determined by urgency of quue length
+            // Initial logging of queue length set to 60secs and issues warning level log if over 1000 items in queue
+            if ((time()-$last_queuelog)>60) {
+                $last_queuelog = time();
+                if ($queue_length > 1000) {
+                    $log->warning("$queue_length items queued to be published to MQTT");
+                } else {
+                    $log->info("$queue_length items queued to be published to MQTT");
+                }
+            }
+
             if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {                
                 if ($mqtt_server['pub_qos']) {            // otherwise include a timestamped payload of someform
                     // TODO: finalise payload format and maybe use a proper JSON function.
                     $payload = '{"value":'.$data['value'].',"timestamp":'.$data['timestamp'].'}';
                     $mqtt_client->publish($data['topic'], $payload, $mqtt_server['pub_qos']);
+                    $log->info("Publishing ".$payload." to ".$data['topic']." QoS ".$mqtt_server['pub_qos']);
                 } else {     // if the QoS is 0 we only publish current "status" data
                     if ($data['timestamp'] > (time()-$mqtt_server['qos0_limit'])) {
                         $mqtt_client->publish($data['topic'], $data['value'],0);
+                        $log->info("Publishing ".$data['value']." to ".$data['topic']." QoS 0");
                     }
             }
         } else {
