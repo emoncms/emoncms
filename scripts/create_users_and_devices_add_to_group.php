@@ -28,15 +28,15 @@ $help_string = "Script for bulk creation of users. If device module is installed
         . "     -h         shows this help\n"
         . "     -u         followed by a user name. At least one user name must be present. To create more than one user add as many -u as needed\n"
         . "     -d         followed by device template. Used if device module is installed. If 'device template' doesn't exist, the script will finish\n"
-        . "     -dnode     followed by device node. Used if device module is installed\n"
-        . "     -dname     followed by device name. Used if device module is installed.\n"
+        . "     --dnode     followed by device node. Used if device module is installed\n"
+        . "     --dname     followed by device name. Used if device module is installed.\n"
         . "     -g         followed by group name. Used if groups module is installed.  If there isn't a group with 'group name', the script will finish\n"
         . "\n Typical uses:\n"
         . "     php create_users_and_devices_add_to_group.php -u Ben -u Matt\n"
         . "     php create_users_and_devices_add_to_group.php -d emonth -u Ben -u Matt\n"
-        . "     php create_users_and_devices_add_to_group.php -d emonth -dnode emontx -dname my_device -u Ben -u Matt\n"
+        . "     php create_users_and_devices_add_to_group.php -d emonth --dnode emontx --dname my_device -u Ben -u Matt\n"
         . "     php create_users_and_devices_add_to_group.php -g my_group -u Ben -u Matt\n"
-        . "     php create_users_and_devices_add_to_group.php -d emonth -g my_group -dnode emontx -dname my_device -u Ben -u Matt\n\n";
+        . "     php create_users_and_devices_add_to_group.php -d emonth -g my_group --dnode emontx --dname my_device -u Ben -u Matt\n\n";
 
 
 //********************
@@ -88,7 +88,7 @@ else {
 //********************
 // Extract arguments
 //********************
-$args = getopt('u:d:dnode:dname:g:h');
+$args = getopt('u:d:dnode:dname:g:h',['dnode:','dname:']);
 if (array_key_exists('h', $args))
     die($help_string);
 if (!array_key_exists('u', $args))
