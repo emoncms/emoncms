@@ -44,7 +44,7 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $log;
+        // global $mqtt_enabled, $mqtt_server, $log;
         
         // if ($mqtt_enabled && !$this->mqtt)
         // {
@@ -713,10 +713,10 @@ class Process_ProcessList
     
     public function publish_to_mqtt($topic, $time, $value)
     {
-        global $redis;
+        global $redis, $mqtt_enabled;
         // saves value to redis
         // phpmqtt_input.php is then used to publish the values
-        if ($this->mqtt){
+        if ($mqtt_enabled){
             $data = array('topic'=>$topic,'value'=>$value,'timestamp'=>$time);
             $redis->rpush('mqtt-pub-queue', json_encode($data));
         }
