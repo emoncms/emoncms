@@ -107,6 +107,7 @@
     $connected = false;
     $last_retry = 0;
     $last_heartbeat = time();
+    $last_queuelog = time();
     $count = 0;
     
     $mqtt_client->onConnect('connect');
