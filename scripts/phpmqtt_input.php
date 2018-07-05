@@ -192,8 +192,8 @@
             $connected = true;
             $topic = $mqtt_server['basetopic']."/#";
             //echo "Subscribing to: ".$topic."\n";
-            $mqtt_client->subscribe($topic,2);
-            $log->info("Subscribing to: ".$topic);
+            $mqtt_client->subscribe($topic,$mqtt_server['sub_qos']);
+            $log->info("Subscribing to: ".$topic. "QoS ".$mqtt_server['sub_qos']);
         } else {
             $log->error('unexpected connection problem mqtt server:'.$message);
         }
