@@ -113,7 +113,7 @@ input[type="range"]{
             <input id="trim_start_time" data-format="dd/MM/yyyy hh:mm:ss" type="text">
             <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
         </div>
-        <p><?php echo _('Are you sure you want to clear all the feed data up to the date?'); ?></p>
+        <p><?php echo _('Are you sure you want to clear all the feed data up to the date? Data after this point is not effected.'); ?></p>
         <div id="feedTrim-loader" class="ajax-loader" style="display:none;"></div>
     </div>
     <div class="modal-footer">
