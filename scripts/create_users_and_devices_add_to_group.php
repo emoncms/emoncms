@@ -159,6 +159,10 @@ if ($device_support && isset($device_template)) {
     }
     if (!$template_found)
         die("\033[31mDevice template not valid, die :( \033[0m\n\n");
+    if (!isset($device_name))
+        die("\033[31mCannot create device without a device name, die :( \033[0m\n\n");
+    if (!isset($device_node))
+        die("\033[31mCannot create device without a device node id, die :( \033[0m\n\n");
 }
 if ($group_support && isset($group_name) && !$group->exists_name($group_name))
     die("\033[31mGroup doesn't exist, die :( \033[0m\n\n");
@@ -186,18 +190,15 @@ foreach ($usernames as $uname) {
             $group->add_user($groupid, $result['userid']);
         }
         if ($device_support && isset($device_template)) {
-            $deviceid = $device->create($result['userid']);
-            $fields = '{"type":"' . $device_template . '"';
-            if (isset($device_node))
-                $fields .= ', "nodeid":"' . $device_node . '"';
-            if (isset($device_name))
-                $fields .= ', "name":"' . $device_name . '"';
-            $fields .= '}';
-            $result = $device->set_fields($deviceid, $fields);
-            if ($result['success'] == false)
-                echo "\033[31mFields for $uname's device could not be saved\033[0m\n";
-            $result = $device->get($deviceid);
-            $out .= ", " . $result['devicekey'];
+            $deviceid = $device->create($result['userid'], $device_node, $device_name, 'No description', $device_template);
+            if (!is_numeric($deviceid)) {
+                echo "\033[31mDevice could not be created. Error: " . $deviceid['message']. "\033[0m\n";
+                $out += ", ";
+            }
+            else {
+                $result = $device->get($deviceid);
+                $out .= ", " . $result['devicekey'];
+            }
         }
         $out .= "\n";
     }
