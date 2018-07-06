@@ -13,13 +13,16 @@
 /***
  * Example of how to publish to mqtt topic using the Mosquitto Client
  */
+ 
+define('EMONCMS_EXEC', 1);
+chdir(dirname(__FILE__)."/../../"); // emoncms root
+require "process_settings.php";     // load mqtt settings from settings.php
 
 // create new instance of mosquitto client
 $mqtt = new Mosquitto\Client('Emoncms input publish example');
-$qos = 0;
+$qos = 2;
 $topic = 'emoncms';
 // callback functions
-$mqtt->onDisconnect( function() { echo "Disconnected cleanly\n"; });
 $mqtt->onConnect(function() use ($mqtt, $qos, $topic) {
     // on connect publish messages
     // publish (topic, payload, QoS)
@@ -28,18 +31,23 @@ $mqtt->onConnect(function() use ($mqtt, $qos, $topic) {
     $mqtt->publish("emoncms/input/house/power", 2500, $qos);
     $mqtt->publish("emoncms/input/house/temperature", 18.2, $qos);
     $m = array(
-        'apikey'=>"5cd8596404exxxxa2ccc5c2a9c24bc7",
+        'apikey'=>"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
         'time'=>time(),
         'node'=>1,
         'csv'=>array(200,300,400)
     );
     // publish message with json payload
     $mqtt->publish("emoncms/input",json_encode($m), $qos);
-    // disconnect once finished
-    $mqtt->disconnect();
+    
 });
 $mqtt->onPublish(function($message_id){
-    printf("published %s\n", $message_id); 
+    printf("published %s\n", $message_id);
+    
+    global $mqtt;
+    if ($message_id==5) $mqtt->disconnect();
 });
-$mqtt->connect('localhost');
+$mqtt->onDisconnect( function() { echo "Disconnected cleanly\n"; });
+
+$mqtt->setCredentials($mqtt_server['user'],$mqtt_server['password']);
+$mqtt->connect($mqtt_server['host'], $mqtt_server['port'], 5);
 $mqtt->loopForever();

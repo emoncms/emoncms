@@ -21,7 +21,7 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.30 | 2018.05.08";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.31 | 2018.06.21";
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -235,13 +235,13 @@
     if ($route->format == 'json')
     {
         if ($route->controller=='time') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='post') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='bulk') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } else {
             header('Content-Type: application/json');
@@ -262,7 +262,7 @@
     }
     else if ($route->format == 'text')
     {
-        header('Content-Type: text');
+        header('Content-Type: text/plain');
         print $output['content'];
     }
     else {

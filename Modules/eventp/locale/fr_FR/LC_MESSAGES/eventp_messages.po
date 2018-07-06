@@ -82,7 +82,7 @@ msgid "Send Email"
 msgstr "Send Email"
 
 #: ../../../eventp_processlist.php:51
-msgid "Send an email to the user with the specified body."
+msgid "Send an email to the user with the specified body. Email sent to user's email address or default set in config."
 msgstr "Envoie un e-mail à l'utilisateur avec le corps spécifié."
 
 #: ../../../eventp_processlist.php:51
