@@ -51,11 +51,11 @@ Edit the settings file:
 
 In the settings file in the **MQTT** section change `$mqtt_enabled` from `false` to `true`, and also change the `$mqtt_server` IP address to that of your MQTT server. On the emonPi the host is `localhost` and authentication is enabled: `user => emonpi` and `password => emonpimqtt2016`.
 
-The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. The default base topic is `emon` which means Enmoncms will subcribe to `emon/#`. In emonpi, this base topic needs to match the MQTT basetopic published from emonHub.
+The `basetopic` option sets the base MQTT topic to which Emoncms subscribes. The default base topic is `emon` which means Enmoncms will subcribe to `emon/#`. In emonpi, this base topic needs to match the MQTT basetopic published from emonHub.
 
 ### Run Emoncms phpmqtt_input script
 
-Install `phpmqtt_input` systemd unit script and make starts on boot:
+Install `phpmqtt_input` systemd unit script and make it start on boot:
 
 ```
 sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
