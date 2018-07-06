@@ -109,7 +109,7 @@ In the process 'Text' box add the topic, for example; `house/power/solar`
 
 #### emoncms as a subscriber
 
-[basetopic] and user ID of the target Emocnms account can be set in settings.php. **Default basetopic = `emon`**, which means Emoncms will subcribe to `emon/#` where # is any higher level topics.
+[basetopic] and user ID of the target Emoncms account can be set in settings.php. **Default basetopic = `emon`**, which means Emoncms will subscribe to `emon/#` where # is any higher level topics.
 
 E.g. Data posted to `emon/[nodeID/name]/[keyname (optional)]` is posted to Emoncms inputs where it can be logged to feeds e.g:
 
