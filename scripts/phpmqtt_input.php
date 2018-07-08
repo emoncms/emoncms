@@ -11,7 +11,7 @@
     **MQTT input interface script**
     
     SERVICE INSTALL INSTRUCTIONS:
-    https://github.com/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+    https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
     
     EXAMPLES:
     
@@ -82,7 +82,7 @@
     
     require("Modules/user/user_model.php");
     $user = new User($mysqli,$redis,null);
-
+    
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis, $feed_settings);
 
@@ -97,8 +97,12 @@
         require_once "Modules/device/device_model.php";
         $device = new Device($mysqli,$redis);
     }
-    
-    $mqtt_client = new Mosquitto\Client();
+    /*
+        new Mosquitto\Client($id,$cleanSession)
+        $id (string) – The client ID. If omitted or null, one will be generated at random.
+        $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
+    */ 
+    $mqtt_client = new Mosquitto\Client('emoncms',true);
     
     $connected = false;
     $last_retry = 0;
@@ -121,19 +125,28 @@
         if (!$connected && (time()-$last_retry)>5.0) {
             $last_retry = time();
             try {
+                // SUBSCRIBE
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
-                $topic = $mqtt_server['basetopic']."/#";
-                //echo "Subscribing to: ".$topic."\n";
-                $log->info("Subscribing to: ".$topic);
-                $mqtt_client->subscribe($topic,2);
+                // moved subscribe to onConnect callback
+
             } catch (Exception $e) {
                 $log->error($e);
             }
             //echo "Not connected, retrying connection\n";
             $log->warn("Not connected, retrying connection");
         }
-        
+
+        // PUBLISH
+        // loop through all queued items in redis
+        $queue_topic = 'mqtt-pub-queue';
+        for ($i=0; $i<$redis->llen($queue_topic); $i++) {
+            if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
+                // publish values to 
+                $mqtt_client->publish($data['topic'], $data['value']);
+            }
+        }
+
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
             $log->info("$count Messages processed in last 5 minutes");
@@ -151,10 +164,19 @@
     
 
     function connect($r, $message) {
-        global $log, $connected;
-        $connected = true;
+        global $log, $connected, $mqtt_server, $mqtt_client;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
+        if( $r==0 ) {
+            // if CONACK is zero 
+            $connected = true;
+            $topic = $mqtt_server['basetopic']."/#";
+            //echo "Subscribing to: ".$topic."\n";
+            $mqtt_client->subscribe($topic,2);
+            $log->info("Subscribing to: ".$topic);
+        } else {
+            $log->error('unexpected connection problem mqtt server:'.$message);
+        }
     }
 
     function subscribe() {

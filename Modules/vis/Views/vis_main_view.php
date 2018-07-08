@@ -40,18 +40,18 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <h2><?php echo dgettext('vis_messages','Visualisations'); ?></h2>
 <div id="vispage">
 <table><tr valign="top"><td>
-    <div style="width:320px; background-color:#efefef; border: 1px solid #ddd;">
-        <div style="padding:10px;  border-top: 1px solid #fff">
+    <div style="width:340px; background-color:#efefef; border: 1px solid #ddd;">
+        <div style="padding:5px;  border-top: 1px solid #fff">
             <div style="float:left; padding-top:2px; font-weight:bold;">1) <?php echo dgettext('vis_messages','Select visualisation:')?> </div>
             <div style="float:right;"><span id="select"></span></div>
             <div style="clear:both"></div>
         </div>
-        <div style="padding:10px;  border-top: 1px solid #fff">
+        <div style="padding:5px;  border-top: 1px solid #fff">
             <div style="padding-top:2px; font-weight:bold;">2) <?php echo dgettext('vis_messages','Set options:')?> </div><br>
             <div id="box-options" ></div><br>
             <p style="font-size:12px; color:#444;"><b><?php echo dgettext('vis_messages','Note:');?></b> <?php echo dgettext('vis_messages','If a feed does not appear in the selection box, check that the type has been set on the feeds page.'); ?></p>
         </div>
-        <div style="padding:10px;  border-top: 1px solid #fff">
+        <div style="padding:5px;  border-top: 1px solid #fff">
             <div style="float:left; padding-top:2px; font-weight:bold;">3) </div>
             <div style="float:right;">
                 <input id="viewbtn" type="submit" value="<?php echo dgettext('vis_messages','View'); ?>" class="btn btn-info" />
@@ -59,9 +59,9 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
             </div>
             <div style="clear:both"></div>
         </div>
-        <div style="padding:10px;  border-top: 1px solid #fff">
+        <div style="padding:5px;  border-top: 1px solid #fff">
             <div style="padding-top:2px; font-weight:bold;"><?php echo dgettext('vis_messages','Embed in your website:'); ?> </div><br>
-            <textarea id="embedcode" style="width:290px; height:120px;" readonly="readonly"></textarea>
+            <textarea id="embedcode" style="width:315px; height:120px;" readonly="readonly"></textarea>
         </div>
     </div>
 </td><td style="padding:0px 0px 0px 5px;">
@@ -180,7 +180,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     // Build options table html
     var options_html = "";
     for (z in box_options) {
-      options_html += "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+box_options[z][1]+"</span>";
+      options_html += "<div class='input-prepend'><span class='add-on' style='width: 100px; text-align: right; font-size:12px'>"+box_options[z][1]+"</span>";
       var type = box_options[z][2];
 
       if (type == 0 || type == 1 || type == 2 || type == 3) {
@@ -197,6 +197,11 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     options_html += "";
 
     $("#box-options").html(options_html);
+
+    // Change the size of the text for items with class options - size initially set by bootstrap
+    // also add height of 30 px for color inputs for Firefox
+    $("input[class='options'], select[class='options'], textarea[class='options']").css({'font-size':'12px'});
+    if (navigator.userAgent.search("Firefox") >= 0) {$("input[type='color']").css({'height':'30px','width':'220px'});};
   }
 
   // Create a drop down select box with a list of feeds.

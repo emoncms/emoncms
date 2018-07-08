@@ -95,6 +95,7 @@ function user_controller()
                         if ($hash == $row->password || $session['admin']==1) {
                             $result = "PERMANENT DELETE:\n";
                             $result .= delete_user($userid,"permanentdelete");
+                            $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'permanentdelete']);
                             
                             $user->logout();
                         } else {
@@ -106,6 +107,7 @@ function user_controller()
                 } else {
                     $result = "DRY RUN:\n";
                     $result .= delete_user($userid,"dryrun");
+                    $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'dryrun']);
                 }
             } else {
                 $result = "missing mode field";

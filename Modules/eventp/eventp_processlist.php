@@ -48,7 +48,7 @@ class Eventp_ProcessList
         $list[] = array(dgettext("eventp_messages","If rate <, skip next"), ProcessArg::VALUE, "ifRateLtSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.")."</p>");
         $list[] = array(dgettext("eventp_messages","If Mute, skip next"), ProcessArg::VALUE, "ifMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.")."</p>");
         $list[] = array(dgettext("eventp_messages","If !Mute, skip next"), ProcessArg::VALUE, "ifNotMuteSkip", 0, DataType::UNDEFINED, "Conditional - Event", 'requireredis'=>true, 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.")."</p>");
-        $list[] = array(dgettext("eventp_messages","Send Email"), ProcessArg::TEXT, "sendEmail", 0, DataType::UNDEFINED, "Event", 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","Send an email to the user with the specified body.")."</p><p>".dgettext("eventp_messages","Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}")."</p><p>".dgettext("eventp_messages","Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.")."</p>");
+        $list[] = array(dgettext("eventp_messages","Send Email"), ProcessArg::TEXT, "sendEmail", 0, DataType::UNDEFINED, "Event", 'nochange'=>true, 'desc'=>"<p>".dgettext("eventp_messages","Send an email to the user with the specified body. Email sent to user's email address or default set in config.")."</p><p>".dgettext("eventp_messages","Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}")."</p><p>".dgettext("eventp_messages","Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.")."</p>");
         return $list;
     }
 
@@ -56,7 +56,7 @@ class Eventp_ProcessList
     // \/ Below are functions of this module processlist, same name must exist on process_list()
     
     public function sendEmail($emailbody, $time, $value, $options) {
-        global $user, $session;
+        global $user, $session, $default_emailto;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
         if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
@@ -75,18 +75,24 @@ class Eventp_ProcessList
             // Not suported for VIRTUAL FEEDS
         }
 
-        $emailto = $user->get_email($session['userid']);
-        require_once "Lib/email.php";
-        $email = new Email();
-        //$email->from(from);
-        $email->to($emailto);
-        $email->subject('Emoncms event alert');
-        $email->body($emailbody);
-        $result = $email->send();
-        if (!$result['success']) {
-            $this->log->error("Email send returned error. message='" . $result['message'] . "'");
+        //need to get an email address from the config file or the form ?
+        $emailto = $default_emailto;
+
+        if (!empty($emailto)) { 
+            require_once "Lib/email.php";
+            $email = new Email();
+            //$email->from(from);
+            $email->to($emailto);
+            $email->subject('Emoncms event alert');
+            $email->body($emailbody);
+            $result = $email->send();
+            if (!$result['success']) {
+                $this->log->error("Email send returned error. message='" . $result['message'] . "'");
+            } else {
+                $this->log->info("Email sent to $emailto");
+            }
         } else {
-            $this->log->info("Email sent to $emailto");
+            $this->log->error("No email address specified");
         }
     }
     

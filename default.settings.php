@@ -102,6 +102,9 @@
     // Allow user to reset his password
     $enable_password_reset = false;
 
+    // Email address to email proccessed input values
+    $default_emailto = 'emrys@localhost';
+    
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
@@ -172,3 +175,6 @@
     // Set to true to run database update without logging in
     // URL Example: http://localhost/emoncms/admin/db
     $updatelogin = false;
+    
+    // Applicaton name
+    $appname = "emoncms";
