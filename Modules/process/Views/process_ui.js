@@ -387,6 +387,7 @@ var processlist_ui =
       $("#type-schedule").hide();
 
       // Check ProcessArg Type
+      // console.log(processlist_ui.processlist[processid][0]);
       if (processid) {
         switch(processlist_ui.processlist[processid][1]) {
           case 0: // VALUE
@@ -406,6 +407,7 @@ var processlist_ui =
             $("#type-schedule").show();
             break;
         }
+
         if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
           $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
         } else {
@@ -481,7 +483,7 @@ var processlist_ui =
       var processid = process[0];
       var processval = process[1];
       var curpos = parseInt($(this).attr('processid'));
-
+      
       $("#process-header-add").hide();
       $("#process-header-edit").show();
       $("#type-btn-add").hide();
@@ -536,6 +538,10 @@ var processlist_ui =
   },
 
   'showfeedoptions':function(processid){
+    $feedSelect = $('#feed-select');
+    $feedEngineSelect = $('#feed-engine');
+    $feedTypeSelect = $('#feed-data-type');
+
     var prc = this.processlist[processid][2];     // process function
     var feedwrite = this.processlist[processid]['feedwrite']; // process writes to feed
     var engines = this.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
@@ -562,32 +568,50 @@ var processlist_ui =
       }
       out += "</optgroup>";
     }
-    $("#feed-select").html(out);
+    // overwrite feed list
+    $feedSelect.data('value',$feedSelect.val());// store previous value before <select> changes
+    $feedSelect.html(out);
+    // recall the old value if available
+    if($feedSelect.data('value')!=""){
+      $feedSelect.val($feedSelect.data('value'));
+      $feedSelect.data('value','');    
+    }
+    $feedTypeSelect.find("option").hide();  // Start by hiding all feed engine options
+    $feedTypeSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
+    $feedTypeSelect.val(datatype); // select datatype
+    $feedTypeSelect.find("option[value="+datatype+"]").show();   // Show only the feed engine options that are available
+    $feedTypeSelect.find("option[value="+datatype+"]").prop('disabled', false);  //for IE show
 
-    $("#feed-data-type option").hide();  // Start by hiding all feed engine options
-    $("#feed-data-type option").prop('disabled', true);  //for IE hide (grayed out)
-    $("#feed-data-type").val(datatype); // select datatype
-    $("#feed-data-type option[value="+datatype+"]").show();   // Show only the feed engine options that are available
-    $("#feed-data-type option[value="+datatype+"]").prop('disabled', false);  //for IE show
-
-    $("#feed-engine option").hide();  // Start by hiding all feed engine options
-    $("#feed-engine option").prop('disabled', true);  //for IE hide (grayed out)
+    $feedEngineSelect.find("option").hide();  // Start by hiding all feed engine options
+    $feedEngineSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
     for (e in engines) { 
-      $("#feed-engine option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
-      $("#feed-engine option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
+      $feedEngineSelect.find("option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
+      $feedEngineSelect.find("option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
     }
 
-    $("#feed-engine, .feed-engine-label").hide(); 
+    $feedEngineSelect.hide();
+    $(".feed-engine-label").hide(); 
     if (typeof(engines) != "undefined") {
-      $("#feed-engine").val(engines[0]);     // Select the first feed engine in the engines array by default
-      $("#feed-select option[value=-1]").show(); // enable create new feed
-      $("#feed-select option[value=-1]").prop('disabled', false);  //for IE show
+      $feedEngineSelect.val(engines[0]);     // Select the first feed engine in the engines array by default
+      $feedSelect.find("option[value=-1]").show(); // enable create new feed
+      $feedSelect.find("option[value=-1]").prop('disabled', false);  //for IE show
     } else {
-      $("#feed-select option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
-      $("#feed-select option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
+      $feedSelect.find("option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
+      $feedSelect.find("option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
       for (f in this.feedlist) {
         if (datatype == 0 || (this.feedlist[f].datatype == datatype)) {  // Only feeds of the supported datatype
-          $("#feed-select").val(this.feedlist[f].id); // select first feed
+          var exists = false;
+          $feedSelect.find('option').each(function(){
+            if (this.value == $feedSelect.val()) {
+              exists = true;
+              return false;
+            }
+          });
+          if (!exists) {
+            if($feedSelect.val()!=this.feedlist[f].id){
+              $feedSelect.val(this.feedlist[f].id); // select first feed
+            }
+          }
           break;
         }
       }
@@ -681,10 +705,10 @@ var processlist_ui =
       var processgroups = [];
       for (z in processlist_ui.processlist) {
         //hide sendEmail and Publish to MQTT from virtual feeds
-        if (processlist_ui.contexttype == 1 &&
+        if (processlist_ui.contexttype == 1 && (
           processlist_ui.processlist[z]['feedwrite'] == true ||
           processlist_ui.processlist[z][2] == "sendEmail" || 
-          processlist_ui.processlist[z][2] == "publish_to_mqtt")
+          processlist_ui.processlist[z][2] == "publish_to_mqtt"))
         {
             continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
