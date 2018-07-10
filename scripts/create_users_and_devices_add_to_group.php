@@ -10,6 +10,8 @@
   http://openenergymonitor.org
   ---------------------------------------------------------------------
   This script has been developed by Carbon Co-op - http://www.carbon.coop
+ * 
+ * In order to be able to create feeds the user running the script must have write access to the feeds directories
  */
 
 
@@ -192,10 +194,19 @@ foreach ($usernames as $uname) {
         if ($device_support && isset($device_template)) {
             $deviceid = $device->create($result['userid'], $device_node, $device_name, 'No description', $device_template);
             if (!is_numeric($deviceid)) {
-                echo "\033[31mDevice could not be created. Error: " . $deviceid['message']. "\033[0m\n";
+                echo "\033[31mDevice could not be created. Error: " . $deviceid['message'] . "\033[0m\n";
+                $leading_line = true;
                 $out += ", ";
             }
             else {
+                $prepared_template = $device->prepare_template($deviceid);
+                unset($prepared_template['success']);
+                $prepared_template = json_encode($prepared_template);
+                $result = $device->init($deviceid, $prepared_template);
+                if (!$result['success']) {
+                    echo "Device could not be initialized, no feeds or inputs created - Error: " . $result['message'];
+                    $leading_line = true;
+                }
                 $result = $device->get($deviceid);
                 $out .= ", " . $result['devicekey'];
             }
