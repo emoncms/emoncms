@@ -718,7 +718,7 @@ class Process_ProcessList
         // phpmqtt_input.php is then used to publish the values
         if ($this->mqtt){
             $data = array('topic'=>$topic,'value'=>$value,'timestamp'=>$time);
-            $redis->rpush('mqtt-pub-queue', json_encode($data));
+            $redis->hset("publish_to_mqtt",$topic,$value);
         }
         return $value;
     }
