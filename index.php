@@ -237,13 +237,13 @@
     if ($route->format == 'json')
     {
         if ($route->controller=='time') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='post') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='bulk') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } else {
             header('Content-Type: application/json');
@@ -264,7 +264,7 @@
     }
     else if ($route->format == 'text')
     {
-        header('Content-Type: text');
+        header('Content-Type: text/plain');
         print $output['content'];
     }
     else {
