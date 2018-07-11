@@ -490,13 +490,11 @@ auth_check();
 setInterval(auth_check,5000);
 function auth_check(){
     $.ajax({ url: path+"device/auth/check.json", dataType: 'json', async: true, success: function(data) {
-        console.log(data);
-    
-        if (data.message!=undefined && data.message=="No authentication request registered") {
-            $("#auth-check").hide();
-        } else {
-            $("#auth-check").show();
+        if (typeof data.ip !== "undefined") {
             $("#auth-check-ip").html(data.ip);
+            $("#auth-check").show();
+        } else {
+            $("#auth-check").hide();
         }
     }});
 }
