@@ -85,7 +85,7 @@ var processlist_ui =
               case 2: //FEEDID
                 var feedid = this.contextprocesslist[z][1];
                 if (this.feedlist[feedid]!=undefined) {
-                arg += "<a class='label label-info' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
+                arg += "<a class='label label-info feedaccesslabel' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
                 arg += "<i class='icon-list-alt icon-white'></i> ";
                 if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
                 arg += this.feedlist[feedid].name;
@@ -622,6 +622,7 @@ var processlist_ui =
 
   'modified':function(){
     $("#save-processlist").attr('class','btn btn-warning').text(_Tr("Changed, press to save"));
+    $(".feedaccesslabel").attr("href","#"); // disable access to feeds
   },
 
   'saved':function(feeds){

@@ -130,6 +130,11 @@ function put($index) {
     return $val;
 }
 
+function version(){
+    $version_file = file_get_contents('./version.txt');
+    $version = filter_var($version_file, FILTER_SANITIZE_STRING);
+    return $version;
+}
 
 
 function load_db_schema()
