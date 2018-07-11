@@ -40,7 +40,7 @@ function input_controller()
 
     require_once "Modules/input/input_methods.php";
     $inputMethods = new InputMethods($mysqli,$redis,$user,$input,$feed,$process,$device);
-
+    
     // Change default route to json
     $route->format = "json"; 
 
@@ -51,13 +51,14 @@ function input_controller()
         $result = $inputMethods->post($session['userid']);
         if ($result=="ok") {
             if ($param->exists('fulljson')) $result = '{"success": true}';
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);
             $log->error($result." for User: ".$session['userid']);
         }
     }
-
+    
     // ------------------------------------------------------------------------
     // input/bulk
     // ------------------------------------------------------------------------
@@ -65,6 +66,7 @@ function input_controller()
         $result = $inputMethods->bulk($session['userid']);
         if ($result=="ok") {
             if ($param->exists('fulljson')) $result = '{"success": true}';
+            if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
             $log = new EmonLogger(__FILE__);

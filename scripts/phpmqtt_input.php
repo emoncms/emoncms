@@ -314,7 +314,6 @@
                     if ($device && method_exists($device,"autocreate")) {
                         $result = $device->autocreate($userid,$nodeid,$value);
                         $log->info(json_encode($result));
-
                     }
                 }
                 else 
