@@ -142,6 +142,21 @@ class User
         // ini_set('session.gc_maxlifetime', 20);
         // session_set_cookie_params(20);
         
+        $cookie_params = session_get_cookie_params();
+        //name of cookie 
+        session_name('EMONCMS_SESSID'); 
+        //get subdir installation 
+        $cookie_params['path'] = dirname($_SERVER['SCRIPT_NAME'])."/"; 
+        //not pass cookie to javascript 
+        $cookie_params['httponly'] = 1; 
+        
+        session_set_cookie_params(
+            $cookie_params['lifetime'],
+            $cookie_params['path'],
+            $cookie_params['domain'],
+            $cookie_params['secure'],
+            $cookie_params['httponly'] 
+        );
         session_start();
 
         if ($this->enable_rememberme)
