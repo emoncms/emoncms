@@ -23,16 +23,16 @@
 
 <div id="vis-title"></div>
 <style>
-.stats-container{
-  position: absolute;
-  bottom: 2.3em;
-  width: 100%;
-  text-align: center;
-  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-  font-size: 1.3rem;
-}
+    .stats-container{
+        position: absolute;
+        bottom: 0.3em;
+        width: 100%;
+        text-align: center;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+        font-size: 1.3rem;
+    }
 </style>
-<div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
+<div id="placeholder_bound">
     <div id="placeholder" style="position:absolute; top:0px;"></div>
     <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
         <div class='btn-group'>
@@ -107,8 +107,8 @@
     var height = width * 0.5;
 
     placeholder.width(width);
-    placeholder_bound.height(height);
-    placeholder.height(height-top_offset);
+    //placeholder_bound.height(height);
+    //placeholder.height(height-top_offset);
 
     if (embed) placeholder.height($(window).height()-top_offset);
         
