@@ -139,12 +139,10 @@
 
         // PUBLISH
         // loop through all queued items in redis
-        $queue_topic = 'mqtt-pub-queue';
-        for ($i=0; $i<$redis->llen($queue_topic); $i++) {
-            if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
-                // publish values to 
-                $mqtt_client->publish($data['topic'], $data['value']);
-            }
+        $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
+        foreach ($publish_to_mqtt as $topic=>$value) {
+            $redis->hdel("publish_to_mqtt",$topic);
+            $mqtt_client->publish($topic, $value);
         }
 
         if ((time()-$last_heartbeat)>300) {
