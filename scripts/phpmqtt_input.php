@@ -148,7 +148,7 @@
         $queue_topic = 'mqtt-pub-queue';
         for ($i=0; $i<$redis->llen($queue_topic); $i++) {
             if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
-                $mqtt_client->publish($data['topic'], $data['value']);
+                $mqtt_client->publish($data['topic'], json_encode(array("time"=>$data['time'],"value"=>$data['value'])));
             }
         }
         
