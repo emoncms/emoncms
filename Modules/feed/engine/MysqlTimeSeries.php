@@ -247,6 +247,7 @@ class MysqlTimeSeries
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly" && $mode!="annual") return false;
 
+        $id = (int) $id;
         $start = intval($start/1000);
         $end = intval($end/1000);
         $feedname = "feed_".trim($id);
@@ -312,6 +313,7 @@ class MysqlTimeSeries
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly" && $mode!="annual") return false;
 
+        $id = (int) $id;
         $start = intval($start/1000);
         $end = intval($end/1000);
         $feedname = "feed_".trim($id);
@@ -399,7 +401,7 @@ class MysqlTimeSeries
     */     
     private function get_datapoint_interpolated( $id, $time)
     {
-        
+        $id = (int) $id;
         $feedname = "feed_".trim($id);
         $time = intval($time/1000);
         $data = array();
@@ -453,6 +455,7 @@ class MysqlTimeSeries
     */ 
     public function get_average($id,$start,$end,$interval)
     {
+        $id = (int) $id;
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
@@ -489,7 +492,7 @@ class MysqlTimeSeries
     */     
     public function get_average_DMY($id,$start,$end,$mode,$timezone)
     {
-        
+        $id = (int) $id;
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly" && $mode!="annual") return false;
 
         $start = intval($start/1000);
