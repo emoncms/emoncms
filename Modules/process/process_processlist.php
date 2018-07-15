@@ -719,6 +719,7 @@ class Process_ProcessList
         if ($this->mqtt){
             $data = array('topic'=>$topic,'value'=>$value,'timestamp'=>$time);
             $redis->hset("publish_to_mqtt",$topic,$value);
+            // $redis->rpush('mqtt-pub-queue', json_encode($data));
         }
         return $value;
     }
