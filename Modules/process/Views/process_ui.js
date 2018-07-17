@@ -859,3 +859,15 @@ var processlist_ui =
     }
   }
 }
+
+/**
+ * pre select processes dropdown
+ * @param {ClickEvent} event 
+ */
+function selectProcess(event){
+  event.preventDefault();
+  processid = event.target.dataset.processid
+  select = document.getElementById('process-select')
+  select.value = processid
+  select.onchange()
+}
