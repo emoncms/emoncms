@@ -9,6 +9,11 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     defined('EMONCMS_EXEC') or die('Restricted access');  // no direct access
     global $path;
 ?>
+<?php
+    $domain3 = "vis_messages";
+    bindtextdomain($domain3, "Modules/vis/locale");
+    bind_textdomain_codeset($domain3, 'UTF-8');
+?>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.touch.min.js"></script>
@@ -32,31 +37,31 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
-<h2><?php echo _('Visualisations'); ?></h2>
+<h2><?php echo dgettext('vis_messages','Visualisations'); ?></h2>
 <div id="vispage">
 <table><tr valign="top"><td>
-    <div style="width:320px; background-color:#efefef; border: 1px solid #ddd;">
-        <div style="padding:10px;  border-top: 1px solid #fff">
-            <div style="float:left; padding-top:2px; font-weight:bold;">1) <?php echo _("Select visualisation:")?> </div>
+    <div style="width:340px; background-color:#efefef; border: 1px solid #ddd;">
+        <div style="padding:5px;  border-top: 1px solid #fff">
+            <div style="float:left; padding-top:2px; font-weight:bold;">1) <?php echo dgettext('vis_messages','Select visualisation:')?> </div>
             <div style="float:right;"><span id="select"></span></div>
             <div style="clear:both"></div>
         </div>
-        <div style="padding:10px;  border-top: 1px solid #fff">
-            <div style="padding-top:2px; font-weight:bold;">2) <?php echo _("Set options:")?> </div><br>
+        <div style="padding:5px;  border-top: 1px solid #fff">
+            <div style="padding-top:2px; font-weight:bold;">2) <?php echo dgettext('vis_messages','Set options:')?> </div><br>
             <div id="box-options" ></div><br>
-            <p style="font-size:12px; color:#444;"><b><?php echo _("Note:");?></b> <?php echo _("If a feed does not appear in the selection box, check that the type has been set on the feeds page."); ?></p>
+            <p style="font-size:12px; color:#444;"><b><?php echo dgettext('vis_messages','Note:');?></b> <?php echo dgettext('vis_messages','If a feed does not appear in the selection box, check that the type has been set on the feeds page.'); ?></p>
         </div>
-        <div style="padding:10px;  border-top: 1px solid #fff">
+        <div style="padding:5px;  border-top: 1px solid #fff">
             <div style="float:left; padding-top:2px; font-weight:bold;">3) </div>
             <div style="float:right;">
-                <input id="viewbtn" type="submit" value="<?php echo _("View"); ?>" class="btn btn-info" />
-                <input id="fullscreen" type="submit" value="<?php echo _("Full screen"); ?>" class="btn btn-info" />
+                <input id="viewbtn" type="submit" value="<?php echo dgettext('vis_messages','View'); ?>" class="btn btn-info" />
+                <input id="fullscreen" type="submit" value="<?php echo dgettext('vis_messages','Full screen'); ?>" class="btn btn-info" />
             </div>
             <div style="clear:both"></div>
         </div>
-        <div style="padding:10px;  border-top: 1px solid #fff">
-            <div style="padding-top:2px; font-weight:bold;"><?php echo _("Embed in your website:"); ?> </div><br>
-            <textarea id="embedcode" style="width:290px; height:120px;" readonly="readonly"></textarea>
+        <div style="padding:5px;  border-top: 1px solid #fff">
+            <div style="padding-top:2px; font-weight:bold;"><?php echo dgettext('vis_messages','Embed in your website:'); ?> </div><br>
+            <textarea id="embedcode" style="width:315px; height:120px;" readonly="readonly"></textarea>
         </div>
     </div>
 </td><td style="padding:0px 0px 0px 5px;">
@@ -134,7 +139,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 
     $("#visiframe").html('<iframe style="width:'+width+'px; height:'+height+'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>');
     if (publicfeed == 1) $("#embedcode").val('<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1"></iframe>'); 
-    else $("#embedcode").val('<?php echo addslashes(_("Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public."));?>\n\n<?php echo _("To embed privately:");?>\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
+    else $("#embedcode").val('<?php echo addslashes(dgettext('vis_messages','Some of the feeds selected are not public, to embed a visualisation publicly first make the feeds that you want to use public.'));?>\n\n<?php echo dgettext('vis_messages','To embed privately:');?>\n\n<iframe style="width:580px; height:400px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="'+visurl+'&embed=1&apikey='+apikey+'"></iframe>');
   });
 
   $("#fullscreen").click(function(){
@@ -175,13 +180,13 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     // Build options table html
     var options_html = "";
     for (z in box_options) {
-      options_html += "<div class='input-prepend'><span class='add-on' style='width: 70px; text-align: right;'>"+box_options[z][1]+"</span>";
+      options_html += "<div class='input-prepend'><span class='add-on' style='width: 100px; text-align: right; font-size:12px'>"+box_options[z][1]+"</span>";
       var type = box_options[z][2];
 
       if (type == 0 || type == 1 || type == 2 || type == 3) {
         options_html += selectFeed(box_options[z][0], feedlist, type);
       } else if (type == 4)  { // boolean
-        options_html += "<select class='options' id='"+box_options[z][0]+"'><option value='0'" + (box_options[z][3] == 0 ? " selected" : "") + "><?php echo _("Off")?></option><option value='1'" + (box_options[z][3] == 1 ? " selected" : "") + "><?php echo _("On")?></option></select>";
+        options_html += "<select class='options' id='"+box_options[z][0]+"'><option value='0'" + (box_options[z][3] == 0 ? " selected" : "") + "><?php echo dgettext('vis_messages','Off');?></option><option value='1'" + (box_options[z][3] == 1 ? " selected" : "") + "><?php echo dgettext('vis_messages','On');?></option></select>";
       } else if (type == 9)  { // colour
         options_html += "<input type='color' class='options' id='"+box_options[z][0]+"' value='#"+box_options[z][3]+"'>";
       } else {
@@ -192,6 +197,11 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     options_html += "";
 
     $("#box-options").html(options_html);
+
+    // Change the size of the text for items with class options - size initially set by bootstrap
+    // also add height of 30 px for color inputs for Firefox
+    $("input[class='options'], select[class='options'], textarea[class='options']").css({'font-size':'12px'});
+    if (navigator.userAgent.search("Firefox") >= 0) {$("input[type='color']").css({'height':'30px','width':'220px'});};
   }
 
   // Create a drop down select box with a list of feeds.

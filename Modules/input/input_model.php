@@ -329,6 +329,7 @@ class Input
         for ($i=0; $i<count($result); $i+=2) {
             $row = $result[$i];
             $lastvalue = $result[$i+1];
+            $row["description"] = utf8_encode($row["description"]);
             if (!isset($lastvalue['time']) || !is_numeric($lastvalue['time']) || is_nan($lastvalue['time'])) {
                 $row['time'] = null;
             } else {
@@ -544,7 +545,7 @@ class Input
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in arg'); 
                         break;
                                                 

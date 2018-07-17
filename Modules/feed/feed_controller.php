@@ -118,6 +118,12 @@ function feed_controller()
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
                     else if ($route->action == 'kwhatpowers') $result = $feed->histogram_get_kwhd_atpowers($feedid,get('points'));
                     else if ($route->action == "csvexport") $result = $feed->csv_export($feedid,get('start'),get('end'),get('interval'),get('timeformat'));
+                    else if ($route->action == "export") {
+                        if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) $result = $feed->mysqltimeseries_export($feedid,get('start'));
+                        elseif ($f['engine']==Engine::PHPTIMESERIES) $result = $feed->phptimeseries_export($feedid,get('start'));
+                        elseif ($f['engine']==Engine::PHPFIWA) $result = $feed->phpfiwa_export($feedid,get('start'),get('layer'));
+                        elseif ($f['engine']==Engine::PHPFINA) $result = $feed->phpfina_export($feedid,get('start'));
+                    }
                 }
 
                 // write session required
@@ -127,7 +133,22 @@ function feed_controller()
 
                     // Set feed meta fields
                     if ($route->action == 'set') {
-                        $result = $feed->set_feed_fields($feedid,get('fields'));
+                        // if tag or name changed check new combination is unique
+                        $fields = json_decode(get('fields'), true);
+                        if (!empty($fields['tag']) || !empty($fields['name'])) {
+                            $original_name = $feed->get_field($feedid, 'name');
+                            $original_tag = $feed->get_field($feedid, 'tag');
+                            // use original tag/name if no new value given
+                            $new_name = !empty($fields['name']) ? $fields['name'] : $original_name;
+                            $new_tag = !empty($fields['tag']) ? $fields['tag'] : $original_tag;
+                            // exists_tag_name returns false if not found
+                            $unique = $feed->exists_tag_name($session['userid'], $new_tag, $new_name) === false;
+                            // update if tag:name unique else return error;
+                            $result = $unique ? $feed->set_feed_fields($feedid, get('fields')) : array('success'=>false, 'message'=>'fields tag:name must be unique');
+                        }else{
+                            // update if no tag/name change
+                            $result = $feed->set_feed_fields($feedid, get('fields'));
+                        }
 
                     // Insert datapoint
                     } else if ($route->action == "insert") { 
@@ -160,15 +181,8 @@ function feed_controller()
                     }
 
                     if ($f['engine']==Engine::MYSQL || $f['engine']==Engine::MYSQLMEMORY) {
-                        if ($route->action == "export") $result = $feed->mysqltimeseries_export($feedid,get('start'));
-                        else if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
+                        if ($route->action == "deletedatapoint") $result = $feed->mysqltimeseries_delete_data_point($feedid,get('feedtime'));
                         else if ($route->action == "deletedatarange") $result = $feed->mysqltimeseries_delete_data_range($feedid,get('start'),get('end'));
-                    } elseif ($f['engine']==Engine::PHPTIMESERIES) {
-                        if ($route->action == "export") $result = $feed->phptimeseries_export($feedid,get('start'));
-                    } elseif ($f['engine']==Engine::PHPFIWA) {
-                        if ($route->action == "export") $result = $feed->phpfiwa_export($feedid,get('start'),get('layer'));
-                    } elseif ($f['engine']==Engine::PHPFINA) {
-                        if ($route->action == "export") $result = $feed->phpfina_export($feedid,get('start'));
                     }
                 }
             }

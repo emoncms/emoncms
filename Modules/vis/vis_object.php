@@ -17,125 +17,125 @@
 
     $visualisations = array(
     
-        'realtime' => array('label'=>_("RealTime"), 'options'=>array(
-            array('feedid',_("feed"),1),
-            array('colour',_("colour"),9,'EDC240'),
+        'realtime' => array('label'=>dgettext('vis_messages','RealTime'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
             )
         ),
         
         // Hex colour EDC240 is the default color for flot. since we want existing setups to not change, we set the default value to it manually now,
-        'rawdata'=> array('label'=>_("RawData"), 'options'=>array(
-            array('feedid',_("feed"),1),
-            array('fill',_("fill"),7,0),
-            array('colour',_("colour"),9,'EDC240'),
-            array('units',_("units"),5,''),
-            array('dp',_("dp"),7,'2'),
-            array('scale',_("scale"),6,'1'))
+        'rawdata'=> array('label'=>dgettext('vis_messages','RawData'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('fill',dgettext('vis_messages','fill'),7,0),
+            array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('units',dgettext('vis_messages','units'),5,''),
+            array('dp',dgettext('vis_messages','dp'),7,'2'),
+            array('scale',dgettext('vis_messages','scale'),6,'1'))
         ),
         
-        'bargraph'=> array('label'=>_("BarGraph"), 'options'=>array(
-            array('feedid',_("feed"),0),
-            array('colour',_("colour"),9,'EDC240'),
-            array('interval',_("interval"),7,'86400'),
-            array('units',_("units"),5,''),
-            array('dp',_("dp"),7,'1'),
-            array('scale',_("scale"),6,'1'),
-            array('delta',_("delta"),4,'0'),
-            array('mode',_("mode"),7,'0')
+        'bargraph'=> array('label'=>dgettext('vis_messages','BarGraph'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),0),
+            array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('interval',dgettext('vis_messages','interval'),7,'86400'),
+            array('units',dgettext('vis_messages','units'),5,''),
+            array('dp',dgettext('vis_messages','dp'),7,'1'),
+            array('scale',dgettext('vis_messages','scale'),6,'1'),
+            array('delta',dgettext('vis_messages','delta'),4,'0'),
+            array('mode',dgettext('vis_messages','mode'),7,'0')
             )
         ),
         
-        'timestoredaily'=> array('label'=>_("Daily from Multiple (BETA)"), 'options'=>array(
-            array('feedid',_("feed"),1),
-            array('units',_("units"),5,'kWh'))
+        'timestoredaily'=> array('label'=>dgettext('vis_messages','Daily from Multiple (BETA)'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('units',dgettext('vis_messages','units'),5,'kWh'))
         ),
         
-        'smoothie'=> array('label'=>_("Smoothie"), 'options'=>array(
-            array('feedid',_("feed"),1),
-            array('ufac',_("ufac"),6))
+        'smoothie'=> array('label'=>dgettext('vis_messages','Smoothie'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('ufac',dgettext('vis_messages','ufac'),6))
         ),
         
-        'histgraph'=> array('label'=>_("Histgraph"), 'options'=>array(
-            array('feedid',_("feed"),3),
-            array('barwidth',_("barwidth"),7,50),
-            array('start',_("start"),7,0),
-            array('end',_("end"),7,0))
+        'histgraph'=> array('label'=>dgettext('vis_messages','Histgraph'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),3),
+            array('barwidth',dgettext('vis_messages','barwidth'),7,50),
+            array('start',dgettext('vis_messages','start'),7,0),
+            array('end',dgettext('vis_messages','end'),7,0))
         ),
         
         //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
-        'zoom'=> array('label'=>_("Zoom"), 'options'=>array(
-            array('power',_("power"),1),
-            array('kwhd',_("kwhd"),0),
-            array('currency',_("currency"),5,'&pound;'),
-            array('currency_after_val',_("currency_after_val"),7, 0),
-            array('pricekwh',_("pricekwh"),6,0.14),
-            array('delta',_("delta"),4,0)
+        'zoom'=> array('label'=>dgettext('vis_messages','Zoom'), 'options'=>array(
+            array('power',dgettext('vis_messages','power'),1),
+            array('kwhd',dgettext('vis_messages','kwhd'),0),
+            array('currency',dgettext('vis_messages','currency'),5,'&pound;'),
+            array('currency_after_val',dgettext('vis_messages','currency_after_val'),7, 0),
+            array('pricekwh',dgettext('vis_messages','pricekwh'),6,0.14),
+            array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
         //'comparison'=> array('options'=>array(array('feedid',3))),
-        'stacked'=> array('label'=>_("Stacked"), 'options'=>array(
-            array('bottom',_("bottom"),0),
-            array('top',_("top"),0),
-            array('colourt',_("colourt"),9,'7CC9FF'),
-            array('colourb',_("colourb"),9,'0096FF'),
-            array('delta',_("delta"),4,0)
+        'stacked'=> array('label'=>dgettext('vis_messages','Stacked'), 'options'=>array(
+            array('bottom',dgettext('vis_messages','bottom'),0),
+            array('top',dgettext('vis_messages','top'),0),
+            array('colourt',dgettext('vis_messages','colourt'),9,'7CC9FF'),
+            array('colourb',dgettext('vis_messages','colourb'),9,'0096FF'),
+            array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        'stackedsolar'=> array('label'=>_("StackedSolar"), 'options'=>array(
-            array('solar',_("solar"),0),
-            array('consumption',_("consumption"),0),
-            array('delta',_("delta"),4,0)
+        'stackedsolar'=> array('label'=>dgettext('vis_messages','StackedSolar'), 'options'=>array(
+            array('solar',dgettext('vis_messages','solar'),0),
+            array('consumption',dgettext('vis_messages','consumption'),0),
+            array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        'threshold'=> array('label'=>_("Threshold"), 'options'=>array(
-            array('feedid',_("feed"),3),
-            array('thresholdA',_("thresholdA"),6,500),
-            array('thresholdB',_("thresholdB"),6,2500))
+        'threshold'=> array('label'=>dgettext('vis_messages','Threshold'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),3),
+            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
+            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500))
         ),
         
-        'simplezoom'=> array('label'=>_("SimpleZoom"), 'options'=>array(
-            array('power',_("power"),1),
-            array('kwhd',_("kwh"),0),
-            array('delta',_("delta"),4,0)
+        'simplezoom'=> array('label'=>dgettext('vis_messages','SimpleZoom'), 'options'=>array(
+            array('power',dgettext('vis_messages','power'),1),
+            array('kwhd',dgettext('vis_messages','kwh'),0),
+            array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        'orderbars'=> array('label'=>_("OrderBars"), 'options'=>array(
-            array('feedid',_("feed"),0),
-            array('delta',_("delta"),4,0)
+        'orderbars'=> array('label'=>dgettext('vis_messages','OrderBars'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),0),
+            array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        'orderthreshold'=> array('label'=>_("OrderThreshold"), 'options'=>array(
-            array('feedid',_("feed"),3),
-            array('power',_("power"),1),
-            array('thresholdA',_("thresholdA"),6,500),
-            array('thresholdB',_("thresholdB"),6,2500)
+        'orderthreshold'=> array('label'=>dgettext('vis_messages','OrderThreshold'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),3),
+            array('power',dgettext('vis_messages','power'),1),
+            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
+            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500)
         )),
         
-        'editrealtime'=> array('label'=>_("EditRealtime"), 'options'=>array(
-            array('feedid',_("feed"),1)
+        'editrealtime'=> array('label'=>dgettext('vis_messages','EditRealtime'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1)
         )),
         
-        'editdaily'=> array('label'=>_("EditDaily"), 'options'=>array(
-            array('feedid',_("feed"),2)
+        'editdaily'=> array('label'=>dgettext('vis_messages','EditDaily'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),2)
         )),
         
-        'multigraph' => array ('label'=>_("MultiGraph"), 'action'=>'multigraph', 'options'=>array(
-            array('mid',_("mid"),8)
+        'multigraph' => array ('label'=>dgettext('vis_messages','MultiGraph'), 'action'=>'multigraph', 'options'=>array(
+            array('mid',dgettext('vis_messages','mid'),8)
         )),
         
-        'compare' => array ('label'=>_("Compare"), 'action'=>'compare', 'options'=>array(
-            array('feedA',_("Feed A"),1),
-            array('feedB',_("Feed B"),1)
+        'compare' => array ('label'=>dgettext('vis_messages','Compare'), 'action'=>'compare', 'options'=>array(
+            array('feedA',dgettext('vis_messages','Feed A'),1),
+            array('feedB',dgettext('vis_messages','Feed B'),1)
         )),
         
-        'graph'=> array('label'=>_("Graph (BETA)"), 'options'=>array(
-            array('feedid',_("feed"),1)
+        'graph'=> array('label'=>dgettext('vis_messages','Graph (BETA)'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1)
         )),
         
-        'timecompare'=> array('label'=>_("Time Comparison"), 'options'=>array(
-            array('feedid',_("feed"),1),
-            array('fill',_("fill"),7,1),
-            array('depth',_("depth"),7,3),
-            array('npoints',_("data points"),7,800)
+        'timecompare'=> array('label'=>dgettext('vis_messages','Time Comparison'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('fill',dgettext('vis_messages','fill'),7,1),
+            array('depth',dgettext('vis_messages','depth'),7,3),
+            array('npoints',dgettext('vis_messages','data points'),7,800)
         ))
     );

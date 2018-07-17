@@ -13,6 +13,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 class ProcessError {
     const NONE = 0;
     const TOO_MANY_ITERATIONS = 1;
+    const ACCESS_FORBIDDEN = 2;
 }
 
 class ProcessOriginType {
@@ -94,15 +95,18 @@ class Process
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
             }
-
             $arg = 0;
             if (isset($inputprocess[1])) $arg = $inputprocess[1];          // Can be value or feed id
-
+            
             $process_function = $processkey;                               // get process key 'module.function'
             if (strpos($processkey, '__') === FALSE)
                 $process_function = $process_list[$processkey][2];         // for backward compatibility -> get process function name
-            $value = $this->$process_function($arg,$time,$value,$options); // execute process function
-
+                $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
+                if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
+                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
+                } else {
+                    $value = $this->$process_function($arg,$time,$value,$options); // execute process function
+                }
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; $this->proc_goto++;
             }
@@ -120,9 +124,13 @@ class Process
                     case ProcessOriginType::VIRTUALFEED:
                          $this->feed->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
                          break;
-                     case ProcessOriginType::TASK:
-                         $this->task->set_processlist($options['sourceid'],"process__error_found:0,".$processList);
-                         break;
+                    case ProcessOriginType::TASK:
+                        if (file_exists("Modules/task/task_model.php")) {
+                            global $session, $redis;
+                            require_once "Modules/task/task_model.php";
+                            $this->task = new Task($this->mysqli, $redis, null);
+                            $this->task->set_processlist($session['userid'], $options['sourceid'], "process__error_found:0," . $processList);
+                        }
                 }
                 return false;
             }

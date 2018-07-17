@@ -319,8 +319,20 @@ var table = {
     },
 
     'text': {
-      'draw': function (t,row,child_row,field) { return t.data[row][field] },
-      'edit': function (t,row,child_row,field) { return "<input type='text' value='"+t.data[row][field]+"' / >" },
+      'draw': function (t,row,child_row,field) { 
+        value = t.data[row][field];
+        tmp = document.createElement('DIV');
+        tmp.innerHTML = t.data[row][field];
+        value = tmp.textContent || tmp.innerText || "";
+        return value;
+      },
+      'edit': function (t,row,child_row,field) { 
+        value = t.data[row][field];
+        tmp = document.createElement('DIV');
+        tmp.innerHTML = t.data[row][field];
+        value = tmp.textContent || tmp.innerText || "";
+        return '<input type="text" value="'+value+'" / >';
+      },
       'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] input").val() },
     },
 
@@ -341,6 +353,31 @@ var table = {
         return "<select style='width:120px'>"+options+"</select>";
       },
       'save': function (t,row,child_row,field) { return $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] select").val() },
+    },
+
+    'selectWithOther': {
+      'draw': function (t,row,child_row,field) { return [t.data[row][field]] },
+      'edit': function (t,row,child_row,field) {
+        var options = "", selected;
+        for (option in t.fields[field].options) {
+          selected = option==t.data[row][field] ? 'selected' : '';
+          options += "<option value='"+option+"' "+selected+" >"+t.fields[field].options[option]+"</option>";
+        }
+        // add the additional "Other option". make this selected if the current value is not in the list
+        other_selected = Object.keys(t.fields[field].options).indexOf(t.data[row][field]||'') < 0;
+        
+        selected = other_selected ? 'selected' : '';
+        display = other_selected ? 'inline-block' : 'none';
+
+        options += "<option value='_custom' "+selected+" >Other</option>";
+        return '<select>'+options+'</select>'+
+        '<input type="text" name="other" style="display:'+display+'" value="'+(t.data[row][field]||'')+'">';
+      },
+      'save': function (t,row,child_row,field) { 
+        var value = $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] select").val();
+        value = value == '_custom' ? $("[row='"+row+"'][child_row='"+child_row+"'][field='"+field+"'] select").next('input').val() : value;
+        return value; 
+      },
     },
 
     'fixedselect': {

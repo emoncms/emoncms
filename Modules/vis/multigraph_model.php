@@ -90,7 +90,7 @@ class Multigraph
         $multigraphs = array();
         while ($row = $result->fetch_object())
         {
-            $multigraphs[] = array('id'=>$row->id,'name'=>$row->name,'feedlist'=>$row->feedlist);
+            $multigraphs[] = array('id'=>$row->id,'name'=>$row->name,'feedlist'=>json_decode($row->feedlist));
         }
         return $multigraphs;
     }

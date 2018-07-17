@@ -1,6 +1,6 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $feed_settings, $redis_enabled;
+    global $path, $feed_settings, $redis_enabled,$default_emailto;
     $domain2 = "process_messages";
     bindtextdomain($domain2, "Modules/process/locale");
     bind_textdomain_codeset($domain2, 'UTF-8');
@@ -20,6 +20,7 @@
     text-align: right;
    }
 </style>
+<script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
 
 <script>

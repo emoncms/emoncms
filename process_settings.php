@@ -110,13 +110,16 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($fullwidth)) $fullwidth = false;
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
+    if (!isset($email_verification)) $email_verification = false;
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';
     if (!isset($csv_field_separator) || $csv_field_separator=="") $csv_field_separator = ',';
 
     if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
-
+    
+    if (!isset($appname)) $appname = 'emoncms';
+    
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
 
@@ -129,6 +132,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
       die;
     }
 
+    if (!isset($default_emailto)) $default_emailto = 'pi@localhost';
 
     // Set display errors
     if (isset($display_errors) && ($display_errors)) {

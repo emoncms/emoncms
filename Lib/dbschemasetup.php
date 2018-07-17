@@ -76,7 +76,7 @@ function db_schema_setup($mysqli, $schema, $apply)
                     }
                   }
                 } 
-
+                
                 next($schema[$table]);
             }
         } else {
@@ -115,10 +115,15 @@ function db_schema_setup($mysqli, $schema, $apply)
             if ($query) $operations[] = $query;
             if ($query && $apply) {
                 $mysqli->multi_query($query);
-                while($mysqli->more_results()){ // We need to loop all the results to avoid errors in future single queries
-                    $mysqli->next_result();
-                }
-            }
+                do {
+                    if (0 !== $mysqli->errno){
+                        $operations['error'] = $mysqli->error;
+                        break;
+                    }
+                    if($mysqli->more_results()) $mysqli->next_result();
+                    else break;
+                }while(true); 
+            }        
         }
         next($schema);
     }

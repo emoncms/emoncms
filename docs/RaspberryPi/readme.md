@@ -38,7 +38,7 @@ See [RasPi device tree commit](https://github.com/raspberrypi/firmware/commit/84
 
 Install the dependencies:
 
-    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server git build-essential
+    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git build-essential
 
 Install the pecl dependencies (swift mailer):
 

@@ -34,13 +34,13 @@ var processlist_ui =
         // Move process up or down
         out += '<td>';
         if (i > 0) {
-          out += '<a class="move-process" title="Move up" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
+          out += '<a class="move-process" title="'+_Tr("Move up")+'" processid='+i+' moveby=-1 ><i class="icon-arrow-up"></i></a>';
         } else {
           out += "<span style='display: inline-block; width:14px; ' />";
         }
 
         if (i < this.contextprocesslist.length-1) {
-          out += "<a class='move-process' title='Move down' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
+          out += "<a class='move-process' title='"+_Tr("Move down")+"' processid="+i+" moveby=1 ><i class='icon-arrow-down'></i></a>";
         }
         out += '</td>';
 
@@ -64,7 +64,7 @@ var processlist_ui =
             // Check ProcessArg Type
             switch(this.processlist[processkey][1]) {
               case 0: // VALUE
-                arg += "<span class='label label-info' title='Value'>";
+                arg += "<span class='label label-info' title='"+_Tr("Value")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
@@ -73,12 +73,12 @@ var processlist_ui =
               case 1: //INPUTID
                 var inpid = this.contextprocesslist[z][1];
                 if (this.inputlist[inpid]!=undefined) {
-                arg += "<span class='label label-info' title='Input "+inpid+"'>";
+                arg += "<span class='label label-info' title='"+_Tr("Input")+" "+inpid+"'>";
                 arg += "<i class='icon-signal icon-white'></i> ";
                 arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
                 if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
                 arg += "</span>";
-                lastvalue = "<span style='color:#888; font-size:12px'>(input last value:"+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
+                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("input last value:")+" "+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
                 } else {
                   arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
                 }
@@ -87,19 +87,19 @@ var processlist_ui =
               case 2: //FEEDID
                 var feedid = this.contextprocesslist[z][1];
                 if (this.feedlist[feedid]!=undefined) {
-                arg += "<a class='label label-info' title='Feed "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
+                arg += "<a class='label label-info feedaccesslabel' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
                 arg += "<i class='icon-list-alt icon-white'></i> ";
                 if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
                 arg += this.feedlist[feedid].name;
                 arg += "</a>";
-                lastvalue = "<span style='color:#888; font-size:12px'>(feed last value:"+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
+                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("feed last value:")+" "+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
                 } else {
                   arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
                 }
                 break;
 
               case 4: // TEXT
-                arg += "<span class='label label-info' title='Text'>";
+                arg += "<span class='label label-info' title='"+_Tr("Text")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
@@ -108,7 +108,7 @@ var processlist_ui =
               case 5: // SCHEDULEID
                 var schid = this.contextprocesslist[z][1];
                 if (this.schedulelist[schid]!=undefined) {
-                arg += "<span class='label label-info' title='Schedule "+schid+"' >";
+                arg += "<span class='label label-info' title='"+_Tr("Schedule")+" "+schid+"' >";
                 arg += "<i class='icon-time icon-white'></i> ";
                 arg += this.schedulelist[schid].name;
                 arg += "</span>";
@@ -127,8 +127,8 @@ var processlist_ui =
         out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
      
         // Delete process button (icon)
-        out += '<td><a class="edit-process" title="Edit" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
-        out += '<td><a class="delete-process" title="Delete" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
+        out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
+        out += '<td><a class="delete-process" title="'+_Tr("Delete")+'" processid='+i+'><i class="icon-trash" style="cursor:pointer"></i></a></td>';
         out += '</tr>';
         
         i++; // process id
@@ -389,51 +389,55 @@ var processlist_ui =
       $("#type-schedule").hide();
 
       // Check ProcessArg Type
-      switch(processlist_ui.processlist[processid][1]) {
-        case 0: // VALUE
-          $("#type-value").show();
-          break;
-        case 1: //INPUTID
-          $("#type-input").show();
-          break;
-        case 2: //FEEDID
-          $("#type-feed").show();
-          processlist_ui.showfeedoptions(processid);
-          break;
-        case 4: // TEXT
-          $("#type-text").show();
-          break;
-        case 5: // SCHEDULEID
-          $("#type-schedule").show();
-          break;
-      }
-      if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
-        $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
-      } else {
-        $("#description").html(processlist_ui.processlist[processid]['desc']);
+      // console.log(processlist_ui.processlist[processid][0]);
+      if (processid) {
+        switch(processlist_ui.processlist[processid][1]) {
+          case 0: // VALUE
+            $("#type-value").show();
+            break;
+          case 1: //INPUTID
+            $("#type-input").show();
+            break;
+          case 2: //FEEDID
+            $("#type-feed").show();
+            processlist_ui.showfeedoptions(processid);
+            break;
+          case 4: // TEXT
+            $("#type-text").show();
+            break;
+          case 5: // SCHEDULEID
+            $("#type-schedule").show();
+            break;
+        }
 
-	var does_modify = "<p><b>Output:</b> Modified value passed onto next process step.</p>";
-	var does_not_modify = "<p><b>Output:</b> Does NOT modify value passed onto next process step.</p>";
-	var redis_required = "<p><b>REDIS:</b> Requires REDIS.</p>";
-	var help = "Click here for additional information about this process.";
+        if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
+          $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
+        } else {
+          $("#description").html(processlist_ui.processlist[processid]['desc']);
 
-	if ('helpurl' in processlist_ui.processlist[processid] &&
-	    typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
-		$("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
-	}
+          var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
+          var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
+          var redis_required = "<p><b>REDIS:</b> "+_Tr("Requires REDIS.")+"</p>";
+          var help = _Tr("Click here for additional information about this process.");
 
-	if ('nochange' in processlist_ui.processlist[processid] &&
-	    processlist_ui.processlist[processid]['nochange'] == true) {
-		$("#description").append(does_not_modify);
-	} else {
-		$("#description").append(does_modify);
-	}
+          if ('helpurl' in processlist_ui.processlist[processid] &&
+              typeof processlist_ui.processlist[processid]['helpurl'] === 'string') {
+            $("#description").append('<p><a href="' + processlist_ui.processlist[processid]['help_url'] + '">' + help+'</p>');
+          }
 
-	if ('requireredis' in processlist_ui.processlist[processid] &&
-	    processlist_ui.processlist[processid]['requireredis'] == true) {
-		$("#description").append(redis_required);
+          if ('nochange' in processlist_ui.processlist[processid] &&
+              processlist_ui.processlist[processid]['nochange'] == true) {
+            $("#description").append(does_not_modify);
+          } else {
+            $("#description").append(does_modify);
+          }
 
-	}
+          if ('requireredis' in processlist_ui.processlist[processid] &&
+              processlist_ui.processlist[processid]['requireredis'] == true) {
+            $("#description").append(redis_required);
+
+          }
+        }//end of if proccessid
       }
       
     });
@@ -481,7 +485,7 @@ var processlist_ui =
       var processid = process[0];
       var processval = process[1];
       var curpos = parseInt($(this).attr('processid'));
-
+      
       $("#process-header-add").hide();
       $("#process-header-edit").show();
       $("#type-btn-add").hide();
@@ -536,6 +540,10 @@ var processlist_ui =
   },
 
   'showfeedoptions':function(processid){
+    $feedSelect = $('#feed-select');
+    $feedEngineSelect = $('#feed-engine');
+    $feedTypeSelect = $('#feed-data-type');
+
     var prc = this.processlist[processid][2];     // process function
     var feedwrite = this.processlist[processid]['feedwrite']; // process writes to feed
     var engines = this.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
@@ -562,32 +570,50 @@ var processlist_ui =
       }
       out += "</optgroup>";
     }
-    $("#feed-select").html(out);
+    // overwrite feed list
+    $feedSelect.data('value',$feedSelect.val());// store previous value before <select> changes
+    $feedSelect.html(out);
+    // recall the old value if available
+    if($feedSelect.data('value')!=""){
+      $feedSelect.val($feedSelect.data('value'));
+      $feedSelect.data('value','');    
+    }
+    $feedTypeSelect.find("option").hide();  // Start by hiding all feed engine options
+    $feedTypeSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
+    $feedTypeSelect.val(datatype); // select datatype
+    $feedTypeSelect.find("option[value="+datatype+"]").show();   // Show only the feed engine options that are available
+    $feedTypeSelect.find("option[value="+datatype+"]").prop('disabled', false);  //for IE show
 
-    $("#feed-data-type option").hide();  // Start by hiding all feed engine options
-    $("#feed-data-type option").prop('disabled', true);  //for IE hide (grayed out)
-    $("#feed-data-type").val(datatype); // select datatype
-    $("#feed-data-type option[value="+datatype+"]").show();   // Show only the feed engine options that are available
-    $("#feed-data-type option[value="+datatype+"]").prop('disabled', false);  //for IE show
-
-    $("#feed-engine option").hide();  // Start by hiding all feed engine options
-    $("#feed-engine option").prop('disabled', true);  //for IE hide (grayed out)
+    $feedEngineSelect.find("option").hide();  // Start by hiding all feed engine options
+    $feedEngineSelect.find("option").prop('disabled', true);  //for IE hide (grayed out)
     for (e in engines) { 
-      $("#feed-engine option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
-      $("#feed-engine option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
+      $feedEngineSelect.find("option[value="+engines[e]+"]").show();   // Show only the feed engine options that are available
+      $feedEngineSelect.find("option[value="+engines[e]+"]").prop('disabled', false);  //for IE show
     }
 
-    $("#feed-engine, .feed-engine-label").hide(); 
+    $feedEngineSelect.hide();
+    $(".feed-engine-label").hide(); 
     if (typeof(engines) != "undefined") {
-      $("#feed-engine").val(engines[0]);     // Select the first feed engine in the engines array by default
-      $("#feed-select option[value=-1]").show(); // enable create new feed
-      $("#feed-select option[value=-1]").prop('disabled', false);  //for IE show
+      $feedEngineSelect.val(engines[0]);     // Select the first feed engine in the engines array by default
+      $feedSelect.find("option[value=-1]").show(); // enable create new feed
+      $feedSelect.find("option[value=-1]").prop('disabled', false);  //for IE show
     } else {
-      $("#feed-select option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
-      $("#feed-select option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
+      $feedSelect.find("option[value=-1]").hide(); // disable create new feed as we have no supported engines for this proccess
+      $feedSelect.find("option[value=-1]").prop('disabled', true);  //for IE hide (grayed out)
       for (f in this.feedlist) {
         if (datatype == 0 || (this.feedlist[f].datatype == datatype)) {  // Only feeds of the supported datatype
-          $("#feed-select").val(this.feedlist[f].id); // select first feed
+          var exists = false;
+          $feedSelect.find('option').each(function(){
+            if (this.value == $feedSelect.val()) {
+              exists = true;
+              return false;
+            }
+          });
+          if (!exists) {
+            if($feedSelect.val()!=this.feedlist[f].id){
+              $feedSelect.val(this.feedlist[f].id); // select first feed
+            }
+          }
           break;
         }
       }
@@ -597,11 +623,12 @@ var processlist_ui =
   },
 
   'modified':function(){
-    $("#save-processlist").attr('class','btn btn-warning').text("Changed, press to save");
+    $("#save-processlist").attr('class','btn btn-warning').text(_Tr("Changed, press to save"));
+    $(".feedaccesslabel").attr("href","#"); // disable access to feeds
   },
 
   'saved':function(t){
-    $("#save-processlist").attr('class','btn btn-success').text("Saved");
+    $("#save-processlist").attr('class','btn btn-success').text(_Tr("Saved"));
     // Update context table immedietly
     for (z in t.data) {
       if (t.data[z].id == processlist_ui.contextid) {
@@ -677,8 +704,13 @@ var processlist_ui =
       processlist_ui.processlist = result;
       var processgroups = [];
       for (z in processlist_ui.processlist) {
-        if (processlist_ui.contexttype == 1 && processlist_ui.processlist[z]['feedwrite'] == true) {
-          continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
+        //hide sendEmail and Publish to MQTT from virtual feeds
+        if (processlist_ui.contexttype == 1 && (
+          processlist_ui.processlist[z]['feedwrite'] == true ||
+          processlist_ui.processlist[z][2] == "sendEmail" || 
+          processlist_ui.processlist[z][2] == "publish_to_mqtt"))
+        {
+            continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
         var group = processlist_ui.processlist[z][5];
         if (processlist_ui.contexttype == 0 && group=="Virtual") { 
@@ -814,7 +846,7 @@ var processlist_ui =
     $("#type-btn-edit").hide();
     processlist_ui.scrollto($('#processlist-ui'));
     this.draw();
-    $("#save-processlist").attr('class','btn btn-success').text("Not modified");
+    $("#save-processlist").attr('class','btn btn-success').text(_Tr("Not modified"));
     $("#processlist-ui #process-select").change(); // Force a refresh
     $("#processlistModal").modal('show');          // Show
     this.adjustmodal();
