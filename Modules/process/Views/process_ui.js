@@ -137,7 +137,7 @@ var processlist_ui =
     $('#process-table-elements').html(out);
   },
 
-  'drawpreview':function(processlist){
+  'drawpreview':function(processlist,input){
     if (!processlist) return "";
     var localprocesslist = processlist_ui.decode(processlist);
     if (localprocesslist.length==0) {
@@ -145,7 +145,7 @@ var processlist_ui =
     } else {
       var out = "";
       // create coloured link or span for each process 
-      for(b of this.getBadges(processlist)){
+      for(b of this.getBadges(processlist,input)){
         out+= b.href ? '<a target="_blank" href="'+b.href+'"' : '<span';
         out+= ' class="label '+b.cssClass+'" title="'+b.title+'">';
         out+= b.text;
@@ -154,7 +154,7 @@ var processlist_ui =
       return out;
     }
   },
-  'getBadges': function (processlist) { 
+  'getBadges': function (processlist,input) { 
     if (!processlist) return ""
     var processPairs = processlist.split(",")
     // create empty list of badges
@@ -163,13 +163,13 @@ var processlist_ui =
     const processList_short_names = [null,'log','x','+','kwh','kwhd','x inp','ontime','kwhinckwhd','kwhkwhd','update','+ inp','/ inp','phaseshift','accumulate','rate','hist','average','flux','pwrgain','pulsdiff','kwhpwr','- inp','kwhkwhd','> 0','< 0','unsign','max','min','+ feed','- feed','x feed','/ feed','= 0','whacc','MQTT','null','ori','!sched 0','!sched N','sched 0','sched N','0? skip','!0? skip','N? skip','!N? skip','>? skip','>=? skip','<? skip','<=? skip','=? skip','!=? skip','GOTO']
     // set process types and what process they're accociated with
     const types = [
-      {name: 'user value',  cssClass: 'label-important',  title: 'Value: {longText} - {value}',                                            process_ids: [2,3,46,47,48,49,50,51,52]},
-      {name: 'input',       cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}',                                            process_ids: [6,11,12,22]},
-      {name: 'feed',        cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]',       process_ids: [1,4,5,7,8,9,10,13,14,15,16,17,18,19,20,21,23,27,28,34]},
-      {name: '',            cssClass: 'label-important',  title: 'Text: {longText}} - {value}',                                            process_ids: [24,25,26,33,36,37,42,43,44,45]},
+      {name: 'user value',  cssClass: 'label-important',  title: 'Value: {longText} - {value}',                                  process_ids: [2,3,46,47,48,49,50,51,52]},
+      {name: 'input',       cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}',    process_ids: [6,11,12,22]},
+      {name: 'feed',        cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]',     process_ids: [1,4,5,7,8,9,10,13,14,15,16,17,18,19,20,21,23,27,28,34]},
+      {name: '',            cssClass: 'label-important',  title: 'Text: {longText} - {value}',                                   process_ids: [24,25,26,33,36,37,42,43,44,45]},
       {name: 'feed',        cssClass: 'label-warning',    title: 'Feed: {longText}',                                             process_ids: [29,30,31,32]},
-      {name: 'topic',       cssClass: 'label-info',       title: 'Text: {longText}',                                             process_ids: [35]},
-      {name: 'schedule',    cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}',                                         process_ids: [38,39,40,41]}
+      {name: 'topic',       cssClass: 'label-info',       title: 'Topic: {longText} - {value}',                                  process_ids: [35]},
+      {name: 'schedule',    cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}',                       process_ids: [38,39,40,41]}
     ]
     for (z in processPairs)
     {
@@ -189,22 +189,21 @@ var processlist_ui =
       badge.value = keyvalue[1]
       badge.typeName = badge.type.name
       badge.cssClass = badge.type.cssClass
-      badge.input =  this.inputlist[key] || {}
+      badge.input =  input || {}
       badge.feed =  this.feedlist[badge.value] || {}
       badge.schedule = this.schedulelist[value] || {}
       badge.href = badge.typeName == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
-     
       // pass the collected badge object as values for the title string template
       badge.title = badge.type.title.format(badge);
       
       // add badge to list or add a blank one if there are any issues.
       if(this.init_done === 0){
         badges.push(badge);
-      } else if(this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0){
+      } else if(this.has_redis == 0 && this.processlist[key]['requireredis'] !== undefined && this.processlist[key]['requireredis'] == true ? 1 : 0){
         // no reids
         badges.push({
-          text: this.processlist[processkey]['internalerror_reason'],
-          title: this.processlist[processkey]['internalerror_desc'],
+          text: this.processlist[key]['internalerror_reason'],
+          title: this.processlist[key]['internalerror_desc'],
           cssClass: 'badge-important',
           href: false
         })
@@ -216,7 +215,7 @@ var processlist_ui =
           cssClass: 'badge-important',
           href: false
         })
-      } else if(!this.processlist[processkey]){
+      } else if(!this.processlist[key]){
         // process not available
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
