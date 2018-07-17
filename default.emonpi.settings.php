@@ -76,6 +76,9 @@
 
 
 //5 #### User Interface settings
+    // gettext  translations are found under each Module's locale directory
+    $default_language = 'en_GB';
+    
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
@@ -173,3 +176,6 @@
     // Set to true to run database update without logging in
     // URL Example: http://localhost/emoncms/admin/db
     $updatelogin = false;
+
+    // Applicaton name
+    $appname = "emoncms";
