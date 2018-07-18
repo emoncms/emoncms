@@ -1291,11 +1291,20 @@ class PHPFina implements engine_methods
         $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
         $datFileName = $this->dir.$feedid.'.dat';
         $tmpFileName = $this->dir.'temp-trim.tmp';
-        exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
-        exec(sprintf("cat %s > %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
-        exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
-        $this->log->info(".data file trimmed to ".($bytesize - $start_bytes)." bytes");
+        // exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
+        // exec(sprintf("cp %s %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
+        // exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
 
+        $fh = fopen($this->dir.$feedid.'.dat','rb');
+        fseek($fh,$start_bytes);
+        $tmp = fread($fh,$bytesize-$start_bytes);
+        fclose($fh);
+        
+        $fh = fopen($this->dir.$feedid.'.dat','wb');
+        fwrite($fh,$tmp);
+        fclose($fh);
+
+        $this->log->info(".data file trimmed to ".($bytesize - $start_bytes)." bytes");
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
         $meta->start_time = $start_time;
         $this->create_meta($feedid, $meta); // set the new start time in the feed's meta

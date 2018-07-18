@@ -1,7 +1,8 @@
 <?php
 include_once dirname(__FILE__) . '/shared_helper.php';
 
-class MysqlTimeSeries implements engine_methods
+// class MysqlTimeSeries implements engine_methods
+class MysqlTimeSeries
 {
     protected $mysqli;
     protected $log;
