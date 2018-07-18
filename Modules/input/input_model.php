@@ -106,7 +106,7 @@ class Input
             }
         } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
             $success = false;
-            $message = "Reached the maximal allowed number of diferent NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
+            $message = "Reached the maximal allowed number of different NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
         }
         return array('success'=>$success, 'message'=>$message);
     }
