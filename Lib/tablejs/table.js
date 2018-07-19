@@ -419,14 +419,6 @@ var table = {
       'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='delete' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-trash' style='cursor:pointer'></i></a>"; }
     },
 
-    'trim': {
-      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='trim' title='Trim down the data' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-resize-small' style='cursor:pointer'></i></a>"; }
-    },
-
-    'clear': {
-      'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='clear' title='Clear feed data' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' ><i class='icon-fire' style='cursor:pointer'></i></a>"; }
-    },
-
     'edit': {
       'draw': function (t,row,child_row,field) { return t.data[row]['#READ_ONLY#'] ? "" : "<a type='edit' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row]['id']+"' mode='edit'><i class='icon-pencil' style='cursor:pointer'></i></a>"; },
     },

@@ -67,58 +67,35 @@ input[type="range"]{
         <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?></h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Deleting a feed is permanent.'); ?></p>
-        <br>
-        <div id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></div>
-        <div id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></div>
-        <br><br>
+        <h4><?php echo _('Deleting a feed is permanent.'); ?></h4>
+        <p id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
+        <p id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
+
+        <h5 class="text-info">Other Options:</h5>
+        <div class="clearfix">
+            <div class="span6">
+                <div class="well well-small" style="margin-bottom:0">
+                    <p style="margin: .35em 0 1.1em 0">Empty feed of data</p>
+                    <button id="feedClear-confirm" class="btn btn-info btn-small" onclick="return confirm('Are you sure you want to delete all the feed data?')"><?php echo _('Clear Data'); ?></button>
+                </div>
+            </div>
+            <div class="span6">
+                <div class="well well-small" style="margin-bottom:0">
+                    <div id="feed_trim_datetimepicker" class="input-append date">
+                        <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="New start date">
+                        <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
+                    </div>
+                    <button id="feedTrim-confirm" class="btn btn-info btn-small"><?php echo _('Trim Data'); ?></button>
+                </div>
+            </div>
+        </div>
+        <hr>
         <p><?php echo _('Are you sure you want to delete?'); ?></p>
         <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
-    </div>
-</div>
-
-<div id="feedClearModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedClearModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedClearModalLabel"><?php echo _('Clear feed data'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <p><i class="icon-fire"></i> <?php echo _('Delete all the data, keep the feed.'); ?> </p>
-        <h4><?php echo _('Deleting feed data is permanent!'); ?></h4>
-        <br><br>
-
-        <p><?php echo _('Are you sure you want to clear all the feed data?'); ?></p>
-        <div id="feedClear-loader" class="ajax-loader" style="display:none;"></div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="feedClear-confirm" class="btn btn-primary"><?php echo _('Delete all feed data permanently'); ?></button>
-    </div>
-</div>
-
-<div id="feedTrimModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedTrimModalLabel" aria-hidden="true" data-backdrop="static">
-    <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedTrimModalLabel"><?php echo _('Clear out old feed data'); ?></h3>
-    </div>
-    <div class="modal-body">
-        <p><i class="icon-resize-small"></i> Empty all data up to the date below:</p>
-        <h4><?php echo _('Deleting feed data is permanent!'); ?></h4>
-        <br>
-        <div id="feed_trim_datetimepicker" class="input-append date">
-            <input id="trim_start_time" data-format="dd/MM/yyyy hh:mm:ss" type="text">
-            <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
-        </div>
-        <p><?php echo _('Are you sure you want to clear all the feed data up to the date? Data after this point is not effected.'); ?></p>
-        <div id="feedTrim-loader" class="ajax-loader" style="display:none;"></div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="feedTrim-confirm" class="btn btn-primary"><?php echo _('Delete feed data permanently'); ?></button>
+        <button id="feedClear-confirm" class="btn btn-primary"><?php echo _('Delete feed permanently'); ?></button>
     </div>
 </div>
 
@@ -366,6 +343,8 @@ input[type="range"]{
     $modal.attr('the_id',id);
     $modal.attr('the_row',row);
   });
+
+  //emrys
   $("#feedClear-confirm").click(function(){
     $modal = $('#feedClearModal')
     var id = $modal.attr('the_id');
