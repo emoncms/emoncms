@@ -1,8 +1,7 @@
 <?php
 include_once dirname(__FILE__) . '/shared_helper.php';
 
-// class MysqlTimeSeries implements engine_methods
-class MysqlTimeSeries
+class MysqlTimeSeries implements engine_methods
 {
     protected $mysqli;
     protected $log;
@@ -783,4 +782,14 @@ class MysqlTimeSeries
        return false;
     }
 
+    public function clear($feedid){
+        // @todo
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
+    public function trim($feedid, $start_time){
+        // @todo
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+
+    
 }

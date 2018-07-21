@@ -120,7 +120,7 @@ interface engine_methods{
      * a new feed starttime of "[CURRENT_TIMESTAMP]" is created 
      *
      * @param integer $feedid The id of the feed to fetch from
-     * @return void
+     * @return array associative array with success and message
      */
     public function clear($feedid);
     
@@ -131,7 +131,8 @@ interface engine_methods{
      *
      * @param integer $feedid The id of the feed to fetch from
      * @param integer $start_time The unix timestamp in ms of the start of the data range
-     * @return void
+     * @return array associative array with success and message
+     * 
      */
     public function trim($feedid, $start_time);
 }

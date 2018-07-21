@@ -172,7 +172,7 @@ function feed_controller()
                         if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
                         $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
                         $result = $feed->trim($feedid, $start_time);
-                    
+                        
                     // Process
                     } else if ($route->action == "process") {
                         if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }

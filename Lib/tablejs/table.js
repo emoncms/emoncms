@@ -140,7 +140,9 @@ var table = {
 
   'draw_row': function(t,row,child_row) {
     var html = "<tr uid='"+child_row+"_"+row+"'>";
-    for (field in t.fields) html += "<td row='"+row+"' child_row='"+child_row+"' field='"+field+"' >"+this.fieldtypes[t.fields[field].type].draw(t,row,child_row,field)+"</td>";
+    for (field in t.fields) {
+      html += "<td row='"+row+"' child_row='"+child_row+"' field='"+field+"' >"+this.fieldtypes[t.fields[field].type].draw(t,row,child_row,field)+"</td>";
+    }
     html += "</tr>";
     return html;
   },

@@ -70,21 +70,25 @@ var feed = {
   },
 
   'remove':function(id){
-    $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
+    $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){ return data} });
   },
 
   'clear':function(id){
+    let response = false;
     let data = {
       id: id
     }
-    $.ajax({ url: path+"feed/clear.json", data: data, async: false, success: function(data){} });
+    $.ajax({ url: path+"feed/clear.json", data: data, async: false, success: function(data){ response = data} });
+    return response;
   },
   'trim':function(id,start_time){
+    let response = false;
     let data = {
       id: id,
       start_time: start_time
     }
-    $.ajax({ url: path+"feed/trim.json", data: data, async: false, success: function(data){} });
+    $.ajax({ url: path+"feed/trim.json", data: data, async: false, success: function(data){ response = data} });
+    return response;
   },
 
   'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){

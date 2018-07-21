@@ -202,6 +202,7 @@ class Feed
 
     public function trim($feedid,$start_time)
     {
+        $response = false;
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
@@ -213,14 +214,16 @@ class Feed
         }
 
         // Call to engine trim method
-        $this->EngineClass($engine)->trim($feedid, $start_time);
+        $response = $this->EngineClass($engine)->trim($feedid, $start_time);
         if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
 
-        $this->log->info("trim() feedid=$feedid");
+        $this->log->info("feed model: trim() feedid=$feedid");
+        return $response;
     }
     public function clear($feedid)
     {
+        $response = false;
         $feedid = (int) $feedid;
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
 
@@ -232,11 +235,12 @@ class Feed
         }
 
         // Call to engine clear method
-        $this->EngineClass($engine)->clear($feedid);
+        $response = $this->EngineClass($engine)->clear($feedid);
         if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
 
-        $this->log->info("clear() feedid=$feedid");
+        $this->log->info("feed model: clear() feedid=$feedid");
+        return $response;
     }
 
     public function exist($feedid)
