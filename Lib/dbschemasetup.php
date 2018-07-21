@@ -35,7 +35,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 // the data type, and so not respecifying all of them when specifying
 // the field will result in them being lost.
 //
-function db_schema_diff_datatype($spec, $current, $field='')
+function db_schema_diff_datatype($spec, $current)
 {
     $changed = false;
 
@@ -147,7 +147,7 @@ function db_schema_make_table($mysqli, $table, $schema, &$operations)
 
     $operations[] = "CREATE TABLE `$table` (" .join(', ', $fields). ") ENGINE=MYISAM";
 
-    foreach ($indexes as $i => $field) {
+    foreach ($indexes as $field) {
         $operations[] = db_schema_make_index($table, $field);
     }
 }
@@ -261,26 +261,26 @@ function db_schema_setup($mysqli, $schema, $apply)
 function db_schema_test($mysqli)
 {
     // Test 1
-    $s = db_schema_make_field($mysqli, "field", array('type' => 'int',
-                                                      'default' => '0',
-                                                      'Null' => true,
-                                                      'Extra' => true));
-    $e = "`field` int DEFAULT '0' auto_increment";
-    if ($s != $e) {
+    $output = db_schema_make_field($mysqli, "field", array('type' => 'int',
+                                                           'default' => '0',
+                                                           'Null' => true,
+                                                           'Extra' => true));
+    $expected = "`field` int DEFAULT '0' auto_increment";
+    if ($output != $expected) {
         echo "Test 1 failed<br>";
-        echo "Expected: <code>$e</code><br>";
-        echo "Output: <code>$s</code><br>";
+        echo "Expected: <code>$expected</code><br>";
+        echo "Output: <code>$output</code><br>";
     }
 
     // Test 2
-    $s = db_schema_make_field($mysqli, "tags", array('type' => 'text',
-                                                     'default' => NULL,
-                                                     'Null' => true));
-    $e = "`tags` text";
-    if ($s != $e) {
+    $output = db_schema_make_field($mysqli, "tags", array('type' => 'text',
+                                                          'default' => NULL,
+                                                          'Null' => true));
+    $expected = "`tags` text";
+    if ($output != $expected) {
         echo "Test 2 failed<br>";
-        echo "Expected: <code>$e</code><br>";
-        echo "Output: <code>$s</code><br>";
+        echo "Expected: <code>$expected</code><br>";
+        echo "Output: <code>$output</code><br>";
     }
 
     // Test 3
