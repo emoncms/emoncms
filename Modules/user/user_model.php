@@ -20,9 +20,10 @@ class User
     private $email_verification = false;
     private $redis;
     private $log;
-    
-    public $appname;
+    private $clientSettingsName = "EMONCMS_BETA_OPTIN";
 
+    public $appname;
+    
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
@@ -805,6 +806,51 @@ class User
         $stmt->close();
         
         return $users;
+    }
+    /**
+     * saves user preference to local device
+     * currently uses cookies
+     *
+     * @param array $optIn
+     * @return array
+     */
+    public function setBetaOptIn($optIn){
+        $expire = time()+60*60*24*365*2;// 2 years
+        $success = setcookie($this->clientSettingsName, json_encode($optIn), $expire);
+        if(!$success){
+            return array('success'=>false,'message'=>'Error Saving Preference');
+        } else {   
+            return array('success'=>true,'message'=>'Preference Saved');
+        }
+    }
+    /**
+     * removes the locally saved user preference
+     *
+     * @return array
+     */
+    public function removeBetaOptIn(){
+        setcookie($this->clientSettingsName, null, -1); // set to null and expire now
+        unset($_COOKIE[$this->clientSettingsName]);
+        return array('success'=>true,'message'=>'Preference Removed');
+    }
+    /**
+     * returns current user preference saved locally
+     * success = false if user not part of beta trial
+     *
+     * @return array
+     */
+    public function getBetaOptIn(){
+        $someReasonForNotShowingBetaOption = false;
+        if (!$someReasonForNotShowingBetaOption) {
+            if (isset($_COOKIE[$this->clientSettingsName])) {
+                return array('success'=>true,'optin'=>$_COOKIE[$this->clientSettingsName]);
+            } else {
+                return array('success'=>true,'optin'=>false);
+            }
+            return array('success'=>true,'optin'=>$value);
+        } else {
+            return array('success'=>false,'message'=>'Not available');
+        }
     }
 }
 
