@@ -121,6 +121,9 @@
     } else {
         $session = $user->emon_session_start();
     }
+
+    $optIns = json_encode($user->getBetaOptIn()['optin'],true);
+    if (!empty($optIns['deviceModule']) && $optIns['deviceModule'] == true) $ui_version_2 = true;
     
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
