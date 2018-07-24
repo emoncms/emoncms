@@ -113,7 +113,7 @@
             $dbinputs = $input->get_inputs($userid);
             
             if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
-                $log->error("Reached the maximal allowed number of diferent NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.");
+                $log->error("Reached the maximal allowed number of different NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.");
             } else {
 
                 $tmp = array();
