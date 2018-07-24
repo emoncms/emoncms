@@ -336,7 +336,7 @@ var processlist_ui =
               return false;
             }
 
-            var result = feed.create(feedtag,feedname,datatype,engine,options);
+            var result = feed.create(feedtag,feedname,datatype,engine,options,process[2]);
             feedid = result.feedid;
 
             if (!result.success || feedid<1) {

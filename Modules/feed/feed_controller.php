@@ -52,7 +52,7 @@ function feed_controller()
             $route->format = "text";
             $result = $feed->get_id($session['userid'],get("name"));
         } elseif ($route->action == "create" && $session['write']) {
-            $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
+            $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('process'));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
         } elseif ($route->action == "buffersize" && $session['write']) {

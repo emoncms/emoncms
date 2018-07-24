@@ -3,9 +3,17 @@ var feed = {
 
   apikey: "",
   
-  'create':function(tag, name, datatype, engine, options){
+  'create':function(tag, name, datatype, engine, options, process){
     var result = {};
-    $.ajax({ url: path+"feed/create.json", data: "tag="+tag+"&name="+name+"&datatype="+datatype+"&engine="+engine+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data){result = data;} });
+    var data = {
+      tag: tag,
+      name: name,
+      datatype: datatype,
+      engine: engine,
+      options: JSON.stringify(options),
+      process: process || ''
+    }
+    $.ajax({ url: path+"feed/create.json", data: data, dataType: 'json', async: false, success: function(data){result = data;} });
     return result;
   },
   
