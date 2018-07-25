@@ -148,13 +148,13 @@ var processlist_ui =
       for(b of this.getBadges(processlist,input)){
         out+= b.href ? '<a target="_blank" href="'+b.href+'"' : '<span';
         out+= ' class="label '+b.cssClass+'" title="'+b.title+'">';
-        out+= b.text;
+        out+= (b.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         out+= b.href ? '</a> ' : '</span> ';
       }
       return out;
     }
   },
-  'getBadges': function (processlist,input) { 
+  'getBadges': function (processlist,input) {
     if (!processlist) return ""
     var processPairs = processlist.split(",")
     // create empty list of badges
@@ -169,7 +169,8 @@ var processlist_ui =
       {name: '',            cssClass: 'label-important',  title: 'Text: {longText} - {value}',                                   process_ids: [24,25,26,33,36,37,42,43,44,45]},
       {name: 'feed',        cssClass: 'label-warning',    title: 'Feed: {longText}',                                             process_ids: [29,30,31,32]},
       {name: 'topic',       cssClass: 'label-info',       title: 'Topic: {longText} - {value}',                                  process_ids: [35]},
-      {name: 'schedule',    cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}',                       process_ids: [38,39,40,41]}
+      {name: 'schedule',    cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}',                       process_ids: [38,39,40,41]},
+      {name: 'other',       cssClass: 'label-default',    title: '{longText}',                                                   process_ids: "eventp__ifmuteskip|eventp__ifnotmuteskip|eventp__ifrategtequalskip|eventp__ifrateltskip|eventp__sendemail|process__error_found|process__max_value_allowed|process__min_value_allowed|schedule__if_not_schedule_null|schedule__if_not_schedule_zero|schedule__if_schedule_null|schedule__if_schedule_zero".split('|')}
     ]
     for (z in processPairs)
     {
@@ -177,11 +178,13 @@ var processlist_ui =
       let badge = {}
       var keyvalue = processPairs[z].split(":")
       var key = parseInt(keyvalue[0])
-      
+      key = isNaN(key) ? keyvalue[0] : key;
       // get badge type from the known process id (key)
       badge.type_key = types.findIndex(function(type){
+        // if true returns index
         return type.process_ids.indexOf(key) > -1
       })
+      
       // set badge properties
       badge.type = types[badge.type_key]
       badge.text = processList_short_names[key]
