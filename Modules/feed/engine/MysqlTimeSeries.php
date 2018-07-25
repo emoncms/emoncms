@@ -699,6 +699,36 @@ class MysqlTimeSeries implements engine_methods
         exit;
     }
 
+
+    public function clear($feedid){
+        $feedid = filter_var ( $feedid, FILTER_SANITIZE_NUMBER_INT);
+        $table = "feed_$feedid";
+        $sql = "TRUNCATE TABLE $table";
+        if(!$this->mysqli->query($sql)) {
+            return array('success'=>false,'message'=>"0 rows deleted");
+        } else {
+            return array('success'=>true,'message'=>"All database rows deleted");
+        }
+    }
+    
+    public function trim($feedid, $start_time){
+        $feedid = filter_var ( $feedid, FILTER_SANITIZE_NUMBER_INT);
+        $start_time = filter_var ( $start_time, FILTER_SANITIZE_NUMBER_INT);
+        $table = "feed_$feedid";
+        $stmt = $this->mysqli->prepare("DELETE FROM $table WHERE time < ?");
+        if(!$stmt) return array('success'=>false,'message'=>"Error accessing database");
+        if(!$stmt->bind_param("i", $start_time)) return array('success'=>false,'message'=>"Error passing parameters to database");
+        if(!$stmt->execute()) return array('success'=>false,'message'=>"Error executing commands on database");
+        $affected_rows = $stmt->affected_rows;
+        if($affected_rows>0){
+            return array('success'=>true,'message'=>"$affected_rows rows deleted");
+        } else {
+            return array('success'=>false,'message'=>"0 rows deleted");
+        }
+    }
+
+
+
 // #### /\ Above are required methods
 
 
@@ -781,15 +811,5 @@ class MysqlTimeSeries implements engine_methods
        }
        return false;
     }
-
-    public function clear($feedid){
-        // @todo
-        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
-    }
-    public function trim($feedid, $start_time){
-        // @todo
-        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
-    }
-
     
 }
