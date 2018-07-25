@@ -147,4 +147,10 @@ class Histogram implements engine_methods
     {
     
     }
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
 }

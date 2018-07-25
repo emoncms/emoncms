@@ -218,11 +218,11 @@ class VirtualFeed implements engine_methods
     }
     public function clear($feedid) {
         // clear all feed data but keep meta.
-        return;
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
     
     public function trim($feedid,$start_time) {
         // clear all data upto a start_time
-        return;
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
     }
 }

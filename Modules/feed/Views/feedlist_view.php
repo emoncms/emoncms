@@ -37,6 +37,10 @@ input[type="range"]{
 .input-append > input[type="range"]{
   border-right-width: 0;
 }
+.modal-wide{
+  width:650px;
+  margin-left:-325px;
+}
 </style>
 
 <div>
@@ -61,45 +65,47 @@ input[type="range"]{
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?></h3>
+        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?> 
+        <span id="feedDelete-message" class="label label-important" data-default="<?php echo _('Deleting a feed is permanent.'); ?>"><?php echo _('Deleting a feed is permanent.'); ?></span>
+        </h3>
     </div>
     <div class="modal-body">
-        <div class="alert alert-error">
-        <h4>&#x26a0; <?php echo _('Deleting a feed is permanent.'); ?></h4>
-        </div>
-        <div class="well well-small">
-            <h4 style="margin-top:0.2em" class="text-info">Clear:</h4>
-            <p>Empty feed of all data</p>
-            <button id="feedClear-confirm" class="btn btn-info" onclick="return confirm('Are you sure you want to delete all the feed\'s data?')"><?php echo _('Clear Data'); ?>&hellip;</button>
-        </div>
-        <div class="well well-small">
-            <h4 style="margin-top:0.2em" class="text-info">Trim:</h4>
-            <p>Empty feed data up to "New Start Date".</p>
-
-            <div id="trim_start_time_container" class="control-group">
-                <label class="control-label" for="trim_start_time">New Start Date</label>
-                <div class="controls">
-                    <div id="feed_trim_datetimepicker" class="input-append date">
-                        <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="dd/mm/yyyy hh:mm:ss">
-                        <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
-                    </div>
-                    <span class="help-inline"></span>
+        <div class="clearfix">
+            <div class="span6">
+                <div style="min-height:10.6em; position:relative" class="well well-small">
+                    <h4 class="text-info">Clear:</h4>
+                    <p>Empty feed of all data</p>
+                    <button id="feedClear-confirm" class="btn btn-info" style="position:absolute;bottom:.8em" onclick="return confirm('Are you sure you want to delete all the feed\'s data?')"><?php echo _('Clear Data'); ?>&hellip;</button>
                 </div>
             </div>
-            <button id="feedTrim-confirm" class="btn btn-info" onclick="return confirm('Are you sure you want to trim the feed\'s data?') "><?php echo _('Trim Data'); ?>&hellip;</button>
 
+            <div class="span6">
+                <div class="well well-small">
+                    <h4 class="text-info">Trim:</h4>
+                    <p>Empty feed data up to:</p>
+                    <div id="trim_start_time_container" class="control-group">
+                        <div class="controls">
+                            <div id="feed_trim_datetimepicker" class="input-append date">
+                                <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="dd/mm/yyyy hh:mm:ss">
+                                <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="feedTrim-confirm" class="btn btn-info"><?php echo _('Trim Data'); ?>&hellip;</button>
+                </div>
+            </div>
         </div>
+        
         <div class="well well-small">
-            <h4 style="margin-top:0.2em" class="text-info">Delete:</h4>
+            <h4 class="text-info">Delete:</h4>
             <p id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
             <p id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
-            <h5><?php echo _('Are you sure you want to delete?'); ?></h5>
-            <button id="feedDelete-confirm" class="btn btn-danger" onclick="return confirm('Confirm...')"><?php echo _('Delete feed permanently'); ?></button>
+            <button id="feedDelete-confirm" class="btn btn-danger" onclick="return confirm('<?php echo _('Are you sure you want to delete?'); ?>')"><?php echo _('Delete feed permanently'); ?></button>
         </div>
     </div>
+
     <div class="modal-footer">
         <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
-        <h4 id="feedDelete-message" style="display:none;margin:0" class="pull-left"></h4>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
     </div>
 </div>
@@ -326,41 +332,42 @@ input[type="range"]{
     $('#feedDeleteModal').attr('the_id',id);
     $('#feedDeleteModal').attr('the_row',row);
   });
-
+  function updateFeedDeleteModalMessage(message){
+    var $msg = $('#feedDelete-message')
+    $msg.text(message).removeClass('label-important').addClass('label-info')
+    setTimeout(function(){
+        $msg.stop().fadeOut(function(){
+            $msg.text($msg.data('default')).removeClass('label-info').addClass('label-important').fadeIn()
+        })
+    }, 2800)
+  }
   $("#feedDelete-confirm").click(function(){
     var id = $('#feedDeleteModal').attr('the_id');
     var row = $('#feedDeleteModal').attr('the_row');
     feed.remove(id);
     table.remove(row);
-    update();
+    updateFeedDeleteModalMessage("<?php echo _('Feed deleted') ?>")
+    setTimeout(function(){
+      update();
+      updaterStart(update, 5000);
+      $('#feedDeleteModal').modal('hide')
+    }, 3000)
 
-    $('#feedDeleteModal').modal('hide');
-    updaterStart(update, 5000);
   });
 
   $("#feedClear-confirm").click(function(){
     $modal = $('#feedDeleteModal')
-    $('#feedDelete-message').text('').hide();
-
     var id = $modal.attr('the_id');
     $("#feedDelete-loader").fadeIn();
     let response = feed.clear(id);
     $("#feedDelete-loader").stop().fadeOut();
+    updateFeedDeleteModalMessage(response.message)
     update();
-    if(response.success){
-        setTimeout(function(){ 
-            $modal.modal('hide');
-            updaterStart(update, 5000);
-            $('#feedDelete-message').hide();
-            }, 3000)
-    }
-    $('#feedDelete-message').text(response.message).fadeIn();
+    updaterStart(update, 5000);
   });
 
   $("#feedTrim-confirm").click(function(){
     $modal = $('#feedDeleteModal')
-    $('#feedDelete-message').text('').hide();
-
     let id = $modal.attr('the_id');
     let $input = $modal.find("#trim_start_time");
     let input_date_string = $input.val();
@@ -371,25 +378,20 @@ input[type="range"]{
     // exit if supplied date not valid
     if (!isValidDate) {
         $('#trim_start_time_container').addClass('error')
-        $('#trim_start_time_container .help-inline').text('Not valid');
+        $input.focus();
         return false;
     }else{
-        $('#trim_start_time_container').removeClass('error')
-        $('#trim_start_time_container .help-inline').text('');
-        // set to seconds from milliseconds
-        let start_time = start_date.getTime()/1000;
-        $("#feedDelete-loader").fadeIn();
-        let response = feed.trim(id, start_time);
-        $("#feedDelete-loader").stop().fadeOut();
-        update();
-        if(response.success){
-            setTimeout(function(){ 
-                $modal.modal('hide');
-                updaterStart(update, 5000);
-                $('#feedDelete-message').hide();
-                }, 3000)
+        if(confirm('Are you sure you want to trim the feed\'s data?')==true) {
+            $('#trim_start_time_container').removeClass('error')
+            // set to seconds from milliseconds
+            let start_time = start_date.getTime()/1000;
+            $("#feedDelete-loader").fadeIn();
+            let response = feed.trim(id, start_time);
+            $("#feedDelete-loader").stop().fadeOut();
+            updateFeedDeleteModalMessage(response.message)
+            update();
+            updaterStart(update, 5000);
         }
-        $('#feedDelete-message').text(response.message).fadeIn();
     }
   });
 

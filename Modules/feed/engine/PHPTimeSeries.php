@@ -616,4 +616,11 @@ class PHPTimeSeries implements engine_methods
         return -1;
     }
 
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
+
 }

@@ -875,4 +875,10 @@ class PHPFiwa implements engine_methods
         fclose($exportfh);
         exit;
     }
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
 }

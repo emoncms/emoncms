@@ -268,5 +268,10 @@ class RedisBuffer implements engine_methods
         $this->redis->hSet("feed:$feedid:bufferstatus",$type,"0"); 
         //$this->log->info("removeLock() $type lock on feed=$feedid");
     }
-    
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
 }
