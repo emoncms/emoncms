@@ -868,6 +868,8 @@ function selectProcess(event){
   event.preventDefault();
   processid = event.target.dataset.processid
   select = document.getElementById('process-select')
+  select.focus()
   select.value = processid
-  select.onchange()
+  select.blur()
+  $(select).trigger('change');// trigger jquery event
 }
