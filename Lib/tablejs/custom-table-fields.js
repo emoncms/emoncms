@@ -60,7 +60,7 @@ var customtablefields = {
   'processlist': {
     'draw': function (t,row,child_row,field) {
       var processlist = t.data[row][field];
-      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist);
+      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist,t.data[row]);
       else return "";
     }
   },
