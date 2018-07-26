@@ -342,7 +342,7 @@ input[type="range"]{
     }, 2800)
   }
   $("#feedDelete-confirm").click(function(){
-    if( confirm('<?php echo _('Are you sure you want to delete?') ?>') == false ) return false;
+    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == false ) return false;
     var id = $('#feedDeleteModal').attr('the_id');
     var row = $('#feedDeleteModal').attr('the_row');
     feed.remove(id);
@@ -357,7 +357,7 @@ input[type="range"]{
   });
 
   $("#feedClear-confirm").click(function(){
-    if( confirm('<?php echo _("Are you sure you want to delete all the feed's data??") ?>') == false ) return false;
+    if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == false ) return false;
     $modal = $('#feedDeleteModal')
     var id = $modal.attr('the_id');
     $("#feedDelete-loader").fadeIn();
@@ -383,7 +383,7 @@ input[type="range"]{
         $input.focus();
         return false;
     }else{
-        if(confirm('<?php echo _("Are you sure you want to trim the feed's data??") ?>') == false )==true) {
+        if(confirm("<?php echo _("Are you sure you want to trim the feed's data??") ?>") == false )==true) {
             $('#trim_start_time_container').removeClass('error')
             // set to seconds from milliseconds
             let start_time = start_date.getTime()/1000;
