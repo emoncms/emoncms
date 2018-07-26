@@ -143,21 +143,35 @@ class Process
         $list = array();
         $dir = scandir("Modules");
         for ($i=2; $i<count($dir); $i++) {
-            if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-                $class = $this->get_module_class($dir[$i]);
+            $module = $dir[$i];
+            if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {
+                $class = $this->get_module_class($module);
                 if ($class != null) {
-                    $mod_process_list = $class->process_list();
-                    foreach($mod_process_list as $k => $v) {
-                        $processkey = strtolower($dir[$i]."__".$v[2]);
-                        $list[$processkey] = $v; // set list key as "module__function"
-                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
+                    
+                    if (file_exists("Modules/$module/processlist.json")) {
+                        $mod_process_list = json_decode(file_get_contents("Modules/$module/processlist.json"));
+
+                        $domain4 = $module."_messages";
+                        bindtextdomain($domain4, "Modules/$module/locale");
+                        bind_textdomain_codeset($domain4, 'UTF-8');
+                        
+                        foreach($mod_process_list as $k => $v) {
+                            $v->name = dgettext($module."_messages",$v->name);
+                            $v->group = dgettext($module."_messages",$v->group);
+                            $v->description = dgettext($module."_messages",$v->description);
+
+                            $processkey = strtolower($dir[$i]."__".$v->function);
+                            $list[$processkey] = $v; // set list key as "module__function"
+                            //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
+                        }
                     }
                 }
             }
         }
         // Loads core process list from process module (with integer key for backward_compatibility)
-        $backward_compatible_list = "process__core_process_list"; 
-        $list+=$this->$backward_compatible_list();
+        //$backward_compatible_list = "process__core_process_list"; 
+        //$list+=$this->$backward_compatible_list();
+                
         return $list;
     }
 
