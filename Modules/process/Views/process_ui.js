@@ -880,6 +880,7 @@ var processlist_ui =
     }
   }
 }
+
 // takes plain object with key / value pairs. 
 // if found swaps placeholder for variable
 // can handle 2 deep nested objects
@@ -894,4 +895,18 @@ if (!String.prototype.format) {
       }
     });
   };
+}
+
+/**
+ * pre select processes dropdown
+ * @param {ClickEvent} event 
+ */
+function selectProcess(event){
+  event.preventDefault();
+  processid = event.target.dataset.processid
+  select = document.getElementById('process-select')
+  select.focus()
+  select.value = processid
+  select.blur()
+  $(select).trigger('change');// trigger jquery event
 }
