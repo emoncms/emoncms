@@ -141,10 +141,12 @@
 
         // PUBLISH
         // loop through all queued items in redis
-        $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
-        foreach ($publish_to_mqtt as $topic=>$value) {
-            $redis->hdel("publish_to_mqtt",$topic);
-            $mqtt_client->publish($topic, $value);
+        if ($connected) {
+            $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
+            foreach ($publish_to_mqtt as $topic=>$value) {
+                $redis->hdel("publish_to_mqtt",$topic);
+                $mqtt_client->publish($topic, $value);
+            }
         }
         // Queue option
         $queue_topic = 'mqtt-pub-queue';
