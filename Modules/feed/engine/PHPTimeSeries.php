@@ -1,6 +1,8 @@
 <?php
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
 
-class PHPTimeSeries
+class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
     private $log;
@@ -612,6 +614,13 @@ class PHPTimeSeries
             if ($time>$array['time']) $start = $mid; else $end = $mid;
         }
         return -1;
+    }
+
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 
 }

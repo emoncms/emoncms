@@ -201,6 +201,30 @@ function list_format_updated(time) {
   return "<span style='color:"+color+";'>"+updated+"</span>";
 }
 
+// Calculate relative time
+function relative_time(time) {
+  time = time * 1000;
+  var servertime = (new Date()).getTime() - table.timeServerLocalOffset;
+  var update = (new Date(time)).getTime();
+
+  var secs = (servertime-update)/1000;
+  var mins = secs/60;
+  var hour = secs/3600;
+  var day = hour/24;
+  var year = day/365;
+
+  var relative_time = secs.toFixed(0) + "s";
+  if (update == 0) relative_time = "n/a";
+  else if (secs< 0) relative_time = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
+  else if (secs.toFixed(0) < 10) relative_time = "a few seconds";
+  else if (day>365) relative_time = year.toFixed(2)+" years";
+  else if (day>2) relative_time = day.toFixed(1)+" days";
+  else if (hour>2) relative_time = hour.toFixed(0)+" hrs";
+  else if (secs>180) relative_time = mins.toFixed(0)+" mins";
+
+  return relative_time
+}
+
 // Format value dynamically 
 function list_format_value(value) {
   if (value == null) return 'NULL';

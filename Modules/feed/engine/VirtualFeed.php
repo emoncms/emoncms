@@ -1,6 +1,8 @@
 <?php
+// engine_methods interface in shared_helper.php
+;include_once dirname(__FILE__) . '/shared_helper.php';
 
-class VirtualFeed
+class VirtualFeed implements engine_methods
 {
 
     private $mysqli;
@@ -214,5 +216,13 @@ class VirtualFeed
         fclose($exportfh);
         exit;
     }
-
+    public function clear($feedid) {
+        // clear all feed data but keep meta.
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
+    
+    public function trim($feedid,$start_time) {
+        // clear all data upto a start_time
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
 }

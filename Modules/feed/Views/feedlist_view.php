@@ -29,6 +29,18 @@
 #table th[fieldg="size"], th[fieldg="time"] { font-weight:normal; }
 #table th[fieldg="processList"] { font-weight:normal; }
 
+input[type="range"]{
+  padding: .35em .5em;
+  border: 1px solid #ddd;
+  border-right-width: 1px;
+}
+.input-append > input[type="range"]{
+  border-right-width: 0;
+}
+.modal-wide{
+  width:650px;
+  margin-left:-325px;
+}
 </style>
 
 <div>
@@ -53,20 +65,48 @@
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?></h3>
+        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?> 
+        <span id="feedDelete-message" class="label label-important" data-default="<?php echo _('Deleting a feed is permanent.'); ?>"><?php echo _('Deleting a feed is permanent.'); ?></span>
+        </h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Deleting a feed is permanent.'); ?></p>
-        <br>
-        <div id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></div>
-        <div id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></div>
-        <br><br>
-        <p><?php echo _('Are you sure you want to delete?'); ?></p>
-        <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
+        <div class="clearfix">
+            <div class="span6">
+                <div style="min-height:10.6em; position:relative" class="well well-small">
+                    <h4 class="text-info">Clear:</h4>
+                    <p>Empty feed of all data</p>
+                    <button id="feedClear-confirm" class="btn btn-info" style="position:absolute;bottom:.8em" onclick="return confirm('Are you sure you want to delete all the feed\'s data?')"><?php echo _('Clear Data'); ?>&hellip;</button>
+                </div>
+            </div>
+
+            <div class="span6">
+                <div class="well well-small">
+                    <h4 class="text-info">Trim:</h4>
+                    <p>Empty feed data up to:</p>
+                    <div id="trim_start_time_container" class="control-group">
+                        <div class="controls">
+                            <div id="feed_trim_datetimepicker" class="input-append date">
+                                <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="dd/mm/yyyy hh:mm:ss">
+                                <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="feedTrim-confirm" class="btn btn-info"><?php echo _('Trim Data'); ?>&hellip;</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="well well-small">
+            <h4 class="text-info">Delete:</h4>
+            <p id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
+            <p id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
+            <button id="feedDelete-confirm" class="btn btn-danger" onclick="return confirm('<?php echo _('Are you sure you want to delete?'); ?>')"><?php echo _('Delete feed permanently'); ?></button>
+        </div>
     </div>
+
     <div class="modal-footer">
+        <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
     </div>
 </div>
 
@@ -216,6 +256,7 @@
       pulses: "pulses",
       dB: "dB"
     }},
+    'start_time':{title:"<?php echo _('Days'); ?>",type:'relative_days'},
     // Actions
     'edit-action':{'title':'', 'type':"edit"},
     'delete-action':{'title':'', 'type':"delete"},
@@ -291,20 +332,71 @@
     $('#feedDeleteModal').attr('the_id',id);
     $('#feedDeleteModal').attr('the_row',row);
   });
-
+  function updateFeedDeleteModalMessage(message){
+    var $msg = $('#feedDelete-message')
+    $msg.text(message).removeClass('label-important').addClass('label-info')
+    setTimeout(function(){
+        $msg.stop().fadeOut(function(){
+            $msg.text($msg.data('default')).removeClass('label-info').addClass('label-important').fadeIn()
+        })
+    }, 2800)
+  }
   $("#feedDelete-confirm").click(function(){
     var id = $('#feedDeleteModal').attr('the_id');
     var row = $('#feedDeleteModal').attr('the_row');
     feed.remove(id);
     table.remove(row);
-    update();
+    updateFeedDeleteModalMessage("<?php echo _('Feed deleted') ?>")
+    setTimeout(function(){
+      update();
+      updaterStart(update, 5000);
+      $('#feedDeleteModal').modal('hide')
+    }, 3000)
 
-    $('#feedDeleteModal').modal('hide');
+  });
+
+  $("#feedClear-confirm").click(function(){
+    $modal = $('#feedDeleteModal')
+    var id = $modal.attr('the_id');
+    $("#feedDelete-loader").fadeIn();
+    let response = feed.clear(id);
+    $("#feedDelete-loader").stop().fadeOut();
+    updateFeedDeleteModalMessage(response.message)
+    update();
     updaterStart(update, 5000);
   });
 
+  $("#feedTrim-confirm").click(function(){
+    $modal = $('#feedDeleteModal')
+    let id = $modal.attr('the_id');
+    let $input = $modal.find("#trim_start_time");
+    let input_date_string = $input.val();
+    // dont submit if nothing selected
+    // convert uk dd/mm/yyyy h:m:s to RFC2822 date
+    let start_date = new Date(input_date_string.replace( /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/, "$3-$2-$1T$4:$5:$6"))
+    let isValidDate = !isNaN(start_date.getTime()) && input_date_string != "";
+    // exit if supplied date not valid
+    if (!isValidDate) {
+        $('#trim_start_time_container').addClass('error')
+        $input.focus();
+        return false;
+    }else{
+        if(confirm('Are you sure you want to trim the feed\'s data?')==true) {
+            $('#trim_start_time_container').removeClass('error')
+            // set to seconds from milliseconds
+            let start_time = start_date.getTime()/1000;
+            $("#feedDelete-loader").fadeIn();
+            let response = feed.trim(id, start_time);
+            $("#feedDelete-loader").stop().fadeOut();
+            updateFeedDeleteModalMessage(response.message)
+            update();
+            updaterStart(update, 5000);
+        }
+    }
+  });
+
   $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, sucinput_date_stringcess: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
   });
 
   //show the input field when "custom" selected in units
@@ -361,6 +453,8 @@
     language: 'en-EN',
     useCurrent: false //Important! See issue #1075
   });
+  $('#feed_trim_datetimepicker').datetimepicker({language: 'en-EN'});
+  
 
   $('#datetimepicker1').on("changeDate", function (e) {
     $('#datetimepicker2').data("datetimepicker").setStartDate(e.date);
@@ -495,5 +589,14 @@
   $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('<?php echo _('ERROR: Could not save processlist.'); ?> '+result.message); }
-  }); 
+  });
+
+/**
+ * triggered on input change
+ */
+  function showNewStartTime(event){
+    let input = event.target
+    let new_start_time = input.value
+    document.getElementById('feed_shift_slider_value').innerText = new_start_time
+  }
 </script>
