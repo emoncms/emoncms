@@ -75,7 +75,7 @@ input[type="range"]{
                 <div style="min-height:10.6em; position:relative" class="well well-small">
                     <h4 class="text-info">Clear:</h4>
                     <p>Empty feed of all data</p>
-                    <button id="feedClear-confirm" class="btn btn-info" style="position:absolute;bottom:.8em" onclick="return confirm('Are you sure you want to delete all the feed\'s data?')"><?php echo _('Clear Data'); ?>&hellip;</button>
+                    <button id="feedClear-confirm" class="btn btn-info" style="position:absolute;bottom:.8em"><?php echo _('Clear Data'); ?>&hellip;</button>
                 </div>
             </div>
 
@@ -100,7 +100,7 @@ input[type="range"]{
             <h4 class="text-info">Delete:</h4>
             <p id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
             <p id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
-            <button id="feedDelete-confirm" class="btn btn-danger" onclick="return confirm('<?php echo _('Are you sure you want to delete?'); ?>')"><?php echo _('Delete feed permanently'); ?></button>
+            <button id="feedDelete-confirm" class="btn btn-danger"><?php echo _('Delete feed permanently'); ?></button>
         </div>
     </div>
 
@@ -342,28 +342,31 @@ input[type="range"]{
     }, 2800)
   }
   $("#feedDelete-confirm").click(function(){
-    var id = $('#feedDeleteModal').attr('the_id');
-    var row = $('#feedDeleteModal').attr('the_row');
-    feed.remove(id);
-    table.remove(row);
-    updateFeedDeleteModalMessage("<?php echo _('Feed deleted') ?>")
-    setTimeout(function(){
-      update();
-      updaterStart(update, 5000);
-      $('#feedDeleteModal').modal('hide')
-    }, 3000)
-
+    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
+      var id = $('#feedDeleteModal').attr('the_id');
+      var row = $('#feedDeleteModal').attr('the_row');
+      feed.remove(id);
+      table.remove(row);
+      updateFeedDeleteModalMessage("<?php echo _('Feed deleted') ?>")
+      setTimeout(function(){
+        update();
+        updaterStart(update, 5000);
+        $('#feedDeleteModal').modal('hide')
+      }, 3000)
+    }
   });
 
   $("#feedClear-confirm").click(function(){
-    $modal = $('#feedDeleteModal')
-    var id = $modal.attr('the_id');
-    $("#feedDelete-loader").fadeIn();
-    let response = feed.clear(id);
-    $("#feedDelete-loader").stop().fadeOut();
-    updateFeedDeleteModalMessage(response.message)
-    update();
-    updaterStart(update, 5000);
+    if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == true ){
+      $modal = $('#feedDeleteModal')
+      var id = $modal.attr('the_id');
+      $("#feedDelete-loader").fadeIn();
+      let response = feed.clear(id);
+      $("#feedDelete-loader").stop().fadeOut();
+      updateFeedDeleteModalMessage(response.message)
+      update();
+      updaterStart(update, 5000);
+    }
   });
 
   $("#feedTrim-confirm").click(function(){
@@ -381,7 +384,7 @@ input[type="range"]{
         $input.focus();
         return false;
     }else{
-        if(confirm('Are you sure you want to trim the feed\'s data?')==true) {
+        if(confirm("<?php echo _("Are you sure you want to trim the feed's data??") ?>") == true ) {
             $('#trim_start_time_container').removeClass('error')
             // set to seconds from milliseconds
             let start_time = start_date.getTime()/1000;
