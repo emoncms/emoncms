@@ -384,7 +384,7 @@ input[type="range"]{
         $input.focus();
         return false;
     }else{
-        if(confirm("<?php echo _("Are you sure you want to trim the feed's data??") ?>") == true ) {
+        if(confirm("<?php echo _("This is a new feature. Consider backing up your data before you continue. OK to continue?") ?>") == true ) {
             $('#trim_start_time_container').removeClass('error')
             // set to seconds from milliseconds
             let start_time = start_date.getTime()/1000;
