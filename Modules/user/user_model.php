@@ -146,7 +146,10 @@ class User
         //name of cookie 
         session_name('EMONCMS_SESSID'); 
         //get subdir installation 
-        $cookie_params['path'] = dirname($_SERVER['SCRIPT_NAME'])."/"; 
+        $cookie_params['path'] = dirname($_SERVER['SCRIPT_NAME']);
+        // Add a slash if the last character isn't already a slash
+        if (substr($cookie_params['path'], -1) !== '/')
+            $cookie_params['path'] .= '/';
         //not pass cookie to javascript 
         $cookie_params['httponly'] = 1; 
         

@@ -200,6 +200,49 @@ class Feed
         $this->log->info("delete() feedid=$feedid");
     }
 
+    public function trim($feedid,$start_time)
+    {
+        $response = false;
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine trim method
+        $response = $this->EngineClass($engine)->trim($feedid, $start_time);
+        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
+        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
+
+        $this->log->info("feed model: trim() feedid=$feedid");
+        return $response;
+    }
+    public function clear($feedid)
+    {
+        $response = false;
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine clear method
+        $response = $this->EngineClass($engine)->clear($feedid);
+        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
+        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
+
+        $this->log->info("feed model: clear() feedid=$feedid");
+        return $response;
+    }
+
     public function exist($feedid)
     {
         $feedid = (int) $feedid;
@@ -352,6 +395,8 @@ class Feed
             $lastvalue = $this->get_timevalue($id);
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
+            $meta = $this->get_meta($id);
+            $row['start_time'] = $meta->start_time;
             $feeds[] = $row;
         }
 
@@ -370,6 +415,8 @@ class Feed
                 $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
                 $row['time'] = $lastvirtual['time'];
                 $row['value'] = $lastvirtual['value'];
+                $meta = $this->get_meta($row['id']);
+                $row['start_time'] = $meta->start_time;
             }
             $feeds[] = $row;
         }

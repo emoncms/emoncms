@@ -140,7 +140,9 @@ var table = {
 
   'draw_row': function(t,row,child_row) {
     var html = "<tr uid='"+child_row+"_"+row+"'>";
-    for (field in t.fields) html += "<td row='"+row+"' child_row='"+child_row+"' field='"+field+"' >"+this.fieldtypes[t.fields[field].type].draw(t,row,child_row,field)+"</td>";
+    for (field in t.fields) {
+      html += "<td row='"+row+"' child_row='"+child_row+"' field='"+field+"' >"+this.fieldtypes[t.fields[field].type].draw(t,row,child_row,field)+"</td>";
+    }
     html += "</tr>";
     return html;
   },
@@ -230,6 +232,28 @@ var table = {
       }
       $(table.element).trigger("onDeleteExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
     });
+    // Event: clear all feed data
+    $(table.element).on('click', 'a[type=clear]', function() {
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      if (table.cleardata) table.remove($(this).attr('row'), $(this).attr('child_row') );
+      if (child_row == "root") {
+        $(table.element).trigger("onClear",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
+      }
+      $(table.element).trigger("onClearExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
+    });
+    // Event: trim feed data to a start_time
+    $(table.element).on('click', 'a[type=trim]', function() {
+      var child_row = $(this).attr('child_row');
+      if (child_row == "root") { t=table; }
+      else { t=table.expand[child_row];  }
+      if (table.cleardata) table.remove($(this).attr('row'), $(this).attr('child_row') );
+      if (child_row == "root") {
+        $(table.element).trigger("onTrim",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]); // Only called for root table (to keep compatibility)
+      }
+      $(table.element).trigger("onTrimExpand",[$(this).attr('uid'),$(this).attr('row'), $(this).attr('child_row')]);  // If your code has an expand table use this instead of onDelete
+    });
 
     // Event: inline edit
     $(table.element).on('click', 'a[type=edit]', function() {
@@ -317,7 +341,6 @@ var table = {
     'fixed': {
       'draw': function (t,row,child_row,field) { return t.data[row][field] }
     },
-
     'text': {
       'draw': function (t,row,child_row,field) { 
         value = t.data[row][field];
@@ -406,6 +429,13 @@ var table = {
       'draw': function (t,row,child_row,field) { return "<a type='expand' row='"+row+"' child_row='"+child_row+"' uid='"+t.data[row][t.expandByField]+"' mode='" + (t.expand[t.data[row][t.expandByField]] == undefined || !t.expand[t.data[row][t.expandByField]].expanded ? "expand":"close") + "'><i class='" + (t.expand[t.data[row][t.expandByField]] == undefined || !t.expand[t.data[row][t.expandByField]].expanded ? "icon-chevron-down":"icon-chevron-up") + "' style='cursor:pointer'></i></a>"; },
     },
     
+    'relative_days': {
+      'draw': function (t,row,child_row,field) {
+        let value = t.data[row][field]
+        return value == 0 ? 0 : Math.round(((new Date().getTime()/1000) - value) / 60 / 60 / 24)
+      }
+    },
+
     'blank': {
       'draw': function (t,row,child_row,field) { return ""; }
     }

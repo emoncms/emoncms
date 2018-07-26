@@ -1,9 +1,11 @@
 <?php
-
 // This timeseries engine implements:
 // Fixed Interval No Averaging
 
-class PHPFina
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
@@ -83,7 +85,9 @@ class PHPFina
         unlink($this->dir.$feedid.".dat");
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
+    public function get_meta3($feedid){
 
+    }
     /**
      * Gets engine metadata
      *
@@ -1248,4 +1252,84 @@ class PHPFina
         
         return true;
     }
+
+    /**
+     * delete feed .dat, re-create blank .dat and .meta with same interval
+     *
+     * @param integer $feedid
+     * @return boolean true == success
+     */
+    public function clear($feedid) {
+        $feedid = (int)$feedid;
+        $meta = $this->get_meta($feedid);
+        if (!$meta) return false;
+        $meta->start_time = 0;
+        $datafilePath = $this->dir.$feedid.".dat";
+        $f = @fopen($datafilePath, "r+");
+        if (!$f) {
+            $this->log->error("unable to open $datafilePath for reading");
+            return array('success'=>false,'message'=>'Error opening data file');
+        } else {
+            ftruncate($f, 0);
+            fclose($f);
+        }
+        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
+        $this->create($feedid,array('interval'=>$meta->interval));
+
+        $this->log->info("Feed $feedid datapoints deleted");
+        return array('success'=>true,'message'=>"Feed cleared successfully");
+    }
+    
+    /**
+     * clear out data from file before $start_time
+     *
+     * @param integer $feedid
+     * @param integer $start_time new timestamp to start the feed data from
+     * @return boolean
+     */
+    public function trim($feedid,$start_time) {
+        $meta = $this->get_meta($feedid); // get .dat meta info
+        $bytesize = $meta->npoints * 4.0; // total .dat file size
+        if($bytesize <= 0) return array('success'=>false,'message'=>'Empty data file, nothing to trim.'); // empty data file - nothing to trim
+        if($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range'); //new start_time out of range
+        
+        $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
+        $datFileName = $this->dir.$feedid.'.dat';
+        // non php file handling
+        // ----------------------
+        // $tmpFileName = $this->dir.'temp-trim.tmp';
+        // exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
+        // exec(sprintf("cp %s %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
+        // exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
+        // $writtenBytes = filesize($datFileName);
+
+        $fh = @fopen($datFileName,'rb');
+        if (!$fh){
+            $this->log->error("unable to open $datFileName for reading");
+            return array('success'=>false,'message'=>'Error opening data file');
+        }
+        fseek($fh,$start_bytes);
+        $tmp = @fread($fh,$bytesize-$start_bytes);
+        if (!$tmp){
+            $this->log->error("Error reading $datFileName");
+            return array('success'=>false,'message'=>'Error reading data file');
+        }
+        fclose($fh);
+        
+        $fh = @fopen($datFileName,'wb');
+        if (!$fh){
+            $this->log->error("unable to open $datFileName for writing");
+            return array('success'=>false,'message'=>'Error writing to data file');
+        }
+        $writtenBytes = fwrite($fh,$tmp);
+        fclose($fh);
+
+        $this->log->info(".data file trimmed to $writtenBytes bytes");
+        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        $meta->start_time = $start_time;
+        $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
+        return array('success'=>true,'message'=>"$writtenBytes bytes written");
+    }
+
 }

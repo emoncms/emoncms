@@ -1,4 +1,6 @@
 <?php
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
 
 /**
  * CassandraEngine
@@ -6,7 +8,7 @@
  * @SuppressWarnings(PHPMD.TooManyMethods)
  *
  */
-class CassandraEngine
+class CassandraEngine implements engine_methods
 {
     const ONE_TABLE_PER_FEED = false;
     protected $cluster;
@@ -222,6 +224,13 @@ class CassandraEngine
     		
         $this->log->info("csv_export($feedid,$start,$end,$outinterval)");  // add: $usertimezone
         // TODO implement
+    }
+
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 
 // #### /\ Above are required methods

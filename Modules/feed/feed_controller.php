@@ -93,7 +93,6 @@ function feed_controller()
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
             // First we load the meta data for the feed that we want
-
             if ($feed->exist($feedid)) // if the feed exists
             {
                 $f = $feed->get($feedid);
@@ -128,6 +127,7 @@ function feed_controller()
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
+                    else if ($route->action == "setstartdate") $result = $feed->set_start_date($feedid,get('startdate'));
 
                     else if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
@@ -178,6 +178,16 @@ function feed_controller()
                     } else if ($route->action == "delete") {
                         $result = $feed->delete($feedid);
                     
+                    // Clear feed
+                    } else if ($route->action == "clear") {
+                        $result = $feed->clear($feedid);
+                    
+                    // Trim feed
+                    } else if ($route->action == "trim") {
+                        if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
+                        $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
+                        $result = $feed->trim($feedid, $start_time);
+                        
                     // Process
                     } else if ($route->action == "process") {
                         if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }
