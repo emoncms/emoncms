@@ -342,30 +342,31 @@ input[type="range"]{
     }, 2800)
   }
   $("#feedDelete-confirm").click(function(){
-    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == false ) return false;
-    var id = $('#feedDeleteModal').attr('the_id');
-    var row = $('#feedDeleteModal').attr('the_row');
-    feed.remove(id);
-    table.remove(row);
-    updateFeedDeleteModalMessage("<?php echo _('Feed deleted') ?>")
-    setTimeout(function(){
-      update();
-      updaterStart(update, 5000);
-      $('#feedDeleteModal').modal('hide')
-    }, 3000)
-
+    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
+      var id = $('#feedDeleteModal').attr('the_id');
+      var row = $('#feedDeleteModal').attr('the_row');
+      feed.remove(id);
+      table.remove(row);
+      updateFeedDeleteModalMessage("<?php echo _('Feed deleted') ?>")
+      setTimeout(function(){
+        update();
+        updaterStart(update, 5000);
+        $('#feedDeleteModal').modal('hide')
+      }, 3000)
+    }
   });
 
   $("#feedClear-confirm").click(function(){
-    if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == false ) return false;
-    $modal = $('#feedDeleteModal')
-    var id = $modal.attr('the_id');
-    $("#feedDelete-loader").fadeIn();
-    let response = feed.clear(id);
-    $("#feedDelete-loader").stop().fadeOut();
-    updateFeedDeleteModalMessage(response.message)
-    update();
-    updaterStart(update, 5000);
+    if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == true ){
+      $modal = $('#feedDeleteModal')
+      var id = $modal.attr('the_id');
+      $("#feedDelete-loader").fadeIn();
+      let response = feed.clear(id);
+      $("#feedDelete-loader").stop().fadeOut();
+      updateFeedDeleteModalMessage(response.message)
+      update();
+      updaterStart(update, 5000);
+    }
   });
 
   $("#feedTrim-confirm").click(function(){
@@ -383,7 +384,7 @@ input[type="range"]{
         $input.focus();
         return false;
     }else{
-        if(confirm("<?php echo _("Are you sure you want to trim the feed's data??") ?>") == false )==true) {
+        if(confirm("<?php echo _("Are you sure you want to trim the feed's data??") ?>") == true ) {
             $('#trim_start_time_container').removeClass('error')
             // set to seconds from milliseconds
             let start_time = start_date.getTime()/1000;
