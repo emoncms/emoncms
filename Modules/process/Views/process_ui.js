@@ -194,7 +194,7 @@ var processlist_ui =
       badge.cssClass = badge.type.cssClass
       badge.input =  input || {}
       badge.feed =  this.feedlist[badge.value] || {}
-      badge.schedule = this.schedulelist[value] || {}
+      badge.schedule = this.schedulelist[badge.value] || {}
       badge.href = badge.typeName == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
       // pass the collected badge object as values for the title string template
       badge.title = badge.type.title.format(badge);
