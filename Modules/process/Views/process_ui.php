@@ -57,6 +57,11 @@
             <table class="table">
             <tr><th>
                 <span id="process-header-add"><?php echo dgettext('process_messages','Add process'); ?>:</span>
+
+                <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="1">log</a>
+                <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="4">kwh</a>
+                <a href="#" onclick="selectProcess(event)" class="label label-warning" data-processid="11">+inp</a>
+
                 <span id="process-header-edit"><?php echo dgettext('process_messages','Edit process'); ?>:</span>
             </th></tr>
             <tr>
