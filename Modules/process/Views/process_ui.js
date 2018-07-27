@@ -58,19 +58,19 @@ var processlist_ui =
           }  
           else if (procneedredis) {
             arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
-            processname = this.processlist[processkey][0];
+            processname = this.processlist[processkey].name;
           }
           else {
             // Check ProcessArg Type
-            switch(this.processlist[processkey][1]) {
-              case 0: // VALUE
+            switch(this.processlist[processkey].argtype) {
+              case "value": // VALUE
                 arg += "<span class='label label-info' title='"+_Tr("Value")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
                 break;
 
-              case 1: //INPUTID
+              case "input": //INPUTID
                 var inpid = this.contextprocesslist[z][1];
                 if (this.inputlist[inpid]!=undefined) {
                 arg += "<span class='label label-info' title='"+_Tr("Input")+" "+inpid+"'>";
@@ -84,7 +84,7 @@ var processlist_ui =
                 }
                 break;
 
-              case 2: //FEEDID
+              case "feed": //FEEDID
                 var feedid = this.contextprocesslist[z][1];
                 if (this.feedlist[feedid]!=undefined) {
                 arg += "<a class='label label-info feedaccesslabel' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
@@ -98,14 +98,14 @@ var processlist_ui =
                 }
                 break;
 
-              case 4: // TEXT
+              case "text": // TEXT
                 arg += "<span class='label label-info' title='"+_Tr("Text")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
                 break;
 
-              case 5: // SCHEDULEID
+              case "schedule": // SCHEDULEID
                 var schid = this.contextprocesslist[z][1];
                 if (this.schedulelist[schid]!=undefined) {
                 arg += "<span class='label label-info' title='"+_Tr("Schedule")+" "+schid+"' >";
@@ -117,7 +117,7 @@ var processlist_ui =
                 }
                 break;
             }
-            processname = this.processlist[processkey][0];
+            processname = this.processlist[processkey].name;
           }
         }
         else {
@@ -161,18 +161,15 @@ var processlist_ui =
     var processPairs = processlist.split(",")
     // create empty list of badges
     let badges = []
-    // array of short names
-    const processList_short_names = [null,'log','x','+','kwh','kwhd','x inp','ontime','kwhinckwhd','kwhkwhd','update','+ inp','/ inp','phaseshift','accumulate','rate','hist','average','flux','pwrgain','pulsdiff','kwhpwr','- inp','kwhkwhd','> 0','< 0','unsign','max','min','+ feed','- feed','x feed','/ feed','= 0','whacc','MQTT','null','ori','!sched 0','!sched N','sched 0','sched N','0? skip','!0? skip','N? skip','!N? skip','>? skip','>=? skip','<? skip','<=? skip','=? skip','!=? skip','GOTO']
     // set process types and what process they're accociated with
-    const types = [
-      {name: 'value',  cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
-      {name: 'input',  cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
-      {name: 'feed',   cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
-      {name: 'none',   cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
-      {name: 'text',   cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      {name: 'schedule', cssClass: 'label-warning',  title: 'Schedule: {longText} - {schedule.name}'}
-
-    ]
+    const types = {
+      'value': {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
+      'input': {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
+      'feed':  {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
+      'none':  {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
+      'text':  {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
+      'schedule': {cssClass: 'label-warning',  title: 'Schedule: {longText} - {schedule.name}'}
+    };
     for (z in processPairs)
     {
       // add badge to list or add a blank one if there are any issues.
@@ -184,15 +181,15 @@ var processlist_ui =
       badge.value = keyvalue[1]
       badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
 
-      if(this.init_done === 0){
+      if(this.init_done === 0 && badge.process){
         // set badge properties
-        badge.type = types[badge.process[1]]
+        badge.type = types[badge.process.argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
         badge.href = badge.type.name == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
         badge.title = badge.type.title.format(badge);
-        badge.text = badge.process['short_name'] || ''
-        badge.longText = badge.process[0]
+        badge.text = badge.process.short || ''
+        badge.longText = badge.process.name
         badge.input = input
         badge.feed =  this.feedlist[badge.value] || {}
         badge.schedule = this.schedulelist[value] || {}
@@ -258,21 +255,21 @@ var processlist_ui =
             } else {
               // Check ProcessArg Type
               value = localprocesslist[z][1];
-              switch(this.processlist[processkey][1]) {
-                case 1: //INPUTID
+              switch(this.processlist[processkey].argtype) {
+                case "input": //INPUTID
                 var inpid = localprocesslist[z][1];
                 if (this.inputlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case 2: //FEEDID
+                case "feed": //FEEDID
                 if (this.feedlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case 5: // SCHEDULEID
+                case "schedule": // SCHEDULEID
                 if (this.schedulelist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
                 }
@@ -296,7 +293,7 @@ var processlist_ui =
       if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
 
       var processid = $("#process-select").val();
-      var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
       if (datatype==2) {
         $("#feed-interval option").hide();          // Hide all
@@ -317,8 +314,8 @@ var processlist_ui =
       var arg = '';
 
       // Check ProcessArg Type
-      switch(process[1]) {
-        case 0: // VALUE (scale, offset)
+      switch(process.argtype) {
+        case "value": // VALUE (scale, offset)
           arg = $("#value-input").val();
           arg = parseFloat(arg.replace(",", "."));
           if (isNaN(arg)) {
@@ -327,11 +324,11 @@ var processlist_ui =
           }
           break;
 
-        case 1: //INPUTID (* / + - by input)
+        case "input": //INPUTID (* / + - by input)
           arg = $("#input-select").val();
           break;
 
-        case 2: //FEEDID
+        case "feed": //FEEDID
           var feedid = $("#feed-select").val();
 
           if (feedid==-1) {
@@ -362,15 +359,15 @@ var processlist_ui =
           arg = feedid;
           break;
 
-        case 3: // NONE
+        case "none": // NONE
           arg = 0;
           break;
 
-        case 4: // TEXT
+        case "text": // TEXT
           arg = $("#text-input").val();
           break;
 
-        case 5: // SCHEDULEID
+        case "schedule": // SCHEDULEID
           arg = $("#schedule-select").val();
           break;
       }
@@ -401,31 +398,30 @@ var processlist_ui =
       $("#type-schedule").hide();
 
       // Check ProcessArg Type
-      // console.log(processlist_ui.processlist[processid][0]);
       if (processid) {
-        switch(processlist_ui.processlist[processid][1]) {
-          case 0: // VALUE
+        switch(processlist_ui.processlist[processid].argtype) {
+          case "value": // VALUE
             $("#type-value").show();
             break;
-          case 1: //INPUTID
+          case "input": //INPUTID
             $("#type-input").show();
             break;
-          case 2: //FEEDID
+          case "feed": //FEEDID
             $("#type-feed").show();
             processlist_ui.showfeedoptions(processid);
             break;
-          case 4: // TEXT
+          case "text": // TEXT
             $("#type-text").show();
             break;
-          case 5: // SCHEDULEID
+          case "schedule": // SCHEDULEID
             $("#type-schedule").show();
             break;
         }
 
-        if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
+        if (processlist_ui.processlist[processid]['description'] === undefined || processlist_ui.processlist[processid]['description'] =="") {
           $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
         } else {
-          $("#description").html(processlist_ui.processlist[processid]['desc']);
+          $("#description").html(processlist_ui.processlist[processid]['description']);
 
           var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
           var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
@@ -515,21 +511,21 @@ var processlist_ui =
         $("#process-select").val( processlist_ui.processlist[processid]['id']);
         $("#processlist-ui #process-select").change(); // Force a refresh
         // Check ProcessArg Type
-        switch(processlist_ui.processlist[processid][1]) {
-          case 0: // VALUE
+        switch(processlist_ui.processlist[processid].argtype) {
+          case "value": // VALUE
             $("#value-input").val(processval);
             break;
-          case 1: //INPUTID
+          case "input": //INPUTID
             $("#input-select").val(processval);
             break;
-          case 2: //FEEDID
+          case "feed": //FEEDID
             $("#feed-select").val(processval);
             $('#processlist-ui #feed-select').change();  // refresh feed select
             break;
-          case 4: // TEXT
+          case "text": // TEXT
             $("#text-input").val(processval);
             break;
-          case 5: // SCHEDULEID
+          case "schedule": // SCHEDULEID
             $("#schedule-select").val(processval);
             break;
         }
@@ -719,12 +715,12 @@ var processlist_ui =
         //hide sendEmail and Publish to MQTT from virtual feeds
         if (processlist_ui.contexttype == 1 && (
           processlist_ui.processlist[z]['feedwrite'] == true ||
-          processlist_ui.processlist[z][2] == "sendEmail" || 
-          processlist_ui.processlist[z][2] == "publish_to_mqtt"))
+          processlist_ui.processlist[z]['function'] == "sendEmail" || 
+          processlist_ui.processlist[z]['function'] == "publish_to_mqtt"))
         {
             continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
-        var group = processlist_ui.processlist[z][5];
+        var group = processlist_ui.processlist[z]['group'];
         if (processlist_ui.contexttype == 0 && group=="Virtual") { 
           continue;  // in input context and group name is virtual? dont show on input processlist selector
         }
