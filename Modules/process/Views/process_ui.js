@@ -502,9 +502,9 @@ var processlist_ui =
 
       if (processlist_ui.processlist[processid] == undefined) {
         if (processlist_ui.contexttype == 0) {
-          $("#process-select").val(1); // default process for input context
+          $("#process-select").val($("#process-select option").first().val()); // default process for input context
         } else {
-          $("#process-select").val(53); // default process for feed context
+          $("#process-select").val('process__source_feed_data_time'); // default process for feed context
         }
         $("#processlist-ui #process-select").change();  // Force a refresh
       } else {
