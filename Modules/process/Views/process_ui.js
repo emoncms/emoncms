@@ -695,16 +695,16 @@ var processlist_ui =
         if (result[p][6]!=undefined) { // processor has supported engines?
           result[p]['feedwrite']=true; // If has an engine so assume process writes to feed 
           if (processlist_ui.engines_hidden.length > 0) {
-            for (var e=result[p][6].length-1; e > -1; e--) {  // for each processor engine
+            for (var e=result[p]['engines'].length-1; e > -1; e--) {  // for each processor engine
               for (h in processlist_ui.engines_hidden) {
-                if (result[p][6][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
-                  result[p][6].splice(e, 1);     // remove engine from processor
+                if (result[p]['engines'][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
+                  result[p]['engines'].splice(e, 1);     // remove engine from processor
                 }
               }
             }
           }
-          if (result[p][6].length == 0) {
-            result[p][6] = undefined;  // if processor now has no engines, undefine its array
+          if (result[p]['engines'].length == 0) {
+            result[p]['engines'] = undefined;  // if processor now has no engines, undefine its array
           }
         }
       }
@@ -749,7 +749,7 @@ var processlist_ui =
             procdisabled = 'disabled=""';
             procneedredis = " (needs REDIS)";
           }
-          out += "<option "+procdisabled+" value="+processgroups[pg][p]['id']+">"+processgroups[pg][p][0]+procneedredis+"</option>";
+          out += "<option "+procdisabled+" value="+processgroups[pg][p]['id']+">"+processgroups[pg][p].name+procneedredis+"</option>";
         }
         out += "</optgroup>";
       }
