@@ -41,7 +41,7 @@
       "function":"power_to_kwh",
       "datafields":1,
       "datatype":"realtime",
-      "unit":"",
+      "unit":"kWh",
       "group":"Main",
       "engines":[0,2,5,8],
       "nochange":true,
@@ -54,7 +54,7 @@
       "function":"power_to_kwhd",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Power & Energy",
       "engines":[0,2,8],
       "nochange":true,
@@ -86,12 +86,12 @@
    },
    {
       "name":"Wh increments to kWh\/d",
-      "short":"kwhinckwhd",
+      "short":"whinckwhd",
       "argtype":"feed",
       "function":"whinc_to_kwhd",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Power & Energy",
       "engines":[0,2,8],
       "nochange":true,
@@ -99,18 +99,18 @@
    },
    {
       "name":"kWh to kWh\/d (OLD)",
-      "short":"kwhkwhd",
+      "short":"kwhkwhdold",
       "argtype":"feed",
       "function":"kwh_to_kwhd_old",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Deleted",
       "engines":[2],
       "description":""
    },
    {
-      "name":"Upsert feed at day",
+      "name":"Update feed at day",
       "short":"update",
       "argtype":"feed",
       "function":"update_feed_data",
@@ -197,7 +197,7 @@
    },
    {
       "name":"Daily Average",
-      "short":"average",
+      "short":"mean",
       "argtype":"feed",
       "function":"average",
       "datafields":2,
@@ -226,7 +226,7 @@
       "function":"power_acc_to_kwhd",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Deleted",
       "engines":[2],
       "description":""
@@ -250,7 +250,7 @@
       "function":"kwh_to_power",
       "datafields":1,
       "datatype":"realtime",
-      "unit":"",
+      "unit":"W",
       "group":"Power & Energy",
       "engines":[6,5,2],
       "requireredis":true,
@@ -274,7 +274,7 @@
       "function":"kwh_to_kwhd",
       "datafields":2,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Power & Energy",
       "engines":[2],
       "requireredis":true,
@@ -305,7 +305,7 @@
    },
    {
       "name":"Signed to unsigned",
-      "short":"",
+      "short":"unsign",
       "argtype":"none",
       "function":"signed2unsigned",
       "datafields":0,
@@ -341,7 +341,7 @@
       "description":"<p>Minimal daily value. Upserts on the selected daily feed the lowest value reached each day.<\/p>"
    },
    {
-      "name":" + feed",
+      "name":"+ feed",
       "short":"+ feed",
       "argtype":"feed",
       "function":"add_feed",
@@ -352,7 +352,7 @@
       "description":"<p>Adds the current value with the last value from a feed as selected from the feed list.<\/p>"
    },
    {
-      "name":" - feed",
+      "name":"- feed",
       "short":"- feed",
       "argtype":"feed",
       "function":"sub_feed",
@@ -363,7 +363,7 @@
       "description":"<p>Subtracts from the current value the last value from a feed as selected from the feed list.<\/p>"
    },
    {
-      "name":" * feed",
+      "name":"* feed",
       "short":"x feed",
       "argtype":"feed",
       "function":"multiply_by_feed",
@@ -374,8 +374,8 @@
       "description":"<p>Multiplies the current value with the last value from a feed as selected from the feed list.<\/p>"
    },
    {
-      "name":" \/ feed",
-      "short":"/ feed",
+      "name":"\/ feed",
+      "short":"\/ feed",
       "argtype":"feed",
       "function":"divide_by_feed",
       "datafields":0,
@@ -386,7 +386,7 @@
    },
    {
       "name":"Reset to ZERO",
-      "short":"= 0",
+      "short":"0",
       "argtype":"none",
       "function":"reset2zero",
       "datafields":0,
@@ -402,7 +402,7 @@
       "function":"wh_accumulator",
       "datafields":1,
       "datatype":"realtime",
-      "unit":"",
+      "unit":"Wh",
       "group":"Main",
       "engines":[2,5],
       "requireredis":true,
@@ -656,7 +656,7 @@
    },
    {
       "name":"Max value allowed",
-      "short":"?max",
+      "short":"<max",
       "argtype":"value",
       "function":"max_value_allowed",
       "datafields":0,
@@ -669,7 +669,7 @@
    },
    {
       "name":"Min value allowed",
-      "short":"?min",
+      "short":">min",
       "argtype":"value",
       "function":"min_value_allowed",
       "datafields":0,

@@ -58,19 +58,19 @@ var processlist_ui =
           }  
           else if (procneedredis) {
             arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
-            processname = this.processlist[processkey][0];
+            processname = this.processlist[processkey].name;
           }
           else {
             // Check ProcessArg Type
-            switch(this.processlist[processkey][1]) {
-              case 0: // VALUE
+            switch(this.processlist[processkey].argtype) {
+              case "value": // VALUE
                 arg += "<span class='label label-info' title='"+_Tr("Value")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
                 break;
 
-              case 1: //INPUTID
+              case "input": //INPUTID
                 var inpid = this.contextprocesslist[z][1];
                 if (this.inputlist[inpid]!=undefined) {
                 arg += "<span class='label label-info' title='"+_Tr("Input")+" "+inpid+"'>";
@@ -84,7 +84,7 @@ var processlist_ui =
                 }
                 break;
 
-              case 2: //FEEDID
+              case "feed": //FEEDID
                 var feedid = this.contextprocesslist[z][1];
                 if (this.feedlist[feedid]!=undefined) {
                 arg += "<a class='label label-info feedaccesslabel' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
@@ -98,14 +98,14 @@ var processlist_ui =
                 }
                 break;
 
-              case 4: // TEXT
+              case "text": // TEXT
                 arg += "<span class='label label-info' title='"+_Tr("Text")+"'>";
                 arg += "<i class='icon-edit icon-white'></i> ";
                 arg += this.contextprocesslist[z][1];
                 arg += "</span>";
                 break;
 
-              case 5: // SCHEDULEID
+              case "schedule": // SCHEDULEID
                 var schid = this.contextprocesslist[z][1];
                 if (this.schedulelist[schid]!=undefined) {
                 arg += "<span class='label label-info' title='"+_Tr("Schedule")+" "+schid+"' >";
@@ -117,7 +117,7 @@ var processlist_ui =
                 }
                 break;
             }
-            processname = this.processlist[processkey][0];
+            processname = this.processlist[processkey].name;
           }
         }
         else {
@@ -143,15 +143,17 @@ var processlist_ui =
     if (localprocesslist.length==0) {
       return ""
     } else {
-      var out = "";
+      var out = [];
       // create coloured link or span for each process 
       for(b of this.getBadges(processlist,input)){
-        out+= b.href ? '<a target="_blank" href="'+b.href+'"' : '<span';
-        out+= ' class="label '+b.cssClass+'" title="'+b.title+'">';
-        out+= (b.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        out+= b.href ? '</a> ' : '</span> ';
+        let markup = []
+        markup.push(b.href ? '<a target="_blank" href="'+b.href+'"' : '<span')
+        markup.push(' class="label '+b.cssClass+'" title="'+b.title+'">')
+        markup.push((b.text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))
+        markup.push(b.href ? '</a> ' : '</span> ')
+        out.push(markup.join(''));
       }
-      return out;
+      return out.join('');
     }
   },
   'getBadges': function (processlist,input) {
@@ -159,54 +161,45 @@ var processlist_ui =
     var processPairs = processlist.split(",")
     // create empty list of badges
     let badges = []
-    // array of short names
-    const processList_short_names = [null,'log','x','+','kwh','kwhd','x inp','ontime','kwhinckwhd','kwhkwhd','update','+ inp','/ inp','phaseshift','accumulate','rate','hist','average','flux','pwrgain','pulsdiff','kwhpwr','- inp','kwhkwhd','> 0','< 0','unsign','max','min','+ feed','- feed','x feed','/ feed','= 0','whacc','MQTT','null','ori','!sched 0','!sched N','sched 0','sched N','0? skip','!0? skip','N? skip','!N? skip','>? skip','>=? skip','<? skip','<=? skip','=? skip','!=? skip','GOTO']
     // set process types and what process they're accociated with
-    const types = [
-      {name: 'user value',  cssClass: 'label-important',  title: 'Value: {longText} - {value}',                                  process_ids: [2,3,46,47,48,49,50,51,52]},
-      {name: 'input',       cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}',    process_ids: [6,11,12,22]},
-      {name: 'feed',        cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]',     process_ids: [1,4,5,7,8,9,10,13,14,15,16,17,18,19,20,21,23,27,28,34]},
-      {name: '',            cssClass: 'label-important',  title: 'Text: {longText} - {value}',                                   process_ids: [24,25,26,33,36,37,42,43,44,45]},
-      {name: 'feed',        cssClass: 'label-warning',    title: 'Feed: {longText}',                                             process_ids: [29,30,31,32]},
-      {name: 'topic',       cssClass: 'label-info',       title: 'Topic: {longText} - {value}',                                  process_ids: [35]},
-      {name: 'schedule',    cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}',                       process_ids: [38,39,40,41]},
-      {name: 'other',       cssClass: 'label-default',    title: '{longText}',                                                   process_ids: "eventp__ifmuteskip|eventp__ifnotmuteskip|eventp__ifrategtequalskip|eventp__ifrateltskip|eventp__sendemail|process__error_found|process__max_value_allowed|process__min_value_allowed|schedule__if_not_schedule_null|schedule__if_not_schedule_zero|schedule__if_schedule_null|schedule__if_schedule_zero".split('|')}
-    ]
+    const types = {
+      'value': {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
+      'input': {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
+      'feed':  {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
+      'none':  {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
+      'text':  {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
+      'schedule': {cssClass: 'label-warning',  title: 'Schedule: {longText} - {schedule.name}'}
+    };
     for (z in processPairs)
     {
-      // create empty badge object to store all the properties
+      // add badge to list or add a blank one if there are any issues.
       let badge = {}
       var keyvalue = processPairs[z].split(":")
       var key = parseInt(keyvalue[0])
+
       key = isNaN(key) ? keyvalue[0] : key;
-      // get badge type from the known process id (key)
-      badge.type_key = types.findIndex(function(type){
-        // if true returns index
-        return type.process_ids.indexOf(key) > -1
-      })
-      
-      // set badge properties
-      badge.type = types[badge.type_key]
-      badge.text = processList_short_names[key]
-      badge.longText = this.processlist[key] ? this.processlist[key][0] : ''
       badge.value = keyvalue[1]
-      badge.typeName = badge.type.name
-      badge.cssClass = badge.type.cssClass
-      badge.input =  input || {}
-      badge.feed =  this.feedlist[badge.value] || {}
-      badge.schedule = this.schedulelist[badge.value] || {}
-      badge.href = badge.typeName == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
-      // pass the collected badge object as values for the title string template
-      badge.title = badge.type.title.format(badge);
-      
-      // add badge to list or add a blank one if there are any issues.
-      if(this.init_done === 0){
+      badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
+
+      if(this.init_done === 0 && badge.process){
+        // set badge properties
+        badge.type = types[badge.process.argtype]
+        badge.typeName = badge.type.name
+        badge.cssClass = badge.type.cssClass
+        badge.href = badge.type.name == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
+        badge.title = badge.type.title.format(badge);
+        badge.text = badge.process.short || ''
+        badge.longText = badge.process.name
+        badge.input = input
+        badge.feed =  this.feedlist[badge.value] || {}
+        badge.schedule = this.schedulelist[value] || {}
+        // pass the collected badge object as values for the title string template
         badges.push(badge);
-      } else if(this.has_redis == 0 && this.processlist[key]['requireredis'] !== undefined && this.processlist[key]['requireredis'] == true ? 1 : 0){
+      } else if(this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
         // no reids
         badges.push({
-          text: this.processlist[key]['internalerror_reason'],
-          title: this.processlist[key]['internalerror_desc'],
+          text: badge.process['internalerror_reason'],
+          title: badge.process['internalerror_desc'],
           cssClass: 'badge-important',
           href: false
         })
@@ -218,7 +211,7 @@ var processlist_ui =
           cssClass: 'badge-important',
           href: false
         })
-      } else if(!this.processlist[key]){
+      } else if(!badge.process){
         // process not available
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
@@ -236,7 +229,6 @@ var processlist_ui =
         })
       }
     }
-    
     return badges;
   },
 
@@ -263,21 +255,21 @@ var processlist_ui =
             } else {
               // Check ProcessArg Type
               value = localprocesslist[z][1];
-              switch(this.processlist[processkey][1]) {
-                case 1: //INPUTID
+              switch(this.processlist[processkey].argtype) {
+                case "input": //INPUTID
                 var inpid = localprocesslist[z][1];
                 if (this.inputlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case 2: //FEEDID
+                case "feed": //FEEDID
                 if (this.feedlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case 5: // SCHEDULEID
+                case "schedule": // SCHEDULEID
                 if (this.schedulelist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
                 }
@@ -301,7 +293,7 @@ var processlist_ui =
       if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
 
       var processid = $("#process-select").val();
-      var datatype = processlist_ui.processlist[processid][4]; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+      var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
       if (datatype==2) {
         $("#feed-interval option").hide();          // Hide all
@@ -322,8 +314,8 @@ var processlist_ui =
       var arg = '';
 
       // Check ProcessArg Type
-      switch(process[1]) {
-        case 0: // VALUE (scale, offset)
+      switch(process.argtype) {
+        case "value": // VALUE (scale, offset)
           arg = $("#value-input").val();
           arg = parseFloat(arg.replace(",", "."));
           if (isNaN(arg)) {
@@ -332,11 +324,11 @@ var processlist_ui =
           }
           break;
 
-        case 1: //INPUTID (* / + - by input)
+        case "input": //INPUTID (* / + - by input)
           arg = $("#input-select").val();
           break;
 
-        case 2: //FEEDID
+        case "feed": //FEEDID
           var feedid = $("#feed-select").val();
 
           if (feedid==-1) {
@@ -367,15 +359,15 @@ var processlist_ui =
           arg = feedid;
           break;
 
-        case 3: // NONE
+        case "none": // NONE
           arg = 0;
           break;
 
-        case 4: // TEXT
+        case "text": // TEXT
           arg = $("#text-input").val();
           break;
 
-        case 5: // SCHEDULEID
+        case "schedule": // SCHEDULEID
           arg = $("#schedule-select").val();
           break;
       }
@@ -406,31 +398,30 @@ var processlist_ui =
       $("#type-schedule").hide();
 
       // Check ProcessArg Type
-      // console.log(processlist_ui.processlist[processid][0]);
       if (processid) {
-        switch(processlist_ui.processlist[processid][1]) {
-          case 0: // VALUE
+        switch(processlist_ui.processlist[processid].argtype) {
+          case "value": // VALUE
             $("#type-value").show();
             break;
-          case 1: //INPUTID
+          case "input": //INPUTID
             $("#type-input").show();
             break;
-          case 2: //FEEDID
+          case "feed": //FEEDID
             $("#type-feed").show();
             processlist_ui.showfeedoptions(processid);
             break;
-          case 4: // TEXT
+          case "text": // TEXT
             $("#type-text").show();
             break;
-          case 5: // SCHEDULEID
+          case "schedule": // SCHEDULEID
             $("#type-schedule").show();
             break;
         }
 
-        if (processlist_ui.processlist[processid]['desc'] === undefined || processlist_ui.processlist[processid]['desc'] =="") {
+        if (processlist_ui.processlist[processid]['description'] === undefined || processlist_ui.processlist[processid]['description'] =="") {
           $("#description").html("<b style='color: orange'>No process description available for process '"+processlist_ui.processlist[processid][0]+"' with id '"+processid+"'.<br>Add a description to Module\\<i>module_name</i>\\<i>module_name</i>_processlist.php in process_list() function, $list[] array at the 'desc' key.</b><br>Please <a target='_blank' href='https://github.com/emoncms/emoncms/issues/new'>click here</a> and paste the text above to ask a developer to include a process description.</b>");
         } else {
-          $("#description").html(processlist_ui.processlist[processid]['desc']);
+          $("#description").html(processlist_ui.processlist[processid]['description']);
 
           var does_modify = "<p><b>Output:</b> "+_Tr("Modified value passed onto next process step.")+"</p>";
           var does_not_modify = "<p><b>Output:</b> "+_Tr("Does NOT modify value passed onto next process step.")+"</p>";
@@ -520,21 +511,21 @@ var processlist_ui =
         $("#process-select").val( processlist_ui.processlist[processid]['id']);
         $("#processlist-ui #process-select").change(); // Force a refresh
         // Check ProcessArg Type
-        switch(processlist_ui.processlist[processid][1]) {
-          case 0: // VALUE
+        switch(processlist_ui.processlist[processid].argtype) {
+          case "value": // VALUE
             $("#value-input").val(processval);
             break;
-          case 1: //INPUTID
+          case "input": //INPUTID
             $("#input-select").val(processval);
             break;
-          case 2: //FEEDID
+          case "feed": //FEEDID
             $("#feed-select").val(processval);
             $('#processlist-ui #feed-select').change();  // refresh feed select
             break;
-          case 4: // TEXT
+          case "text": // TEXT
             $("#text-input").val(processval);
             break;
-          case 5: // SCHEDULEID
+          case "schedule": // SCHEDULEID
             $("#schedule-select").val(processval);
             break;
         }
@@ -704,16 +695,16 @@ var processlist_ui =
         if (result[p][6]!=undefined) { // processor has supported engines?
           result[p]['feedwrite']=true; // If has an engine so assume process writes to feed 
           if (processlist_ui.engines_hidden.length > 0) {
-            for (var e=result[p][6].length-1; e > -1; e--) {  // for each processor engine
+            for (var e=result[p]['engines'].length-1; e > -1; e--) {  // for each processor engine
               for (h in processlist_ui.engines_hidden) {
-                if (result[p][6][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
-                  result[p][6].splice(e, 1);     // remove engine from processor
+                if (result[p]['engines'][e]==processlist_ui.engines_hidden[h]) { // if engine is to be hidden
+                  result[p]['engines'].splice(e, 1);     // remove engine from processor
                 }
               }
             }
           }
-          if (result[p][6].length == 0) {
-            result[p][6] = undefined;  // if processor now has no engines, undefine its array
+          if (result[p]['engines'].length == 0) {
+            result[p]['engines'] = undefined;  // if processor now has no engines, undefine its array
           }
         }
       }
@@ -724,12 +715,12 @@ var processlist_ui =
         //hide sendEmail and Publish to MQTT from virtual feeds
         if (processlist_ui.contexttype == 1 && (
           processlist_ui.processlist[z]['feedwrite'] == true ||
-          processlist_ui.processlist[z][2] == "sendEmail" || 
-          processlist_ui.processlist[z][2] == "publish_to_mqtt"))
+          processlist_ui.processlist[z]['function'] == "sendEmail" || 
+          processlist_ui.processlist[z]['function'] == "publish_to_mqtt"))
         {
             continue;  // in feed context and processor has a engine? dont show on virtual processlist selector
         }
-        var group = processlist_ui.processlist[z][5];
+        var group = processlist_ui.processlist[z]['group'];
         if (processlist_ui.contexttype == 0 && group=="Virtual") { 
           continue;  // in input context and group name is virtual? dont show on input processlist selector
         }
@@ -758,7 +749,7 @@ var processlist_ui =
             procdisabled = 'disabled=""';
             procneedredis = " (needs REDIS)";
           }
-          out += "<option "+procdisabled+" value="+processgroups[pg][p]['id']+">"+processgroups[pg][p][0]+procneedredis+"</option>";
+          out += "<option "+procdisabled+" value="+processgroups[pg][p]['id']+">"+processgroups[pg][p].name+procneedredis+"</option>";
         }
         out += "</optgroup>";
       }
