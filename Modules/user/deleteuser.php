@@ -10,10 +10,10 @@ function delete_user($userid,$mode) {
     if ($user_row = $result1->fetch_object()){
         $result = "User $userid\n";
         
-        require "Modules/feed/feed_model.php";
+        require_once "Modules/feed/feed_model.php";
         $feed = new Feed($mysqli,$redis,$feed_settings);
 
-        require "Modules/input/input_model.php";
+        require_once "Modules/input/input_model.php";
         $input = new Input($mysqli,$redis,$feed);
     
         $result .= "Feeds:\n";
