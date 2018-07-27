@@ -64,6 +64,7 @@ class Process_ProcessList
     
     // List of core process module with hard coded integer keys, for backward compatibility only
     // Not used on other modules, use process_list() function instead
+
     public function core_process_list_map()
     {
         $map = array(
@@ -125,7 +126,6 @@ class Process_ProcessList
                                 
         return $map;
     }
-
 
     // \/ Below are functions of this module processlist
 

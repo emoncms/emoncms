@@ -143,15 +143,17 @@ var processlist_ui =
     if (localprocesslist.length==0) {
       return ""
     } else {
-      var out = "";
+      var out = [];
       // create coloured link or span for each process 
       for(b of this.getBadges(processlist,input)){
-        out+= b.href ? '<a target="_blank" href="'+b.href+'"' : '<span';
-        out+= ' class="label '+b.cssClass+'" title="'+b.title+'">';
-        out+= (b.text||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        out+= b.href ? '</a> ' : '</span> ';
+        let markup = []
+        markup.push(b.href ? '<a target="_blank" href="'+b.href+'"' : '<span')
+        markup.push(' class="label '+b.cssClass+'" title="'+b.title+'">')
+        markup.push((b.text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'))
+        markup.push(b.href ? '</a> ' : '</span> ')
+        out.push(markup.join(''));
       }
-      return out;
+      return out.join('');
     }
   },
   'getBadges': function (processlist,input) {
@@ -163,50 +165,44 @@ var processlist_ui =
     const processList_short_names = [null,'log','x','+','kwh','kwhd','x inp','ontime','kwhinckwhd','kwhkwhd','update','+ inp','/ inp','phaseshift','accumulate','rate','hist','average','flux','pwrgain','pulsdiff','kwhpwr','- inp','kwhkwhd','> 0','< 0','unsign','max','min','+ feed','- feed','x feed','/ feed','= 0','whacc','MQTT','null','ori','!sched 0','!sched N','sched 0','sched N','0? skip','!0? skip','N? skip','!N? skip','>? skip','>=? skip','<? skip','<=? skip','=? skip','!=? skip','GOTO']
     // set process types and what process they're accociated with
     const types = [
-      {name: 'user value',  cssClass: 'label-important',  title: 'Value: {longText} - {value}',                                  process_ids: [2,3,46,47,48,49,50,51,52]},
-      {name: 'input',       cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}',    process_ids: [6,11,12,22]},
-      {name: 'feed',        cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]',     process_ids: [1,4,5,7,8,9,10,13,14,15,16,17,18,19,20,21,23,27,28,34]},
-      {name: '',            cssClass: 'label-important',  title: 'Text: {longText} - {value}',                                   process_ids: [24,25,26,33,36,37,42,43,44,45]},
-      {name: 'feed',        cssClass: 'label-warning',    title: 'Feed: {longText}',                                             process_ids: [29,30,31,32]},
-      {name: 'topic',       cssClass: 'label-info',       title: 'Topic: {longText} - {value}',                                  process_ids: [35]},
-      {name: 'schedule',    cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}',                       process_ids: [38,39,40,41]},
-      {name: 'other',       cssClass: 'label-default',    title: '{longText}',                                                   process_ids: "eventp__ifmuteskip|eventp__ifnotmuteskip|eventp__ifrategtequalskip|eventp__ifrateltskip|eventp__sendemail|process__error_found|process__max_value_allowed|process__min_value_allowed|schedule__if_not_schedule_null|schedule__if_not_schedule_zero|schedule__if_schedule_null|schedule__if_schedule_zero".split('|')}
+      {name: 'value',  cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
+      {name: 'input',  cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
+      {name: 'feed',   cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
+      {name: 'none',   cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
+      {name: 'text',   cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
+      {name: 'schedule', cssClass: 'label-warning',  title: 'Schedule: {longText} - {schedule.name}'}
+
     ]
     for (z in processPairs)
     {
-      // create empty badge object to store all the properties
+      // add badge to list or add a blank one if there are any issues.
       let badge = {}
       var keyvalue = processPairs[z].split(":")
       var key = parseInt(keyvalue[0])
+
       key = isNaN(key) ? keyvalue[0] : key;
-      // get badge type from the known process id (key)
-      badge.type_key = types.findIndex(function(type){
-        // if true returns index
-        return type.process_ids.indexOf(key) > -1
-      })
-      
-      // set badge properties
-      badge.type = types[badge.type_key]
-      badge.text = processList_short_names[key]
-      badge.longText = this.processlist[key] ? this.processlist[key][0] : ''
       badge.value = keyvalue[1]
-      badge.typeName = badge.type.name
-      badge.cssClass = badge.type.cssClass
-      badge.input =  input || {}
-      badge.feed =  this.feedlist[badge.value] || {}
-      badge.schedule = this.schedulelist[badge.value] || {}
-      badge.href = badge.typeName == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
-      // pass the collected badge object as values for the title string template
-      badge.title = badge.type.title.format(badge);
-      
-      // add badge to list or add a blank one if there are any issues.
+      badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
+
       if(this.init_done === 0){
+        // set badge properties
+        badge.type = types[badge.process[1]]
+        badge.typeName = badge.type.name
+        badge.cssClass = badge.type.cssClass
+        badge.href = badge.type.name == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
+        badge.title = badge.type.title.format(badge);
+        badge.text = badge.process['short_name'] || ''
+        badge.longText = badge.process[0]
+        badge.input = input
+        badge.feed =  this.feedlist[badge.value] || {}
+        badge.schedule = this.schedulelist[value] || {}
+        // pass the collected badge object as values for the title string template
         badges.push(badge);
-      } else if(this.has_redis == 0 && this.processlist[key]['requireredis'] !== undefined && this.processlist[key]['requireredis'] == true ? 1 : 0){
+      } else if(this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
         // no reids
         badges.push({
-          text: this.processlist[key]['internalerror_reason'],
-          title: this.processlist[key]['internalerror_desc'],
+          text: badge.process['internalerror_reason'],
+          title: badge.process['internalerror_desc'],
           cssClass: 'badge-important',
           href: false
         })
@@ -218,7 +214,7 @@ var processlist_ui =
           cssClass: 'badge-important',
           href: false
         })
-      } else if(!this.processlist[key]){
+      } else if(!badge.process){
         // process not available
         badges.push({
           title: '{typeName} {value} does not exist or was deleted'.format(badge),
@@ -236,7 +232,6 @@ var processlist_ui =
         })
       }
     }
-    
     return badges;
   },
 

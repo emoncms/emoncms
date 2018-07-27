@@ -1,7 +1,7 @@
 [
    {
       "name":"Log to feed",
-      "short":"",
+      "short":"log",
       "argtype":"feed",
       "function":"log_to_feed",
       "datafields":1,
@@ -14,7 +14,7 @@
    },
    {
       "name":"x",
-      "short":"",
+      "short":"x",
       "argtype":"value",
       "function":"scale",
       "datafields":0,
@@ -25,7 +25,7 @@
    },
    {
       "name":"+",
-      "short":"",
+      "short":"+",
       "argtype":"value",
       "function":"offset",
       "datafields":0,
@@ -36,12 +36,12 @@
    },
    {
       "name":"Power to kWh",
-      "short":"",
+      "short":"kwh",
       "argtype":"feed",
       "function":"power_to_kwh",
       "datafields":1,
       "datatype":"realtime",
-      "unit":"",
+      "unit":"kWh",
       "group":"Main",
       "engines":[0,2,5,8],
       "nochange":true,
@@ -49,12 +49,12 @@
    },
    {
       "name":"Power to kWh\/d",
-      "short":"",
+      "short":"kwhd",
       "argtype":"feed",
       "function":"power_to_kwhd",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Power & Energy",
       "engines":[0,2,8],
       "nochange":true,
@@ -62,7 +62,7 @@
    },
    {
       "name":"x input",
-      "short":"",
+      "short":"x inp",
       "argtype":"input",
       "function":"times_input",
       "datafields":0,
@@ -73,7 +73,7 @@
    },
    {
       "name":"Input on-time",
-      "short":"",
+      "short":"ontime",
       "argtype":"feed",
       "function":"input_ontime",
       "datafields":1,
@@ -86,12 +86,12 @@
    },
    {
       "name":"Wh increments to kWh\/d",
-      "short":"",
+      "short":"whinckwhd",
       "argtype":"feed",
       "function":"whinc_to_kwhd",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Power & Energy",
       "engines":[0,2,8],
       "nochange":true,
@@ -99,19 +99,19 @@
    },
    {
       "name":"kWh to kWh\/d (OLD)",
-      "short":"",
+      "short":"kwhkwhdold",
       "argtype":"feed",
       "function":"kwh_to_kwhd_old",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Deleted",
       "engines":[2],
       "description":""
    },
    {
-      "name":"Upsert feed at day",
-      "short":"",
+      "name":"Update feed at day",
+      "short":"update",
       "argtype":"feed",
       "function":"update_feed_data",
       "datafields":1,
@@ -124,7 +124,7 @@
    },
    {
       "name":"+ input",
-      "short":"",
+      "short":"+ inp",
       "argtype":"input",
       "function":"add_input",
       "datafields":0,
@@ -135,7 +135,7 @@
    },
    {
       "name":"\/ input",
-      "short":"",
+      "short":"/ inp",
       "argtype":"input",
       "function":"divide_input",
       "datafields":0,
@@ -146,7 +146,7 @@
    },
    {
       "name":"Phaseshift",
-      "short":"",
+      "short":"phaseshift",
       "argtype":"value",
       "function":"phaseshift",
       "datafields":0,
@@ -157,7 +157,7 @@
    },
    {
       "name":"Accumulator",
-      "short":"",
+      "short":"accumulate",
       "argtype":"feed",
       "function":"accumulator",
       "datafields":1,
@@ -169,7 +169,7 @@
    },
    {
       "name":"Rate of change",
-      "short":"",
+      "short":"rate",
       "argtype":"feed",
       "function":"ratechange",
       "datafields":1,
@@ -182,7 +182,7 @@
    },
    {
       "name":"Histogram",
-      "short":"",
+      "short":"hist",
       "argtype":"feed",
       "function":"histogram",
       "datafields":2,
@@ -197,7 +197,7 @@
    },
    {
       "name":"Daily Average",
-      "short":"",
+      "short":"mean",
       "argtype":"feed",
       "function":"average",
       "datafields":2,
@@ -209,7 +209,7 @@
    },
    {
       "name":"Heat flux",
-      "short":"",
+      "short":"flux",
       "argtype":"feed",
       "function":"heat_flux",
       "datafields":1,
@@ -221,19 +221,19 @@
    },
    {
       "name":"Power gained to kWh\/d",
-      "short":"",
+      "short":"pwrgain",
       "argtype":"feed",
       "function":"power_acc_to_kwhd",
       "datafields":1,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Deleted",
       "engines":[2],
       "description":""
    },
    {
       "name":"Total pulse count to pulse increment",
-      "short":"",
+      "short":"pulsdiff",
       "argtype":"feed",
       "function":"pulse_diff",
       "datafields":1,
@@ -245,12 +245,12 @@
    },
    {
       "name":"kWh to Power",
-      "short":"",
+      "short":"kwhpwr",
       "argtype":"feed",
       "function":"kwh_to_power",
       "datafields":1,
       "datatype":"realtime",
-      "unit":"",
+      "unit":"W",
       "group":"Power & Energy",
       "engines":[6,5,2],
       "requireredis":true,
@@ -258,7 +258,7 @@
    },
    {
       "name":"- input",
-      "short":"",
+      "short":"- inp",
       "argtype":"input",
       "function":"subtract_input",
       "datafields":0,
@@ -269,12 +269,12 @@
    },
    {
       "name":"kWh to kWh\/d",
-      "short":"",
+      "short":"kwhkwhd",
       "argtype":"feed",
       "function":"kwh_to_kwhd",
       "datafields":2,
       "datatype":"daily",
-      "unit":"",
+      "unit":"kWhd",
       "group":"Power & Energy",
       "engines":[2],
       "requireredis":true,
@@ -283,7 +283,7 @@
    },
    {
       "name":"Allow positive",
-      "short":"",
+      "short":"> 0",
       "argtype":"none",
       "function":"allowpositive",
       "datafields":0,
@@ -294,7 +294,7 @@
    },
    {
       "name":"Allow negative",
-      "short":"",
+      "short":"< 0",
       "argtype":"none",
       "function":"allownegative",
       "datafields":0,
@@ -305,7 +305,7 @@
    },
    {
       "name":"Signed to unsigned",
-      "short":"",
+      "short":"unsign",
       "argtype":"none",
       "function":"signed2unsigned",
       "datafields":0,
@@ -316,7 +316,7 @@
    },
    {
       "name":"Max daily value",
-      "short":"",
+      "short":"max",
       "argtype":"feed",
       "function":"max_value",
       "datafields":1,
@@ -329,7 +329,7 @@
    },
    {
       "name":"Min daily value",
-      "short":"",
+      "short":"min",
       "argtype":"feed",
       "function":"min_value",
       "datafields":1,
@@ -342,7 +342,7 @@
    },
    {
       "name":" + feed",
-      "short":"",
+      "short":"+ feed",
       "argtype":"feed",
       "function":"add_feed",
       "datafields":0,
@@ -353,7 +353,7 @@
    },
    {
       "name":" - feed",
-      "short":"",
+      "short":"- feed",
       "argtype":"feed",
       "function":"sub_feed",
       "datafields":0,
@@ -364,7 +364,7 @@
    },
    {
       "name":" * feed",
-      "short":"",
+      "short":"x feed",
       "argtype":"feed",
       "function":"multiply_by_feed",
       "datafields":0,
@@ -375,7 +375,7 @@
    },
    {
       "name":" \/ feed",
-      "short":"",
+      "short":"\/ feed",
       "argtype":"feed",
       "function":"divide_by_feed",
       "datafields":0,
@@ -386,7 +386,7 @@
    },
    {
       "name":"Reset to ZERO",
-      "short":"",
+      "short":"0",
       "argtype":"none",
       "function":"reset2zero",
       "datafields":0,
@@ -397,12 +397,12 @@
    },
    {
       "name":"Wh Accumulator",
-      "short":"",
+      "short":"whacc",
       "argtype":"feed",
       "function":"wh_accumulator",
       "datafields":1,
       "datatype":"realtime",
-      "unit":"",
+      "unit":"Wh",
       "group":"Main",
       "engines":[2,5],
       "requireredis":true,
@@ -410,7 +410,7 @@
    },
    {
       "name":"Publish to MQTT",
-      "short":"",
+      "short":"MQTT",
       "argtype":"text",
       "function":"publish_to_mqtt",
       "datafields":1,
@@ -422,7 +422,7 @@
    },
    {
       "name":"Reset to NULL",
-      "short":"",
+      "short":"null",
       "argtype":"none",
       "function":"reset2null",
       "datafields":0,
@@ -433,7 +433,7 @@
    },
    {
       "name":"Reset to Original",
-      "short":"",
+      "short":"ori",
       "argtype":"none",
       "function":"reset2original",
       "datafields":0,
@@ -444,7 +444,7 @@
    },
    {
       "name":"If ZERO, skip next",
-      "short":"",
+      "short":"0? skip",
       "argtype":"none",
       "function":"if_zero_skip",
       "datafields":0,
@@ -456,7 +456,7 @@
    },
    {
       "name":"If !ZERO, skip next",
-      "short":"",
+      "short":"!0? skip",
       "argtype":"none",
       "function":"if_not_zero_skip",
       "datafields":0,
@@ -468,7 +468,7 @@
    },
    {
       "name":"If NULL, skip next",
-      "short":"",
+      "short":"N? skip",
       "argtype":"none",
       "function":"if_null_skip",
       "datafields":0,
@@ -480,7 +480,7 @@
    },
    {
       "name":"If !NULL, skip next",
-      "short":"",
+      "short":"!N? skip",
       "argtype":"none",
       "function":"if_not_null_skip",
       "datafields":0,
@@ -492,7 +492,7 @@
    },
    {
       "name":"If >, skip next",
-      "short":"",
+      "short":">? skip",
       "argtype":"value",
       "function":"if_gt_skip",
       "datafields":0,
@@ -504,7 +504,7 @@
    },
    {
       "name":"If >=, skip next",
-      "short":"",
+      "short":">=? skip",
       "argtype":"value",
       "function":"if_gt_equal_skip",
       "datafields":0,
@@ -516,7 +516,7 @@
    },
    {
       "name":"If <, skip next",
-      "short":"",
+      "short":"<? skip",
       "argtype":"value",
       "function":"if_lt_skip",
       "datafields":0,
@@ -528,7 +528,7 @@
    },
    {
       "name":"If <=, skip next",
-      "short":"",
+      "short":"<=? skip",
       "argtype":"value",
       "function":"if_lt_equal_skip",
       "datafields":0,
@@ -540,7 +540,7 @@
    },
    {
       "name":"If =, skip next",
-      "short":"",
+      "short":"=? skip",
       "argtype":"value",
       "function":"if_equal_skip",
       "datafields":0,
@@ -552,7 +552,7 @@
    },
    {
       "name":"If !=, skip next",
-      "short":"",
+      "short":"!=? skip",
       "argtype":"value",
       "function":"if_not_equal_skip",
       "datafields":0,
@@ -564,7 +564,7 @@
    },
    {
       "name":"GOTO",
-      "short":"",
+      "short":"GOTO",
       "argtype":"value",
       "function":"goto_process",
       "datafields":0,
@@ -576,7 +576,7 @@
    },
    {
       "name":"Source Feed",
-      "short":"",
+      "short":"logxxx",
       "argtype":"feed",
       "function":"source_feed_data_time",
       "datafields":1,
@@ -587,7 +587,7 @@
    },
    {
       "name":" + source feed",
-      "short":"",
+      "short":"+ sfeed",
       "argtype":"feed",
       "function":"add_source_feed",
       "datafields":0,
@@ -598,7 +598,7 @@
    },
    {
       "name":" - source feed",
-      "short":"",
+      "short":"- sfeed",
       "argtype":"feed",
       "function":"sub_source_feed",
       "datafields":0,
@@ -609,7 +609,7 @@
    },
    {
       "name":" * source feed",
-      "short":"",
+      "short":"x sfeed",
       "argtype":"feed",
       "function":"multiply_by_source_feed",
       "datafields":0,
@@ -620,7 +620,7 @@
    },
    {
       "name":" \/ source feed",
-      "short":"",
+      "short":"\/ sfeed",
       "argtype":"feed",
       "function":"divide_by_source_feed",
       "datafields":0,
@@ -631,7 +631,7 @@
    },
    {
       "name":"1\/ source feed",
-      "short":"",
+      "short":"1\/ sfeed",
       "argtype":"feed",
       "function":"reciprocal_by_source_feed",
       "datafields":0,
@@ -642,7 +642,7 @@
    },
    {
       "name":"EXIT",
-      "short":"",
+      "short":"EXIT",
       "argtype":"none",
       "function":"error_found",
       "datafields":0,
@@ -656,7 +656,7 @@
    },
    {
       "name":"Max value allowed",
-      "short":"",
+      "short":"<max",
       "argtype":"value",
       "function":"max_value_allowed",
       "datafields":0,
@@ -669,7 +669,7 @@
    },
    {
       "name":"Min value allowed",
-      "short":"",
+      "short":">min",
       "argtype":"value",
       "function":"min_value_allowed",
       "datafields":0,
