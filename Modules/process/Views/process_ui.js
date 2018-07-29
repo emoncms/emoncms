@@ -156,6 +156,31 @@ var processlist_ui =
       return out.join('');
     }
   },
+  /**
+   * return array of objects with id,id_num properties
+   */
+  'backward_compatible_list': function(){
+    if(!this.processlist) return
+    let pl = this.processlist
+    let ids = [];
+    Object.keys(pl).forEach(function(key) {
+      ids.push({id:key,id_num: pl[key].id_num})
+    });
+    return ids
+  },
+  /**
+   * return process "name" when given a valid id
+   */
+  'getProcessKeyById': function(key){
+    if (isNaN(key)) return key
+    old_ids = this.backward_compatible_list()
+    // add numeric and textual ids (backward compatible)
+    for (k in old_ids) {
+      if (old_ids[k].id_num === key){
+        return old_ids[k].id
+      }
+    }
+  },
   'getBadges': function (processlist,input) {
     if (!processlist) return ""
     var processPairs = processlist.split(",")
@@ -176,12 +201,11 @@ var processlist_ui =
       let badge = {}
       var keyvalue = processPairs[z].split(":")
       var key = parseInt(keyvalue[0])
-
-      key = isNaN(key) ? keyvalue[0] : key;
+      key = isNaN(key) ? keyvalue[0]: this.getProcessKeyById(key);
       badge.value = keyvalue[1]
       badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
 
-      if(this.init_done === 0 && badge.process){
+      if(this.init_done === 0 && badge.process!==false){
         // set badge properties
         badge.type = types[badge.process.argtype]
         badge.typeName = badge.type.name
@@ -229,6 +253,7 @@ var processlist_ui =
         })
       }
     }
+    // console.log(badges)
     return badges;
   },
 
@@ -243,8 +268,8 @@ var processlist_ui =
       {
         for (z in localprocesslist) {
           // Process name and argument
-          var processkey = localprocesslist[z][0];
-
+          var processkey = parseInt(localprocesslist[z][0]);
+          processkey = isNaN(processkey) ? localprocesslist[z][0]: this.getProcessKeyById(processkey);
           if (this.processlist[processkey] != undefined) {
             var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
             if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
@@ -502,9 +527,9 @@ var processlist_ui =
 
       if (processlist_ui.processlist[processid] == undefined) {
         if (processlist_ui.contexttype == 0) {
-          $("#process-select").val(1); // default process for input context
+          $("#process-select").val($("#process-select option").first().val()); // default process for input context
         } else {
-          $("#process-select").val(53); // default process for feed context
+          $("#process-select").val('process__source_feed_data_time'); // default process for feed context
         }
         $("#processlist-ui #process-select").change();  // Force a refresh
       } else {
@@ -834,9 +859,9 @@ var processlist_ui =
       processlist_ui.draw();
       table.draw();
       if (processlist_ui.contexttype == 0) {
-        $("#process-select").val(1); // default process for input context
+        $("#process-select").val(this.getProcessKeyById(1)); // default process for input context
       } else {
-        $("#process-select").val(53); // default process for feed context
+        $("#process-select").val(this.getProcessKeyById(53)); // default process for feed context
       }
       $("#processlist-ui #process-select").change();  // Force a refresh
     }
@@ -872,7 +897,8 @@ var processlist_ui =
 // if found swaps placeholder for variable
 // can handle 2 deep nested objects
 if (!String.prototype.format) {
-  String.prototype.format = function(data) {   
+  String.prototype.format = function(data) {
+    console.log(data);
     return this.replace(/{([\w\.-]+)}/g, function(match, placeholder) {
       if (placeholder.indexOf('.') > -1){
         p = placeholder.split('.')
