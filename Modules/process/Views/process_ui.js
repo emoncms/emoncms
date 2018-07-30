@@ -46,85 +46,109 @@ var processlist_ui =
 
         // Process name and argument
         var processkey = this.contextprocesslist[z][0];
-        var arg = "";
+        var arg = {};
         var lastvalue = "";
         var processname = "";
-
+        processkey = this.getProcessKeyById(processkey); // convert id numbers to key names (backward compatible)
+        // colour the badges with the same class names as the short title list
+        arg.cssClass = this.argtypes[this.processlist[processkey].argtype].cssClass
+        
         if (this.processlist[processkey] != undefined) {
           var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
           if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
-              arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
-              processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
+            arg.text = this.processlist[processkey]['internalerror_desc']
+            // arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
+            processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
           }  
           else if (procneedredis) {
-            arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
+            // arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
+            arg.text = "Process '"+processkey+"' not available. Redis not installed."
             processname = this.processlist[processkey].name;
           }
           else {
             // Check ProcessArg Type
             switch(this.processlist[processkey].argtype) {
               case "value": // VALUE
-                arg += "<span class='label label-info' title='"+_Tr("Value")+"'>";
-                arg += "<i class='icon-edit icon-white'></i> ";
-                arg += this.contextprocesslist[z][1];
-                arg += "</span>";
-                break;
-
+                arg.text = this.contextprocesslist[z][1]
+                arg.title = _Tr("Value")
+                arg.icon = 'icon-edit'
+              break;
+              
               case "input": //INPUTID
-                var inpid = this.contextprocesslist[z][1];
-                if (this.inputlist[inpid]!=undefined) {
-                arg += "<span class='label label-info' title='"+_Tr("Input")+" "+inpid+"'>";
-                arg += "<i class='icon-signal icon-white'></i> ";
-                arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
-                if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
-                arg += "</span>";
-                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("input last value:")+" "+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
-                } else {
-                  arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
-                }
-                break;
+              var inpid = this.contextprocesslist[z][1];
+              if (this.inputlist[inpid]!=undefined) {
+                arg.text = "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name+' ' + (this.inputlist[inpid].description || '')
+                arg.title = _Tr("Input")+" "+inpid
+                arg.icon = 'icon-signal'
 
+                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("input last value:")+" "+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
+              } else {
+                arg.text = 'Input "+schid+" does not exists or was deleted'
+              }
+              break;
+              
               case "feed": //FEEDID
-                var feedid = this.contextprocesslist[z][1];
-                if (this.feedlist[feedid]!=undefined) {
-                arg += "<a class='label label-info feedaccesslabel' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
-                arg += "<i class='icon-list-alt icon-white'></i> ";
-                if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
-                arg += this.feedlist[feedid].name;
-                arg += "</a>";
+              var feedid = this.contextprocesslist[z][1];
+              if (this.feedlist[feedid]!=undefined) {
+                arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
+                arg.cssClass += ' feedaccesslabel'
+                arg.title = _Tr("Feed")+" "+feedid
+                arg.icon = 'icon-list-alt'
+                arg.href = path+"vis/auto?feedid="+feedid
+
                 lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("feed last value:")+" "+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
-                } else {
-                  arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
-                }
-                break;
+              } else {
+                arg.text = 'Feedid "+feedid+" does not exists or was deleted'
+
+              }
+              break;
 
               case "text": // TEXT
-                arg += "<span class='label label-info' title='"+_Tr("Text")+"'>";
-                arg += "<i class='icon-edit icon-white'></i> ";
-                arg += this.contextprocesslist[z][1];
-                arg += "</span>";
-                break;
-
+                arg.title = _Tr("Text")
+                arg.text = this.contextprocesslist[z][1]
+                arg.icon = 'icon-edit'
+              break;
+              
               case "schedule": // SCHEDULEID
-                var schid = this.contextprocesslist[z][1];
-                if (this.schedulelist[schid]!=undefined) {
-                arg += "<span class='label label-info' title='"+_Tr("Schedule")+" "+schid+"' >";
-                arg += "<i class='icon-time icon-white'></i> ";
-                arg += this.schedulelist[schid].name;
-                arg += "</span>";
-                } else {
-                  arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
-                }
-                break;
+              var schid = this.contextprocesslist[z][1];
+              if (this.schedulelist[schid]!=undefined) {
+                arg.title = _Tr("Schedule")+" "+schid
+                arg.text = this.schedulelist[schid].name
+                arg.icon = 'icon-time'
+
+              } else {
+                arg.text = "Schedule "+schid+" does not exists or was deleted"
+              }
+              break;
             }
             processname = this.processlist[processkey].name;
           }
         }
         else {
           processname = "UNSUPPORTED";
-          arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Module missing?</span>";
+          arg.text = "Process ´"+processkey+"´ not available. Module missing?"
         }
-        out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
+
+        // create the badge markup to display the process argument detail
+        label = ""
+        if(arg.text){
+          label += arg.href ? '<a href="'+arg.href+'"' : '<span'
+          label += ' title="'+arg.title+'"'
+          label += ' class="label '+(arg.cssClass || 'label-important')+'">'
+          label += arg.icon ? '<i class="icon-white '+arg.icon+'"></i> ' : ''
+          label += arg.text || arg.title
+          label += arg.href ? '</a>':'</span>'
+        }
+
+        tag = ""
+        try {
+            // processlist_ui.processlist[processkey].name)
+            tag += `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
+             class="label ${arg.cssClass}">${this.processlist[processkey].short}</span>`
+        } catch (e) {
+        }
+
+        out += "<td>"+(i+1)+"</td><td>"+tag+processname+"</td><td>"+label+"</td><td>"+lastvalue+"</td>";
      
         // Delete process button (icon)
         out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
@@ -169,32 +193,32 @@ var processlist_ui =
     return ids
   },
   /**
-   * return process "name" when given a valid id
+   * return process "name" when given a valid id (if id not number original input returned)
    */
-  'getProcessKeyById': function(key){
-    if (isNaN(key)) return key
+  'getProcessKeyById': function(id){
+    id_int = parseInt(id)
+    if (isNaN(id_int)) return id
     old_ids = this.backward_compatible_list()
     // add numeric and textual ids (backward compatible)
-    for (k in old_ids) {
-      if (old_ids[k].id_num === key){
-        return old_ids[k].id
+    for (id2 in old_ids) {
+      if (old_ids[id2].id_num === id_int){
+        return old_ids[id2].id
       }
     }
+  },
+  'argtypes': {
+      'value': {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
+      'input': {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
+      'feed':  {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
+      'none':  {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
+      'text':  {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
+      'schedule': {cssClass: 'label-warning', title: 'Schedule: {longText} - {schedule.name}'}
   },
   'getBadges': function (processlist,input) {
     if (!processlist) return ""
     var processPairs = processlist.split(",")
     // create empty list of badges
     let badges = []
-    // set process types and what process they're accociated with
-    const types = {
-      'value': {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
-      'input': {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
-      'feed':  {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
-      'none':  {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
-      'text':  {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      'schedule': {cssClass: 'label-warning',  title: 'Schedule: {longText} - {schedule.name}'}
-    };
     for (z in processPairs)
     {
       // add badge to list or add a blank one if there are any issues.
@@ -207,16 +231,16 @@ var processlist_ui =
 
       if(this.init_done === 0 && badge.process!==false){
         // set badge properties
-        badge.type = types[badge.process.argtype]
+        badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
         badge.href = badge.type.name == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
-        badge.title = badge.type.title.format(badge);
         badge.text = badge.process.short || ''
         badge.longText = badge.process.name
         badge.input = input
         badge.feed =  this.feedlist[badge.value] || {}
         badge.schedule = this.schedulelist[value] || {}
+        badge.title = badge.type.title.format(badge);
         // pass the collected badge object as values for the title string template
         badges.push(badge);
       } else if(this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
@@ -898,7 +922,6 @@ var processlist_ui =
 // can handle 2 deep nested objects
 if (!String.prototype.format) {
   String.prototype.format = function(data) {
-    console.log(data);
     return this.replace(/{([\w\.-]+)}/g, function(match, placeholder) {
       if (placeholder.indexOf('.') > -1){
         p = placeholder.split('.')
