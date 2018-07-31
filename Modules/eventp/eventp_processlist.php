@@ -24,74 +24,74 @@ class Eventp_ProcessList
         $this->parentProcessModel = &$parent;
     }
 
-    // \/ Below are functions of this module processlist, same name must exist on process_list()
+    // / Below are functions of this module processlist, same name must exist on process_list()
     
     public function process_list() {
         
         $list = array(
             array(
-              "name"=>"If rate >=, skip next",
+              "name"=>_("If rate >=, skip next"),
               "short"=>"?rate>=",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateGtEqualSkip",
               "datafields"=>0,
               "datatype"=>false,
               "unit"=>"",
-              "group"=>"Conditional - Event",
+              "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
-              "description"=>"<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.<\/p>"
+              "description"=>_("<p>If value from last process has an absolute change from previous time it was calculated higher or equal to the specified value, processlist execution will skip the next process.</p>")
            ),
            array(
-              "name"=>"If rate <, skip next",
+              "name"=>_("If rate <, skip next"),
               "short"=>"?rate<",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateLtSkip",
               "datafields"=>0,
               "datatype"=>false,
               "unit"=>"",
-              "group"=>"Conditional - Event",
+              "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
-              "description"=>"<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.<\/p>"
+              "description"=>_("<p>If value from last process has an absolute change from previous time it was calculated lower than the specified value, processlist execution will skip the next process.</p>")
            ),
            array(
-              "name"=>"If Mute, skip next",
+              "name"=>_("If Mute, skip next"),
               "short"=>"?mute",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifMuteSkip",
               "datafields"=>0,
               "datatype"=>false,
               "unit"=>"",
-              "group"=>"Conditional - Event",
+              "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
-              "description"=>"<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.<\/p>"
+              "description"=>_("<p>A time elapsed dependent condition, first time a processlist passes here the flow is unchanged. Next times the same processlist passes here, if the specified value time (in seconds) has not elapsed, flow will skip next process.</p>")
            ),
            array(
-              "name"=>"If !Mute, skip next",
+              "name"=>_("If !Mute, skip next"),
               "short"=>"?!mute",
               "argtype"=>ProcessArg::VALUE,
               "function"=>"ifNotMuteSkip",
               "datafields"=>0,
               "datatype"=>false,
               "unit"=>"",
-              "group"=>"Conditional - Event",
+              "group"=>_("Conditional - Event"),
               "requireredis"=>true,
               "nochange"=>true,
-              "description"=>"<p>A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.<\/p>"
+              "description"=>_("<p>A time elapsed dependent condition, first time a processlist passes here the flow skips next. Next times the same processlist passes here, if the specified value time (in seconds) has elapsed, flow will skip next process.</p>")
            ),
            array(
-              "name"=>"Send Email",
+              "name"=>_("Send Email"),
               "short"=>"email",
               "argtype"=>ProcessArg::TEXT,
               "function"=>"sendEmail",
               "datafields"=>0,
               "datatype"=>false,
               "unit"=>"",
-              "group"=>"Event",
+              "group"=>_("Event"),
               "nochange"=>true,
-              "description"=>"<p>Send an email to the user with the specified body. Email sent to user's email address or default set in config.<\/p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}<\/p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.<\/p>"
+              "description"=>_("<p>Send an email to the user with the specified body. Email sent to user's email address or default set in config.</p><p>Supported template tags to customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}</p><p>Example body text: At {time} your {type} from {node} with key {key} named {name} had value {value}.</p>")
            )
         ); 
         return $list;
