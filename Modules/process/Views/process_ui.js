@@ -46,85 +46,111 @@ var processlist_ui =
 
         // Process name and argument
         var processkey = this.contextprocesslist[z][0];
-        var arg = "";
+        var arg = {};
         var lastvalue = "";
         var processname = "";
-
+        processkey = this.getProcessKeyById(processkey); // convert id numbers to key names (backward compatible)
+        
         if (this.processlist[processkey] != undefined) {
           var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
           if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
-              arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
-              processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
+            arg.text = this.processlist[processkey]['internalerror_desc']
+            // arg += "<span class='label label-important' title='Value'>" + this.processlist[processkey]['internalerror_desc'] + "</span>";
+            processname = "<span class='label label-important' title='Value'>" + this.processlist[processkey][0] + "</span>";
           }  
           else if (procneedredis) {
-            arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
+            // arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Redis not installed.</span>";
+            arg.text = "Process '"+processkey+"' not available. Redis not installed."
             processname = this.processlist[processkey].name;
           }
           else {
             // Check ProcessArg Type
             switch(this.processlist[processkey].argtype) {
               case "value": // VALUE
-                arg += "<span class='label label-info' title='"+_Tr("Value")+"'>";
-                arg += "<i class='icon-edit icon-white'></i> ";
-                arg += this.contextprocesslist[z][1];
-                arg += "</span>";
-                break;
-
+                arg.text = this.contextprocesslist[z][1]
+                arg.title = _Tr("Value")
+                arg.icon = 'icon-edit'
+              break;
+              
               case "input": //INPUTID
-                var inpid = this.contextprocesslist[z][1];
-                if (this.inputlist[inpid]!=undefined) {
-                arg += "<span class='label label-info' title='"+_Tr("Input")+" "+inpid+"'>";
-                arg += "<i class='icon-signal icon-white'></i> ";
-                arg += "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name;
-                if (this.inputlist[inpid].description!="") arg += " "+this.inputlist[inpid].description;
-                arg += "</span>";
-                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("input last value:")+" "+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
-                } else {
-                  arg += "<span class='label label-important'>Input "+schid+" does not exists or was deleted</span>"
-                }
-                break;
+              var inpid = this.contextprocesslist[z][1];
+              if (this.inputlist[inpid]!=undefined) {
+                arg.text = "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name+' ' + (this.inputlist[inpid].description || '')
+                arg.title = _Tr("Input")+" "+inpid
+                arg.icon = 'icon-signal'
 
+                lastvalue = (this.inputlist[inpid].value*1).toFixed(2);
+              } else {
+                arg.text = 'Input "+schid+" does not exists or was deleted'
+              }
+              break;
+              
               case "feed": //FEEDID
-                var feedid = this.contextprocesslist[z][1];
-                if (this.feedlist[feedid]!=undefined) {
-                arg += "<a class='label label-info feedaccesslabel' title='"+_Tr("Feed")+" "+feedid+"' href='"+path+"vis/auto?feedid="+feedid+"'>";
-                arg += "<i class='icon-list-alt icon-white'></i> ";
-                if (this.feedlist[feedid].tag) arg += this.feedlist[feedid].tag+": ";
-                arg += this.feedlist[feedid].name;
-                arg += "</a>";
-                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("feed last value:")+" "+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
-                } else {
-                  arg += "<span class='label label-important'>Feedid "+feedid+" does not exists or was deleted</span>"
-                }
-                break;
+              var feedid = this.contextprocesslist[z][1];
+              if (this.feedlist[feedid]!=undefined) {
+                arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
+                arg.title = _Tr("Feed")+" "+feedid
+                arg.icon = 'icon-list-alt'
+                arg.href = path+"vis/auto?feedid="+feedid
+                lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
+              } else {
+                arg.text = 'Feedid "+feedid+" does not exists or was deleted'
+              }
+              break;
 
               case "text": // TEXT
-                arg += "<span class='label label-info' title='"+_Tr("Text")+"'>";
-                arg += "<i class='icon-edit icon-white'></i> ";
-                arg += this.contextprocesslist[z][1];
-                arg += "</span>";
-                break;
-
+                arg.title = _Tr("Text")
+                arg.text = this.contextprocesslist[z][1]
+                arg.icon = 'icon-edit'
+              break;
+              
               case "schedule": // SCHEDULEID
-                var schid = this.contextprocesslist[z][1];
-                if (this.schedulelist[schid]!=undefined) {
-                arg += "<span class='label label-info' title='"+_Tr("Schedule")+" "+schid+"' >";
-                arg += "<i class='icon-time icon-white'></i> ";
-                arg += this.schedulelist[schid].name;
-                arg += "</span>";
-                } else {
-                  arg += "<span class='label label-important'>Schedule "+schid+" does not exists or was deleted</span>"
-                }
-                break;
+              var schid = this.contextprocesslist[z][1];
+              if (this.schedulelist[schid]!=undefined) {
+                arg.title = _Tr("Schedule")+" "+schid
+                arg.text = this.schedulelist[schid].name
+                arg.icon = 'icon-time'
+
+              } else {
+                arg.text = "Schedule "+schid+" does not exists or was deleted"
+              }
+              break;
             }
             processname = this.processlist[processkey].name;
           }
         }
         else {
           processname = "UNSUPPORTED";
-          arg += "<span class='label label-important' title='Value'>Process ´"+processkey+"´ not available. Module missing?</span>";
+          arg.text = "Process ´"+processkey+"´ not available. Module missing?"
         }
-        out += "<td>"+(i+1)+"</td><td>"+processname+"</td><td>"+arg+"</td><td>"+lastvalue+"</td>";
+
+        // create the badge markup to display the process argument detail
+        label = ""
+        if(arg.text){
+          label += arg.href ? '<a href="'+arg.href+'" class="text-info"' : '<span class="muted"'
+          label += ' title="'+arg.title+'"'
+          label += ">"
+          label += arg.icon ? '<i class="'+arg.icon+'"></i> ' : ''
+          label += arg.text || arg.title
+          label += arg.href ? '</a>':'</span>'
+        }
+
+        try {
+            tag = `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
+            style="cursor:help" 
+            class="fw-label overflow-hidden label ${this.argtypes[this.processlist[processkey].argtype].cssClass}">${this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;")}</span>`
+        } catch (e) {
+            tag = ""
+        }
+
+        try {
+            latest = lastvalue ? `<small title="Last recorded ${this.processlist[processkey].argtype} value" class="muted">(${lastvalue})</small>` : ''
+        } catch (e) {
+            latest = ""
+        }
+        
+
+        out += '<td>'+(i+1)+'</td><td>'+processname+'</td><td style="text-align:right">'+tag+'</td><td>'+label+'</td><td>'+latest+'</td>';
      
         // Delete process button (icon)
         out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
@@ -156,43 +182,67 @@ var processlist_ui =
       return out.join('');
     }
   },
-  'getBadges': function (processlist,input) {
-    if (!processlist) return ""
-    var processPairs = processlist.split(",")
-    // create empty list of badges
-    let badges = []
-    // set process types and what process they're accociated with
-    const types = {
+  /**
+   * return array of objects with id,id_num properties
+   */
+  'backward_compatible_list': function(){
+    if(!this.processlist) return
+    let pl = this.processlist
+    let ids = [];
+    Object.keys(pl).forEach(function(key) {
+      ids.push({id:key,id_num: pl[key].id_num})
+    });
+    return ids
+  },
+  /**
+   * return process "name" when given a valid id (if id not number original input returned)
+   */
+  'getProcessKeyById': function(id){
+    id_int = parseInt(id)
+    if (isNaN(id_int)) return id
+    old_ids = this.backward_compatible_list()
+    // add numeric and textual ids (backward compatible)
+    for (id2 in old_ids) {
+      if (old_ids[id2].id_num === id_int){
+        return old_ids[id2].id
+      }
+    }
+  },
+  'argtypes': {
       'value': {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
       'input': {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
       'feed':  {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
       'none':  {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
       'text':  {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      'schedule': {cssClass: 'label-warning',  title: 'Schedule: {longText} - {schedule.name}'}
-    };
+      'schedule': {cssClass: 'label-warning', title: 'Schedule: {longText} - {schedule.name}'}
+  },
+  'getBadges': function (processlist,input) {
+    if (!processlist) return ""
+    var processPairs = processlist.split(",")
+    // create empty list of badges
+    let badges = []
     for (z in processPairs)
     {
       // add badge to list or add a blank one if there are any issues.
       let badge = {}
       var keyvalue = processPairs[z].split(":")
       var key = parseInt(keyvalue[0])
-
-      key = isNaN(key) ? keyvalue[0] : key;
+      key = isNaN(key) ? keyvalue[0]: this.getProcessKeyById(key);
       badge.value = keyvalue[1]
       badge.process = this.processlist.hasOwnProperty(key) ? this.processlist[key] : false
 
-      if(this.init_done === 0 && badge.process){
+      if(this.init_done === 0 && badge.process!==false){
         // set badge properties
-        badge.type = types[badge.process.argtype]
+        badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
         badge.href = badge.type.name == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
-        badge.title = badge.type.title.format(badge);
         badge.text = badge.process.short || ''
         badge.longText = badge.process.name
         badge.input = input
         badge.feed =  this.feedlist[badge.value] || {}
         badge.schedule = this.schedulelist[value] || {}
+        badge.title = badge.type.title.format(badge);
         // pass the collected badge object as values for the title string template
         badges.push(badge);
       } else if(this.has_redis == 0 && badge.process['requireredis'] !== undefined && badge.process['requireredis'] == true ? 1 : 0){
@@ -229,6 +279,7 @@ var processlist_ui =
         })
       }
     }
+    // console.log(badges)
     return badges;
   },
 
@@ -243,8 +294,8 @@ var processlist_ui =
       {
         for (z in localprocesslist) {
           // Process name and argument
-          var processkey = localprocesslist[z][0];
-
+          var processkey = parseInt(localprocesslist[z][0]);
+          processkey = isNaN(processkey) ? localprocesslist[z][0]: this.getProcessKeyById(processkey);
           if (this.processlist[processkey] != undefined) {
             var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] !== undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
             if (this.processlist[processkey]['internalerror'] !== undefined && this.processlist[processkey]['internalerror'] == true) {
@@ -490,7 +541,7 @@ var processlist_ui =
 
     $('#processlist-ui .table').on('click', '.edit-process', function(){
       var process = processlist_ui.contextprocesslist[$(this).attr('processid')];
-      var processid = process[0];
+      var processid = processlist_ui.getProcessKeyById(process[0]); // get process id name (backward compatible)
       var processval = process[1];
       var curpos = parseInt($(this).attr('processid'));
       
@@ -502,9 +553,9 @@ var processlist_ui =
 
       if (processlist_ui.processlist[processid] == undefined) {
         if (processlist_ui.contexttype == 0) {
-          $("#process-select").val(1); // default process for input context
+          $("#process-select").val($("#process-select option").first().val()); // default process for input context
         } else {
-          $("#process-select").val(53); // default process for feed context
+          $("#process-select").val('process__source_feed_data_time'); // default process for feed context
         }
         $("#processlist-ui #process-select").change();  // Force a refresh
       } else {
@@ -551,24 +602,29 @@ var processlist_ui =
     $feedSelect = $('#feed-select');
     $feedEngineSelect = $('#feed-engine');
     $feedTypeSelect = $('#feed-data-type');
-
-    var prc = this.processlist[processid][2];     // process function
-    var feedwrite = this.processlist[processid]['feedwrite']; // process writes to feed
-    var engines = this.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
-    var datatype = this.processlist[processid][4];  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+    var prc = this.processlist[processid].function;     // process function
+    var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
+    var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
+    var datatype = this.processlist[processid].datatype;  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
 
     var feedgroups = [];
     for (z in this.feedlist) {
-      if (datatype == 0 || (this.feedlist[z].datatype == datatype)) {
-        if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
-          continue; // Dont list virtual feed
+        datatypes = {
+            0: 'undefined',
+            1: 'realtime',
+            2: 'daily',
+            3: 'histogram'
         }
-        var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
-        if (group!="Deleted") {
-          if (!feedgroups[group]) feedgroups[group] = []
-          feedgroups[group].push(this.feedlist[z]);
+        if (datatype == 0 || (datatypes[this.feedlist[z].datatype] == datatype)) {
+            if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
+                continue; // Dont list virtual feed
+            }
+            var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
+            if (group!="Deleted") {
+                if (!feedgroups[group]) feedgroups[group] = []
+                feedgroups[group].push(this.feedlist[z]);
+            }
         }
-       }
     }
     var out = "<option value=-1>CREATE NEW:</option>";
     for (z in feedgroups) {
@@ -660,7 +716,9 @@ var processlist_ui =
 
   'encode':function(array){
     var parts = [];
-    for (z in array) parts.push(array[z][0]+":"+array[z][1]);
+    for (z in array) {
+      parts.push(array[z][0]+":"+array[z][1]);
+    }
     return parts.join(",");
   },
 
@@ -834,9 +892,9 @@ var processlist_ui =
       processlist_ui.draw();
       table.draw();
       if (processlist_ui.contexttype == 0) {
-        $("#process-select").val(1); // default process for input context
+        $("#process-select").val(this.getProcessKeyById(1)); // default process for input context
       } else {
-        $("#process-select").val(53); // default process for feed context
+        $("#process-select").val(this.getProcessKeyById(53)); // default process for feed context
       }
       $("#processlist-ui #process-select").change();  // Force a refresh
     }
@@ -872,7 +930,7 @@ var processlist_ui =
 // if found swaps placeholder for variable
 // can handle 2 deep nested objects
 if (!String.prototype.format) {
-  String.prototype.format = function(data) {   
+  String.prototype.format = function(data) {
     return this.replace(/{([\w\.-]+)}/g, function(match, placeholder) {
       if (placeholder.indexOf('.') > -1){
         p = placeholder.split('.')

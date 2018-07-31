@@ -303,11 +303,28 @@ class Input
     // -----------------------------------------------------------------------------------------
     public function getlist($userid)
     {
+        global $mysql, $input, $feed;
         if ($this->redis) {
-            return $this->redis_getlist($userid);
+            $input = $this->redis_getlist($userid);
         } else {
-            return $this->mysql_getlist($userid);
+            $input = $this->mysql_getlist($userid);
         }
+        /* swap key ids for key strings */
+        foreach ($input as $properties) {
+            $pl = $properties['processList'];
+            $p = explode(',',$pl);
+            foreach ($p as $prop) {
+                $key_value = explode(':',$prop);
+                $key = $key_value[0];
+                if (!is_numeric($key)) {
+                    $process = new Process($this->mysqli, $this->mysqli, $this->mysqli, null);
+                    $processList = $process->get_process_list();
+                    $key = isset($processList[$key]->function) ? $processList[$key]->function: $key;
+                }
+            }
+        }
+        // @todo: recreate the array with the new keys before returning $input
+        return $input;
     }
 
     private function redis_getlist($userid)
@@ -509,54 +526,73 @@ class Input
         $pairs = explode(",",$processlist);
         $pairs_out = array();
         
+        // Build map of processids where set
+        $map = array();
+        foreach ($process_list as $key=>$process) {
+            if (isset($process->map)) $map[$process->map] = $key;
+        }
+        
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = $inputprocess[0];
-                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
+                $processkey = $inputprocess[0];
+                // If key is in the map, switch to associated full process key
+                if (isset($map[$processkey])) $processkey = $map[$processkey];
+            
+                // Load process
+                if (isset($process_list[$processkey])) {
+                    $processarg = $process_list[$processkey]->argtype;
+                    
+                    // remap process back to use map id if available
+                    if (isset($process_list[$processkey]->map))
+                        $processkey = $process_list[$processkey]->map;
+                    
+                } else {
+                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+                }
                 
                 // Verify argument
                 $arg = $inputprocess[1];
                 
                 // Check argument against process arg type
-                switch($process_list[$processid][1]){
+                switch($processarg){
                 
-                    case ProcessArg::FEEDID:
+                    case "feed": //ProcessArg::FEEDID:
                         $feedid = (int) $arg;
                         if (!$this->feed->access($userid,$feedid)) {
                             return array('success'=>false, 'message'=>_("Invalid feed"));
                         }
                         break;
                         
-                    case ProcessArg::INPUTID:
+                    case "input": //ProcessArg::INPUTID:
                         $inputid = (int) $arg;
                         if (!$this->access($userid,$inputid)) {
                             return array('success'=>false, 'message'=>_("Invalid input"));
                         }
                         break;
 
-                    case ProcessArg::VALUE:
+                    case "value": //ProcessArg::VALUE:
                         if (!is_numeric($arg)) {
                             return array('success'=>false, 'message'=>'Value is not numeric'); 
                         }
                         break;
 
-                    case ProcessArg::TEXT:
+                    case "text": //ProcessArg::TEXT:
                         if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in arg'); 
                         break;
                                                 
-                    case ProcessArg::SCHEDULEID:
+                    case "schedule": //ProcessArg::SCHEDULEID:
                         $scheduleid = (int) $arg;
                         if (!$this->schedule_access($userid,$scheduleid)) { // This should really be in the schedule model
                             return array('success'=>false, 'message'=>'Invalid schedule'); 
                         }
                         break;
                         
-                    case ProcessArg::NONE:
+                    case "none": //ProcessArg::NONE:
                         $arg = false;
                         break;
                         
@@ -565,7 +601,7 @@ class Input
                         break;
                 }
                 
-                $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processkey,$arg));
             }
         }
         
