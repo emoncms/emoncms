@@ -37,7 +37,10 @@ class Process
     
     private $log;
     private $modules_functions = array();
-
+    
+    private $process_list = array();
+    public $process_map = array();
+    
     public function __construct($mysqli,$input,$feed,$timezone)
     {
         $this->mysqli = $mysqli;
@@ -45,7 +48,13 @@ class Process
         $this->feed = $feed;
         if (!($timezone === NULL)) $this->timezone = $timezone;
         $this->log = new EmonLogger(__FILE__);
-        $this->get_process_list(); // Load modules modules
+        
+        $this->process_list = $this->load_modules();
+        
+        // Build map of processids where set
+        foreach ($this->process_list as $k=>$v) {
+            if (isset($v['id_num'])) $this->process_map[$v['id_num']] = $k;
+        }
     }
 
     // Triggered when invoking inaccessible methods in this class context, it must be a module function then
@@ -68,11 +77,7 @@ class Process
 
     public function get_process_list()
     {
-        static $list = array(); // Array to hold the cache
-        if (empty($list) || empty($this->modules_functions)) {     // Cache it now
-            $list=$this->load_modules();  
-        }
-        return $list;
+        return $this->process_list;
     }
 
 
@@ -91,6 +96,10 @@ class Process
             $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
             $processkey = $inputprocess[0];                          // Process id
+            
+            // Map ids to process key names
+            if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
+            
             if (!isset($process_list[$processkey])) {
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
