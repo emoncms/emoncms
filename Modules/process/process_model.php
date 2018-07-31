@@ -100,7 +100,7 @@ class Process
             
             $process_function = $processkey;                               // get process key 'module.function'
             if (strpos($processkey, '__') === FALSE)
-                $process_function = $process_list[$processkey][2];         // for backward compatibility -> get process function name
+                $process_function = $process_list[$processkey]["function"];         // for backward compatibility -> get process function name
                 $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
                 if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
                     $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
@@ -138,7 +138,6 @@ class Process
         return $value;
     }
 
-
     private function load_modules() {
         $list = array();
         $dir = scandir("Modules");
@@ -149,33 +148,12 @@ class Process
                 $class = $this->get_module_class($module);
                 if ($class != null) {
                     
-                    if (file_exists("Modules/$module/processlist.json")) {
-                        $mod_process_list = json_decode(file_get_contents("Modules/$module/processlist.json"));
-
-                        $domain4 = $module."_messages";
-                        bindtextdomain($domain4, "Modules/$module/locale");
-                        bind_textdomain_codeset($domain4, 'UTF-8');
-                        
-                        foreach($mod_process_list as $k => $v) {
-                            $v->name = dgettext($module."_messages",$v->name);
-                            $v->group = dgettext($module."_messages",$v->group);
-                            $v->description = dgettext($module."_messages",$v->description);
-                            
-                            $processkey = strtolower($dir[$i]."__".$v->function);
-                            $list[$processkey] = $v; // set list key as "module__function"
-                            //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
-                            
-                            // add old ids
-                            // only available using the process_processlist.php file
-                            if(is_callable(array($class,'core_process_list_map'))){
-                                $numeric_ids = $class->core_process_list_map();
-                                foreach($numeric_ids as $id=>$name) {
-                                    if($name == $v->function){
-                                        $v->id_num = $id;
-                                    }
-                                }
-                            }
-                        }
+                    $mod_process_list = $class->process_list();
+                    
+                    foreach($mod_process_list as $k => $v) {
+                        $processkey = strtolower($dir[$i]."__".$v['function']);
+                        $list[$processkey] = $v; // set list key as "module__function"
+                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]"); 
                     }
                 }
             }
