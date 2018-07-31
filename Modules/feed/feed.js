@@ -3,7 +3,7 @@ var feed = {
 
   apikey: "",
   
-  'create':function(tag, name, datatype, engine, options, process){
+  'create':function(tag, name, datatype, engine, options, unit){
     var result = {};
     var data = {
       tag: tag,
@@ -11,7 +11,7 @@ var feed = {
       datatype: datatype,
       engine: engine,
       options: JSON.stringify(options),
-      process: process || ''
+      unit: unit || ''
     }
     $.ajax({ url: path+"feed/create.json", data: data, dataType: 'json', async: false, success: function(data){result = data;} });
     return result;
