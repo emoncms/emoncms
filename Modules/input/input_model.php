@@ -304,11 +304,10 @@ class Input
     public function getlist($userid)
     {
         if ($this->redis) {
-            $input = $this->redis_getlist($userid);
+            return $this->redis_getlist($userid);
         } else {
-            $input = $this->mysql_getlist($userid);
+            return $this->mysql_getlist($userid);
         }
-        return $input;
     }
 
     private function redis_getlist($userid)
