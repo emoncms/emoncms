@@ -64,8 +64,7 @@ class Process_ProcessList
     
     public function process_list() {
 
-        bindtextdomain("process_messages", "Modules/process/locale");
-        bind_textdomain_codeset("process_messages", 'UTF-8');
+        textdomain("process_messages");
                     
         $list = array(
            array(
