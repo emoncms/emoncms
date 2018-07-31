@@ -121,17 +121,23 @@
     } else {
         $session = $user->emon_session_start();
     }
-    
+
+    // If the EmonMUC module exists, check if a default local controller should be registered
+    if ($muc_test == true && (@include "Modules/muc/muc_model.php") == true) {
+        $muc = new Controller($mysqli, $redis);
+        $muc->test($session['userid']);
+    }
+
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
-    
+
     // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
     $param = new Param($route,$user);
-    
+
     // --------------------------------------------------------------------------------------
     // Special routes
 
@@ -205,7 +211,7 @@
             $route->controller = $public_profile_controller;
             $route->action = $public_profile_action;
             $output = controller($route->controller);
-
+            
             // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists
             if ($output["content"]=="" && $route->subaction=="graph") {
                 $route->controller = "graph";

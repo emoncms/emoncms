@@ -99,7 +99,21 @@ function languagecode_to_name($langs) {
             <input id="change-password-submit" type="submit" class="btn btn-primary" value="<?php echo _('Save'); ?>" />
             <input id="change-password-cancel" type="submit" class="btn" value="<?php echo _('Cancel'); ?>" />
         </div>
-
+        
+        <?php
+        if (file_exists("Modules/muc")) {
+        ?>
+        <br>
+        <div id="account">
+          <div class="account-item">
+              <span class="muted"><?php echo _('Multi Utility Communication'); ?></span><a href="<?php echo $path; ?>muc/view" style="float:right" class="btn btn-small btn-info"><?php echo _('Configure'); ?></a>
+              <p><?php echo _('Administer controllers'); ?></p>
+          </div>
+        </div>
+        <?php
+        }
+        ?>
+        
         <br>
         <div id="account">
           <div class="account-item">
@@ -112,7 +126,8 @@ function languagecode_to_name($langs) {
               <span id="msg"></span>
           </div>
         </div>
-	<br>
+        
+	    <br>
         <div class="account-item">
             <button class="btn btn-danger" id="deleteall">Delete my account</button>
         </div>
