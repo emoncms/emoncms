@@ -44,11 +44,12 @@
             
             <table id="process-table" class="table table-hover">
                 <tr>
-                    <th style='width:5%;'></th>
-                    <th style='width:5%;'><?php echo dgettext('process_messages','Order'); ?></th>
+                    <th style="width:5%;"></th>
+                    <th style="width:5%;"><?php echo dgettext('process_messages','Order'); ?></th>
                     <th><?php echo dgettext('process_messages','Process'); ?></th>
+                    <th style="width:5%; text-align:right;opacity:.8" title="Hover over the short names below to get the full description"><i class="icon icon-question-sign"></i></th>
                     <th><?php echo dgettext('process_messages','Arg'); ?></th>
-                    <th></th>
+                    <th><span class="hidden-md"><?php echo dgettext('process_messages','Latest'); ?></span></th>
                     <th colspan='2'><?php echo dgettext('process_messages','Actions'); ?></th>
                 </tr>
                 <tbody id="process-table-elements"></tbody>
@@ -56,12 +57,11 @@
 
             <table class="table">
             <tr><th>
-                <span id="process-header-add"><?php echo dgettext('process_messages','Add process'); ?>:</span>
-
-                <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="process__log_to_feed">log</a>
-                <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="process__power_to_kwh">kwh</a>
-                <a href="#" onclick="selectProcess(event)" class="label label-warning" data-processid="process__add_input">+inp</a>
-
+                <span id="process-header-add"><?php echo dgettext('process_messages','Add process'); ?>:
+                    <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="process__log_to_feed">log</a>
+                    <a href="#" onclick="selectProcess(event)" class="label label-info" data-processid="process__power_to_kwh">kwh</a>
+                    <a href="#" onclick="selectProcess(event)" class="label label-warning" data-processid="process__add_input">+inp</a>
+                </span>
                 <span id="process-header-edit"><?php echo dgettext('process_messages','Edit process'); ?>:</span>
             </th></tr>
             <tr>

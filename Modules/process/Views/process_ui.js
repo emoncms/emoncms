@@ -50,8 +50,6 @@ var processlist_ui =
         var lastvalue = "";
         var processname = "";
         processkey = this.getProcessKeyById(processkey); // convert id numbers to key names (backward compatible)
-        // colour the badges with the same class names as the short title list
-        arg.cssClass = this.argtypes[this.processlist[processkey].argtype].cssClass
         
         if (this.processlist[processkey] != undefined) {
           var procneedredis = (this.has_redis == 0 && this.processlist[processkey]['requireredis'] != undefined && this.processlist[processkey]['requireredis'] == true ? 1 : 0);
@@ -81,7 +79,7 @@ var processlist_ui =
                 arg.title = _Tr("Input")+" "+inpid
                 arg.icon = 'icon-signal'
 
-                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("input last value:")+" "+(this.inputlist[inpid].value*1).toFixed(2)+")</span>";
+                lastvalue = (this.inputlist[inpid].value*1).toFixed(2);
               } else {
                 arg.text = 'Input "+schid+" does not exists or was deleted'
               }
@@ -91,15 +89,12 @@ var processlist_ui =
               var feedid = this.contextprocesslist[z][1];
               if (this.feedlist[feedid]!=undefined) {
                 arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
-                arg.cssClass += ' feedaccesslabel'
                 arg.title = _Tr("Feed")+" "+feedid
                 arg.icon = 'icon-list-alt'
                 arg.href = path+"vis/auto?feedid="+feedid
-
-                lastvalue = "<span style='color:#888; font-size:12px'>("+_Tr("feed last value:")+" "+(this.feedlist[feedid].value*1).toFixed(2)+")</span>";
+                lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
               } else {
                 arg.text = 'Feedid "+feedid+" does not exists or was deleted'
-
               }
               break;
 
@@ -132,23 +127,30 @@ var processlist_ui =
         // create the badge markup to display the process argument detail
         label = ""
         if(arg.text){
-          label += arg.href ? '<a href="'+arg.href+'"' : '<span'
+          label += arg.href ? '<a href="'+arg.href+'" class="text-info"' : '<span class="muted"'
           label += ' title="'+arg.title+'"'
-          label += ' class="label '+(arg.cssClass || 'label-important')+'">'
-          label += arg.icon ? '<i class="icon-white '+arg.icon+'"></i> ' : ''
+          label += ">"
+          label += arg.icon ? '<i class="'+arg.icon+'"></i> ' : ''
           label += arg.text || arg.title
           label += arg.href ? '</a>':'</span>'
         }
 
-        tag = ""
         try {
-            // processlist_ui.processlist[processkey].name)
-            tag += `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
-             class="label ${arg.cssClass}">${this.processlist[processkey].short}</span>`
+            tag = `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
+            style="cursor:help" 
+            class="fw-label overflow-hidden label ${this.argtypes[this.processlist[processkey].argtype].cssClass}">${this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;")}</span>`
         } catch (e) {
+            tag = ""
         }
 
-        out += "<td>"+(i+1)+"</td><td>"+tag+processname+"</td><td>"+label+"</td><td>"+lastvalue+"</td>";
+        try {
+            latest = lastvalue ? `<small title="Last recorded ${this.processlist[processkey].argtype} value" class="muted">(${lastvalue})</small>` : ''
+        } catch (e) {
+            latest = ""
+        }
+        
+
+        out += '<td>'+(i+1)+'</td><td>'+processname+'</td><td style="text-align:right">'+tag+'</td><td>'+label+'</td><td>'+latest+'</td>';
      
         // Delete process button (icon)
         out += '<td><a class="edit-process" title="'+_Tr("Edit")+'" processid='+i+'><i class="icon-pencil" style="cursor:pointer"></i></a></td>';
@@ -539,7 +541,7 @@ var processlist_ui =
 
     $('#processlist-ui .table').on('click', '.edit-process', function(){
       var process = processlist_ui.contextprocesslist[$(this).attr('processid')];
-      var processid = process[0];
+      var processid = processlist_ui.getProcessKeyById(process[0]); // get process id name (backward compatible)
       var processval = process[1];
       var curpos = parseInt($(this).attr('processid'));
       
@@ -600,24 +602,29 @@ var processlist_ui =
     $feedSelect = $('#feed-select');
     $feedEngineSelect = $('#feed-engine');
     $feedTypeSelect = $('#feed-data-type');
-
-    var prc = this.processlist[processid][2];     // process function
-    var feedwrite = this.processlist[processid]['feedwrite']; // process writes to feed
-    var engines = this.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
-    var datatype = this.processlist[processid][4];  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
+    var prc = this.processlist[processid].function;     // process function
+    var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
+    var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
+    var datatype = this.processlist[processid].datatype;  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
 
     var feedgroups = [];
     for (z in this.feedlist) {
-      if (datatype == 0 || (this.feedlist[z].datatype == datatype)) {
-        if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
-          continue; // Dont list virtual feed
+        datatypes = {
+            0: 'undefined',
+            1: 'realtime',
+            2: 'daily',
+            3: 'histogram'
         }
-        var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
-        if (group!="Deleted") {
-          if (!feedgroups[group]) feedgroups[group] = []
-          feedgroups[group].push(this.feedlist[z]);
+        if (datatype == 0 || (datatypes[this.feedlist[z].datatype] == datatype)) {
+            if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
+                continue; // Dont list virtual feed
+            }
+            var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
+            if (group!="Deleted") {
+                if (!feedgroups[group]) feedgroups[group] = []
+                feedgroups[group].push(this.feedlist[z]);
+            }
         }
-       }
     }
     var out = "<option value=-1>CREATE NEW:</option>";
     for (z in feedgroups) {
@@ -709,7 +716,9 @@ var processlist_ui =
 
   'encode':function(array){
     var parts = [];
-    for (z in array) parts.push(array[z][0]+":"+array[z][1]);
+    for (z in array) {
+      parts.push(array[z][0]+":"+array[z][1]);
+    }
     return parts.join(",");
   },
 

@@ -303,11 +303,28 @@ class Input
     // -----------------------------------------------------------------------------------------
     public function getlist($userid)
     {
+        global $mysql, $input, $feed;
         if ($this->redis) {
-            return $this->redis_getlist($userid);
+            $input = $this->redis_getlist($userid);
         } else {
-            return $this->mysql_getlist($userid);
+            $input = $this->mysql_getlist($userid);
         }
+        /* swap key ids for key strings */
+        foreach ($input as $properties) {
+            $pl = $properties['processList'];
+            $p = explode(',',$pl);
+            foreach ($p as $prop) {
+                $key_value = explode(':',$prop);
+                $key = $key_value[0];
+                if (!is_numeric($key)) {
+                    $process = new Process($this->mysqli, $this->mysqli, $this->mysqli, null);
+                    $processList = $process->get_process_list();
+                    $key = isset($processList[$key]->function) ? $processList[$key]->function: $key;
+                }
+            }
+        }
+        // @todo: recreate the array with the new keys before returning $input
+        return $input;
     }
 
     private function redis_getlist($userid)

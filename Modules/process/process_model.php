@@ -182,26 +182,6 @@ class Process
         }
         return $list;
     }
-    /**
-     * Loads core process list from process module (with integer key for backward_compatibility)
-     * 
-     * @param array $list current list of processes without the old ids
-     * @return void
-     */
-    private function backward_compatible_list($list){
-        $backward_compatible_list = array();
-        $class = $this->get_module_class('process');
-        if(is_callable(array($class,'core_process_list_map'))){
-            $backward_compatible_list = $class->core_process_list_map();
-        }
-        if(!empty($backward_compatible_list)){
-            // @todo: get id for process by name
-            // PROBLEM---------
-            // $list uses this format as the process's key = "$process"__"function"
-            // this has to be done while looping through the module directory to get the Module/process_processlist.php\core_process_list_map() function
-            // moving this functionallity to $this->load_modules()
-        }
-    }
 
     private function get_module_class($module_name){
         /*
