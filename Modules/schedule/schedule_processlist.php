@@ -31,7 +31,7 @@ class Schedule_ProcessList
           array(
             "name"=>"If !schedule, ZERO",
             "short"=>"!sched 0",
-            "argtype"=>"schedule",
+            "argtype"=>ProcessArg::SCHEDULEID,
             "function"=>"if_not_schedule_zero",
             "datafields"=>0,
             "datatype"=>false,
@@ -42,7 +42,7 @@ class Schedule_ProcessList
           array(
             "name"=>"If !schedule, NULL",
             "short"=>"!sched N",
-            "argtype"=>"schedule",
+            "argtype"=>ProcessArg::SCHEDULEID,
             "function"=>"if_not_schedule_null",
             "datafields"=>0,
             "datatype"=>false,
@@ -53,7 +53,7 @@ class Schedule_ProcessList
           array(
             "name"=>"If schedule, ZERO",
             "short"=>"sched 0",
-            "argtype"=>"schedule",
+            "argtype"=>ProcessArg::SCHEDULEID,
             "function"=>"if_schedule_zero",
             "datafields"=>0,
             "datatype"=>false,
@@ -64,7 +64,7 @@ class Schedule_ProcessList
           array(
             "name"=>"If schedule, NULL",
             "short"=>"sched N",
-            "argtype"=>"schedule",
+            "argtype"=>ProcessArg::SCHEDULEID,
             "function"=>"if_schedule_null",
             "datafields"=>0,
             "datatype"=>false,

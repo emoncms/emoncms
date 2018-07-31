@@ -1,3 +1,12 @@
+var ProcessArg = {
+  VALUE:0,
+  INPUTID:1,
+  FEEDID:2,
+  NONE:3,
+  TEXT:4,
+  SCHEDULEID:5
+}
+
 var processlist_ui =
 {
   contexttype: 0,         // Editor type (0:input, 1:feed/virtual)
@@ -66,13 +75,13 @@ var processlist_ui =
           else {
             // Check ProcessArg Type
             switch(this.processlist[processkey].argtype) {
-              case "value": // VALUE
+              case ProcessArg.VALUE:
                 arg.text = this.contextprocesslist[z][1]
                 arg.title = _Tr("Value")
                 arg.icon = 'icon-edit'
               break;
               
-              case "input": //INPUTID
+              case ProcessArg.INPUTID:
               var inpid = this.contextprocesslist[z][1];
               if (this.inputlist[inpid]!=undefined) {
                 arg.text = "Node "+this.inputlist[inpid].nodeid+":"+this.inputlist[inpid].name+' ' + (this.inputlist[inpid].description || '')
@@ -85,7 +94,7 @@ var processlist_ui =
               }
               break;
               
-              case "feed": //FEEDID
+              case ProcessArg.FEEDID:
               var feedid = this.contextprocesslist[z][1];
               if (this.feedlist[feedid]!=undefined) {
                 arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
@@ -98,13 +107,13 @@ var processlist_ui =
               }
               break;
 
-              case "text": // TEXT
+              case ProcessArg.TEXT:
                 arg.title = _Tr("Text")
                 arg.text = this.contextprocesslist[z][1]
                 arg.icon = 'icon-edit'
               break;
               
-              case "schedule": // SCHEDULEID
+              case ProcessArg.SCHEDULEID:
               var schid = this.contextprocesslist[z][1];
               if (this.schedulelist[schid]!=undefined) {
                 arg.title = _Tr("Schedule")+" "+schid
@@ -209,12 +218,12 @@ var processlist_ui =
     }
   },
   'argtypes': {
-      'value': {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
-      'input': {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
-      'feed':  {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
-      'none':  {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
-      'text':  {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
-      'schedule': {cssClass: 'label-warning', title: 'Schedule: {longText} - {schedule.name}'}
+      0: {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
+      1: {cssClass: 'label-warning',    title: 'Input: {longText} - ({input.nodeid}:{input.name}) {input.description}'},
+      2: {cssClass: 'label-info',       title: 'Feed: {longText} - ({feed.tag}:{feed.name})  [{feed.id}]'},
+      3: {cssClass: 'label-important',  title: 'Text: {longText} - {value}'},
+      4: {cssClass: 'label-info',       title: 'Topic: {longText} - {value}'},
+      5: {cssClass: 'label-warning',    title: 'Schedule: {longText} - {schedule.name}'}
   },
   'getBadges': function (processlist,input) {
     if (!processlist) return ""
@@ -307,20 +316,20 @@ var processlist_ui =
               // Check ProcessArg Type
               value = localprocesslist[z][1];
               switch(this.processlist[processkey].argtype) {
-                case "input": //INPUTID
+                case ProcessArg.INPUTID: //INPUTID
                 var inpid = localprocesslist[z][1];
                 if (this.inputlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Input "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case "feed": //FEEDID
+                case ProcessArg.FEEDID: //FEEDID
                 if (this.feedlist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Feedid "+value+" does not exists or was deleted'>ERROR</span> "
                 }
                 break;
 
-                case "schedule": // SCHEDULEID
+                case ProcessArg.SCHEDULEID: // SCHEDULEID
                 if (this.schedulelist[value]==undefined) {
                   out +=  "<span class='badge badge-important' title='Schedule "+value+" does not exists or was deleted'>ERROR</span> "
                 }
@@ -366,7 +375,7 @@ var processlist_ui =
 
       // Check ProcessArg Type
       switch(process.argtype) {
-        case "value": // VALUE (scale, offset)
+        case ProcessArg.VALUE: // VALUE (scale, offset)
           arg = $("#value-input").val();
           arg = parseFloat(arg.replace(",", "."));
           if (isNaN(arg)) {
@@ -375,11 +384,11 @@ var processlist_ui =
           }
           break;
 
-        case "input": //INPUTID (* / + - by input)
+        case ProcessArg.INPUTID: //INPUTID (* / + - by input)
           arg = $("#input-select").val();
           break;
 
-        case "feed": //FEEDID
+        case ProcessArg.FEEDID: //FEEDID
           var feedid = $("#feed-select").val();
 
           if (feedid==-1) {
@@ -414,11 +423,11 @@ var processlist_ui =
           arg = 0;
           break;
 
-        case "text": // TEXT
+        case ProcessArg.TEXT: // TEXT
           arg = $("#text-input").val();
           break;
 
-        case "schedule": // SCHEDULEID
+        case ProcessArg.SCHEDULEID: // SCHEDULEID
           arg = $("#schedule-select").val();
           break;
       }
@@ -451,20 +460,20 @@ var processlist_ui =
       // Check ProcessArg Type
       if (processid) {
         switch(processlist_ui.processlist[processid].argtype) {
-          case "value": // VALUE
+          case ProcessArg.VALUE: // VALUE
             $("#type-value").show();
             break;
-          case "input": //INPUTID
+          case ProcessArg.INPUTID: //INPUTID
             $("#type-input").show();
             break;
-          case "feed": //FEEDID
+          case ProcessArg.FEEDID: //FEEDID
             $("#type-feed").show();
             processlist_ui.showfeedoptions(processid);
             break;
-          case "text": // TEXT
+          case ProcessArg.TEXT: // TEXT
             $("#type-text").show();
             break;
-          case "schedule": // SCHEDULEID
+          case ProcessArg.SCHEDULEID: // SCHEDULEID
             $("#type-schedule").show();
             break;
         }
@@ -563,20 +572,20 @@ var processlist_ui =
         $("#processlist-ui #process-select").change(); // Force a refresh
         // Check ProcessArg Type
         switch(processlist_ui.processlist[processid].argtype) {
-          case "value": // VALUE
+          case ProcessArg.VALUE: // VALUE
             $("#value-input").val(processval);
             break;
-          case "input": //INPUTID
+          case ProcessArg.INPUTID: //INPUTID
             $("#input-select").val(processval);
             break;
-          case "feed": //FEEDID
+          case ProcessArg.FEEDID: //FEEDID
             $("#feed-select").val(processval);
             $('#processlist-ui #feed-select').change();  // refresh feed select
             break;
-          case "text": // TEXT
+          case ProcessArg.TEXT: // TEXT
             $("#text-input").val(processval);
             break;
-          case "schedule": // SCHEDULEID
+          case ProcessArg.SCHEDULEID: // SCHEDULEID
             $("#schedule-select").val(processval);
             break;
         }

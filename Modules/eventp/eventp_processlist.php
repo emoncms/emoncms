@@ -32,7 +32,7 @@ class Eventp_ProcessList
             array(
               "name"=>"If rate >=, skip next",
               "short"=>"?rate>=",
-              "argtype"=>"value",
+              "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateGtEqualSkip",
               "datafields"=>0,
               "datatype"=>false,
@@ -45,7 +45,7 @@ class Eventp_ProcessList
            array(
               "name"=>"If rate <, skip next",
               "short"=>"?rate<",
-              "argtype"=>"value",
+              "argtype"=>ProcessArg::VALUE,
               "function"=>"ifRateLtSkip",
               "datafields"=>0,
               "datatype"=>false,
@@ -58,7 +58,7 @@ class Eventp_ProcessList
            array(
               "name"=>"If Mute, skip next",
               "short"=>"?mute",
-              "argtype"=>"value",
+              "argtype"=>ProcessArg::VALUE,
               "function"=>"ifMuteSkip",
               "datafields"=>0,
               "datatype"=>false,
@@ -71,7 +71,7 @@ class Eventp_ProcessList
            array(
               "name"=>"If !Mute, skip next",
               "short"=>"?!mute",
-              "argtype"=>"value",
+              "argtype"=>ProcessArg::VALUE,
               "function"=>"ifNotMuteSkip",
               "datafields"=>0,
               "datatype"=>false,
@@ -84,7 +84,7 @@ class Eventp_ProcessList
            array(
               "name"=>"Send Email",
               "short"=>"email",
-              "argtype"=>"text",
+              "argtype"=>ProcessArg::TEXT,
               "function"=>"sendEmail",
               "datafields"=>0,
               "datatype"=>false,
