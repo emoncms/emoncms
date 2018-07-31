@@ -1,5 +1,6 @@
 [
    {
+      "map":1,
       "name":"Log to feed",
       "short":"log",
       "argtype":"feed",
@@ -13,6 +14,7 @@
       "description":"<p><b>Log to feed:<\/b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.<\/p><p><b>Feed engine:<\/b><ul><li><b>PHPFina<\/b> is the recommended feed engine it is a basic fixed interval timeseries engine.<\/li><li><b>PHPTimeseries<\/b> is for data posted at a non regular interval such as on state change.<\/li><\/ul><\/p><p><b>Feed interval:<\/b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.<\/p>"
    },
    {
+      "map":2,
       "name":"x",
       "short":"x",
       "argtype":"value",
@@ -24,6 +26,7 @@
       "description":"<p>Multiplies current value by given constant. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.<\/p>"
    },
    {
+      "map":3,
       "name":"+",
       "short":"+",
       "argtype":"value",
@@ -35,6 +38,7 @@
       "description":"<p>Offset current value by given value. This can again be useful for calibrating a particular variable on the web rather than by reprogramming hardware.<\/p>"
    },
    {
+      "map":4,
       "name":"Power to kWh",
       "short":"kwh",
       "argtype":"feed",
@@ -48,6 +52,7 @@
       "description":"<p><b>Power to kWh:<\/b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:<\/b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1.<br>See forum thread here for an example <a href=\"https:\/\/openenergymonitor.org\/emon\/node\/12308\">Creating kWh per day bar graphs from Accumulating kWh <\/a><\/p>"
    },
    {
+      "map":5,
       "name":"Power to kWh\/d",
       "short":"kwhd",
       "argtype":"feed",
@@ -61,6 +66,7 @@
       "description":"<p>Convert a power value in Watts to a feed that contains an entry for the total energy used each day (kWh\/d)<\/p>"
    },
    {
+      "map":6,
       "name":"x input",
       "short":"x inp",
       "argtype":"input",
@@ -72,6 +78,7 @@
       "description":"<p>Multiplies the current value with the last value from other input as selected from the input list.<\/p>"
    },
    {
+      "map":7,
       "name":"Input on-time",
       "short":"ontime",
       "argtype":"feed",
@@ -85,6 +92,7 @@
       "description":"<p>Counts the amount of time that an input is high in each day and logs the result to a feed. Created for counting the number of hours a solar hot water pump is on each day<\/p>"
    },
    {
+      "map":8,
       "name":"Wh increments to kWh\/d",
       "short":"whinckwhd",
       "argtype":"feed",
@@ -98,6 +106,7 @@
       "description":"<p>Accumulate Wh measurements into kWh\/d.<p><b>Input<\/b>: energy increments in Wh.<\/p>"
    },
    {
+      "map":9,
       "name":"kWh to kWh\/d (OLD)",
       "short":"kwhkwhdold",
       "argtype":"feed",
@@ -110,6 +119,7 @@
       "description":""
    },
    {
+      "map":10,
       "name":"Update feed at day",
       "short":"update",
       "argtype":"feed",
@@ -123,6 +133,7 @@
       "description":"<p>Updates or inserts daily value on the specified time (given by the JSON time parameter from the API) of the specified feed<\/p>"
    },
    {
+      "map":11,
       "name":"+ input",
       "short":"+ inp",
       "argtype":"input",
@@ -134,6 +145,7 @@
       "description":"<p>Adds the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.<\/p>"
    },
    {
+      "map":12,
       "name":"\/ input",
       "short":"\/ inp",
       "argtype":"input",
@@ -145,6 +157,7 @@
       "description":"<p>Divides the current value with the last value from other input as selected from the input list. The result is passed back for further processing by the next processor in the processing list.<\/p>"
    },
    {
+      "map":13,
       "name":"Phaseshift",
       "short":"phaseshift",
       "argtype":"value",
@@ -156,6 +169,7 @@
       "description":""
    },
    {
+      "map":14,
       "name":"Accumulator",
       "short":"accumulate",
       "argtype":"feed",
@@ -168,6 +182,7 @@
       "description":"<p>Output feed accumulates by input value<\/p>"
    },
    {
+      "map":15,
       "name":"Rate of change",
       "short":"rate",
       "argtype":"feed",
@@ -181,6 +196,7 @@
       "description":"<p>Output feed is the difference between the current value and the last<\/p>"
    },
    {
+      "map":16,
       "name":"Histogram",
       "short":"hist",
       "argtype":"feed",
@@ -196,6 +212,7 @@
       "description":"Creates a histogram of energy binned by power ranges. For each power range on the x-axis, this processor will aggregate the total energy of the stream while it was in that power range.<p><b>Input<\/b>: power in Watts.<\/p>"
    },
    {
+      "map":17,
       "name":"Daily Average",
       "short":"mean",
       "argtype":"feed",
@@ -208,6 +225,7 @@
       "description":""
    },
    {
+      "map":18,
       "name":"Heat flux",
       "short":"flux",
       "argtype":"feed",
@@ -220,6 +238,7 @@
       "description":""
    },
    {
+      "map":19,
       "name":"Power gained to kWh\/d",
       "short":"pwrgain",
       "argtype":"feed",
@@ -232,6 +251,7 @@
       "description":""
    },
    {
+      "map":20,
       "name":"Total pulse count to pulse increment",
       "short":"pulsdiff",
       "argtype":"feed",
@@ -244,6 +264,7 @@
       "description":"<p>Returns the number of pulses incremented since the last update for a input that is a cumulative pulse count. i.e If the input updates from 23400 to 23410 the result will be an incremenet of 10.<\/p>"
    },
    {
+      "map":21,
       "name":"kWh to Power",
       "short":"kwhpwr",
       "argtype":"feed",
@@ -257,6 +278,7 @@
       "description":"<p>Convert accumulating kWh to instantaneous power<\/p>"
    },
    {
+      "map":22,
       "name":"- input",
       "short":"- inp",
       "argtype":"input",
@@ -268,6 +290,7 @@
       "description":"<p>Subtracts from the current value the last value from other input as selected from the input list.<\/p>"
    },
    {
+      "map":23,
       "name":"kWh to kWh\/d",
       "short":"kwhkwhd",
       "argtype":"feed",
@@ -282,6 +305,7 @@
       "description":"<p>Upsert kWh to a daily value.<\/p>"
    },
    {
+      "map":24,
       "name":"Allow positive",
       "short":"> 0",
       "argtype":"none",
@@ -293,6 +317,7 @@
       "description":"<p>Negative values are zeroed for further processing by the next processor in the processing list.<\/p>"
    },
    {
+      "map":25,
       "name":"Allow negative",
       "short":"< 0",
       "argtype":"none",
@@ -304,6 +329,7 @@
       "description":"<p>Positive values are zeroed for further processing by the next processor in the processing list.<\/p>"
    },
    {
+      "map":26,
       "name":"Signed to unsigned",
       "short":"unsign",
       "argtype":"none",
@@ -315,6 +341,7 @@
       "description":"<p>Convert a number that was interpreted as a 16 bit signed number to an unsigned number.<\/p>"
    },
    {
+      "map":27,
       "name":"Max daily value",
       "short":"max",
       "argtype":"feed",
@@ -328,6 +355,7 @@
       "description":"<p>Maximal daily value. Upserts on the selected daily feed the highest value reached each day.<\/p>"
    },
    {
+      "map":28,
       "name":"Min daily value",
       "short":"min",
       "argtype":"feed",
@@ -341,6 +369,7 @@
       "description":"<p>Minimal daily value. Upserts on the selected daily feed the lowest value reached each day.<\/p>"
    },
    {
+      "map":29,
       "name":"+ feed",
       "short":"+ feed",
       "argtype":"feed",
@@ -352,6 +381,7 @@
       "description":"<p>Adds the current value with the last value from a feed as selected from the feed list.<\/p>"
    },
    {
+      "map":30,
       "name":"- feed",
       "short":"- feed",
       "argtype":"feed",
@@ -363,6 +393,7 @@
       "description":"<p>Subtracts from the current value the last value from a feed as selected from the feed list.<\/p>"
    },
    {
+      "map":31,
       "name":"* feed",
       "short":"x feed",
       "argtype":"feed",
@@ -374,6 +405,7 @@
       "description":"<p>Multiplies the current value with the last value from a feed as selected from the feed list.<\/p>"
    },
    {
+      "map":32,
       "name":"\/ feed",
       "short":"\/ feed",
       "argtype":"feed",
@@ -385,6 +417,7 @@
       "description":"<p>Divides the current value by the last value from a feed as selected from the feed list.<\/p>"
    },
    {
+      "map":33,
       "name":"Reset to ZERO",
       "short":"0",
       "argtype":"none",
@@ -396,6 +429,7 @@
       "description":"<p>The value \"0\" is passed back for further processing by the next processor in the processing list.<\/p>"
    },
    {
+      "map":34,
       "name":"Wh Accumulator",
       "short":"whacc",
       "argtype":"feed",
@@ -409,6 +443,7 @@
       "description":"<b>Wh Accumulator:<\/b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals<\/i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:<\/b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br>See forum thread here for an example <a href=\"https:\/\/openenergymonitor.org\/emon\/node\/12308\" Creating kWh per day bar graphs from Accumulating kWh <\/a><\/p>"
    },
    {
+      "map":35,
       "name":"Publish to MQTT",
       "short":"MQTT",
       "argtype":"text",
@@ -421,6 +456,7 @@
       "description":"<p>Publishes value to MQTT topic e.g. 'home\/power\/kitchen'<\/p>"
    },
    {
+      "map":36,
       "name":"Reset to NULL",
       "short":"null",
       "argtype":"none",
@@ -432,6 +468,7 @@
       "description":"<p>Value is set to NULL.<\/p><p>Useful for conditional process to work on.<\/p>"
    },
    {
+      "map":37,
       "name":"Reset to Original",
       "short":"ori",
       "argtype":"none",
@@ -443,6 +480,7 @@
       "description":"<p>The value is set to the original value at the start of the process list.<\/p>"
    },
    {
+      "map":42,
       "name":"If ZERO, skip next",
       "short":"0? skip",
       "argtype":"none",
@@ -455,6 +493,7 @@
       "description":"<p>If value from last process is ZERO, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":43,
       "name":"If !ZERO, skip next",
       "short":"!0? skip",
       "argtype":"none",
@@ -467,6 +506,7 @@
       "description":"<p>If value from last process is NOT ZERO, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":44,
       "name":"If NULL, skip next",
       "short":"N? skip",
       "argtype":"none",
@@ -479,6 +519,7 @@
       "description":"<p>If value from last process is NULL, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":45,
       "name":"If !NULL, skip next",
       "short":"!N? skip",
       "argtype":"none",
@@ -491,6 +532,7 @@
       "description":"<p>If value from last process is NOT NULL, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":46,
       "name":"If >, skip next",
       "short":">? skip",
       "argtype":"value",
@@ -503,6 +545,7 @@
       "description":"<p>If value from last process is greater than the specified value, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":47,
       "name":"If >=, skip next",
       "short":">=? skip",
       "argtype":"value",
@@ -515,6 +558,7 @@
       "description":"<p>If value from last process is greater or equal to the specified value, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":48,
       "name":"If <, skip next",
       "short":"<? skip",
       "argtype":"value",
@@ -527,6 +571,7 @@
       "description":"<p>If value from last process is lower than the specified value, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":49,
       "name":"If <=, skip next",
       "short":"<=? skip",
       "argtype":"value",
@@ -539,6 +584,7 @@
       "description":"<p>If value from last process is lower or equal to the specified value, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":50,
       "name":"If =, skip next",
       "short":"=? skip",
       "argtype":"value",
@@ -551,6 +597,7 @@
       "description":"<p>If value from last process is equal to the specified value, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":51,
       "name":"If !=, skip next",
       "short":"!=? skip",
       "argtype":"value",
@@ -563,6 +610,7 @@
       "description":"<p>If value from last process is NOT equal to the specified value, process execution will skip execution of next process in list.<\/p>"
    },
    {
+      "map":52,
       "name":"GOTO",
       "short":"GOTO",
       "argtype":"value",
@@ -575,6 +623,7 @@
       "description":"<p>Jumps the process execution to the specified position.<\/p><p><b>Warning<\/b><br>If you're not careful you can create a goto loop on the process list.<br>When a loop occurs, the API will appear to lock until the server php times out with an error.<\/p>"
    },
    {
+      "map":53,
       "name":"Source Feed",
       "short":"sfeed",
       "argtype":"feed",
@@ -586,6 +635,7 @@
       "description":"<p><b>Source Feed:<\/b><br>Virtual feeds should use this processor as the first one in the process list. It sources data from the selected feed.<br>The sourced value is passed back for further processing by the next processor in the processing list.<br>You can then add other processors to apply logic on the passed value for post-processing calculations in realtime.<\/p><p>Note: This virtual feed process list is executed on visualizations requests that use this virtual feed.<\/p>"
    },
    {
+      "map":55,
       "name":"+ source feed",
       "short":"+ sfeed",
       "argtype":"feed",
@@ -597,6 +647,7 @@
       "description":"<p>Add the specified feed.<\/p>"
    },
    {
+      "map":56,
       "name":"- source feed",
       "short":"- sfeed",
       "argtype":"feed",
@@ -608,6 +659,7 @@
       "description":"<p>Subtract the specified feed.<\/p>"
    },
    {
+      "map":57,
       "name":"* source feed",
       "short":"x sfeed",
       "argtype":"feed",
@@ -619,6 +671,7 @@
       "description":"<p>Multiply by specified feed.<\/p>"
    },
    {
+      "map":58,
       "name":"\/ source feed",
       "short":"\/ sfeed",
       "argtype":"feed",
@@ -630,6 +683,7 @@
       "description":"<p>Divide by specified feed. Returns NULL for zero values.<\/p>"
    },
    {
+      "map":59,
       "name":"\/ source feed",
       "short":"\/ sfeed",
       "argtype":"feed",
