@@ -97,7 +97,7 @@ class Feed
     Configurations operations
     create, delete, exist, update_user_feeds_size, get_buffer_size, get_meta
     */
-    public function create($userid,$tag,$name,$datatype,$engine,$options_in)
+    public function create($userid,$tag,$name,$datatype,$engine,$options_in,$unit='')
     {
         $userid = (int) $userid;
         if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
@@ -105,7 +105,7 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
-
+    
         if (!ENGINE::is_valid($engine)) {
             $this->log->error("Engine id '".$engine."' is not supported.");
             return array('success'=>false, 'message'=>"ABORTED: Engine id $engine is not supported.");
@@ -117,8 +117,8 @@ class Feed
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine) VALUES (?,?,?,?,?,?)");
-        $stmt->bind_param("issiii",$userid,$tag,$name,$datatype,$public,$engine);
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
@@ -137,7 +137,8 @@ class Feed
                     'tag'=>$tag,
                     'public'=>false,
                     'size'=>0,
-                    'engine'=>$engine
+                    'engine'=>$engine,
+                    'unit'=>$unit
                 ));
             }
 
