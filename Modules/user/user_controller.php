@@ -113,6 +113,24 @@ function user_controller()
                 $result = "missing mode field";
             }
         }
+        // set user peferences for beta opt ins
+        if ($route->action == 'beta' && $session['read']) {
+            switch($route->method) {
+                case 'POST':
+                    if(!empty(post('optIn'))){
+                        $optIns = post('optIn');
+                        $result = $user->setBetaOptIn($optIns);
+                    } else {
+                        $result = array('success'=>false,'message'=>'Invalid parameters');
+                    }
+                    break;
+                case 'DELETE':
+                    $result = $user->removeBetaOptIn();
+                    break;
+                default:
+                    $result = $user->getBetaOptIn();
+            }
+        }
     }
 
     return array('content'=>$result);

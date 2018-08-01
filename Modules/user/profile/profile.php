@@ -121,7 +121,32 @@ function languagecode_to_name($langs) {
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
-        
+
+        <div id="beta-section" class="well hidden">
+            <h4><?php echo _('Beta Features'); ?>:</h4>
+            <form id="beta-form" class="form-horizontal" style="margin-bottom:.2em">
+            
+                <!-- start option toggle -->
+                <div class="control-group">
+                    <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
+                    <div class="controls" data-prop="deviceModule">
+                        <div class="options btn-group" data-toggle="buttons-radio">
+                            <button type="button" autocomplete="off" class="btn" data-toggle="button" data-value="true">On</button>
+                            <button type="button" autocomplete="off" class="btn active" data-toggle="button" data-value="false">Off</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- end option toggle -->
+
+                <button class="btn" data-saved-text="<?php echo _('Saved') ?>" data-error-text="<?php echo _('Error') ?>" data-loading-text="<?php echo _('Saving...') ?>">Save</button>
+                <span style="padding:1em" class="text-info" id="beta-errors"></span>
+            </form>
+            <form id="delete-opts" action="<?php echo $path.'user/beta.json'?>" class="pull-right" style="margin-top:-2em">
+                <input type="hidden" name="_method" value="DELETE">
+                <button class="btn"><?php echo _('Reset') ?></button>
+            </form>
+        </div>
+
         <h3><?php echo _('Mobile app'); ?></h3>
         <div class="account-item">
             <table>
@@ -412,5 +437,113 @@ function languagecode_to_name($langs) {
             window.location = path;
         }});
     });
+
+    /**
+     * save user preferences to device
+     * currently only saving opt in choices for beta feature releases
+     */
+    $(function(){
+        // show the buttons if the user is able to join the beta trial
+        // highlight the 'Off' button if no value is set
+        $optInSection = $('#beta-section')
+        $.get(path+'user/beta.json')
+        .done(function(data){
+            if (data.success) {
+                //show options if applicable
+                $optInSection.removeClass('hidden')
+                setOptInButtonStates(data.optin)
+            }
+        })
+        function setOptInButtonStates(optIn){
+            // get the optIn options
+            optIn = typeof optIn == 'string' ? JSON.parse(optIn) : optIn
+            // create empty object if no preference saved
+            optIn = optIn || {}
+            // default to false
+            $optInSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                optIn[prop] = optIn[prop] || false
+            })
+            // set the buttons for Device Module
+            $betaButtons = $optInSection.find('.options button')
+            $.each($betaButtons, function(n,elem){
+                let $button = $(elem)
+                $button.removeClass('active')
+                let prop = $button.parents('.controls').data('prop')
+                if (optIn.hasOwnProperty(prop) && elem.dataset.value == optIn[prop].toString()) {
+                    $(elem).addClass('active')
+                }
+            })
+        }
+        // delete all saved options
+        $('#delete-opts').submit(function(event){
+            event.preventDefault();
+            $.post(this.action, $(this).serialize())
+            .done(function(data){
+                if (data && data.success) {
+                    setOptInButtonStates()
+                    $('#beta-errors').text(data.message)
+                }
+            })
+        })
+        // send user preference to controller via ajax
+        // display status & progress to user
+        $('#beta-form').submit(function(event){
+            event.preventDefault()
+
+            let url = path+"user/beta.json"
+            let states = ['ready','saved','error']
+            let state = 0
+
+            $form = $(event.target)
+            $btn = $('[data-loading-text]')
+            $msg = $('#beta-errors')
+
+            $btn.button('loading') // set the loading text 
+
+            // ajax promise functions
+            success = function(data,textStatus,xhr) {
+                // ajax success
+                // display error if returned value is not desired
+                if(data && !data && !data.success) {
+                    error(xhr, 'not successful', data.message)
+                } else {
+                    state = 1
+                    $btn.button('saved').removeClass('btn-primary').addClass('btn-success')
+                    $msg.text('') // clear the error messages
+                }
+            }
+            error = function(xhr,textStatus,errorThrown) {
+                // ajax error or called by success
+                // display error to user
+                state = 2
+                $btn.removeClass('btn-primary').addClass('btn-danger').button('error')
+                $msg.text(errorThrown)
+            }
+            always = function(){
+                // reset form state after ajax call
+                timeout = state == 2 ? 4000 : 1300
+                setTimeout(function(){
+                    $btn.button('reset').removeClass('btn-danger btn-success')
+                    state = 0
+                },timeout)
+            }
+
+            data = $form.serialize()
+            optIn = {}
+            $optInSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                optIn[prop] = $(elem).find('.btn.active').data('value') == true
+            })
+            data = $.extend({}, data, {optIn:optIn})
+            $.post(url, data)
+            .done(success)
+            .fail(error)
+            .always(always)
+
+            return false;
+        })
+        
+    })
 
 </script>
