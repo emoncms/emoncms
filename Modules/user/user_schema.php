@@ -22,7 +22,8 @@ $schema['users'] = array(
     'tags' => array('type' => 'text', 'default'=>NULL, 'Null'=>true),
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int(11)', 'default'=>0),
-    'verification_key' => array('type' => 'varchar(64)', 'default'=>'')
+    'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
+    'opt_in' => array('type' => 'varchar(255)', 'default'=>NULL, 'Null'=>true)
 );
 
 $schema['rememberme'] = array(
