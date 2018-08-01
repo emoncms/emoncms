@@ -817,11 +817,14 @@ class User
     public function setBetaOptIn($userid, $optIn){
         $userid = (int) $userid;
         $json = json_encode($optIn);
+        $success = false;
         
         $stmt = $this->mysqli->prepare("UPDATE users SET opt_in = ? WHERE id = ?");
-        $stmt->bind_param("si", $json, $userid);
-        $success = $stmt->execute();
-        $stmt->close();
+        if ($stmt) {
+            $stmt->bind_param("si", $json, $userid);
+            $success = $stmt->execute();
+            $stmt->close();
+        }
 
         if(!$success){
             return array('success'=>false,'message'=>'Error Saving Preference');
@@ -841,12 +844,14 @@ class User
         $someReasonForNotShowingBetaOption = false;
 
         $stmt = $this->mysqli->prepare("SELECT opt_in FROM users WHERE id = ?");
-        $stmt->bind_param("i",$userid);
-        $stmt->execute();
-        $stmt->bind_result($opt_in);
-        $success = $stmt->fetch();
-        $stmt->close();
-
+        $opt_in = false;
+        if($stmt){
+            $stmt->bind_param("i",$userid);
+            $stmt->execute();
+            $stmt->bind_result($opt_in);
+            $success = $stmt->fetch();
+            $stmt->close();
+        }
         $json = json_decode($opt_in);
 
         if (!$someReasonForNotShowingBetaOption) {

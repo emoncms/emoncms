@@ -124,11 +124,11 @@ function languagecode_to_name($langs) {
 
         <div id="beta-section" class="well hidden">
             <h4><?php echo _('Beta Features'); ?>:
-                <span class="text-info" id="beta-errors"
+                <small class="text-info" id="beta-errors"
                   data-saved-text="<?php echo _('Saved') ?>" 
                   data-error-text="<?php echo _('Error') ?>" 
-                 data-loading-text="<?php echo _('Saving...') ?>"
-                ></span>
+                  data-loading-text="<?php echo _('Saving...') ?>"
+                ></small>
             </h4>
             <form id="beta-form" class="form-horizontal" style="margin-bottom:.2em">
             
@@ -499,41 +499,51 @@ function languagecode_to_name($langs) {
             $msg = $('#beta-errors')
 
             // ajax promise functions
+            // ----------------------
+            // ajax success
             success = function(data,textStatus,xhr) {
-                // ajax success
-                // display error if returned value is not desired
-                if(data && !data && !data.success) {
+                // display error if returned value is not as expected
+                if(!data || !data.success) {
                     error(xhr, 'not successful', data.message)
                 } else {
                     state = 1
                     $msg.text($msg.data('saved-text'))
                 }
             }
+            // ajax issue
             error = function(xhr,textStatus,errorThrown) {
-                // ajax error or called by success
                 state = 2
-                // display error to user
-                $msg.text($msg.data('error-text')+' '+errorThrown)
+                $msg.text($msg.data('error-text')+': '+errorThrown)
             }
+            // success or error
             always = function(){
                 // reset form state after ajax call
                 timeout = state == 2 ? 4000 : 1300
                 setTimeout(function(){
-                    $msg.text('')
+                    $msg.fadeOut('fast',function(){ $(this).text('').show()})
                     state = 0
                 }, timeout)
             }
-
+            // serialize any inputs or hidden fields
             data = $form.serialize()
+            // create optIn object to send to server
             optIn = {}
             $optInSection.find('.controls').each(function(n,elem){
                 let prop = $(elem).data('prop')
                 optIn[prop] = $(elem).find('.btn.active').data('value') == true
             })
+            // add the optIn object to the data object
             data = $.extend({}, data, {optIn:optIn})
-            $msg.text($msg.data('loading-text'))
+
+            // show loading message if response time > 200ms
+            setTimeout(function(){
+                if(state == 0) $msg.text($msg.data('loading-text'))
+            }, 200)
+
+            // send request
             $.post(url, data).done(success).fail(error).always(always)
 
+            // return false and wait for promises to complete
             return false;
         })
         
