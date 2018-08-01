@@ -312,12 +312,11 @@
             } else {
                 $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
-            
-            // Enabled in device-support branch
-            // if (!isset($dbinputs[$nodeid])) {
-            //     $dbinputs[$nodeid] = array();
-            //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
-            // }
+
+            if (!isset($dbinputs[$nodeid])) {
+                $dbinputs[$nodeid] = array();
+                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
+            }
 
             $tmp = array();
             foreach ($inputs as $i)
