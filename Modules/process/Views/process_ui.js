@@ -250,7 +250,7 @@ var processlist_ui =
         badge.longText = badge.process.name
         badge.input = input
         badge.feed =  this.feedlist[badge.value] || {}
-        badge.schedule = this.schedulelist[value] || {}
+        badge.schedule = this.schedulelist[badge.value] || {}
         badge.title = badge.type.title.format(badge);
         // pass the collected badge object as values for the title string template
         badges.push(badge);
