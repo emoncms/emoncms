@@ -278,7 +278,7 @@ class InputMethods
 
         if (!isset($dbinputs[$nodeid])) {
             $dbinputs[$nodeid] = array();
-            if ($this->device) $this->device->create($userid,$nodeid);
+            if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
                 
         $tmp = array();
@@ -301,6 +301,8 @@ class InputMethods
                     'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
                     'sourceid'=>$dbinputs[$nodeid][$name]['id'])
                 );
+
+                if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
             }
         }
 

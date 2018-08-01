@@ -705,15 +705,18 @@ var processlist_ui =
     $(".feedaccesslabel").attr("href","#"); // disable access to feeds
   },
 
-  'saved':function(t){
-    $("#save-processlist").attr('class','btn btn-success').text(_Tr("Saved"));
-    // Update context table immedietly
-    for (z in t.data) {
-      if (t.data[z].id == processlist_ui.contextid) {
-        t.data[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
+  'saved':function(feeds){
+    $("#save-processlist").attr('class','btn btn-success').text("Saved");
+
+    // compatibility input vs device view transpose
+    if (feeds.data!=undefined) feeds = feeds.data;
+
+    for (z in feeds) {
+      if (feeds[z].id == processlist_ui.contextid) {
+        feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    table.draw();
+    if (window.table!=undefined) table.draw();
   },
 
   'decode':function(str){
@@ -904,7 +907,8 @@ var processlist_ui =
     processlist_ui.init_done--;
     if (processlist_ui.init_done == 0) {
       processlist_ui.draw();
-      table.draw();
+      if (window.table!=undefined) table.draw();
+
       if (processlist_ui.contexttype == 0) {
         $("#process-select").val(this.getProcessKeyById(1)); // default process for input context
       } else {
