@@ -395,7 +395,7 @@ var processlist_ui =
             var feedname = $('#new-feed-name').val();
             var feedtag = $('#new-feed-tag').val();
             var engine = $('#feed-engine').val();
-            var datatype = process[4];
+            var datatype = process.datatype;
 
             var options = {};
             options = {interval:$('#feed-interval').val()};
@@ -615,7 +615,7 @@ var processlist_ui =
     var feedwrite = this.processlist[processid].feedwrite; // process writes to feed
     var engines = this.processlist[processid].engines;   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
     var datatype = this.processlist[processid].datatype;  // 0:UNDEFINED, 1:REALTIME, 2:DAILY, 3:HISTOGRAM
-
+    
     var feedgroups = [];
     for (z in this.feedlist) {
         datatypes = {
