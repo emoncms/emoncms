@@ -41,7 +41,7 @@ function feed_controller()
         if ($route->action == "list" && $session['write']) {
         
             global $ui_version_2;
-            if ($device && !(isset($ui_version_2) && !$ui_version_2)) {
+            if ($device && isset($ui_version_2) && $ui_version_2) {
                 $result = view("Modules/feed/Views/feedlist_view_v2.php",array());
             } else {
                 $result = view("Modules/feed/Views/feedlist_view.php",array());
