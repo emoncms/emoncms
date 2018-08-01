@@ -353,7 +353,35 @@ var processlist_ui =
               return false;
             }
 
-            var result = feed.create(feedtag,feedname,datatype,engine,options);
+            units = {
+              'log_to_feed':'',//Log to feed 
+              'power_to_kwh':'kWh',//Power to kWh
+              'power_to_kwhd':'kWh',//Power to kWh/d
+              'whinc_to_kwhd':'Wh',//Wh increments to kWh/d
+              'kwh_to_kwhd_old':'',//kWh to kWh/d (OLD)
+              'update_feed_data':'',//Upsert feed at day
+              'ratechange':'',//Rate of change
+              'histogram':'',//Histogram
+              'average':'',//Daily Average
+              'heat_flux':'',//Heat flux
+              'power_acc_to_kwhd':'',//Power gained to kWh/d
+              'pulse_diff':'',//Total pulse count to pulse increment
+              'kwh_to_kwhd':'',//kWh to kWh/d
+              'min_value':'',//Min daily value
+              'sub_feed':'',// - feed
+              'multiply_by_feed':'',// * feed
+              'divide_by_feed':'',// / feed
+              'wh_accumulator':'Wh',//Wh Accumulator
+              'source_feed_data_time':'',//Source Feed
+              //'get_feed_data_day':'',//Source Daily (TBD)
+              'add_source_feed':'',// + source feed
+              'sub_source_feed':'',// - source feed
+              'multiply_by_source_feed':'',// * source feed
+              'divide_by_source_feed':'',// / source feed
+              'reciprocal_by_source_feed':''//1/ source feed
+            };
+            unit = units[process[2]] || ''
+            var result = feed.create(feedtag,feedname,datatype,engine,options,unit);
             feedid = result.feedid;
 
             if (!result.success || feedid<1) {
