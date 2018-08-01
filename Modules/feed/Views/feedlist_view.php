@@ -8,6 +8,7 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
+<!-- <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.js"></script> -->
 
 <style>
 #table input[type="text"] {
@@ -72,22 +73,26 @@ input[type="range"]{
     <div class="modal-body">
         <div class="clearfix">
             <div class="span6">
-                <div style="min-height:10.6em; position:relative" class="well well-small">
-                    <h4 class="text-info">Clear:</h4>
-                    <p>Empty feed of all data</p>
+                <div style="min-height:12.1em; position:relative" class="well well-small">
+                    <h4 class="text-info"><?php echo _('Clear') ?>:</h4>
+                    <p><?php echo _('Empty feed of all data') ?></p>
                     <button id="feedClear-confirm" class="btn btn-info" style="position:absolute;bottom:.8em"><?php echo _('Clear Data'); ?>&hellip;</button>
                 </div>
             </div>
 
             <div class="span6">
                 <div class="well well-small">
-                    <h4 class="text-info">Trim:</h4>
-                    <p>Empty feed data up to:</p>
-                    <div id="trim_start_time_container" class="control-group">
+                    <h4 class="text-info"><?php echo _('Trim') ?>:</h4>
+                    <p><?php echo _('Empty feed data up to') ?>:</p>
+                    <div id="trim_start_time_container" class="control-group" style="margin-bottom:1.3em">
                         <div class="controls">
-                            <div id="feed_trim_datetimepicker" class="input-append date">
+                            <div id="feed_trim_datetimepicker" class="input-append date" style="margin-bottom:0">
                                 <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="dd/mm/yyyy hh:mm:ss">
                                 <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
+                            </div>
+                            <div class="btn-group" style="margin-bottom:-4px">
+                                <button class="btn btn-mini" data-relative_time="-1y"><?php echo _('- 1 year') ?></button>
+                                <button class="btn btn-mini" data-relative_time="-2y"><?php echo _('- 2 year') ?></button>
                             </div>
                         </div>
                     </div>
@@ -369,6 +374,11 @@ input[type="range"]{
     }
   });
 
+  $('#feedDeleteModal #trim_start_time').focus(function(event){
+    $parent = $(this).parents('.date').first()
+    $parent.datetimepicker('show')
+  })
+
   $("#feedTrim-confirm").click(function(){
     $modal = $('#feedDeleteModal')
     let id = $modal.attr('the_id');
@@ -602,4 +612,47 @@ input[type="range"]{
     let new_start_time = input.value
     document.getElementById('feed_shift_slider_value').innerText = new_start_time
   }
+
+  /**
+   * allow relative time adjustments for feed trim() dialogue
+   */
+  $(function(){
+    $('[data-relative_time]').click(function(event){
+      event.preventDefault()
+      $btn = $(this)
+      $input = $('#trim_start_time')
+      now = new Date()
+      // add more cases here for additional options
+      switch ($btn.data('relative_time')) {
+        case '-2y':
+            date = new Date(now.getFullYear()-2,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds())
+            break
+        case '-1y':
+            date = new Date(now.getFullYear()-1,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds())
+            break
+        default:
+            date = now
+      }
+      // rebuild the date string from the new date object
+      Y = date.getFullYear()
+      m = (date.getMonth()+1).pad(2)
+      d = date.getDate().pad(2)
+      h = date.getHours().pad(2)
+      i = date.getMinutes().pad(2)
+      s = date.getSeconds().pad(2)
+
+      // DD/MM/YYYY HH:MM:SS
+      newDateString = [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ')
+      $input.val(newDateString)
+
+      $('#feed_trim_datetimepicker').datetimepicker('setValue',date).datetimepicker('hide')
+    })
+  })
+
+Number.prototype.pad = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {s = "0" + s;}
+  return s;
+}
+  
 </script>
