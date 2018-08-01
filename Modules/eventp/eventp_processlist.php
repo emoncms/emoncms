@@ -27,7 +27,9 @@ class Eventp_ProcessList
     // / Below are functions of this module processlist, same name must exist on process_list()
     
     public function process_list() {
-        
+
+        textdomain("eventp_messages");
+          
         $list = array(
             array(
               "name"=>_("If rate >=, skip next"),
