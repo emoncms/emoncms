@@ -767,7 +767,7 @@ var processlist_ui =
       for (p in result)  // for each processor
       {
         result[p]['feedwrite']=false;
-        if (result[p][6]!=undefined) { // processor has supported engines?
+        if (result[p]['engines']!=undefined) { // processor has supported engines?
           result[p]['feedwrite']=true; // If has an engine so assume process writes to feed 
           if (processlist_ui.engines_hidden.length > 0) {
             for (var e=result[p]['engines'].length-1; e > -1; e--) {  // for each processor engine
