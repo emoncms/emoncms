@@ -814,38 +814,46 @@ class User
      * @param array $optIn
      * @return array
      */
-    public function setBetaOptIn($optIn){
-        $expire = time()+60*60*24*365*2;// 2 years
-        $success = setcookie($this->clientSettingsName, json_encode($optIn), $expire);
+    public function setBetaOptIn($userid, $optIn){
+        $userid = (int) $userid;
+        $json = json_encode($optIn);
+        
+        $stmt = $this->mysqli->prepare("UPDATE users SET opt_in = ? WHERE id = ?");
+        $stmt->bind_param("si", $json, $userid);
+        $success = $stmt->execute();
+        $stmt->close();
+
         if(!$success){
             return array('success'=>false,'message'=>'Error Saving Preference');
         } else {   
             return array('success'=>true,'message'=>'Preference Saved');
         }
     }
-    /**
-     * removes the locally saved user preference
-     *
-     * @return array
-     */
-    public function removeBetaOptIn(){
-        setcookie($this->clientSettingsName, null, -1); // set to null and expire now
-        unset($_COOKIE[$this->clientSettingsName]);
-        return array('success'=>true,'message'=>'Preference Removed');
-    }
+
     /**
      * returns current user preference saved locally
      * success = false if user not part of beta trial
      *
      * @return array
      */
-    public function getBetaOptIn(){
+    public function getBetaOptIn($userid){
+        // this might be used in the future to restrict access to this feature
         $someReasonForNotShowingBetaOption = false;
+
+        $stmt = $this->mysqli->prepare("SELECT opt_in FROM users WHERE id = ?");
+        $stmt->bind_param("i",$userid);
+        $stmt->execute();
+        $stmt->bind_result($opt_in);
+        $success = $stmt->fetch();
+        $stmt->close();
+
+        $json = json_decode($opt_in);
+
         if (!$someReasonForNotShowingBetaOption) {
-            if (isset($_COOKIE[$this->clientSettingsName])) {
-                return array('success'=>true,'optin'=>$_COOKIE[$this->clientSettingsName]);
+            if (!empty($json)) {
+                return array('success'=>true,'optin'=>$json);
             } else {
-                return array('success'=>true,'optin'=>false);
+                return array('success'=>true,'optin'=>false,'message'=>'Empty');
             }
             return array('success'=>true,'optin'=>$value);
         } else {

@@ -115,20 +115,19 @@ function user_controller()
         }
         // set user peferences for beta opt ins
         if ($route->action == 'beta' && $session['read']) {
+            $userid = $session['userid'];
+
             switch($route->method) {
                 case 'POST':
                     if(!empty(post('optIn'))){
                         $optIns = post('optIn');
-                        $result = $user->setBetaOptIn($optIns);
+                        $result = $user->setBetaOptIn($userid, $optIns);
                     } else {
                         $result = array('success'=>false,'message'=>'Invalid parameters');
                     }
                     break;
-                case 'DELETE':
-                    $result = $user->removeBetaOptIn();
-                    break;
                 default:
-                    $result = $user->getBetaOptIn();
+                    $result = $user->getBetaOptIn($userid);
             }
         }
     }

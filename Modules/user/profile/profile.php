@@ -123,7 +123,13 @@ function languagecode_to_name($langs) {
         <div id="table"></div>
 
         <div id="beta-section" class="well hidden">
-            <h4><?php echo _('Beta Features'); ?>:</h4>
+            <h4><?php echo _('Beta Features'); ?>:
+                <span class="text-info" id="beta-errors"
+                  data-saved-text="<?php echo _('Saved') ?>" 
+                  data-error-text="<?php echo _('Error') ?>" 
+                 data-loading-text="<?php echo _('Saving...') ?>"
+                ></span>
+            </h4>
             <form id="beta-form" class="form-horizontal" style="margin-bottom:.2em">
             
                 <!-- start option toggle -->
@@ -131,19 +137,13 @@ function languagecode_to_name($langs) {
                     <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
                     <div class="controls" data-prop="deviceModule">
                         <div class="options btn-group" data-toggle="buttons-radio">
-                            <button type="button" autocomplete="off" class="btn" data-toggle="button" data-value="true">On</button>
-                            <button type="button" autocomplete="off" class="btn active" data-toggle="button" data-value="false">Off</button>
+                            <button autocomplete="off" class="btn" data-toggle="button" data-value="true">On</button>
+                            <button autocomplete="off" class="btn active" data-toggle="button" data-value="false">Off</button>
                         </div>
                     </div>
                 </div>
                 <!-- end option toggle -->
 
-                <button class="btn" data-saved-text="<?php echo _('Saved') ?>" data-error-text="<?php echo _('Error') ?>" data-loading-text="<?php echo _('Saving...') ?>">Save</button>
-                <span style="padding:1em" class="text-info" id="beta-errors"></span>
-            </form>
-            <form id="delete-opts" action="<?php echo $path.'user/beta.json'?>" class="pull-right" style="margin-top:-2em">
-                <input type="hidden" name="_method" value="DELETE">
-                <button class="btn"><?php echo _('Reset') ?></button>
             </form>
         </div>
 
@@ -496,10 +496,7 @@ function languagecode_to_name($langs) {
             let state = 0
 
             $form = $(event.target)
-            $btn = $('[data-loading-text]')
             $msg = $('#beta-errors')
-
-            $btn.button('loading') // set the loading text 
 
             // ajax promise functions
             success = function(data,textStatus,xhr) {
@@ -509,24 +506,22 @@ function languagecode_to_name($langs) {
                     error(xhr, 'not successful', data.message)
                 } else {
                     state = 1
-                    $btn.button('saved').removeClass('btn-primary').addClass('btn-success')
-                    $msg.text('') // clear the error messages
+                    $msg.text($msg.data('saved-text'))
                 }
             }
             error = function(xhr,textStatus,errorThrown) {
                 // ajax error or called by success
-                // display error to user
                 state = 2
-                $btn.removeClass('btn-primary').addClass('btn-danger').button('error')
-                $msg.text(errorThrown)
+                // display error to user
+                $msg.text($msg.data('error-text')+' '+errorThrown)
             }
             always = function(){
                 // reset form state after ajax call
                 timeout = state == 2 ? 4000 : 1300
                 setTimeout(function(){
-                    $btn.button('reset').removeClass('btn-danger btn-success')
+                    $msg.text('')
                     state = 0
-                },timeout)
+                }, timeout)
             }
 
             data = $form.serialize()
@@ -536,10 +531,8 @@ function languagecode_to_name($langs) {
                 optIn[prop] = $(elem).find('.btn.active').data('value') == true
             })
             data = $.extend({}, data, {optIn:optIn})
-            $.post(url, data)
-            .done(success)
-            .fail(error)
-            .always(always)
+            $msg.text($msg.data('loading-text'))
+            $.post(url, data).done(success).fail(error).always(always)
 
             return false;
         })
