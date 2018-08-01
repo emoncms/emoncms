@@ -510,20 +510,39 @@ class Input
         $pairs = explode(",",$processlist);
         $pairs_out = array();
         
+        // Build map of processids where set
+        $map = array();
+        foreach ($process_list as $key=>$process) {
+            if (isset($process['id_num'])) $map[$process['id_num']] = $key;
+        }
+        
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = $inputprocess[0];
-                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
+                $processkey = $inputprocess[0];
+                // If key is in the map, switch to associated full process key
+                if (isset($map[$processkey])) $processkey = $map[$processkey];
+            
+                // Load process
+                if (isset($process_list[$processkey])) {
+                    $processarg = $process_list[$processkey]['argtype'];
+                    
+                    // remap process back to use map id if available
+                    if (isset($process_list[$processkey]['id_num']))
+                        $processkey = $process_list[$processkey]['id_num'];
+                    
+                } else {
+                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+                }
                 
                 // Verify argument
                 $arg = $inputprocess[1];
                 
                 // Check argument against process arg type
-                switch($process_list[$processid][1]){
+                switch($processarg){
                 
                     case ProcessArg::FEEDID:
                         $feedid = (int) $arg;
@@ -566,7 +585,7 @@ class Input
                         break;
                 }
                 
-                $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processkey,$arg));
             }
         }
         

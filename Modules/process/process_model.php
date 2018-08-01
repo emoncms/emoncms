@@ -37,7 +37,10 @@ class Process
     
     private $log;
     private $modules_functions = array();
-
+    
+    private $process_list = array();
+    public $process_map = array();
+    
     public function __construct($mysqli,$input,$feed,$timezone)
     {
         $this->mysqli = $mysqli;
@@ -45,7 +48,13 @@ class Process
         $this->feed = $feed;
         if (!($timezone === NULL)) $this->timezone = $timezone;
         $this->log = new EmonLogger(__FILE__);
-        $this->get_process_list(); // Load modules modules
+        
+        $this->process_list = $this->load_modules();
+        
+        // Build map of processids where set
+        foreach ($this->process_list as $k=>$v) {
+            if (isset($v['id_num'])) $this->process_map[$v['id_num']] = $k;
+        }
     }
 
     // Triggered when invoking inaccessible methods in this class context, it must be a module function then
@@ -68,11 +77,7 @@ class Process
 
     public function get_process_list()
     {
-        static $list = array(); // Array to hold the cache
-        if (empty($list) || empty($this->modules_functions)) {     // Cache it now
-            $list=$this->load_modules();  
-        }
-        return $list;
+        return $this->process_list;
     }
 
 
@@ -91,6 +96,10 @@ class Process
             $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
             $processkey = $inputprocess[0];                          // Process id
+            
+            // Map ids to process key names
+            if (isset($this->process_map[$processkey])) $processkey = $this->process_map[$processkey];
+            
             if (!isset($process_list[$processkey])) {
                 $this->log->error("input() Processor '".$processkey."' does not exists. Module missing?");
                 return false;
@@ -100,7 +109,7 @@ class Process
             
             $process_function = $processkey;                               // get process key 'module.function'
             if (strpos($processkey, '__') === FALSE)
-                $process_function = $process_list[$processkey][2];         // for backward compatibility -> get process function name
+                $process_function = $process_list[$processkey]["function"];         // for backward compatibility -> get process function name
                 $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
                 if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
                     $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
@@ -138,26 +147,26 @@ class Process
         return $value;
     }
 
-
     private function load_modules() {
         $list = array();
         $dir = scandir("Modules");
+        $old_ids = array();
         for ($i=2; $i<count($dir); $i++) {
-            if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link') {
-                $class = $this->get_module_class($dir[$i]);
+            $module = $dir[$i];
+            if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {
+                $class = $this->get_module_class($module);
                 if ($class != null) {
+                    
                     $mod_process_list = $class->process_list();
+                    
                     foreach($mod_process_list as $k => $v) {
-                        $processkey = strtolower($dir[$i]."__".$v[2]);
+                        $processkey = strtolower($dir[$i]."__".$v['function']);
                         $list[$processkey] = $v; // set list key as "module__function"
-                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]");
+                        //$this->log->info("load_modules() module=$dir[$i] function=$v[2]"); 
                     }
                 }
             }
         }
-        // Loads core process list from process module (with integer key for backward_compatibility)
-        $backward_compatible_list = "process__core_process_list"; 
-        $list+=$this->$backward_compatible_list();
         return $list;
     }
 
