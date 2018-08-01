@@ -92,6 +92,8 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 
 - [Graph module](https://github.com/emoncms/graph) advanced graphing module that integrates with the emoncms feed list, highly recommended, examples of use can be found in emoncms guide [[1]](http://guide.openenergymonitor.org/setup/daily-kwh)[[2]](http://guide.openenergymonitor.org/setup/daily-averages/)[[3]](http://guide.openenergymonitor.org/setup/export-csv/)[[4]](http://guide.openenergymonitor.org/setup/histograms)
 
+- [Device module](https://github.com/emoncms/device) automatically configure inputs and feeds using device templates. 
+
 - [Dashboards module](https://github.com/emoncms/dashboard), required for creating, viewing and publishing dashboards: 
 
 - [App Module](https://github.com/emoncms/app.git) - Application specific dashboards e.g. MyElectric, MySolar
