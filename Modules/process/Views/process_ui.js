@@ -404,8 +404,11 @@ var processlist_ui =
               alert('ERROR: Please enter a feed name');
               return false;
             }
-
-            var result = feed.create(feedtag,feedname,datatype,engine,options);
+            
+            var unit = '';
+            if (process.unit!=undefined) unit = process.unit;
+            
+            var result = feed.create(feedtag,feedname,datatype,engine,options,unit);
             feedid = result.feedid;
 
             if (!result.success || feedid<1) {
