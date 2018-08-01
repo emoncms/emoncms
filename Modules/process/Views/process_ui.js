@@ -100,7 +100,7 @@ var processlist_ui =
                 arg.text = (this.feedlist[feedid].tag || '') + ': '+this.feedlist[feedid].name
                 arg.title = _Tr("Feed")+" "+feedid
                 arg.icon = 'icon-list-alt'
-                arg.href = path+"vis/auto?feedid="+feedid
+                arg.href = path+"graph?"+feedid
                 lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
               } else {
                 arg.text = 'Feedid "+feedid+" does not exists or was deleted'
@@ -245,7 +245,7 @@ var processlist_ui =
         badge.type = this.argtypes[badge.process.argtype]
         badge.typeName = badge.type.name
         badge.cssClass = badge.type.cssClass
-        badge.href = badge.type.name == 'feed' ? path+"vis/auto?feedid="+badge.value : false;
+        badge.href = badge.process.argtype == ProcessArg.FEEDID ? path+"graph?"+badge.value : false;
         badge.text = badge.process.short || ''
         badge.longText = badge.process.name
         badge.input = input
