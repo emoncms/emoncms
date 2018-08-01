@@ -644,7 +644,9 @@ var processlist_ui =
       out += "</optgroup>";
     }
     // overwrite feed list
-    $feedSelect.data('value',$feedSelect.val());// store previous value before <select> changes
+    var lastval = $feedSelect.val();
+    if (lastval==null) lastval = -1;
+    $feedSelect.data('value',lastval);// store previous value before <select> changes
     $feedSelect.html(out);
     // recall the old value if available
     if($feedSelect.data('value')!=""){

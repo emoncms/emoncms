@@ -77,7 +77,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Main"),
-              "engines"=>array(0,2,5,6,8,10),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
               "nochange"=>true,
               "description"=>_("<p><b>Log to feed:</b> This processor logs to a timeseries feed which can then be used to explore historic data. This is recommended for logging power, temperature, humidity, voltage and current data.</p><p><b>Feed engine:</b><ul><li><b>PHPFina</b> is the recommended feed engine it is a basic fixed interval timeseries engine.</li><li><b>PHPTimeseries</b> is for data posted at a non regular interval such as on state change.</li></ul></p><p><b>Feed interval:</b> When selecting the feed interval select an interval that is the same as, or longer than the update rate that is set in your monitoring equipment. Setting the interval rate to be shorter than the update rate of the equipment causes un-needed disk space to be used up.</p>")
            ),
@@ -115,7 +115,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"kWh",
               "group"=>_("Main"),
-              "engines"=>array(0,2,5,8),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p><b>Power to kWh:</b> Convert a power value in Watts to a cumulative kWh feed.<br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1.<br>See forum thread here for an example <a href=\"https://openenergymonitor.org/emon/node/12308\">Creating kWh per day bar graphs from Accumulating kWh </a></p>")
            ),
@@ -129,7 +129,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Power & Energy"),
-              "engines"=>array(0,2,8),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Convert a power value in Watts to a feed that contains an entry for the total energy used each day (kWh/d)</p>")
            ),
@@ -155,7 +155,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Input"),
-              "engines"=>array(0,2,8),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Counts the amount of time that an input is high in each day and logs the result to a feed. Created for counting the number of hours a solar hot water pump is on each day</p>")
            ),
@@ -169,7 +169,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Power & Energy"),
-              "engines"=>array(0,2,8),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Accumulate Wh measurements into kWh/d.<p><b>Input</b>: energy increments in Wh.</p>")
            ),
@@ -183,7 +183,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
-              "engines"=>array(2),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "description"=>_("")
            ),
            array(
@@ -196,7 +196,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Input"),
-              "engines"=>array(0,8),
+              "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Updates or inserts daily value on the specified time (given by the JSON time parameter from the API) of the specified feed</p>")
            ),
@@ -246,7 +246,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Misc"),
-              "engines"=>array(5,2,0,8),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "description"=>_("<p>Output feed accumulates by input value</p>")
            ),
            array(
@@ -259,7 +259,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Misc"),
-              "engines"=>array(6,5,2),
+              "engines"=>array(Engine::PHPFIWA,Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
               "description"=>_("<p>Output feed is the difference between the current value and the last</p>")
            ),
@@ -273,7 +273,7 @@ class Process_ProcessList
               "datatype"=>DataType::HISTOGRAM,
               "unit"=>"",
               "group"=>_("Power & Energy"),
-              "engines"=>array(0,8),
+              "engines"=>array(Engine::MYSQL,Engine::MYSQLMEMORY),
               "description"=>_("Creates a histogram of energy binned by power ranges. For each power range on the x-axis, this processor will aggregate the total energy of the stream while it was in that power range.<p><b>Input</b>: power in Watts.</p>")
            ),
            array(
@@ -286,7 +286,7 @@ class Process_ProcessList
               "datatype"=>DataType::HISTOGRAM,
               "unit"=>"",
               "group"=>_("Deleted"),
-              "engines"=>array(2),
+              "engines"=>array(Engine::PHPTIMESERIES),
               "description"=>_("")
            ),
            array(
@@ -299,7 +299,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Deleted"),
-              "engines"=>array(6,5,2),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "description"=>_("")
            ),
            array(
@@ -312,7 +312,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Deleted"),
-              "engines"=>array(2),
+              "engines"=>array(Engine::PHPTIMESERIES),
               "description"=>_("")
            ),
            array(
@@ -325,7 +325,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"",
               "group"=>_("Pulse"),
-              "engines"=>array(5,2),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "description"=>_("<p>Returns the number of pulses incremented since the last update for a input that is a cumulative pulse count. i.e If the input updates from 23400 to 23410 the result will be an incremenet of 10.</p>")
            ),
            array(
@@ -338,7 +338,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"W",
               "group"=>_("Power & Energy"),
-              "engines"=>array(6,5,2),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
               "description"=>_("<p>Convert accumulating kWh to instantaneous power</p>")
            ),
@@ -364,7 +364,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"kWhd",
               "group"=>_("Power & Energy"),
-              "engines"=>array(2),
+              "engines"=>array(Engine::PHPTIMESERIES),
               "requireredis"=>true,
               "nochange"=>true,
               "description"=>_("<p>Upsert kWh to a daily value.</p>")
@@ -415,7 +415,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Misc"),
-              "engines"=>array(2,0,8),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Maximal daily value. Upserts on the selected daily feed the highest value reached each day.</p>")
            ),
@@ -429,7 +429,7 @@ class Process_ProcessList
               "datatype"=>DataType::DAILY,
               "unit"=>"",
               "group"=>_("Misc"),
-              "engines"=>array(2,0,8),
+              "engines"=>array(Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY),
               "nochange"=>true,
               "description"=>_("<p>Minimal daily value. Upserts on the selected daily feed the lowest value reached each day.</p>")
            ),
@@ -503,7 +503,7 @@ class Process_ProcessList
               "datatype"=>DataType::REALTIME,
               "unit"=>"Wh",
               "group"=>_("Main"),
-              "engines"=>array(2,5),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
               "requireredis"=>true,
               "description"=>_("<b>Wh Accumulator:</b> Use with emontx, emonth or emonpi pulsecount or an emontx running firmware <i>emonTxV3_4_continuous_kwhtotals</i> sending cumulative watt hours.<br><br>This processor ensures that when the emontx is reset the watt hour count in emoncms does not reset, it also checks filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br>See forum thread here for an example <a href=\"https://openenergymonitor.org/emon/node/12308\" Creating kWh per day bar graphs from Accumulating kWh </a></p>")
            ),
