@@ -49,7 +49,7 @@ class Process
         if (!($timezone === NULL)) $this->timezone = $timezone;
         $this->log = new EmonLogger(__FILE__);
         
-        $this->process_list = $this->load_modules();
+        $this->process_list = $this->get_process_list(); // Load modules modules
         
         // Build map of processids where set
         foreach ($this->process_list as $k=>$v) {
@@ -77,9 +77,12 @@ class Process
 
     public function get_process_list()
     {
-        return $this->process_list;
+        static $list = array(); // Array to hold the cache
+        if (empty($list) || empty($this->modules_functions)) {     // Cache it now
+            $list=$this->load_modules();  
+        }
+        return $list;
     }
-
 
     public function input($time, $value, $processList, $options = null)
     {
