@@ -885,6 +885,8 @@ class User
             $stmt->bind_result($preferences);
             $success = $stmt->fetch();
             $stmt->close();
+        }else{
+            return array('success'=>false,'message'=>_('Please update database'));
         }
         $json = json_decode($preferences,1);
         // return data and/or success/error message

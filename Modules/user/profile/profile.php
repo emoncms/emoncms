@@ -122,6 +122,10 @@ function languagecode_to_name($langs) {
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
 
+        
+        <div id="preferences-section_update_warning" class="well hidden">
+            <h4><?php echo _('Please update your database') ?></h4>
+        </div>
         <div id="preferences-section" class="well hidden">
             <h4><?php echo _('Beta Features'); ?>:
                 <small class="text-info" id="preferences-errors"
@@ -450,6 +454,8 @@ function languagecode_to_name($langs) {
                 //show options if applicable
                 $preferencesSection.removeClass('hidden')
                 setButtonStates(data.preferences)
+            }else{
+                $('#preferences-section_update_warning').removeClass('hidden')
             }
         })
         function setButtonStates(preferences){
