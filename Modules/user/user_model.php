@@ -814,55 +814,82 @@ class User
      * @param array $optIn
      * @return array
      */
-    public function setBetaOptIn($userid, $optIn){
+    public function set_preferences ($userid, $preference) {
         $userid = (int) $userid;
-        $json = json_encode($optIn);
-        $success = false;
+        // add to this array to allow more properties
+        $allowed_properties = array('deviceView');
+
+        // overwrite the current settings with the new
+        $get_preferences = $this->get_preferences($userid);
+        $current_preferences = !empty($get_preferences['preferences']) ? $get_preferences['preferences'] : array();
+        // array_merge only works on top level assoc arrays (not nested)
+        $preferences = array_merge($current_preferences,$preference);
         
-        $stmt = $this->mysqli->prepare("UPDATE users SET opt_in = ? WHERE id = ?");
-        if ($stmt) {
+        // set the sanitize features for each allowed property
+        $filters = array(
+            'deviceView'=>FILTER_VALIDATE_BOOLEAN
+        );
+        $options = array(
+            'deviceView'=>array(
+                'flags'=>FILTER_NULL_ON_FAILURE
+            )
+        );
+        // santize the passed preferences
+        $filtered = array(); // clean preferences
+        foreach($preferences as $key=>$value) {
+            if (in_array($key, $allowed_properties)) {
+                $filtered[$key] = filter_var($value, $filters[$key], $options[$key]);
+            }
+        }
+
+        // encode the sanitized preferences as a JSON string
+        $json = json_encode($filtered, JSON_NUMERIC_CHECK);
+
+        $success = false;
+        $error = '';
+        if ($stmt = $this->mysqli->prepare("UPDATE users SET preferences = ? WHERE id = ?")) {
             $stmt->bind_param("si", $json, $userid);
             $success = $stmt->execute();
+            $error = $stmt->error;
             $stmt->close();
+        } else {
+            return array('success'=>false,'message'=>_('Error building query'));
         }
 
         if(!$success){
-            return array('success'=>false,'message'=>'Error Saving Preference');
+            return array('success'=>false,'message'=>_($error));
         } else {   
-            return array('success'=>true,'message'=>'Preference Saved');
+            return array('success'=>true,'message'=>_('Preference Saved'));
         }
     }
 
     /**
-     * returns current user preference saved locally
-     * success = false if user not part of beta trial
+     * returns all or individual user preference
+     * @param int $userid
+     * @param string $key
      *
      * @return array
      */
-    public function getBetaOptIn($userid){
-        // this might be used in the future to restrict access to this feature
-        $someReasonForNotShowingBetaOption = false;
-
-        $stmt = $this->mysqli->prepare("SELECT opt_in FROM users WHERE id = ?");
-        $opt_in = false;
-        if($stmt){
-            $stmt->bind_param("i",$userid);
+    public function get_preferences ($userid, $key = null) {
+        $stmt = $this->mysqli->prepare("SELECT preferences FROM users WHERE id = ?");
+        $preferences = false;
+        if ($stmt) {
+            $stmt->bind_param("i", $userid);
             $stmt->execute();
-            $stmt->bind_result($opt_in);
+            $stmt->bind_result($preferences);
             $success = $stmt->fetch();
             $stmt->close();
         }
-        $json = json_decode($opt_in);
-
-        if (!$someReasonForNotShowingBetaOption) {
-            if (!empty($json)) {
-                return array('success'=>true,'optin'=>$json);
-            } else {
-                return array('success'=>true,'optin'=>false,'message'=>'Empty');
-            }
-            return array('success'=>true,'optin'=>$value);
+        $json = json_decode($preferences,1);
+        // only return single property if called with a $key param
+        if(!empty($key) && !empty($json[$key])){
+            $json = $json[$key];
+        }
+        // return data and/or success/error message
+        if (!empty($json)) {
+            return array('success'=>true, 'preferences'=>$json);
         } else {
-            return array('success'=>false,'message'=>'Not available');
+            return array('success'=>true, 'message'=>_('Empty'));
         }
     }
 }

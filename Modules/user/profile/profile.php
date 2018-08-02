@@ -122,27 +122,27 @@ function languagecode_to_name($langs) {
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
 
-        <div id="beta-section" class="well hidden">
+        <div id="preferences-section" class="well hidden">
             <h4><?php echo _('Beta Features'); ?>:
-                <small class="text-info" id="beta-errors"
+                <small class="text-info" id="preferences-errors"
                   data-saved-text="<?php echo _('Saved') ?>" 
                   data-error-text="<?php echo _('Error') ?>" 
                   data-loading-text="<?php echo _('Saving...') ?>"
                 ></small>
             </h4>
-            <form id="beta-form" class="form-horizontal" style="margin-bottom:.2em">
+            <form id="preferences" class="form-horizontal" style="margin-bottom:.2em">
             
-                <!-- start option toggle -->
+                <!-- start preference section  -->
                 <div class="control-group">
                     <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
-                    <div class="controls" data-prop="deviceModule">
+                    <div class="controls" data-prop="deviceView">
                         <div class="options btn-group" data-toggle="buttons-radio">
                             <button autocomplete="off" class="btn" data-toggle="button" data-value="true">On</button>
                             <button autocomplete="off" class="btn active" data-toggle="button" data-value="false">Off</button>
                         </div>
                     </div>
                 </div>
-                <!-- end option toggle -->
+                <!-- end preference section -->
 
             </form>
         </div>
@@ -439,64 +439,52 @@ function languagecode_to_name($langs) {
     });
 
     /**
-     * save user preferences to device
-     * currently only saving opt in choices for beta feature releases
+     * save user preferences 
      */
     $(function(){
-        // show the buttons if the user is able to join the beta trial
         // highlight the 'Off' button if no value is set
-        $optInSection = $('#beta-section')
-        $.get(path+'user/beta.json')
+        $preferencesSection = $('#preferences-section')
+        $.get(path+'user/preferences.json')
         .done(function(data){
             if (data.success) {
                 //show options if applicable
-                $optInSection.removeClass('hidden')
-                setOptInButtonStates(data.optin)
+                $preferencesSection.removeClass('hidden')
+                setButtonStates(data.preferences)
             }
         })
-        function setOptInButtonStates(optIn){
-            // get the optIn options
-            optIn = typeof optIn == 'string' ? JSON.parse(optIn) : optIn
+        function setButtonStates(preferences){
+            // get the preferences options
+            preferences = typeof preferences == 'string' ? JSON.parse(preferences) : preferences
             // create empty object if no preference saved
-            optIn = optIn || {}
+            preferences = preferences || {}
             // default to false
-            $optInSection.find('.controls').each(function(n,elem){
+            $preferencesSection.find('.controls').each(function(n,elem){
                 let prop = $(elem).data('prop')
-                optIn[prop] = optIn[prop] || false
+                preferences[prop] = preferences[prop] || false
             })
             // set the buttons for Device Module
-            $betaButtons = $optInSection.find('.options button')
-            $.each($betaButtons, function(n,elem){
+            $preferencesButtons = $preferencesSection.find('.options button')
+            $.each($preferencesButtons, function(n,elem){
                 let $button = $(elem)
                 $button.removeClass('active')
                 let prop = $button.parents('.controls').data('prop')
-                if (optIn.hasOwnProperty(prop) && elem.dataset.value == optIn[prop].toString()) {
+
+                if (preferences.hasOwnProperty(prop) && elem.dataset.value == preferences[prop].toString()) {
                     $(elem).addClass('active')
                 }
             })
         }
-        // delete all saved options
-        $('#delete-opts').submit(function(event){
-            event.preventDefault();
-            $.post(this.action, $(this).serialize())
-            .done(function(data){
-                if (data && data.success) {
-                    setOptInButtonStates()
-                    $('#beta-errors').text(data.message)
-                }
-            })
-        })
         // send user preference to controller via ajax
         // display status & progress to user
-        $('#beta-form').submit(function(event){
+        $('#preferences').submit(function(event){
             event.preventDefault()
 
-            let url = path+"user/beta.json"
+            let url = path+"user/preferences.json"
             let states = ['ready','saved','error']
             let state = 0
 
             $form = $(event.target)
-            $msg = $('#beta-errors')
+            $msg = $('#preferences-errors')
 
             // ajax promise functions
             // ----------------------
@@ -526,14 +514,14 @@ function languagecode_to_name($langs) {
             }
             // serialize any inputs or hidden fields
             data = $form.serialize()
-            // create optIn object to send to server
-            optIn = {}
-            $optInSection.find('.controls').each(function(n,elem){
+            // create preferences object to send to server
+            preferences = {}
+            $preferencesSection.find('.controls').each(function(n,elem){
                 let prop = $(elem).data('prop')
-                optIn[prop] = $(elem).find('.btn.active').data('value') == true
+                preferences[prop] = $(elem).find('.btn.active').data('value') == true
             })
-            // add the optIn object to the data object
-            data = $.extend({}, data, {optIn:optIn})
+            // add the preferences object to the data object
+            data = $.extend({}, data, {preferences:preferences})
 
             // show loading message if response time > 200ms
             setTimeout(function(){

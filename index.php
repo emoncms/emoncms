@@ -121,10 +121,10 @@
     } else {
         $session = $user->emon_session_start();
     }
-    $userid = !empty($_SESSION['userid']) ? $_SESSION['userid'] : null;
-    $optIns = json_encode($user->getBetaOptIn($userid),true);
-    if (!empty($optIns['deviceModule']) && $optIns['deviceModule'] == true) $ui_version_2 = true;
     
+    $userid = 1;
+    if ($user->get_preferences($userid, 'deviceView')) $ui_version_2 = true;
+
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);

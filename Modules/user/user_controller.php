@@ -113,21 +113,22 @@ function user_controller()
                 $result = "missing mode field";
             }
         }
-        // set user peferences for beta opt ins
-        if ($route->action == 'beta' && $session['read']) {
+        // set user peferences
+        if ($route->action == 'preferences' && $session['read']) {
             $userid = $session['userid'];
 
-            switch($route->method) {
+            switch ($route->method) {
                 case 'POST':
-                    if(!empty(post('optIn'))){
-                        $optIns = post('optIn');
-                        $result = $user->setBetaOptIn($userid, $optIns);
+                    if(!empty(post('preferences'))){
+                        $preferences = post('preferences');
+                        $result = $user->set_preferences($userid, $preferences);
                     } else {
-                        $result = array('success'=>false,'message'=>'Invalid parameters');
+                        $result = array('success'=>false, 'message'=>'Invalid parameters');
                     }
                     break;
                 default:
-                    $result = $user->getBetaOptIn($userid);
+                    $property = prop('preferences') ? prop('preferences') : false;
+                    $result = $user->get_preferences($userid, $property);
             }
         }
     }
