@@ -124,8 +124,12 @@ class Route
         if (count($args) > 3) {
             $this->subaction2 = $args[3];
         }
-        
-        if (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
+        // allow for method to be added as post variable
+        if(post('_method')=='DELETE') {
+            $this->method = 'DELETE';
+        } elseif(post('_method')=='PUT') {
+            $this->method = 'PUT';
+        } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
         }
     }

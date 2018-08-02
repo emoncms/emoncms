@@ -121,7 +121,32 @@ function languagecode_to_name($langs) {
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
-        
+
+        <div id="preferences-section" class="well hidden">
+            <h4><?php echo _('Beta Features'); ?>:
+                <small class="text-info" id="preferences-errors"
+                  data-saved-text="<?php echo _('Saved') ?>" 
+                  data-error-text="<?php echo _('Error') ?>" 
+                  data-loading-text="<?php echo _('Saving...') ?>"
+                ></small>
+            </h4>
+            <form id="preferences" class="form-horizontal" style="margin-bottom:.2em">
+            
+                <!-- start preference section  -->
+                <div class="control-group">
+                    <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
+                    <div class="controls" data-prop="deviceView">
+                        <div class="options btn-group" data-toggle="buttons-radio">
+                            <button autocomplete="off" class="btn" data-toggle="button" data-value="true">On</button>
+                            <button autocomplete="off" class="btn active" data-toggle="button" data-value="false">Off</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- end preference section -->
+
+            </form>
+        </div>
+
         <h3><?php echo _('Mobile app'); ?></h3>
         <div class="account-item">
             <table>
@@ -412,5 +437,104 @@ function languagecode_to_name($langs) {
             window.location = path;
         }});
     });
+
+    /**
+     * save user preferences 
+     */
+    $(function(){
+        // highlight the 'Off' button if no value is set
+        $preferencesSection = $('#preferences-section')
+        $.get(path+'user/preferences.json')
+        .done(function(data){
+            if (data.success) {
+                //show options if applicable
+                $preferencesSection.removeClass('hidden')
+                setButtonStates(data.preferences)
+            }
+        })
+        function setButtonStates(preferences){
+            // get the preferences options
+            preferences = typeof preferences == 'string' ? JSON.parse(preferences) : preferences
+            // create empty object if no preference saved
+            preferences = preferences || {}
+            // default to false
+            $preferencesSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                preferences[prop] = preferences[prop] || false
+            })
+            // set the buttons for Device Module
+            $preferencesButtons = $preferencesSection.find('.options button')
+            $.each($preferencesButtons, function(n,elem){
+                let $button = $(elem)
+                $button.removeClass('active')
+                let prop = $button.parents('.controls').data('prop')
+
+                if (preferences.hasOwnProperty(prop) && elem.dataset.value == preferences[prop].toString()) {
+                    $(elem).addClass('active')
+                }
+            })
+        }
+        // send user preference to controller via ajax
+        // display status & progress to user
+        $('#preferences').submit(function(event){
+            event.preventDefault()
+
+            let url = path+"user/preferences.json"
+            let states = ['ready','saved','error']
+            let state = 0
+
+            $form = $(event.target)
+            $msg = $('#preferences-errors')
+
+            // ajax promise functions
+            // ----------------------
+            // ajax success
+            success = function(data,textStatus,xhr) {
+                // display error if returned value is not as expected
+                if(!data || !data.success) {
+                    error(xhr, 'not successful', data.message)
+                } else {
+                    state = 1
+                    $msg.text($msg.data('saved-text'))
+                }
+            }
+            // ajax issue
+            error = function(xhr,textStatus,errorThrown) {
+                state = 2
+                $msg.text($msg.data('error-text')+': '+errorThrown)
+            }
+            // success or error
+            always = function(){
+                // reset form state after ajax call
+                timeout = state == 2 ? 4000 : 1300
+                setTimeout(function(){
+                    $msg.fadeOut('fast',function(){ $(this).text('').show()})
+                    state = 0
+                }, timeout)
+            }
+            // serialize any inputs or hidden fields
+            data = $form.serialize()
+            // create preferences object to send to server
+            preferences = {}
+            $preferencesSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                preferences[prop] = $(elem).find('.btn.active').data('value') == true
+            })
+            // add the preferences object to the data object
+            data = $.extend({}, data, {preferences:preferences})
+
+            // show loading message if response time > 200ms
+            setTimeout(function(){
+                if(state == 0) $msg.text($msg.data('loading-text'))
+            }, 200)
+
+            // send request
+            $.post(url, data).done(success).fail(error).always(always)
+
+            // return false and wait for promises to complete
+            return false;
+        })
+        
+    })
 
 </script>

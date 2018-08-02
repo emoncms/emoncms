@@ -113,6 +113,38 @@ function user_controller()
                 $result = "missing mode field";
             }
         }
+        // set user peferences
+        if ($route->action == 'preferences' && $session['read']) {
+            $userid = $session['userid'];
+
+            switch ($route->method) {
+                case 'POST':
+                    if(!empty(post('preferences'))){
+                        $preferences = post('preferences');
+                        if($user->set_preferences($userid, $preferences)) {
+                            $result = array('success'=>true, 'message'=>_('Preference Saved'));
+                        } else {
+                            $result = array('success'=>false, 'message'=>_('Problem saving Preferences'));
+                        }
+                    } else {
+                        $result = array('success'=>false, 'message'=>_('Invalid parameters'));
+                    }
+                    break;
+                default:
+                    $property = prop('preferences') ? prop('preferences') : false;
+                    if (!$property) {
+                        $preferences = $user->get_preferences($userid);
+                    } else {
+                        $preferences = $user->get_preferences($userid, $property);
+                    }
+
+                    if(!empty($preferences)){
+                        $result = array('success'=>true, 'preferences'=>$preferences);
+                    } else {
+                        $result = array('success'=>false, 'message'=>_('Empty'));
+                    }
+            }
+        }
     }
 
     return array('content'=>$result);

@@ -158,7 +158,7 @@ function input_controller()
     } else if ($route->action == 'view') {
         $route->format = "html";
         
-        global $ui_version_2;
+        $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
         if ($device && isset($ui_version_2) && $ui_version_2) {
             $result =  view("Modules/input/Views/device_view.php", array());
         } else {
