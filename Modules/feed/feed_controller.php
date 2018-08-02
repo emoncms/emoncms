@@ -39,8 +39,9 @@ function feed_controller()
     if ($route->format == 'html')
     {
         if ($route->action == "list" && $session['write']) {
-        
-            global $ui_version_2;
+
+            $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
+
             if ($device && isset($ui_version_2) && $ui_version_2) {
                 $result = view("Modules/feed/Views/feedlist_view_v2.php",array());
             } else {
