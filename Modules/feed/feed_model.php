@@ -97,7 +97,7 @@ class Feed
     Configurations operations
     create, delete, exist, update_user_feeds_size, get_buffer_size, get_meta
     */
-    public function create($userid,$tag,$name,$datatype,$engine,$options_in)
+    public function create($userid,$tag,$name,$datatype,$engine,$options_in,$unit='')
     {
         $userid = (int) $userid;
         if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
@@ -105,7 +105,7 @@ class Feed
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
-
+    
         if (!ENGINE::is_valid($engine)) {
             $this->log->error("Engine id '".$engine."' is not supported.");
             return array('success'=>false, 'message'=>"ABORTED: Engine id $engine is not supported.");
@@ -117,8 +117,8 @@ class Feed
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine) VALUES (?,?,?,?,?,?)");
-        $stmt->bind_param("issiii",$userid,$tag,$name,$datatype,$public,$engine);
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
@@ -137,7 +137,8 @@ class Feed
                     'tag'=>$tag,
                     'public'=>false,
                     'size'=>0,
-                    'engine'=>$engine
+                    'engine'=>$engine,
+                    'unit'=>$unit
                 ));
             }
 
@@ -198,6 +199,49 @@ class Feed
         if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
         if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
         $this->log->info("delete() feedid=$feedid");
+    }
+
+    public function trim($feedid,$start_time)
+    {
+        $response = false;
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine trim method
+        $response = $this->EngineClass($engine)->trim($feedid, $start_time);
+        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
+        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
+
+        $this->log->info("feed model: trim() feedid=$feedid");
+        return $response;
+    }
+    public function clear($feedid)
+    {
+        $response = false;
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine clear method
+        $response = $this->EngineClass($engine)->clear($feedid);
+        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
+        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
+
+        $this->log->info("feed model: clear() feedid=$feedid");
+        return $response;
     }
 
     public function exist($feedid)
@@ -352,6 +396,8 @@ class Feed
             $lastvalue = $this->get_timevalue($id);
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
+            $meta = $this->get_meta($id);
+            $row['start_time'] = $meta->start_time;
             $feeds[] = $row;
         }
 
@@ -370,6 +416,8 @@ class Feed
                 $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
                 $row['time'] = $lastvirtual['time'];
                 $row['value'] = $lastvirtual['value'];
+                $meta = $this->get_meta($row['id']);
+                $row['start_time'] = $meta->start_time;
             }
             $feeds[] = $row;
         }
@@ -991,21 +1039,40 @@ class Feed
         $pairs = explode(",",$processlist);
         $pairs_out = array();
         
+        // Build map of processids where set
+        $map = array();
+        foreach ($process_list as $key=>$process) {
+            if (isset($process['id_num'])) $map[$process['id_num']] = $key;
+        }
+        
         foreach ($pairs as $pair)
         {
             $inputprocess = explode(":", $pair);
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = $inputprocess[0];
-                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
+                $processkey = $inputprocess[0];
+                // If key is in the map, switch to associated full process key
+                if (isset($map[$processkey])) $processkey = $map[$processkey];
+            
+                // Load process
+                if (isset($process_list[$processkey])) {
+                    $processarg = $process_list[$processkey]['argtype'];
+                    $proccess_name = $process_list[$processkey]['function'];
+                    
+                    // remap process back to use map id if available
+                    if (isset($process_list[$processkey]['id_num']))
+                        $processkey = $process_list[$processkey]['id_num'];
+                    
+                } else {
+                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+                }
                 
                 // Verify argument
                 $arg = $inputprocess[1];
 
                 // Stop virtual feeds from adding email and mqtt processes.
                 $isVirtual = $this->get($id)['engine']==7;
-                $proccess_name = $process_list[$processid][2];
                 $not_for_virtual_feeds = array('publish_to_mqtt','sendEmail');
                 if (in_array($proccess_name, $not_for_virtual_feeds) && $isVirtual) {
                     $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
@@ -1013,7 +1080,7 @@ class Feed
                 }
 
                 // Check argument against process arg type
-                switch($process_list[$processid][1]){
+                switch($processarg){
                 
                     case ProcessArg::FEEDID:
                         $feedid = (int) $arg;
@@ -1056,7 +1123,7 @@ class Feed
                         break;
                 }
                 
-                $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processkey,$arg));
             }
         }
         

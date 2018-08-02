@@ -17,7 +17,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function feed_controller()
 {
-    global $mysqli, $redis, $session, $route, $feed_settings,$user;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device;
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
@@ -29,9 +29,24 @@ function feed_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
+    if (!$device) {
+        if (file_exists("Modules/device/device_model.php")) {
+            require_once "Modules/device/device_model.php";
+            $device = new Device($mysqli,$redis);
+        }
+    }
+
     if ($route->format == 'html')
     {
-        if ($route->action == "list" && $session['write']) $result = view("Modules/feed/Views/feedlist_view.php",array());
+        if ($route->action == "list" && $session['write']) {
+        
+            global $ui_version_2;
+            if ($device && isset($ui_version_2) && $ui_version_2) {
+                $result = view("Modules/feed/Views/feedlist_view_v2.php",array());
+            } else {
+                $result = view("Modules/feed/Views/feedlist_view.php",array());
+            }
+        }
         else if ($route->action == "api" && $session['write']) $result = view("Modules/feed/Views/feedapi_view.php",array());
     }
 
@@ -52,7 +67,7 @@ function feed_controller()
             $route->format = "text";
             $result = $feed->get_id($session['userid'],get("name"));
         } elseif ($route->action == "create" && $session['write']) {
-            $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')));
+            $result = $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
         } elseif ($route->action == "updatesize" && $session['write']) {
             $result = $feed->update_user_feeds_size($session['userid']);
         } elseif ($route->action == "buffersize" && $session['write']) {
@@ -78,7 +93,6 @@ function feed_controller()
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
             // First we load the meta data for the feed that we want
-
             if ($feed->exist($feedid)) // if the feed exists
             {
                 $f = $feed->get($feedid);
@@ -113,6 +127,7 @@ function feed_controller()
                     else if ($route->action == "get") $result = $feed->get_field($feedid,get('field')); // '/[^\w\s-]/'
                     else if ($route->action == "aget") $result = $feed->get($feedid);
                     else if ($route->action == "getmeta") $result = $feed->get_meta($feedid);
+                    else if ($route->action == "setstartdate") $result = $feed->set_start_date($feedid,get('startdate'));
 
                     else if ($route->action == 'histogram') $result = $feed->histogram_get_power_vs_kwh($feedid,get('start'),get('end'));
                     else if ($route->action == 'kwhatpower') $result = $feed->histogram_get_kwhd_atpower($feedid,get('min'),get('max'));
@@ -163,6 +178,16 @@ function feed_controller()
                     } else if ($route->action == "delete") {
                         $result = $feed->delete($feedid);
                     
+                    // Clear feed
+                    } else if ($route->action == "clear") {
+                        $result = $feed->clear($feedid);
+                    
+                    // Trim feed
+                    } else if ($route->action == "trim") {
+                        if (!filter_var(get('start_time'), FILTER_VALIDATE_INT)) return false;
+                        $start_time = filter_var(get('start_time'), FILTER_SANITIZE_NUMBER_INT);
+                        $result = $feed->trim($feedid, $start_time);
+                        
                     // Process
                     } else if ($route->action == "process") {
                         if ($f['engine']!=Engine::VIRTUALFEED) { $result = array('success'=>false, 'message'=>'Feed is not Virtual'); }

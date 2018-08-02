@@ -105,6 +105,7 @@
     $mqtt_client = new Mosquitto\Client('emoncms',true);
     
     $connected = false;
+    $subscribed = 0;
     $last_retry = 0;
     $last_heartbeat = time();
     $count = 0;
@@ -123,26 +124,29 @@
         }
         
         if (!$connected && (time()-$last_retry)>5.0) {
+            $subscribed = 0;
             $last_retry = time();
             try {
                 // SUBSCRIBE
+                $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 // moved subscribe to onConnect callback
 
             } catch (Exception $e) {
                 $log->error($e);
+                $subscribed = 0;
             }
-            //echo "Not connected, retrying connection\n";
-            $log->warn("Not connected, retrying connection");
         }
 
         // PUBLISH
         // loop through all queued items in redis
-        $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
-        foreach ($publish_to_mqtt as $topic=>$value) {
-            $redis->hdel("publish_to_mqtt",$topic);
-            $mqtt_client->publish($topic, $value);
+        if ($connected) {
+            $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
+            foreach ($publish_to_mqtt as $topic=>$value) {
+                $redis->hdel("publish_to_mqtt",$topic);
+                $mqtt_client->publish($topic, $value);
+            }
         }
         // Queue option
         $queue_topic = 'mqtt-pub-queue';
@@ -169,17 +173,19 @@
     
 
     function connect($r, $message) {
-        global $log, $connected, $mqtt_server, $mqtt_client;
+        global $log, $connected, $mqtt_server, $mqtt_client, $subscribed;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
         if( $r==0 ) {
             // if CONACK is zero 
             $connected = true;
-            $topic = $mqtt_server['basetopic']."/#";
-            //echo "Subscribing to: ".$topic."\n";
-            $mqtt_client->subscribe($topic,2);
-            $log->info("Subscribing to: ".$topic);
+            if ($subscribed==0) {
+                $topic = $mqtt_server['basetopic']."/#";
+                $subscribed = $mqtt_client->subscribe($topic,2);
+                $log->info("Subscribed to: ".$topic." ID - ".$subscribed);
+            }
         } else {
+            $subscribed = 0;
             $log->error('unexpected connection problem mqtt server:'.$message);
         }
     }
@@ -187,17 +193,19 @@
     function subscribe() {
         global $log, $topic;
         //echo "Subscribed to topic: ".$topic."\n";
-        $log->info("Subscribed to topic: ".$topic);
+        $log->info("Callback subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
-        global $log, $topic;
+        global $log, $topic, $subscribed;
         //echo "Unsubscribed from topic:".$topic."\n";
+        $subscribed = 0;
         $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
-        global $connected, $log;
+        global $connected, $log, $subscribed;
+        $subscribed = 0;
         $connected = false;
         //echo "Disconnected cleanly\n";
         $log->info("Disconnected cleanly");
@@ -304,12 +312,11 @@
             } else {
                 $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
-            
-            // Enabled in device-support branch
-            // if (!isset($dbinputs[$nodeid])) {
-            //     $dbinputs[$nodeid] = array();
-            //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
-            // }
+
+            if (!isset($dbinputs[$nodeid])) {
+                $dbinputs[$nodeid] = array();
+                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
+            }
 
             $tmp = array();
             foreach ($inputs as $i)

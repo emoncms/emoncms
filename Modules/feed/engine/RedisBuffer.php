@@ -2,7 +2,12 @@
 // Internal engine for low-write functionality
 // Maintains a buffer in redis with latest feed data
 // Written by: Chaveiro Portugal Jul-2015
-class RedisBuffer
+// edited by: emrys@openenergymonitor.org Jun-2018
+
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class RedisBuffer implements engine_methods
 {
     private $log;
     private $redis;
@@ -263,5 +268,10 @@ class RedisBuffer
         $this->redis->hSet("feed:$feedid:bufferstatus",$type,"0"); 
         //$this->log->info("removeLock() $type lock on feed=$feedid");
     }
-    
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
 }
