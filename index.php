@@ -122,8 +122,7 @@
         $session = $user->emon_session_start();
     }
     
-    $userid = 1;
-    if ($user->get_preferences($userid, 'deviceView')) $ui_version_2 = true;
+        if ($user->get_preferences($session['userid'], 'deviceView')) $ui_version_2 = true;
 
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';

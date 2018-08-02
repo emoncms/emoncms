@@ -121,14 +121,28 @@ function user_controller()
                 case 'POST':
                     if(!empty(post('preferences'))){
                         $preferences = post('preferences');
-                        $result = $user->set_preferences($userid, $preferences);
+                        if($user->set_preferences($userid, $preferences)) {
+                            $result = array('success'=>true, 'message'=>_('Preference Saved'));
+                        } else {
+                            $result = array('success'=>false, 'message'=>_('Problem saving Preferences'));
+                        }
                     } else {
-                        $result = array('success'=>false, 'message'=>'Invalid parameters');
+                        $result = array('success'=>false, 'message'=>_('Invalid parameters'));
                     }
                     break;
                 default:
                     $property = prop('preferences') ? prop('preferences') : false;
-                    $result = $user->get_preferences($userid, $property);
+                    if (!$property) {
+                        $preferences = $user->get_preferences($userid);
+                    } else {
+                        $preferences = $user->get_preferences($userid, $property);
+                    }
+
+                    if(!empty($preferences)){
+                        $result = array('success'=>true, 'preferences'=>$preferences);
+                    } else {
+                        $result = array('success'=>false, 'message'=>_('Empty'));
+                    }
             }
         }
     }

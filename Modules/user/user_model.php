@@ -853,13 +853,16 @@ class User
             $error = $stmt->error;
             $stmt->close();
         } else {
-            return array('success'=>false,'message'=>_('Error building query'));
+            $this->log->error("Error preparing SQL for user preferences");
+            return false;
         }
-
+        
         if(!$success){
-            return array('success'=>false,'message'=>_($error));
-        } else {   
-            return array('success'=>true,'message'=>_('Preference Saved'));
+            $this->log->error("Error writing to user table");
+            return false;
+        } else {
+            $this->log->info("Succesfully updated user preferences");
+            return true;
         }
     }
 
@@ -881,15 +884,17 @@ class User
             $stmt->close();
         }
         $json = json_decode($preferences,1);
-        // only return single property if called with a $key param
-        if(!empty($key) && !empty($json[$key])){
-            $json = $json[$key];
-        }
         // return data and/or success/error message
         if (!empty($json)) {
-            return array('success'=>true, 'preferences'=>$json);
+            // only return single property if called with a $key param
+            if(!empty($key) && !empty($json[$key])){
+                return array($key=>$json[$key]);
+            } else {
+                return $json;
+            }
         } else {
-            return array('success'=>true, 'message'=>_('Empty'));
+            return false;
+            // return array('success'=>true, 'message'=>_('Empty'));
         }
     }
 }
