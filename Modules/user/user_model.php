@@ -588,9 +588,9 @@ class User
     public function get_name($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT username FROM users WHERE id = '$userid';");
+        $result = $this->mysqli->query("SELECT name FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
-        return $row['username'];
+        return $row['name'];
     }
 
     public function get_email($userid)
