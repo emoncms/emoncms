@@ -139,9 +139,14 @@ function user_controller()
                     }
 
                     if(!empty($preferences)){
-                        $result = array('success'=>true, 'preferences'=>$preferences);
+                        if(isset($preferences['success']) && $preferences['success']===false){
+                            $error_msg = !empty($preferences['message']) ? $preferences['message'] : _('Error getting data');
+                            $result = array('success'=>false, 'message'=>$error_msg);
+                        }else{
+                            $result = array('success'=>true, 'preferences'=>$preferences);
+                        }
                     } else {
-                        $result = array('success'=>false, 'message'=>_('Empty'));
+                        $result = array('success'=>true, 'message'=>_('Empty'));
                     }
             }
         }
