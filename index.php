@@ -122,8 +122,6 @@
         $session = $user->emon_session_start();
     }
     
-        if ($user->get_preferences($session['userid'], 'deviceView')) $ui_version_2 = true;
-
     // 4) Language
     if (!isset($session['lang'])) $session['lang']='';
     set_emoncms_lang($session['lang']);

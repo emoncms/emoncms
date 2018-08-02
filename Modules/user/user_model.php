@@ -876,7 +876,7 @@ class User
      *
      * @return array
      */
-    public function get_preferences ($userid, $key = null) {
+    public function get_preferences ($userid, $property = null) {
         $stmt = $this->mysqli->prepare("SELECT preferences FROM users WHERE id = ?");
         $preferences = false;
         if ($stmt) {
@@ -889,9 +889,11 @@ class User
         $json = json_decode($preferences,1);
         // return data and/or success/error message
         if (!empty($json)) {
-            // only return single property if called with a $key param
-            if(!empty($key) && !empty($json[$key])){
-                return array($key=>$json[$key]);
+            // only return single property value if called with a $property param
+            if(!empty($property) && $json[$property]===false) {
+                return $json[$property];
+            }elseif(!empty($property) && !empty($json[$property])){
+                return $json[$property];
             } else {
                 return $json;
             }
