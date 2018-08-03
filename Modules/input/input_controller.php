@@ -153,11 +153,12 @@ function input_controller()
     // -------------------------------------------------------------------------
     else if ($route->action == 'api') {
         $route->format = "html";
+        textdomain("messages");
         $result = view("Modules/input/Views/input_api.php", array());
         
     } else if ($route->action == 'view') {
         $route->format = "html";
-        
+        textdomain("messages");
         $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
         if ($device && isset($ui_version_2) && $ui_version_2) {
             $result =  view("Modules/input/Views/device_view.php", array());
@@ -167,6 +168,7 @@ function input_controller()
         
     } else if ($device && $route->action == 'schedule') {
         $route->format = "html";
+        textdomain("messages");
         $result =  view("Modules/input/Views/schedule.php", array());
     }
 

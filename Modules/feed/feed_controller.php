@@ -38,8 +38,8 @@ function feed_controller()
 
     if ($route->format == 'html')
     {
+        textdomain("messages");
         if ($route->action == "list" && $session['write']) {
-
             $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
 
             if ($device && isset($ui_version_2) && $ui_version_2) {
