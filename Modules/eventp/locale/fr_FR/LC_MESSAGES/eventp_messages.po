@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-03 17:16+0100\n"
-"PO-Revision-Date: 2018-03-03 17:20+0100\n"
+"POT-Creation-Date: 2018-08-06 14:43+0200\n"
+"PO-Revision-Date: 2018-08-06 14:54+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,92 +14,116 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.1.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../eventp_processlist.php:47
+#: ../../../eventp_processlist.php:35
 msgid "If rate >=, skip next"
 msgstr "If rate >=, skip next"
 
-#: ../../../eventp_processlist.php:47
+#: ../../../eventp_processlist.php:42 ../../../eventp_processlist.php:55
+#: ../../../eventp_processlist.php:68 ../../../eventp_processlist.php:81
+msgid "Conditional - Event"
+msgstr "Conditionnel - Événement"
+
+#: ../../../eventp_processlist.php:45
 msgid ""
-"If value from last process has an absolute change from previous time it was "
-"calculated higher or equal to the specified value, processlist execution "
-"will skip the next process."
+"<p>If value from last process has an absolute change from previous time it "
+"was calculated higher or equal to the specified value, processlist execution "
+"will skip the next process.</p>"
 msgstr ""
-"Si la valeur du dernier traitement a un changement absolu par rapport à "
+"<p>Si la valeur du dernier traitement a un changement absolu par rapport à "
 "l'heure précédente, il a été calculé plus haut ou égal à la valeur "
 "spécifiée, l'exécution de la liste du traitement ignorera le traitement "
-"suivant."
+"suivant.</p>"
 
 #: ../../../eventp_processlist.php:48
 msgid "If rate <, skip next"
 msgstr "If rate <, skip next"
 
-#: ../../../eventp_processlist.php:48
+#: ../../../eventp_processlist.php:58
 msgid ""
-"If value from last process has an absolute change from previous time it was "
-"calculated lower than the specified value, processlist execution will skip "
-"the next process."
+"<p>If value from last process has an absolute change from previous time it "
+"was calculated lower than the specified value, processlist execution will "
+"skip the next process.</p>"
 msgstr ""
-"Si la valeur du dernier traitement a un changement absolu par rapport à "
+"<p>Si la valeur du dernier traitement a un changement absolu par rapport à "
 "l'heure précédente, il a été calculé plus bas que la valeur spécifiée, "
-"l'exécution de la liste de traitement ignorera le traitement suivant."
+"l'exécution de la liste de traitement ignorera le traitement suivant.</p>"
 
-#: ../../../eventp_processlist.php:49
+#: ../../../eventp_processlist.php:61
 msgid "If Mute, skip next"
 msgstr "If Mute, skip next"
 
-#: ../../../eventp_processlist.php:49
+#: ../../../eventp_processlist.php:71
 msgid ""
-"A time elapsed dependent condition, first time a processlist passes here the "
-"flow is unchanged. Next times the same processlist passes here, if the "
+"<p>A time elapsed dependent condition, first time a processlist passes here "
+"the flow is unchanged. Next times the same processlist passes here, if the "
 "specified value time (in seconds) has not elapsed, flow will skip next "
-"process."
+"process.</p>"
 msgstr ""
-"Une condition dépendante du temps écoulé, la première fois qu'une liste de "
-"traitement passe ici, le flux est inchangé. Les fois suivantes où la même "
+"<p>Une condition dépendante du temps écoulé, la première fois qu'une liste "
+"de traitement passe ici, le flux est inchangé. Les fois suivantes où la même "
 "liste de traitement passe ici, si le temps de la valeur spécifiée (en "
-"secondes) ne s'est pas écoulé, le flux ignorera le traitement suivant."
+"secondes) ne s'est pas écoulé, le flux ignorera le traitement suivant.</P>"
 
-#: ../../../eventp_processlist.php:50
+#: ../../../eventp_processlist.php:74
 msgid "If !Mute, skip next"
 msgstr "If !Mute, skip next"
 
-#: ../../../eventp_processlist.php:50
+#: ../../../eventp_processlist.php:84
 msgid ""
-"A time elapsed dependent condition, first time a processlist passes here the "
-"flow skips next. Next times the same processlist passes here, if the "
-"specified value time (in seconds) has elapsed, flow will skip next process."
+"<p>A time elapsed dependent condition, first time a processlist passes here "
+"the flow skips next. Next times the same processlist passes here, if the "
+"specified value time (in seconds) has elapsed, flow will skip next process.</"
+"p>"
 msgstr ""
-"Une condition dépendante du temps écoulé, la première fois qu'une liste de "
-"traitement passe ici, le flux ignore le suivant. Les fois suivantes où la "
+"<p>Une condition dépendante du temps écoulé, la première fois qu'une liste "
+"de traitement passe ici, le flux ignore le suivant. Les fois suivantes où la "
 "même liste de traitement passe ici, si le temps de la valeur spécifiée (en "
-"secondes) s'est écoulé, le flux ignorera le traitement suivant."
+"secondes) s'est écoulé, le flux ignorera le traitement suivant.</p>"
 
-#: ../../../eventp_processlist.php:51
+#: ../../../eventp_processlist.php:87
 msgid "Send Email"
 msgstr "Send Email"
 
-#: ../../../eventp_processlist.php:51
-msgid "Send an email to the user with the specified body. Email sent to user's email address or default set in config."
-msgstr "Envoie un e-mail à l'utilisateur avec le corps spécifié."
+#: ../../../eventp_processlist.php:94
+msgid "Event"
+msgstr "Événement"
 
-#: ../../../eventp_processlist.php:51
+#: ../../../eventp_processlist.php:96
 msgid ""
-"Supported template tags to customize body: {type}, {id}, {key}, {name}, "
-"{node}, {time}, {value}"
+"<p>Send an email to the user with the specified body. Email sent to user's "
+"email address or default set in config.</p><p>Supported template tags to "
+"customize body: {type}, {id}, {key}, {name}, {node}, {time}, {value}</"
+"p><p>Example body text: At {time} your {type} from {node} with key {key} "
+"named {name} had value {value}.</p>"
 msgstr ""
-"Balises de modèle prises en charge pour personnaliser le corps : {type}, "
-"{id}, {key}, {name}, {node}, {time}, {value}"
+"<p>Envoie un courriel à l'utilisateur avec le corps spécifié. L'email est "
+"envoyé à l'adresse email de l'utilisateur ou à l'adresse par défaut définie "
+"dans la configuration</p><p>Étiquettes supportées pour la personnalisation "
+"du corps : {type}, {id}, {key}, {name}, {node}, {time}, {value}</"
+"p><p>Exemple de texte de corps: À {time} votre {type} provenant du {node} "
+"avec la clé {key} nommée {name} avait la valeur {value}.</p>"
 
-#: ../../../eventp_processlist.php:51
-msgid ""
-"Example body text: At {time} your {type} from {node} with key {key} named "
-"{name} had value {value}."
-msgstr ""
-"Exemple de texte pour le corps : À {time} votre {type} provenant de {node} "
-"avec la clé {key} nommée {name} a la valeur {value}."
+#~ msgid ""
+#~ "Send an email to the user with the specified body. Email sent to user's "
+#~ "email address or default set in config."
+#~ msgstr "Envoie un e-mail à l'utilisateur avec le corps spécifié."
+
+#~ msgid ""
+#~ "Supported template tags to customize body: {type}, {id}, {key}, {name}, "
+#~ "{node}, {time}, {value}"
+#~ msgstr ""
+#~ "Balises de modèle prises en charge pour personnaliser le corps : {type}, "
+#~ "{id}, {key}, {name}, {node}, {time}, {value}"
+
+#~ msgid ""
+#~ "Example body text: At {time} your {type} from {node} with key {key} named "
+#~ "{name} had value {value}."
+#~ msgstr ""
+#~ "Exemple de texte pour le corps : À {time} votre {type} provenant de "
+#~ "{node} avec la clé {key} nommée {name} a la valeur {value}."
 
 #~ msgid "Feed API"
 #~ msgstr "API Flux"
