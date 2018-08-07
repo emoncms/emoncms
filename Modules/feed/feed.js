@@ -78,7 +78,10 @@ var feed = {
   },
 
   'remove':function(id){
-    $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){ return data} });
+    $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){
+         // Clean processlists of deleted feeds
+         // $.ajax({ url: path+"input/cleanprocesslistfeeds.json", async: true, success: function(data){} });
+    }});
   },
 
   'clear':function(id){
@@ -166,6 +169,20 @@ var feed = {
   'reset_processlist':function(feedid,processid){
     var result = {};
     $.ajax({ url: path+"feed/process/reset.json", data: "id="+feedid, async: false, success: function(data){result = data;} });
+    return result;
+  },
+  
+  'meta':function(feedid)
+  {
+    var result = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
+    $.ajax({                                      
+      url: path+'feed/getmeta.json',                         
+      data: apikeystr+"&id="+feedid,
+      dataType: 'json',
+      async: false,                      
+      success: function(data_in) { result = data_in; } 
+    });
     return result;
   }
 }
