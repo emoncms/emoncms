@@ -104,7 +104,7 @@ td:nth-of-type(2) { width:4%;}
 <tr><td><?php echo _('Absolute time format:'); ?></td><td>POST</td><td>curl --data "data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=<?php echo time(); ?>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>" "<?php echo $path; ?>input/bulk"</td></tr>
 </table>
 
-<h4><?php echo _('encryption'); ?></h4>
+<h4><?php echo _('Encryption'); ?></h4>
 
 <p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/input-improvements/docs/input_encrypted.md">PHP Example source code.</a></p>
 

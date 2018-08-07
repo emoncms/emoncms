@@ -95,7 +95,9 @@ class Process
         $pairs = explode(",",$processList);
         $total = count($pairs);
         $steps=0;
-        for($this->proc_goto = 0 ; $this->proc_goto < $total ; $this->proc_goto++) {
+        // if ($total>50) return false;
+
+        for ($this->proc_goto=0; $this->proc_goto<$total; $this->proc_goto++) {
             $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
             $processkey = $inputprocess[0];                          // Process id
@@ -153,7 +155,6 @@ class Process
     private function load_modules() {
         $list = array();
         $dir = scandir("Modules");
-        $old_ids = array();
         for ($i=2; $i<count($dir); $i++) {
             $module = $dir[$i];
             if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {

@@ -1324,7 +1324,7 @@ class Process_ProcessList
             
                 if ($val_diff>0 && $power<$max_power) $totalwh += $val_diff;
             }
-             
+
             $padding_mode = "join";
             $this->feed->insert_data($feedid, $time, $time, $totalwh, $padding_mode);
             
