@@ -352,7 +352,7 @@ function update() {
                 out += "<div class='span1 public'>"+publicfeed+"</div>";
                 out += "<div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
                 out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                out += "<div class='span2 hidden-phone start_time'>"+nodes[node][feed].start_time+"</div>";
+                out += "<div class='span2 hidden-phone start_time'>"+formatStartTime(nodes[node][feed].start_time)+"</div>";
 
                 out += "<div class='span3 pull-right'>";
                 out += "  <div class='row-fluid'>";
@@ -376,7 +376,22 @@ function update() {
         resize();
     })
 }
-  
+  function formatStartTime(timestamp, format){
+    //convert unix timestamp to js date (milliseconds)
+    date = new Date(timestamp*1000)
+    if (isNaN(date.getTime())) return timestamp
+    // rebuild the date string from the new date object
+    Y = date.getFullYear()
+    m = (date.getMonth()+1).pad(2)
+    d = date.getDate().pad(2)
+    h = date.getHours().pad(2)
+    i = date.getMinutes().pad(2)
+    s = date.getSeconds().pad(2)
+    
+    // show date in input field - DD/MM/YYYY HH:MM:SS
+    return [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ')
+  }
+
   $("#table").on("click",".node-info",function() {
       var node = $(this).attr("node");
       if (nodes_display[node]) {
@@ -811,5 +826,16 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 
+
+/**
+ * alter the Number primitive to include a new method to pad out numbers with zeros
+ * @param int size - number of characters to fill with zeros
+ * @return string
+ */
+Number.prototype.pad = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {s = "0" + s;}
+  return s;
+}
 </script>
 
