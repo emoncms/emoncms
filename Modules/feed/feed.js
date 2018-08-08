@@ -80,7 +80,7 @@ var feed = {
   'remove':function(id){
     $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){
          // Clean processlists of deleted feeds
-         // $.ajax({ url: path+"input/cleanprocesslistfeeds.json", async: true, success: function(data){} });
+         $.ajax({ url: path+"input/cleanprocesslistfeeds.json", async: true, success: function(data){} });
     }});
   },
 
