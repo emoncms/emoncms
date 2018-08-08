@@ -55,26 +55,41 @@
     margin:0 .5em!important;
 }
 .controls { margin-bottom:10px; }
-.node-feed [class*="span"] {
-    line-height:2;
-}
+.controls select { width: auto!important; }
+.node-feed [class*="span"] { line-height:2; }
+
+
 /* override old bootstrap mobile grid */
-@media (max-width: 767px) { 
-    .node-feed [class*="span"]{
-        float:left!important;
-        background:yellow;
-    }
-    .node-feed>[class*="span"]{
-        width: 33.33%;
-    }
-    .node-feed>[class*="span"] [class*="span"]{
-        width: 50%;
-    }
-    .node-feed>[class*="span"]:first-child [class*="span"]:first-child{
-        width: 25%;
-    }
+/* would not required in recent versions of bootstrap */
+@media (max-width: 767px) {
+    /* only has 3 columns - 3,4 & 5 are hidden */
+    .node-feed [class*="span"]{ float:left!important; }
+    .node-feed>[class*="span"]{ width: auto;}
+    .node-feed>[class*="span"]:nth-child(1){width: 40%;}
+    .node-feed>[class*="span"]:nth-child(1) [class*="span"]{ width: auto; }
+    /* global/private */
+    .node-feed>[class*="span"]:nth-child(2){width: 20%;}
+    /* value & unit */
+    .node-feed>[class*="span"]:nth-child(6){width: 40%;}
+    /* sub column splits */
+    .node-feed>[class*="span"] [class*="span"]{ width: 50%; }
 
 }
+/* extra small devices */
+@media (max-width: 464px) {
+    /* additional responsive show/hide for smaller devices */
+    .hidden-phone-small{  display:none!important }
+
+    /* only has 3 columns - 3,4 & 5 are hidden */
+    .node-feed>[class*="span"]:nth-child(1){width: 50%;}
+    .node-feed>[class*="span"]:nth-child(1) [class*="span"]:first-child{ width: 25%; } /* shrink the tickbox column */
+    /* global/private */
+    .node-feed>[class*="span"]:nth-child(2){width: 10%;} /* shrink the global/private column */
+    /* value & unit */
+    .node-feed>[class*="span"]:nth-child(6) [class*="span"]:first-child{width: 70%;} /* grow the value column */
+    .node-feed>[class*="span"]:nth-child(6) [class*="span"]:last-child{width: 30%;} /* shrink the unit column */
+}
+
 
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
@@ -280,112 +295,87 @@
   update();
 //   setInterval(update,5000);
   
-  function update() 
-  {
-  
-      $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
-      
-          // Show/hide no feeds alert
-          $('#feed-loader').hide();
-          if (data.length == 0){
-              $("#nofeeds").show();
-              $("#localheading").hide();
-              $("#apihelphead").hide();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").hide();
-          } else {
-              $("#nofeeds").hide();
-              $("#localheading").show();
-              $("#apihelphead").show();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").show();
-          }
+function update() {
+    $.ajax({ url: path+"feed/list.json", dataType: 'json'})
+    .done(function(data) {
+        // Show/hide no feeds alert
+        $('#feed-loader').hide();
+        if (data.length == 0){
+            $("#nofeeds").show();
+            $("#localheading").hide();
+            $("#apihelphead").hide();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").hide();
+        } else {
+            $("#nofeeds").hide();
+            $("#localheading").show();
+            $("#apihelphead").show();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").show();
+        }
 		      
-          feeds = {};
-		      for (var z in data) feeds[data[z].id] = data[z];
-		      
-          
-          var nodes = {};
-          for (var z in feeds) {
-              var node = feeds[z].tag;
-              if (nodes[node]==undefined) nodes[node] = [];
-              if (nodes_display[node]==undefined) nodes_display[node] = true;
-              nodes[node].push(feeds[z]);
-          }
+        feeds = {};
+        for (var z in data) feeds[data[z].id] = data[z];
+        var nodes = {};
+        for (var z in feeds) {
+            var node = feeds[z].tag;
+            if (nodes[node]==undefined) nodes[node] = [];
+            if (nodes_display[node]==undefined) nodes_display[node] = true;
+            nodes[node].push(feeds[z]);
+        }
       
-          var out = "";
+        var out = "";
           
-          for (var node in nodes) {
-              var visible = "hide"; if (nodes_display[node]) visible = "";
-              
-              out += "<div class='node'>";
-              out += "<div class='node-info' node='"+node+"'>";
-              out += "<div class='node-name'>"+node+":</div>";
-              out += "</div>";
-              
-              out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
-              for (var feed in nodes[node]) {
-                  if ( true ) {
-                    var feedid = nodes[node][feed].id;
-                    out += "<div class='row-fluid node-feed' feedid="+feedid+">";
-                    var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                    out += '<div class="span3">';
-                    out += '  <div class="row-fluid">';
-                    out += "    <div class='span3 select'><input class='feed-select checkbox-large' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
-                    out += "    <div class='span9 name' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div>";
-                    out += "  </div>";
-                    out += "</div>";
-                    
-                    var publicfeed = "<i class='icon-lock'></i>"
-                    if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                    out += "<div class='span1 hidden-phone public'>"+publicfeed+"</div>";
-                    out += "<div class='span2 engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
-                    out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                    out += "<div class='span2 hidden-phone start_time'>"+nodes[node][feed].start_time+"</div>";
-                    
-                    out += "<div class='span3 pull-right'>";
-                    out += "  <div class='row-fluid'>";
-                    out += '    <div class="span6">';
-                    out += '      <div class="row-fluid">';
-                    out += "        <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                    out += "        <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
-                    out += "      </div>";
-                    out += "    </div>";
-                    out += "    <div class='span6 time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                    out += "  </div>";
-                    out += "</div>";
-                    out += "</div>";
-                  }else{
-                    var feedid = nodes[node][feed].id;
-                    out += "<div class='node-feed' feedid="+feedid+">";
-                    var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                    out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                    out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
-                    
-                    var publicfeed = "<i class='icon-lock'></i>"
-                    if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                    
-                    out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
-                    out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
-                    out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                    
-                    out += "<div class='node-feed-right'>";
-                    out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                    out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                    out += "</div>";
-                    out += "</div>";
+        for (var node in nodes) {
+            var visible = "hide"; if (nodes_display[node]) visible = "";
 
-                  }
-              }
-              
-              out += "</div>";
-              out += "</div>";
-          }
-          $("#table").html(out);
-          
-          resize();
-      }});
-  }
+            out += "<div class='node'>";
+            out += "<div class='node-info' node='"+node+"'>";
+            out += "<div class='node-name'>"+node+":</div>";
+            out += "</div>";
+
+            out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
+            for (var feed in nodes[node]) {
+                var feedid = nodes[node][feed].id;
+                out += "<div class='row-fluid node-feed' feedid="+feedid+">";
+                var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                out += '<div class="span3">';
+                out += '  <div class="row-fluid">';
+                out += "    <div class='span2 select'><input class='feed-select checkbox-large' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
+                out += "    <div class='span10 name' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div>";
+                out += "  </div>";
+                out += "</div>";
+
+                var publicfeed = "<i class='icon-lock'></i>"
+
+                if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                out += "<div class='span1 public'>"+publicfeed+"</div>";
+                out += "<div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                out += "<div class='span2 hidden-phone start_time'>"+nodes[node][feed].start_time+"</div>";
+
+                out += "<div class='span3 pull-right'>";
+                out += "  <div class='row-fluid'>";
+                out += '    <div class="span6">';
+                out += '      <div class="row-fluid">';
+                out += "        <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                out += "        <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                out += "      </div>";
+                out += "    </div>";
+                out += "    <div class='span6 time hidden-phone-small'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                out += "  </div>";
+                out += "</div>";
+                out += "</div>";
+            }
+
+            out += "</div>";
+            out += "</div>";
+        }
+        $("#table").html(out);
+        
+        resize();
+    })
+}
   
   $("#table").on("click",".node-info",function() {
       var node = $(this).attr("node");
