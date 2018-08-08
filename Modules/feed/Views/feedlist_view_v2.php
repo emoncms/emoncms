@@ -292,6 +292,10 @@
   
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
+  // @todo: match this with the user's preferences
+  user.timeFormat = 'uk';
+  user.dateFormat = 'uk';
+
   update();
 //   setInterval(update,5000);
   
@@ -352,7 +356,7 @@ function update() {
                 out += "<div class='span1 public'>"+publicfeed+"</div>";
                 out += "<div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
                 out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                out += "<div class='span2 hidden-phone start_time'>"+formatStartTime(nodes[node][feed].start_time)+"</div>";
+                out += '<div class="span2 hidden-phone start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
 
                 out += "<div class='span3 pull-right'>";
                 out += "  <div class='row-fluid'>";
@@ -376,72 +380,116 @@ function update() {
         resize();
     })
 }
-  function formatStartTime(timestamp, format){
-    //convert unix timestamp to js date (milliseconds)
-    date = new Date(timestamp*1000)
-    if (isNaN(date.getTime())) return timestamp
-    // rebuild the date string from the new date object
-    Y = date.getFullYear()
-    m = (date.getMonth()+1).pad(2)
-    d = date.getDate().pad(2)
-    h = date.getHours().pad(2)
-    i = date.getMinutes().pad(2)
-    s = date.getSeconds().pad(2)
-    
-    // show date in input field - DD/MM/YYYY HH:MM:SS
-    return [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ')
-  }
+    /**
+    * format unix timestamp to date string
+    *
+    * @todo moment.js to offer better multilingual js date formatting offers
+    * @param int timestamp unix timestamp
+    * @param string format name for the format to output to
+    */
+    function formatTimestamp(timestamp, format){
+        // set fromat to empty string if not passed
+        // convert unix timestamp to js date (milliseconds)
+        date = new Date(timestamp*1000)
+        if (isNaN(date.getTime())) return timestamp
+        // rebuild the date string from the new date object
+        let Y = date.getFullYear(),
+            y = date.getFullYear().toString().substr(-2, 2),
+            m = (date.getMonth()+1).pad(2),
+            d = date.getDate().pad(2),
+            h = date.getHours().pad(2),
+            i = date.getMinutes().pad(2),
+            s = date.getSeconds().pad(2)
 
-  $("#table").on("click",".node-info",function() {
-      var node = $(this).attr("node");
-      if (nodes_display[node]) {
-          $(".node-feeds[node='"+node+"']").hide();
-          nodes_display[node] = false;
-      } else {
-          $(".node-feeds[node='"+node+"']").show();
-          nodes_display[node] = true;
-      }
-  });
+        let dateFormat = user.dateFormat || 'uk',
+            timeFormat = user.timeFormat || 'uk',
+            formattedDate = ''
 
-  $("#table").on("click",".select",function(e) {
-      e.stopPropagation();
-  });
-  
-  $("#table").on("click",".public",function(e) {
-      e.stopPropagation();
-  });
+        switch(dateFormat) {
+            case 'us':
+                newDate = [m,d,Y].join('/')
+                break
+            case 'iso':
+                newDate = [d,m,Y].join('/')
+                break
+            case 'uk':
+            default:
+                newDate = [Y,m,d].join('/')
+        }
 
-  $("#table").on("click",".feed-select",function(e) {
-      feed_selection();
-  });
+        switch(timeFormat) {
+            default : 
+                newTime = [h,i,s].join(':')
+        }
+        
+        formattedDate = [newDate, newTime].join(' ')
 
-  $("#feed-selection").change(function(){
-      var selection = $(this).val();
-      
-      if (selection=="all") {
-          for (var id in feeds) selected_feeds[id] = true;
-          $(".feed-select").prop('checked', true); 
-          
-      } else if (selection=="none") {
-          selected_feeds = {};
-          $(".feed-select").prop('checked', false); 
-      }
-      feed_selection();
-  });
+        // if format passed override output to match format
+        switch(format) {
+            case 'm/d/Y': // USA
+                // MM/DD/YYYY
+                formattedDate = [m,d,Y].join('/')
+            case 'Y-m-d': // ISO
+                // YYYY-MM-DD
+                formattedDate = [Y,m,d].join('-')
+            case 'd/m/y':
+                // DD/MM/YY
+                formattedDate = [d,m,y].join('/')
+                break;
+        }
+        
+        return formattedDate
+    }
 
+    $("#table").on("click",".node-info",function() {
+        var node = $(this).attr("node");
+        if (nodes_display[node]) {
+            $(".node-feeds[node='"+node+"']").hide();
+            nodes_display[node] = false;
+        } else {
+            $(".node-feeds[node='"+node+"']").show();
+            nodes_display[node] = true;
+        }
+    });
 
-  $("#table").on("click",".node-feed",function() {
-      var feedid = $(this).attr("feedid");
-      window.location = path+"graph/"+feedid;
-  });
-  
-  $(".feed-graph").click(function(){
-      var graph_feeds = [];
-      for (var feedid in selected_feeds) {
-          if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
-      }
-      window.location = path+"graph/"+graph_feeds.join(",");	  
-  });
+    $("#table").on("click",".select",function(e) {
+        e.stopPropagation();
+    });
+
+    $("#table").on("click",".public",function(e) {
+        e.stopPropagation();
+    });
+
+    $("#table").on("click",".feed-select",function(e) {
+        feed_selection();
+    });
+
+    $("#feed-selection").change(function(){
+        var selection = $(this).val();
+        
+        if (selection=="all") {
+            for (var id in feeds) selected_feeds[id] = true;
+            $(".feed-select").prop('checked', true); 
+            
+        } else if (selection=="none") {
+            selected_feeds = {};
+            $(".feed-select").prop('checked', false); 
+        }
+        feed_selection();
+    });
+
+    $("#table").on("click",".node-feed",function() {
+        var feedid = $(this).attr("feedid");
+        window.location = path+"graph/"+feedid;
+    });
+
+    $(".feed-graph").click(function(){
+        var graph_feeds = [];
+        for (var feedid in selected_feeds) {
+            if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
+        }
+        window.location = path+"graph/"+graph_feeds.join(",");	  
+    });
   
   // ---------------------------------------------------------------------------------------------
   // EDIT FEED
