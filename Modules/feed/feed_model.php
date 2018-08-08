@@ -1216,7 +1216,7 @@ class Feed
         return $engine;
     }
     
-    private function get_user_timezone($userid) 
+    public function get_user_timezone($userid) 
     {
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");

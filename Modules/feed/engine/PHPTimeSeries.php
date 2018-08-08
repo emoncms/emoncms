@@ -31,7 +31,8 @@ class PHPTimeSeries implements engine_methods
     {
         $fh = @fopen($this->dir."feed_$feedid.MYD", 'a');
         if (!$fh) {
-            $msg = "could not write data file " . error_get_last()['message'];
+            $error = error_get_last();
+            $msg = "could not write data file ".$error['message'];
             $this->log->error("create() ".$msg);
             return $msg;
         }
@@ -232,6 +233,8 @@ class PHPTimeSeries implements engine_methods
 
         // Minimum interval
         if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
         if ($req_dp>8928) return array("success"=>false, "message"=>"request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
@@ -239,6 +242,8 @@ class PHPTimeSeries implements engine_methods
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 
+        if ($filesize==0) return array();
+        
         $data = array();
         $time = 0; $i = 0;
         $atime = 0;
@@ -536,7 +541,6 @@ class PHPTimeSeries implements engine_methods
             
         if (isset($this->writebuffer[$feedid]))
             $bytesize += strlen($this->writebuffer[$feedid]);
-            
         return floor($bytesize / 9.0);
     } 
 

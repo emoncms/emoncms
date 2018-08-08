@@ -8,7 +8,7 @@ function delete_user($userid,$mode) {
 
     $result1 = $mysqli->query("SELECT id,apikey_read,apikey_write FROM users WHERE id=$userid");
     if ($user_row = $result1->fetch_object()){
-        $result = "User $userid\n";
+        $result = "User $userid ".time()." ".date("Y-m-d H:i:s",time())."\n";
         
         require_once "Modules/feed/feed_model.php";
         $feed = new Feed($mysqli,$redis,$feed_settings);

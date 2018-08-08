@@ -38,7 +38,7 @@ class PHPFina implements engine_methods
         
         // Check to ensure we dont overwrite an existing feed
         
-        if (!file_exists($this->dir.$feedid.".meta")) {
+        if (!$meta = $this->get_meta($feedid)) {
             // Set initial feed meta data
             $meta = new stdClass();
             $meta->interval = $interval;
@@ -53,7 +53,8 @@ class PHPFina implements engine_methods
 
             $fh = @fopen($this->dir.$feedid.".dat", 'c+');
             if (!$fh) {
-                $msg = "could not create meta data file " . error_get_last()['message'];
+                $error = error_get_last();
+                $msg = "could not create meta data file ".$error['message'];
                 $this->log->error("create() ".$msg);
                 return $msg;
             }
@@ -79,15 +80,12 @@ class PHPFina implements engine_methods
     public function delete($feedid)
     {
         $feedid = (int)$feedid;
-        $meta = $this->get_meta($feedid);
-        if (!$meta) return false;
+        if (!$meta = $this->get_meta($feedid)) return false;
         unlink($this->dir.$feedid.".meta");
         unlink($this->dir.$feedid.".dat");
         if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
-    public function get_meta3($feedid){
-
-    }
+    
     /**
      * Gets engine metadata
      *
@@ -116,9 +114,15 @@ class PHPFina implements engine_methods
             $meta->interval = $tmp[1];
             $tmp = unpack("I",fread($metafile,4)); 
             $meta->start_time = $tmp[1];
-            $meta->npoints = $this->get_npoints($feedid);
             fclose($metafile);
+            
+            $meta->npoints = $this->get_npoints($feedid);
 
+            if ($meta->start_time>0 && $meta->npoints==0) {
+                $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
+                return false;
+            }
+            
             $metadata_cache[$feedid] = $meta; // Cache it
             return $meta;
         }
@@ -270,7 +274,7 @@ class PHPFina implements engine_methods
             $fh = fopen($this->dir.$feedid.".dat", 'rb');
             $size = filesize($this->dir.$feedid.".dat");
             fseek($fh,$size-4);
-             $d = fread($fh,4);
+            $d = fread($fh,4);
             fclose($fh);
 
             $value = null;
@@ -296,12 +300,16 @@ class PHPFina implements engine_methods
     */
     public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
 
         // Minimum interval
         if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
         if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
@@ -310,7 +318,7 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
         $meta->npoints = $this->get_npoints($name);
         
-        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
+        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval;
 
         $this->log->info("get_data() feed=$name st=$start end=$end int=$interval sk=$skipmissing lm=$limitinterval pts=$meta->npoints st=$meta->start_time");
 
@@ -351,7 +359,7 @@ class PHPFina implements engine_methods
         return $data;
     }
     
-    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+    public function get_data_DMY($id,$start,$end,$mode,$timezone)
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
@@ -417,9 +425,7 @@ class PHPFina implements engine_methods
         $start = intval($start/1000);
         $end = intval($end/1000);
         $split = json_decode($split);
-
         if (gettype($split)!="array") return false;
-        /* SP Increase to 48 points to allow a days worth of half hour readings */
         if (count($split)>48) return false;
 
         // If meta data file does not exist exit
@@ -550,10 +556,10 @@ class PHPFina implements engine_methods
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
 
-        $feedid = intval($feedid);
-        $start = intval($start);
-        $end = intval($end);
-        $outinterval= (int) $outinterval;
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $outinterval = (int) $outinterval;
 
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($feedid)) return false;
@@ -692,7 +698,8 @@ class PHPFina implements engine_methods
                 if ($padding_mode!=null) {
                     static $lastvalue_static_cache = array(); // Array to hold the cache
                     if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
-                        $lastvalue_static_cache[$feedid] = $this->lastvalue($feedid)['value'];
+                        $lastvalue = $this->lastvalue($feedid);
+                        $lastvalue_static_cache[$feedid] = $lastvalue['value'];
                     }
                     $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
                     $padding_value = $lastvalue_static_cache[$feedid];
@@ -778,7 +785,8 @@ class PHPFina implements engine_methods
         $metafile = @fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
-            $msg = "could not write meta data file " . error_get_last()['message'];
+            $error = error_get_last();
+            $msg = "could not write meta data file ".$error['message'];
             $this->log->error("create_meta() ".$msg);
             return $msg;
         }

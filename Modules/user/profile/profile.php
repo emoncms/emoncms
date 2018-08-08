@@ -167,8 +167,7 @@ function languagecode_to_name($langs) {
 	            </td>
 	          </tr>
 	          </table>
-        </div>    
-         
+        </div>      
     </div>
 </div>
 
