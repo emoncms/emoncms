@@ -29,76 +29,52 @@
     background-color:#ddd;
     cursor:pointer;
 }
-.node-name { 
-  font-weight:bold;
-	float:left;
-	padding:10px;
-	padding-right:5px;
+.node-name {
+    padding: 5px;
+    font-weight:bold;
 }
-
-
-.node-feeds {
-    padding: 0px 5px 5px 5px;
+.node-feeds{
+    padding: 3px 5px 4px 4px;
     background-color:#ddd;
 }
-
 .node-feed {
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-    height:41px;
+    border-left:2px solid transparent;
+    cursor: pointer;
+    transition: background .3s ease-in;
+    padding: .2em 0
 }
-.node-feed:hover{ border-left:2px solid #44b3e2; }
-
-.node-feed .select {
-    display:inline-block;
-    padding-top: 10px;
-    text-align:center;
+.node-feed:hover{ 
+    border-left:2px solid #44b3e2;
+    background-color:#F3F3F3;
 }
-
-.node-feed .name {
-    display:inline-block;
-}
-
-.node-feed .public {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .size {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .engine {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed-right {
-    float:right;
-}
-
-.node-feed .time {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
-}
-
-.node-feed .value {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
-}
-
-.ipad {
-    padding-left:10px;
-}
-
-input[type="checkbox"] { margin:0px; }
-#feed-selection { width:80px; }
-.controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
+.checkbox-large{ 
+    transform: scale(1.4)!important;
+    margin:0 .5em!important;
+}
+.controls { margin-bottom:10px; }
+.node-feed [class*="span"] {
+    line-height:2;
+}
+/* override old bootstrap mobile grid */
+@media (max-width: 767px) { 
+    .node-feed [class*="span"]{
+        float:left!important;
+        background:yellow;
+    }
+    .node-feed>[class*="span"]{
+        width: 33.33%;
+    }
+    .node-feed>[class*="span"] [class*="span"]{
+        width: 50%;
+    }
+    .node-feed>[class*="span"]:first-child [class*="span"]:first-child{
+        width: 25%;
+    }
+
+}
 
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
@@ -107,6 +83,7 @@ input[type="checkbox"] { margin:0px; }
 @media (max-width: 768px) {
     body {padding:0};
 }
+
 
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
@@ -144,9 +121,9 @@ input[type="checkbox"] { margin:0px; }
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -169,9 +146,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EXPORT                                                                                                                                   -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -239,9 +216,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED DELETE MODAL                                                                                                                             -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -263,9 +240,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- NEW VIRTUAL FEED                                                                                                                              -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -289,7 +266,7 @@ input[type="checkbox"] { margin:0px; }
 </div>
 
 <?php require "Modules/process/Views/process_ui.php"; ?>
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
   var path = "<?php echo $path; ?>";
   var feedviewpath = "<?php echo $feedviewpath; ?>";
@@ -301,7 +278,7 @@ input[type="checkbox"] { margin:0px; }
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  setInterval(update,5000);
+//   setInterval(update,5000);
   
   function update() 
   {
@@ -347,40 +324,64 @@ input[type="checkbox"] { margin:0px; }
               out += "</div>";
               
               out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
-              
               for (var feed in nodes[node]) {
-				          var feedid = nodes[node][feed].id;
-                  out += "<div class='node-feed' feedid="+feedid+">";
-                  var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
-                  
-                  var publicfeed = "<i class='icon-lock'></i>"
-                  if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                  
-                  out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
-                  out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
-                  out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                  
-                  out += "<div class='node-feed-right'>";
-                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                  out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                  out += "</div>";
-                  out += "</div>";
+                  if ( true ) {
+                    var feedid = nodes[node][feed].id;
+                    out += "<div class='row-fluid node-feed' feedid="+feedid+">";
+                    var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                    out += '<div class="span3">';
+                    out += '  <div class="row-fluid">';
+                    out += "    <div class='span3 select'><input class='feed-select checkbox-large' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
+                    out += "    <div class='span9 name' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div>";
+                    out += "  </div>";
+                    out += "</div>";
+                    
+                    var publicfeed = "<i class='icon-lock'></i>"
+                    if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                    out += "<div class='span1 hidden-phone public'>"+publicfeed+"</div>";
+                    out += "<div class='span2 engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                    out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                    out += "<div class='span2 hidden-phone start_time'>"+nodes[node][feed].start_time+"</div>";
+                    
+                    out += "<div class='span3 pull-right'>";
+                    out += "  <div class='row-fluid'>";
+                    out += '    <div class="span6">';
+                    out += '      <div class="row-fluid">';
+                    out += "        <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                    out += "        <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                    out += "      </div>";
+                    out += "    </div>";
+                    out += "    <div class='span6 time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                    out += "  </div>";
+                    out += "</div>";
+                    out += "</div>";
+                  }else{
+                    var feedid = nodes[node][feed].id;
+                    out += "<div class='node-feed' feedid="+feedid+">";
+                    var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                    out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
+                    out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
+                    
+                    var publicfeed = "<i class='icon-lock'></i>"
+                    if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                    
+                    out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
+                    out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
+                    out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
+                    
+                    out += "<div class='node-feed-right'>";
+                    out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                    out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                    out += "</div>";
+                    out += "</div>";
+
+                  }
               }
               
               out += "</div>";
               out += "</div>";
           }
           $("#table").html(out);
-          
-          autowidth(".node-feeds .name",20);
-          autowidth(".node-feeds .public",20);
-          autowidth(".node-feeds .engine",20);
-          autowidth(".node-feeds .size",20);
-          
-          autowidth(".node-feeds .value",20);
-          autowidth(".node-feeds .time",20);
           
           resize();
       }});
@@ -559,7 +560,7 @@ function resize()
     show_time = true;
     show_value = true;
 
-    $(".node-feed").each(function(){
+    $(".node-feedx").each(function(){
          var node_feed_width = $(this).width();
          if (node_feed_width>0) {
              var w = node_feed_width-10;
@@ -587,25 +588,15 @@ function resize()
          }
     });
     
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_public) $(".public").show(); else $(".public").hide();
-    if (show_engine) $(".engine").show(); else $(".engine").hide();
-    if (show_size) $(".size").show(); else $(".size").hide();
+    // if (show_select) $(".select").show(); else $(".select").hide();
+    // if (show_time) $(".time").show(); else $(".time").hide();
+    // if (show_value) $(".value").show(); else $(".value").hide();
+    // if (show_public) $(".public").show(); else $(".public").hide();
+    // if (show_engine) $(".engine").show(); else $(".engine").hide();
+    // if (show_size) $(".size").show(); else $(".size").hide();
     
 }
 
-function autowidth(element,padding) {
-    var mw = 0;
-    $(element).each(function(){
-        var w = $(this).width();
-        if (w>mw) mw = w;
-    });
-    
-    $(element).width(mw+padding);
-    return mw;
-}
 
   
 // Calculate and color updated time
