@@ -357,10 +357,7 @@ input[type="checkbox"] { margin:0px; }
             for (let node in nodes) {
                 node_size[node] = 0
                 node_time[node] = 0
-                console.log('new node',nodes[node])
                 for (let feed in nodes[node]) {
-                    console.log('new feed size',nodes[node][feed].size,node_size[node])
-                    console.log('new feed time',nodes[node][feed].time,node_time[node])
                     node_size[node] += Number(nodes[node][feed].size)
                     node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
                 }
