@@ -29,11 +29,12 @@
     background-color:#ddd;
     cursor:pointer;
 }
+.node-info > div{
+	padding:.5em 1em    
+}
 .node-name { 
   font-weight:bold;
 	float:left;
-	padding:10px;
-	padding-right:5px;
 }
 
 
@@ -144,9 +145,9 @@ input[type="checkbox"] { margin:0px; }
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -169,9 +170,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EXPORT                                                                                                                                   -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -239,9 +240,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED DELETE MODAL                                                                                                                             -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -263,9 +264,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- NEW VIRTUAL FEED                                                                                                                              -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -289,7 +290,7 @@ input[type="checkbox"] { margin:0px; }
 </div>
 
 <?php require "Modules/process/Views/process_ui.php"; ?>
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
   var path = "<?php echo $path; ?>";
   var feedviewpath = "<?php echo $feedviewpath; ?>";
@@ -301,7 +302,7 @@ input[type="checkbox"] { margin:0px; }
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  setInterval(update,5000);
+  //setInterval(update,5000);
   
   function update() 
   {
@@ -338,13 +339,36 @@ input[type="checkbox"] { margin:0px; }
       
           var out = "";
           
+          // get node overview
+          var node_size = {},
+              node_time = {}
+            for (let node in nodes) {
+                node_size[node] = 0
+                node_time[node] = 0
+                console.log('new node',nodes[node])
+                for (let feed in nodes[node]) {
+                    console.log('new feed size',nodes[node][feed].size,node_size[node])
+                    console.log('new feed time',nodes[node][feed].time,node_time[node])
+                    node_size[node] += Number(nodes[node][feed].size)
+                    node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
+                }
+          }
+          // display nodes and feeds
           for (var node in nodes) {
               var visible = "hide"; if (nodes_display[node]) visible = "";
               
               out += "<div class='node'>";
-              out += "<div class='node-info' node='"+node+"'>";
-              out += "<div class='node-name'>"+node+":</div>";
-              out += "</div>";
+              out += "  <div class='node-info row-fluid' node='"+node+"'>";
+              out += '    <div class="span5">'
+              out += "      <div class='node-name'>"+node+":</div>";
+              out += '    </div>';
+              out += '    <div class="span3">'
+              out += "      <div class='node-size'>"+list_format_size(node_size[node])+"</div>";
+              out += '    </div>';
+              out += '    <div class="span4 text-right">'
+              out += "      <div class='node-latest'>"+list_format_updated(node_time[node])+"</div>";
+              out += '    </div>';
+              out += '  </div>';
               
               out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
               
