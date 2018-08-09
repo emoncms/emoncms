@@ -101,6 +101,18 @@ input[type="checkbox"] { margin:0px; }
 .controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
 
+/* override bootstrap v2 small device wrap */
+@media (max-width: 767px) {
+    .node-info>[class*="span"]{float:left}
+    .node-info>.span3{width: 23.351063829787233%}
+    .node-info>.span6{width: 48.61878453038674%}
+}
+/* extra small devices */
+@media (max-width: 464px) {
+    /* additional responsive show/hide for smaller devices */
+    .hidden-phone-small{  display:none!important }
+}
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
@@ -359,13 +371,13 @@ input[type="checkbox"] { margin:0px; }
               
               out += "<div class='node'>";
               out += "  <div class='node-info row-fluid' node='"+node+"'>";
-              out += '    <div class="span5">'
+              out += '    <div class="span6">'
               out += "      <div class='node-name'>"+node+":</div>";
               out += '    </div>';
-              out += '    <div class="span3">'
+              out += '    <div class="span3 hidden-phone-small">'
               out += "      <div class='node-size'>"+list_format_size(node_size[node])+"</div>";
               out += '    </div>';
-              out += '    <div class="span4 text-right">'
+              out += '    <div class="span3 text-right" style="padding-right:2em">'
               out += "      <div class='node-latest'>"+list_format_updated(node_time[node])+"</div>";
               out += '    </div>';
               out += '  </div>';
