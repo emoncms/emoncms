@@ -104,8 +104,8 @@ input[type="checkbox"] { margin:0px; }
 /* override bootstrap v2 small device wrap */
 @media (max-width: 767px) {
     .node-info>[class*="span"]{float:left}
-    .node-info>.span3{width: 23.351063829787233%}
-    .node-info>.span6{width: 48.61878453038674%}
+    .node-info>.span3{width: 25%}
+    .node-info>.span6{width: 50%}
 }
 /* extra small devices */
 @media (max-width: 464px) {
