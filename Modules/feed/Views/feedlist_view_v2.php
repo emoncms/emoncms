@@ -144,9 +144,9 @@ input[type="checkbox"] { margin:0px; }
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedEditModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -161,7 +161,26 @@ input[type="checkbox"] { margin:0px; }
 
         <p>Make feed public: 
         <input id="feed-public" type="checkbox"></p>
-                
+
+        <p>Feed Unit</p>
+        <select id="feed_unit_dropdown">
+            <option value=""></option>
+            <option value="W">W</option>
+            <option value="kWh">kWh</option>
+            <option value="Wh">Wh</option>
+            <option value="V">V</option>
+            <option value="VA">VA</option>
+            <option value="A">A</option>
+            <option value="°C">°C</option>
+            <option value="K">K</option>
+            <option value="°F">°F</option>
+            <option value="%">%</option>
+            <option value="Hz">Hz</option>
+            <option value="pulses">pulses</option>
+            <option value="dB">dB</option>
+            <option value="_other">Other</option>
+        </select>
+        <input id="feed_unit_dropdown_other">
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -169,9 +188,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EXPORT                                                                                                                                   -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedExportModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedExportModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -239,9 +258,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED DELETE MODAL                                                                                                                             -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -263,9 +282,9 @@ input[type="checkbox"] { margin:0px; }
     </div>
 </div>
 
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- NEW VIRTUAL FEED                                                                                                                              -->
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <div id="newFeedNameModal" class="modal hide keyboard" tabindex="-1" role="dialog" aria-labelledby="newFeedNameModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
@@ -289,7 +308,7 @@ input[type="checkbox"] { margin:0px; }
 </div>
 
 <?php require "Modules/process/Views/process_ui.php"; ?>
-<!--------------------------------------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
   var path = "<?php echo $path; ?>";
   var feedviewpath = "<?php echo $feedviewpath; ?>";
@@ -451,6 +470,30 @@ input[type="checkbox"] { margin:0px; }
       $("#feed-node").val(feeds[feedid].tag);
       var checked = false; if (feeds[feedid].public==1) checked = true;
       $("#feed-public")[0].checked = checked;
+
+        let $dropdown = $('#feed_unit_dropdown')
+        $dropdown.val(feeds[feedid].unit)
+        let options = []
+        $dropdown.find('option').each(function(key,elem){
+            options.push(elem.value)
+        })
+        if (options.indexOf(feeds[feedid].unit) == -1) {
+            $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
+            $dropdown.val('_other')
+        }
+        if($dropdown.val()=='_other') {
+            $dropdown.next('input').show();
+        }else{
+            $dropdown.next('input').hide();
+        }
+        $dropdown.change(function(event){
+            if(event.target.value=='_other') {
+                $(event.target).next('input').show();
+            }else{
+                $(event.target).next('input').hide();
+            }
+        });
+
   });
 
   $("#feed-edit-save").click(function(){
@@ -458,16 +501,32 @@ input[type="checkbox"] { margin:0px; }
       // There should only ever be one feed that is selected here:
       for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
       
-      var publicfeed = false;
-      if ($("#feed-public")[0].checked) publicfeed = true;
+      var publicfeed = 0;
+      if ($("#feed-public")[0].checked) publicfeed = 1;
       
+      var unit = $('#feed_unit_dropdown').val()
+      unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+
       var fields = {
-          tag: $("#feed-node").val(), 
-          name: $("#feed-name").val(),
-          public: publicfeed
+        tag: $("#feed-node").val(), 
+        name: $("#feed-name").val(),
+        public: publicfeed,
+        unit: unit
       };
-      
-      $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(fields), dataType: 'json', async: true, success: function(data) {
+      // only send changed values
+      var data = {}
+      for(f in fields){
+          console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+          if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+      }
+      console.log(Object.keys(data).length);
+      // dont send ajax if nothing changed
+      if (Object.keys(data).length==0) {
+        $('#feedEditModal').modal('hide')
+        return
+      }
+
+      $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
           update();
           $('#feedEditModal').modal('hide');
       }});
