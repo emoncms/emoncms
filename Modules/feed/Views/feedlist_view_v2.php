@@ -314,7 +314,7 @@ input[type="checkbox"] { margin:0px; }
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  //setInterval(update,5000);
+  setInterval(update,5000);
   
   function update() 
   {
