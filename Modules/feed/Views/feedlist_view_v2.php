@@ -297,7 +297,7 @@
   user.dateFormat = 'uk';
 
   update();
-//   setInterval(update,5000);
+  setInterval(update,5000);
   
 function update() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json'})
@@ -377,7 +377,6 @@ function update() {
         }
         $("#table").html(out);
         
-        resize();
     })
 }
     /**
@@ -602,56 +601,6 @@ var show_select = true;
 var show_time = true;
 var show_value = true;
 
-$(window).resize(function(){ resize(); });
-
-function resize() 
-{
-    show_size = true;
-    show_engine = true;
-    show_public = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
-
-    $(".node-feedx").each(function(){
-         var node_feed_width = $(this).width();
-         if (node_feed_width>0) {
-             var w = node_feed_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-
-             tw += $(this).find(".public").width();
-             if (tw>w) show_public = false;
-             
-             tw += $(this).find(".engine").width();
-             if (tw>w) show_engine = false;
-              
-             tw += $(this).find(".size").width();
-             if (tw>w) show_size = false;
-         }
-    });
-    
-    // if (show_select) $(".select").show(); else $(".select").hide();
-    // if (show_time) $(".time").show(); else $(".time").hide();
-    // if (show_value) $(".value").show(); else $(".value").hide();
-    // if (show_public) $(".public").show(); else $(".public").hide();
-    // if (show_engine) $(".engine").show(); else $(".engine").hide();
-    // if (show_size) $(".size").show(); else $(".size").hide();
-    
-}
-
-
-  
 // Calculate and color updated time
 function list_format_updated(time) {
   time = time * 1000;
