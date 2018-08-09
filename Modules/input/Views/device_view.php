@@ -242,7 +242,7 @@ function updaterStart(func, interval){
 	  updater = null;
 	  if (interval > 0) updater = setInterval(func, interval);
 }
-// updaterStart(update, 5000);
+updaterStart(update, 5000);
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
@@ -535,52 +535,7 @@ $(".auth-check-allow").click(function(){
 
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive
-//
-// The following implements the showing and hiding of the device fields depending on the available width
-// of the container and the width of the individual fields themselves. It implements a level of responsivness
-// that is one step more advanced than is possible using css alone.
-// -------------------------------------------------------------------------------------------------------
-var show_processlist = true;
-var show_select = true;
-var show_time = true;
-var show_value = true;
+// now using bootstrap grid css to handle the responsive layout
+// @todo: upgrade to latest bootstrap and re-label the relevant classes
 
-// $(window).resize(function(){ resize(); });
-
-function resize() 
-{
-    show_processlist = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
-
-    $(".node-input").each(function(){
-         var node_input_width = $(this).width();
-         if (node_input_width>0) {
-             var w = node_input_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-             tw += $(this).find(".configure").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-                
-             tw += $(this).find(".processlist").width();
-             if (tw>w) show_processlist = false;
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_processlist) $(".processlist").show(); else $(".processlist").hide();
-    
-}
 </script>
