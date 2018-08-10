@@ -98,8 +98,8 @@ class Route
         // trim slashes: '/user/view' => 'user/view'
         $q = trim($q, '/');
 
-        // filter out all except a-z and / .
-        $q = preg_replace('/[^.\/A-Za-z0-9-]/', '', $q);
+        // filter out all except alphanumerics and / . _ -
+        $q = preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q);
 
         // Split by /
         $args = preg_split('/[\/]/', $q);
