@@ -85,55 +85,30 @@
 .node-input {
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-    height:41px;
+    border-left: 2px solid transparent;
+    line-height: 2;
 }
 
 .node-input:hover{ border-left:2px solid #44b3e2; }
 
-.node-input .select {
-    display:inline-block;
-    padding-top: 10px;
-    text-align:center;
-}
-
+.node-input .select ,
 .node-input .name {
     display:inline-block;
 }
 
 .node-input .processlist {
-    display:inline-block;
-    padding-top:10px;
-    /*padding-left:10px;*/
-}
-
-.node-input-right {
-    float:right;
-}
-
-.node-input .time {
-    display:inline-block;
-    width:60px;
-    padding-top:10px;
-    text-align:center;
-}
-
-.node-input .value {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
+    line-height: 1.6;
+    padding-top: 0.8em!important;
 }
 
 .node-input .configure {
     display:inline-block;
-    width:40px;
-    padding-top:10px;
     text-align:center;
-	  cursor:pointer;
+    cursor:pointer;
 }
-
-.ipad {
-    padding-left:10px;
+.checkbox-large{ 
+    transform: scale(1.4)!important;
+    margin:0 .5em!important;
 }
 
 input[type="checkbox"] { margin:0px; }
@@ -154,14 +129,54 @@ input[type="checkbox"] { margin:0px; }
     float:right;
     margin-top:-2px;
 }
+.node-input.row-fluid > [class*=span] {
+    padding: .6em 0;
+}
 
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
-
+/* override bootstrap css to allow for smaller devices */
 @media (max-width: 768px) {
-    body {padding:0};
+    body {padding:0}
+    .node-input.row-fluid [class*=span] {float:left}
+    .node-input.row-fluid .span1 { width: 8.3333%; }
+    .node-input.row-fluid .span2 { width: 16.6666%; }
+    .node-input.row-fluid .span3 { width: 24.9999%; }
+    .node-input.row-fluid .span4 { width: 33.3332%; }
+    .node-input.row-fluid .span5 { width: 41.6665%; }
+    .node-input.row-fluid .span6 { width: 49.9998%; }
+    .node-input.row-fluid .span7 { width: 58.3331%; }
+    .node-input.row-fluid .span8 { width: 66.6664%; }
+    .node-input.row-fluid .span9 { width: 74.9997%; }
+    .node-input.row-fluid .span10 { width: 83.333%; }
+    .node-input.row-fluid .span11 { width: 91.6663%; }
+    .node-input.row-fluid .span11 { width: 99.9996%; }
 }
+
+/* extra small devices */
+@media (max-width: 464px) {
+    /* additional responsive show/hide for smaller devices */
+    .hidden-phone-small{  display:none!important }
+
+    .node-input.row-fluid .span5-xs { width: 41%; }
+    .node-input.row-fluid .span6-xs { width: 50%; }
+    .node-input.row-fluid .span7-xs { width: 59%; }
+}
+/* large devices */
+@media (min-width: 992px) {
+    /* additional responsive show/hide for larger devices */
+    .node-input.row-fluid .span2-lg { width: 14.3%; }
+    .node-input.row-fluid .span8-lg { width: 66.2%; }
+}
+/* extra large devices */
+@media (min-width: 1200px) {
+    /* additional responsive show/hide for larger devices */
+    .node-input.row-fluid .span1-xl { width: 7.15%; }
+    .node-input.row-fluid .span9-xl { width: 73.35%; }
+}
+
+
 
 </style>
 
@@ -295,25 +310,37 @@ function draw_devices()
             var input = devices[node].inputs[i];
             
             var selected = "";
-            if (selected_inputs[input.id]!=undefined && selected_inputs[input.id]==true) 
-                selected = "checked";
+            if (selected_inputs[input.id]!=undefined && selected_inputs[input.id]==true) selected = "checked";
+
+            out += '<div class="node-input row-fluid" id='+input.id+'>';
+            out += '<div class="span3 span7-xs span2-lg span1-xl">';
+            out += '  <div class="select"><input class="input-select checkbox-large" type="checkbox" id="'+input.id+'" '+selected+' /></div>';
+            out += '  <div class="name">'+input.name+'</div>';
+            out += '</div>';
             
-            out += "<div class='node-input' id="+input.id+">";
-            out += "<div class='select'><div class='ipad'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div></div>";
-            out += "<div class='name'><div class='ipad'>"+input.name+"</div></div>";
+            out += '<div class="processlist span6 span8-lg span9-xl hidden-phone-small">'
+            if (processlist_ui != undefined) out += processlist_ui.drawpreview(input.processList)
+            out += '</div>';
             
-            if (processlist_ui != undefined)  out += "<div class='processlist'><div class='ipad'>"+processlist_ui.drawpreview(input.processList)+"</div></div>";
-            
-            out += "<div class='node-input-right'>";
-            out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
-            out += "<div class='value'>"+list_format_value(input.value)+"</div>";
-            out += "<div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
-            out += "</div>";
-            out += "</div>";
+            out += '<div class="span3 span5-xs span2-lg">';
+            out += '  <div class="row-fluid">';
+            out += '    <div class="span4 text-center">';
+            out += '      <div class="time">'+list_format_updated(input.time)+'</div>';
+            out += '    </div>';
+            out += '    <div class="span4 text-center">';
+            out += '      <div class="value">'+list_format_value(input.value)+'</div>';
+            out += '    </div>';
+            out += '    <div class="span4 text-center">';
+            out += '      <div class="configure" id="'+input.id+'"><i class="icon-wrench"></i></div>';
+            out += '    </div>';
+            out += '  </div>';
+            out += '</div>';
+
+            out += '</div>'; // end of .node-input
         }
         
-        out += "</div>";
-        out += "</div>";
+        out += "</div>"; // end of .node-inputs
+        out += "</div>"; // end of .node
     }
     $("#table").html(out);
 
@@ -332,9 +359,9 @@ function draw_devices()
         }
     }
     
-    autowidth(".node-inputs .name",10);
-    autowidth(".node-inputs .value",10);
-    resize();
+    // autowidth(".node-inputs .name",10);
+    // autowidth(".node-inputs .value",10);
+    // resize();
 }
 // ---------------------------------------------------------------------------------------------
 
@@ -508,52 +535,7 @@ $(".auth-check-allow").click(function(){
 
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive
-//
-// The following implements the showing and hiding of the device fields depending on the available width
-// of the container and the width of the individual fields themselves. It implements a level of responsivness
-// that is one step more advanced than is possible using css alone.
-// -------------------------------------------------------------------------------------------------------
-var show_processlist = true;
-var show_select = true;
-var show_time = true;
-var show_value = true;
+// now using bootstrap grid css to handle the responsive layout
+// @todo: upgrade to latest bootstrap and re-label the relevant classes
 
-$(window).resize(function(){ resize(); });
-
-function resize() 
-{
-    show_processlist = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
-
-    $(".node-input").each(function(){
-         var node_input_width = $(this).width();
-         if (node_input_width>0) {
-             var w = node_input_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-             tw += $(this).find(".configure").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-                
-             tw += $(this).find(".processlist").width();
-             if (tw>w) show_processlist = false;
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_processlist) $(".processlist").show(); else $(".processlist").hide();
-    
-}
 </script>
