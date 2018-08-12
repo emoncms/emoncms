@@ -397,7 +397,7 @@ class Feed
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
             $meta = $this->get_meta($id);
-            $row['start_time'] = $meta->start_time;
+            if (isset($meta->start_time)) $row['start_time'] = $meta->start_time;
             $feeds[] = $row;
         }
 
