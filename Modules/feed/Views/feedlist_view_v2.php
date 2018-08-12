@@ -100,7 +100,7 @@
     padding-left:10px;
 }
 
-input[type="checkbox"] { margin:0px; transform: scale(1.4);padding:1em}
+input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 #feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
