@@ -107,7 +107,7 @@
     cursor:pointer;
 }
 .checkbox-large{ 
-    transform: scale(1.4)!important;
+    transform: scale(1.00)!important;
     margin:0 .5em!important;
 }
 
