@@ -367,7 +367,7 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-//   setInterval(update,5000);
+  setInterval(update,5000);
   
   function update() 
   {
@@ -417,7 +417,7 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
                   var row_title = ["Feed ID: "+feedid,
-                                    "Feed Interval: "+(nodes[node][feed].interval||''),
+                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s',
                                     "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
                   ].join("\n")
 
