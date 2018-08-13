@@ -50,8 +50,7 @@
     background-color:#F3F3F3;
 }
 #feeds-to-delete { font-style:italic; }
-.checkbox-large{ 
-    transform: scale(1.4)!important;
+.feed-select{
     margin:0 .5em!important;
 }
 .controls { margin-bottom:10px; }
@@ -408,7 +407,7 @@ function update() {
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += '<div class="span3">';
                 out += '  <div class="row-fluid">';
-                out += "    <div class='span2 select'><input class='feed-select checkbox-large' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
+                out += "    <div class='span2 select'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
                 out += "    <div class='span10 name' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div>";
                 out += "  </div>";
                 out += "</div>";
