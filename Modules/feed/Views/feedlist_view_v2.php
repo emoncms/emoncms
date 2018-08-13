@@ -30,7 +30,7 @@
     cursor:pointer;
 }
 .node-name {
-    padding: 5px;
+    padding: .7em;
     font-weight:bold;
 }
 .node-feeds{
@@ -55,7 +55,7 @@
 }
 .controls { margin-bottom:10px; }
 .controls select { width: auto!important; }
-.node-feed [class*="span"] { line-height:2; }
+.node-feed [class*="span"] { line-height:2; background: green }
 
 
 /* override old bootstrap mobile grid */
@@ -359,7 +359,7 @@
   user.dateFormat = 'uk';
 
   update();
-  setInterval(update,5000);
+  //setInterval(update,5000);
   
 function update() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json'})
@@ -405,31 +405,36 @@ function update() {
                 var feedid = nodes[node][feed].id;
                 out += "<div class='row-fluid node-feed' feedid="+feedid+">";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                out += '<div class="span3">';
-                out += '  <div class="row-fluid">';
-                out += "    <div class='span2 select'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
-                out += "    <div class='span10 name' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div>";
-                out += "  </div>";
-                out += "</div>";
+                out += '<div class="row-fluid">'
+                out += '<div class="span6 span3-lg">'
+                out += '  <div class="span9">';
+                out += '      <div class="span10 name" title="ID:'+feedid+'"><input class="feed-select" type="checkbox" feedid="'+feedid+'" '+checked+'>'+nodes[node][feed].name+'</div>';
+                out += '  </div>';
 
                 var publicfeed = "<i class='icon-lock'></i>"
-
                 if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                out += "<div class='span1 public'>"+publicfeed+"</div>";
-                out += "<div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
-                out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                out += '<div class="span2 hidden-phone start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
+                out += "  <div class='span1 public'>"+publicfeed+"</div>";
+                
+                out += "  <div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                out += "</div>";
 
-                out += "<div class='span3 pull-right'>";
-                out += "  <div class='row-fluid'>";
-                out += '    <div class="span6">';
-                out += '      <div class="row-fluid">';
-                out += "        <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                out += "        <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                out += '<div class="span4 pull-right">'
+                
+                out += "  <div class='span3 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                out += '  <div class="span3 hidden-phone start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
+
+                out += "  <div class='span6'>";
+                out += "    <div class='row-fluid'>";
+                out += '      <div class="span6">';
+                out += '        <div class="row-fluid">';
+                out += "          <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                out += "          <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                out += "        </div>";
                 out += "      </div>";
+                out += "      <div class='span6 time hidden-phone-small'>"+list_format_updated(nodes[node][feed].time)+"</div>";
                 out += "    </div>";
-                out += "    <div class='span6 time hidden-phone-small'>"+list_format_updated(nodes[node][feed].time)+"</div>";
                 out += "  </div>";
+                out += "</div>";
                 out += "</div>";
                 out += "</div>";
             }
