@@ -46,8 +46,10 @@
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
     border-left:2px solid #f0f0f0;
-    height:41px;
-    transition: background .2s ease-in
+    min-height:41px;
+    line-height:41px;
+    transition: background .2s ease-in;
+    overflow:hidden;
 }
 .node-feed:hover {
     background-color:#EBEBEB;
@@ -57,7 +59,6 @@
 
 .node-feed .select {
     display:inline-block;
-    padding-top: 10px;
     text-align:center;
 }
 
@@ -86,13 +87,11 @@
 
 .node-feed .time {
     display:inline-block;
-    padding-top:10px;
     text-align:center;
 }
 
 .node-feed .value {
     display:inline-block;
-    padding-top:10px;
     text-align:center;
 }
 
@@ -368,7 +367,7 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  setInterval(update,5000);
+//   setInterval(update,5000);
   
   function update() 
   {
@@ -416,11 +415,16 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
               out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
               
               for (var feed in nodes[node]) {
-				          var feedid = nodes[node][feed].id;
-                  out += "<div class='node-feed' feedid="+feedid+">";
+                  var feedid = nodes[node][feed].id;
+                  var row_title = ["Feed ID: "+feedid,
+                                    "Feed Interval: "+(nodes[node][feed].interval||''),
+                                    "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
+                  ].join("\n")
+
+                  out += "<div class='node-feed' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                   out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
+                  out += "<div class='name'><div class='ipad'>"+nodes[node][feed].name+"</div></div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
@@ -428,9 +432,8 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
                   out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
                   out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
                   out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                  
                   out += "<div class='node-feed-right'>";
-                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+"</div>";
                   out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
                   out += "</div>";
                   out += "</div>";
@@ -1165,6 +1168,7 @@ function resize()
     show_select = true;
     show_time = true;
     show_value = true;
+    show_start_time = true;
 
     $(".node-feed").each(function(){
          var node_feed_width = $(this).width();
@@ -1191,6 +1195,9 @@ function resize()
               
              tw += $(this).find(".size").width();
              if (tw>w) show_size = false;
+             
+             tw += $(this).find(".start_time").width();
+             if (tw>w) show_start_time = false;
          }
     });
     
@@ -1200,6 +1207,7 @@ function resize()
     if (show_public) $(".public").show(); else $(".public").hide();
     if (show_engine) $(".engine").show(); else $(".engine").hide();
     if (show_size) $(".size").show(); else $(".size").hide();
+    if (show_start_time) $(".start_time").show(); else $(".start_time").hide();
     
 }
 
@@ -1447,6 +1455,20 @@ Number.prototype.pad = function(size) {
   while (s.length < (size || 2)) {s = "0" + s;}
   return s;
 }
-
+</script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/moment-with-locales.js"></script>
+<script>
+/**
+ * uses moment.js to format to local time 
+ * @param int time unix epoc time
+ * @param string format moment.js date formatting options
+ * @see date format options - https://momentjs.com/docs/#/displaying/
+ */
+function format_time(time,format){
+    time = time || (new Date().valueOf() / 1000)
+    format = format || ''
+    formatted_date = moment.unix(time).format(format)
+    return formatted_date
+}
 </script>
 
