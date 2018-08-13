@@ -29,81 +29,33 @@
     background-color:#ddd;
     cursor:pointer;
 }
-.node-name { 
-  font-weight:bold;
-	float:left;
-	padding:10px;
-	padding-right:5px;
+.node-name {
+    padding: .7em;
+    font-weight:bold;
 }
-
-
-.node-feeds {
-    padding: 0px 5px 5px 5px;
+.node-feeds{
+    padding: 3px 5px 4px 4px;
     background-color:#ddd;
 }
-
 .node-feed {
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-    height:41px;
-    transition: background .2s ease-in
+    border-left:2px solid transparent;
+    cursor: pointer;
+    transition: background .3s ease-in;
+    padding: .2em 0
 }
-.node-feed:hover {
-    background-color:#EBEBEB;
-    cursor: pointer
+.node-feed:hover{ 
+    border-left:2px solid #44b3e2;
+    background-color:#F3F3F3;
 }
-.node-feed:hover{ border-left:2px solid #44b3e2; }
-
-.node-feed .select {
-    display:inline-block;
-    padding-top: 10px;
-    text-align:center;
-}
-
-.node-feed .name {
-    display:inline-block;
-}
-
-.node-feed .public {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .size {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .engine {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed-right {
-    float:right;
-}
-
-.node-feed .time {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
-}
-
-.node-feed .value {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
-}
-
-.ipad {
-    padding-left:10px;
-}
-
-input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
-#feed-selection { width:80px; }
-.controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
+.feed-select{
+    margin:0 .5em!important;
+}
+.controls { margin-bottom:10px; }
+.controls select { width: auto!important; }
+.node-feed [class*="span"] { line-height:2; }
 
 #deleteFeedModalSelectedItems{
     postion:absolute;
@@ -123,6 +75,99 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 @media (max-width: 768px) {
     body {padding:0};
 }
+
+
+/* override old bootstrap mobile grid */
+
+[class*=span] {background:olive}
+.node-feed [class*=span] { float:left; margin:0}
+.node-feed .span1 { width: 8.333333333% }
+.node-feed .span2 { width: 16.6666666666667% }
+.node-feed .span3 { width: 25% }
+.node-feed .span4 { width: 33.3333333333333% }
+.node-feed .span5 { width: 41.6666666666667% }
+.node-feed .span6 { width: 50% }
+.node-feed .span7 { width: 58.3333333333333% }
+.node-feed .span8 { width: 66.6666666666667% }
+.node-feed .span9 { width: 75% }
+.node-feed .span10 { width: 83.3333333333333% }
+.node-feed .span11 { width: 91.6666666666667% }
+.node-feed .span12 { width: 100% }
+
+.node-feed [class*=visible-] { display:none }
+
+/* // Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) { 
+    [class*=span] {background:LightPink }
+    .node-feed .visible-sm { display:block }
+    .node-feed .span1-sm { width: 8.333333333% }
+    .node-feed .span2-sm { width: 16.6666666666667% }
+    .node-feed .span3-sm { width: 25% }
+    .node-feed .span4-sm { width: 33.3333333333333% }
+    .node-feed .span5-sm { width: 41.6666666666667% }
+    .node-feed .span6-sm { width: 50% }
+    .node-feed .span7-sm { width: 58.3333333333333% }
+    .node-feed .span8-sm { width: 66.6666666666667% }
+    .node-feed .span9-sm { width: 75% }
+    .node-feed .span10-sm { width: 83.3333333333333% }
+    .node-feed .span11-sm { width: 91.6666666666667% }
+    .node-feed .span12-sm { width: 100% }
+}
+
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    [class*=span] {background:lightblue}
+    .node-feed .visible-md { display:block }
+    .node-feed .span1-md { width: 8.333333333% }
+    .node-feed .span2-md { width: 16.6666666666667% }
+    .node-feed .span3-md { width: 25% }
+    .node-feed .span4-md { width: 33.3333333333333% }
+    .node-feed .span5-md { width: 41.6666666666667% }
+    .node-feed .span6-md { width: 50% }
+    .node-feed .span7-md { width: 58.3333333333333% }
+    .node-feed .span8-md { width: 66.6666666666667% }
+    .node-feed .span9-md { width: 75% }
+    .node-feed .span10-md { width: 83.3333333333333% }
+    .node-feed .span11-md { width: 91.6666666666667% }
+    .node-feed .span12-md { width: 100% }
+}
+
+/* // Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+    [class*=span] {background:lime}
+    .node-feed .visible-lg { display:block }
+    .node-feed .span1-lg { width: 8.333333333% }
+    .node-feed .span2-lg { width: 16.6666666666667% }
+    .node-feed .span3-lg { width: 25% }
+    .node-feed .span4-lg { width: 33.3333333333333% }
+    .node-feed .span5-lg { width: 41.6666666666667% }
+    .node-feed .span6-lg { width: 50% }
+    .node-feed .span7-lg { width: 58.3333333333333% }
+    .node-feed .span8-lg { width: 66.6666666666667% }
+    .node-feed .span9-lg { width: 75% }
+    .node-feed .span10-lg { width: 83.3333333333333% }
+    .node-feed .span11-lg { width: 91.6666666666667% }
+    .node-feed .span12-lg { width: 100% }
+}
+
+/* // Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+    [class*=span] {background:orange}
+    .node-feed .visible-xl { display:block }
+    .node-feed .span1-xl { width: 8.333333333% }
+    .node-feed .span2-xl { width: 16.6666666666667% }
+    .node-feed .span3-xl { width: 25% }
+    .node-feed .span4-xl { width: 33.3333333333333% }
+    .node-feed .span5-xl { width: 41.6666666666667% }
+    .node-feed .span6-xl { width: 50% }
+    .node-feed .span7-xl { width: 58.3333333333333% }
+    .node-feed .span8-xl { width: 66.6666666666667% }
+    .node-feed .span9-xl { width: 75% }
+    .node-feed .span10-xl { width: 83.3333333333333% }
+    .node-feed .span11-xl { width: 91.6666666666667% }
+    .node-feed .span12-xl { width: 100% }
+}
+
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
@@ -367,142 +412,216 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
   
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
+  // @todo: match this with the user's preferences
+  user.timeFormat = 'uk';
+  user.dateFormat = 'uk';
+
   update();
-  setInterval(update,5000);
+  //setInterval(update,5000);
   
-  function update() 
-  {
-  
-      $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
-      
-          // Show/hide no feeds alert
-          $('#feed-loader').hide();
-          if (data.length == 0){
-              $("#nofeeds").show();
-              $("#localheading").hide();
-              $("#apihelphead").hide();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").hide();
-          } else {
-              $("#nofeeds").hide();
-              $("#localheading").show();
-              $("#apihelphead").show();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").show();
-          }
+function update() {
+    $.ajax({ url: path+"feed/list.json", dataType: 'json'})
+    .done(function(data) {
+        // Show/hide no feeds alert
+        $('#feed-loader').hide();
+        if (data.length == 0){
+            $("#nofeeds").show();
+            $("#localheading").hide();
+            $("#apihelphead").hide();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").hide();
+        } else {
+            $("#nofeeds").hide();
+            $("#localheading").show();
+            $("#apihelphead").show();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").show();
+        }
 		      
-          feeds = {};
-		      for (var z in data) feeds[data[z].id] = data[z];
-		      
-          
-          var nodes = {};
-          for (var z in feeds) {
-              var node = feeds[z].tag;
-              if (nodes[node]==undefined) nodes[node] = [];
-              if (nodes_display[node]==undefined) nodes_display[node] = true;
-              nodes[node].push(feeds[z]);
-          }
+        feeds = {};
+        for (var z in data) feeds[data[z].id] = data[z];
+        var nodes = {};
+        for (var z in feeds) {
+            var node = feeds[z].tag;
+            if (nodes[node]==undefined) nodes[node] = [];
+            if (nodes_display[node]==undefined) nodes_display[node] = true;
+            nodes[node].push(feeds[z]);
+        }
       
-          var out = "";
+        var out = "";
+        out +='<div class="node-feed">'
+        out += '<span class="visible-sm">visible-sm</span>'
+        out += '<span class="visible-md">visible-md</span>'
+        out += '<span class="visible-lg">visible-lg</span>'
+        out += '<span class="visible-xl">visible-xl</span>'
+        out += '</div>'
           
-          for (var node in nodes) {
-              var visible = "hide"; if (nodes_display[node]) visible = "";
-              
-              out += "<div class='node'>";
-              out += "<div class='node-info' node='"+node+"'>";
-              out += "<div class='node-name'>"+node+":</div>";
-              out += "</div>";
-              
-              out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
-              
-              for (var feed in nodes[node]) {
-				          var feedid = nodes[node][feed].id;
-                  out += "<div class='node-feed' feedid="+feedid+">";
-                  var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
-                  
-                  var publicfeed = "<i class='icon-lock'></i>"
-                  if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                  
-                  out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
-                  out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
-                  out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                  
-                  out += "<div class='node-feed-right'>";
-                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                  out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                  out += "</div>";
-                  out += "</div>";
-              }
-              
-              out += "</div>";
-              out += "</div>";
-          }
-          $("#table").html(out);
-          
-          autowidth(".node-feeds .name",20);
-          autowidth(".node-feeds .public",20);
-          autowidth(".node-feeds .engine",20);
-          autowidth(".node-feeds .size",20);
-          
-          autowidth(".node-feeds .value",20);
-          autowidth(".node-feeds .time",20);
-          
-          resize();
-      }});
-  }
-  
-  $("#table").on("click",".node-info",function() {
-      var node = $(this).attr("node");
-      if (nodes_display[node]) {
-          $(".node-feeds[node='"+node+"']").hide();
-          nodes_display[node] = false;
-      } else {
-          $(".node-feeds[node='"+node+"']").show();
-          nodes_display[node] = true;
-      }
-  });
+        for (var node in nodes) {
+            var visible = "hide"; if (nodes_display[node]) visible = "";
 
-  $("#table").on("click",".select",function(e) {
-      e.stopPropagation();
-  });
-  
-  $("#table").on("click",".public",function(e) {
-      e.stopPropagation();
-  });
+            out += "<div class='node'>";
+            out += "<div class='node-info' node='"+node+"'>";
+            out += "<div class='node-name'>"+node+":</div>";
+            out += "</div>";
 
-  $("#table").on("click",".feed-select",function(e) {
-      feed_selection();
-  });
+            out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
+            for (var feed in nodes[node]) {
+                var feedid = nodes[node][feed].id;
+                out += "<div class='row-fluid node-feed' feedid="+feedid+">";
+                var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                out += '<div class="row-fluid">'
+                // left
+                out += '  <div class="span9 span6-sm">'
+                out += '    <div class="row-fluid">'
+                out += '      <div class="span9-sm">';
+                out += '          <div class="span10 name" title="ID:'+feedid+'"><input class="feed-select" type="checkbox" feedid="'+feedid+'" '+checked+'>'+nodes[node][feed].name+'</div>';
+                out += '      </div>';
 
-  $("#feed-selection").change(function(){
-      var selection = $(this).val();
-      
-      if (selection=="all") {
-          for (var id in feeds) selected_feeds[id] = true;
-          $(".feed-select").prop('checked', true); 
-          
-      } else if (selection=="none") {
-          selected_feeds = {};
-          $(".feed-select").prop('checked', false); 
-      }
-      feed_selection();
-  });
+                var publicfeed = "<i class='icon-lock'></i>"
+                if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                out += "      <div class='span1 public visible-sm'>"+publicfeed+"</div>";
+                
+                out += "      <div class='span2 visible-md engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                out += "    </div>";
+                out += "  </div>";
 
+                // right
+                out += '  <div class="span3 span6-sm pull-right">'
+                out += "    <div class='span3 visible-lg size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                out += '    <div class="span3 visible-sm start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
+                out += "    <div class='span9 span6-sm'>";
+                out += "      <div class='row-fluid'>";
+                out += '        <div class="span6">';
+                out += '          <div class="row-fluid">';
+                out += "            <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                out += "            <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                out += "          </div>";
+                out += "        </div>";
+                out += "        <div class='span6 time visible-sm'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                out += "      </div>";
+                out += "    </div>";
+                out += "  </div>";
+                out += "</div>";
+                out += "</div>";
+            }
 
-  $("#table").on("click",".node-feed",function() {
-      var feedid = $(this).attr("feedid");
-      window.location = path+"graph/"+feedid;
-  });
-  
-  $(".feed-graph").click(function(){
-      var graph_feeds = [];
-      for (var feedid in selected_feeds) {
-          if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
-      }
-      window.location = path+"graph/"+graph_feeds.join(",");	  
-  });
+            out += "</div>";
+            out += "</div>";
+        }
+        $("#table").html(out);
+        
+    })
+}
+    /**
+    * format unix timestamp to date string
+    *
+    * @todo moment.js to offer better multilingual js date formatting offers
+    * @param int timestamp unix timestamp
+    * @param string format name for the format to output to
+    */
+    function formatTimestamp(timestamp, format){
+        // set fromat to empty string if not passed
+        // convert unix timestamp to js date (milliseconds)
+        date = new Date(timestamp*1000)
+        if (isNaN(date.getTime())) return timestamp
+        // rebuild the date string from the new date object
+        let Y = date.getFullYear(),
+            y = date.getFullYear().toString().substr(-2, 2),
+            m = (date.getMonth()+1).pad(2),
+            d = date.getDate().pad(2),
+            h = date.getHours().pad(2),
+            i = date.getMinutes().pad(2),
+            s = date.getSeconds().pad(2)
+
+        let dateFormat = user.dateFormat || 'uk',
+            timeFormat = user.timeFormat || 'uk',
+            formattedDate = ''
+
+        switch(dateFormat) {
+            case 'us':
+                newDate = [m,d,Y].join('/')
+                break
+            case 'iso':
+                newDate = [d,m,Y].join('/')
+                break
+            case 'uk':
+            default:
+                newDate = [Y,m,d].join('/')
+        }
+
+        switch(timeFormat) {
+            default : 
+                newTime = [h,i,s].join(':')
+        }
+        
+        formattedDate = [newDate, newTime].join(' ')
+
+        // if format passed override output to match format
+        switch(format) {
+            case 'm/d/Y': // USA
+                // MM/DD/YYYY
+                formattedDate = [m,d,Y].join('/')
+            case 'Y-m-d': // ISO
+                // YYYY-MM-DD
+                formattedDate = [Y,m,d].join('-')
+            case 'd/m/y':
+                // DD/MM/YY
+                formattedDate = [d,m,y].join('/')
+                break;
+        }
+        
+        return formattedDate
+    }
+
+    $("#table").on("click",".node-info",function() {
+        var node = $(this).attr("node");
+        if (nodes_display[node]) {
+            $(".node-feeds[node='"+node+"']").hide();
+            nodes_display[node] = false;
+        } else {
+            $(".node-feeds[node='"+node+"']").show();
+            nodes_display[node] = true;
+        }
+    });
+
+    $("#table").on("click",".select",function(e) {
+        e.stopPropagation();
+    });
+
+    $("#table").on("click",".public",function(e) {
+        e.stopPropagation();
+    });
+
+    $("#table").on("click",".feed-select",function(e) {
+        feed_selection();
+    });
+
+    $("#feed-selection").change(function(){
+        var selection = $(this).val();
+        
+        if (selection=="all") {
+            for (var id in feeds) selected_feeds[id] = true;
+            $(".feed-select").prop('checked', true); 
+            
+        } else if (selection=="none") {
+            selected_feeds = {};
+            $(".feed-select").prop('checked', false); 
+        }
+        feed_selection();
+    });
+
+    $("#table").on("click",".node-feed",function() {
+        var feedid = $(this).attr("feedid");
+        window.location = path+"graph/"+feedid;
+    });
+
+    $(".feed-graph").click(function(){
+        var graph_feeds = [];
+        for (var feedid in selected_feeds) {
+            if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
+        }
+        window.location = path+"graph/"+graph_feeds.join(",");	  
+    });
   
   // ---------------------------------------------------------------------------------------------
   // EDIT FEED
@@ -1155,66 +1274,6 @@ var show_select = true;
 var show_time = true;
 var show_value = true;
 
-$(window).resize(function(){ resize(); });
-
-function resize() 
-{
-    show_size = true;
-    show_engine = true;
-    show_public = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
-
-    $(".node-feed").each(function(){
-         var node_feed_width = $(this).width();
-         if (node_feed_width>0) {
-             var w = node_feed_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-
-             tw += $(this).find(".public").width();
-             if (tw>w) show_public = false;
-             
-             tw += $(this).find(".engine").width();
-             if (tw>w) show_engine = false;
-              
-             tw += $(this).find(".size").width();
-             if (tw>w) show_size = false;
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_public) $(".public").show(); else $(".public").hide();
-    if (show_engine) $(".engine").show(); else $(".engine").hide();
-    if (show_size) $(".size").show(); else $(".size").hide();
-    
-}
-
-function autowidth(element,padding) {
-    var mw = 0;
-    $(element).each(function(){
-        var w = $(this).width();
-        if (w>mw) mw = w;
-    });
-    
-    $(element).width(mw+padding);
-    return mw;
-}
-
-  
 // Calculate and color updated time
 function list_format_updated(time) {
   time = time * 1000;
@@ -1447,6 +1506,5 @@ Number.prototype.pad = function(size) {
   while (s.length < (size || 2)) {s = "0" + s;}
   return s;
 }
-
 </script>
 
