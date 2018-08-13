@@ -55,40 +55,7 @@
 }
 .controls { margin-bottom:10px; }
 .controls select { width: auto!important; }
-.node-feed [class*="span"] { line-height:2; background: green }
-
-
-/* override old bootstrap mobile grid */
-/* would not required in recent versions of bootstrap */
-@media (max-width: 767px) {
-    /* only has 3 columns - 3,4 & 5 are hidden */
-    .node-feed [class*="span"]{ float:left!important; }
-    .node-feed>[class*="span"]{ width: auto;}
-    .node-feed>[class*="span"]:nth-child(1){width: 40%;}
-    .node-feed>[class*="span"]:nth-child(1) [class*="span"]{ width: auto; }
-    /* global/private */
-    .node-feed>[class*="span"]:nth-child(2){width: 20%;}
-    /* value & unit */
-    .node-feed>[class*="span"]:nth-child(6){width: 40%;}
-    /* sub column splits */
-    .node-feed>[class*="span"] [class*="span"]{ width: 50%; }
-
-}
-/* extra small devices */
-@media (max-width: 464px) {
-    /* additional responsive show/hide for smaller devices */
-    .hidden-phone-small{  display:none!important }
-
-    /* only has 3 columns - 3,4 & 5 are hidden */
-    .node-feed>[class*="span"]:nth-child(1){width: 50%;}
-    .node-feed>[class*="span"]:nth-child(1) [class*="span"]:first-child{ width: 25%; } /* shrink the tickbox column */
-    /* global/private */
-    .node-feed>[class*="span"]:nth-child(2){width: 10%;} /* shrink the global/private column */
-    /* value & unit */
-    .node-feed>[class*="span"]:nth-child(6) [class*="span"]:first-child{width: 70%;} /* grow the value column */
-    .node-feed>[class*="span"]:nth-child(6) [class*="span"]:last-child{width: 30%;} /* shrink the unit column */
-}
-
+.node-feed [class*="span"] { line-height:2; }
 
 #deleteFeedModalSelectedItems{
     postion:absolute;
@@ -109,6 +76,100 @@
     body {padding:0};
 }
 
+
+/* override old bootstrap mobile grid */
+
+[class*=span] {background:olive}
+.node-feed [class*=span] { float:left;margin:0}
+.node-feed [class*=span1] { width: 8.333333333% }
+.node-feed [class*=span2] { width: 16.6666666666667% }
+.node-feed [class*=span3] { width: 25% }
+.node-feed [class*=span4] { width: 33.3333333333333% }
+.node-feed [class*=span5] { width: 41.6666666666667% }
+.node-feed [class*=span6] { width: 50% }
+.node-feed [class*=span7] { width: 58.3333333333333% }
+.node-feed [class*=span8] { width: 66.6666666666667% }
+.node-feed [class*=span9] { width: 75% }
+.node-feed [class*=span10] { width: 83.3333333333333% }
+.node-feed [class*=span11] { width: 91.6666666666667% }
+.node-feed [class*=span12] { width: 100% }
+
+.node-feed [class*=visible-] { display:none }
+
+/* // Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) { 
+    [class*=span] {background:LightPink }
+    .node-feed [class*=visible-sm] { display:block }
+    .node-feed [class*=visible-sm] { display:block }
+    .node-feed [class*=span1-sm] { width: 8.333333333% }
+    .node-feed [class*=span2-sm] { width: 16.6666666666667% }
+    .node-feed [class*=span3-sm] { width: 25% }
+    .node-feed [class*=span4-sm] { width: 33.3333333333333% }
+    .node-feed [class*=span5-sm] { width: 41.6666666666667% }
+    .node-feed [class*=span6-sm] { width: 50% }
+    .node-feed [class*=span7-sm] { width: 58.3333333333333% }
+    .node-feed [class*=span8-sm] { width: 66.6666666666667% }
+    .node-feed [class*=span9-sm] { width: 75% }
+    .node-feed [class*=span10-sm] { width: 83.3333333333333% }
+    .node-feed [class*=span11-sm] { width: 91.6666666666667% }
+    .node-feed [class*=span12-sm] { width: 100% }
+}
+
+/* // Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) { 
+    [class*=span] {background:lightblue}
+    .node-feed [class*=visible-md] { display:block }
+    .node-feed [class*=visible-md] { display:block }
+    .node-feed [class*=span1-md] { width: 8.333333333% }
+    .node-feed [class*=span2-md] { width: 16.6666666666667% }
+    .node-feed [class*=span3-md] { width: 25% }
+    .node-feed [class*=span4-md] { width: 33.3333333333333% }
+    .node-feed [class*=span5-md] { width: 41.6666666666667% }
+    .node-feed [class*=span6-md] { width: 50% }
+    .node-feed [class*=span7-md] { width: 58.3333333333333% }
+    .node-feed [class*=span8-md] { width: 66.6666666666667% }
+    .node-feed [class*=span9-md] { width: 75% }
+    .node-feed [class*=span10-md] { width: 83.3333333333333% }
+    .node-feed [class*=span11-md] { width: 91.6666666666667% }
+    .node-feed [class*=span12-md] { width: 100% }
+}
+
+/* // Large devices (desktops, 992px and up) */
+@media (min-width: 992px) { 
+    [class*=span] {background:lime}
+    .node-feed [class*=visible-lg] { display:block }
+    .node-feed [class*=span1-lg] { width: 8.333333333% }
+    .node-feed [class*=span2-lg] { width: 16.6666666666667% }
+    .node-feed [class*=span3-lg] { width: 25% }
+    .node-feed [class*=span4-lg] { width: 33.3333333333333% }
+    .node-feed [class*=span5-lg] { width: 41.6666666666667% }
+    .node-feed [class*=span6-lg] { width: 50% }
+    .node-feed [class*=span7-lg] { width: 58.3333333333333% }
+    .node-feed [class*=span8-lg] { width: 66.6666666666667% }
+    .node-feed [class*=span9-lg] { width: 75% }
+    .node-feed [class*=span10-lg] { width: 83.3333333333333% }
+    .node-feed [class*=span11-lg] { width: 91.6666666666667% }
+    .node-feed [class*=span12-lg] { width: 100% }
+}
+
+/* // Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px) { 
+    [class*=span] {background:orange}
+    .node-feed [class*=visible-xl] { display:block }
+    .node-feed [class*=visible-xl] { display:block }
+    .node-feed [class*=span1-xl] { width: 8.333333333% }
+    .node-feed [class*=span2-xl] { width: 16.6666666666667% }
+    .node-feed [class*=span3-xl] { width: 25% }
+    .node-feed [class*=span4-xl] { width: 33.3333333333333% }
+    .node-feed [class*=span5-xl] { width: 41.6666666666667% }
+    .node-feed [class*=span6-xl] { width: 50% }
+    .node-feed [class*=span7-xl] { width: 58.3333333333333% }
+    .node-feed [class*=span8-xl] { width: 66.6666666666667% }
+    .node-feed [class*=span9-xl] { width: 75% }
+    .node-feed [class*=span10-xl] { width: 83.3333333333333% }
+    .node-feed [class*=span11-xl] { width: 91.6666666666667% }
+    .node-feed [class*=span12-xl] { width: 100% }
+}
 
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
@@ -406,7 +467,8 @@ function update() {
                 out += "<div class='row-fluid node-feed' feedid="+feedid+">";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += '<div class="row-fluid">'
-                out += '<div class="span6 span3-lg">'
+                out += '<div class="span5 span6-md span8-sm">'
+                out += '<div class="row-fluid">'
                 out += '  <div class="span9">';
                 out += '      <div class="span10 name" title="ID:'+feedid+'"><input class="feed-select" type="checkbox" feedid="'+feedid+'" '+checked+'>'+nodes[node][feed].name+'</div>';
                 out += '  </div>';
@@ -415,13 +477,14 @@ function update() {
                 if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 out += "  <div class='span1 public'>"+publicfeed+"</div>";
                 
-                out += "  <div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                out += "  <div class='span2 visible-sm engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                out += "</div>";
                 out += "</div>";
 
                 out += '<div class="span4 pull-right">'
                 
-                out += "  <div class='span3 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                out += '  <div class="span3 hidden-phone start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
+                out += "  <div class='span3 visible-sm size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                out += '  <div class="span3 visible-sm start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
 
                 out += "  <div class='span6'>";
                 out += "    <div class='row-fluid'>";
@@ -431,7 +494,7 @@ function update() {
                 out += "          <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
                 out += "        </div>";
                 out += "      </div>";
-                out += "      <div class='span6 time hidden-phone-small'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                out += "      <div class='span6 time visible-sm'>"+list_format_updated(nodes[node][feed].time)+"</div>";
                 out += "    </div>";
                 out += "  </div>";
                 out += "</div>";
