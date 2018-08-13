@@ -1503,10 +1503,6 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 1f0f8ea6e319d5cf42d8fc8ceb5b8fe933faddf2
 /**
  * alter the Number primitive to include a new method to pad out numbers with zeros
  * @param int size - number of characters to fill with zeros
@@ -1517,9 +1513,5 @@ Number.prototype.pad = function(size) {
   while (s.length < (size || 2)) {s = "0" + s;}
   return s;
 }
-<<<<<<< HEAD
-
-=======
->>>>>>> 1f0f8ea6e319d5cf42d8fc8ceb5b8fe933faddf2
 </script>
 
