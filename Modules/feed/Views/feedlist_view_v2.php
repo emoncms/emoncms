@@ -80,95 +80,92 @@
 /* override old bootstrap mobile grid */
 
 [class*=span] {background:olive}
-.node-feed [class*=span] { float:left;margin:0}
-.node-feed [class*=span1] { width: 8.333333333% }
-.node-feed [class*=span2] { width: 16.6666666666667% }
-.node-feed [class*=span3] { width: 25% }
-.node-feed [class*=span4] { width: 33.3333333333333% }
-.node-feed [class*=span5] { width: 41.6666666666667% }
-.node-feed [class*=span6] { width: 50% }
-.node-feed [class*=span7] { width: 58.3333333333333% }
-.node-feed [class*=span8] { width: 66.6666666666667% }
-.node-feed [class*=span9] { width: 75% }
-.node-feed [class*=span10] { width: 83.3333333333333% }
-.node-feed [class*=span11] { width: 91.6666666666667% }
-.node-feed [class*=span12] { width: 100% }
+.node-feed [class*=span] { float:left; margin:0}
+.node-feed .span1 { width: 8.333333333% }
+.node-feed .span2 { width: 16.6666666666667% }
+.node-feed .span3 { width: 25% }
+.node-feed .span4 { width: 33.3333333333333% }
+.node-feed .span5 { width: 41.6666666666667% }
+.node-feed .span6 { width: 50% }
+.node-feed .span7 { width: 58.3333333333333% }
+.node-feed .span8 { width: 66.6666666666667% }
+.node-feed .span9 { width: 75% }
+.node-feed .span10 { width: 83.3333333333333% }
+.node-feed .span11 { width: 91.6666666666667% }
+.node-feed .span12 { width: 100% }
 
 .node-feed [class*=visible-] { display:none }
 
 /* // Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) { 
     [class*=span] {background:LightPink }
-    .node-feed [class*=visible-sm] { display:block }
-    .node-feed [class*=visible-sm] { display:block }
-    .node-feed [class*=span1-sm] { width: 8.333333333% }
-    .node-feed [class*=span2-sm] { width: 16.6666666666667% }
-    .node-feed [class*=span3-sm] { width: 25% }
-    .node-feed [class*=span4-sm] { width: 33.3333333333333% }
-    .node-feed [class*=span5-sm] { width: 41.6666666666667% }
-    .node-feed [class*=span6-sm] { width: 50% }
-    .node-feed [class*=span7-sm] { width: 58.3333333333333% }
-    .node-feed [class*=span8-sm] { width: 66.6666666666667% }
-    .node-feed [class*=span9-sm] { width: 75% }
-    .node-feed [class*=span10-sm] { width: 83.3333333333333% }
-    .node-feed [class*=span11-sm] { width: 91.6666666666667% }
-    .node-feed [class*=span12-sm] { width: 100% }
+    .node-feed .visible-sm { display:block }
+    .node-feed .span1-sm { width: 8.333333333% }
+    .node-feed .span2-sm { width: 16.6666666666667% }
+    .node-feed .span3-sm { width: 25% }
+    .node-feed .span4-sm { width: 33.3333333333333% }
+    .node-feed .span5-sm { width: 41.6666666666667% }
+    .node-feed .span6-sm { width: 50% }
+    .node-feed .span7-sm { width: 58.3333333333333% }
+    .node-feed .span8-sm { width: 66.6666666666667% }
+    .node-feed .span9-sm { width: 75% }
+    .node-feed .span10-sm { width: 83.3333333333333% }
+    .node-feed .span11-sm { width: 91.6666666666667% }
+    .node-feed .span12-sm { width: 100% }
 }
 
 /* // Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) { 
     [class*=span] {background:lightblue}
-    .node-feed [class*=visible-md] { display:block }
-    .node-feed [class*=visible-md] { display:block }
-    .node-feed [class*=span1-md] { width: 8.333333333% }
-    .node-feed [class*=span2-md] { width: 16.6666666666667% }
-    .node-feed [class*=span3-md] { width: 25% }
-    .node-feed [class*=span4-md] { width: 33.3333333333333% }
-    .node-feed [class*=span5-md] { width: 41.6666666666667% }
-    .node-feed [class*=span6-md] { width: 50% }
-    .node-feed [class*=span7-md] { width: 58.3333333333333% }
-    .node-feed [class*=span8-md] { width: 66.6666666666667% }
-    .node-feed [class*=span9-md] { width: 75% }
-    .node-feed [class*=span10-md] { width: 83.3333333333333% }
-    .node-feed [class*=span11-md] { width: 91.6666666666667% }
-    .node-feed [class*=span12-md] { width: 100% }
+    .node-feed .visible-md { display:block }
+    .node-feed .span1-md { width: 8.333333333% }
+    .node-feed .span2-md { width: 16.6666666666667% }
+    .node-feed .span3-md { width: 25% }
+    .node-feed .span4-md { width: 33.3333333333333% }
+    .node-feed .span5-md { width: 41.6666666666667% }
+    .node-feed .span6-md { width: 50% }
+    .node-feed .span7-md { width: 58.3333333333333% }
+    .node-feed .span8-md { width: 66.6666666666667% }
+    .node-feed .span9-md { width: 75% }
+    .node-feed .span10-md { width: 83.3333333333333% }
+    .node-feed .span11-md { width: 91.6666666666667% }
+    .node-feed .span12-md { width: 100% }
 }
 
 /* // Large devices (desktops, 992px and up) */
 @media (min-width: 992px) { 
     [class*=span] {background:lime}
-    .node-feed [class*=visible-lg] { display:block }
-    .node-feed [class*=span1-lg] { width: 8.333333333% }
-    .node-feed [class*=span2-lg] { width: 16.6666666666667% }
-    .node-feed [class*=span3-lg] { width: 25% }
-    .node-feed [class*=span4-lg] { width: 33.3333333333333% }
-    .node-feed [class*=span5-lg] { width: 41.6666666666667% }
-    .node-feed [class*=span6-lg] { width: 50% }
-    .node-feed [class*=span7-lg] { width: 58.3333333333333% }
-    .node-feed [class*=span8-lg] { width: 66.6666666666667% }
-    .node-feed [class*=span9-lg] { width: 75% }
-    .node-feed [class*=span10-lg] { width: 83.3333333333333% }
-    .node-feed [class*=span11-lg] { width: 91.6666666666667% }
-    .node-feed [class*=span12-lg] { width: 100% }
+    .node-feed .visible-lg { display:block }
+    .node-feed .span1-lg { width: 8.333333333% }
+    .node-feed .span2-lg { width: 16.6666666666667% }
+    .node-feed .span3-lg { width: 25% }
+    .node-feed .span4-lg { width: 33.3333333333333% }
+    .node-feed .span5-lg { width: 41.6666666666667% }
+    .node-feed .span6-lg { width: 50% }
+    .node-feed .span7-lg { width: 58.3333333333333% }
+    .node-feed .span8-lg { width: 66.6666666666667% }
+    .node-feed .span9-lg { width: 75% }
+    .node-feed .span10-lg { width: 83.3333333333333% }
+    .node-feed .span11-lg { width: 91.6666666666667% }
+    .node-feed .span12-lg { width: 100% }
 }
 
 /* // Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) { 
     [class*=span] {background:orange}
-    .node-feed [class*=visible-xl] { display:block }
-    .node-feed [class*=visible-xl] { display:block }
-    .node-feed [class*=span1-xl] { width: 8.333333333% }
-    .node-feed [class*=span2-xl] { width: 16.6666666666667% }
-    .node-feed [class*=span3-xl] { width: 25% }
-    .node-feed [class*=span4-xl] { width: 33.3333333333333% }
-    .node-feed [class*=span5-xl] { width: 41.6666666666667% }
-    .node-feed [class*=span6-xl] { width: 50% }
-    .node-feed [class*=span7-xl] { width: 58.3333333333333% }
-    .node-feed [class*=span8-xl] { width: 66.6666666666667% }
-    .node-feed [class*=span9-xl] { width: 75% }
-    .node-feed [class*=span10-xl] { width: 83.3333333333333% }
-    .node-feed [class*=span11-xl] { width: 91.6666666666667% }
-    .node-feed [class*=span12-xl] { width: 100% }
+    .node-feed .visible-xl { display:block }
+    .node-feed .span1-xl { width: 8.333333333% }
+    .node-feed .span2-xl { width: 16.6666666666667% }
+    .node-feed .span3-xl { width: 25% }
+    .node-feed .span4-xl { width: 33.3333333333333% }
+    .node-feed .span5-xl { width: 41.6666666666667% }
+    .node-feed .span6-xl { width: 50% }
+    .node-feed .span7-xl { width: 58.3333333333333% }
+    .node-feed .span8-xl { width: 66.6666666666667% }
+    .node-feed .span9-xl { width: 75% }
+    .node-feed .span10-xl { width: 83.3333333333333% }
+    .node-feed .span11-xl { width: 91.6666666666667% }
+    .node-feed .span12-xl { width: 100% }
 }
 
 </style>
@@ -452,6 +449,12 @@ function update() {
         }
       
         var out = "";
+        out +='<div class="node-feed">'
+        out += '<span class="visible-sm">visible-sm</span>'
+        out += '<span class="visible-md">visible-md</span>'
+        out += '<span class="visible-lg">visible-lg</span>'
+        out += '<span class="visible-xl">visible-xl</span>'
+        out += '</div>'
           
         for (var node in nodes) {
             var visible = "hide"; if (nodes_display[node]) visible = "";
@@ -467,37 +470,37 @@ function update() {
                 out += "<div class='row-fluid node-feed' feedid="+feedid+">";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += '<div class="row-fluid">'
-                out += '<div class="span5 span6-md span8-sm">'
-                out += '<div class="row-fluid">'
-                out += '  <div class="span9">';
-                out += '      <div class="span10 name" title="ID:'+feedid+'"><input class="feed-select" type="checkbox" feedid="'+feedid+'" '+checked+'>'+nodes[node][feed].name+'</div>';
-                out += '  </div>';
+                // left
+                out += '  <div class="span9 span6-sm">'
+                out += '    <div class="row-fluid">'
+                out += '      <div class="span9-sm">';
+                out += '          <div class="span10 name" title="ID:'+feedid+'"><input class="feed-select" type="checkbox" feedid="'+feedid+'" '+checked+'>'+nodes[node][feed].name+'</div>';
+                out += '      </div>';
 
                 var publicfeed = "<i class='icon-lock'></i>"
                 if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                out += "  <div class='span1 public'>"+publicfeed+"</div>";
+                out += "      <div class='span1 public visible-sm'>"+publicfeed+"</div>";
                 
-                out += "  <div class='span2 visible-sm engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
-                out += "</div>";
-                out += "</div>";
-
-                out += '<div class="span4 pull-right">'
-                
-                out += "  <div class='span3 visible-sm size'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                out += '  <div class="span3 visible-sm start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
-
-                out += "  <div class='span6'>";
-                out += "    <div class='row-fluid'>";
-                out += '      <div class="span6">';
-                out += '        <div class="row-fluid">';
-                out += "          <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                out += "          <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
-                out += "        </div>";
-                out += "      </div>";
-                out += "      <div class='span6 time visible-sm'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                out += "      <div class='span2 visible-md engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
                 out += "    </div>";
                 out += "  </div>";
-                out += "</div>";
+
+                // right
+                out += '  <div class="span3 span6-sm pull-right">'
+                out += "    <div class='span3 visible-lg size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                out += '    <div class="span3 visible-sm start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
+                out += "    <div class='span9 span6-sm'>";
+                out += "      <div class='row-fluid'>";
+                out += '        <div class="span6">';
+                out += '          <div class="row-fluid">';
+                out += "            <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                out += "            <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                out += "          </div>";
+                out += "        </div>";
+                out += "        <div class='span6 time visible-sm'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                out += "      </div>";
+                out += "    </div>";
+                out += "  </div>";
                 out += "</div>";
                 out += "</div>";
             }
