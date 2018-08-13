@@ -29,9 +29,12 @@
     background-color:#ddd;
     cursor:pointer;
 }
-.node-name {
-    padding: 5px;
-    font-weight:bold;
+.node-info > div{
+	padding:.5em 1em    
+}
+.node-name { 
+  font-weight:bold;
+	float:left;
 }
 .node-feeds{
     padding: 3px 5px 4px 4px;
@@ -102,6 +105,24 @@
     max-width:80%;
     position:absolute;
 }
+
+input[type="checkbox"] { margin:0px; }
+#feed-selection { width:80px; }
+.controls { margin-bottom:10px; }
+#feeds-to-delete { font-style:italic; }
+
+/* override bootstrap v2 small device wrap */
+@media (max-width: 767px) {
+    .node-info>[class*="span"]{float:left}
+    .node-info>.span3{width: 25%}
+    .node-info>.span6{width: 50%}
+}
+/* extra small devices */
+@media (max-width: 464px) {
+    /* additional responsive show/hide for smaller devices */
+    .hidden-phone-small{  display:none!important }
+}
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
@@ -391,7 +412,63 @@ function update() {
             nodes[node].push(feeds[z]);
         }
       
-        var out = "";
+          var out = "";
+          
+          // get node overview
+          var node_size = {},
+              node_time = {}
+            for (let node in nodes) {
+                node_size[node] = 0
+                node_time[node] = 0
+                for (let feed in nodes[node]) {
+                    node_size[node] += Number(nodes[node][feed].size)
+                    node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
+                }
+          }
+          // display nodes and feeds
+          for (var node in nodes) {
+              var visible = "hide"; if (nodes_display[node]) visible = "";
+              
+              out += "<div class='node'>";
+              out += "  <div class='node-info row-fluid' node='"+node+"'>";
+              out += '    <div class="span6">'
+              out += "      <div class='node-name'>"+node+":</div>";
+              out += '    </div>';
+              out += '    <div class="span3 hidden-phone-small">'
+              out += "      <div class='node-size'>"+list_format_size(node_size[node])+"</div>";
+              out += '    </div>';
+              out += '    <div class="span3 text-right" style="padding-right:2em">'
+              out += "      <div class='node-latest'>"+list_format_updated(node_time[node])+"</div>";
+              out += '    </div>';
+              out += '  </div>';
+              
+              out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
+              
+              for (var feed in nodes[node]) {
+				          var feedid = nodes[node][feed].id;
+                  out += "<div class='node-feed' feedid="+feedid+">";
+                  var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
+                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
+                  
+                  var publicfeed = "<i class='icon-lock'></i>"
+                  if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                  
+                  out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
+                  out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
+                  out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
+                  
+                  out += "<div class='node-feed-right'>";
+                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                  out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                  out += "</div>";
+                  out += "</div>";
+              }
+              
+              out += "</div>";
+              out += "</div>";
+          }
+          $("#table").html(out);
           
         for (var node in nodes) {
             var visible = "hide"; if (nodes_display[node]) visible = "";
