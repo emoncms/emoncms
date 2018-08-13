@@ -29,81 +29,67 @@
     background-color:#ddd;
     cursor:pointer;
 }
-.node-name { 
-  font-weight:bold;
-	float:left;
-	padding:10px;
-	padding-right:5px;
+.node-name {
+    padding: 5px;
+    font-weight:bold;
 }
-
-
-.node-feeds {
-    padding: 0px 5px 5px 5px;
+.node-feeds{
+    padding: 3px 5px 4px 4px;
     background-color:#ddd;
 }
-
 .node-feed {
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-    height:41px;
-    transition: background .2s ease-in
+    border-left:2px solid transparent;
+    cursor: pointer;
+    transition: background .3s ease-in;
+    padding: .2em 0
 }
-.node-feed:hover {
-    background-color:#EBEBEB;
-    cursor: pointer
+.node-feed:hover{ 
+    border-left:2px solid #44b3e2;
+    background-color:#F3F3F3;
 }
-.node-feed:hover{ border-left:2px solid #44b3e2; }
-
-.node-feed .select {
-    display:inline-block;
-    padding-top: 10px;
-    text-align:center;
-}
-
-.node-feed .name {
-    display:inline-block;
-}
-
-.node-feed .public {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .size {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .engine {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed-right {
-    float:right;
-}
-
-.node-feed .time {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
-}
-
-.node-feed .value {
-    display:inline-block;
-    padding-top:10px;
-    text-align:center;
-}
-
-.ipad {
-    padding-left:10px;
-}
-
-input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
-#feed-selection { width:80px; }
-.controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
+.checkbox-large{ 
+    transform: scale(1.4)!important;
+    margin:0 .5em!important;
+}
+.controls { margin-bottom:10px; }
+.controls select { width: auto!important; }
+.node-feed [class*="span"] { line-height:2; }
+
+
+/* override old bootstrap mobile grid */
+/* would not required in recent versions of bootstrap */
+@media (max-width: 767px) {
+    /* only has 3 columns - 3,4 & 5 are hidden */
+    .node-feed [class*="span"]{ float:left!important; }
+    .node-feed>[class*="span"]{ width: auto;}
+    .node-feed>[class*="span"]:nth-child(1){width: 40%;}
+    .node-feed>[class*="span"]:nth-child(1) [class*="span"]{ width: auto; }
+    /* global/private */
+    .node-feed>[class*="span"]:nth-child(2){width: 20%;}
+    /* value & unit */
+    .node-feed>[class*="span"]:nth-child(6){width: 40%;}
+    /* sub column splits */
+    .node-feed>[class*="span"] [class*="span"]{ width: 50%; }
+
+}
+/* extra small devices */
+@media (max-width: 464px) {
+    /* additional responsive show/hide for smaller devices */
+    .hidden-phone-small{  display:none!important }
+
+    /* only has 3 columns - 3,4 & 5 are hidden */
+    .node-feed>[class*="span"]:nth-child(1){width: 50%;}
+    .node-feed>[class*="span"]:nth-child(1) [class*="span"]:first-child{ width: 25%; } /* shrink the tickbox column */
+    /* global/private */
+    .node-feed>[class*="span"]:nth-child(2){width: 10%;} /* shrink the global/private column */
+    /* value & unit */
+    .node-feed>[class*="span"]:nth-child(6) [class*="span"]:first-child{width: 70%;} /* grow the value column */
+    .node-feed>[class*="span"]:nth-child(6) [class*="span"]:last-child{width: 30%;} /* shrink the unit column */
+}
+
 
 #deleteFeedModalSelectedItems{
     postion:absolute;
@@ -123,6 +109,8 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 @media (max-width: 768px) {
     body {padding:0};
 }
+
+
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
@@ -367,142 +355,203 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
   
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
+  // @todo: match this with the user's preferences
+  user.timeFormat = 'uk';
+  user.dateFormat = 'uk';
+
   update();
   setInterval(update,5000);
   
-  function update() 
-  {
-  
-      $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
-      
-          // Show/hide no feeds alert
-          $('#feed-loader').hide();
-          if (data.length == 0){
-              $("#nofeeds").show();
-              $("#localheading").hide();
-              $("#apihelphead").hide();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").hide();
-          } else {
-              $("#nofeeds").hide();
-              $("#localheading").show();
-              $("#apihelphead").show();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").show();
-          }
+function update() {
+    $.ajax({ url: path+"feed/list.json", dataType: 'json'})
+    .done(function(data) {
+        // Show/hide no feeds alert
+        $('#feed-loader').hide();
+        if (data.length == 0){
+            $("#nofeeds").show();
+            $("#localheading").hide();
+            $("#apihelphead").hide();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").hide();
+        } else {
+            $("#nofeeds").hide();
+            $("#localheading").show();
+            $("#apihelphead").show();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").show();
+        }
 		      
-          feeds = {};
-		      for (var z in data) feeds[data[z].id] = data[z];
-		      
-          
-          var nodes = {};
-          for (var z in feeds) {
-              var node = feeds[z].tag;
-              if (nodes[node]==undefined) nodes[node] = [];
-              if (nodes_display[node]==undefined) nodes_display[node] = true;
-              nodes[node].push(feeds[z]);
-          }
+        feeds = {};
+        for (var z in data) feeds[data[z].id] = data[z];
+        var nodes = {};
+        for (var z in feeds) {
+            var node = feeds[z].tag;
+            if (nodes[node]==undefined) nodes[node] = [];
+            if (nodes_display[node]==undefined) nodes_display[node] = true;
+            nodes[node].push(feeds[z]);
+        }
       
-          var out = "";
+        var out = "";
           
-          for (var node in nodes) {
-              var visible = "hide"; if (nodes_display[node]) visible = "";
-              
-              out += "<div class='node'>";
-              out += "<div class='node-info' node='"+node+"'>";
-              out += "<div class='node-name'>"+node+":</div>";
-              out += "</div>";
-              
-              out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
-              
-              for (var feed in nodes[node]) {
-				          var feedid = nodes[node][feed].id;
-                  out += "<div class='node-feed' feedid="+feedid+">";
-                  var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
-                  
-                  var publicfeed = "<i class='icon-lock'></i>"
-                  if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                  
-                  out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
-                  out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
-                  out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                  
-                  out += "<div class='node-feed-right'>";
-                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
-                  out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                  out += "</div>";
-                  out += "</div>";
-              }
-              
-              out += "</div>";
-              out += "</div>";
-          }
-          $("#table").html(out);
-          
-          autowidth(".node-feeds .name",20);
-          autowidth(".node-feeds .public",20);
-          autowidth(".node-feeds .engine",20);
-          autowidth(".node-feeds .size",20);
-          
-          autowidth(".node-feeds .value",20);
-          autowidth(".node-feeds .time",20);
-          
-          resize();
-      }});
-  }
-  
-  $("#table").on("click",".node-info",function() {
-      var node = $(this).attr("node");
-      if (nodes_display[node]) {
-          $(".node-feeds[node='"+node+"']").hide();
-          nodes_display[node] = false;
-      } else {
-          $(".node-feeds[node='"+node+"']").show();
-          nodes_display[node] = true;
-      }
-  });
+        for (var node in nodes) {
+            var visible = "hide"; if (nodes_display[node]) visible = "";
 
-  $("#table").on("click",".select",function(e) {
-      e.stopPropagation();
-  });
-  
-  $("#table").on("click",".public",function(e) {
-      e.stopPropagation();
-  });
+            out += "<div class='node'>";
+            out += "<div class='node-info' node='"+node+"'>";
+            out += "<div class='node-name'>"+node+":</div>";
+            out += "</div>";
 
-  $("#table").on("click",".feed-select",function(e) {
-      feed_selection();
-  });
+            out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
+            for (var feed in nodes[node]) {
+                var feedid = nodes[node][feed].id;
+                out += "<div class='row-fluid node-feed' feedid="+feedid+">";
+                var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                out += '<div class="span3">';
+                out += '  <div class="row-fluid">';
+                out += "    <div class='span2 select'><input class='feed-select checkbox-large' type='checkbox' feedid='"+feedid+"' "+checked+"/></div>";
+                out += "    <div class='span10 name' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div>";
+                out += "  </div>";
+                out += "</div>";
 
-  $("#feed-selection").change(function(){
-      var selection = $(this).val();
-      
-      if (selection=="all") {
-          for (var id in feeds) selected_feeds[id] = true;
-          $(".feed-select").prop('checked', true); 
-          
-      } else if (selection=="none") {
-          selected_feeds = {};
-          $(".feed-select").prop('checked', false); 
-      }
-      feed_selection();
-  });
+                var publicfeed = "<i class='icon-lock'></i>"
 
+                if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                out += "<div class='span1 public'>"+publicfeed+"</div>";
+                out += "<div class='span2 hidden-phone engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                out += "<div class='span1 hidden-phone size'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                out += '<div class="span2 hidden-phone start_time" title="'+formatTimestamp(nodes[node][feed].start_time)+'">'+formatTimestamp(nodes[node][feed].start_time,'d/m/y')+"</div>";
 
-  $("#table").on("click",".node-feed",function() {
-      var feedid = $(this).attr("feedid");
-      window.location = path+"graph/"+feedid;
-  });
-  
-  $(".feed-graph").click(function(){
-      var graph_feeds = [];
-      for (var feedid in selected_feeds) {
-          if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
-      }
-      window.location = path+"graph/"+graph_feeds.join(",");	  
-  });
+                out += "<div class='span3 pull-right'>";
+                out += "  <div class='row-fluid'>";
+                out += '    <div class="span6">';
+                out += '      <div class="row-fluid">';
+                out += "        <div class='span6 value text-right'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                out += "        <div class='span6 unit'>"+nodes[node][feed].unit+"</div>";
+                out += "      </div>";
+                out += "    </div>";
+                out += "    <div class='span6 time hidden-phone-small'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                out += "  </div>";
+                out += "</div>";
+                out += "</div>";
+            }
+
+            out += "</div>";
+            out += "</div>";
+        }
+        $("#table").html(out);
+        
+    })
+}
+    /**
+    * format unix timestamp to date string
+    *
+    * @todo moment.js to offer better multilingual js date formatting offers
+    * @param int timestamp unix timestamp
+    * @param string format name for the format to output to
+    */
+    function formatTimestamp(timestamp, format){
+        // set fromat to empty string if not passed
+        // convert unix timestamp to js date (milliseconds)
+        date = new Date(timestamp*1000)
+        if (isNaN(date.getTime())) return timestamp
+        // rebuild the date string from the new date object
+        let Y = date.getFullYear(),
+            y = date.getFullYear().toString().substr(-2, 2),
+            m = (date.getMonth()+1).pad(2),
+            d = date.getDate().pad(2),
+            h = date.getHours().pad(2),
+            i = date.getMinutes().pad(2),
+            s = date.getSeconds().pad(2)
+
+        let dateFormat = user.dateFormat || 'uk',
+            timeFormat = user.timeFormat || 'uk',
+            formattedDate = ''
+
+        switch(dateFormat) {
+            case 'us':
+                newDate = [m,d,Y].join('/')
+                break
+            case 'iso':
+                newDate = [d,m,Y].join('/')
+                break
+            case 'uk':
+            default:
+                newDate = [Y,m,d].join('/')
+        }
+
+        switch(timeFormat) {
+            default : 
+                newTime = [h,i,s].join(':')
+        }
+        
+        formattedDate = [newDate, newTime].join(' ')
+
+        // if format passed override output to match format
+        switch(format) {
+            case 'm/d/Y': // USA
+                // MM/DD/YYYY
+                formattedDate = [m,d,Y].join('/')
+            case 'Y-m-d': // ISO
+                // YYYY-MM-DD
+                formattedDate = [Y,m,d].join('-')
+            case 'd/m/y':
+                // DD/MM/YY
+                formattedDate = [d,m,y].join('/')
+                break;
+        }
+        
+        return formattedDate
+    }
+
+    $("#table").on("click",".node-info",function() {
+        var node = $(this).attr("node");
+        if (nodes_display[node]) {
+            $(".node-feeds[node='"+node+"']").hide();
+            nodes_display[node] = false;
+        } else {
+            $(".node-feeds[node='"+node+"']").show();
+            nodes_display[node] = true;
+        }
+    });
+
+    $("#table").on("click",".select",function(e) {
+        e.stopPropagation();
+    });
+
+    $("#table").on("click",".public",function(e) {
+        e.stopPropagation();
+    });
+
+    $("#table").on("click",".feed-select",function(e) {
+        feed_selection();
+    });
+
+    $("#feed-selection").change(function(){
+        var selection = $(this).val();
+        
+        if (selection=="all") {
+            for (var id in feeds) selected_feeds[id] = true;
+            $(".feed-select").prop('checked', true); 
+            
+        } else if (selection=="none") {
+            selected_feeds = {};
+            $(".feed-select").prop('checked', false); 
+        }
+        feed_selection();
+    });
+
+    $("#table").on("click",".node-feed",function() {
+        var feedid = $(this).attr("feedid");
+        window.location = path+"graph/"+feedid;
+    });
+
+    $(".feed-graph").click(function(){
+        var graph_feeds = [];
+        for (var feedid in selected_feeds) {
+            if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
+        }
+        window.location = path+"graph/"+graph_feeds.join(",");	  
+    });
   
   // ---------------------------------------------------------------------------------------------
   // EDIT FEED
@@ -1155,66 +1204,6 @@ var show_select = true;
 var show_time = true;
 var show_value = true;
 
-$(window).resize(function(){ resize(); });
-
-function resize() 
-{
-    show_size = true;
-    show_engine = true;
-    show_public = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
-
-    $(".node-feed").each(function(){
-         var node_feed_width = $(this).width();
-         if (node_feed_width>0) {
-             var w = node_feed_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-
-             tw += $(this).find(".public").width();
-             if (tw>w) show_public = false;
-             
-             tw += $(this).find(".engine").width();
-             if (tw>w) show_engine = false;
-              
-             tw += $(this).find(".size").width();
-             if (tw>w) show_size = false;
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_public) $(".public").show(); else $(".public").hide();
-    if (show_engine) $(".engine").show(); else $(".engine").hide();
-    if (show_size) $(".size").show(); else $(".size").hide();
-    
-}
-
-function autowidth(element,padding) {
-    var mw = 0;
-    $(element).each(function(){
-        var w = $(this).width();
-        if (w>mw) mw = w;
-    });
-    
-    $(element).width(mw+padding);
-    return mw;
-}
-
-  
 // Calculate and color updated time
 function list_format_updated(time) {
   time = time * 1000;
@@ -1437,6 +1426,10 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1f0f8ea6e319d5cf42d8fc8ceb5b8fe933faddf2
 /**
  * alter the Number primitive to include a new method to pad out numbers with zeros
  * @param int size - number of characters to fill with zeros
@@ -1447,6 +1440,9 @@ Number.prototype.pad = function(size) {
   while (s.length < (size || 2)) {s = "0" + s;}
   return s;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1f0f8ea6e319d5cf42d8fc8ceb5b8fe933faddf2
 </script>
 
