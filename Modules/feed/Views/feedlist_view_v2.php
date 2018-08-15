@@ -433,9 +433,10 @@ input[type="checkbox"] { vertical-align:text-bottom;}
           // display nodes and feeds
           for (var node in nodes) {
               var visible = "hide"; if (nodes_display[node]) visible = "";
+              var cssClass = nodes_display[node] ? 'open' : 'closed'
               
               out += '<div class="node">';
-              out += '  <div class="node-info node-feeds" data-node="'+node+'">';
+              out += '  <div class="node-info node-feeds '+cssClass+'" data-node="'+node+'">';
               out += '    <div class="node-feed">'
               out += '      <div class="select text-center"></div>';
               out += '      <div class="name">'+node+':</div>';
@@ -541,6 +542,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
         $elem.addClass('open').removeClass('closed')
         nodes_display[node] = true;
     }
+    update()
 });
 
   $("#table").on("click",".select",function(e) {
