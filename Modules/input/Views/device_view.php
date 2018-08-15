@@ -86,53 +86,50 @@
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
     border-left:2px solid #f0f0f0;
-    height:41px;
+}
+
+.node-input > * {
+    display:inline-block;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    vertical-align:top;
 }
 
 .node-input:hover{ border-left:2px solid #44b3e2; }
 
 .node-input .select {
-    display:inline-block;
-    padding-top: 10px;
     text-align:center;
 }
 
 .node-input .name {
     display:inline-block;
+    padding-top:10px;
+    vertical-align:top;
 }
 
 .node-input .processlist {
-    display:inline-block;
-    padding-top:10px;
     /*padding-left:10px;*/
 }
 
-.node-input-right {
-    float:right;
-}
+.node-input-right { float:right; }
+.node-input-right > * { display:inline-block; }
 
 .node-input .time {
-    display:inline-block;
     width:60px;
-    padding-top:10px;
     text-align:center;
 }
 
 .node-input .value {
-    display:inline-block;
-    padding-top:10px;
     text-align:center;
 }
 
 .node-input .configure {
-    display:inline-block;
     width:40px;
-    padding-top:10px;
     text-align:center;
 	  cursor:pointer;
 }
 
-.ipad {
+.pl10 {
     padding-left:10px;
 }
 
@@ -225,7 +222,7 @@ var updater;
 function updaterStart(func, interval){
 	  clearInterval(updater);
 	  updater = null;
-	  if (interval > 0) updater = setInterval(func, interval);
+	  //if (interval > 0) updater = setInterval(func, interval);
 }
 updaterStart(update, 5000);
 
@@ -299,10 +296,10 @@ function draw_devices()
                 selected = "checked";
             
             out += "<div class='node-input' id="+input.id+">";
-            out += "<div class='select'><div class='ipad'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div></div>";
-            out += "<div class='name'><div class='ipad'>"+input.name+"</div></div>";
+            out += "<div class='select'><div class='pl10'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div></div>";
+            out += "<div class='name'><div class='pl10'>"+input.name+"</div></div>";
             
-            if (processlist_ui != undefined)  out += "<div class='processlist'><div class='ipad'>"+processlist_ui.drawpreview(input.processList)+"</div></div>";
+            if (processlist_ui != undefined)  out += "<div class='processlist'><div class='pl10'>"+processlist_ui.drawpreview(input.processList)+"</div></div>";
             
             out += "<div class='node-input-right'>";
             out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
@@ -487,7 +484,7 @@ $("#save-processlist").click(function (){
 // Device authentication transfer
 // -------------------------------------------------------------------------------------------------------
 auth_check();
-setInterval(auth_check,5000);
+//setInterval(auth_check,5000);
 function auth_check(){
     $.ajax({ url: path+"device/auth/check.json", dataType: 'json', async: true, success: function(data) {
         if (typeof data.ip !== "undefined") {
@@ -545,8 +542,11 @@ function resize()
              tw += $(this).find(".time").width();
              if (tw>w) show_time = false;   
                 
-             tw += $(this).find(".processlist").width();
-             if (tw>w) show_processlist = false;
+             var remainder = w - tw;
+             if (remainder<200) remainder  = 200;
+             $(this).find(".processlist").width(remainder);
+             tw += remainder;
+             if (tw>w) show_processlist = false;   
          }
     });
     

@@ -88,11 +88,11 @@ Comment out all redis saves:
 
 Save & exit:
 
-    sudo service redis-server reboot
+    sudo service redis-server restart
 
 Ensure all redis databases have been removed from `/var/lib/redis` with: 
     
-   rm -rf /var/lib/redis/*
+    sudo rm -rf /var/lib/redis/*
 
 #### Configure Feedwriter
 

@@ -95,7 +95,9 @@ class Process
         $pairs = explode(",",$processList);
         $total = count($pairs);
         $steps=0;
-        for($this->proc_goto = 0 ; $this->proc_goto < $total ; $this->proc_goto++) {
+        // if ($total>50) return false;
+
+        for ($this->proc_goto=0; $this->proc_goto<$total; $this->proc_goto++) {
             $steps++;
             $inputprocess = explode(":", $pairs[$this->proc_goto]);  // Divide into process key and arg
             $processkey = $inputprocess[0];                          // Process id
@@ -111,14 +113,15 @@ class Process
             if (isset($inputprocess[1])) $arg = $inputprocess[1];          // Can be value or feed id
             
             $process_function = $processkey;                               // get process key 'module.function'
-            if (strpos($processkey, '__') === FALSE)
-                $process_function = $process_list[$processkey]["function"];         // for backward compatibility -> get process function name
-                $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
-                if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
-                    $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
-                } else {
-                    $value = $this->$process_function($arg,$time,$value,$options); // execute process function
-                }
+            if (strpos($processkey, '__') === FALSE) $process_function = $process_list[$processkey]["function"]; // Is this line needed??
+                
+            $not_for_virtual_feeds = array('publish_to_mqtt','eventp__sendemail');
+            if (in_array($process_function, $not_for_virtual_feeds) && isset($options['sourcetype']) && $options['sourcetype']==ProcessOriginType::VIRTUALFEED) {
+                $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
+            } else {
+                $value = $this->$process_function($arg,$time,$value,$options); // execute process function
+            }
+            
             if ($this->proc_skip_next) {
                 $this->proc_skip_next = false; $this->proc_goto++;
             }
@@ -153,7 +156,6 @@ class Process
     private function load_modules() {
         $list = array();
         $dir = scandir("Modules");
-        $old_ids = array();
         for ($i=2; $i<count($dir); $i++) {
             $module = $dir[$i];
             if (filetype("Modules/$module")=='dir' || filetype("Modules/$module")=='link') {

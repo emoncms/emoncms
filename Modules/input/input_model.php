@@ -475,6 +475,54 @@ class Input
         }
         return "Deleted $n inputs";
     }
+    
+    public function clean_processlist_feeds($process_class,$userid) 
+    {
+        $processes = $process_class->get_process_list();
+        $out = "clean_processlist_feeds:\n";
+        $userid = (int) $userid;
+        $result = $this->mysqli->query("SELECT id, processList FROM input WHERE `userid`='$userid'");
+        while ($row = $result->fetch_object())
+        {
+            $inputid = $row->id;
+            $processlist = $row->processList;
+            $pairs = explode(",",$processlist);
+
+            $pairsout = array();
+            for ($i=0; $i<count($pairs); $i++)
+            {
+                $valid = true;
+                $keyarg = explode(":",$pairs[$i]);
+                if (count($keyarg)==2) {
+                    $key = $keyarg[0];
+                    $arg = $keyarg[1];
+                    
+                    // Map ids to process key names
+                    if (isset($process_class->process_map[$key])) $key = $process_class->process_map[$key];
+
+                    if (!isset($processes[$key])) {
+                        $this->log->error("clean_processlist_feeds() Processor '".$processkey."' does not exists. Module missing?");
+                        return false;
+                    }
+
+                    if ($processes[$key]["argtype"] == ProcessArg::FEEDID) {
+                        if (!$this->feed->exist($arg)) $valid = false;
+                    }
+                } else {
+                    $valid = false;
+                }
+                if ($valid) $pairsout[] = $pairs[$i];
+            }
+            $processlist_after = implode(",",$pairsout);
+
+            if ($processlist_after!=$processlist) {
+                $this->redis->hset("input:$inputid",'processList',$processlist_after);
+                $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
+                $out .= "processlist for input $inputid changed from $processlist to $processlist_after\n";
+            }
+        }
+        return $out;
+    }
 
     // -----------------------------------------------------------------------------------------
     // Processlist functions

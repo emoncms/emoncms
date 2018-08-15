@@ -21,9 +21,8 @@ class User
     private $redis;
     private $log;
     private $clientSettingsName = "EMONCMS_BETA_OPTIN";
-
     public $appname;
-    
+
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
@@ -408,6 +407,8 @@ class User
                     $this->rememberme->clearCookie();
                 }
             }
+            
+            if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
 
             return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
         }
@@ -571,6 +572,16 @@ class User
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
         $stmt->close();
+
+        // $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='0' WHERE id = ?");
+        // $stmt->bind_param("i", $userid);
+        // $stmt->execute();
+        // $stmt->close();
+        
+        // global $session;
+        // $session['emailverified'] = 0;
+        // $_SESSION['emailverified'] = 0;
+        
         return array('success'=>true, 'message'=>_("Email updated"));
     }
 

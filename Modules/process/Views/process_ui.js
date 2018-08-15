@@ -621,13 +621,7 @@ var processlist_ui =
     
     var feedgroups = [];
     for (z in this.feedlist) {
-        datatypes = {
-            0: 'undefined',
-            1: 'realtime',
-            2: 'daily',
-            3: 'histogram'
-        }
-        if (datatype == 0 || (datatypes[this.feedlist[z].datatype] == datatype)) {
+        if (datatype == 0 || this.feedlist[z].datatype == datatype) {
             if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
                 continue; // Dont list virtual feed
             }

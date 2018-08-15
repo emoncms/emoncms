@@ -129,7 +129,7 @@ function languagecode_to_name($langs) {
         
 	    <br>
         <div class="account-item">
-            <button class="btn btn-danger" id="deleteall">Delete my account</button>
+            <button class="btn btn-danger" id="deleteall"><?php echo _('Delete my account'); ?></button>
         </div>
 
     </div>
@@ -139,14 +139,14 @@ function languagecode_to_name($langs) {
 
         
         <div id="preferences-section_update_warning" class="well hidden">
-            <h4><?php echo _('Please update your database') ?></h4>
+            <h4><?php echo _('Please update your database'); ?></h4>
         </div>
         <div id="preferences-section" class="well hidden">
             <h4><?php echo _('Beta Features'); ?>:
                 <small class="text-info" id="preferences-errors"
-                  data-saved-text="<?php echo _('Saved') ?>" 
-                  data-error-text="<?php echo _('Error') ?>" 
-                  data-loading-text="<?php echo _('Saving...') ?>"
+                  data-saved-text="<?php echo _('Saved'); ?>" 
+                  data-error-text="<?php echo _('Error'); ?>" 
+                  data-loading-text="<?php echo _('Saving...'); ?>"
                 ></small>
             </h4>
             <form id="preferences" class="form-horizontal" style="margin-bottom:.2em">
@@ -156,8 +156,8 @@ function languagecode_to_name($langs) {
                     <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
                     <div class="controls" data-prop="deviceView">
                         <div class="options btn-group" data-toggle="buttons-radio">
-                            <button autocomplete="off" class="btn" data-toggle="button" data-value="true">On</button>
-                            <button autocomplete="off" class="btn active" data-toggle="button" data-value="false">Off</button>
+                            <button autocomplete="off" class="btn" data-toggle="button" data-value="true"><?php echo _('On'); ?></button>
+                            <button autocomplete="off" class="btn active" data-toggle="button" data-value="false"><?php echo _('Off'); ?></button>
                         </div>
                     </div>
                 </div>
@@ -182,8 +182,7 @@ function languagecode_to_name($langs) {
 	            </td>
 	          </tr>
 	          </table>
-        </div>    
-         
+        </div>      
     </div>
 </div>
 
@@ -198,13 +197,13 @@ function languagecode_to_name($langs) {
         </div>
 
         <div class="delete-account-s2" style="display:none">
-        <p><b>Your account has been successfully deleted.</b></p>
+        <p><b><?php echo _('Your account has been successfully deleted.'); ?></b></p>
         </div>
         
         <pre id="deleteall-output"></pre>
         
         <div class="delete-account-s1">
-            <p>Confirm password to delete:<br>
+            <p><?php echo _('Confirm password to delete:'); ?><br>
             <input id="delete-account-password" type="password" /></p>
         </div>
     </div>
