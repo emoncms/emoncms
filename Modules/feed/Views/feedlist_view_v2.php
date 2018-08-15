@@ -123,11 +123,16 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 
 @media (max-width: 468px) {
     body {padding:0}
+    #table .row-fluid .span6-xs, #table .row-fluid .span6-xs {width: 48.88%!important}
 }
 
-#table .row-fluid .span3, #table .row-fluid .span3 {float: left; width: 23.3510638297872%!important;}
-#table .row-fluid .span6, #table .row-fluid .span6 {float: left; width: 48.882978723404250%!important;}
+#table .row-fluid .span3, #table .row-fluid .span3 {float: left; width: 22.7%!important;}
+#table .row-fluid .span6, #table .row-fluid .span6 {float: left; width: 48.88%!important;}
 
+@media (max-width: 468px) {
+    body {padding:0}
+    #table .row-fluid .span6-xs, #table .row-fluid .span6-xs {width: 48.88%!important}
+}
 .hidden-xs{display:none!important}
 @media (min-width: 468px) {
     .hidden-xs{display:block!important}
@@ -146,6 +151,8 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 		</select>
 	</div>
 	
+	<button class="btn feed-hide-all" title="Collapse"><i class="icon-resize-small"></i></button>
+	<button class="btn feed-show-all" title="Expand"><i class="icon-resize-full"></i></button>
 	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
@@ -431,13 +438,13 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
               
               out += "<div class='node'>";
               out += '  <div class="node-info row-fluid" node="'+node+'">';
-              out += '    <div class="span6">'
+              out += '    <div class="span6 pull-left">'
               out += "      <div class='node-name'>"+node+":</div>";
               out += '    </div>';
-              out += '    <div class="span3 hidden-xs">'
+              out += '    <div class="span3 pull-left hidden-xs">'
               out += "      <div class='node-size'>"+list_format_size(node_size[node])+"</div>";
               out += '    </div>';
-              out += '    <div class="span3 span6-xs text-right">'
+              out += '    <div class="span3 pull-right span6-xs text-right">'
               out += "      <div class='node-latest'>"+list_format_updated(node_time[node])+"</div>";
               out += '    </div>';
               out += '  </div>';
@@ -486,6 +493,22 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
       }});
   }
   
+  $(".feed-hide-all").on("click",function(event) {
+      event.preventDefault()
+      console.log('nodes_display',)
+      $(".node-info").each(function(i,v){
+        node = $(this).attr('node')
+        if (nodes_display[node]) $(this).click()
+      })
+  })
+  $(".feed-show-all").on("click",function(event) {
+      event.preventDefault()
+      $(".node-info").each(function(i,v){
+        node = $(this).attr('node')
+        if (!nodes_display[node]) $(this).click()
+      })
+  })
+
   $("#table").on("click",".node-info",function() {
       var node = $(this).attr("node");
       if (nodes_display[node]) {
