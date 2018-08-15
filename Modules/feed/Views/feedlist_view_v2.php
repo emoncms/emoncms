@@ -86,7 +86,7 @@ body{padding:0!important}
     border-bottom:0px solid transparent;
 }
 .node-feed:hover {
-    background-color:#EBEBEB;
+    /*background-color:#EBEBEB;*/
     cursor: pointer
 }
 .node-feed:hover{ border-left-color: #44b3e2; }
