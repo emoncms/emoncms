@@ -47,13 +47,19 @@
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
     border-left:2px solid #f0f0f0;
-    height:41px;
+    min-height:41px;
+    line-height:41px;
+    transition: background .2s ease-in;
+    overflow:hidden;
+}
+.node-feed:hover {
+    background-color:#EBEBEB;
+    cursor: pointer
 }
 .node-feed:hover{ border-left:2px solid #44b3e2; }
 
 .node-feed .select {
     display:inline-block;
-    padding-top: 10px;
     text-align:center;
 }
 
@@ -82,13 +88,11 @@
 
 .node-feed .time {
     display:inline-block;
-    padding-top:10px;
     text-align:center;
 }
 
 .node-feed .value {
     display:inline-block;
-    padding-top:10px;
     text-align:center;
 }
 
@@ -96,31 +100,37 @@
     padding-left:10px;
 }
 
-input[type="checkbox"] { margin:0px; }
+input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 #feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
 
-/* override bootstrap v2 small device wrap */
-@media (max-width: 767px) {
-    .node-info>[class*="span"]{float:left}
-    .node-info>.span3{width: 25%}
-    .node-info>.span6{width: 50%}
+#deleteFeedModalSelectedItems{
+    postion:absolute;
+    overflow:hidden;
+    text-align:left;
+    background: #f5f5f5;
 }
-/* extra small devices */
-@media (max-width: 464px) {
-    /* additional responsive show/hide for smaller devices */
-    .hidden-phone-small{  display:none!important }
+#deleteFeedModalSelectedItems h5{ margin:0 }
+#deleteFeedModalSelectedItems ol{
+    max-width:80%;
+    position:absolute;
 }
-
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
 
-@media (max-width: 768px) {
-    body {padding:0};
+@media (max-width: 468px) {
+    body {padding:0}
 }
 
+#table .row-fluid .span3, #table .row-fluid .span3 {float: left; width: 23.3510638297872%!important;}
+#table .row-fluid .span6, #table .row-fluid .span6 {float: left; width: 48.882978723404250%!important;}
+
+.hidden-xs{display:none!important}
+@media (min-width: 468px) {
+    .hidden-xs{display:block!important}
+}
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
@@ -174,7 +184,26 @@ input[type="checkbox"] { margin:0px; }
 
         <p>Make feed public: 
         <input id="feed-public" type="checkbox"></p>
-                
+
+        <p>Feed Unit</p>
+        <select id="feed_unit_dropdown">
+            <option value=""></option>
+            <option value="W">W</option>
+            <option value="kWh">kWh</option>
+            <option value="Wh">Wh</option>
+            <option value="V">V</option>
+            <option value="VA">VA</option>
+            <option value="A">A</option>
+            <option value="°C">°C</option>
+            <option value="K">K</option>
+            <option value="°F">°F</option>
+            <option value="%">%</option>
+            <option value="Hz">Hz</option>
+            <option value="pulses">pulses</option>
+            <option value="dB">dB</option>
+            <option value="_other">Other</option>
+        </select>
+        <input id="feed_unit_dropdown_other">
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
@@ -258,21 +287,54 @@ input[type="checkbox"] { margin:0px; }
 <div id="feedDeleteModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="feedDeleteModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?></h3>
+        <h3 id="feedDeleteModalLabel"><?php echo _('Delete feed'); ?> 
+        <span id="feedDelete-message" class="label label-warning" data-default="<?php echo _('Deleting a feed is permanent.'); ?>"><?php echo _('Deleting a feed is permanent.'); ?></span>
+        </h3>
     </div>
     <div class="modal-body">
-        <p><?php echo _('Deleting a feed is permanent.'); ?></p>
-        <br>
-        <div id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></div>
-        <div id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></div>
-        <br><br>
-        <p><?php echo _('Are you sure you want to delete:'); ?></p>
-		<div id="feeds-to-delete"></div>
-        <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
+        <div class="clearfix">
+            <div id="clearContainer" class="span6">
+                <div style="min-height:12.1em; position:relative" class="well well-small">
+                    <h4 class="text-info"><?php echo _('Clear') ?>:</h4>
+                    <p><?php echo _('Empty feed of all data') ?></p>
+                    <button id="feedClear-confirm" class="btn btn-inverse" style="position:absolute;bottom:.8em"><?php echo _('Clear Data'); ?>&hellip;</button>
+                </div>
+            </div>
+
+            <div id="trimContainer" class="span6">
+                <div class="well well-small">
+                    <h4 class="text-info"><?php echo _('Trim') ?>:</h4>
+                    <p><?php echo _('Empty feed data up to') ?>:</p>
+                    <div id="trim_start_time_container" class="control-group" style="margin-bottom:1.3em">
+                        <div class="controls">
+                            <div id="feed_trim_datetimepicker" class="input-append date" style="margin-bottom:0">
+                                <input id="trim_start_time" class="input-medium" data-format="dd/MM/yyyy hh:mm:ss" type="text" placeholder="dd/mm/yyyy hh:mm:ss">
+                                <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar" class="icon-calendar"></i></span>
+                            </div>
+                            <div class="btn-group" style="margin-bottom:-4px">
+                                <button class="btn btn-mini active" title="<?php echo _('Set to the start date') ?>" data-relative_time="start"><?php echo _('Start') ?></button>
+                                <button class="btn btn-mini" title="<?php echo _('One year ago') ?>" data-relative_time="-1y"><?php echo _('- 1 year') ?></button>
+                                <button class="btn btn-mini" title="<?php echo _('Two years ago') ?>" data-relative_time="-2y"><?php echo _('- 2 year') ?></button>
+                                <button class="btn btn-mini" title="<?php echo _('Set to the current date/time') ?>" data-relative_time="now"><?php echo _('Now') ?></button>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="feedTrim-confirm" class="btn btn-inverse"><?php echo _('Trim Data'); ?>&hellip;</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="well well-small" style="margin-bottom:0">
+            <h4 class="text-info"><?php echo _('Delete')?>: <span id="feedProcessList"></span></h4>
+            <p id="deleteFeedText"><?php echo _('If you have Input Processlist processors that use this feed, after deleting it, review that process lists or they will be in error, freezing other Inputs. Also make sure no Dashboards use the deleted feed.'); ?></p>
+            <p id="deleteVirtualFeedText"><?php echo _('This is a Virtual Feed, after deleting it, make sure no Dashboard continue to use the deleted feed.'); ?></p>
+            <button id="feedDelete-confirm" class="btn btn-danger"><?php echo _('Delete feed permanently'); ?></button>
+        </div>
     </div>
     <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
-        <button id="feedDelete-confirm" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+        <div id="feeds-to-delete" class="pull-left"></div>
+        <div id="feedDelete-loader" class="ajax-loader" style="display:none;"></div>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
     </div>
 </div>
 
@@ -314,7 +376,7 @@ input[type="checkbox"] { margin:0px; }
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  setInterval(update,5000);
+//   setInterval(update,5000);
   
   function update() 
   {
@@ -348,7 +410,7 @@ input[type="checkbox"] { margin:0px; }
               if (nodes_display[node]==undefined) nodes_display[node] = true;
               nodes[node].push(feeds[z]);
           }
-      
+
           var out = "";
           
           // get node overview
@@ -367,14 +429,14 @@ input[type="checkbox"] { margin:0px; }
               var visible = "hide"; if (nodes_display[node]) visible = "";
               
               out += "<div class='node'>";
-              out += "  <div class='node-info row-fluid' node='"+node+"'>";
+              out += '  <div class="node-info row-fluid" style="line-height:1.7" node="'+node+'">';
               out += '    <div class="span6">'
               out += "      <div class='node-name'>"+node+":</div>";
               out += '    </div>';
-              out += '    <div class="span3 hidden-phone-small">'
+              out += '    <div class="span3 hidden-xs">'
               out += "      <div class='node-size'>"+list_format_size(node_size[node])+"</div>";
               out += '    </div>';
-              out += '    <div class="span3 text-right" style="padding-right:2em">'
+              out += '    <div class="span3 span6-xs text-right">'
               out += "      <div class='node-latest'>"+list_format_updated(node_time[node])+"</div>";
               out += '    </div>';
               out += '  </div>';
@@ -382,11 +444,16 @@ input[type="checkbox"] { margin:0px; }
               out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
               
               for (var feed in nodes[node]) {
-				          var feedid = nodes[node][feed].id;
-                  out += "<div class='node-feed' feedid="+feedid+">";
+                  var feedid = nodes[node][feed].id;
+                  var row_title = ["Feed ID: "+feedid,
+                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s',
+                                    "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
+                  ].join("\n")
+
+                  out += "<div class='node-feed' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                   out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                  out += "<div class='name'><div class='ipad' title='ID:"+feedid+"'>"+nodes[node][feed].name+"</div></div>";
+                  out += "<div class='name'><div class='ipad'>"+nodes[node][feed].name+"</div></div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
@@ -394,9 +461,8 @@ input[type="checkbox"] { margin:0px; }
                   out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
                   out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
                   out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                  
                   out += "<div class='node-feed-right'>";
-                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+"</div>";
+                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+"</div>";
                   out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
                   out += "</div>";
                   out += "</div>";
@@ -484,6 +550,30 @@ input[type="checkbox"] { margin:0px; }
       $("#feed-node").val(feeds[feedid].tag);
       var checked = false; if (feeds[feedid].public==1) checked = true;
       $("#feed-public")[0].checked = checked;
+
+        let $dropdown = $('#feed_unit_dropdown')
+        $dropdown.val(feeds[feedid].unit)
+        let options = []
+        $dropdown.find('option').each(function(key,elem){
+            options.push(elem.value)
+        })
+        if (options.indexOf(feeds[feedid].unit) == -1) {
+            $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
+            $dropdown.val('_other')
+        }
+        if($dropdown.val()=='_other') {
+            $dropdown.next('input').show();
+        }else{
+            $dropdown.next('input').hide();
+        }
+        $dropdown.change(function(event){
+            if(event.target.value=='_other') {
+                $(event.target).next('input').show();
+            }else{
+                $(event.target).next('input').hide();
+            }
+        });
+
   });
 
   $("#feed-edit-save").click(function(){
@@ -491,43 +581,559 @@ input[type="checkbox"] { margin:0px; }
       // There should only ever be one feed that is selected here:
       for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
       
-      var publicfeed = false;
-      if ($("#feed-public")[0].checked) publicfeed = true;
+      var publicfeed = 0;
+      if ($("#feed-public")[0].checked) publicfeed = 1;
       
+      var unit = $('#feed_unit_dropdown').val()
+      unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+
       var fields = {
-          tag: $("#feed-node").val(), 
-          name: $("#feed-name").val(),
-          public: publicfeed
+        tag: $("#feed-node").val(), 
+        name: $("#feed-name").val(),
+        public: publicfeed,
+        unit: unit
       };
-      
-      $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(fields), dataType: 'json', async: true, success: function(data) {
+      // only send changed values
+      var data = {}
+      for(f in fields){
+          console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+          if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+      }
+      console.log(Object.keys(data).length);
+      // dont send ajax if nothing changed
+      if (Object.keys(data).length==0) {
+        $('#feedEditModal').modal('hide')
+        return
+      }
+
+      $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
           update();
           $('#feedEditModal').modal('hide');
       }});
   });
 
+
+
   // ---------------------------------------------------------------------------------------------
   // DELETE FEED
   // ---------------------------------------------------------------------------------------------
-  $(".feed-delete").click(function(){
-      $('#feedDeleteModal #deleteFeedText').show();
-      $('#feedDeleteModal #deleteVirtualFeedText').hide();
-      $('#feedDeleteModal').modal('show');
-	    var out = "";
-	    for (var feedid in selected_feeds) {
-		      if (selected_feeds[feedid]==true) out += feeds[feedid].tag+":"+feeds[feedid].name+"<br>";
-	    }
-	    $("#feeds-to-delete").html(out);
-  });
+
+/**
+ * find which inputs and processess write to a feed
+ *
+ * the returned object is a list of arrays that store the process/input pairs that make up the specific output to feed
+ *   obj[feedid][0].input.nodeid --- will get the nodeid for the first input that outputs to the given feed
+ *   obj[feedid][0].process.short --- will get the short name for the first process that outputs to the given feed
+ *
+ * @return object
+ */
+function getFeedProcess(){
+    let inputs = {}, // list of inputs and their processes
+        feedProcesses = {}, // list of process that write to feeds
+        let_feeds = {} // list of feeds and their accociated processes
+
+    // create a list of all inputs that have processes
+    for (inputid in processlist_ui.inputlist) {
+        let input = processlist_ui.inputlist[inputid]
+        if (input.processList.length>0) {
+            inputs[inputid] = {
+                processList: processlist_ui.decode(input.processList),
+                nodeid: input.nodeid,
+                name: input.name,
+                inputid: inputid
+            }
+        }
+    }
+    // get all the processes that write to a feed - list them by numeric key (if available)
+    for (processid in processlist_ui.processlist) {
+        let process = processlist_ui.processlist[processid]
+        if (process.feedwrite) {
+            key = process.hasOwnProperty('id_num') ? process.id_num : processid
+            feedProcesses[key] = processid
+        }
+    }
+
+    // go through all the input processes and get all the feeds they output to
+    for (inputid in inputs) {
+        let input = inputs[inputid]
+        // loop through the key / value pairs of each input processlist
+        for (item in input.processList) {
+            let processid = input.processList[item][0]
+            let processval = input.processList[item][1] || null
+            if(feedProcesses[processid]){
+                //this process writes to feed
+                let_feeds[processval] = let_feeds[processval] || []
+                let_feeds[processval].push({
+                    process: processlist_ui.processlist[feedProcesses[processid]],
+                    input: input,
+                    feedid: processval
+                })
+            }
+        }
+    }
+    return let_feeds
+}
+/**
+ * output what feeds have been selected in the overlay modal box
+ *
+ * @return void
+ */
+function showSelectedFeeds(feed_inputs) {
+    // loop through selection 
+    let selected = []
+    for (var feedid in selected_feeds) {
+        if (selected_feeds[feedid] == true) {
+            selected[feedid] = feeds[feedid];
+            if (feed_inputs[feedid]) {
+                if (Array.isArray(feed_inputs[feedid])) {
+                    selected[feedid].input = []
+                    selected[feedid].process = []
+                    for (f in feed_inputs[feedid]) {
+                        selected[feedid].input.push(feed_inputs[feedid][f].input)
+                        selected[feedid].process.push(feed_inputs[feedid][f].process)
+                    }
+                } else {
+                    selected[feedid].input = [feed_inputs[feedid].input]
+                    selected[feedid].process = [feed_inputs[feedid].process]
+                }
+            }
+        }
+    }
+
+    // count the number of processess associated with the selected feeds
+    let list='',titles={},linked=[],total_linked = 0
+    for(s in selected) {
+        titles[s] = selected[s].tag+":"+selected[s].name
+        // virtual feed processes
+        if ( selected[s].hasOwnProperty('processList') && selected[s].processList.length > 0 ) {
+            linked.push(selected[s])
+            let virtualProcesses = processlist_ui.decode(selected[s].processList)
+            for(p in virtualProcesses) {
+                total_linked ++
+            }
+        }
+        // feed's linked/parent process
+        if ( selected[s].hasOwnProperty('process') && selected[s].process && selected[s].process.length > 0 ) {
+            linked.push(selected[s])
+            for(i=0;i<selected[s].process.length;i++) {
+                total_linked ++
+            }
+        }
+        
+    }
+    // create html to display the results
+    // notify user that feed is associated to processList
+    
+    // create a simple list of feed ids and names to display to the user
+    let feedListShort = ''
+    for(id in titles){
+        feedListShort += '['+id+'] '+titles[id]+', '
+    }
+    // remove the last comma
+    feedListShort = feedListShort.slice(0, -2);
+
+    // create a container to store the result that is displayed to the user
+    total_summary = '<div id="deleteFeedModalSelectedItems">'
+    total_selected = Object.keys(titles).length
+    if (total_selected == 1) {
+    // if only one is selected display it's id & name
+        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> <?php echo _('1 Input process associated with this feed') ?>':''
+        total_summary += '<h5>'+feedListShort+'</h5>'
+    } else {
+    // show a summary total if more than one are selected
+        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> '+(' <?php echo _('%s Input processes associated with these feeds') ?>'.replace('%s',total_linked))+'</span>' : ''
+        total_summary += '<h5 title="'+feedListShort+'"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>'.replace('%s', total_selected)
+    }
+    total_summary += '</div>'
+    $("#feeds-to-delete").html(total_summary); // show how many feeds have been selected
+    $("#feedProcessList").html(feedProcessList); // show how many processes are associated with the selected feeds
+
+}
+
+/**
+ * show the trim start time in the date time picker and input field
+ * 
+ * will also highlight a button if it matches the currently selected timestamp
+ *
+ * @param int start_time unix timestamp (seconds)
+ */
+function showFeedStartDate(start_time){
+    let startDate = start_time==0 ? new Date() : new Date(start_time*1000)
+    $datetimepicker = $('#feed_trim_datetimepicker')
+    $datetimepicker
+    .datetimepicker({startDate: startDate}) // restrict calendar selection to the start time
+    .datetimepicker('setValue', startDate) // set the date/time picker to the start time
+    .on('changeDate', function(event){
+        // mark any matching buttons as active
+        $('[data-relative_time]').each(function(i,elem){
+            if ($(elem).data('startdate') != event.date) {
+                $(this).removeClass('active')
+            }
+        })
+    })
+}
+
+/**
+ * Initialises the different events to enable the "relative date" selections below the date/time picker
+ * 
+ * Set the data property of each button to store correct Date() for each button. Each button must have a 
+ * "data-relative_time" attribute with one of the following values:-
+ *   "-2y", "-1y", "start" or "now" (default)
+ *
+ * Each button shows a formatted date in the input field and also sets the date time picker to the relevant position
+ * @param int start_time the earliest possible timestamp for all the selected feeds - does not allow trimming beyond this point
+ *
+ * @return void
+ */
+function initRelativeStartDateButtons(start_time){
+    let startDate = start_time>0 ? new Date(start_time*1000) : new Date()
+
+    $('[data-relative_time]').each(function(i,v){
+        $btn = $(this)
+        // add more cases here for additional options (and also data-relative_time='xyz' in the html)
+        // returns function so that the dates are calculated to when the user clicks the buttons
+        switch ($btn.data('relative_time')) {
+        case '-2y':
+            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-2,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) })
+            break
+        case '-1y':
+            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-1,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) })
+            break
+        case 'start':
+            relativeTime = startDate
+            break
+        default:
+            relativeTime = new Date()
+        }
+        relativeTime = typeof relativeTime === 'function' ? relativeTime() : relativeTime;
+        // set the timestamp as a data property of the button so that it can be referenced on click
+        $btn.data('startdate', relativeTime.valueOf() )
+        // make sure the calculated date is not beyond the start date
+        if (relativeTime < startDate) {
+            $btn.hide() // hide button date is beyond start date
+            $btn.css({'font-style':'italic', color:'#9a9eaa'})
+            $btn.attr('title',$btn.attr('title')+' - [<?php echo _('Out of range')?>]')
+        }
+    })
+    // open date picker on input focus
+    $('#trim_start_time').on('focus', function(event){ $datetimepicker.datetimepicker('show') })
+    
+    // alter the trim date / time picker on button presses
+    $('[data-relative_time]').click(function(event){
+        event.preventDefault()
+        $btn = $(this)
+        $btn.addClass('active').siblings().removeClass('active')
+        $input = $('#trim_start_time')
+        // get starttime from button's data
+        date = new Date($btn.data('startdate'))
+        // restrict selection to the earliest possible date
+        if (date < startDate) {
+            date = startDate
+        }
+        // rebuild the date string from the new date object
+        Y = date.getFullYear()
+        m = (date.getMonth()+1).pad(2)
+        d = date.getDate().pad(2)
+        h = date.getHours().pad(2)
+        i = date.getMinutes().pad(2)
+        s = date.getSeconds().pad(2)
+        
+        // show date in input field - DD/MM/YYYY HH:MM:SS
+        newDateString = [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ')
+        $input.val(newDateString)
+    })
+}
+
+/**
+ * compares all the selected feed start_times to see which is the best suited for the group 
+ * @return int start_time timestamp
+ */
+function getEarliestStartTime() { 
+    let start_time = 0
+    for (var feedid in selected_feeds) {
+        if (selected_feeds[feedid] == true) {
+            // record the earliest possible start_time for all the selected feeds
+            start_time = feeds[feedid].start_time > start_time ? feeds[feedid].start_time : start_time
+        }
+    }
+    return start_time
+}
+/**
+ * mark button as selected if chosen date in date/time picker matches
+ * jQuery Event handler for datetime picker's changeDate event
+ */
+$('#feed_trim_datetimepicker').on('changeDate',function(event){
+    $('[data-relative_time]').each(function(){
+        $btn = $(this)
+        if ($btn.data('startdate') == event.date.valueOf()) {
+            $btn.addClass('active').siblings().removeClass('active')
+        }
+    })
+})
+/**
+ * returns true if trim function available for all the selected feed engine types
+ *
+ * @return boolean
+ */
+function isSelectionValidForTrim(){
+    /*
+        const MYSQL = 0;
+        const TIMESTORE = 1;     // Depreciated
+        const PHPTIMESERIES = 2;
+        const GRAPHITE = 3;      // Not included in core
+        const PHPTIMESTORE = 4;  // Depreciated
+        const PHPFINA = 5;
+        const PHPFIWA = 6;
+        const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
+        const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
+        const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
+        const CASSANDRA = 10;    // Cassandra
+    */
+    let allowed_engines = [0,5,8] // array of allowed storage engines
+    for (var feedid in selected_feeds) {
+        engineid = parseInt(feeds[feedid].engine) // convert string to number
+        // if feed selected and engineid is NOT found in allowed_engines
+        if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
+            return false
+        }
+    }
+    return true
+}
+/**
+ * display a message to the user in the delete feed modal
+ *
+ * restores the original message after delay
+ *
+ * @param string message text to show to user
+ */
+function updateFeedDeleteModalMessage(response){
+    let message = response.message
+    let success = response.success
+    let $msg = $('#feedDelete-message')
+    let cssClassName = success ? 'label-success' : 'label-important'
+
+    $msg.stop().fadeOut(function(){
+        $(this).text(message).removeClass('label-warning').addClass(cssClassName).fadeIn()
+    })
+    setTimeout(function(){
+        $msg.stop().fadeOut(function(){
+            $msg.text($msg.data('default')).removeClass(cssClassName).addClass('label-warning').fadeIn()
+        })
+    }, 3800)
+}
+
+/**
+ * function call queue - clears previous interval if interrupted
+ */
+var updater;
+function updaterStart(func, interval){
+    clearInterval(updater);
+    updater = null;
+    if (interval > 0) updater = setInterval(func, interval);
+}
+
+
+
+/**
+ * Enables/Disables the feed trim() feature based on selected feeds
+ *
+ * @return void
+ */
+function initTrim(){
+    // get the most suitable start_time for all selected feeds
+    if (isSelectionValidForTrim()) {
+        let start_time = getEarliestStartTime()
+        enableTrim(start_time)
+    } else {
+        disableTrim()
+    }
+}
+/**
+ * Allows feed(s) to be trimmed to a new start_date
+ *
+ * @param int start_time new timestamp to trim to
+ * @return void
+ */
+function enableTrim(start_time){
+    // populate the trim() date input with the feed's current start date
+    showFeedStartDate(start_time)
+    // make buttons under the trim date input react on click
+    initRelativeStartDateButtons(start_time)
+
+    // remove any styling the disableTrim() function created
+    $('#trimContainer').attr('title','').removeClass('muted')//.show()
+    .find('h4').addClass('text-info').removeClass('muted').end()
+    .find('button,input').removeClass('disabled')
+    .find('input').val('')
+    
+    // enable the confirm trim button
+    $('#feedTrim-confirm')
+    .unbind('click')
+    .click(function(){
+        $modal = $('#feedDeleteModal')
+        let $input = $modal.find("#trim_start_time")
+        let input_date_string = $input.val()
+        // dont submit if nothing selected
+        // convert uk dd/mm/yyyy h:m:s to RFC2822 date
+        let start_date = new Date(input_date_string.replace( /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/, "$3-$2-$1T$4:$5:$6"))
+        let isValidDate = !isNaN(start_date.getTime()) && input_date_string != ""
+        // exit if supplied date not valid
+        if (!isValidDate) {
+            $('#trim_start_time_container').addClass('error')
+            $input.focus()
+            return false
+        }else{
+            if(confirm("<?php echo _("This is a new feature. Consider backing up your data before you continue. OK to continue?") ?>") == true ) {
+                $('#trim_start_time_container').removeClass('error')
+                // set to seconds from milliseconds
+                let start_time = start_date.getTime()/1000
+                $("#feedDelete-loader").fadeIn()
+                // run the trim() function on all the selected feeds
+                for (let feedid in selected_feeds) {
+                    if (selected_feeds[feedid]) {
+                        let response = feed.trim(feedid, start_time)
+                        updateFeedDeleteModalMessage(response)
+                        if (!response.success) {
+                            break;
+                        }
+                    }
+                }
+                $("#feedDelete-loader").stop().fadeOut()
+                update()
+                updaterStart(update, 5000)
+            }
+        }
+    })
+}
+/**
+ * hide the trim feature
+ *
+ * @return void
+ */
+function disableTrim(){
+    $('#trimContainer').attr('title','<?php echo _('"Trim" not available for this storage engine') ?>').addClass('muted')//.hide()
+    .find('h4').removeClass('text-info').addClass('muted').end()
+    .find('button,input').addClass('disabled')
+    .find('input').val('')
+    $('#feedTrim-confirm').unbind('click') // remove previous click event (if it exists)
+}
+
+/**
+ * trigger off the modal overlay to display delete options
+ * 
+ * jQuery Event handler for the delete feed button
+ * also shows items selected as well as a processlist warning
+ */
+$(".feed-delete").click(function(){
+    $('#feedDeleteModal #deleteFeedText').show();
+    $('#feedDeleteModal #deleteVirtualFeedText').hide();
+    $('#feedDeleteModal').modal('show'); //show the delete modal
+
+    // get the list of input processlists that write to feeds
+    let feed_processes = getFeedProcess()
+    let selected_feeds_inputs = {}
+    for (i in selected_feeds){
+        // if a selected feed has an associated process id then save it into an array
+        if (selected_feeds[i] && typeof feed_processes[i] != 'undefined') {
+            selected_feeds_inputs[i] = feed_processes[i]
+        }
+    }
+
+    // show the selected feeds and any associated processList
+    showSelectedFeeds(selected_feeds_inputs)
+
+    initTrim()
+    initClear()
+});
+
+    function isSelectionValidForClear(){
+        /*
+            const MYSQL = 0;
+            const TIMESTORE = 1;     // Depreciated
+            const PHPTIMESERIES = 2;
+            const GRAPHITE = 3;      // Not included in core
+            const PHPTIMESTORE = 4;  // Depreciated
+            const PHPFINA = 5;
+            const PHPFIWA = 6;
+            const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
+            const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
+            const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
+            const CASSANDRA = 10;    // Cassandra
+        */
+        let allowed_engines = [0,5,8] // array of allowed storage engines 
+        for (var feedid in selected_feeds) {
+            engineid = parseInt(feeds[feedid].engine) // convert string to number
+            // if feed selected and engineid is NOT found in allowed_engines
+            if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
+                return false
+            }
+        }
+        return true
+    }
+    function initClear(){
+        // get the most suitable start_time for all selected feeds
+        if (isSelectionValidForClear()) {
+            enableClear()
+        } else {
+            disableClear()
+        }
+    }
+    function enableClear(){
+        // remove any disable styling
+        $('#clearContainer').attr('title','').removeClass('muted')//.show()
+        .find('h4').addClass('text-info').removeClass('muted').end()
+        .find('button').removeClass('disabled')
+
+        $("#feedClear-confirm")
+        .unbind('click')
+        .click(function(){
+            if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == true ){
+                $modal = $('#feedDeleteModal')
+                $("#feedDelete-loader").fadeIn();
+
+                for (let feedid in selected_feeds) {
+                    if (selected_feeds[feedid]) {
+                        let response = feed.clear(feedid);
+                        updateFeedDeleteModalMessage(response)
+                        if (!response.success) {
+                            break;
+                        }
+                    }
+                }
+                $("#feedDelete-loader").stop().fadeOut();
+                update();
+                updaterStart(update, 5000);
+            }
+        });
+    }
+    function disableClear(){
+        $("#feedClear-confirm").unbind()
+
+        $('#clearContainer').attr('title','<?php echo _('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
+        .find('h4').removeClass('text-info').addClass('muted').end()
+        .find('button').addClass('disabled')
+    }
+
+
+
 
   $("#feedDelete-confirm").click(function(){
-	    for (var feedid in selected_feeds) {
-          if (selected_feeds[feedid]==true) feed.remove(feedid);
-	    }
-	    update();
-      $('#feedDeleteModal').modal('hide');
+    if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
+        for (let feedid in selected_feeds) {
+            if (selected_feeds[feedid]) {
+                let response = feed.remove(feedid)
+                response = response ? response : {success:true, message: '<?php echo _("Feeds Deleted") ?>'}
+                updateFeedDeleteModalMessage(response)
+            }
+        }
+        setTimeout(function(){
+            update();
+            updaterStart(update, 5000);
+            $('#feedDeleteModal').modal('hide')
+        }, 5000)
+    }
   });
-  
+
   $("#refreshfeedsize").click(function(){
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
   });
@@ -591,6 +1197,7 @@ function resize()
     show_select = true;
     show_time = true;
     show_value = true;
+    show_start_time = true;
 
     $(".node-feed").each(function(){
          var node_feed_width = $(this).width();
@@ -617,6 +1224,9 @@ function resize()
               
              tw += $(this).find(".size").width();
              if (tw>w) show_size = false;
+             
+             tw += $(this).find(".start_time").width();
+             if (tw>w) show_start_time = false;
          }
     });
     
@@ -626,6 +1236,7 @@ function resize()
     if (show_public) $(".public").show(); else $(".public").hide();
     if (show_engine) $(".engine").show(); else $(".engine").hide();
     if (show_size) $(".size").show(); else $(".size").hide();
+    if (show_start_time) $(".start_time").show(); else $(".start_time").hide();
     
 }
 
@@ -863,5 +1474,30 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 
+/**
+ * alter the Number primitive to include a new method to pad out numbers with zeros
+ * @param int size - number of characters to fill with zeros
+ * @return string
+ */
+Number.prototype.pad = function(size) {
+  var s = String(this);
+  while (s.length < (size || 2)) {s = "0" + s;}
+  return s;
+}
+</script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/moment-with-locales.js"></script>
+<script>
+/**
+ * uses moment.js to format to local time 
+ * @param int time unix epoc time
+ * @param string format moment.js date formatting options
+ * @see date format options - https://momentjs.com/docs/#/displaying/
+ */
+function format_time(time,format){
+    time = time || (new Date().valueOf() / 1000)
+    format = format || ''
+    formatted_date = moment.unix(time).format(format)
+    return formatted_date
+}
 </script>
 
