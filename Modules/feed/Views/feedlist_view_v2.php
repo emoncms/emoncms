@@ -118,7 +118,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
 @media (max-width: 569px) {
-    .node-feed .name { font-size:20px;padding-left:.7em}
+    /* .node-feed .name { font-size:20px;padding-left:.7em} */
     .node-info .name:before {
         display:none
     }
@@ -373,7 +373,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-//   setInterval(update,5000);
+  setInterval(update,5000);
   
   function update() 
   {
@@ -1232,7 +1232,7 @@ $(window).on('resize', function(e) {
     resizeTimer = setTimeout(function() {
         // resize the columns to fit the view
         resize()
-    }, 250)
+    }, 50)
 });
 
 
