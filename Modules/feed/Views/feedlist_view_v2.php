@@ -16,7 +16,6 @@ body{padding:0!important}
     margin-left: 0px;
     margin-right: 0px;
 }
-
 .navbar-fixed-top {
     margin-left: 0px;
     margin-right: 0px;
@@ -34,10 +33,29 @@ body{padding:0!important}
     cursor:pointer;
     border: 0 solid transparent;
 }
-.node-feed.feed-graph-link .name { transform: all .8s ease-out}
-.node-info .name { font-weight:bold; font-size: larger }
+.node-info .name { position:relative; font-weight:bold; font-size: larger }
+
+.node-info .name:before {
+    top: 1em;
+    left: -1em;
+    position: absolute;
+    height: 0;
+    width: 0;
+    display: block;
+    content: '';
+    border-top: 5px solid darkgrey;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
 .node-info .time {
     padding-right: 4px;
+}
+
+.node-name { font-weight:bold; }
+.node-name,
+.node-size,
+.node-latest{
+  float:left;
 }
 
 .node-name { font-weight:bold; }
@@ -101,6 +119,9 @@ input[type="checkbox"] { vertical-align:text-bottom;}
 }
 @media (max-width: 569px) {
     .node-feed .name { font-size:20px;padding-left:.7em}
+    .node-info .name:before {
+        display:none
+    }
 }
 @media (max-width: 468px) {
     #table .row-fluid .span6-xs, #table .row-fluid .span6-xs {width: 48.88%!important}
@@ -352,7 +373,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
   update();
-  setInterval(update,5000);
+//   setInterval(update,5000);
   
   function update() 
   {
