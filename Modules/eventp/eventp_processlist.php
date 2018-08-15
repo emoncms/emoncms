@@ -198,7 +198,7 @@ class Eventp_ProcessList
             //$this->log->info("ifRateLtSkip() time=$time value=$value redispath=$redispath");
             if ($redis->exists($redispath)) {
                 $lastvalue = $redis->hmget($redispath,array('time','value'));
-                $change = abs($value - $lastvalue['value']);
+                $change = abs(floatval($value) - floatval($lastvalue['value']));
                 if ($change < $arg)
                     $this->parentProcessModel->proc_skip_next = true;
             }

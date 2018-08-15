@@ -26,6 +26,7 @@
 
 .node-info {
     height:40px;
+    line-height:1.7;
     background-color:#ddd;
     cursor:pointer;
 }
@@ -429,7 +430,7 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
               var visible = "hide"; if (nodes_display[node]) visible = "";
               
               out += "<div class='node'>";
-              out += '  <div class="node-info row-fluid" style="line-height:1.7" node="'+node+'">';
+              out += '  <div class="node-info row-fluid" node="'+node+'">';
               out += '    <div class="span6">'
               out += "      <div class='node-name'>"+node+":</div>";
               out += '    </div>';

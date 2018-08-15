@@ -397,7 +397,8 @@ class Feed
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
             $meta = $this->get_meta($id);
-            $row['start_time'] = $meta->start_time;
+            if (isset($meta->start_time)) $row['start_time'] = $meta->start_time;
+            if (isset($meta->interval)) $row['interval'] = $meta->interval;
             $feeds[] = $row;
         }
 
@@ -418,6 +419,7 @@ class Feed
                 $row['value'] = $lastvirtual['value'];
                 $meta = $this->get_meta($row['id']);
                 $row['start_time'] = $meta->start_time;
+                $row['interval'] = $meta->interval;
             }
             $feeds[] = $row;
         }
