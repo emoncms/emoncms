@@ -43,10 +43,19 @@ body{padding:0!important}
     width: 0;
     display: block;
     content: '';
+    transition: all .2s ease-out;
+    border-bottom: 5px solid darkgrey;
+    border-top: 0 solid transparent;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+.node-info.closed .name:before {
+    border-bottom: 0 solid transparent;
     border-top: 5px solid darkgrey;
     border-right: 5px solid transparent;
     border-left: 5px solid transparent;
 }
+
 .node-info .time {
     padding-right: 4px;
 }
@@ -519,14 +528,17 @@ input[type="checkbox"] { vertical-align:text-bottom;}
       resize()
   }
 
+  // expand/hide a single feed group
   $("#table").on("click",".node-info", function (event){
     $elem = $(event.currentTarget)
     var node = $elem.data("node");
     if (nodes_display[node]) {
         $(".node-feeds[node='"+node+"']").hide();
+        $elem.addClass('closed').removeClass('open')
         nodes_display[node] = false;
     } else {
         $(".node-feeds[node='"+node+"']").show();
+        $elem.addClass('open').removeClass('closed')
         nodes_display[node] = true;
     }
 });
