@@ -1564,7 +1564,6 @@ Number.prototype.pad = function(size) {
  */
 function format_time(time,format){
     moment.locale(window.navigator.userLanguage || window.navigator.language)
-    localeData = moment.localeData()
     time = time || (new Date().valueOf() / 1000)
     format = format || ''
     formatted_date = moment.unix(time).format(format)
