@@ -164,7 +164,7 @@ input[type="checkbox"] { margin:0px; }
 
 <div>
 	<div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
-	<div id="localheading"><h3><?php echo _('My Devices'); ?></h3></div>
+	<div id="localheading"><h3><?php echo _('Inputs'); ?></h3></div>
 
 <div class="controls">
 	<div class="input-prepend" style="margin-bottom:0px">

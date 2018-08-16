@@ -9,14 +9,13 @@
 <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
 <style>
-
+body{padding:0!important}
 .container-fluid { padding: 0px 10px 0px 10px; }
 
 #footer {
     margin-left: 0px;
     margin-right: 0px;
 }
-
 .navbar-fixed-top {
     margin-left: 0px;
     margin-right: 0px;
@@ -24,82 +23,91 @@
 
 .node {margin-bottom:10px;}
 
-.node-info {
-    height:40px;
+.node-info.node-feeds {
+    padding:0;
+    line-height:2.7;
+}
+.node-info .node-feed {
+    padding-left: 10px;
     background-color:#ddd;
     cursor:pointer;
+    border: 0 solid transparent;
 }
-.node-name { 
-  font-weight:bold;
-	float:left;
-	padding:10px;
-	padding-right:5px;
+.node-info .name { position:relative; font-weight:bold; font-size: larger }
+
+.node-info .name:before {
+    top: 1em;
+    left: -1em;
+    position: absolute;
+    height: 0;
+    width: 0;
+    display: block;
+    content: '';
+    transition: all .2s ease-out;
+    border-bottom: 5px solid darkgrey;
+    border-top: 0 solid transparent;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+.node-info.closed .name:before {
+    border-bottom: 0 solid transparent;
+    border-top: 5px solid darkgrey;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
 }
 
+.node-info .time {
+    padding-right: 4px;
+}
+
+.node-name { font-weight:bold; }
+.node-name,
+.node-size,
+.node-latest{
+  float:left;
+}
+
+.node-name { font-weight:bold; }
 
 .node-feeds {
     padding: 0px 5px 5px 5px;
     background-color:#ddd;
 }
-
 .node-feed {
     background-color:#f0f0f0;
     border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
+    border-left:2px solid transparent;
     min-height:41px;
     line-height:41px;
     transition: background .2s ease-in;
     overflow:hidden;
 }
+.node-feed:last-child{
+    border-bottom:0px solid transparent;
+}
 .node-feed:hover {
-    background-color:#EBEBEB;
+    /*background-color:#EBEBEB;*/
     cursor: pointer
 }
-.node-feed:hover{ border-left:2px solid #44b3e2; }
+.node-feed:hover{ border-left-color: #44b3e2; }
 
-.node-feed .select {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .name {
+.node-feed > *,
+.node-feed > .node-feed-right > * {
     display:inline-block;
 }
 
-.node-feed .public {
-    display:inline-block;
-    text-align:center;
+input[type="checkbox"] { vertical-align:text-bottom;}
+
+.select::before {
+    content: '';
+    background: transparent;
+    width: 1em;
+    height: 0;
+    display: block;
+    float: left;
 }
 
-.node-feed .size {
-    display:inline-block;
-    text-align:center;
-}
 
-.node-feed .engine {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed-right {
-    float:right;
-}
-
-.node-feed .time {
-    display:inline-block;
-    text-align:center;
-}
-
-.node-feed .value {
-    display:inline-block;
-    text-align:center;
-}
-
-.ipad {
-    padding-left:10px;
-}
-
-input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 #feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
@@ -118,9 +126,15 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
+@media (max-width: 569px) {
+    /* .node-feed .name { font-size:20px;padding-left:.7em} */
+    .node-info .name:before {
+        display:none
+    }
+}
+@media (max-width: 468px) {
+    #table .row-fluid .span6-xs, #table .row-fluid .span6-xs {width: 48.88%!important}
 
-@media (max-width: 768px) {
-    body {padding:0};
 }
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
@@ -136,6 +150,7 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
 		</select>
 	</div>
 	
+	<button class="btn feed-show-hide-all" data-expanded="true" title="<?php echo _('Reduce') ?>" data-title-expanded="<?php echo _('Expand') ?>" data-title-reduced="<?php echo _('Reduce') ?>"><i class="icon icon-resize-small"></i></button>
 	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
@@ -401,16 +416,39 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
               if (nodes_display[node]==undefined) nodes_display[node] = true;
               nodes[node].push(feeds[z]);
           }
-      
+
           var out = "";
           
+          // get node overview
+          var node_size = {},
+              node_time = {}
+            for (let node in nodes) {
+                node_size[node] = 0
+                node_time[node] = 0
+                for (let feed in nodes[node]) {
+                    node_size[node] += Number(nodes[node][feed].size)
+                    node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
+                }
+          }
+          // display nodes and feeds
           for (var node in nodes) {
               var visible = "hide"; if (nodes_display[node]) visible = "";
+              var cssClass = nodes_display[node] ? 'open' : 'closed'
               
-              out += "<div class='node'>";
-              out += "<div class='node-info' node='"+node+"'>";
-              out += "<div class='node-name'>"+node+":</div>";
-              out += "</div>";
+              out += '<div class="node">';
+              out += '  <div class="node-info node-feeds '+cssClass+'" data-node="'+node+'">';
+              out += '    <div class="node-feed">'
+              out += '      <div class="select text-center"></div>';
+              out += '      <div class="name">'+node+':</div>';
+              out += '      <div class="public text-center"></div>';
+              out += '      <div class="engine"></div>';
+              out += '      <div class="size text-center">'+list_format_size(node_size[node])+'</div>';
+              out += '      <div class="node-feed-right pull-right">';
+              out += '        <div class="value"></div>';
+              out += '        <div class="time">'+list_format_updated(node_time[node])+'</div>';
+              out += '      </div>';
+              out += '    </div>';
+              out += '  </div>';
               
               out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
               
@@ -421,21 +459,21 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
                                     "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
                   ].join("\n")
 
-                  out += "<div class='node-feed' feedid="+feedid+" title='"+row_title+"'>";
+                  out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select'><div class='ipad'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"/></div></div>";
-                  out += "<div class='name'><div class='ipad'>"+nodes[node][feed].name+"</div></div>";
+                  out += "<div class='select text-center'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                  out += "<div class='name'>"+nodes[node][feed].name+"</div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
                   
-                  out += "<div class='public'><div class='ipad'>"+publicfeed+"</div></div>";
-                  out += "<div class='engine'><div class='ipad'>"+feed_engines[nodes[node][feed].engine]+"</div></div>";
-                  out += "<div class='size'><div class='ipad'>"+list_format_size(nodes[node][feed].size)+"</div></div>";
-                  out += "<div class='node-feed-right'>";
-                  out += "<div class='value'>"+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+"</div>";
-                  out += "<div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                  out += "</div>";
+                  out += "<div class='public text-center'>"+publicfeed+"</div>";
+                  out += "  <div class='engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
+                  out += "  <div class='size text-center'>"+list_format_size(nodes[node][feed].size)+"</div>";
+                  out += "  <div class='node-feed-right pull-right'>";
+                  out += "    <div class='value'>"+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+"</div>";
+                  out += "    <div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
+                  out += "  </div>";
                   out += "</div>";
               }
               
@@ -451,21 +489,61 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
           
           autowidth(".node-feeds .value",20);
           autowidth(".node-feeds .time",20);
-          
+
           resize();
       }});
   }
   
-  $("#table").on("click",".node-info",function() {
-      var node = $(this).attr("node");
-      if (nodes_display[node]) {
-          $(".node-feeds[node='"+node+"']").hide();
-          nodes_display[node] = false;
-      } else {
-          $(".node-feeds[node='"+node+"']").show();
-          nodes_display[node] = true;
-      }
-  });
+
+  $(".feed-show-hide-all").on("click", showHideAllFeedGroup)
+
+  function showHideAllFeedGroup(event) {
+      // hide expanded groups if the switch is set to expanded false
+      // show all shrunk groups if the switch is set to expanded true
+      event.preventDefault()
+      let $this = $(this)
+      let $icon = $this.find('.icon')
+      // initial state
+      let expanded = $(this).data('expanded')
+      // str to bool
+      expanded = expanded || expanded === 'true'
+      // save the opposite for next click
+      $this.data('expanded',!expanded)
+      // notify the user by changing the button
+      $icon.toggleClass('icon-resize-full icon-resize-small')
+      let title = expanded ? $this.data('title-expanded') : $this.data('title-reduced')
+      $this.attr('title',title)
+      // interact with each row. one at a time
+      $(".node-info").each(function(i,v){
+        $this = $(this)
+        node = $this.data('node')
+        // click open ones if expanded == true
+        if (nodes_display[node] && expanded) {
+            $this.click()
+        // click closed ones if expanded == false
+        } else if (!nodes_display[node] && !expanded) {
+            $this.click()
+        }
+      })
+      // clean the screen arrangement of elements
+      resize()
+  }
+
+  // expand/hide a single feed group
+  $("#table").on("click",".node-info", function (event){
+    $elem = $(event.currentTarget)
+    var node = $elem.data("node");
+    if (nodes_display[node]) {
+        $(".node-feeds[node='"+node+"']").hide();
+        $elem.addClass('closed').removeClass('open')
+        nodes_display[node] = false;
+    } else {
+        $(".node-feeds[node='"+node+"']").show();
+        $elem.addClass('open').removeClass('closed')
+        nodes_display[node] = true;
+    }
+    update()
+});
 
   $("#table").on("click",".select",function(e) {
       e.stopPropagation();
@@ -493,8 +571,9 @@ input[type="checkbox"] { margin:0px; transform: scale(1.0);padding:1em}
       feed_selection();
   });
 
-
-  $("#table").on("click",".node-feed",function() {
+  $("#table").on("click",".feed-graph-link",function(e) {
+      // ignore click on feed-info row
+      if ($(this).parent().is('.node-info')) return false
       var feedid = $(this).attr("feedid");
       window.location = path+"graph/"+feedid;
   });
@@ -1158,7 +1237,18 @@ var show_select = true;
 var show_time = true;
 var show_value = true;
 
-$(window).resize(function(){ resize(); });
+
+var resizeTimer;
+
+// debounce (ish) script to improve performance
+$(window).on('resize', function(e) {
+    clearTimeout(resizeTimer)
+    resizeTimer = setTimeout(function() {
+        // resize the columns to fit the view
+        resize()
+    }, 50)
+});
+
 
 function resize() 
 {
@@ -1173,7 +1263,7 @@ function resize()
     $(".node-feed").each(function(){
          var node_feed_width = $(this).width();
          if (node_feed_width>0) {
-             var w = node_feed_width-10;
+             var w = node_feed_width-20;
              
              var tw = 0;
              tw += $(this).find(".name").width();
@@ -1207,8 +1297,6 @@ function resize()
     if (show_public) $(".public").show(); else $(".public").hide();
     if (show_engine) $(".engine").show(); else $(".engine").hide();
     if (show_size) $(".size").show(); else $(".size").hide();
-    if (show_start_time) $(".start_time").show(); else $(".start_time").hide();
-    
 }
 
 function autowidth(element,padding) {
