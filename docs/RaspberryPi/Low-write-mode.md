@@ -92,7 +92,7 @@ Save & exit:
 
 Ensure all redis databases have been removed from `/var/lib/redis` with: 
     
-    sudo rm -rf /var/lib/redis/*
+    sudo su -c 'rm -rf /var/lib/redis/*'
 
 #### Configure Feedwriter
 
