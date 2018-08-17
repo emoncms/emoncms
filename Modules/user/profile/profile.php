@@ -13,18 +13,19 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-    global $path;
-    $v=1;
+global $path;
+$languages = array();
+$v=1;
 
-    $languages = get_available_languages();
-    $languages_name = languagecode_to_name($languages);
-    //languages order by language name
-    $languages_new = array();
-    foreach ($languages_name as $key=>$lang){
-       $languages_new[$key]=$languages[$key];
-    }
-    $languages= array_values($languages_new);
-    $languages_name= array_values($languages_name);
+$languages = get_available_languages();
+$languages_name = languagecode_to_name($languages);
+//languages order by language name
+$languages_new = array();
+foreach ($languages_name as $key=>$lang){
+    $languages_new[$key]=$languages[$key];
+}
+$languages= array_values($languages_new);
+$languages_name= array_values($languages_name);
 
 
 function languagecode_to_name($langs) {
@@ -131,12 +132,30 @@ function languagecode_to_name($langs) {
         <div class="account-item">
             <button class="btn btn-danger" id="deleteall"><?php echo _('Delete my account'); ?></button>
         </div>
-
+        
+        <h3><?php echo _('Mobile app'); ?></h3>
+        <div class="account-item">
+            <table>
+            <tr>
+              <td style="width:192px">
+                <p><?php echo _('Scan QR code from the iOS or Android app to connect:');?></p>
+                <div id="qr_apikey"></div>
+                <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding-left:20px">
+                <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
+                <br/>
+	              <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
+	            </td>
+	          </tr>
+	        </table>
+        </div>
     </div>
     <div class="span8">
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
-
         
         <div id="preferences-section_update_warning" class="well hidden">
             <h4><?php echo _('Please update your database'); ?></h4>
@@ -165,24 +184,6 @@ function languagecode_to_name($langs) {
 
             </form>
         </div>
-
-        <h3><?php echo _('Mobile app'); ?></h3>
-        <div class="account-item">
-            <table>
-            <tr>
-              <td style="width:192px">
-                <p><?php echo _('Scan QR code from the iOS or Android app to connect:');?></p>
-                <div id="qr_apikey"></div>
-                <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
-              </td>
-              <td style="padding-left:20px">
-                <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
-                <br/>
-	              <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
-	            </td>
-	          </tr>
-	          </table>
-        </div>      
     </div>
 </div>
 
