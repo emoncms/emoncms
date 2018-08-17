@@ -138,8 +138,28 @@ After MYSQL has been installed (see Raspberry Pi Emoncms install) we will need t
 Move the database:
 
 	mkdir /home/pi/data/mysql
-	sudo cp -rp /var/lib/mysql/. /home/pi/data/mysql
+	chown -R mysql:mysql /home/pi/data/mysql
+	cp -R -p /var/lib/mysql/* /home/pi/data/mysql
+	sudo rm -rf /var/lib/mysql
 
-Change MYSQL config to use database in new RW location change line `datadir` to `/home/pi/data/mysql`
+Change MYSQL config to use database in new RW location change the config file:
 
 	sudo nano /etc/mysql/my.cnf
+	
+	Under [mysqld]:
+	datadir=/home/pi/data/mysql
+	socket=/home/pi/data/mysql/mysql.sock
+	Under [client]:
+	port=3306
+	socket=/home/pi/data/mysql/mysql.sock
+	
+If using mariadb (Stretch default) we need another change to run the database from the home folder
+	
+	sudo nano /etc/systemd/system/mysqld.service
+
+Change: 
+
+	ProtectHome=true
+to:
+
+	ProtectHome=false
