@@ -193,13 +193,24 @@ input[type=text][class=variable-name-edit] {
 }
 .node .collapse > * {
     border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
     background: #f0f0f0;
     width: 100%;
-    border-left: 2px solid transparent;
 }
-.node .collapse > *:hover {
-    border-left: 2px solid blue;
+.node .collapse > *{
+    position: relative
+}
+.node .collapse > *:before{
+    content: '';
+    width: 0px;
+    background: #44b3e2;
+    height: 100%;
+    display: block;
+    position: absolute;
+    transition: all .2s ease-out;
+    transition: width .2s ease-out;
+}
+.node .collapse > *:hover:before{
+    width: 2px;
 }
 .node .collapse > *:last-child {
     border-bottom-width: 0
