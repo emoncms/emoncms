@@ -2,11 +2,10 @@
 	global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
 
 <style>
 
@@ -22,22 +21,11 @@
     margin-right: 0px;
 }
 
-.node {
-    margin-bottom:10px;
-    border: 1px solid #aaa;
-}
-
-.node-info {
-    height:40px;
-    background-color:#ddd;
-    cursor:pointer;
-}
-
+/*
 .device-name { 
   font-weight:bold;
-	float:left;
-	padding:10px;
-	padding-right:5px;
+    float:left;
+    padding:0 5px
 }
 
 .device-description { 
@@ -77,61 +65,10 @@
 .device-key:hover {background-color:#eaeaea;}
 .device-configure:hover {background-color:#eaeaea;}
 
-.node-inputs {
-    padding: 0px 5px 5px 5px;
-    background-color:#ddd;
-}
-
-.node-input {
-    background-color:#f0f0f0;
-    border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-}
-
-.node-input > * {
-    display:inline-block;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    vertical-align:top;
-}
-
-.node-input:hover{ border-left:2px solid #44b3e2; }
-
-.node-input .select {
-    text-align:center;
-}
-
-.node-input .name {
-    display:inline-block;
-    padding-top:10px;
-    vertical-align:top;
-}
-
-.node-input .processlist {
-    /*padding-left:10px;*/
-}
-
-.node-input-right { float:right; }
-.node-input-right > * { display:inline-block; }
-
-.node-input .time {
-    width:60px;
-    text-align:center;
-}
-
-.node-input .value {
-    text-align:center;
-}
-
-.node-input .configure {
-    width:40px;
-    text-align:center;
-	  cursor:pointer;
-}
-
 .pl10 {
     padding-left:10px;
 }
+*/
 
 input[type="checkbox"] { margin:0px; }
 #input-selection { width:80px; }
@@ -175,6 +112,7 @@ input[type="checkbox"] { margin:0px; }
 			<option value="none">None</option>
 		</select>
 	</div>
+	<button class="btn expand-all in" title="<?php echo _('Reduce') ?>" data-title-expanded="<?php echo _('Expand') ?>" data-title-reduced="<?php echo _('Reduce') ?>" data-target=".node"><i class="icon icon-resize-small"></i><i class="icon icon-resize-full"></i></button>
 	
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	
@@ -258,7 +196,7 @@ function update(){
 	                      if (!data) alert("There was an error creating device: "+inputs[z].nodeid); 
 	                  }});
 	              }
-	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = false;
+	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
@@ -275,37 +213,38 @@ function draw_devices()
 {
     // Draw node/input list
     var out = "";
+    var counter = 0
     for (var node in devices) {
-        var visible = "hide"; if (nodes_display[node]) visible = "";
-        
-        out += "<div class='node'>";
-        out += "  <div class='node-info' node='"+node+"'>";
-        out += "    <div class='device-name'>"+node+":</div>";
-        out += "    <div class='device-description'>"+devices[node].description+"</div>";
-        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
-        out += "    <div class='device-key'><i class='icon-lock icon-white'></i></div>"; 
-        out += "    <div class='device-schedule'><i class='icon-time icon-white'></i></div>";
+        counter++
+        var visible = nodes_display[node] ? 'in' : ''
+        out += "<div class='node accordion line-height-expanded'>";
+        out += '  <div class="node-info accordion-toggle" node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "    <div class='select'><span class='indicator'></span></h4>";
+        out += "    <h4 class='name'>"+node+":</h4>";
+        out += "    <div class='processlist'>"+devices[node].description+"</div>";
+        out += "    <div class='node-input pull-right'>"
+        out += "      <div class='configure'><i class='icon-wrench icon-white'></i></div>";
+        out += "      <div class='key'><i class='icon-lock icon-white'></i></div>"; 
+        out += "      <div class='schedule'><i class='icon-time icon-white'></i></div>";
+        out += "    </div>";
         out += "  </div>";
-        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
+        out += "<div id='collapse"+counter+"' class='node-inputs collapse "+visible+"' node='"+node+"'>";
         
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
-            
-            var selected = "";
-            if (selected_inputs[input.id]!=undefined && selected_inputs[input.id]==true) 
-                selected = "checked";
-            
+            var selected = selected_inputs[input.id] ? 'checked': ''
+            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : ''
             out += "<div class='node-input' id="+input.id+">";
-            out += "<div class='select'><div class='pl10'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div></div>";
-            out += "<div class='name'><div class='pl10'>"+input.name+"</div></div>";
-            
-            if (processlist_ui != undefined)  out += "<div class='processlist'><div class='pl10'>"+processlist_ui.drawpreview(input.processList)+"</div></div>";
-            
-            out += "<div class='node-input-right'>";
-            out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
-            out += "<div class='value'>"+list_format_value(input.value)+"</div>";
-            out += "<div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
-            out += "</div>";
+            out += "  <div class='select'>"
+            out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
+            out += "  </div>";
+            out += "  <div class='name'>"+input.name+"</div>";
+            out += "  <div class='processlist line-height-normal'>"+processlistHtml+"</div>";
+            out += "  <div class='pull-right'>";
+            out += "    <div class='time'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "  </div>";
             out += "</div>";
         }
         
@@ -329,34 +268,25 @@ function draw_devices()
         }
     }
     
-    autowidth(".node-inputs .name",10);
-    autowidth(".node-inputs .value",10);
+    autowidth(".node .select",10);
+    autowidth(".node .name",10);
     resize();
 }
 // ---------------------------------------------------------------------------------------------
 
-function autowidth(element,padding) {
-    var mw = 0;
-    $(element).each(function(){
-        var w = $(this).width();
-        if (w>mw) mw = w;
-    });
-    
-    $(element).width(mw+padding);
-    return mw;
-}
+
 
 // Show/hide node on click
-$("#table").on("click",".node-info",function() {
-    var node = $(this).attr('node');
-    if (nodes_display[node]) {
-        nodes_display[node] = false;
-    } else {
-        nodes_display[node] = true;
-    }
+// $("#table").on("click",".node-info",function() {
+//     var node = $(this).attr('node');
+//     if (nodes_display[node]) {
+//         nodes_display[node] = false;
+//     } else {
+//         nodes_display[node] = true;
+//     }
 
-    draw_devices();
-});
+//     draw_devices();
+// });
 
 $("#table").on("click",".input-select",function(e) {
     input_selection();
@@ -517,43 +447,5 @@ var show_value = true;
 
 $(window).resize(function(){ resize(); });
 
-function resize() 
-{
-    show_processlist = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
 
-    $(".node-input").each(function(){
-         var node_input_width = $(this).width();
-         if (node_input_width>0) {
-             var w = node_input_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-             tw += $(this).find(".configure").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-                
-             var remainder = w - tw;
-             if (remainder<200) remainder  = 200;
-             $(this).find(".processlist").width(remainder);
-             tw += remainder;
-             if (tw>w) show_processlist = false;   
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_processlist) $(".processlist").show(); else $(".processlist").hide();
-    
-}
 </script>
