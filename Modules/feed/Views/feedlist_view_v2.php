@@ -21,67 +21,9 @@ body{padding:0!important}
     margin-left: 0px;
     margin-right: 0px;
 }
-
-.node {margin-bottom:10px}
-
 .node .feed-graph-link {
     cursor:pointer;
 }
-/*
-.node-info .name { font-weight:bold; }
-
-.node-info .select { position:relative; }
-
-.node-info .time { padding-right: 4px; }
-.node-info .size { padding-left: 4px; }
-
-.node-name { font-weight:bold; }
-.node-name,
-.node-size,
-.node-latest{
-  float:left;
-}
-
-.node-name { font-weight:bold; }
-
-.node-feeds {
-    padding: 0px 5px 5px 5px;
-    background-color:#ddd;
-}
-.node-feed {
-    background-color:#f0f0f0;
-    border-bottom:1px solid #fff;
-    border-left:2px solid transparent;
-    min-height:41px;
-    line-height:41px;
-    transition: background .2s ease-in;
-    overflow:hidden;
-}
-.node-feed:last-child{
-    border-bottom:0px solid transparent;
-}
-.node-feed:hover {
-    cursor: pointer
-}
-.node-feed:hover{ border-left-color: #44b3e2; }
-*/
-
-.node-feed > *,
-.node-feed > .node-feed-right > * {
-    display:inline-block;
-}
-
-input[type="checkbox"] { vertical-align:text-bottom;}
-
-.select::before {
-    content: '';
-    background: transparent;
-    width: 1em;
-    height: 0;
-    display: block;
-    float: left;
-}
-
 
 #feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
@@ -403,14 +345,14 @@ input[type="checkbox"] { vertical-align:text-bottom;}
               counter ++;
               out += '<div class="node accordion">';
               out += '    <div class="node-info accordion-toggle" data-toggle="collapse" data-target="#collapse'+counter+'">'
-              out += '      <div class="select text-center" data-col="2"><span class="indicator"></span></div>';
-              out += '      <h4 data-col="1">'+node+':</h4>';
-              out += '      <div class="text-center" data-col="5">x</div>';
-              out += '      <div data-col="4">y</div>';
-              out += '      <div class="text-center" data-col="3">'+list_format_size(node_size[node])+'</div>';
+              out += '      <div class="select text-center has-indicator" data-col="B"></div>';
+              out += '      <h5 class="name" data-col="A">'+node+':</h5>';
+              out += '      <div class="public" class="text-center" data-col="E"></div>';
+              out += '      <div class="engine" data-col="F"></div>';
+              out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
               out += '      <div class="node-feed-right pull-right">';
-              out += '        <div data-col="6"></div>';
-              out += '        <div data-col="7">'+list_format_updated(node_time[node])+'</div>';
+              out += '        <div class="value" data-col="C"></div>';
+              out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
               out += '      </div>';
               out += '    </div>';
               
@@ -425,18 +367,18 @@ input[type="checkbox"] { vertical-align:text-bottom;}
 
                   out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select text-center'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
-                  out += "<div data-col='name'>"+nodes[node][feed].name+"</div>";
+                  out += "<div class='select text-center' data-col='B' data-col-padding='20'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                  out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
                   
-                  out += '<div class="text-center" data-col="public">'+publicfeed+'</div>';
-                  out += '  <div data-col="engine">'+feed_engines[nodes[node][feed].engine]+'</div>';
-                  out += '  <div class="text-center" data-col="size">'+list_format_size(nodes[node][feed].size)+'</div>';
+                  out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
+                  out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
+                  out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
                   out += '  <div class="node-feed-right pull-right">';
-                  out += '    <div data-col="value">'+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+'</div>';
-                  out += '    <div data-col="time">'+list_format_updated(nodes[node][feed].time)+'</div>';
+                  out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+'</div>';
+                  out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
                   out += '  </div>';
                   out += '</div>';
               }
@@ -1135,8 +1077,7 @@ $(".feed-delete").click(function(){
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
 
-watchResize()
-
+watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
 
 
 // ---------------------------------------------------------------------------------------------

@@ -167,23 +167,17 @@ input[type=text][class=variable-name-edit] {
     background: #ddd;
     height: 41px;
 }
-.node .accordion-toggle .indicator{
-    position:relative;
-    padding-left:.4em
-}
-.node .accordion-toggle .indicator:before {
+.node .accordion-toggle .has-indicator:before {
     content: '';
     transition: border .2s ease-out;
     border-bottom: 5px solid darkgrey;
     border-top: 0 solid transparent;
     border-right: 5px solid transparent;
     border-left: 5px solid transparent;
-    position: absolute;
-    left: .3em;
-    top: 50%;
-    margin-top:-.1em;
+    display: inline-block;
+    margin-bottom: .2em;
 }
-.node .accordion-toggle.collapsed .indicator:before {
+.node .accordion-toggle.collapsed .has-indicator:before {
     content: '';
     border-bottom: 0 solid transparent;
     border-top: 5px solid darkgrey;
@@ -195,23 +189,28 @@ input[type=text][class=variable-name-edit] {
     transition-duration: 150ms;
     transition-property: all;
     transition-timing-function: cubic-bezier(0.950, 0.050, 0.795, 0.035);
+    background-color: #ddd;
 }
 .node .collapse > * {
     border-bottom:1px solid #fff;
     border-left:2px solid #f0f0f0;
     background: #f0f0f0;
     width: 100%;
+    border-left: 2px solid transparent;
 }
-.node .collapse > * > * {
-    vertical-align: middle;
-    display: inline-block;
+.node .collapse > *:hover {
+    border-left: 2px solid blue;
 }
-.node > * > *,
-.node > * > * > * {
+.node .collapse > *:last-child {
+    border-bottom-width: 0
+}
+.node > * > * ,
+.node > * > * > * ,
+.node > * > * > .pull-right > *{
     float: left;
+    min-height: 1px;
 }
 .pull-right{float:right!important}
-.node .name{padding-left:1em}
 .line-height-expanded{line-height: 2;}
 .line-height-normal{line-height: 1.5;}
 

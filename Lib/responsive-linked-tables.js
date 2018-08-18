@@ -88,7 +88,7 @@ function autowidth() {
     $('.collapse [data-col]').each(function(){
         let $this = $(this),
             padding = $this.data('col-padding') || 20, // default 20px padding
-            width = $this.outerWidth() + padding,
+            width = $this.width() + padding,
             col = $this.data('col')
         // save the col and largest width for all the columns
         widths[col] = widths[col] || 0
@@ -104,64 +104,69 @@ function autowidth() {
 }
 
 /**
-* responsive show/hide columns on resize
-*/
+ * responsive show/hide columns on window resize
+ * 
+ * requires that all the columns are already set to the same width
+ * @see autowidth()
+ * 
+ * read all columns with a data-col attribute
+ * sorts the value a-z
+ * hides the columns if not enough room (oldest first)
+ */
 function onResize() {
-    $(".node .accordion-toggle:first").each(function(){
-        var rowWidth = $(this).width() // total available space
-        var columnsWidth = 0 // increments for each column
-        var order = {}
-        var hidden = {}
-        var $row = $(this)
-        var cols = {}
-        // get a list of all the columns
-        $row.find('[data-col]').each(function(){
-            let $col = $(this)
-            cols[$col.data('col')] = $col
-        })
-        // get a list of columns to hide
-        $row.find('[data-order]').each(function(){
-            let $col = $(this)
-            order[$col.data('order')] = $col
-        })
-        // sort columns to hide (ascending)
-        sorted = Object.keys(order).sort()
+    // only take the first row for comparison as autowidth() should have already resized the columns
+    var $row = $(".node .accordion-toggle:first")
+    var rowWidth = $row.width() // total available space
+    var columnsWidth = 0 // increments for each column
+    var hidden = {}
+    var cols = {}
+    // get a list of all the columns
+    $row.find('[data-col]').each(function(){
+        let $col = $(this)
+        cols[$col.data('col')] = $col
+    })
+    // sort columns in order to hide first 
+    keys = Object.keys(cols).sort()
+    
+    // check if each column fits the width, add to hidden list if not
+    for(k in keys){
+        // let $col = order[keys[s]]
+        let $col = cols[keys[k]]
+        columnsWidth += $col.outerWidth() // includes padding
+        // if this column is too wide add to hidden list
+        if (keys[k]!==keys[0]) hidden[keys[k]] = columnsWidth > rowWidth
+    }
+    
+    // var remainder = rowWidth - columnsWidth
+    // if (remainder<200) remainder  = 200
+    // // $(this).find(".processlist").width(remainder);
+    // columnsWidth += remainder
+    // console.log(columnsWidth)
 
-        // check if each column fits the width, add to hidden list if not
-        for(c in cols){
-            // let $col = order[sorted[s]]
-            let $col = cols[c]
-            columnsWidth += $col.outerWidth() // includes padding
-            // if this column is too wide add to hidden list
- console.log({col:$col.outerWidth(),widths:columnsWidth,row:rowWidth})
-            hidden[$col.data('col')] = columnsWidth < rowWidth
-        }
-
-        // var remainder = rowWidth - columnsWidth
-        // if (remainder<200) remainder  = 200
-        // // $(this).find(".processlist").width(remainder);
-        // columnsWidth += remainder
-        // console.log(columnsWidth)
-
-        //show all, then hide relevant columns
-        $('[data-order').show()
-// console.log(hidden)
-        for(h in hidden) {
-            $('[data-order="'+hidden[h]+'"]').hide()
-        }
-    });
+    //show all, then hide relevant columns
+    $('[data-col]').show()
+    for(key in hidden) {
+        if(hidden[key]) $('[data-col="'+key+'"]').hide()
+    }
 }
-
-function watchResize(){
-    var resizeTimer;
-
+/**
+ * 
+ * @param {Function} callback function to call after callback delay
+ * @param {int} timeout ms to wait
+ */
+function watchResize(callback, timeout){
+    // exit if callback not a function
+    if (typeof callback == 'undefined' || !(callback instanceof Function)) return
+    timeout = timeout || 50 // defaults to 50ms
+    
+    var resizeTimer
     // debounce (ish) script to improve performance
     $(window).on('resize', function(e) {
         clearTimeout(resizeTimer)
         resizeTimer = setTimeout(function() {
             // resize the columns to fit the view
-            onResize()
-        }, 50)
+            callback()
+        }, )
     });
 }
 
