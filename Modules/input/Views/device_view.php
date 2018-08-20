@@ -64,8 +64,7 @@ input[type="checkbox"] { margin:0px; }
 			<option value="none">None</option>
 		</select>
 	</div>
-	<button class="btn expand-all in" title="<?php echo _('Reduce') ?>" data-title-expanded="<?php echo _('Expand') ?>" data-title-reduced="<?php echo _('Reduce') ?>" data-target=".node"><i class="icon icon-resize-small"></i><i class="icon icon-resize-full"></i></button>
-	
+    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	
 </div>	
@@ -289,12 +288,13 @@ $("#table").on("click",".device-key",function(e) {
     if(!$this.data('original')) $this.data('original',$this.html())
     if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
     $this.data('state', !$this.data('state')||false)
+    let width = 315
     if($this.data('state')){
         $this.html(devices[node].devicekey)
-        $this.animate({width:315}) // value will be of fixed size
+        $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
     }else{
         $this.html($this.data('original'))
-        $this.animate({width:$this.data('originalWidth')},'fast') // reset to original width
+        $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
     }
 });
 
@@ -407,7 +407,7 @@ $(".auth-check-allow").click(function(){
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
 
-watchResize(onResize, 50) // only call onResize() after 20ms of delay (similar to debounce)
-
+// watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
+$(window).on("resize",onResize)
 
 </script>

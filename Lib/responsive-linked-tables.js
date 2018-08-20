@@ -1,38 +1,64 @@
 $(function() {
-    // hide expanded groups if the switch is set to expanded false
-    $(".expand-all").on("click", function(event) {
-        let $btn = $(this);
-        let $container = $($btn.data("target"));
-        let $collapsableToggles = $container.find('[data-toggle="collapse"]');
-        let $collapsables = $(".node .collapse");
-        $collapsables.stop(true, true);
-        if ($btn.is(".in")) {
-            $collapsables.collapse("hide");
-            $collapsableToggles.addClass("collapsed");
-        } else {
-            $collapsables.collapse("show");
-            $collapsableToggles.removeClass("collapsed");
+    // togglable show/hide button to expand/hide all the collapsable items
+    $container = $('#table')
+    $show_all_btn = $('#expand-all')
+    $hide_all_btn = $('#collapse-all')
+    $btn = $('#expand-collapse-all')
+    $icon = $btn.find('.icon')
+    $btn.data('original-title',$btn.attr('title'))
+
+    // hide collapsable groups on button press
+    $hide_all_btn.on('click',function(){
+        $collapsables = $container.find('.collapse')
+        $collapsables.stop(true, true).collapse('hide')
+        $show_all_btn.show()
+        $hide_all_btn.hide()
+    })
+    // show collapsable groups on button press
+    $show_all_btn.on("click", function(event) {
+        $collapsables = $container.find('.collapse')
+        $collapsables.stop(true, true).collapse('show')
+        $hide_all_btn.show()
+        $show_all_btn.hide()
+    })
+
+    $btn.on('click', function(){
+        $btn = $(this)
+        let isOpen = $btn.data('isOpen')!=false
+        $container.find('.collapse').collapse(isOpen ? 'hide':'show')
+        $btn.data('isOpen',!isOpen)
+    })
+
+    // once accordion has finished closing check if all are closed and change the button
+    $(document).on("hidden", function(){
+        if ($container.find('.collapse.in').length == 0) {
+            isOpen = false
+            $btn.data('isOpen', isOpen)
+            $icon.toggleClass('icon-resize-small', isOpen)
+            $icon.toggleClass('icon-resize-full', !isOpen)
+            $btn.attr('title',$btn.data('alt-title'))
         }
-    });
+    })
+    // once accordion has finished opening check if all are open and change the button
+    $(document).on("shown", function(){
+        $collapsables = $container.find('.collapse')
+        if ($container.find('.collapse.in').length == $collapsables.length) {
+            isOpen = true
+            $btn.data('isOpen', isOpen)
+            $icon.toggleClass('icon-resize-small', isOpen)
+            $icon.toggleClass('icon-resize-full', !isOpen)
+            $btn.attr('title',$btn.data('original-title'))
+        }
+    })
+    // once accordion starts to close change the node state
+    $(document).on("hide", "#table .tbody.collapse", function(e) {
+        nodes_display[$(this).data('node')] = false
+    })
+    // once accordion starts to open change the node state
+    $(document).on("show", "#table .tbody.collapse", function(e) {
+        nodes_display[$(this).data('node')] = true
+    })
     
-    // on collapsed or shown alter the toggle button
-    $(document).on("shown hidden", ".node .collapse", function(e) {
-        let $btn = $(".expand-all");
-        let $container = $($btn.data("target"));
-        let total_groups = $container.find(".collapse").length;
-        let total_visible = $container.find(".collapse.in").length;
-        let title = "";
-        if (total_visible == total_groups) {
-            //toggle switch to shrink
-            $btn.addClass("in");
-            title = $btn.data("title-reduced");
-        } else if (total_visible == 0) {
-            //toggle switch to expand
-            $btn.removeClass("in");
-            title = $btn.data("title-expanded");
-        }
-        $btn.attr("title", title);
-    });
 });
 
 // Calculate and color updated time

@@ -206,7 +206,6 @@ input[type=text][class=variable-name-edit] {
     height: 100%;
     display: block;
     position: absolute;
-    transition: all .2s ease-out;
     transition: width .2s ease-out;
 }
 .node .collapse > *:hover:before{
@@ -230,9 +229,11 @@ input[type=text][class=variable-name-edit] {
 .device-schedule,
 .device-configure {
     border-left: 1px solid #eee;
+    color: white;
 }
 
 .device-key:hover {background-color:#eaeaea;}
 .device-configure:hover {background-color:#eaeaea;}
 
 .label-container{padding-top:.6em; display:inline-block; min-width: 200px}
+

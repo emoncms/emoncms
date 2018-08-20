@@ -58,7 +58,7 @@ body{padding:0!important}
 		</select>
 	</div>
 	
-	<button class="btn expand-all in" title="<?php echo _('Reduce') ?>" data-title-expanded="<?php echo _('Expand') ?>" data-title-reduced="<?php echo _('Reduce') ?>" data-target=".node"><i class="icon icon-resize-small"></i><i class="icon icon-resize-full"></i></button>
+    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
 	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
@@ -342,7 +342,6 @@ body{padding:0!important}
           // display nodes and feeds
           var counter = 0
           for (var node in nodes) {
-              var visible = nodes_display[node] ? 'in':'';
               counter ++;
               out += '<div class="node accordion">';
               out += '    <div class="node-info accordion-toggle thead" data-toggle="collapse" data-target="#collapse'+counter+'">'
@@ -357,7 +356,7 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
-              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+visible+"' node='"+node+"'>";
+              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
@@ -389,8 +388,15 @@ body{padding:0!important}
           }
           $container = $('#table')
           $container.html(out);
-          autowidth($container) // set each column group to the same width
-      }});
+          
+          // reset the toggle state for all collapsable elements once data has loaded
+          // css class "in" is used to remember the state
+          $("#table .collapse").collapse({toggle: false})
+
+        autowidth($container) // set each column group to the same width
+
+      } // end of for loop
+      }); // end of ajax callback
   }
   
   $("#table").on("click",".select",function(e) {
