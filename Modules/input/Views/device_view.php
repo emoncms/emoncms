@@ -21,54 +21,6 @@
     margin-right: 0px;
 }
 
-/*
-.device-name { 
-  font-weight:bold;
-    float:left;
-    padding:0 5px
-}
-
-.device-description { 
-  color:#666;
-	float:left;
-	padding-top:10px;
-}
-
-.device-key {
-	float:right;
-	padding:10px;
-	min-width:30px;
-	text-align:center;
-	color:#fff;
-	border-left: 1px solid #eee;
-}
-
-.device-schedule {
-	float:right;
-	padding:10px;
-	min-width:30px;
-	text-align:center;
-	color:#fff;
-	border-left: 1px solid #eee;
-	display:none;
-}
-
-.device-configure {
-	float:right;
-	padding:10px;
-	width:30px;
-	text-align:center;
-	color:#666;
-	border-left: 1px solid #eee;
-}
-
-.device-key:hover {background-color:#eaeaea;}
-.device-configure:hover {background-color:#eaeaea;}
-
-.pl10 {
-    padding-left:10px;
-}
-*/
 
 input[type="checkbox"] { margin:0px; }
 #input-selection { width:80px; }
@@ -223,9 +175,9 @@ function draw_devices()
         out += "      <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "      <div class='processlist' data-col='F'>"+devices[node].description+"</div>";
         out += "      <div class='pull-right'>"
-        out += "        <div class='configure text-center' data-col='C'><i class='icon-wrench icon-white'></i></div>";
-        out += "        <div class='key text-center' data-col='D'><i class='icon-lock icon-white'></i></div>"; 
-        out += "        <div class='schedule text-center' data-col='E'><i class='icon-time icon-white'></i></div>";
+        out += "        <div class='device-configure text-center' data-col='C'><i class='icon-wrench icon-white'></i></div>";
+        out += "        <div class='device-key text-center' data-col='D'><i class='icon-lock icon-white'></i></div>"; 
+        out += "        <div class='device-schedule text-center' data-col='E'><i class='icon-time icon-white'></i></div>";
         out += "      </div>";
         out += "    </div>";
         out += "  <div id='collapse"+counter+"' class='node-inputs collapse "+visible+"' node='"+node+"'>";
@@ -241,9 +193,9 @@ function draw_devices()
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
             out += "  <div class='processlist' data-col='F'>"+processlistHtml+"</div>";
             out += "  <div class='pull-right'>";
-            out += "    <div class='time text-center' data-col='C' data-col-padding='30'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='device-configure text-center cursor-pointer' data-col='E' data-col-padding='30' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "    <div class='value text-center' data-col='D' data-col-padding='30'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='E' data-col-padding='30' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "    <div class='time text-center' data-col='C' data-col-padding='30'>"+list_format_updated(input.time)+"</div>";
             out += "  </div>";
             out += "</div>";
         }
