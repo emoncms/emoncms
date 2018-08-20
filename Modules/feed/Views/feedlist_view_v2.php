@@ -1545,6 +1545,7 @@ Number.prototype.pad = function(size) {
 }
 </script>
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
+<!--
 <script src="<?php echo $path; ?>Lib/momentjs-locales/da.js"></script>
 <script src="<?php echo $path; ?>Lib/momentjs-locales/de.js"></script>
 <script src="<?php echo $path; ?>Lib/momentjs-locales/es.js"></script>
@@ -1553,7 +1554,7 @@ Number.prototype.pad = function(size) {
 <script src="<?php echo $path; ?>Lib/momentjs-locales/it.js"></script>
 <script src="<?php echo $path; ?>Lib/momentjs-locales/nl-be.js"></script>
 <script src="<?php echo $path; ?>Lib/momentjs-locales/nl.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/cy.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/cy.js"></script>-->
 <script src="<?php echo $path; ?>Lib/momentjs-locales/en-gb.js"></script>
 <script>
 /**
