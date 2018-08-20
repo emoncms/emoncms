@@ -170,18 +170,18 @@ function draw_devices()
         counter++
         var visible = nodes_display[node] ? 'in' : ''
         out += "<div class='node accordion line-height-expanded'>";
-        out += '    <div class="node-info accordion-toggle" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "      <div class='select text-center has-indicator' data-col='B'></div>";
-        out += "      <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "      <div class='processlist' data-col='F'>"+devices[node].description+"</div>";
-        out += "      <div class='pull-right'>"
-        out += "        <div class='device-schedule text-center hidden' data-col='E'><i class='icon-time icon-white'></i></div>";
-        out += "        <div class='device-key text-center' data-col='D'><i class='icon-lock icon-white'></i></div>"; 
-        out += "        <div class='device-configure text-center' data-col='C'><i class='icon-wrench icon-white'></i></div>";
-        out += "      </div>";
-        out += "    </div>";
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse "+visible+"' node='"+node+"'>";
-        
+        out += '   <div class="node-info accordion-toggle thead" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "     <div class='select text-center has-indicator' data-col='B'></div>";
+        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
+        out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
+        out += "     <div class='pull-right'>"
+        out += "        <div class='device-schedule text-center hidden' data-col='E' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        out += "        <div class='device-key text-center' data-col='D' data-col-width='50'><i class='icon-lock icon-white'></i></div>"; 
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-wrench icon-white'></i></div>";
+        out += "     </div>";
+        out += "  </div>";
+
+        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+visible+"' node='"+node+"'>";
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
@@ -191,11 +191,11 @@ function draw_devices()
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='processlist' data-col='F' data-col-width='auto'><div class='label-container line-height-normal' style='display:inline-block'>"+processlistHtml+"</div></div>";
+            out += "  <div class='processlist' data-col='F'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='pull-right'>";
-            out += "    <div class='time text-center' data-col='C' data-col-width='50'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='D' data-col-width='50'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='E' data-col-width='50' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "    <div class='time text-center' data-col='C'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='E' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
@@ -221,7 +221,7 @@ function draw_devices()
         }
     }
     
-    autowidth() // set each column group to the same width
+    autowidth($('#table')) // set each column group to the same width
 }
 // ---------------------------------------------------------------------------------------------
 
@@ -407,7 +407,7 @@ $(".auth-check-allow").click(function(){
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
 
-watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
+watchResize(onResize, 50) // only call onResize() after 20ms of delay (similar to debounce)
 
 
 </script>

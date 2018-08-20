@@ -345,7 +345,7 @@ body{padding:0!important}
               var visible = nodes_display[node] ? 'in':'';
               counter ++;
               out += '<div class="node accordion">';
-              out += '    <div class="node-info accordion-toggle" data-toggle="collapse" data-target="#collapse'+counter+'">'
+              out += '    <div class="node-info accordion-toggle thead" data-toggle="collapse" data-target="#collapse'+counter+'">'
               out += '      <div class="select text-center has-indicator" data-col="B"></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
@@ -357,7 +357,7 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
-              out += "<div id='collapse"+counter+"' class='node-feeds collapse "+visible+"' node='"+node+"'>";
+              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+visible+"' node='"+node+"'>";
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
@@ -387,8 +387,9 @@ body{padding:0!important}
               out += "</div>";
               out += "</div>";
           }
-          $("#table").html(out);
-          autowidth() // set each column group to the same width
+          $container = $('#table')
+          $container.html(out);
+          autowidth($container) // set each column group to the same width
       }});
   }
   

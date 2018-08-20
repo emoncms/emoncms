@@ -225,35 +225,14 @@ input[type=text][class=variable-name-edit] {
 .line-height-expanded{line-height: 2;}
 .line-height-normal{line-height: 1.5;}
 .cursor-pointer{ cursor: pointer; }
-/*
-.node-input:hover{ border-left:2px solid #44b3e2; }
 
-.node-input .select {
-    text-align:center;
+.device-key,
+.device-schedule,
+.device-configure {
+    border-left: 1px solid #eee;
 }
 
-.node-input .name {
-    display:inline-block;
-    padding-top:10px;
-    vertical-align:top;
-}
+.device-key:hover {background-color:#eaeaea;}
+.device-configure:hover {background-color:#eaeaea;}
 
-.node-input-right { float:right; }
-.node-input-right > * { display:inline-block; }
-
-.node-input .time {
-    width:60px;
-    text-align:center;
-}
-
-.node-input .value {
-    text-align:center;
-}
-
-.node-input .configure {
-    width:40px;
-    text-align:center;
-	  cursor:pointer;
-}
-
-*/
+.label-container{padding-top:.6em; display:inline-block; min-width: 200px}
