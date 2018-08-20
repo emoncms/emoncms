@@ -20,7 +20,6 @@ class User
     private $email_verification = false;
     private $redis;
     private $log;
-    private $clientSettingsName = "EMONCMS_BETA_OPTIN";
     public $appname;
 
     public function __construct($mysqli,$redis)

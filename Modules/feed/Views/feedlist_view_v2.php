@@ -1544,7 +1544,18 @@ Number.prototype.pad = function(size) {
   return s;
 }
 </script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/moment-with-locales.js"></script>
+<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
+<!--
+<script src="<?php echo $path; ?>Lib/momentjs-locales/da.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/de.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/es.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/et.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/fr.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/it.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/nl-be.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/nl.js"></script>
+<script src="<?php echo $path; ?>Lib/momentjs-locales/cy.js"></script>-->
+<script src="<?php echo $path; ?>Lib/momentjs-locales/en-gb.js"></script>
 <script>
 /**
  * uses moment.js to format to local time 
@@ -1553,6 +1564,7 @@ Number.prototype.pad = function(size) {
  * @see date format options - https://momentjs.com/docs/#/displaying/
  */
 function format_time(time,format){
+    moment.locale(window.navigator.userLanguage || window.navigator.language)
     time = time || (new Date().valueOf() / 1000)
     format = format || ''
     formatted_date = moment.unix(time).format(format)
