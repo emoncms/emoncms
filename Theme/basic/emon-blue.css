@@ -237,3 +237,29 @@ input[type=text][class=variable-name-edit] {
 
 .label-container{padding-top:.6em; display:inline-block; min-width: 200px}
 
+.has-indicator{position:relative}
+.has-indicator:after{
+    transition:all 200ms ease-in-out;
+    display:block;
+    width: 1.1em;
+    height: 1.1em;
+    background: #FBFBFB;
+    border: 1px solid #C7C7C7;
+    color: #909090;
+    border-radius: 3px;
+    position: absolute;
+    margin: .85em .55em;
+    left:0;
+    top:0;
+    line-height: 1.1em;
+    opacity: 0;
+    content:'✔';
+}
+.has-indicator:hover:after{
+    opacity: 1;
+}
+.has-indicator:active:after{
+    border: 1px solid #B1522E;
+    color: #FBFBFB;
+    background: #D65C29;
+}

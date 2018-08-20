@@ -67,7 +67,7 @@ body{padding:0!important}
 	
 </div>
 
-<div id="table"></div>
+<div id="table" class="feed-list"></div>
 
 <div id="nofeeds" class="alert alert-block hide">
     <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
@@ -407,7 +407,7 @@ body{padding:0!important}
       e.stopPropagation();
   });
 
-  $("#table").on("click",".feed-select",function(e) {
+  $("#table").on("click select",".feed-select",function(e) {
       feed_selection();
   });
 

@@ -21,7 +21,7 @@ $(function() {
         $hide_all_btn.show()
         $show_all_btn.hide()
     })
-
+    // store the state of the collapsed items in the button after collapsing(or expanding)
     $btn.on('click', function(){
         $btn = $(this)
         let isOpen = $btn.data('isOpen')!=false
@@ -58,7 +58,23 @@ $(function() {
     $(document).on("show", "#table .tbody.collapse", function(e) {
         nodes_display[$(this).data('node')] = true
     })
+
+    // select or deselect all the checkboxes for a node
+    function selectAll(e){
+        e.preventDefault()
+        e.stopPropagation()
+        $container = $(e.target).parents('.accordion').first()
+        $inputs = $container.find(':checkbox')
+        $selected = $container.find(':checkbox:checked')
+        // use a custom trigger so not to confuse with the click event
+        // if all selected de-select else select all
+        $inputs.prop('checked', $inputs.length != $selected.length).trigger('select')
+    }
+    // check / clear all selection
+    $(document).on('click','.input-list .has-indicator', selectAll)
     
+    // feed list view already makes use of the click event
+    $(document).on('mouseup','.feed-list .has-indicator', selectAll)
 });
 
 // Calculate and color updated time

@@ -74,7 +74,7 @@ input[type="checkbox"] { margin:0px; }
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
 	</div>
 	
-	<div id="table"></div>
+	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
 
@@ -225,20 +225,7 @@ function draw_devices()
 // ---------------------------------------------------------------------------------------------
 
 
-
-// Show/hide node on click
-// $("#table").on("click",".node-info",function() {
-//     var node = $(this).attr('node');
-//     if (nodes_display[node]) {
-//         nodes_display[node] = false;
-//     } else {
-//         nodes_display[node] = true;
-//     }
-
-//     draw_devices();
-// });
-
-$("#table").on("click",".input-select",function(e) {
+$("#table").on("click select",".input-select",function(e) {
     input_selection();
 });
 
@@ -408,6 +395,8 @@ $(".auth-check-allow").click(function(){
 // -------------------------------------------------------------------------------------------------------
 
 // watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
+
+// debouncing causes odd rendering during resize - run this at all resize points...
 $(window).on("resize",onResize)
 
 </script>
