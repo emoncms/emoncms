@@ -169,15 +169,15 @@ function draw_devices()
     for (var node in devices) {
         counter++
         var visible = nodes_display[node] ? 'in' : ''
-        out += "<div class='node accordion'>";
-        out += '    <div class="node-info accordion-toggle" node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "<div class='node accordion line-height-expanded'>";
+        out += '    <div class="node-info accordion-toggle" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
         out += "      <div class='select text-center has-indicator' data-col='B'></div>";
         out += "      <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "      <div class='processlist' data-col='F'>"+devices[node].description+"</div>";
         out += "      <div class='pull-right'>"
-        out += "        <div class='device-configure text-center' data-col='C'><i class='icon-wrench icon-white'></i></div>";
+        out += "        <div class='device-schedule text-center hidden' data-col='E'><i class='icon-time icon-white'></i></div>";
         out += "        <div class='device-key text-center' data-col='D'><i class='icon-lock icon-white'></i></div>"; 
-        out += "        <div class='device-schedule text-center' data-col='E'><i class='icon-time icon-white'></i></div>";
+        out += "        <div class='device-configure text-center' data-col='C'><i class='icon-wrench icon-white'></i></div>";
         out += "      </div>";
         out += "    </div>";
         out += "  <div id='collapse"+counter+"' class='node-inputs collapse "+visible+"' node='"+node+"'>";
@@ -191,11 +191,11 @@ function draw_devices()
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='processlist' data-col='F'>"+processlistHtml+"</div>";
+            out += "  <div class='processlist' data-col='F' data-col-width='auto'><div class='label-container line-height-normal' style='display:inline-block'>"+processlistHtml+"</div></div>";
             out += "  <div class='pull-right'>";
-            out += "    <div class='device-configure text-center cursor-pointer' data-col='E' data-col-padding='30' id='"+input.id+"'><i class='icon-wrench'></i></div>";
-            out += "    <div class='value text-center' data-col='D' data-col-padding='30'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='time text-center' data-col='C' data-col-padding='30'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='time text-center' data-col='C' data-col-width='50'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='D' data-col-width='50'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='E' data-col-width='50' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
@@ -215,13 +215,13 @@ function draw_devices()
     }
 
     for (var node in devices) {
-        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control) {
-            $(".node-info[node='"+node+"'] .device-schedule").show();
+        indicator = $(".node-info[data-node='"+node+"'] .device-schedule")
+        if (device_templates[devices[node].type]!=undefined && !device_templates[devices[node].type].hasOwnProperty('control')) {
+            indicator.removeClass('hidden')
         }
     }
     
     autowidth() // set each column group to the same width
-
 }
 // ---------------------------------------------------------------------------------------------
 
@@ -280,26 +280,41 @@ function input_selection()
     }
 }
 
+// column title buttons ---
+
 $("#table").on("click",".device-key",function(e) {
     e.stopPropagation();
-    var node = $(this).parent().attr("node");
-    $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);    
+    var node = $(this).parents('.node-info').first().data("node");
+    $this = $(this)
+    if(!$this.data('original')) $this.data('original',$this.html())
+    if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
+    $this.data('state', !$this.data('state')||false)
+    if($this.data('state')){
+        $this.html(devices[node].devicekey)
+        $this.animate({width:315}) // value will be of fixed size
+    }else{
+        $this.html($this.data('original'))
+        $this.animate({width:$this.data('originalWidth')},'fast') // reset to original width
+    }
 });
 
 $("#table").on("click",".device-schedule",function(e) {
     e.stopPropagation();
-    var node = $(this).parent().attr("node");
+    var node = $(this).parents('.node-info').first().data("node");
     window.location = path+"demandshaper?node="+node;
     
 });
 
 $("#table").on("click",".device-configure",function(e) {
     e.stopPropagation();
-
     // Get device of clicked node
-    var device = devices[$(this).parent().attr("node")];
+    node = $(this).parents('.node-info').first().data("node");
+    var device = devices[node];
 	device_dialog.loadConfig(device_templates, device);
 });
+
+
+// selection buttons ---
 
 $(".input-delete").click(function(){
 	  $('#inputDeleteModal').modal('show');

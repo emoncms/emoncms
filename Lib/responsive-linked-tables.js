@@ -81,7 +81,8 @@ function list_format_value(value) {
 /**
 * Resize all the columns to the same width
 *
-* add data-autowidth-padding="[width]" to any element you want additional padding to
+* add data-col-padding="[width]" to any element you want additional padding to
+* add data-col-width="[width]" to any element to fix it's column's width
 */
 function autowidth() {
     let widths = {} // only store widest column values against each selector
@@ -92,6 +93,13 @@ function autowidth() {
             col = $this.data('col')
         // save the col and largest width for all the columns
         widths[col] = widths[col] || 0
+        // set a fix width column if [data-col-width] is set
+        if($this.data('col-width')){
+            width = $this.data('col-width')
+            if (width == 'auto'){
+
+            }
+        }
         if (width > widths[col]) {
             widths[col] = width
         }
