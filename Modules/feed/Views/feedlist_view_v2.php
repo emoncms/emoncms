@@ -367,7 +367,7 @@ body{padding:0!important}
 
                   out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select text-center' data-col='B' data-col-padding='20'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                  out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
                   out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"

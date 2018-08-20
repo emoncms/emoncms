@@ -217,33 +217,33 @@ function draw_devices()
     for (var node in devices) {
         counter++
         var visible = nodes_display[node] ? 'in' : ''
-        out += "<div class='node accordion line-height-expanded'>";
-        out += '  <div class="node-info accordion-toggle" node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "    <div class='select'><span class='indicator'></span></h4>";
-        out += "    <h4 class='name'>"+node+":</h4>";
-        out += "    <div class='processlist'>"+devices[node].description+"</div>";
-        out += "    <div class='node-input pull-right'>"
-        out += "      <div class='configure'><i class='icon-wrench icon-white'></i></div>";
-        out += "      <div class='key'><i class='icon-lock icon-white'></i></div>"; 
-        out += "      <div class='schedule'><i class='icon-time icon-white'></i></div>";
+        out += "<div class='node accordion'>";
+        out += '    <div class="node-info accordion-toggle" node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "      <div class='select text-center has-indicator' data-col='B'></div>";
+        out += "      <h5 class='name' data-col='A'>"+node+":</h5>";
+        out += "      <div class='processlist' data-col='F'>"+devices[node].description+"</div>";
+        out += "      <div class='pull-right'>"
+        out += "        <div class='configure text-center' data-col='C'><i class='icon-wrench icon-white'></i></div>";
+        out += "        <div class='key text-center' data-col='D'><i class='icon-lock icon-white'></i></div>"; 
+        out += "        <div class='schedule text-center' data-col='E'><i class='icon-time icon-white'></i></div>";
+        out += "      </div>";
         out += "    </div>";
-        out += "  </div>";
-        out += "<div id='collapse"+counter+"' class='node-inputs collapse "+visible+"' node='"+node+"'>";
+        out += "  <div id='collapse"+counter+"' class='node-inputs collapse "+visible+"' node='"+node+"'>";
         
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : ''
             out += "<div class='node-input' id="+input.id+">";
-            out += "  <div class='select'>"
+            out += "  <div class='select text-center' data-col='B'>"
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
-            out += "  <div class='name'>"+input.name+"</div>";
-            out += "  <div class='processlist line-height-normal'>"+processlistHtml+"</div>";
+            out += "  <div class='name' data-col='A'>"+input.name+"</div>";
+            out += "  <div class='processlist' data-col='F'>"+processlistHtml+"</div>";
             out += "  <div class='pull-right'>";
-            out += "    <div class='time'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "    <div class='time text-center' data-col='C' data-col-padding='30'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='D' data-col-padding='30'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='E' data-col-padding='30' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
@@ -268,9 +268,8 @@ function draw_devices()
         }
     }
     
-    autowidth(".node .select",10);
-    autowidth(".node .name",10);
-    resize();
+    autowidth() // set each column group to the same width
+
 }
 // ---------------------------------------------------------------------------------------------
 
@@ -440,12 +439,8 @@ $(".auth-check-allow").click(function(){
 // of the container and the width of the individual fields themselves. It implements a level of responsivness
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
-var show_processlist = true;
-var show_select = true;
-var show_time = true;
-var show_value = true;
 
-$(window).resize(function(){ resize(); });
+watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
 
 
 </script>
