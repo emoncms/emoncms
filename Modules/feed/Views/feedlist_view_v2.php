@@ -1544,18 +1544,34 @@ Number.prototype.pad = function(size) {
   return s;
 }
 </script>
+
+
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
-<!--
-<script src="<?php echo $path; ?>Lib/momentjs-locales/da.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/de.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/es.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/et.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/fr.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/it.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/nl-be.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/nl.js"></script>
-<script src="<?php echo $path; ?>Lib/momentjs-locales/cy.js"></script>-->
-<script src="<?php echo $path; ?>Lib/momentjs-locales/en-gb.js"></script>
+<script>
+user.lang = "<?php echo $_SESSION['lang']; ?>"
+// rework to fit the momentjs naming scheme for the locale files
+momentjs_locales = {
+    da_DK:'da',
+    nl_BE:'nl-be',
+    nl_NL:'nl',
+    en_GB:'en-gb',
+    et_EE:'et',
+    fr_FR:'fr',
+    de_DE:'de',
+    it_IT:'it',
+    es_ES:'es',
+    cy_GB:'cy'
+}
+// match supported locales with momentjs file names
+user.locale = momentjs_locales.hasOwnProperty(user.lang) ? momentjs_locales[user.lang] : 'en-gb'
+// load the moment js locale file for the user's language
+var script = document.createElement('script');
+script.src = "<?php echo $path; ?>Lib/momentjs-locales/%s.js".replace("%s",user.locale);
+document.head.appendChild(script);
+</script>
+
+
+
 <script>
 /**
  * uses moment.js to format to local time 
@@ -1564,7 +1580,6 @@ Number.prototype.pad = function(size) {
  * @see date format options - https://momentjs.com/docs/#/displaying/
  */
 function format_time(time,format){
-    moment.locale(window.navigator.userLanguage || window.navigator.language)
     time = time || (new Date().valueOf() / 1000)
     format = format || ''
     formatted_date = moment.unix(time).format(format)
