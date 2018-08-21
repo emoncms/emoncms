@@ -2,11 +2,10 @@
 	global $path;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
 
 <style>
 
@@ -22,116 +21,6 @@
     margin-right: 0px;
 }
 
-.node {
-    margin-bottom:10px;
-    border: 1px solid #aaa;
-}
-
-.node-info {
-    height:40px;
-    background-color:#ddd;
-    cursor:pointer;
-}
-
-.device-name { 
-  font-weight:bold;
-	float:left;
-	padding:10px;
-	padding-right:5px;
-}
-
-.device-description { 
-  color:#666;
-	float:left;
-	padding-top:10px;
-}
-
-.device-key {
-	float:right;
-	padding:10px;
-	min-width:30px;
-	text-align:center;
-	color:#fff;
-	border-left: 1px solid #eee;
-}
-
-.device-schedule {
-	float:right;
-	padding:10px;
-	min-width:30px;
-	text-align:center;
-	color:#fff;
-	border-left: 1px solid #eee;
-	display:none;
-}
-
-.device-configure {
-	float:right;
-	padding:10px;
-	width:30px;
-	text-align:center;
-	color:#666;
-	border-left: 1px solid #eee;
-}
-
-.device-key:hover {background-color:#eaeaea;}
-.device-configure:hover {background-color:#eaeaea;}
-
-.node-inputs {
-    padding: 0px 5px 5px 5px;
-    background-color:#ddd;
-}
-
-.node-input {
-    background-color:#f0f0f0;
-    border-bottom:1px solid #fff;
-    border-left:2px solid #f0f0f0;
-}
-
-.node-input > * {
-    display:inline-block;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    vertical-align:top;
-}
-
-.node-input:hover{ border-left:2px solid #44b3e2; }
-
-.node-input .select {
-    text-align:center;
-}
-
-.node-input .name {
-    display:inline-block;
-    padding-top:10px;
-    vertical-align:top;
-}
-
-.node-input .processlist {
-    /*padding-left:10px;*/
-}
-
-.node-input-right { float:right; }
-.node-input-right > * { display:inline-block; }
-
-.node-input .time {
-    width:60px;
-    text-align:center;
-}
-
-.node-input .value {
-    text-align:center;
-}
-
-.node-input .configure {
-    width:40px;
-    text-align:center;
-	  cursor:pointer;
-}
-
-.pl10 {
-    padding-left:10px;
-}
 
 input[type="checkbox"] { margin:0px; }
 #input-selection { width:80px; }
@@ -175,7 +64,7 @@ input[type="checkbox"] { margin:0px; }
 			<option value="none">None</option>
 		</select>
 	</div>
-	
+    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	
 </div>	
@@ -185,7 +74,7 @@ input[type="checkbox"] { margin:0px; }
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
 	</div>
 	
-	<div id="table"></div>
+	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
 
@@ -222,7 +111,7 @@ var updater;
 function updaterStart(func, interval){
 	  clearInterval(updater);
 	  updater = null;
-	  //if (interval > 0) updater = setInterval(func, interval);
+	  if (interval > 0) updater = setInterval(func, interval);
 }
 updaterStart(update, 5000);
 
@@ -254,11 +143,17 @@ function update(){
 	              if (devices[inputs[z].nodeid]==undefined) {
 	                  devices[inputs[z].nodeid] = {description:""};
 	                  // Device creation
-	                  $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: true, success: function(data) {
-	                      if (!data) alert("There was an error creating device: "+inputs[z].nodeid); 
+	                  $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: false, success: function(deviceid) {
+	                      if (!deviceid) {
+	                          alert("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid); 
+	                      } else {
+	                          $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
+	                              devices[inputs[z].nodeid] = result;
+	                          }});
+	                      }
 	                  }});
 	              }
-	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = false;
+	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
@@ -275,37 +170,38 @@ function draw_devices()
 {
     // Draw node/input list
     var out = "";
+    var counter = 0
     for (var node in devices) {
-        var visible = "hide"; if (nodes_display[node]) visible = "";
-        
-        out += "<div class='node'>";
-        out += "  <div class='node-info' node='"+node+"'>";
-        out += "    <div class='device-name'>"+node+":</div>";
-        out += "    <div class='device-description'>"+devices[node].description+"</div>";
-        out += "    <div class='device-configure'><i class='icon-wrench icon-white'></i></div>";
-        out += "    <div class='device-key'><i class='icon-lock icon-white'></i></div>"; 
-        out += "    <div class='device-schedule'><i class='icon-time icon-white'></i></div>";
+        counter++
+        var visible = nodes_display[node] ? 'in' : ''
+        out += "<div class='node accordion line-height-expanded'>";
+        out += '   <div class="node-info accordion-toggle thead" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "     <div class='select text-center has-indicator' data-col='B'></div>";
+        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
+        out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
+        out += "     <div class='pull-right'>"
+        out += "        <div class='device-schedule text-center hidden' data-col='E' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        out += "        <div class='device-key text-center' data-col='D' data-col-width='50'><i class='icon-lock icon-white'></i></div>"; 
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-wrench icon-white'></i></div>";
+        out += "     </div>";
         out += "  </div>";
-        out += "<div class='node-inputs "+visible+"' node='"+node+"'>";
-        
+
+        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+visible+"' node='"+node+"'>";
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
-            
-            var selected = "";
-            if (selected_inputs[input.id]!=undefined && selected_inputs[input.id]==true) 
-                selected = "checked";
-            
+            var selected = selected_inputs[input.id] ? 'checked': ''
+            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : ''
             out += "<div class='node-input' id="+input.id+">";
-            out += "<div class='select'><div class='pl10'><input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" /></div></div>";
-            out += "<div class='name'><div class='pl10'>"+input.name+"</div></div>";
-            
-            if (processlist_ui != undefined)  out += "<div class='processlist'><div class='pl10'>"+processlist_ui.drawpreview(input.processList)+"</div></div>";
-            
-            out += "<div class='node-input-right'>";
-            out += "<div class='time'>"+list_format_updated(input.time)+"</div>";
-            out += "<div class='value'>"+list_format_value(input.value)+"</div>";
-            out += "<div class='configure' id='"+input.id+"'><i class='icon-wrench'></i></div>";
-            out += "</div>";
+            out += "  <div class='select text-center' data-col='B'>"
+            out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
+            out += "  </div>";
+            out += "  <div class='name' data-col='A'>"+input.name+"</div>";
+            out += "  <div class='processlist' data-col='F'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
+            out += "  <div class='pull-right'>";
+            out += "    <div class='time text-center' data-col='C'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='E' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "  </div>";
             out += "</div>";
         }
         
@@ -324,41 +220,20 @@ function draw_devices()
     }
 
     for (var node in devices) {
-        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control) {
-            $(".node-info[node='"+node+"'] .device-schedule").show();
+        indicator = $(".node-info[data-node='"+node+"'] .device-schedule")
+        if (device_templates[devices[node].type]!=undefined && !device_templates[devices[node].type].hasOwnProperty('control')) {
+            indicator.removeClass('hidden')
         }
     }
     
-    autowidth(".node-inputs .name",10);
-    autowidth(".node-inputs .value",10);
-    resize();
+    autowidth($('#table')) // set each column group to the same width
 }
 // ---------------------------------------------------------------------------------------------
 
-function autowidth(element,padding) {
-    var mw = 0;
-    $(element).each(function(){
-        var w = $(this).width();
-        if (w>mw) mw = w;
-    });
-    
-    $(element).width(mw+padding);
-    return mw;
-}
+$('#wrap').on("device-delete",function() { update(); });
+$('#wrap').on("device-init",function() { update(); });
 
-// Show/hide node on click
-$("#table").on("click",".node-info",function() {
-    var node = $(this).attr('node');
-    if (nodes_display[node]) {
-        nodes_display[node] = false;
-    } else {
-        nodes_display[node] = true;
-    }
-
-    draw_devices();
-});
-
-$("#table").on("click",".input-select",function(e) {
+$("#table").on("click select",".input-select",function(e) {
     input_selection();
 });
 
@@ -399,26 +274,42 @@ function input_selection()
     }
 }
 
+// column title buttons ---
+
 $("#table").on("click",".device-key",function(e) {
     e.stopPropagation();
-    var node = $(this).parent().attr("node");
-    $(".node-info[node='"+node+"'] .device-key").html(devices[node].devicekey);    
+    var node = $(this).parents('.node-info').first().data("node");
+    $this = $(this)
+    if(!$this.data('original')) $this.data('original',$this.html())
+    if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
+    $this.data('state', !$this.data('state')||false)
+    let width = 315
+    if($this.data('state')){
+        $this.html(devices[node].devicekey)
+        $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
+    }else{
+        $this.html($this.data('original'))
+        $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
+    }
 });
 
 $("#table").on("click",".device-schedule",function(e) {
     e.stopPropagation();
-    var node = $(this).parent().attr("node");
+    var node = $(this).parents('.node-info').first().data("node");
     window.location = path+"demandshaper?node="+node;
     
 });
 
 $("#table").on("click",".device-configure",function(e) {
     e.stopPropagation();
-
     // Get device of clicked node
-    var device = devices[$(this).parent().attr("node")];
+    node = $(this).parents('.node-info').first().data("node");
+    var device = devices[node];
 	device_dialog.loadConfig(device_templates, device);
 });
+
+
+// selection buttons ---
 
 $(".input-delete").click(function(){
 	  $('#inputDeleteModal').modal('show');
@@ -510,50 +401,10 @@ $(".auth-check-allow").click(function(){
 // of the container and the width of the individual fields themselves. It implements a level of responsivness
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
-var show_processlist = true;
-var show_select = true;
-var show_time = true;
-var show_value = true;
 
-$(window).resize(function(){ resize(); });
+// watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
 
-function resize() 
-{
-    show_processlist = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
+// debouncing causes odd rendering during resize - run this at all resize points...
+$(window).on("resize",onResize)
 
-    $(".node-input").each(function(){
-         var node_input_width = $(this).width();
-         if (node_input_width>0) {
-             var w = node_input_width-10;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-             tw += $(this).find(".configure").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-                
-             var remainder = w - tw;
-             if (remainder<200) remainder  = 200;
-             $(this).find(".processlist").width(remainder);
-             tw += remainder;
-             if (tw>w) show_processlist = false;   
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_processlist) $(".processlist").show(); else $(".processlist").hide();
-    
-}
 </script>
