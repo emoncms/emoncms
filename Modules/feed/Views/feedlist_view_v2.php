@@ -25,7 +25,6 @@ body{padding:0!important}
     cursor:pointer;
 }
 
-#feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
 
@@ -48,23 +47,14 @@ body{padding:0!important}
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
 
-<div class="controls">
-	<div class="input-prepend" style="margin-bottom:0px">
-		<span class="add-on">Select</span>
-		<select id="feed-selection">
-		  <option value="custom">Custom</option>
-			<option value="all">All</option>
-			<option value="none">None</option>
-		</select>
-	</div>
-	
+<div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
 	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
 	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
-	
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -408,20 +398,6 @@ body{padding:0!important}
   });
 
   $("#table").on("click select",".feed-select",function(e) {
-      feed_selection();
-  });
-
-  $("#feed-selection").change(function(){
-      var selection = $(this).val();
-      
-      if (selection=="all") {
-          for (var id in feeds) selected_feeds[id] = true;
-          $(".feed-select").prop('checked', true); 
-          
-      } else if (selection=="none") {
-          selected_feeds = {};
-          $(".feed-select").prop('checked', false); 
-      }
       feed_selection();
   });
 

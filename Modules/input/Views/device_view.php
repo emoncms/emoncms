@@ -23,7 +23,6 @@
 
 
 input[type="checkbox"] { margin:0px; }
-#input-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
 
@@ -55,18 +54,10 @@ input[type="checkbox"] { margin:0px; }
 	<div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
 	<div id="localheading"><h3><?php echo _('Inputs'); ?></h3></div>
 
-<div class="controls">
-	<div class="input-prepend" style="margin-bottom:0px">
-		<span class="add-on">Select</span>
-		<select id="input-selection">
-		  <option value="custom">Custom</option>
-			<option value="all">All</option>
-			<option value="none">None</option>
-		</select>
-	</div>
+<div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-	
 </div>	
 	
 	<div id="auth-check" class="hide">
@@ -226,20 +217,6 @@ function draw_devices()
 
 
 $("#table").on("click select",".input-select",function(e) {
-    input_selection();
-});
-
-$("#input-selection").change(function(){
-    var selection = $(this).val();
-    
-    if (selection=="all") {
-        for (var id in inputs) selected_inputs[id] = true;
-        $(".input-select").prop('checked', true); 
-        
-    } else if (selection=="none") {
-        selected_inputs = {};
-        $(".input-select").prop('checked', false); 
-    }
     input_selection();
 });
   

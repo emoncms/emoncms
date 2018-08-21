@@ -268,3 +268,33 @@ input[type=text][class=variable-name-edit] {
 #table .accordion{
     margin-bottom:.5em
 }
+
+
+#table{margin-top:3rem}
+.controls{
+    transition: all .2s ease-out
+}
+.controls.affix:before{
+    content: '';
+    background: rgba(5,4,4,0.7);
+    width: 100%;
+    display:block;
+    position: fixed;
+    z-index: -1;
+    height: 2.5rem;
+    left:0;
+    margin-top:-.3rem;
+}
+.controls.affix > *{
+    z-index: 2
+}
+.controls.affix{
+    z-index: 2;
+    top: 2.5rem;
+    padding: .3rem 0;
+}
+.controls.affix-top{position: absolute;}
+
+@media(max-width:979px) {
+    .controls.affix{top:0}
+}
