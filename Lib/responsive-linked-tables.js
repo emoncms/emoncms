@@ -55,7 +55,7 @@ $(function() {
         $this.find('.icon').toggleClass('icon-ban-circle', state)
         $this.find('.icon').toggleClass('icon-check', !state)
         // make the selection with custom event handler
-        $(".feed-select").prop('checked', state).trigger('select')
+        $("#table .select input[type='checkbox']").prop('checked', state).trigger('select')
         // set the title
         title = state ? $this.data('alt-title') : $this.data('title-original')
         $this.attr('title', title)
