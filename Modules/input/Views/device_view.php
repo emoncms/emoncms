@@ -102,7 +102,7 @@ var updater;
 function updaterStart(func, interval){
 	  clearInterval(updater);
 	  updater = null;
-	  //if (interval > 0) updater = setInterval(func, interval);
+	  if (interval > 0) updater = setInterval(func, interval);
 }
 updaterStart(update, 5000);
 
@@ -134,8 +134,14 @@ function update(){
 	              if (devices[inputs[z].nodeid]==undefined) {
 	                  devices[inputs[z].nodeid] = {description:""};
 	                  // Device creation
-	                  $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: true, success: function(data) {
-	                      if (!data) alert("There was an error creating device: "+inputs[z].nodeid); 
+	                  $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: false, success: function(deviceid) {
+	                      if (!deviceid) {
+	                          alert("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid); 
+	                      } else {
+	                          $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
+	                              devices[inputs[z].nodeid] = result;
+	                          }});
+	                      }
 	                  }});
 	              }
 	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
@@ -215,6 +221,8 @@ function draw_devices()
 }
 // ---------------------------------------------------------------------------------------------
 
+$('#wrap').on("device-delete",function() { update(); });
+$('#wrap').on("device-init",function() { update(); });
 
 $("#table").on("click select",".input-select",function(e) {
     input_selection();

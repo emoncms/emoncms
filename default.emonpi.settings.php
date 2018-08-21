@@ -1,7 +1,7 @@
 <?php
 
 //1 #### Mysql database settings
-    $server   = "localhost";
+    $server   = "127.0.0.1";
     $database = "emoncms";
     $username = "emoncms";
     $password = "emonpiemoncmsmysql2016";
