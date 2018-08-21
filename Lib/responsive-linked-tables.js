@@ -67,7 +67,9 @@ $(function() {
         // flip the toggle state
         $this.data('state',!state)
     })
-    
+$(document).on('click',function(event){
+console.log('clicked',event.target.tagName)
+})
     // select or deselect all the checkboxes for a node
     function selectAllInNode(e){
         e.preventDefault()
@@ -81,10 +83,10 @@ $(function() {
         $inputs.prop('checked', $inputs.length != $selected.length).trigger('select')
     }
     // check / clear all selection
-    $(document).on('click','.input-list .has-indicator', selectAllInNode)
+    // $(document).on('click','.input-list .has-indicator', selectAllInNode)
     
     // feed list view already makes use of the click event
-    $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
+    // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
 });
 
 // Calculate and color updated time

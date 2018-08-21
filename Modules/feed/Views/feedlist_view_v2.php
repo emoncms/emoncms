@@ -433,7 +433,8 @@ body{padding:0!important}
       }); // end of ajax callback
   }
   
-  $("#table").on("click",".select",function(e) {
+  // stop checkbox form opening graph view
+  $("#table").on("click",".tbody .select",function(e) {
       e.stopPropagation();
   });
   
