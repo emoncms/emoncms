@@ -333,13 +333,13 @@ body{padding:0!important}
           $('#feed-loader').hide();
           if (data.length == 0){
               $("#nofeeds").show();
-              $("#localheading").hide();
+              //$("#localheading").hide();
               $("#apihelphead").hide();
               $("#bottomtoolbar").show();
               $("#refreshfeedsize").hide();
           } else {
               $("#nofeeds").hide();
-              $("#localheading").show();
+              //$("#localheading").show();
               $("#apihelphead").show();
               $("#bottomtoolbar").show();
               $("#refreshfeedsize").show();
