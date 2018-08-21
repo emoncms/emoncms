@@ -346,9 +346,8 @@ body{padding:0!important}
           }
 		      
           feeds = {};
-		      for (var z in data) feeds[data[z].id] = data[z];
+          for (var z in data) feeds[data[z].id] = data[z];
 		      
-          
           var nodes = {};
           for (var z in feeds) {
               var node = feeds[z].tag;
@@ -364,7 +363,7 @@ body{padding:0!important}
           // get node overview
           var node_size = {},
               node_time = {}
-            for (let node in nodes) {
+            for (node in nodes) {
                 node_size[node] = 0
                 node_time[node] = 0
                 for (let feed in nodes[node]) {
