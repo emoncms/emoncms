@@ -239,6 +239,7 @@ input[type=text][class=variable-name-edit] {
 .label-container{padding-top:.6em; display:inline-block; min-width: 200px}
 
 /* select all button */
+/*
 .has-indicator{position:relative}
 .has-indicator:after{
     transition:all 200ms ease-in-out;
@@ -265,6 +266,7 @@ input[type=text][class=variable-name-edit] {
     color: #FBFBFB;
     background: #D65C29;
 }
+*/
 #table .accordion{
     margin-bottom:.5em
 }
