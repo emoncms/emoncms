@@ -167,6 +167,7 @@ input[type=text][class=variable-name-edit] {
     background: #ddd;
     height: 41px;
 }
+/* dropdown indicator */
 .node .accordion-toggle .has-indicator:before {
     content: '';
     transition: border .2s ease-out;
@@ -237,6 +238,7 @@ input[type=text][class=variable-name-edit] {
 
 .label-container{padding-top:.6em; display:inline-block; min-width: 200px}
 
+/* select all button */
 .has-indicator{position:relative}
 .has-indicator:after{
     transition:all 200ms ease-in-out;
@@ -262,4 +264,7 @@ input[type=text][class=variable-name-edit] {
     border: 1px solid #B1522E;
     color: #FBFBFB;
     background: #D65C29;
+}
+#table .accordion{
+    margin-bottom:.5em
 }

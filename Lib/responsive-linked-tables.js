@@ -1,32 +1,18 @@
 $(function() {
     // togglable show/hide button to expand/hide all the collapsable items
     $container = $('#table')
-    $show_all_btn = $('#expand-all')
-    $hide_all_btn = $('#collapse-all')
     $btn = $('#expand-collapse-all')
     $icon = $btn.find('.icon')
     $btn.data('original-title',$btn.attr('title'))
 
-    // hide collapsable groups on button press
-    $hide_all_btn.on('click',function(){
-        $collapsables = $container.find('.collapse')
-        $collapsables.stop(true, true).collapse('hide')
-        $show_all_btn.show()
-        $hide_all_btn.hide()
-    })
-    // show collapsable groups on button press
-    $show_all_btn.on("click", function(event) {
-        $collapsables = $container.find('.collapse')
-        $collapsables.stop(true, true).collapse('show')
-        $hide_all_btn.show()
-        $show_all_btn.hide()
-    })
     // store the state of the collapsed items in the button after collapsing(or expanding)
     $btn.on('click', function(){
         $btn = $(this)
         let isOpen = $btn.data('isOpen')!=false
         $container.find('.collapse').collapse(isOpen ? 'hide':'show')
         $btn.data('isOpen',!isOpen)
+        $container.find('.accordion-toggle').toggleClass('collapsed', isOpen)
+
     })
 
     // once accordion has finished closing check if all are closed and change the button
