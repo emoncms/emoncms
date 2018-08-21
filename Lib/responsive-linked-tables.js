@@ -5,14 +5,16 @@ $(function() {
     $icon_expand = $btn_expand.find('.icon')
     $btn_expand.data('original-title',$btn_expand.attr('title'))
     
+    $btn_expand.data('isOpen',$container.find('.collapse').length > 1)
+    toggleExpandButtonIcons()
+
     // store the state of the collapsed items in the button after collapsing(or expanding)
     $btn_expand.on('click', function(){
         $btn_expand = $(this)
-        let isOpen = $btn_expand.data('isOpen')!=false
+        let isOpen = $btn_expand.data('isOpen')
         $container.find('.collapse').collapse(isOpen ? 'hide':'show')
         $btn_expand.data('isOpen',!isOpen)
         $container.find('.accordion-toggle').toggleClass('collapsed', isOpen)
-        
     })
     
     // once accordion has finished closing check if all are closed and change the button
@@ -20,8 +22,7 @@ $(function() {
         if ($container.find('.collapse.in').length == 0) {
             isOpen = false
             $btn_expand.data('isOpen', isOpen)
-            $icon_expand.toggleClass('icon-resize-small', isOpen)
-            $icon_expand.toggleClass('icon-resize-full', !isOpen)
+            toggleExpandButtonIcons()
             $btn_expand.attr('title',$btn_expand.data('alt-title'))
         }
     })
@@ -31,8 +32,7 @@ $(function() {
         if ($container.find('.collapse.in').length == $collapsables.length) {
             isOpen = true
             $btn_expand.data('isOpen', isOpen)
-            $icon_expand.toggleClass('icon-resize-small', isOpen)
-            $icon_expand.toggleClass('icon-resize-full', !isOpen)
+            toggleExpandButtonIcons()
             $btn_expand.attr('title',$btn_expand.data('original-title'))
         }
     })
@@ -44,7 +44,12 @@ $(function() {
     $(document).on("show", "#table .tbody.collapse", function(e) {
         nodes_display[$(this).data('node')] = true
     })
-    
+
+    function toggleExpandButtonIcons(){
+        let isOpen = $btn_expand.data('isOpen')
+        $icon_expand.toggleClass('icon-resize-small', isOpen)
+        $icon_expand.toggleClass('icon-resize-full', !isOpen)
+    }
     
     $('#select-all').on('click',function(){
         $this = $(this)
@@ -68,6 +73,7 @@ $(function() {
         e.preventDefault()
         e.stopPropagation()
         $container = $(e.target).parents('.accordion').first()
+        $container.find('.collapse').collapse('show')
         $inputs = $container.find(':checkbox')
         $selected = $container.find(':checkbox:checked')
         // use a custom trigger so not to confuse with the click event

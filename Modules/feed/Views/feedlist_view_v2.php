@@ -376,9 +376,10 @@ body{padding:0!important}
           var counter = 0
           for (var node in nodes) {
               counter ++;
+              isCollapsed = Object.keys(nodes).length > 1 ? ' collapsed' : ''
               out += '<div class="node accordion">';
-              out += '    <div class="node-info accordion-toggle thead" data-toggle="collapse" data-target="#collapse'+counter+'">'
-              out += '      <div class="select text-center has-indicator" data-col="B"></div>';
+              out += '    <div class="node-info accordion-toggle thead'+isCollapsed+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
               out += '      <div class="engine" data-col="F"></div>';

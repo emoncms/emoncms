@@ -149,7 +149,7 @@ function update(){
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
-	          firstLoad = false;
+              firstLoad = false;
               draw_devices();
         }});
     }});
@@ -165,10 +165,11 @@ function draw_devices()
     var counter = 0
     for (var node in devices) {
         counter++
+        isCollapsed = Object.keys(devices).length > 1 ? ' collapsed' : ''
         var visible = nodes_display[node] ? 'in' : ''
         out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B'></div>";
+        out += '   <div class="node-info accordion-toggle thead'+isCollapsed+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
         out += "     <div class='pull-right'>"
