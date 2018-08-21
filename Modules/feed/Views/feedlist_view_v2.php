@@ -2,11 +2,12 @@
     global $path, $feedviewpath;
     if (!isset($feedviewpath)) $feedviewpath = "vis/auto?feedid=";
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script src="<?php echo $path; ?>Modules/user/user.js"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-<script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
+<script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
 <style>
 body{padding:0!important}
@@ -20,93 +21,9 @@ body{padding:0!important}
     margin-left: 0px;
     margin-right: 0px;
 }
-
-.node {margin-bottom:10px;}
-
-.node-info.node-feeds {
-    padding:0;
-    line-height:2.7;
-}
-.node-info .node-feed {
-    padding-left: 10px;
-    background-color:#ddd;
+.node .feed-graph-link {
     cursor:pointer;
-    border: 0 solid transparent;
 }
-.node-info .name { position:relative; font-weight:bold; font-size: larger }
-
-.node-info .name:before {
-    top: 1em;
-    left: -1em;
-    position: absolute;
-    height: 0;
-    width: 0;
-    display: block;
-    content: '';
-    transition: all .2s ease-out;
-    border-bottom: 5px solid darkgrey;
-    border-top: 0 solid transparent;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
-}
-.node-info.closed .name:before {
-    border-bottom: 0 solid transparent;
-    border-top: 5px solid darkgrey;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
-}
-
-.node-info .time {
-    padding-right: 4px;
-}
-
-.node-name { font-weight:bold; }
-.node-name,
-.node-size,
-.node-latest{
-  float:left;
-}
-
-.node-name { font-weight:bold; }
-
-.node-feeds {
-    padding: 0px 5px 5px 5px;
-    background-color:#ddd;
-}
-.node-feed {
-    background-color:#f0f0f0;
-    border-bottom:1px solid #fff;
-    border-left:2px solid transparent;
-    min-height:41px;
-    line-height:41px;
-    transition: background .2s ease-in;
-    overflow:hidden;
-}
-.node-feed:last-child{
-    border-bottom:0px solid transparent;
-}
-.node-feed:hover {
-    /*background-color:#EBEBEB;*/
-    cursor: pointer
-}
-.node-feed:hover{ border-left-color: #44b3e2; }
-
-.node-feed > *,
-.node-feed > .node-feed-right > * {
-    display:inline-block;
-}
-
-input[type="checkbox"] { vertical-align:text-bottom;}
-
-.select::before {
-    content: '';
-    background: transparent;
-    width: 1em;
-    height: 0;
-    display: block;
-    float: left;
-}
-
 
 #feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
@@ -126,16 +43,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
-@media (max-width: 569px) {
-    /* .node-feed .name { font-size:20px;padding-left:.7em} */
-    .node-info .name:before {
-        display:none
-    }
-}
-@media (max-width: 468px) {
-    #table .row-fluid .span6-xs, #table .row-fluid .span6-xs {width: 48.88%!important}
 
-}
 </style>
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
@@ -150,7 +58,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
 		</select>
 	</div>
 	
-	<button class="btn feed-show-hide-all" data-expanded="true" title="<?php echo _('Reduce') ?>" data-title-expanded="<?php echo _('Expand') ?>" data-title-reduced="<?php echo _('Reduce') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
 	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
@@ -159,7 +67,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
 	
 </div>
 
-<div id="table"></div>
+<div id="table" class="feed-list"></div>
 
 <div id="nofeeds" class="alert alert-block hide">
     <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
@@ -381,6 +289,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
   
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 
+// auto refresh
   update();
   setInterval(update,5000);
   
@@ -431,26 +340,23 @@ input[type="checkbox"] { vertical-align:text-bottom;}
                 }
           }
           // display nodes and feeds
+          var counter = 0
           for (var node in nodes) {
-              var visible = "hide"; if (nodes_display[node]) visible = "";
-              var cssClass = nodes_display[node] ? 'open' : 'closed'
-              
-              out += '<div class="node">';
-              out += '  <div class="node-info node-feeds '+cssClass+'" data-node="'+node+'">';
-              out += '    <div class="node-feed">'
-              out += '      <div class="select text-center"></div>';
-              out += '      <div class="name">'+node+':</div>';
-              out += '      <div class="public text-center"></div>';
-              out += '      <div class="engine"></div>';
-              out += '      <div class="size text-center">'+list_format_size(node_size[node])+'</div>';
+              counter ++;
+              out += '<div class="node accordion">';
+              out += '    <div class="node-info accordion-toggle thead" data-toggle="collapse" data-target="#collapse'+counter+'">'
+              out += '      <div class="select text-center has-indicator" data-col="B"></div>';
+              out += '      <h5 class="name" data-col="A">'+node+':</h5>';
+              out += '      <div class="public" class="text-center" data-col="E"></div>';
+              out += '      <div class="engine" data-col="F"></div>';
+              out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
               out += '      <div class="node-feed-right pull-right">';
-              out += '        <div class="value"></div>';
-              out += '        <div class="time">'+list_format_updated(node_time[node])+'</div>';
+              out += '        <div class="value" data-col="C"></div>';
+              out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
               out += '      </div>';
               out += '    </div>';
-              out += '  </div>';
               
-              out += "<div class='node-feeds "+visible+"' node='"+node+"'>";
+              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
@@ -461,90 +367,38 @@ input[type="checkbox"] { vertical-align:text-bottom;}
 
                   out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select text-center'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
-                  out += "<div class='name'>"+nodes[node][feed].name+"</div>";
+                  out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                  out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
                   
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
                   
-                  out += "<div class='public text-center'>"+publicfeed+"</div>";
-                  out += "  <div class='engine'>"+feed_engines[nodes[node][feed].engine]+"</div>";
-                  out += "  <div class='size text-center'>"+list_format_size(nodes[node][feed].size)+"</div>";
-                  out += "  <div class='node-feed-right pull-right'>";
-                  out += "    <div class='value'>"+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+"</div>";
-                  out += "    <div class='time'>"+list_format_updated(nodes[node][feed].time)+"</div>";
-                  out += "  </div>";
-                  out += "</div>";
+                  out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
+                  out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
+                  out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
+                  out += '  <div class="node-feed-right pull-right">';
+                  out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+'</div>';
+                  out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
+                  out += '  </div>';
+                  out += '</div>';
               }
               
               out += "</div>";
               out += "</div>";
           }
-          $("#table").html(out);
+          $container = $('#table')
+          $container.html(out);
           
-          autowidth(".node-feeds .name",20);
-          autowidth(".node-feeds .public",20);
-          autowidth(".node-feeds .engine",20);
-          autowidth(".node-feeds .size",20);
-          
-          autowidth(".node-feeds .value",20);
-          autowidth(".node-feeds .time",20);
+          // reset the toggle state for all collapsable elements once data has loaded
+          // css class "in" is used to remember the state
+          $("#table .collapse").collapse({toggle: false})
 
-          resize();
-      }});
+        autowidth($container) // set each column group to the same width
+
+      } // end of for loop
+      }); // end of ajax callback
   }
   
-
-  $(".feed-show-hide-all").on("click", showHideAllFeedGroup)
-
-  function showHideAllFeedGroup(event) {
-      // hide expanded groups if the switch is set to expanded false
-      // show all shrunk groups if the switch is set to expanded true
-      event.preventDefault()
-      let $this = $(this)
-      let $icon = $this.find('.icon')
-      // initial state
-      let expanded = $(this).data('expanded')
-      // str to bool
-      expanded = expanded || expanded === 'true'
-      // save the opposite for next click
-      $this.data('expanded',!expanded)
-      // notify the user by changing the button
-      $icon.toggleClass('icon-resize-full icon-resize-small')
-      let title = expanded ? $this.data('title-expanded') : $this.data('title-reduced')
-      $this.attr('title',title)
-      // interact with each row. one at a time
-      $(".node-info").each(function(i,v){
-        $this = $(this)
-        node = $this.data('node')
-        // click open ones if expanded == true
-        if (nodes_display[node] && expanded) {
-            $this.click()
-        // click closed ones if expanded == false
-        } else if (!nodes_display[node] && !expanded) {
-            $this.click()
-        }
-      })
-      // clean the screen arrangement of elements
-      resize()
-  }
-
-  // expand/hide a single feed group
-  $("#table").on("click",".node-info", function (event){
-    $elem = $(event.currentTarget)
-    var node = $elem.data("node");
-    if (nodes_display[node]) {
-        $(".node-feeds[node='"+node+"']").hide();
-        $elem.addClass('closed').removeClass('open')
-        nodes_display[node] = false;
-    } else {
-        $(".node-feeds[node='"+node+"']").show();
-        $elem.addClass('open').removeClass('closed')
-        nodes_display[node] = true;
-    }
-    update()
-});
-
   $("#table").on("click",".select",function(e) {
       e.stopPropagation();
   });
@@ -553,7 +407,7 @@ input[type="checkbox"] { vertical-align:text-bottom;}
       e.stopPropagation();
   });
 
-  $("#table").on("click",".feed-select",function(e) {
+  $("#table").on("click select",".feed-select",function(e) {
       feed_selection();
   });
 
@@ -1230,144 +1084,9 @@ $(".feed-delete").click(function(){
 // of the container and the width of the individual fields themselves. It implements a level of responsivness
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
-var show_size = true;
-var show_engine = true;
-var show_public = true;
-var show_select = true;
-var show_time = true;
-var show_value = true;
 
+watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
 
-var resizeTimer;
-
-// debounce (ish) script to improve performance
-$(window).on('resize', function(e) {
-    clearTimeout(resizeTimer)
-    resizeTimer = setTimeout(function() {
-        // resize the columns to fit the view
-        resize()
-    }, 50)
-});
-
-
-function resize() 
-{
-    show_size = true;
-    show_engine = true;
-    show_public = true;
-    show_select = true;
-    show_time = true;
-    show_value = true;
-    show_start_time = true;
-
-    $(".node-feed").each(function(){
-         var node_feed_width = $(this).width();
-         if (node_feed_width>0) {
-             var w = node_feed_width-20;
-             
-             var tw = 0;
-             tw += $(this).find(".name").width();
-
-             tw += $(this).find(".select").width();
-             if (tw>w) show_select = false;
-             
-             tw += $(this).find(".value").width();
-             if (tw>w) show_value = false;
-             
-             tw += $(this).find(".time").width();
-             if (tw>w) show_time = false;   
-
-             tw += $(this).find(".public").width();
-             if (tw>w) show_public = false;
-             
-             tw += $(this).find(".engine").width();
-             if (tw>w) show_engine = false;
-              
-             tw += $(this).find(".size").width();
-             if (tw>w) show_size = false;
-             
-             tw += $(this).find(".start_time").width();
-             if (tw>w) show_start_time = false;
-         }
-    });
-    
-    if (show_select) $(".select").show(); else $(".select").hide();
-    if (show_time) $(".time").show(); else $(".time").hide();
-    if (show_value) $(".value").show(); else $(".value").hide();
-    if (show_public) $(".public").show(); else $(".public").hide();
-    if (show_engine) $(".engine").show(); else $(".engine").hide();
-    if (show_size) $(".size").show(); else $(".size").hide();
-}
-
-function autowidth(element,padding) {
-    var mw = 0;
-    $(element).each(function(){
-        var w = $(this).width();
-        if (w>mw) mw = w;
-    });
-    
-    $(element).width(mw+padding);
-    return mw;
-}
-
-  
-// Calculate and color updated time
-function list_format_updated(time) {
-  time = time * 1000;
-  var servertime = (new Date()).getTime();// - table.timeServerLocalOffset;
-  var update = (new Date(time)).getTime();
-
-  var secs = (servertime-update)/1000;
-  var mins = secs/60;
-  var hour = secs/3600;
-  var day = hour/24;
-
-  var updated = secs.toFixed(0) + "s";
-  if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
-  else if (secs< 0) updated = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
-  else if (secs.toFixed(0) == 0) updated = "now";
-  else if (day>7) updated = "inactive";
-  else if (day>2) updated = day.toFixed(1)+" days";
-  else if (hour>2) updated = hour.toFixed(0)+" hrs";
-  else if (secs>180) updated = mins.toFixed(0)+" mins";
-
-  secs = Math.abs(secs);
-  var color = "rgb(255,0,0)";
-  if (secs<25) color = "rgb(50,200,50)"
-  else if (secs<60) color = "rgb(240,180,20)"; 
-  else if (secs<(3600*2)) color = "rgb(255,125,20)"
-
-  return "<span style='color:"+color+";'>"+updated+"</span>";
-}
-
-// Format value dynamically 
-function list_format_value(value) {
-  if (value == null) return 'NULL';
-  value = parseFloat(value);
-  if (value>=1000) value = parseFloat((value).toFixed(0));
-  else if (value>=100) value = parseFloat((value).toFixed(1));
-  else if (value>=10) value = parseFloat((value).toFixed(2));
-  else if (value<=-1000) value = parseFloat((value).toFixed(0));
-  else if (value<=-100) value = parseFloat((value).toFixed(1));
-  else if (value<10) value = parseFloat((value).toFixed(2));
-  return value;
-}
-
-function list_format_size(bytes) {
-  if (!$.isNumeric(bytes)) {
-    return "n/a";
-  } else if (bytes<1024) {
-    return bytes+"B";
-  } else if (bytes<1024*100) {
-    return (bytes/1024).toFixed(1)+"KB";
-  } else if (bytes<1024*1024) {
-    return Math.round(bytes/1024)+"KB";
-  } else if (bytes<=1024*1024*1024) {
-    return Math.round(bytes/(1024*1024))+"MB";
-  } else {
-    return (bytes/(1024*1024*1024)).toFixed(1)+"GB";
-  }
-}
 
 // ---------------------------------------------------------------------------------------------
 // Virtual Feed feature
@@ -1533,16 +1252,7 @@ function parse_timepicker_time(timestr){
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
 
-/**
- * alter the Number primitive to include a new method to pad out numbers with zeros
- * @param int size - number of characters to fill with zeros
- * @return string
- */
-Number.prototype.pad = function(size) {
-  var s = String(this);
-  while (s.length < (size || 2)) {s = "0" + s;}
-  return s;
-}
+
 </script>
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <!--
