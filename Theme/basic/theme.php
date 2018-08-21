@@ -10,6 +10,8 @@
   http://openenergymonitor.org
   */
   global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$themecolor,$favicon,$menu;
+  
+  $v = 1;
 
 ?>
 <html>
@@ -26,11 +28,11 @@
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         
         <?php if ($themecolor=="blue") { ?>
-            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css" rel="stylesheet">
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } else if ($themecolor=="sun") { ?>
-            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-sun.css" rel="stylesheet">
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-sun.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } else { ?>
-            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css" rel="stylesheet">
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } ?>
 
         <?php //compute dynamic @media properties depending on numbers and lengths of shortcuts

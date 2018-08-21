@@ -136,8 +136,10 @@ input[type=text][class=variable-name-edit] {
     background-color:#2eaadf !important;
 }
 
-.nav > li > a { color: #fff !important; }
-.nav > li > a { text-shadow:none !important; }
+.nav > li > a {
+    color: #fff !important;
+    text-shadow:none !important;
+}
 
 .caret {
    border-top-color: #fff !important;
@@ -146,7 +148,6 @@ input[type=text][class=variable-name-edit] {
 .text-larger {
     font-size: larger
 }
-
 
 .expand-all .icon-resize-small{
     display: none
