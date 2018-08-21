@@ -100,7 +100,8 @@ body{padding:0!important}
         <input id="feed-public" type="checkbox"></p>
 
         <p>Feed Unit</p>
-        <select id="feed_unit_dropdown">
+        <div class="input-prepend">
+        <select id="feed_unit_dropdown" style="width:100px">
             <option value=""></option>
             <option value="W">W</option>
             <option value="kWh">kWh</option>
@@ -117,7 +118,8 @@ body{padding:0!important}
             <option value="dB">dB</option>
             <option value="_other">Other</option>
         </select>
-        <input id="feed_unit_dropdown_other">
+        <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>
+        </div>
     </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
