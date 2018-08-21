@@ -322,7 +322,7 @@ body{padding:0!important}
 
 // auto refresh
   update();
-//   setInterval(update,5000);
+  setInterval(update,5000);
   
   function update() 
   {

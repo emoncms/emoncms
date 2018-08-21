@@ -149,7 +149,7 @@ function update(){
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
 	          
-	          draw_devices();
+              draw_devices();
         }});
     }});
 }
@@ -177,7 +177,7 @@ function draw_devices()
         out += "     </div>";
         out += "  </div>";
 
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+visible+"' node='"+node+"'>";
+        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
@@ -216,7 +216,7 @@ function draw_devices()
             indicator.removeClass('hidden')
         }
     }
-    
+    $("#table .collapse").collapse({toggle: false})
     autowidth($('#table')) // set each column group to the same width
 }
 // ---------------------------------------------------------------------------------------------
