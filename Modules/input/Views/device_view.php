@@ -109,7 +109,7 @@ updaterStart(update, 5000);
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
-
+var firstLoad = true
 function update(){
 
     // Join and include device data
@@ -144,11 +144,12 @@ function update(){
 	                      }
 	                  }});
 	              }
-	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                  if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                  if (Object.keys(inputs).length > 1 && firstLoad)  nodes_display[inputs[z].nodeid] = false
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
-	          
+	          firstLoad = false;
               draw_devices();
         }});
     }});

@@ -323,7 +323,7 @@ body{padding:0!important}
 // auto refresh
   update();
   setInterval(update,5000);
-  
+  var firstLoad = true;
   function update() 
   {
   
@@ -354,8 +354,10 @@ body{padding:0!important}
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
+              if (Object.keys(feeds).length > 1 && firstLoad)  nodes_display[node] = false
               nodes[node].push(feeds[z]);
           }
+          firstLoad = false
 
           var out = "";
           
