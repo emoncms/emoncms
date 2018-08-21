@@ -43,6 +43,7 @@ function format_time(time,format){
 </script>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>

@@ -710,7 +710,7 @@ var processlist_ui =
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    if (window.table!=undefined) table.draw();
+    if (window.table!=undefined && window.table.draw!=undefined)  table.draw();
   },
 
   'decode':function(str){
@@ -901,7 +901,7 @@ var processlist_ui =
     processlist_ui.init_done--;
     if (processlist_ui.init_done == 0) {
       processlist_ui.draw();
-      if (window.table!=undefined) table.draw();
+      if (window.table!=undefined && window.table.draw!=undefined) table.draw();
 
       if (processlist_ui.contexttype == 0) {
         $("#process-select").val(this.getProcessKeyById(1)); // default process for input context
