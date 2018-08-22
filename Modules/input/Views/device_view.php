@@ -63,8 +63,9 @@ input[type="checkbox"] { margin:0px; }
 	<div id="auth-check" class="hide">
 	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
-	</div>
-	
+    </div>
+    
+	<div id="notice"></div>
 	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
@@ -151,8 +152,20 @@ function update(){
 	          }
               firstLoad = false;
               draw_devices();
+              configurationNotification()
         }});
     }});
+}
+
+function configurationNotification(){
+    let processlist = []
+    for (i in processlist_ui.inputlist) {
+        processlist.push(processlist_ui.inputlist[i])
+    }
+    if(processlist.length<1){
+        message = '<div class="alert pull-right" style="margin:0"><button type="button" class="close" data-dismiss="alert">&times;</button>%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
+        $('#notice').html(message)
+    }
 }
 
 // ---------------------------------------------------------------------------------------------
