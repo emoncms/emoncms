@@ -706,7 +706,7 @@ var processlist_ui =
     if (feeds.data!=undefined) feeds = feeds.data;
 
     for (z in feeds) {
-      if (feeds[z].id == processlist_ui.contextid) {
+      if (feeds.hasOwnProperty(z) && (feeds[z].id == processlist_ui.contextid)) {
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }

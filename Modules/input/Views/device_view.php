@@ -40,6 +40,8 @@ input[type="checkbox"] { margin:0px; }
     margin-top:-2px;
 }
 
+#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
@@ -65,14 +67,14 @@ input[type="checkbox"] { margin:0px; }
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
     </div>
     
-	<div id="notice"></div>
+	<div id="noprocesses"></div>
 	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
 
 	<div id="noinputs" class="alert alert-block hide">
-			<h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-			<p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
 	</div>
 	
 	<div id="input-loader" class="ajax-loader"></div>
@@ -157,19 +159,23 @@ function update(){
               firstLoad = false;
               
               draw_devices();
-              configurationNotification()
+              configurationNotification(devices)
         }});
     }});
 }
-
-function configurationNotification(){
+/** show a message to the user if no processes have been added */
+function configurationNotification(devices){
     let processlist = []
-    for (i in processlist_ui.inputlist) {
-        processlist.push(processlist_ui.inputlist[i])
+    for (d in devices) {
+        for (i in devices[d].inputs) {
+            if(devices[d].inputs[i].processList.length>0) {
+                processlist.push(devices[d].inputs[i].processList)
+            }
+        }
     }
     if(processlist.length<1){
-        message = '<div class="alert pull-right" style="margin:0"><button type="button" class="close" data-dismiss="alert">&times;</button>%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
-        $('#notice').html(message)
+        message = '<div class="alert pull-right">%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
+        $('#noprocesses').html(message)
     }
 }
 
@@ -368,6 +374,7 @@ $("#table").on('click', '.configure', function() {
 $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+    console.log('call refresh()')
 });
 
 // -------------------------------------------------------------------------------------------------------
