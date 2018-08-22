@@ -11,7 +11,7 @@
   */
   global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$themecolor,$favicon,$menu;
   
-  $v = 1;
+  $v = 2;
 
 ?>
 <html>
