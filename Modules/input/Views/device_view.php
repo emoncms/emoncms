@@ -224,8 +224,10 @@ function draw_devices()
             indicator.removeClass('hidden')
         }
     }
-    $("#table .collapse").collapse({toggle: false})
-    setExpandButtonState($('#table .collapsed').length == 0)
+    if(typeof $.fn.collapse == 'function'){
+        $("#table .collapse").collapse({toggle: false})
+        setExpandButtonState($('#table .collapsed').length == 0)
+    }
     autowidth($('#table')) // set each column group to the same width
 }
 // ---------------------------------------------------------------------------------------------
