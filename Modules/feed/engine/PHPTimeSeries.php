@@ -295,10 +295,12 @@ class PHPTimeSeries implements engine_methods
         if ($timezone===0) $timezone = "UTC";
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
+        
         $date->modify("midnight");
-        if ($mode=="weekly") $date->modify("this monday");
-        if ($mode=="monthly") $date->modify("first day of this month");
-
+        $increment="+1 day";
+        if ($mode=="weekly") { $date->modify("this monday"); $increment="+1 week"; }
+        if ($mode=="monthly") { $date->modify("first day of this month"); $increment="+1 month"; }
+        
         $fh = fopen($this->dir."feed_$id.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$id.MYD");
 
@@ -317,11 +319,12 @@ class PHPTimeSeries implements engine_methods
             $array = unpack("x/Itime/fvalue",$d);
             
             if ($array['time']!=$lastarray['time']) {
-                $data[] = array($array['time']*1000,$array['value']);
+                if ($array['time']>=$start && $array['time']<$end) {
+                    $data[] = array($array['time']*1000,$array['value']);
+                }
             }
-            if ($mode=="daily") $date->modify("+1 day");
-            if ($mode=="weekly") $date->modify("+1 week");
-            if ($mode=="monthly") $date->modify("+1 month");
+            $date->modify($increment);
+            
             $n++;
         }
         
