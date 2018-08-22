@@ -427,8 +427,11 @@ body{padding:0!important}
           
           // reset the toggle state for all collapsable elements once data has loaded
           // css class "in" is used to remember the expanded state of the ".collapse" element
-          $("#table .collapse").collapse({toggle: false})
-          setExpandButtonState($container.find('.collapsed').length == 0)
+    
+          if(typeof $.fn.collapse == 'function'){
+            $("#table .collapse").collapse({toggle: false})
+            setExpandButtonState($container.find('.collapsed').length == 0)
+          }
           
         autowidth($container) // set each column group to the same width
       } // end of for loop
