@@ -136,8 +136,10 @@ input[type=text][class=variable-name-edit] {
     background-color:#2eaadf !important;
 }
 
-.nav > li > a { color: #fff !important; }
-.nav > li > a { text-shadow:none !important; }
+.nav > li > a {
+    color: #fff !important;
+    text-shadow:none !important;
+}
 
 .caret {
    border-top-color: #fff !important;
@@ -146,7 +148,6 @@ input[type=text][class=variable-name-edit] {
 .text-larger {
     font-size: larger
 }
-
 
 .expand-all .icon-resize-small{
     display: none
@@ -167,6 +168,7 @@ input[type=text][class=variable-name-edit] {
     background: #ddd;
     height: 41px;
 }
+/* dropdown indicator */
 .node .accordion-toggle .has-indicator:before {
     content: '';
     transition: border .2s ease-out;
@@ -237,6 +239,8 @@ input[type=text][class=variable-name-edit] {
 
 .label-container{padding-top:.6em; display:inline-block; min-width: 200px}
 
+/* select all button */
+/*
 .has-indicator{position:relative}
 .has-indicator:after{
     transition:all 200ms ease-in-out;
@@ -253,7 +257,7 @@ input[type=text][class=variable-name-edit] {
     top:0;
     line-height: 1.1em;
     opacity: 0;
-    content:'✔';
+    content: attr(data-marker);
 }
 .has-indicator:hover:after{
     opacity: 1;
@@ -262,4 +266,38 @@ input[type=text][class=variable-name-edit] {
     border: 1px solid #B1522E;
     color: #FBFBFB;
     background: #D65C29;
+}
+*/
+#table .accordion{
+    margin-bottom:.5em
+}
+
+
+#table{margin-top:3rem}
+.controls{
+    transition: all .2s ease-out
+}
+.controls.affix:before{
+    content: '';
+    background: rgba(5,4,4,0.7);
+    width: 100%;
+    display:block;
+    position: fixed;
+    z-index: -1;
+    height: 2.5rem;
+    left:0;
+    margin-top:-.3rem;
+}
+.controls.affix > *{
+    z-index: 2
+}
+.controls.affix{
+    z-index: 2;
+    top: 2.5rem;
+    padding: .3rem 0;
+}
+.controls.affix-top{position: absolute;}
+
+@media(max-width:979px) {
+    .controls.affix{top:0}
 }

@@ -64,7 +64,6 @@ body{padding:0!important}
     cursor:pointer;
 }
 
-#feed-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #feeds-to-delete { font-style:italic; }
 
@@ -87,23 +86,14 @@ body{padding:0!important}
 <div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
 
-<div class="controls">
-	<div class="input-prepend" style="margin-bottom:0px">
-		<span class="add-on">Select</span>
-		<select id="feed-selection">
-		  <option value="custom">Custom</option>
-			<option value="all">All</option>
-			<option value="none">None</option>
-		</select>
-	</div>
-	
+<div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
 	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
 	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
 	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
-	
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -333,7 +323,7 @@ body{padding:0!important}
 // auto refresh
   update();
   setInterval(update,5000);
-  
+  var firstLoad = true;
   function update() 
   {
   
@@ -343,13 +333,13 @@ body{padding:0!important}
           $('#feed-loader').hide();
           if (data.length == 0){
               $("#nofeeds").show();
-              $("#localheading").hide();
+              //$("#localheading").hide();
               $("#apihelphead").hide();
               $("#bottomtoolbar").show();
               $("#refreshfeedsize").hide();
           } else {
               $("#nofeeds").hide();
-              $("#localheading").show();
+              //$("#localheading").show();
               $("#apihelphead").show();
               $("#bottomtoolbar").show();
               $("#refreshfeedsize").show();
@@ -364,8 +354,10 @@ body{padding:0!important}
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
+              if (Object.keys(feeds).length > 1 && firstLoad)  nodes_display[node] = false
               nodes[node].push(feeds[z]);
           }
+          firstLoad = false
 
           var out = "";
           
@@ -384,9 +376,10 @@ body{padding:0!important}
           var counter = 0
           for (var node in nodes) {
               counter ++;
+              isCollapsed = Object.keys(nodes).length > 1 ? ' collapsed' : ''
               out += '<div class="node accordion">';
-              out += '    <div class="node-info accordion-toggle thead" data-toggle="collapse" data-target="#collapse'+counter+'">'
-              out += '      <div class="select text-center has-indicator" data-col="B"></div>';
+              out += '    <div class="node-info accordion-toggle thead'+isCollapsed+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
               out += '      <div class="engine" data-col="F"></div>';
@@ -440,7 +433,8 @@ body{padding:0!important}
       }); // end of ajax callback
   }
   
-  $("#table").on("click",".select",function(e) {
+  // stop checkbox form opening graph view
+  $("#table").on("click",".tbody .select",function(e) {
       e.stopPropagation();
   });
   
@@ -449,20 +443,6 @@ body{padding:0!important}
   });
 
   $("#table").on("click select",".feed-select",function(e) {
-      feed_selection();
-  });
-
-  $("#feed-selection").change(function(){
-      var selection = $(this).val();
-      
-      if (selection=="all") {
-          for (var id in feeds) selected_feeds[id] = true;
-          $(".feed-select").prop('checked', true); 
-          
-      } else if (selection=="none") {
-          selected_feeds = {};
-          $(".feed-select").prop('checked', false); 
-      }
       feed_selection();
   });
 

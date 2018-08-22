@@ -23,7 +23,6 @@
 
 
 input[type="checkbox"] { margin:0px; }
-#input-selection { width:80px; }
 .controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
 
@@ -55,18 +54,10 @@ input[type="checkbox"] { margin:0px; }
 	<div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
 	<div id="localheading"><h3><?php echo _('Inputs'); ?></h3></div>
 
-<div class="controls">
-	<div class="input-prepend" style="margin-bottom:0px">
-		<span class="add-on">Select</span>
-		<select id="input-selection">
-		  <option value="custom">Custom</option>
-			<option value="all">All</option>
-			<option value="none">None</option>
-		</select>
-	</div>
+<div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-	
 </div>	
 	
 	<div id="auth-check" class="hide">
@@ -118,7 +109,7 @@ updaterStart(update, 5000);
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
-
+var firstLoad = true
 function update(){
 
     // Join and include device data
@@ -153,12 +144,13 @@ function update(){
 	                      }
 	                  }});
 	              }
-	              if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                  if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                  if (Object.keys(inputs).length > 1 && firstLoad)  nodes_display[inputs[z].nodeid] = false
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
 	          }
-	          
-	          draw_devices();
+              firstLoad = false;
+              draw_devices();
         }});
     }});
 }
@@ -173,10 +165,11 @@ function draw_devices()
     var counter = 0
     for (var node in devices) {
         counter++
+        isCollapsed = Object.keys(devices).length > 1 ? ' collapsed' : ''
         var visible = nodes_display[node] ? 'in' : ''
         out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B'></div>";
+        out += '   <div class="node-info accordion-toggle thead'+isCollapsed+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
         out += "     <div class='pull-right'>"
@@ -186,7 +179,7 @@ function draw_devices()
         out += "     </div>";
         out += "  </div>";
 
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+visible+"' node='"+node+"'>";
+        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
@@ -225,7 +218,7 @@ function draw_devices()
             indicator.removeClass('hidden')
         }
     }
-    
+    $("#table .collapse").collapse({toggle: false})
     autowidth($('#table')) // set each column group to the same width
 }
 // ---------------------------------------------------------------------------------------------
@@ -234,20 +227,6 @@ $('#wrap').on("device-delete",function() { update(); });
 $('#wrap').on("device-init",function() { update(); });
 
 $("#table").on("click select",".input-select",function(e) {
-    input_selection();
-});
-
-$("#input-selection").change(function(){
-    var selection = $(this).val();
-    
-    if (selection=="all") {
-        for (var id in inputs) selected_inputs[id] = true;
-        $(".input-select").prop('checked', true); 
-        
-    } else if (selection=="none") {
-        selected_inputs = {};
-        $(".input-select").prop('checked', false); 
-    }
     input_selection();
 });
   
