@@ -347,17 +347,18 @@ body{padding:0!important}
 		      
           feeds = {};
           for (var z in data) feeds[data[z].id] = data[z];
-		      
           var nodes = {};
           for (var z in feeds) {
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
-              if (Object.keys(feeds).length > 1 && firstLoad)  nodes_display[node] = false
+              // expand if only one feed available
+              if (firstLoad && Object.keys(nodes).length > 1) {
+                  nodes_display[node] = false
+              }
               nodes[node].push(feeds[z]);
           }
           firstLoad = false
-
           var out = "";
           
           // get node overview
@@ -373,11 +374,13 @@ body{padding:0!important}
           }
           // display nodes and feeds
           var counter = 0
+
+
           for (var node in nodes) {
               counter ++;
-              isCollapsed = Object.keys(nodes).length > 1 ? ' collapsed' : ''
+              isCollapsed = !nodes_display[node]
               out += '<div class="node accordion">';
-              out += '    <div class="node-info accordion-toggle thead'+isCollapsed+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+              out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
               out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
@@ -389,7 +392,7 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
-              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
+              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
@@ -423,11 +426,11 @@ body{padding:0!important}
           $container.html(out);
           
           // reset the toggle state for all collapsable elements once data has loaded
-          // css class "in" is used to remember the state
+          // css class "in" is used to remember the expanded state of the ".collapse" element
           $("#table .collapse").collapse({toggle: false})
-
+          setExpandButtonState($container.find('.collapsed').length == 0)
+          
         autowidth($container) // set each column group to the same width
-
       } // end of for loop
       }); // end of ajax callback
   }
