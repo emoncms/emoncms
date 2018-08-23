@@ -40,12 +40,13 @@
         }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
+    $local_dns_tld = '.home'; // .local can sometimes not be compatable
 
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),
+                 'ip' => gethostbyname($host.$local_dns_tld),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
@@ -64,7 +65,7 @@
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
                  'mqtt_port' => $mqtt_server['port'],
 
-                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
+                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host.$local_dns_tld)),
                  'http_proto' => $_SERVER['SERVER_PROTOCOL'],
                  'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
                  'http_port' => $_SERVER['SERVER_PORT'],
