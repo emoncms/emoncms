@@ -711,6 +711,7 @@ var processlist_ui =
       }
     }
     if (window.table!=undefined && window.table.draw!=undefined)  table.draw();
+    if (typeof update == 'function') update()
   },
 
   'decode':function(str){

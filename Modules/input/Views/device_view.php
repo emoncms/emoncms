@@ -159,24 +159,25 @@ function update(){
               firstLoad = false;
               
               draw_devices();
-              configurationNotification(devices)
+              noProcessNotification(devices);
         }});
     }});
 }
 /** show a message to the user if no processes have been added */
-function configurationNotification(devices){
-    let processlist = []
+function noProcessNotification(devices){
+    let processList = [],  message = ''
+    
     for (d in devices) {
         for (i in devices[d].inputs) {
             if(devices[d].inputs[i].processList.length>0) {
-                processlist.push(devices[d].inputs[i].processList)
+                processList.push(devices[d].inputs[i].processList)
             }
         }
     }
-    if(processlist.length<1){
+    if(processList.length<1 && Object.keys(devices).length > 0){
         message = '<div class="alert pull-right">%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
-        $('#noprocesses').html(message)
     }
+    $('#noprocesses').html(message)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -353,7 +354,6 @@ processlist_ui.init(0); // Set input context
 
 $("#table").on('click', '.configure', function() {
     var i = inputs[$(this).attr('id')];
-    console.log(i);
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
@@ -374,7 +374,6 @@ $("#table").on('click', '.configure', function() {
 $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
-    console.log('call refresh()')
 });
 
 // -------------------------------------------------------------------------------------------------------
