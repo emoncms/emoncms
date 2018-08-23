@@ -189,10 +189,14 @@ class Input
     private function redis_get_inputs($userid)
     {
         $userid = (int) $userid;
-        if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
 
         $dbinputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
+        
+        if ($inputids==null) {
+            $this->load_to_redis($userid);
+            $inputids = $this->redis->sMembers("user:inputs:$userid");
+        }
 
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
@@ -479,7 +483,7 @@ class Input
     public function clean_processlist_feeds($process_class,$userid) 
     {
         $processes = $process_class->get_process_list();
-        $out = "clean_processlist_feeds:\n";
+        $out = "";
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT id, processList FROM input WHERE `userid`='$userid'");
         while ($row = $result->fetch_object())
@@ -553,6 +557,7 @@ class Input
     public function set_processlist($userid, $id, $processlist, $process_list)
     {    
         $userid = (int) $userid;
+        $id = (int) $id;
         
         // Validate processlist
         $pairs = explode(",",$processlist);
@@ -577,6 +582,10 @@ class Input
                 // Load process
                 if (isset($process_list[$processkey])) {
                     $processarg = $process_list[$processkey]['argtype'];
+                    
+                    if ($process_list[$processkey]['group']=="Deleted") {
+                        return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
+                    }
                     
                     // remap process back to use map id if available
                     if (isset($process_list[$processkey]['id_num']))
