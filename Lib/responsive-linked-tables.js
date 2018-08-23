@@ -141,8 +141,8 @@ function list_format_value(value) {
 function autowidth($container) {
     let widths = {}, // only store widest column values against each selector
     default_padding = 20;
-    // tbody
-    $container.find(".tbody [data-col]").each(function() {
+    // resize columns based on columns in tbody and thead
+    $container.find("[data-col]").each(function() {
         let $this = $(this),
         padding = $this.data("col-padding") || default_padding,
         width = $this.width() + padding,
