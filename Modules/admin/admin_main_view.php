@@ -40,12 +40,12 @@
         }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
-
+    $local_dns_tld = '.home'; // .local can sometimes not be compatable
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),
+                 'ip' => gethostbyname($host.$local_dns_tld),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
@@ -64,16 +64,14 @@
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
                  'mqtt_port' => $mqtt_server['port'],
 
-                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
+                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host.$local_dns_tld)),
                  'http_proto' => $_SERVER['SERVER_PROTOCOL'],
                  'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
                  'http_port' => $_SERVER['SERVER_PORT'],
                  'php_modules' => get_loaded_extensions(),
                  'mem_info' => $meminfo,
                  'partitions' => disk_list(),
-                 'emoncms_modules' => $emoncms_modules,
-                 'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch"),
-                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin")
+                 'emoncms_modules' => $emoncms_modules
                  );
   }
 
@@ -258,8 +256,6 @@ if ($allow_emonpi_admin) {
             <table class="table table-hover table-condensed" id="serverinformationtabular">
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git URL</td><td><?php echo $system['git_URL']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git Branch</td><td><?php echo $system['git_branch']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
 ?>
