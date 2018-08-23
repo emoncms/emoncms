@@ -40,6 +40,8 @@ input[type="checkbox"] { margin:0px; }
     margin-top:-2px;
 }
 
+#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
@@ -63,15 +65,16 @@ input[type="checkbox"] { margin:0px; }
 	<div id="auth-check" class="hide">
 	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
-	</div>
-	
+    </div>
+    
+	<div id="noprocesses"></div>
 	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
 
 	<div id="noinputs" class="alert alert-block hide">
-			<h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-			<p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
 	</div>
 	
 	<div id="input-loader" class="ajax-loader"></div>
@@ -156,8 +159,25 @@ function update(){
               firstLoad = false;
               
               draw_devices();
+              noProcessNotification(devices);
         }});
     }});
+}
+/** show a message to the user if no processes have been added */
+function noProcessNotification(devices){
+    let processList = [],  message = ''
+    
+    for (d in devices) {
+        for (i in devices[d].inputs) {
+            if(devices[d].inputs[i].processList.length>0) {
+                processList.push(devices[d].inputs[i].processList)
+            }
+        }
+    }
+    if(processList.length<1 && Object.keys(devices).length > 0){
+        message = '<div class="alert pull-right">%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
+    }
+    $('#noprocesses').html(message)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -336,7 +356,6 @@ processlist_ui.init(0); // Set input context
 
 $("#table").on('click', '.configure', function() {
     var i = inputs[$(this).attr('id')];
-    console.log(i);
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
