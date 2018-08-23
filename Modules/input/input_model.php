@@ -48,7 +48,7 @@ class Input
                 $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
             }
         } else {
-           $this->log->warn("create_input mysql error");
+           $this->log->warn("create_input mysql error $userid $nodeid $name ".$this->mysqli->error);
         }
         return $id;
     }

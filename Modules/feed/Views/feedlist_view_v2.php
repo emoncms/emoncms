@@ -413,6 +413,7 @@ body{padding:0!important}
                   out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
                   out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
                   out += '  <div class="node-feed-right pull-right">';
+                  if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
                   out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+'</div>';
                   out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
                   out += '  </div>';
