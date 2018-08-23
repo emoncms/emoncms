@@ -352,11 +352,13 @@ body{padding:0!important}
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
-              // expand if only one feed available
-              if (firstLoad && Object.keys(nodes).length > 1) {
-                  nodes_display[node] = false
-              }
               nodes[node].push(feeds[z]);
+          }
+          if (firstLoad && Object.keys(nodes).length > 1) {
+            for (var node in nodes) {
+            // collapse all if more than one node
+                nodes_display[node] = false
+            }
           }
           firstLoad = false
           var out = "";
@@ -392,6 +394,7 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
+              console.log('isCollapsed',isCollapsed)
               out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
