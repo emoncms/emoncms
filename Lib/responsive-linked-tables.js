@@ -228,7 +228,7 @@ function onResize() {
     // if "auto" column les than min width hide it
     $container.find('.thead [data-col-width="auto"]').each(function() {
         let col = $(this).data("col")
-        $container.find('[data-col="' + col + '"]').width(r);
+        $container.find('[data-col="' + col + '"]').width(r-10);
         hidden[col] = remainder < min_auto_width;
     });
     

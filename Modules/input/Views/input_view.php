@@ -1,11 +1,13 @@
 <?php
 	global $path;
+	
+	$v=1;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 
 <style>
 #table input[type="text"] {
@@ -75,7 +77,7 @@
 	'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'}
   }
 
-  update();
+  setTimeout(update,50);
 
   function update(){   
 	var requestTime = (new Date()).getTime();

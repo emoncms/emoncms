@@ -120,6 +120,7 @@ input[type=text][class=variable-name-edit] {
     	no-repeat;
 }
 
+/*
 .navbar-inner {
     background-image:none !important;
     background-color:#44b3e2 !important;
@@ -143,7 +144,7 @@ input[type=text][class=variable-name-edit] {
 
 .caret {
    border-top-color: #fff !important;
-}
+}*/
 
 .text-larger {
     font-size: larger
