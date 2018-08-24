@@ -352,11 +352,13 @@ body{padding:0!important}
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
-              // expand if only one feed available
-              if (firstLoad && Object.keys(nodes).length > 1) {
-                  nodes_display[node] = false
-              }
               nodes[node].push(feeds[z]);
+          }
+          if (firstLoad && Object.keys(nodes).length > 1) {
+            for (var node in nodes) {
+            // collapse all if more than one node
+                nodes_display[node] = false
+            }
           }
           firstLoad = false
           var out = "";
@@ -392,6 +394,7 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
+              console.log('isCollapsed',isCollapsed)
               out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
@@ -413,6 +416,7 @@ body{padding:0!important}
                   out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
                   out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
                   out += '  <div class="node-feed-right pull-right">';
+                  if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
                   out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+'</div>';
                   out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
                   out += '  </div>';

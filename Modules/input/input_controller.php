@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device, $param;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings,$param,$device;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!isset($session['write'])) return array('content'=>false);
