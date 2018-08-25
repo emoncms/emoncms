@@ -348,9 +348,13 @@ class InputMethods
                     $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
                     $this->input->set_timevalue($inputid,$time,$value);
                 } else {
-                    if (isset($names[$index])) $name = $names[$index]; else $name = $index+1;
-                    if ($dbinputs_byindex[$nodeid][$index]['name']!=$name) {
-                        $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name);
+                    if (isset($names[$index])) {
+                        $name = $names[$index]; 
+                        if ($dbinputs_byindex[$nodeid][$index]['name']!=$name) {
+                            $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name);
+                        }
+                    } else {
+                        $name = $index+1;
                     }
                 
                     $this->input->set_timevalue($dbinputs_byindex[$nodeid][$index]['id'],$time,$value);
