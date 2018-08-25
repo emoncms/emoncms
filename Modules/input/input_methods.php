@@ -340,7 +340,7 @@ class InputMethods
                 
                 if (!isset($dbinputs_byindex[$nodeid][$index])) {
                 
-                    if (isset($names[$index])) $name = $names[$index]; else $name = $index+1;
+                    if (isset($names[$index])) $name = $names[$index]; else $name = $index;
                     
                     //$this->log->warn("create input $nodeid $index $name");
                     $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
@@ -354,7 +354,7 @@ class InputMethods
                             $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name);
                         }
                     } else {
-                        $name = $index+1;
+                        $name = $index;
                     }
                 
                     $this->input->set_timevalue($dbinputs_byindex[$nodeid][$index]['id'],$time,$value);

@@ -287,7 +287,7 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT nodeid,`index`,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object())
         {
             if ($row['nodeid']==null) $row['nodeid'] = 0;
@@ -360,7 +360,7 @@ class Input
     {
         $userid = (int) $userid;
         $inputs = array();
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,nodeid,`index`,name,description,processList,time,value FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = (array)$result->fetch_object()) $inputs[] = $row;
         return $inputs;
     }
