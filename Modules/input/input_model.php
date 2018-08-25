@@ -27,17 +27,19 @@ class Input
         $this->log = new EmonLogger(__FILE__);
     }
 
-    public function create_input($userid, $nodeid, $name)
+    public function create_input($userid, $nodeid, $index, $name)
     {
+        $this->log->warn("index:$index");
         $userid = (int) $userid;
+        $index = (int) $index;
         $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
         // if (strlen($nodeid)>16) return false; // restriction placed on emoncms.org
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
         $id = false;
         
-        if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,name,nodeid,description,processList) VALUES (?,?,?,'','')")) {
-            $stmt->bind_param("iss",$userid,$name,$nodeid);
+        if ($stmt = $this->mysqli->prepare("INSERT INTO input (userid,nodeid,`index`,name,description,processList) VALUES (?,?,?,?,'','')")) {
+            $stmt->bind_param("isis",$userid,$nodeid,$index,$name);
             $stmt->execute();
             $stmt->close();
 
@@ -45,10 +47,10 @@ class Input
 
             if ($this->redis && $id>0) {
                 $this->redis->sAdd("user:inputs:$userid", $id);
-                $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
+                $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'index'=>$index,'name'=>$name,'description'=>"", 'processList'=>""));
             }
         } else {
-           $this->log->warn("create_input mysql error $userid $nodeid $name ".$this->mysqli->error);
+           $this->log->warn("create_input mysql error $userid $nodeid $index $name ".$this->mysqli->error);
         }
         return $id;
     }
@@ -171,6 +173,20 @@ class Input
             return array('success'=>false, 'message'=>'Field could not be updated');
         }
     }
+    
+    public function set_name($id,$name)
+    {
+        $id = (int) $id;
+        if (!$this->exists($id)) return array('success'=>false, 'message'=>'Input does not exist');
+        if (preg_replace('/[^\p{N}\p{L}_\s-]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in input name');
+        
+        $stmt = $this->mysqli->prepare("UPDATE input SET name = ? WHERE id = ?");
+        $stmt->bind_param("si",$fields->name,$id);
+        if ($stmt->execute()) $success = true;
+        $stmt->close();
+        
+        if ($this->redis) $this->redis->hset("input:$id",'name',$name);
+    }
 
     // -----------------------------------------------------------------------------------------
     // get_inputs, returns user inputs by node name and input name
@@ -202,12 +218,7 @@ class Input
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
         $result = $pipe->exec();
         
-        foreach ($result as $row) {
-            if ($row['nodeid']==null) $row['nodeid'] = 0;
-            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
-        }
-
+        foreach ($result as $row) $dbinputs[] = $row;
         return $dbinputs;
     }
 
@@ -215,13 +226,8 @@ class Input
     {
         $userid = (int) $userid;
         $dbinputs = array();
-        $result = $this->mysqli->query("SELECT id,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
-        while ($row = (array)$result->fetch_object())
-        {
-            if ($row['nodeid']==null) $row['nodeid'] = 0;
-            if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
-            $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
-        }
+        $result = $this->mysqli->query("SELECT id,nodeid,`index`,name,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        while ($row = (array)$result->fetch_object()) $dbinputs[] = $row;
         return $dbinputs;
     }
 

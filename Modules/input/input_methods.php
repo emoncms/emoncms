@@ -17,6 +17,7 @@ class InputMethods
     private $mysqli;
     private $feed;
     private $redis;
+    private $log;
 
     public function __construct($mysqli,$redis,$user,$input,$feed,$process,$device)
     {
@@ -28,6 +29,7 @@ class InputMethods
         $this->feed = $feed;
         $this->process = $process;
         $this->device = $device;
+        $this->log = new EmonLogger(__FILE__);
     }
     
     // ------------------------------------------------------------------------------------
@@ -88,10 +90,11 @@ class InputMethods
         if ($param->exists('json')) $datain = $param->val('json');
         else if ($param->exists('fulljson')) $datain = $param->val('fulljson');
         else if ($param->exists('csv')) $datain = $param->val('csv');
+        else if ($param->exists('values')) $datain = $param->val('values');
         else if ($param->exists('data')) $datain = $param->val('data');
 
         if ($datain=="") return "Request contains no data via csv, json or data tag";
-        
+                
         if ($param->exists('fulljson')) {
             $jsondata = null;
             $jsondata = json_decode($datain,true,2);
@@ -139,7 +142,6 @@ class InputMethods
             $datapairs = explode(',', $json);
             
             $inputs = array();
-            $csvi = 0;
             for ($i=0; $i<count($datapairs); $i++)
             {
                 $keyvalue = explode(':', $datapairs[$i]);
@@ -147,16 +149,22 @@ class InputMethods
                 if (isset($keyvalue[1])) {
                     if ($keyvalue[0]=='') return "Format error, json key missing or invalid character";
                     if (!is_numeric($keyvalue[1]) && $keyvalue[1]!='null') return "Format error, json value is not numeric";
-                    $inputs[$keyvalue[0]] = (float) $keyvalue[1];
+                    $inputs[] = array($keyvalue[0],(float) $keyvalue[1]);
                 } else {
                     if (!is_numeric($keyvalue[0]) && $keyvalue[0]!='null') return "Format error: csv value is not numeric";
-                    $inputs[$csvi+1] = (float) $keyvalue[0];
-                    $csvi ++;
+                    $inputs[] = (float) $keyvalue[0];
                 }
             }
         }
+        
+        $names = false;
+        if ($param->exists('names')) {
+            $names = $param->val('names');
+            $names = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$names);
+            $names = explode(',', $names);
+        }
 
-        $result = $this->process_node($userid,$time,$nodeid,$inputs);
+        $result = $this->process_node($userid,$time,$nodeid,$inputs,$names);
         if ($result!==true) return $result;
         
         return "ok";
@@ -240,21 +248,19 @@ class InputMethods
                 if ($nodeid=="") $nodeid = 0;
 
                 $inputs = array();
-                $name = 1;
                 for ($i=2; $i<count($item); $i++)
                 {
                     if (is_object($item[$i]))
                     {
                         $value = (float) current($item[$i]);
-                        $inputs[key($item[$i])] = $value;
+                        $inputs[] = array(key($item[$i]),$value);
                         continue;
                     }
                     if (strlen($item[$i]))
                     {
                         $value = (float) $item[$i];
-                        $inputs[$name] = $value;
+                        $inputs[] = $value;
                     }
-                    $name ++;
                 }
 
                 $result = $this->process_node($userid,$time,$nodeid,$inputs);
@@ -269,40 +275,95 @@ class InputMethods
     // Register and process the inputs for the node given
     // This function is used by all input methods
     // ------------------------------------------------------------------------------------
-    public function process_node($userid,$time,$nodeid,$inputs)
+    public function process_node($userid,$time,$nodeid,$inputs,$names)
     {
         $dbinputs = $this->input->get_inputs($userid);
         
-        $validate_access = $this->input->validate_access($dbinputs, $nodeid);
+        $dbinputs_byindex = array();
+        $dbinputs_byname = array();
+        
+        foreach ($dbinputs as $row) {
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs_byindex[$row['nodeid']])) $dbinputs_byindex[$row['nodeid']] = array();
+            if (!isset($dbinputs_byname[$row['nodeid']])) $dbinputs_byname[$row['nodeid']] = array();
+            
+            $dbinputs_byname[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'index'=>$row['index'], 'processList'=>$row['processList']);
+            $dbinputs_byindex[$row['nodeid']][$row['index']] = array('id'=>$row['id'], 'name'=>$row['name'], 'processList'=>$row['processList']);
+        }
+        
+        $validate_access = $this->input->validate_access($dbinputs_byindex, $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
 
-        if (!isset($dbinputs[$nodeid])) {
-            $dbinputs[$nodeid] = array();
+        if (!isset($dbinputs_byindex[$nodeid])) {
+            $dbinputs_byindex[$nodeid] = array();
+            $dbinputs_byname[$nodeid] = array();
             if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
-                
+        
+        //$this->log->warn(json_encode($inputs));
+        //$this->log->warn(json_encode($dbinputs_byindex));     
+        //$this->log->warn(json_encode($dbinputs_byname));
+           
         $tmp = array();
-        foreach ($inputs as $name => $value)
+        foreach ($inputs as $index => $i)
         {
-            if (!isset($dbinputs[$nodeid][$name]))
-            {
-                $inputid = $this->input->create_input($userid, $nodeid, $name);
-                $dbinputs[$nodeid][$name] = true;
-                $dbinputs[$nodeid][$name] = array('id'=>$inputid, 'processList'=>'');
-                $this->input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
-            }
-            else
-            {
-                $this->input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+            // key:value format
+            if (is_array($i)) {
+                $name = $i[0];
+                $value = $i[1];
+                //$this->log->warn($index." ".$name." ".$value);
                 
-                if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array(
-                    'value'=>$value,
-                    'processList'=>$dbinputs[$nodeid][$name]['processList'],
-                    'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
-                    'sourceid'=>$dbinputs[$nodeid][$name]['id'])
-                );
+                if (!isset($dbinputs_byname[$nodeid][$name])) {
+                    $index = count($dbinputs_byname[$nodeid]);
+                    //$this->log->warn("create input $nodeid $index $name");
+                    $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
+                    $dbinputs_byindex[$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
+                    $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
+                    $this->input->set_timevalue($inputid,$time,$value);
+                } else {
+                    $this->input->set_timevalue($dbinputs_byname[$nodeid][$name]['id'],$time,$value);
 
-                if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
+                    if ($dbinputs_byname[$nodeid][$name]['processList']) $tmp[] = array(
+                        'value'=>$value,
+                        'processList'=>$dbinputs_byname[$nodeid][$name]['processList'],
+                        'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
+                        'sourceid'=>$dbinputs_byname[$nodeid][$name]['id'])
+                    );
+                    
+                    // if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
+                }
+                
+            // csv, indexed values format
+            } else {
+                $value = $i;
+                //$this->log->warn($index." ".$value);
+                
+                if (!isset($dbinputs_byindex[$nodeid][$index])) {
+                
+                    if (isset($names[$index])) $name = $names[$index]; else $name = $index+1;
+                    
+                    //$this->log->warn("create input $nodeid $index $name");
+                    $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
+                    $dbinputs_byindex[$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
+                    $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
+                    $this->input->set_timevalue($inputid,$time,$value);
+                } else {
+                    if (isset($names[$index])) $name = $names[$index]; else $name = $index+1;
+                    if ($dbinputs_byindex[$nodeid][$index]['name']!=$name) {
+                        $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name);
+                    }
+                
+                    $this->input->set_timevalue($dbinputs_byindex[$nodeid][$index]['id'],$time,$value);
+                    
+                    if ($dbinputs_byindex[$nodeid][$index]['processList']) $tmp[] = array(
+                        'value'=>$value,
+                        'processList'=>$dbinputs_byindex[$nodeid][$index]['processList'],
+                        'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
+                        'sourceid'=>$dbinputs_byindex[$nodeid][$index]['id'])
+                    );
+                    
+                    // if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
+                }
             }
         }
 

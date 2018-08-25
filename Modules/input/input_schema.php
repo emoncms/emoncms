@@ -5,6 +5,7 @@ $schema['input'] = array(
     'userid' => array('type' => 'int(11)'),
     'nodeid' => array('type' => 'text'),
     'name' => array('type' => 'text'),
+    'index' => array('type' => 'int(11)'),
     'description' => array('type' => 'text','default'=>''),
     'processList' => array('type' => 'text'),
     'time' => array('type' => 'int(10)'),
