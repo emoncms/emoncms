@@ -127,6 +127,9 @@ function input_controller()
     } else if ($route->action == "cleanprocesslistfeeds") {
         $route->format = 'text';
         $result = $input->clean_processlist_feeds($process,$session['userid']);
+    } else if ($route->action == "populateindexes") {
+        $route->format = 'text';
+        $result = $input->populate_indexes($session['userid']);
     }
     else if ($route->action == "list") $result = $input->getlist($session['userid']);
     else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);

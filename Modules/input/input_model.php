@@ -230,6 +230,33 @@ class Input
         while ($row = (array)$result->fetch_object()) $dbinputs[] = $row;
         return $dbinputs;
     }
+    
+    public function populate_indexes($userid) {
+        $userid = (int) $userid;
+        
+        $nodes = array();
+        $result = $this->mysqli->query("SELECT id,nodeid,`index`,name,processList FROM input WHERE `userid` = '$userid' ORDER BY id");
+        while ($row = $result->fetch_object()) {
+            if (!isset($nodes[$row->nodeid])) $nodes[$row->nodeid] = array();
+            $nodes[$row->nodeid][] = $row;
+        }
+        
+        foreach ($nodes as $node) {
+            $index = 0;
+            foreach ($node as $input) {
+                if ($input->index==-1) {
+                    $this->mysqli->query("UPDATE input SET `index`='$index' WHERE `id` = '$input->id'");
+                } else {
+                    $index = $input->index;
+                }
+                $index ++;
+            }
+        }
+        
+        if ($this->redis) $this->load_to_redis($userid);
+        
+        return "indexes populated";
+    }
 
     // -----------------------------------------------------------------------------------------
     // get_inputs_v2, returns user inputs by node name and input name
@@ -681,7 +708,7 @@ class Input
     private function load_input_to_redis($inputid)
     {
         $inputid = (int) $inputid;
-        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,userid,nodeid,`index`,name,description,processList FROM input WHERE `id` = '$inputid' ORDER BY nodeid,name asc");
         if ($result->num_rows > 0) {
             $row = $result->fetch_object();
             $userid = $row->userid;
@@ -690,6 +717,7 @@ class Input
             $this->redis->hMSet("input:$row->id",array(
                 'id'=>$row->id,
                 'nodeid'=>$row->nodeid,
+                'index'=>$row->index,
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'processList'=>$row->processList
@@ -700,13 +728,14 @@ class Input
     private function load_to_redis($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT id,userid,nodeid,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
+        $result = $this->mysqli->query("SELECT id,userid,nodeid,`index`,name,description,processList FROM input WHERE `userid` = '$userid' ORDER BY nodeid,name asc");
         while ($row = $result->fetch_object())
         {
             $this->redis->sAdd("user:inputs:$userid", $row->id);
             $this->redis->hMSet("input:$row->id",array(
                 'id'=>$row->id,
                 'nodeid'=>$row->nodeid,
+                'index'=>$row->index,
                 'name'=>$row->name,
                 'description'=>$row->description,
                 'processList'=>$row->processList
