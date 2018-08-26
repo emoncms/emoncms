@@ -262,12 +262,72 @@ function admin_controller()
                 $redis->flushDB();
                 $result = array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
             }
-            else if ($route->action == 'userlist' && $session['write'])
+            
+            else if ($route->action == 'numberofusers')
             {
+                $route->format = "text";
+                $result = $mysqli->query("SELECT COUNT(*) FROM users");
+                $row = $result->fetch_array();
+                $result = (int) $row[0];
+            }
+
+            else if ($route->action == 'userlist')
+            {
+
+                $limit = "";
+                if (isset($_GET['page']) && isset($_GET['perpage'])) {
+                    $page = (int) $_GET['page'];
+                    $perpage = (int) $_GET['perpage'];
+                    $offset = $page * $perpage;
+                    $limit = "LIMIT $perpage OFFSET $offset";
+                }
+                
+                $orderby = "id";
+                if (isset($_GET['orderby'])) {
+                    if ($_GET['orderby']=="id") $orderby = "id";
+                    if ($_GET['orderby']=="username") $orderby = "username";
+                    if ($_GET['orderby']=="email") $orderby = "email";
+                    if ($_GET['orderby']=="email_verified") $orderby = "email_verified";
+                }
+                
+                $order = "DESC";
+                if (isset($_GET['order'])) {
+                    if ($_GET['order']=="decending") $order = "DESC";
+                    if ($_GET['order']=="ascending") $order = "ASC";
+                }
+                
+                $search = false;
+                $searchstr = "";
+                if (isset($_GET['search'])) {
+                    $search = $_GET['search'];
+                    $search_out = preg_replace('/[^\p{N}\p{L}_\s-@.]/u','',$search);
+                    if ($search_out!=$search || $search=="") { 
+                        $search = false; 
+                    }
+                    if ($search!==false) $searchstr = "WHERE username LIKE '%$search%' OR email LIKE '%$search%'";
+                }
+            
                 $data = array();
-                $result = $mysqli->query("SELECT id,username,email FROM users");
+                $result = $mysqli->query("SELECT id,username,email,email_verified FROM users $searchstr ORDER BY $orderby $order ".$limit);
+                
                 while ($row = $result->fetch_object()) $data[] = $row;
                 $result = $data;
+            }
+
+            else if ($route->action == 'setuser' && $session['write'])
+            {
+                $_SESSION['userid'] = intval(get('id'));
+                header("Location: ../user/view");
+            }
+            
+            else if ($route->action == 'setuserfeed' && $session['write'])
+            {
+                $feedid = (int) get("id");
+                $result = $mysqli->query("SELECT userid FROM feeds WHERE id=$feedid");
+                $row = $result->fetch_object();
+                $userid = $row->userid;
+                $_SESSION['userid'] = $userid;
+                header("Location: ../user/view");
             }
         }
     }
