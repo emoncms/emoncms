@@ -83,7 +83,7 @@ body{padding:0!important}
 }
 
 </style>
-<div id="apihelphead" style="float:right;"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
+<div id="apihelphead" style="float:right; padding-top:10px"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
 
 <div class="controls" data-spy="affix" data-offset-top="100">
@@ -346,25 +346,27 @@ body{padding:0!important}
           }
 		      
           feeds = {};
-		      for (var z in data) feeds[data[z].id] = data[z];
-		      
-          
+          for (var z in data) feeds[data[z].id] = data[z];
           var nodes = {};
           for (var z in feeds) {
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
-              if (Object.keys(feeds).length > 1 && firstLoad)  nodes_display[node] = false
               nodes[node].push(feeds[z]);
           }
+          if (firstLoad && Object.keys(nodes).length > 1) {
+            for (var node in nodes) {
+            // collapse all if more than one node
+                nodes_display[node] = false
+            }
+          }
           firstLoad = false
-
           var out = "";
           
           // get node overview
           var node_size = {},
               node_time = {}
-            for (let node in nodes) {
+            for (node in nodes) {
                 node_size[node] = 0
                 node_time[node] = 0
                 for (let feed in nodes[node]) {
@@ -374,11 +376,13 @@ body{padding:0!important}
           }
           // display nodes and feeds
           var counter = 0
+
+
           for (var node in nodes) {
               counter ++;
-              isCollapsed = Object.keys(nodes).length > 1 ? ' collapsed' : ''
+              isCollapsed = !nodes_display[node]
               out += '<div class="node accordion">';
-              out += '    <div class="node-info accordion-toggle thead'+isCollapsed+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+              out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
               out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
@@ -390,7 +394,8 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
-              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
+              console.log('isCollapsed',isCollapsed)
+              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
@@ -411,6 +416,7 @@ body{padding:0!important}
                   out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
                   out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
                   out += '  <div class="node-feed-right pull-right">';
+                  if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
                   out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+nodes[node][feed].unit+'</div>';
                   out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
                   out += '  </div>';
@@ -424,11 +430,14 @@ body{padding:0!important}
           $container.html(out);
           
           // reset the toggle state for all collapsable elements once data has loaded
-          // css class "in" is used to remember the state
-          $("#table .collapse").collapse({toggle: false})
-
+          // css class "in" is used to remember the expanded state of the ".collapse" element
+    
+          if(typeof $.fn.collapse == 'function'){
+            $("#table .collapse").collapse({toggle: false})
+            setExpandButtonState($container.find('.collapsed').length == 0)
+          }
+          
         autowidth($container) // set each column group to the same width
-
       } // end of for loop
       }); // end of ajax callback
   }

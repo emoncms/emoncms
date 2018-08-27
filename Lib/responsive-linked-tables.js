@@ -1,57 +1,55 @@
+/**
+ * mark toggle button as opened if all accordions are opened
+ * 
+ * @parm {bool} state == true if all visible
+ */
+function setExpandButtonState(state){
+    if(typeof state == 'undefined') return
+    $container = $('#table')
+    $btn_expand = $('#expand-collapse-all')
+    // set the icon and button title based on state (true == open)
+    $icon_expand = $btn_expand.find('.icon')
+    $icon_expand
+      .toggleClass('icon-resize-small', state)
+      .toggleClass('icon-resize-full', !state)
+    if(!$btn_expand.data('original-title')) $btn_expand.data('original-title', $btn_expand.attr('title'))
+    $btn_expand.attr('title', !state ? $btn_expand.data('alt-title') : $btn_expand.data('original-title'))
+}
+function expandAllNodes(state){
+    $container = $('#table')
+    // true if all expanded
+    if (typeof state == 'undefined') state = $container.find('.collapsed').length == 0
+    $container.find('.collapse').collapse(state ? 'hide':'show')
+}
+
 $(function() {
-    // togglable show/hide button to expand/hide all the collapsable items
+    // toggle-able show/hide button to expand/hide all the collapsable items
     $container = $('#table')
     $btn_expand = $('#expand-collapse-all')
     $icon_expand = $btn_expand.find('.icon')
-    $btn_expand.data('original-title',$btn_expand.attr('title'))
-    
-    $btn_expand.data('isOpen',$container.find('.collapse').length > 1)
-    toggleExpandButtonIcons()
 
-    // store the state of the collapsed items in the button after collapsing(or expanding)
+    // collapse or expand all nodes
     $btn_expand.on('click', function(){
-        $btn_expand = $(this)
-        let isOpen = $btn_expand.data('isOpen')
-        $container.find('.collapse').collapse(isOpen ? 'hide':'show')
-        $btn_expand.data('isOpen',!isOpen)
-        $container.find('.accordion-toggle').toggleClass('collapsed', isOpen)
+        expandAllNodes()
     })
     
-    // once accordion has finished closing check if all are closed and change the button
-    $(document).on("hidden", function(){
-        if ($container.find('.collapse.in').length == 0) {
-            isOpen = false
-            $btn_expand.data('isOpen', isOpen)
-            toggleExpandButtonIcons()
-            $btn_expand.attr('title',$btn_expand.data('alt-title'))
+    // once accordion has finished opening or closing check if all are open and change the button
+    $(document).on("shown hidden", function(e){
+        if (e.type == 'hidden'){
+            $('[data-target="#'+e.target.id+'"]').addClass('collapsed')
+        } else {
+            $('[data-target="#'+e.target.id+'"]').removeClass('collapsed')
         }
+        state = $container.find('.collapsed').length == 0
+        setExpandButtonState(state)
     })
-    // once accordion has finished opening check if all are open and change the button
-    $(document).on("shown", function(){
-        $collapsables = $container.find('.collapse')
-        if ($container.find('.collapse.in').length == $collapsables.length) {
-            isOpen = true
-            $btn_expand.data('isOpen', isOpen)
-            toggleExpandButtonIcons()
-            $btn_expand.attr('title',$btn_expand.data('original-title'))
-        }
+    // once accordion starts open/close change the node state
+    $(document).on("hide show", "#table .tbody.collapse", function(e) {
+        nodes_display[$(this).data('node')] = e.type == 'show'
     })
-    // once accordion starts to close change the node state
-    $(document).on("hide", "#table .tbody.collapse", function(e) {
-        nodes_display[$(this).data('node')] = false
-    })
-    // once accordion starts to open change the node state
-    $(document).on("show", "#table .tbody.collapse", function(e) {
-        nodes_display[$(this).data('node')] = true
-    })
-
-    function toggleExpandButtonIcons(){
-        let isOpen = $btn_expand.data('isOpen')
-        $icon_expand.toggleClass('icon-resize-small', isOpen)
-        $icon_expand.toggleClass('icon-resize-full', !isOpen)
-    }
-    
+    // select/de-select all node checkboxes
     $('#select-all').on('click',function(){
+        // state = true if all selected
         $this = $(this)
         state = $this.data('state') != false
         // remember the original title
@@ -66,28 +64,30 @@ $(function() {
         $this.attr('title', title)
         // flip the toggle state
         $this.data('state',!state)
+        // expand all accordions if chosen to select all
+        if (state===true) expandAllNodes(false)
     })
-$(document).on('click',function(event){
-console.log('clicked',event.target.tagName)
-})
-    // select or deselect all the checkboxes for a node
-    function selectAllInNode(e){
-        e.preventDefault()
-        e.stopPropagation()
-        $container = $(e.target).parents('.accordion').first()
-        $container.find('.collapse').collapse('show')
-        $inputs = $container.find(':checkbox')
-        $selected = $container.find(':checkbox:checked')
-        // use a custom trigger so not to confuse with the click event
-        // if all selected de-select else select all
-        $inputs.prop('checked', $inputs.length != $selected.length).trigger('select')
-    }
-    // check / clear all selection
-    // $(document).on('click','.input-list .has-indicator', selectAllInNode)
-    
-    // feed list view already makes use of the click event
-    // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
+
+    // @todo: not yet implemented. ui element not chosen on to trigger this action
+        // select or deselect all the checkboxes for a node
+        function selectAllInNode(e){
+            e.preventDefault()
+            e.stopPropagation()
+            $container = $(e.target).parents('.accordion').first()
+            $container.find('.collapse').collapse('show')
+            $inputs = $container.find(':checkbox')
+            $selected = $container.find(':checkbox:checked')
+            // use a custom trigger so not to confuse with the click event
+            // if all selected de-select else select all
+            $inputs.prop('checked', $inputs.length != $selected.length).trigger('select')
+        }
+        // check / clear all selection
+        // $(document).on('click','.input-list .has-indicator', selectAllInNode)
+        
+        // feed list view already makes use of the click event
+        // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
 });
+
 
 // Calculate and color updated time
 function list_format_updated(time) {
@@ -141,8 +141,8 @@ function list_format_value(value) {
 function autowidth($container) {
     let widths = {}, // only store widest column values against each selector
     default_padding = 20;
-    // tbody
-    $container.find(".tbody [data-col]").each(function() {
+    // resize columns based on columns in tbody and thead
+    $container.find("[data-col]").each(function() {
         let $this = $(this),
         padding = $this.data("col-padding") || default_padding,
         width = $this.width() + padding,
@@ -228,7 +228,7 @@ function onResize() {
     // if "auto" column les than min width hide it
     $container.find('.thead [data-col-width="auto"]').each(function() {
         let col = $(this).data("col")
-        $container.find('[data-col="' + col + '"]').width(r);
+        $container.find('[data-col="' + col + '"]').width(r-10);
         hidden[col] = remainder < min_auto_width;
     });
     

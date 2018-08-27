@@ -40,6 +40,8 @@ input[type="checkbox"] { margin:0px; }
     margin-top:-2px;
 }
 
+#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
@@ -63,15 +65,16 @@ input[type="checkbox"] { margin:0px; }
 	<div id="auth-check" class="hide">
 	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
 	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
-	</div>
-	
+    </div>
+    
+	<div id="noprocesses"></div>
 	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
 
 	<div id="noinputs" class="alert alert-block hide">
-			<h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-			<p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
 	</div>
 	
 	<div id="input-loader" class="ajax-loader"></div>
@@ -145,14 +148,36 @@ function update(){
 	                  }});
 	              }
                   if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
-                  if (Object.keys(inputs).length > 1 && firstLoad)  nodes_display[inputs[z].nodeid] = false
+                  // expand if only one feed available
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
+                  // expand if only one feed available
+                  if (firstLoad && Object.keys(devices).length > 1) {
+                      nodes_display[inputs[z].nodeid] = false
+                  }
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
-	          }
+              }
               firstLoad = false;
+              
               draw_devices();
+              noProcessNotification(devices);
         }});
     }});
+}
+/** show a message to the user if no processes have been added */
+function noProcessNotification(devices){
+    let processList = [],  message = ''
+    
+    for (d in devices) {
+        for (i in devices[d].inputs) {
+            if(devices[d].inputs[i].processList.length>0) {
+                processList.push(devices[d].inputs[i].processList)
+            }
+        }
+    }
+    if(processList.length<1 && Object.keys(devices).length > 0){
+        message = '<div class="alert pull-right">%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
+    }
+    $('#noprocesses').html(message)
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -163,12 +188,13 @@ function draw_devices()
     // Draw node/input list
     var out = "";
     var counter = 0
+    isCollapsed = !(Object.keys(devices).length > 1)
+
     for (var node in devices) {
         counter++
-        isCollapsed = Object.keys(devices).length > 1 ? ' collapsed' : ''
-        var visible = nodes_display[node] ? 'in' : ''
+        isCollapsed = !nodes_display[node]
         out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+isCollapsed+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
         out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
@@ -179,7 +205,7 @@ function draw_devices()
         out += "     </div>";
         out += "  </div>";
 
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( nodes_display[node] ? 'in':'' )+"' data-node='"+node+"'>";
+        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
         for (var i in devices[node].inputs) {
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
@@ -218,7 +244,10 @@ function draw_devices()
             indicator.removeClass('hidden')
         }
     }
-    $("#table .collapse").collapse({toggle: false})
+    if(typeof $.fn.collapse == 'function'){
+        $("#table .collapse").collapse({toggle: false})
+        setExpandButtonState($('#table .collapsed').length == 0)
+    }
     autowidth($('#table')) // set each column group to the same width
 }
 // ---------------------------------------------------------------------------------------------
@@ -327,7 +356,6 @@ processlist_ui.init(0); // Set input context
 
 $("#table").on('click', '.configure', function() {
     var i = inputs[$(this).attr('id')];
-    console.log(i);
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
