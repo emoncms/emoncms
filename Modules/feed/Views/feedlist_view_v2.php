@@ -83,32 +83,34 @@ body{padding:0!important}
 }
 
 </style>
-<div id="apihelphead" style="float:right; padding-top:10px"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
-<div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
-
-<div class="controls" data-spy="affix" data-offset-top="100">
-    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
-	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
-	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
-	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
+<div id="feed-header" class="hide">
+    <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
+    <h2><?php echo _('Feeds'); ?></h2>
+    
+    <div class="controls" data-spy="affix" data-offset-top="100">
+        <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+        <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
+    	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
+    	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+    	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
+    	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
+    	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
+    </div>
 </div>
 
 <div id="table" class="feed-list"></div>
 
-<div id="nofeeds" class="alert alert-block hide">
+<div id="feed-none" class="alert alert-block hide">
     <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
 
-<div id="feed-loader" class="ajax-loader"></div>
-    
-<div id="bottomtoolbar" class="hide">
+<div id="feed-footer" class="hide">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
 </div>
+<div id="feed-loader" class="ajax-loader"></div>
+
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
@@ -332,17 +334,13 @@ body{padding:0!important}
           // Show/hide no feeds alert
           $('#feed-loader').hide();
           if (data.length == 0){
-              $("#nofeeds").show();
-              //$("#localheading").hide();
-              $("#apihelphead").hide();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").hide();
+              $("#feed-header").hide();
+              $("#feed-footer").hide();
+              $("#feed-none").show();
           } else {
-              $("#nofeeds").hide();
-              //$("#localheading").show();
-              $("#apihelphead").show();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").show();
+              $("#feed-header").show();
+              $("#feed-footer").show();
+              $("#feed-none").hide();
           }
 		      
           feeds = {};
@@ -383,7 +381,7 @@ body{padding:0!important}
               isCollapsed = !nodes_display[node]
               out += '<div class="node accordion">';
               out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
+              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
               out += '      <div class="engine" data-col="F"></div>';

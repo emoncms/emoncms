@@ -35,10 +35,13 @@ $(function() {
     
     // once accordion has finished opening or closing check if all are open and change the button
     $(document).on("shown hidden", function(e){
+    	$header = $('[data-target="#'+e.target.id+'"]')
         if (e.type == 'hidden'){
-            $('[data-target="#'+e.target.id+'"]').addClass('collapsed')
+        	$header.addClass('collapsed')
+            $header.find('.icon-indicator').removeClass('icon-chevron-down').addClass('icon-chevron-right')
         } else {
-            $('[data-target="#'+e.target.id+'"]').removeClass('collapsed')
+        	$header.removeClass('collapsed')
+            $header.find('.icon-indicator').removeClass('icon-chevron-right').addClass('icon-chevron-down')
         }
         state = $container.find('.collapsed').length == 0
         setExpandButtonState(state)

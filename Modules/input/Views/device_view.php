@@ -53,14 +53,16 @@ input[type="checkbox"] { margin:0px; }
 </style>
 
 <div>
-	<div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
-	<div id="localheading"><h3><?php echo _('Inputs'); ?></h3></div>
-
-<div class="controls" data-spy="affix" data-offset-top="100">
-    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-</div>	
+    <div id="input-header" class="hide">
+        <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
+        <h2><?php echo _('Inputs'); ?></h2>
+        
+        <div class="controls" data-spy="affix" data-offset-top="100">
+            <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+            <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
+        	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+        </div>
+    </div>
 	
 	<div id="auth-check" class="hide">
 	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
@@ -72,11 +74,14 @@ input[type="checkbox"] { margin:0px; }
 	
 	<div id="output"></div>
 
-	<div id="noinputs" class="alert alert-block hide">
+	<div id="input-none" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
         <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
 	</div>
 	
+    <div id="input-footer" class="hide">
+        <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
+    </div>
 	<div id="input-loader" class="ajax-loader"></div>
 </div>
 
@@ -195,7 +200,7 @@ function draw_devices()
         isCollapsed = !nodes_display[node]
         out += "<div class='node accordion line-height-expanded'>";
         out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
+        out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
         out += "     <div class='pull-right'>"
@@ -212,7 +217,7 @@ function draw_devices()
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : ''
             out += "<div class='node-input' id="+input.id+">";
             out += "  <div class='select text-center' data-col='B'>"
-            out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
+            out += "    <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
             out += "  <div class='processlist' data-col='F'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
@@ -231,11 +236,13 @@ function draw_devices()
 
     $('#input-loader').hide();
     if (out=="") {
-        $("#noinputs").show();
-        $("#apihelphead").hide();
+        $("#input-header").hide();
+        $("#input-footer").hide();
+        $("#input-none").show();
     } else {
-        $("#noinputs").hide();
-        $("#apihelphead").show();
+        $("#input-header").show();
+        $("#input-footer").show();
+        $("#input-none").hide();
     }
 
     for (var node in devices) {
@@ -254,11 +261,12 @@ function draw_devices()
 
 $('#wrap').on("device-delete",function() { update(); });
 $('#wrap').on("device-init",function() { update(); });
+$('#device-new').on("click",function() { device_dialog.loadConfig(device_templates); });
 
 $("#table").on("click select",".input-select",function(e) {
     input_selection();
 });
-  
+
 function input_selection() 
 {
     selected_inputs = {};

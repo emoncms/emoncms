@@ -185,35 +185,22 @@ input[type=text][class=variable-name-edit] {
 .node .accordion-toggle:hover {
     background-color: #e3e3e3;
 }
+
 /* dropdown indicator */
-.node .accordion-toggle .has-indicator:before {
-    content: '';
-    transition: border .2s ease-out;
-    border-bottom: 5px solid darkgrey;
-    border-top: 0 solid transparent;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
-    display: inline-block;
-    margin-bottom: .2em;
+.node .has-indicator .icon-indicator {
+    opacity: 0.333;
+    float: none;
 }
-.node .accordion-toggle.collapsed .has-indicator:before {
-    content: '';
-    border-bottom: 0 solid transparent;
-    border-top: 5px solid darkgrey;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
-}
+
 .node .select input {margin-top: -1px}
 .node .collapse {
-    transition-duration: 150ms;
-    transition-property: all;
-    transition-timing-function: cubic-bezier(0.950, 0.050, 0.795, 0.035);
+    width: 100%;
 }
 .node .collapse > * {
+    width: 100%;
     position: relative;
     border-bottom: 1px solid #fff;
     background: #f0f0f0;
-    width: 100%;
 }
 .node .collapse > *:hover {
     background-color: #f5f5f5;
