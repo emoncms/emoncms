@@ -106,7 +106,7 @@ td:nth-of-type(2) { width:4%;}
 
 <h4><?php echo _('Encryption'); ?></h4>
 
-<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/57f75aee6948c96d31ad023ae49289b04d832f1e/docs/input_encrypted.md">PHP Example source code.</a></p>
+<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/master/docs/input_encrypted.md">PHP Example source code.</a></p>
 
 <p>
 1. Start with a request string conforming with the API options above e.g: node=emontx&data={power1:100,power2:200,power3:300}<br>
