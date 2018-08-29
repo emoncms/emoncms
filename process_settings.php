@@ -14,6 +14,110 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
+function ini_merge ($config_ini, $custom_ini) {
+    foreach ($custom_ini AS $k => $v):
+        if (is_array($v)):
+            $config_ini[$k] = ini_merge($config_ini[$k], $custom_ini[$k]);
+        else:
+            $config_ini[$k] = $v;
+        endif;
+    endforeach;
+    return $config_ini;
+};
+
+$CONFIG_INI = parse_ini_file("default-settings.ini");
+$CUSTOM_INI = parse_ini_file("settings.ini");
+$ini_array = ini_merge($CONFIG_INI, $CUSTOM_INI);
+
+//$ini_array = parse_ini_file("default-settings.ini");
+//$ini_array = parse_ini_file("settings.ini");
+//************************************************
+$server   = $ini_array['server'];
+$database = $ini_array['database'];
+$username = $ini_array['username'];
+$password = $ini_array['password'];
+$port     = $ini_array['port'];
+
+$dbtest = $ini_array['dbtest'];
+$redis_enabled = $ini_array['redis_enabled'];
+$redis_server = array( 'host'   => $ini_array['redis_server']['host'],
+                       'port'   => $ini_array['redis_server']['port'],
+                       'auth'   => $ini_array['redis_server']['auth'],
+                       'prefix' => $ini_array['redis_server']['prefix']);
+$mqtt_enabled = $ini_array['mqtt_enabled'];          // Activate MQTT by changing to true
+$mqtt_server = array( 'host'     => $ini_array['mqtt_server']['host'],
+                      'port'     => $ini_array['mqtt_server']['port'],
+                      'user'     => $ini_array['mqtt_server']['user'],
+                      'password' => $ini_array['mqtt_server']['password'],
+                      'basetopic'=> $ini_array['mqtt_server']['basetopic']);
+$feed_settings = array(
+    'engines_hidden'=>array(
+        //Engine::MYSQL         // 0  Mysql traditional
+        //Engine::MYSQLMEMORY   // 8  Mysql with MEMORY tables on RAM. All data is lost on shutdown
+        //Engine::PHPTIMESERIES // 2
+        //,Engine::PHPFINA      // 5
+        //,Engine::PHPFIWA      // 6
+        //,Engine::CASSANDRA    // 10 Apache Cassandra
+    ),
+    'redisbuffer'=>array(
+        'enabled' => $ini_array['redisbuffer']['enabled']      // If enabled is true, requires redis enabled and feedwriter service running
+        ,'sleep' => $ini_array['redisbuffer']['sleep']),       // Number of seconds to wait before write buffer to disk - user selectable option
+    'csvdownloadlimit_mb' => $ini_array['csvdownloadlimit_mb'],     // Max csv download size in MB
+    'phpfiwa'=>array(
+        'datadir' => $ini_array['phpfiwa']['datadir']),
+    'phpfina'=>array(
+        'datadir' => $ini_array['phpfina']['datadir']),
+    'phptimeseries'=>array(
+        'datadir' => $ini_array['phptimeseries']['datadir']),
+    'cassandra'=>array(
+        'keyspace' => $ini_array['cassandra']['datadir'])
+);
+
+$max_node_id_limit = $ini_array['max_node_id_limit'];
+$default_language = $ini_array['default_language'];
+$theme = $ini_array['theme'];
+$themecolor = $ini_array['themecolor'];
+$favicon = $ini_array['favicon'];
+$fullwidth = $ini_array['fullwidth'];
+$menucollapses = $ini_array['menucollapses'];
+$enable_multi_user = $ini_array['enable_multi_user'];
+$enable_rememberme = $ini_array['enable_rememberme'];
+$enable_password_reset = $ini_array['enable_password_reset'];
+$default_emailto = $ini_array['default_emailto'];
+$smtp_email_settings = array(
+  'host'=> $ini_array['smtp_email_settings']['host'],
+  'port'=> $ini_array['smtp_email_settings']['port'],  // 25, 465, 587
+  'from'=> array(
+      $ini_array['smtp_email_settings']['from_email'] => $ini_array['smtp_email_settings']['from_name']),
+  'encryption'=> $ini_array['smtp_email_settings']['encryption'], // ssl, tls
+  'username'=> $ini_array['smtp_email_settings']['username'],
+  'password'=>$ini_array['smtp_email_settings']['password']);
+
+$default_controller = $ini_array['default_controller'];
+$default_action = $ini_array['default_action'];
+$default_controller_auth = $ini_array['default_controller_auth'];
+$default_action_auth = $ini_array['default_action_auth'];
+$public_profile_enabled = $ini_array['public_profile_enabled'];
+$public_profile_controller = $ini_array['public_profile_controller'];
+$public_profile_action = $ini_array['public_profile_action'];
+$feedviewpath = $ini_array['feedviewpath'];
+$log_enabled = $ini_array['log_enabled'];
+$log_filename = $ini_array['log_filename'];
+$log_level = $ini_array['log_level'];
+$allow_emonpi_admin = $ini_array['allow_emonpi_admin'];
+$data_sampling = $ini_array['data_sampling'];
+$display_errors = $ini_array['display_errors'];
+$csv_decimal_places = $ini_array['csv_decimal_places'];
+$csv_decimal_place_separator = $ini_array['csv_decimal_place_separator'];
+$csv_field_separator = $ini_array['csv_field_separator'];
+$allow_config_env_vars = $ini_array['allow_config_env_vars'];
+$config_file_version = $ini_array['config_file_version'];
+$updatelogin = $ini_array['updatelogin'];
+$appname = $ini_array['appname'];
+
+//echo "<h3>Got here</h3>";
+
+//************************************************
 // Check if settings.php file exists
 if(file_exists(dirname(__FILE__)."/settings.php"))
 {
