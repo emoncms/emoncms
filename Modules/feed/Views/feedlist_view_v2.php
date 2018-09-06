@@ -392,7 +392,6 @@ body{padding:0!important}
               out += '      </div>';
               out += '    </div>';
               
-              console.log('isCollapsed',isCollapsed)
               out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
               
               for (var feed in nodes[node]) {
@@ -473,16 +472,20 @@ body{padding:0!important}
   // ---------------------------------------------------------------------------------------------
   $(".feed-edit").click(function() {
       $('#feedEditModal').modal('show');
-      
+      var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
       var feedid = 0;
-      // There should only ever be one feed that is selected here:
-      for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
-
-      $("#feed-name").val(feeds[feedid].name);
-      $("#feed-node").val(feeds[feedid].tag);
-      var checked = false; if (feeds[feedid].public==1) checked = true;
-      $("#feed-public")[0].checked = checked;
-
+      // Now allows for multiple feed selection
+      for (var z in selected_feeds) { 
+        if (selected_feeds[z]) feedid = z;
+        if (edited_feeds.length == 1) {
+            $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
+        } else {
+            $("#feed-name").prop('disabled',true).val('').attr('placeholder','<?php echo _("Unable to rename multiple feeds") ?>');
+        }
+        $("#feed-node").val(feeds[feedid].tag);
+        var checked = false; if (feeds[feedid].public==1) checked = true;
+        $("#feed-public")[0].checked = checked;
+        
         let $dropdown = $('#feed_unit_dropdown')
         $dropdown.val(feeds[feedid].unit)
         let options = []
@@ -505,43 +508,48 @@ body{padding:0!important}
                 $(event.target).next('input').hide();
             }
         });
-
+    }
   });
 
   $("#feed-edit-save").click(function(){
       var feedid = 0;
-      // There should only ever be one feed that is selected here:
-      for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
-      
-      var publicfeed = 0;
-      if ($("#feed-public")[0].checked) publicfeed = 1;
-      
-      var unit = $('#feed_unit_dropdown').val()
-      unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+      var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
 
-      var fields = {
-        tag: $("#feed-node").val(), 
-        name: $("#feed-name").val(),
-        public: publicfeed,
-        unit: unit
-      };
-      // only send changed values
-      var data = {}
-      for(f in fields){
-          console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
-          if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+      for (var z in selected_feeds) {
+        if (selected_feeds[z]) feedid = z; 
+        
+        var publicfeed = 0;
+        if ($("#feed-public")[0].checked) publicfeed = 1;
+        
+        var unit = $('#feed_unit_dropdown').val()
+        unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+        
+        var fields = {
+            tag: $("#feed-node").val(), 
+            public: publicfeed,
+            unit: unit
+        };
+        // if only one feed selected add the name value
+        if(edited_feeds.length==1){
+            fields.name = $("#feed-name").val()
+        }
+        // only send changed values
+        var data = {}
+        for(f in fields){
+            // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+            if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+        }
+        // console.log(Object.keys(data).length);
+        // dont send ajax if nothing changed
+        if (Object.keys(data).length==0) {
+            $('#feedEditModal').modal('hide')
+            return
+        }
+        $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
+            update();
+            $('#feedEditModal').modal('hide');
+        }});
       }
-      console.log(Object.keys(data).length);
-      // dont send ajax if nothing changed
-      if (Object.keys(data).length==0) {
-        $('#feedEditModal').modal('hide')
-        return
-      }
-
-      $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-          update();
-          $('#feedEditModal').modal('hide');
-      }});
   });
 
 
@@ -1086,10 +1094,14 @@ $(".feed-delete").click(function(){
 	        $(".feed-delete").show();
           $(".feed-download").show();
           $(".feed-graph").show();
+          $(".feed-edit").show();
+
 	    } else {
           $(".feed-delete").hide();
           $(".feed-download").hide();
 	        $(".feed-graph").hide();
+          $(".feed-edit").hide();
+
 	    }
 	    
 	    if (num_selected==1) {
@@ -1097,10 +1109,6 @@ $(".feed-delete").click(function(){
           var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
           // Only show feed process button for Virtual feeds
 	        if (feeds[feedid].engine==7) $(".feed-process").show(); else $(".feed-process").hide();
-	    
-	        $(".feed-edit").show();
-	    } else {
-		      $(".feed-edit").hide();
 	    }
   }
   

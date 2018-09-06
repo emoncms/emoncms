@@ -10,7 +10,7 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
-
+    //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
@@ -40,12 +40,11 @@
         }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
-
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),
+                 'ip' => server('SERVER_ADDR'),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
