@@ -195,6 +195,9 @@ input[type=text][class=variable-name-edit] {
 .node .select input {margin-top: -1px}
 .node .collapse {
     width: 100%;
+    transition-duration: 350ms;
+    transition-property: all;
+    transition-timing-function: ease;
 }
 .node .collapse > * {
     width: 100%;
