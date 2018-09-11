@@ -37,8 +37,8 @@ class PHPFina implements engine_methods
         if ($interval<5) $interval = 5;
         
         // Check to ensure we dont overwrite an existing feed
-        
-        if (!$meta = $this->get_meta($feedid)) {
+        $feedname = "$feedid.meta";
+        if (!file_exists($this->dir.$feedname)) {
             // Set initial feed meta data
             $meta = new stdClass();
             $meta->interval = $interval;
@@ -62,7 +62,6 @@ class PHPFina implements engine_methods
             $this->log->info("create() feedid=$feedid");
         }
 
-        $feedname = "$feedid.meta";
         if (file_exists($this->dir.$feedname)) {
             return true;
         } else {
