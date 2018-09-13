@@ -237,7 +237,7 @@ function draw_devices()
     $('#input-loader').hide();
     if (out=="") {
         $("#input-header").hide();
-        $("#input-footer").hide();
+        $("#input-footer").show();
         $("#input-none").show();
     } else {
         $("#input-header").show();
