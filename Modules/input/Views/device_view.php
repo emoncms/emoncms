@@ -91,7 +91,8 @@ var path = "<?php echo $path; ?>";
 var devices = {};
 var inputs = {};
 var nodes = {};
-var nodes_display = {};
+var local_cache_key = 'input_nodes_display';
+var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
 var selected_inputs = {};
 var selected_device = false;
 
@@ -150,14 +151,15 @@ function update(){
                   if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
                   // expand if only one feed available
 	              if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
-                  // expand if only one feed available
-                  if (firstLoad && Object.keys(devices).length > 1) {
+                  // expand if only one feed available or state locally cached in cookie
+                  if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
                       nodes_display[inputs[z].nodeid] = false
                   }
 	              devices[inputs[z].nodeid].inputs.push(inputs[z]);
               }
+              // cache state in cookie
+              if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display))
               firstLoad = false;
-              
               draw_devices();
               noProcessNotification(devices);
         }});

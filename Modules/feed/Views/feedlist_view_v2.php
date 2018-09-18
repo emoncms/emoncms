@@ -315,18 +315,17 @@ body{padding:0!important}
   var feedviewpath = "<?php echo $feedviewpath; ?>";
   
   var feeds = {};
+  var nodes = {};
   var selected_feeds = {};
-  var nodes_display = {};
-  
+  var local_cache_key = 'feed_nodes_display';
+  var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
-
 // auto refresh
   update();
-  setInterval(update,5000);
+  //setInterval(update,5000);
   var firstLoad = true;
   function update() 
   {
-  
       $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
       
           // Show/hide no feeds alert
@@ -344,23 +343,24 @@ body{padding:0!important}
               $("#bottomtoolbar").show();
               $("#refreshfeedsize").show();
           }
-		      
           feeds = {};
           for (var z in data) feeds[data[z].id] = data[z];
-          var nodes = {};
+          nodes = {};
           for (var z in feeds) {
               var node = feeds[z].tag;
               if (nodes[node]==undefined) nodes[node] = [];
               if (nodes_display[node]==undefined) nodes_display[node] = true;
               nodes[node].push(feeds[z]);
           }
-          if (firstLoad && Object.keys(nodes).length > 1) {
+          if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
-            // collapse all if more than one node
+            // collapse all if more than one node and not cached in cookie
                 nodes_display[node] = false
             }
           }
-          firstLoad = false
+          // cache state in cookie
+          if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display))
+          firstLoad = false;
           var out = "";
           
           // get node overview
