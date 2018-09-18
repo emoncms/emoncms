@@ -322,7 +322,7 @@ body{padding:0!important}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 // auto refresh
   update();
-  //setInterval(update,5000);
+  setInterval(update,5000);
   var firstLoad = true;
   function update() 
   {
