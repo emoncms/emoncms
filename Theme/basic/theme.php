@@ -10,7 +10,7 @@
   http://openenergymonitor.org
   */
   global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$themecolor,$favicon,$menu;
-  
+
   $v = 2;
 
 ?>
@@ -92,7 +92,7 @@
     </head>
     <body>
         <div id="wrap">
-        
+
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                     <?php  if ($menucollapses) { ?>
@@ -181,5 +181,50 @@
             <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/hammer.min.js"></script>
+
+        <script>
+            // uses hammerjs to detect mobile gestures. navigates between input and feed view
+            
+            // allow text on page to be highlighted. 
+            delete Hammer.defaults.cssProps.userSelect
+
+            // SETUP VARIABLES:
+            var container = document.getElementById('wrap'),
+                // get the path as reported by server
+                path = "<?php echo $path; ?>",
+                // create a new instance of the hammerjs api
+                mc = new Hammer.Manager(container),
+                // make swipes require more velocity
+                swipe = new Hammer.Swipe({ velocity: 1.1 }) // default 0.3
+                // CSV list of pages in the navigation
+                pages = "feed/list,input/view".split(',')
+                // strip off the domain/ip and just get the path
+                currentPage = (""+window.location).replace(path,''),
+                // find where in the list the current page is
+                currentIndex = pages.indexOf(currentPage)
+            
+            // enable the altered swipe gesture
+            mc.add([swipe]);
+
+            // CREATE EVENT LIST:
+            // add a callback function on the swipe gestures
+            mc.on("swipeleft swiperight", function(event) {
+                // only act on swipe if current page is in list
+                if (currentIndex > -1) {
+                    // increase or decrease the currentIndex
+                    index = event.type=='swipeleft' ? currentIndex+1 : currentIndex-1;
+                    // wrap back to start if beyond end
+                    index = index > pages.length-1 ? 0 : index
+                    // wrap forward to end if beyond start
+                    index = index < 0 ? pages.length-1 : index
+                    // get the page to load
+                    url = path+pages[index]
+                    // load the page
+                    window.location.href = url
+                }
+            });
+
+        </script>
     </body>
 </html>
