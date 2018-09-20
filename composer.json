@@ -1,0 +1,9 @@
+{
+    "name": "emoncms/emoncms",
+    "description": "Web-app for processing, logging and visualising energy, temperature and other environmental data https://emoncms.org",
+    "type": "project",
+    "require": {
+        "yosymfony/toml": "^1.0"
+    },
+    "license": "GNU AFFERO GENERAL PUBLIC LICENSE"
+}

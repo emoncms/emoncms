@@ -1,0 +1,63 @@
+# This is a config file for saving user editable editable settings.
+# Written in TOML to standardize the config file format
+# https://github.com/toml-lang/toml
+
+[version]
+title = "Emoncms Settings"
+date = 2018-09-20T20:43:11Z
+
+# common engeneering units - add [[units]] before the "short" and "long" names
+# this list will appear whenever you select units within the system
+
+[[units]]
+short = "W"
+long = "Watt"
+[[units]]
+short = "kWh"
+long = "Kilowatt Hour"
+
+[[units]]
+short = "Wh"
+long = "Watt-Hour"
+
+[[units]]
+short = "V"
+long = "Volt"
+
+[[units]]
+short = "VA"
+long = "Volt-Ampere"
+
+[[units]]
+short = "A"
+long = "Ampere"
+
+[[units]]
+short = "°C"
+long = "Celsius"
+
+[[units]]
+short = "K"
+long = "Kelvin"
+
+[[units]]
+short = "°F"
+long = "Fahrenheit"
+
+[[units]]
+short = "%"
+long = "Percent"
+
+[[units]]
+short = "Hz"
+long = "Hertz"
+
+[[units]]
+short = "pulses"
+long = "Pulses"
+
+[[units]]
+short = "dB"
+long = "Decibel"
+
+
