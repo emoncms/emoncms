@@ -27,3 +27,5 @@ Modules/*/
 Theme/*
 Theme/*/
 !Theme/basic/
+
+/vendor/
