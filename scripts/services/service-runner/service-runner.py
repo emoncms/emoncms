@@ -12,7 +12,6 @@ import redis
 import subprocess
 import time
 import signal
-import os
 
 def handle_sigterm(sig, frame):
   print("Got Termination signal, exiting")
@@ -55,6 +54,10 @@ while True:
       # Got a cmdline, now run it.
       try:
         subprocess.call(cmdstring, shell=True)
+      except SystemExit:
+        # If the sys.exit(0) from the interrupt handler gets caught here,
+        # just break from the while True: and let the script exit normally.
+        break
       except:
         # if an error occurs running the subprocess, add the error to
         #  the specified logfile
