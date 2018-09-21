@@ -133,7 +133,10 @@ class InputMethods
                     $log->info("No time element found in JSON - System time used");
                     $time = time();
                 }
-                $inputs = $jsondata;
+                
+                foreach ($jsondata as $key=>$val) {
+                    $inputs[] = array($key,(float) $val);
+                }
             } else {
                 return "Input in not a valid JSON object";
             }
@@ -279,24 +282,12 @@ class InputMethods
     {
         $dbinputs = $this->input->get_inputs($userid);
         
-        $dbinputs_byindex = array();
-        $dbinputs_byname = array();
-        
-        foreach ($dbinputs as $row) {
-            if ($row['nodeid']==null) $row['nodeid'] = 0;
-            if (!isset($dbinputs_byindex[$row['nodeid']])) $dbinputs_byindex[$row['nodeid']] = array();
-            if (!isset($dbinputs_byname[$row['nodeid']])) $dbinputs_byname[$row['nodeid']] = array();
-            
-            $dbinputs_byname[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'index'=>$row['index'], 'processList'=>$row['processList']);
-            $dbinputs_byindex[$row['nodeid']][$row['index']] = array('id'=>$row['id'], 'name'=>$row['name'], 'processList'=>$row['processList']);
-        }
-        
-        $validate_access = $this->input->validate_access($dbinputs_byindex, $nodeid);
+        $validate_access = $this->input->validate_access($dbinputs['byindex'], $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
 
-        if (!isset($dbinputs_byindex[$nodeid])) {
-            $dbinputs_byindex[$nodeid] = array();
-            $dbinputs_byname[$nodeid] = array();
+        if (!isset($dbinputs['byindex'][$nodeid])) {
+            $dbinputs['byindex'][$nodeid] = array();
+            $dbinputs['byname'][$nodeid] = array();
             if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
            
@@ -307,36 +298,36 @@ class InputMethods
             if (is_array($i)) {
                 $name = $i[0];
                 $value = $i[1];
-                if (isset($dbinputs_byname[$nodeid][$name])) 
-                    $index = $dbinputs_byname[$nodeid][$name]['index'];
-                else $index = count($dbinputs_byname[$nodeid]);
+                if (isset($dbinputs['byname'][$nodeid][$name])) 
+                    $index = $dbinputs['byname'][$nodeid][$name]['index'];
+                else $index = count($dbinputs['byname'][$nodeid]);
             // indexed csv format
             } else {
                 $name = $index; // default name
                 $value = $i;
-                if (isset($dbinputs_byindex[$nodeid][$index]))
-                    $name = $dbinputs_byindex[$nodeid][$index]["name"];  
+                if (isset($dbinputs['byindex'][$nodeid][$index]))
+                    $name = $dbinputs['byindex'][$nodeid][$index]["name"];  
                 if (isset($names[$index])) $name = $names[$index];
             }
             
-            if (!isset($dbinputs_byindex[$nodeid][$index])) {
+            if (!isset($dbinputs['byindex'][$nodeid][$index])) {
                 
                 $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
-                $dbinputs_byindex[$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
-                $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
+                $dbinputs['byindex'][$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
+                $dbinputs['byname'][$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
                 $this->input->set_timevalue($inputid,$time,$value);
             } else {            
-                $this->input->set_timevalue($dbinputs_byindex[$nodeid][$index]['id'],$time,$value);
+                $this->input->set_timevalue($dbinputs['byindex'][$nodeid][$index]['id'],$time,$value);
 
-                if ($dbinputs_byindex[$nodeid][$index]['processList']) $tmp[] = array(
+                if ($dbinputs['byindex'][$nodeid][$index]['processList']) $tmp[] = array(
                     'value'=>$value,
-                    'processList'=>$dbinputs_byindex[$nodeid][$index]['processList'],
+                    'processList'=>$dbinputs['byindex'][$nodeid][$index]['processList'],
                     'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
-                    'sourceid'=>$dbinputs_byindex[$nodeid][$index]['id'])
+                    'sourceid'=>$dbinputs['byindex'][$nodeid][$index]['id'])
                 );
                 
-                if ($dbinputs_byindex[$nodeid][$index]['name']!=$name)
-                    $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name); 
+                if ($dbinputs['byindex'][$nodeid][$index]['name']!=$name)
+                    $this->input->set_name($dbinputs['byindex'][$nodeid][$index]['id'],$name); 
                
                 // if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
             }

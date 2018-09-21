@@ -196,10 +196,26 @@ class Input
     public function get_inputs($userid)
     {
         if ($this->redis) {
-            return $this->redis_get_inputs($userid);
+            $result = $this->redis_get_inputs($userid);
         } else {
-            return $this->mysql_get_inputs($userid);
+            $result = $this->mysql_get_inputs($userid);
         }
+        
+        $dbinputs = array(
+            "byindex"=>array(),
+            "byname"=>array()
+        );
+        
+        foreach ($result as $row) {
+            if ($row['nodeid']==null) $row['nodeid'] = 0;
+            if (!isset($dbinputs['byindex'][$row['nodeid']])) $dbinputs['byindex'][$row['nodeid']] = array();
+            if (!isset($dbinputs['byname'][$row['nodeid']])) $dbinputs['byname'][$row['nodeid']] = array();
+            
+            $dbinputs['byname'][$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'index'=>$row['index'], 'processList'=>$row['processList']);
+            $dbinputs['byindex'][$row['nodeid']][$row['index']] = array('id'=>$row['id'], 'name'=>$row['name'], 'processList'=>$row['processList']);
+        }
+        
+        return $dbinputs;
     }
 
     private function redis_get_inputs($userid)
