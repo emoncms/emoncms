@@ -299,10 +299,6 @@ class InputMethods
             $dbinputs_byname[$nodeid] = array();
             if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
-        
-        //$this->log->warn(json_encode($inputs));
-        //$this->log->warn(json_encode($dbinputs_byindex));     
-        //$this->log->warn(json_encode($dbinputs_byname));
            
         $tmp = array();
         foreach ($inputs as $index => $i)
@@ -311,63 +307,38 @@ class InputMethods
             if (is_array($i)) {
                 $name = $i[0];
                 $value = $i[1];
-                //$this->log->warn($index." ".$name." ".$value);
-                
-                if (!isset($dbinputs_byname[$nodeid][$name])) {
-                    $index = count($dbinputs_byname[$nodeid]);
-                    //$this->log->warn("create input $nodeid $index $name");
-                    $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
-                    $dbinputs_byindex[$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
-                    $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
-                    $this->input->set_timevalue($inputid,$time,$value);
-                } else {
-                    $this->input->set_timevalue($dbinputs_byname[$nodeid][$name]['id'],$time,$value);
-
-                    if ($dbinputs_byname[$nodeid][$name]['processList']) $tmp[] = array(
-                        'value'=>$value,
-                        'processList'=>$dbinputs_byname[$nodeid][$name]['processList'],
-                        'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
-                        'sourceid'=>$dbinputs_byname[$nodeid][$name]['id'])
-                    );
-                    
-                    // if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
-                }
-                
-            // csv, indexed values format
+                if (isset($dbinputs_byname[$nodeid][$name])) 
+                    $index = $dbinputs_byname[$nodeid][$name]['index'];
+                else $index = count($dbinputs_byname[$nodeid]);
+            // indexed csv format
             } else {
+                $name = $index; // default name
                 $value = $i;
-                //$this->log->warn($index." ".$value);
+                if (isset($dbinputs_byindex[$nodeid][$index]))
+                    $name = $dbinputs_byindex[$nodeid][$index]["name"];  
+                if (isset($names[$index])) $name = $names[$index];
+            }
+            
+            if (!isset($dbinputs_byindex[$nodeid][$index])) {
                 
-                if (!isset($dbinputs_byindex[$nodeid][$index])) {
+                $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
+                $dbinputs_byindex[$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
+                $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
+                $this->input->set_timevalue($inputid,$time,$value);
+            } else {            
+                $this->input->set_timevalue($dbinputs_byindex[$nodeid][$index]['id'],$time,$value);
+
+                if ($dbinputs_byindex[$nodeid][$index]['processList']) $tmp[] = array(
+                    'value'=>$value,
+                    'processList'=>$dbinputs_byindex[$nodeid][$index]['processList'],
+                    'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
+                    'sourceid'=>$dbinputs_byindex[$nodeid][$index]['id'])
+                );
                 
-                    if (isset($names[$index])) $name = $names[$index]; else $name = $index;
-                    
-                    //$this->log->warn("create input $nodeid $index $name");
-                    $inputid = $this->input->create_input($userid, $nodeid, $index, $name);
-                    $dbinputs_byindex[$nodeid][$index] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
-                    $dbinputs_byname[$nodeid][$name] = array('id'=>$inputid, 'index'=>$index, 'processList'=>'');
-                    $this->input->set_timevalue($inputid,$time,$value);
-                } else {
-                    if (isset($names[$index])) {
-                        $name = $names[$index]; 
-                        if ($dbinputs_byindex[$nodeid][$index]['name']!=$name) {
-                            $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name);
-                        }
-                    } else {
-                        $name = $index;
-                    }
-                
-                    $this->input->set_timevalue($dbinputs_byindex[$nodeid][$index]['id'],$time,$value);
-                    
-                    if ($dbinputs_byindex[$nodeid][$index]['processList']) $tmp[] = array(
-                        'value'=>$value,
-                        'processList'=>$dbinputs_byindex[$nodeid][$index]['processList'],
-                        'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
-                        'sourceid'=>$dbinputs_byindex[$nodeid][$index]['id'])
-                    );
-                    
-                    // if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
-                }
+                if ($dbinputs_byindex[$nodeid][$index]['name']!=$name)
+                    $this->input->set_name($dbinputs_byindex[$nodeid][$index]['id'],$name); 
+               
+                // if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
             }
         }
 
