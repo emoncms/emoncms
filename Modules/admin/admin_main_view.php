@@ -10,7 +10,7 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
-
+    //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
@@ -40,12 +40,11 @@
         }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
-
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),
+                 'ip' => server('SERVER_ADDR'),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
@@ -72,7 +71,7 @@
                  'mem_info' => $meminfo,
                  'partitions' => disk_list(),
                  'emoncms_modules' => $emoncms_modules,
-                 'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch"),
+                 'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
                  'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin")
                  );
   }
