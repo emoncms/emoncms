@@ -32,6 +32,6 @@ Tested on Raspiban Stretch
 Prior to September 2018 the service runner ran as a bash script triggered by cron. The
 bash script had to connect to redis every iteration of the loop which on a RPi 3 caused
 service runner to consume 100% of the CPU.
-This version was written by @greeebs using Python and systemd see
-https://github.com/emoncms/emoncms/pull/. The python service is far more efficient as a
-constant connection to redis can be kept open.
+This version was written by @greeebs using python and systemd instead of bash and cron, see
+https://github.com/emoncms/emoncms/pull/1025 for the discussion.
+The python service is far more efficient as a constant connection to redis can be kept open.
