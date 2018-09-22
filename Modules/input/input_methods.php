@@ -266,7 +266,8 @@ class InputMethods
                     }
                 }
 
-                $result = $this->process_node($userid,$time,$nodeid,$inputs);
+                $names = array();
+                $result = $this->process_node($userid,$time,$nodeid,$inputs,$names);
                 if ($result!==true) return $result;
             }
         }
