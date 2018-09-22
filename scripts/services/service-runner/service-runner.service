@@ -1,0 +1,68 @@
+# Systemd unit file for mqtt input script
+
+# ***** NOTE: RUNS AS USER "pi" BY DEFAULT *****
+#  If running on a non-Raspbian environment, change "User=pi" in the [Service] section
+#  to the user of your choice (user must exist and should be the "emoncms" admin account)
+
+# INSTALL:
+# sudo ln -s /var/www/emoncms/scripts/services/service-runner/service-runner.service /lib/systemd/system
+
+# RUN AT STARTUP
+# sudo systemctl daemon-reload
+# sudo systemctl enable service-runner.service
+
+# START / STOP With:
+# sudo systemctl start service-runner
+# sudo systemctl stop service-runner
+
+# VIEW STATUS / LOG
+# If Using Syslog:
+# systemctl status service-runner -n50
+# where -nX is the number of log lines to view
+# journalctl -f -u service-runner
+# Otherwise:
+# Specify
+#StandardOutput=file:/var/log/service-runner.log
+# tail -f /var/log/service-runner.log
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+###
+
+[Unit]
+Description=Emoncms service-runner Input Script
+Wants=redis-server.service
+After=redis-server.service
+StartLimitIntervalSec=5
+#Documentation=https://github.com/emoncms/emoncms/blob/master/docs/service-runner.md
+
+# Uncomment this line to use a dedicated log file for StdOut and StdErr.
+# NOTE: only works in systemd v236+
+#       Debain "stretch" includes v232, "buster" includes v239
+#StandardOutput=file:/var/log/service-runner.log
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /var/www/emoncms/scripts/services/service-runner/service-runner.py
+User=pi
+
+# Restart script if stopped
+Restart=always
+# Wait 60s before restart
+RestartSec=30s
+
+# Tag things in the log
+# If you want to use the journal instead of the file above, uncomment SyslogIdentifier below
+# View with: sudo journalctl -f -u service-runner -o cat
+SyslogIdentifier=service-runner
+
+[Install]
+WantedBy=multi-user.target
+
