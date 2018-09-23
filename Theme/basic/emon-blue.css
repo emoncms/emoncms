@@ -41,7 +41,7 @@ html, body {
 }
 
 #footer a {
-    color: #77b4d9;
+    colofeedr: #77b4d9;
     text-decoration: none;
 }
 
@@ -273,7 +273,7 @@ input[type=text][class=variable-name-edit] {
 }
 
 
-#table{margin-top:3rem}
+#table{margin-top:3rem;}
 .controls{
     transition: all .2s ease-out
 }
@@ -298,6 +298,9 @@ input[type=text][class=variable-name-edit] {
 }
 .controls.affix-top{position: absolute;}
 
-@media(max-width:979px) {
+@media only screen and (max-width:979px) {
     .controls.affix{top:0}
+}
+@media only screen and (min-width:870px) {
+    body{font-size:16px}
 }
