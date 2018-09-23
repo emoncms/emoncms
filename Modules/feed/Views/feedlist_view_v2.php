@@ -94,6 +94,8 @@ body{padding:0!important}
 	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
 	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
 	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
+    <button id="refreshfeedsize" class="btn" title="<?php echo _('Refresh feed size'); ?>"><i class="icon-refresh" ></i></button>
+    <button id="addnewvirtualfeed" class="btn" data-toggle="modal" data-target="#newFeedNameModal" title="<?php echo _('New virtual feed'); ?>"><i class="icon-plus-sign" ></i></button>
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -105,10 +107,10 @@ body{padding:0!important}
 
 <div id="feed-loader" class="ajax-loader"></div>
     
-<div id="bottomtoolbar" class="hide">
+<!-- <div id="bottomtoolbar" class="hide">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
-</div>
+</div> -->
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
