@@ -66,7 +66,7 @@
   table.fields = {
 	//'id':{'type':"fixed"},
 	'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
-	'index':{'title':'<?php echo _("Index"); ?>','type':"fixed"},
+	'indx':{'title':'<?php echo _("Index"); ?>','type':"fixed"},
 	'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
 	'description':{'title':'<?php echo _("Description"); ?>','type':"text"},
 	'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
