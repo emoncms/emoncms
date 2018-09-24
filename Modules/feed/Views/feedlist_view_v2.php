@@ -398,10 +398,15 @@ body{padding:0!important}
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
-                  var row_title = ["Feed ID: "+feedid,
-                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s',
-                                    "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
-                  ].join("\n")
+                  var title_lines = ["Feed ID: "+feedid,
+                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s'
+                  ]
+                  // show the start time if available
+                  if(nodes[node][feed].start_time > 0){
+                      title_lines.push("Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL'))
+                      title_lines.push("Timestamp:  "+nodes[node][feed].start_time)
+                  }
+                  row_title = title_lines.join("\n")
 
                   out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
