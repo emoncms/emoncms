@@ -64,7 +64,18 @@ body{padding:0!important}
     cursor:pointer;
 }
 
-.controls { margin-bottom:10px; }
+.controls-container {
+    position: relative;
+} 
+.controls { 
+    margin-bottom:10px;
+    width: 100%;
+    left: 0;
+    z-index:2;
+}
+.controls .btn{
+    display: block
+}
 #feeds-to-delete { font-style:italic; }
 
 #deleteFeedModalSelectedItems{
@@ -78,24 +89,123 @@ body{padding:0!important}
     max-width:80%;
     position:absolute;
 }
+.display-sm-inline-block{display:none}
+.list-sm-inline > * {float:left}
+
+.subnav-wrapper{
+    min-height: 4rem;
+}
+.navbar-subnav {
+    transition: all .2s ease-in-out;
+    top:0;
+    margin-bottom: .3em;
+}
+.navbar-subnav .navbar-inner {
+    background: transparent!important;
+    border: 1px solid #d4d4d4!important;
+}
+.navbar-subnav .nav > li > a{
+    color: #777!important;
+}
+.navbar-subnav .nav > li > a:hover,
+.navbar-subnav .nav > li > a:focus{
+    background-color: #F0F0F0;
+    background-position: 0 0;
+}
+.navbar-subnav .nav > li > a:focus{
+    box-shadow: inset 0 1px 0px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
+}
+.navbar-subnav .subnav-title{
+    padding-left:1em;
+    cursor: pointer;
+}
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
+/* small display */
+@media (max-width: 979px) {
+    .display-sm-inline-block{display:inline-block}
+    .list-sm-inline > * {float:none}
+    .navbar-subnav .nav > li > a{text-align:left}
+    .navbar-subnav ul.nav{margin-left: 1em}
+    .navbar-subnav.affix{
+        position: relative!important;
+    }
+}
+/* large display */
+@media (min-width: 980px) {
+    .navbar-subnav ul{padding:.3em}
+    .d-lg-none{display:none}
+    .nav-list .divider{
+        height: 1px;
+        width: .3em;
+        margin: 0;
+        overflow: visible;
+        border: 0 none;
+        background: none;
+        padding:0 .5em;
+    }
+    .nav-list .divider:before{
+        content: "";
+        top:0;
+        display: block;
+        width: 1px;
+        height: 100%;
+        position: absolute !important;
+        background: #d8d8d8;
+    }
+    .navbar-subnav .nav > li > a{margin:0 .2em 0 0 }
+    .navbar-subnav.affix{
+        width: 100%;
+        z-index: 2;
+        top:2.5rem;
+        left:0;
+    }
+    .navbar-subnav.affix .navbar-inner{
+        background: rgba(0,0,0,.8)!important;
+        border: 0px solid transparent!important;
+        padding: .2em 1.4em !important;
+        border-radius: 0;
+    }
+    .navbar-subnav.affix .navbar-inner .nav-list .divider:before{
+        background: #4d4d4d;
+    }
+}
+.navbar-subnav .nav > li > a.hide{display:none;}
 
 </style>
 <div id="apihelphead" style="float:right; padding-top:10px"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
 <div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
-
-<div class="controls" data-spy="affix" data-offset-top="100">
-    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
-	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
-	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
-	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
-    <button id="refreshfeedsize" class="btn" title="<?php echo _('Refresh feed size'); ?>"><i class="icon-refresh" ></i></button>
-    <button id="addnewvirtualfeed" class="btn" data-toggle="modal" data-target="#newFeedNameModal" title="<?php echo _('New virtual feed'); ?>"><i class="icon-plus-sign" ></i></button>
+<div class="subnav-wrapper">
+    <div class="navbar navbar-subnav" data-spy="affix" data-offset-top="130">
+        <div class="navbar-inner">
+            <div class="container">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <!-- Everything you want hidden at 940px or less, place within here -->
+                <h5 class="subnav-title d-lg-none"><?php echo _('Options'); ?>:</h5>
+                <div class="nav-collapse collapse">
+                <ul class="nav nav-pills nav-list">
+                    <li><a href="#" id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i> <span class="display-sm-inline-block"><?php echo _('Expand') ?></span></a></li>
+                    <li><a href="#" id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i> <span class="display-sm-inline-block"><?php echo _('Select all') ?></span></a></li>
+                    <li class="divider"></li>
+                    <li><a href="#" class="feed-edit btn hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i> <span class="display-sm-inline-block"><?php echo _('Edit') ?></span></a></li>
+                    <li><a href="#" class="feed-delete btn hide" title="<?php echo _('Delete') ?>"><i class="icon-trash" ></i> <span class="display-sm-inline-block"><?php echo _('Delete') ?></span></a></li>
+                    <li><a href="#" class="feed-download btn hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i> <span class="display-sm-inline-block"><?php echo _('Download') ?></span></a></li>
+                    <li><a href="#" class="feed-graph btn hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i> <span class="display-sm-inline-block"><?php echo _('Graph view') ?></span></a></li>
+                    <li><a href="#" class="feed-process btn hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i> <span class="display-sm-inline-block"><?php echo _('Process config') ?></span></a></li>
+                    <li class="divider divider-1 hide"></li>
+                    <li><a href="#" id="refreshfeedsize" class="btn" title="<?php echo _('Refresh feed size'); ?>"><i class="icon-refresh" ></i> <span class="display-sm-inline-block"><?php echo _('Refresh feed size'); ?></span></a></li>
+                    <li><a href="#" id="addnewvirtualfeed" class="btn" data-toggle="modal" data-target="#newFeedNameModal" title="<?php echo _('New virtual feed'); ?>"><i class="icon-plus-sign"></i> <span class="display-sm-inline-block"><?php echo _('New virtual feed'); ?></span></a></li>
+                </ul>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -333,17 +443,11 @@ body{padding:0!important}
           // Show/hide no feeds alert
           $('#feed-loader').hide();
           if (data.length == 0){
-              $("#nofeeds").show();
-              //$("#localheading").hide();
-              $("#apihelphead").hide();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").hide();
+              $("#nofeeds,#bottomtoolbar").removeClass('hide')
+              $("#apihelphead,#refreshfeedsize").addClass('hide')
           } else {
-              $("#nofeeds").hide();
-              //$("#localheading").show();
-              $("#apihelphead").show();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").show();
+              $("#nofeeds").addClass('hide')
+              $("#apihelphead,#bottomtoolbar,#refreshfeedsize").removeClass('hide')
           }
           feeds = {};
           for (var z in data) feeds[data[z].id] = data[z];
@@ -463,7 +567,8 @@ body{padding:0!important}
       window.location = path+"graph/"+feedid;
   });
   
-  $(".feed-graph").click(function(){
+  $(".feed-graph").click(function(e){
+      e.preventDefault();
       var graph_feeds = [];
       for (var feedid in selected_feeds) {
           if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
@@ -474,7 +579,8 @@ body{padding:0!important}
   // ---------------------------------------------------------------------------------------------
   // EDIT FEED
   // ---------------------------------------------------------------------------------------------
-  $(".feed-edit").click(function() {
+  $(".feed-edit").click(function(e) {
+      e.preventDefault()
       $('#feedEditModal').modal('show');
       var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
       var feedid = 0;
@@ -968,7 +1074,8 @@ function disableTrim(){
  * jQuery Event handler for the delete feed button
  * also shows items selected as well as a processlist warning
  */
-$(".feed-delete").click(function(){
+$(".feed-delete").click(function(e){
+    e.preventDefault();
     $('#feedDeleteModal #deleteFeedText').show();
     $('#feedDeleteModal #deleteVirtualFeedText').hide();
     $('#feedDeleteModal').modal('show'); //show the delete modal
@@ -1078,7 +1185,8 @@ $(".feed-delete").click(function(){
     }
   });
 
-  $("#refreshfeedsize").click(function(){
+  $("#refreshfeedsize").click(function(e){
+    e.preventDefault();
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
   });
 
@@ -1095,24 +1203,21 @@ $(".feed-delete").click(function(){
       });
 	    
 	    if (num_selected>0) {
-	        $(".feed-delete").show();
-          $(".feed-download").show();
-          $(".feed-graph").show();
-          $(".feed-edit").show();
-
+            $(".feed-delete,.feed-download,.feed-graph,.feed-edit,.divider-1").removeClass('hide');
 	    } else {
-          $(".feed-delete").hide();
-          $(".feed-download").hide();
-	        $(".feed-graph").hide();
-          $(".feed-edit").hide();
-
+            $(".feed-delete,.feed-download,.feed-graph,.feed-edit,.divider-1").addClass('hide');
 	    }
 	    
 	    if (num_selected==1) {
           // There should only ever be one feed that is selected here:
           var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
           // Only show feed process button for Virtual feeds
-	        if (feeds[feedid].engine==7) $(".feed-process").show(); else $(".feed-process").hide();
+            if (feeds[feedid].engine==7) {
+                $(".feed-process").removeClass('hide');
+            }  else {
+                $(".feed-process").addClass('hide');
+            }
+            
 	    }
   }
   
@@ -1153,7 +1258,8 @@ $("#newfeed-save").click(function (){
 // Process list UI js
 processlist_ui.init(1); // is virtual feed
 
-$(".feed-process").click(function() {
+$(".feed-process").click(function(e) {
+    e.preventDefault();
     // There should only ever be one feed that is selected here:
     var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
     var contextid = feedid;
@@ -1172,7 +1278,8 @@ $("#save-processlist").click(function (){
 // ---------------------------------------------------------------------------------------------
 // Export feature
 // ---------------------------------------------------------------------------------------------
-$(".feed-download").click(function(){
+$(".feed-download").click(function(e){
+    e.preventDefault();
     var ids = [];
 	  for (var feedid in selected_feeds) {
 		    if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));

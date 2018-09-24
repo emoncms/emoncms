@@ -13,7 +13,9 @@ function setExpandButtonState(state){
       .toggleClass('icon-resize-small', state)
       .toggleClass('icon-resize-full', !state)
     if(!$btn_expand.data('original-title')) $btn_expand.data('original-title', $btn_expand.attr('title'))
-    $btn_expand.attr('title', !state ? $btn_expand.data('alt-title') : $btn_expand.data('original-title'))
+    title =  !state ? $btn_expand.data('alt-title') : $btn_expand.data('original-title')
+    $btn_expand.attr('title',title)
+    $btn_expand.find('span').text(title)
 }
 function expandAllNodes(state){
     $container = $('#table')
@@ -38,6 +40,7 @@ $(function() {
     save_node_state_timeout = null
     // store the state once animation finished
     $(document).on("shown hidden", '#table .tbody.collapse', function(e){
+        e.preventDefault()
         if (e.type == 'hidden'){
             $('[data-target="#'+e.target.id+'"]').addClass('collapsed')
         } else {
@@ -56,8 +59,12 @@ $(function() {
     $(document).on('hide show', '#table .tbody.collapse', function(event){
         nodes_display[event.target.dataset.node] = event.type == 'show'
     })
+    $('.navbar-subnav h5').click(function(){
+        $(this).prev('a').trigger('click')
+    })
     // select/de-select all node checkboxes
-    $('#select-all').on('click',function(){
+    $('#select-all').on('click',function(e){
+        e.preventDefault()
         // state = true if all selected
         $this = $(this)
         state = $this.data('state') != false
@@ -71,6 +78,7 @@ $(function() {
         // set the title
         title = state ? $this.data('alt-title') : $this.data('title-original')
         $this.attr('title', title)
+        $this.find('span').text(title)
         // flip the toggle state
         $this.data('state',!state)
         // expand all accordions if chosen to select all
