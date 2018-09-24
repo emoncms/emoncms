@@ -385,7 +385,7 @@ body{padding:0!important}
               out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
               out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
-              out += '      <div class="public" class="text-center" data-col="E"></div>';
+            //   out += '      <div class="public" class="text-center" data-col="E"></div>';
               out += '      <div class="engine" data-col="F"></div>';
               out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
               out += '      <div class="node-feed-right pull-right">';
@@ -398,11 +398,23 @@ body{padding:0!important}
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
-                  var row_title = ["Feed ID: "+feedid,
-                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s',
-                                    "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
-                  ].join("\n")
+                  var title_lines = ["Feed ID: "+feedid]
 
+                  // show public feed status in tooltip
+                  title_lines.push("Public: "+(nodes[node][feed]['public']==1 ? 'Yes':'No'))
+
+                  // only show interval for feeds using the PHPFina engine (engine.id =5)
+                  if(nodes[node][feed].engine == 5){
+                      title_lines.push("Feed Interval: "+(nodes[node][feed].interval||'')+'s')
+                  }
+
+                  // show the start time if available
+                  if(nodes[node][feed].start_time > 0){
+                      title_lines.push("Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')+"")
+                  }
+
+                  row_title = title_lines.join("\n")
+                
                   out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                   out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
@@ -411,7 +423,7 @@ body{padding:0!important}
                   var publicfeed = "<i class='icon-lock'></i>"
                   if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
                   
-                  out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
+                //   out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
                   out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
                   out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
                   out += '  <div class="node-feed-right pull-right">';
