@@ -155,7 +155,10 @@ body{padding:0!important}
         position: absolute !important;
         background: #d8d8d8;
     }
-    .navbar-subnav .nav > li > a{margin:0 .2em 0 0 }
+    .navbar-subnav .nav > li > a{
+        margin:0 .3em 0 0;
+        padding: 8px 12px;
+    }
     .navbar-subnav.affix{
         width: 100%;
         z-index: 2;
