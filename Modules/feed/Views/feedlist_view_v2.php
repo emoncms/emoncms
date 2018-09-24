@@ -328,7 +328,7 @@ body{padding:0!important}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 // auto refresh
   update();
-//   setInterval(update,5000);
+  setInterval(update,5000);
   var firstLoad = true;
   function update() 
   {
@@ -447,9 +447,8 @@ body{padding:0!important}
               container: 'body',
               html: true,
             //   trigger: 'manual',
-              animation: false
+              animation: true
           })
-          $('#table [data-toggle="tooltip"]').eq(2).tooltip('show');
 
           // reset the toggle state for all collapsable elements once data has loaded
           // css class "in" is used to remember the expanded state of the ".collapse" element
