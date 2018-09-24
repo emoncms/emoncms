@@ -78,6 +78,12 @@ body{padding:0!important}
     max-width:80%;
     position:absolute;
 }
+
+.tooltip h4{margin-bottom:0}
+.tooltip .dl-horizontal{ margin-bottom: .5em;}
+.tooltip .dl-horizontal dt{ width:8.5em }
+.tooltip .dl-horizontal dd{ margin-left:9.3em; text-align: left;min-width:8.5em }
+
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
@@ -322,7 +328,7 @@ body{padding:0!important}
   var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 // auto refresh
   update();
-  setInterval(update,5000);
+//   setInterval(update,5000);
   var firstLoad = true;
   function update() 
   {
@@ -376,8 +382,8 @@ body{padding:0!important}
           }
           // display nodes and feeds
           var counter = 0
-
-
+          // remove any tooltips added in previous list
+          $('#table [data-toggle="tooltip"]').tooltip('destroy')
           for (var node in nodes) {
               counter ++;
               isCollapsed = !nodes_display[node]
@@ -398,12 +404,21 @@ body{padding:0!important}
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
-                  var row_title = ["Feed ID: "+feedid,
-                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s',
-                                    "Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')
-                  ].join("\n")
+                  var title_lines = ['<h4>'+nodes[node][feed].name+'</h4>',
+                                    '<dl class="dl-horizontal">',
+                                    '<dt>Tag :</dt><dd>'+nodes[node][feed].tag+'</dd>',
+                                    '<dt>Feed ID :</dt><dd>'+feedid+'</dd>',
+                                    '<dt>Feed Interval :<dt><dd>'+(nodes[node][feed].interval||'')+'s</dd>'
+                  ]
+                  // show the start time if available
+                  if(nodes[node][feed].start_time > 0){
+                      title_lines.push("<dt>Feed Start Time:</dt><dd>"+format_time(nodes[node][feed].start_time,'LLLL')+"</dd>")
+                    }
+                    
+                  title_lines.push('</dl>')
+                  row_title = title_lines.join("\n");
 
-                  out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
+                  out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                   out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
                   out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
@@ -427,7 +442,15 @@ body{padding:0!important}
           }
           $container = $('#table')
           $container.html(out);
-          
+          // add the tooltips to all the rows
+          $('#table [data-toggle="tooltip"]').tooltip({
+              container: 'body',
+              html: true,
+            //   trigger: 'manual',
+              animation: false
+          })
+          $('#table [data-toggle="tooltip"]').eq(2).tooltip('show');
+
           // reset the toggle state for all collapsable elements once data has loaded
           // css class "in" is used to remember the expanded state of the ".collapse" element
     
