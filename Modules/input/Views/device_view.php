@@ -203,7 +203,7 @@ function draw_devices()
         out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
         out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <span class='name' data-col='G'>"+devices[node].description+"</span>";
+        out += "     <span class='description' data-col='G'>"+devices[node].description+"</span>";
         out += "     <div class='processlist' data-col='F' data-col-width='auto'></div>";
         out += "     <div class='pull-right'>"
         out += "        <div class='device-schedule text-center hidden' data-col='E' data-col-width='50'><i class='icon-time icon-white'></i></div>";
@@ -222,7 +222,7 @@ function draw_devices()
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='name' data-col='G'>"+input.description+"</div>";
+            out += "  <div class='description' data-col='G'>"+input.description+"</div>";
             out += "  <div class='processlist' data-col='F'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='pull-right'>";
             out += "    <div class='time text-center' data-col='C'>"+list_format_updated(input.time)+"</div>";
