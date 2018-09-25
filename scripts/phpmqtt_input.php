@@ -2,7 +2,7 @@
 
     // TBD: support user target in message schema
     $mqttsettings = array(
-        'userid' => 1
+        'userid' => 9
     );
 
 
@@ -313,8 +313,9 @@
                 $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
 
-            if (!isset($dbinputs[$nodeid])) {
-                $dbinputs[$nodeid] = array();
+            if (isset($nodeid) && !isset($dbinputs['byindx'][$nodeid])) {
+                $dbinputs['byindx'][$nodeid] = array();
+                $dbinputs['byname'][$nodeid] = array();
                 if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
             }
 
@@ -336,24 +337,29 @@
                 }
                 else 
                 {
-                    if (!isset($dbinputs[$nodeid][$name])) {
-                        $inputid = $input->create_input($userid, $nodeid, $name);
+                    if (!isset($dbinputs['byname'][$nodeid][$name])) {
+                        $indx = count($dbinputs['byname'][$nodeid]);
+                        $inputid = $input->create_input($userid, $nodeid, $indx, $name);
                         if (!$inputid) {
                             $log->warn("error creating input"); die;
                         }
-                        $dbinputs[$nodeid][$name] = true;
-                        $dbinputs[$nodeid][$name] = array('id'=>$inputid);
-                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                        $dbinputs['byindx'][$nodeid][$indx] = array('id'=>$inputid, 'name'=>$name, 'processList'=>'');
+                        $dbinputs['byname'][$nodeid][$name] = array('id'=>$inputid, 'indx'=>$indx, 'processList'=>'');
+                        $input->set_timevalue($inputid,$time,$value);
                     } else {
-                        $inputid = $dbinputs[$nodeid][$name]['id'];
-                        $input->set_timevalue($dbinputs[$nodeid][$name]['id'],$time,$value);
+                        $input->set_timevalue($dbinputs['byname'][$nodeid][$name]['id'],$time,$value);
                         
-                        if ($dbinputs[$nodeid][$name]['processList']) $tmp[] = array('value'=>$value,'processList'=>$dbinputs[$nodeid][$name]['processList']);
+                        if ($dbinputs['byname'][$nodeid][$name]['processList']) $tmp[] = array(
+                            'value'=>$value,
+                            'processList'=>$dbinputs['byname'][$nodeid][$name]['processList'],
+                            'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
+                            'sourceid'=>$dbinputs['byname'][$nodeid][$name]['id'])
+                        );
                     }
                 }
             }
             
-            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList']);
+            foreach ($tmp as $i) $process->input($time,$i['value'],$i['processList'],$i['opt']);
             
         } catch (Exception $e) {
             $log->error($e);
