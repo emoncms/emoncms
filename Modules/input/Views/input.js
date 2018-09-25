@@ -37,7 +37,7 @@ var input = {
             alert('Error saving data. '+msg)
         })
         // return the synchronous result or the asynchronous promise
-        return !async ? response : jqxhr;
+        return !async ? result : jqxhr;
     },
 
     'remove':function(id)
