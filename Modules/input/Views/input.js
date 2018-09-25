@@ -18,7 +18,7 @@ var input = {
 
         return inputs;
     },
-    // now passes promise if async == true
+    // now returns promise if async == true
     'set':function(id, fields, async)
     {
         async = async || false

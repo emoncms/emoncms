@@ -25,7 +25,7 @@
 </div>
 
 
-<div id="inputEditModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" aria-hidden="true" data-backdrop="static">
+<div id="inputEditModal" class="modal hide modal-wide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
         <h3 id="inputEditModalLabel"><?php echo _('Edit Input'); ?></h3>
@@ -38,10 +38,12 @@
     </div>
     <div class="modal-footer">
         <div id="input-edit-status" class="pull-left" style="max-width:75%"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true" type="button"><?php echo _('Cancel'); ?></button>
-        <button id="inputEdit-confirm" class="btn btn-primary" type="button" onclick="submitAllInputForms(event)"><?php echo _('Save All'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true" type="button"><?php echo _('Close'); ?></button>
+        <button class="single btn btn-primary" type="button" onclick="submitAllInputForms(event)"><?php echo _('Save'); ?></button>
+        <button class="multiple btn btn-primary hide" type="button" onclick="submitAllInputForms(event)"><?php echo _('Save All'); ?></button>
     </div>
 </div>
+<!-- this template will repeat for every selected input -->
 <template id="edit-input-form">
     <form class="form-inline" style="margin-bottom:.5em">
         <input name="inputid" type="hidden">

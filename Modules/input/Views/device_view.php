@@ -44,6 +44,10 @@ input[type="checkbox"] { margin:0px; }
 
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
+    .modal-wide{
+        width:650px;
+        margin-left:-325px
+    }
 }
 
 @media (max-width: 768px) {
@@ -345,10 +349,12 @@ $("#inputEditModal").on('show',function(e){
     let template = document.getElementById('edit-input-form').innerHTML
     let container = document.getElementById('edit-input-form-container')
     container.innerHTML = ''
+    total_selected = 0
     for(inputid in selected_inputs){
         let form = document.createElement('div')
         // if input has been selected duplicate <template> and modify values
         if (selected_inputs[inputid]){
+            total_selected ++
             form.innerHTML += template
             form.querySelector('[name="inputid"]').value = inputid
             form.querySelector('[name="name"]').value = inputs[inputid].name
@@ -359,6 +365,17 @@ $("#inputEditModal").on('show',function(e){
             $(appended).on('submit',submitSingleInputForm)
         }
     }
+    if(total_selected>1){
+        $('#inputEditModal .btn.single').addClass('hide')
+        $('#inputEditModal .btn.multiple').removeClass('hide')
+    }else{
+        $('#inputEditModal .btn.single').removeClass('hide')
+        $('#inputEditModal .btn.multiple').addClass('hide')
+    }
+})
+$("#inputEditModal").on('show',function(e){
+    showStatus.clear()
+    update()
 })
 // return fields object that matches the api requirements
 function serializeInputData(form){
@@ -366,7 +383,7 @@ function serializeInputData(form){
     let fields = {}
     let inputid = void 0
     for(field in formData) {
-        if(formData[field].name=='description' && formData[field].value.length>0) fields.description = formData[field].value
+        if(formData[field].name=='description') fields.description = formData[field].value
         if(formData[field].name=='name' && formData[field].value.length>0) fields.name = formData[field].value
         if(formData[field].name=='inputid') inputid = formData[field].value
     }
