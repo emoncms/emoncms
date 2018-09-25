@@ -303,9 +303,15 @@
                     else
                     {
                         $values = explode(",",$value);
-                        $name = 0;
+                        $index = 0;
                         foreach ($values as $value) {
-                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$name++, "value"=>$value);
+                            $name = $index;
+                            if (isset($dbinputs["byindx"][$nodeid]) && isset($dbinputs["byindx"][$nodeid][$index])) {
+                                $name = $dbinputs["byindx"][$nodeid][$index]["name"];
+                            }
+                        
+                            $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "indx"=>$index, "name"=>$name, "value"=>$value);
+                            $index++;
                         }
                     }
                 }
