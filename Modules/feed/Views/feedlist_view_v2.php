@@ -35,9 +35,9 @@ document.head.appendChild(script);
  * @see date format options - https://momentjs.com/docs/#/displaying/
  */
 function format_time(time,format){
-    time = time || (new Date().valueOf() / 1000)
-    format = format || ''
-    formatted_date = moment.unix(time).format(format)
+    if(!Number.isInteger(time)) return time
+    format = format || 'YYYY-MM-DD'
+    formatted_date = moment.unix(time).utc().format(format)
     return formatted_date
 }
 </script>
@@ -403,8 +403,8 @@ body{padding:0!important}
                   ]
                   // show the start time if available
                   if(nodes[node][feed].start_time > 0){
-                      title_lines.push("Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL'))
-                      title_lines.push("Timestamp:  "+nodes[node][feed].start_time)
+                      title_lines.push("Feed Start Time:  "+nodes[node][feed].start_time)
+                      title_lines.push("("+format_time(nodes[node][feed].start_time,'LL LTS')+" UTC)")
                   }
                   row_title = title_lines.join("\n")
 
