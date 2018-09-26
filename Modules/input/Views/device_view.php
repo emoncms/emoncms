@@ -108,7 +108,7 @@ function updaterStart(func, interval){
 	  updater = null;
 	  if (interval > 0) updater = setInterval(func, interval);
 }
-updaterStart(update, 5000);
+// updaterStart(update, 5000);
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
@@ -199,10 +199,11 @@ function draw_devices()
         out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
         out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
+        out += "     <div class='processlist' data-col='G' data-col-width='auto'>"+devices[node].description+"</div>";
         out += "     <div class='pull-right'>"
-        out += "        <div class='device-schedule text-center hidden' data-col='E' data-col-width='50'><i class='icon-time icon-white'></i></div>";
-        out += "        <div class='device-key text-center' data-col='D' data-col-width='50'><i class='icon-lock icon-white'></i></div>"; 
+        out += "        <div class='device-schedule text-center hidden' data-col='F' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
+        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devices[node].devicekey+"' data-col-width='50'><i class='icon-lock icon-white'></i></a>"; 
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-wrench icon-white'></i></div>";
         out += "     </div>";
         out += "  </div>";
@@ -217,11 +218,12 @@ function draw_devices()
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='processlist' data-col='F'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
+            out += "  <div class='processlist' data-col='G'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='pull-right'>";
-            out += "    <div class='time text-center' data-col='C'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='E' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "    <div class='schedule text-center hidden' data-col='F'></div>";
+            out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
@@ -231,6 +233,22 @@ function draw_devices()
     }
     $("#table").html(out);
 
+    // show tooltip with device key on click 
+    $('#table [data-toggle="tooltip"]').tooltip({
+        trigger: 'manual',
+        container: 'body',
+        placement: 'left',
+        title: function(){
+           return  $(this).data('device-key')
+        }
+    }).hover(
+        // show "fake" title (tooltip-title) on hover
+        function(e){
+            let $btn = $(this)
+            let title = !$btn.data('shown') ? $btn.data('tooltip-title') : ''
+            $btn.attr('title', title)
+        }
+    )
     $('#input-loader').hide();
     if (out=="") {
         $("#noinputs").show();
@@ -286,22 +304,33 @@ function input_selection()
 
 // column title buttons ---
 
+$("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
+$("#table").on("hidden",".device-key",function(e) { $(this).data('shown',false) })
 $("#table").on("click",".device-key",function(e) {
-    e.stopPropagation();
-    var node = $(this).parents('.node-info').first().data("node");
-    $this = $(this)
-    if(!$this.data('original')) $this.data('original',$this.html())
-    if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
-    $this.data('state', !$this.data('state')||false)
-    let width = 315
-    if($this.data('state')){
-        $this.html(devices[node].devicekey)
-        $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
-    }else{
-        $this.html($this.data('original'))
-        $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
+    e.stopPropagation()
+    var $btn = $(this),
+        action = 'show'
+    if($btn.data('shown') && $btn.data('shown')==true){
+        action = 'hide'
     }
-});
+    $(this).tooltip({title:'def'}).tooltip(action)
+})
+// $("#table").on("click",".device-key",function(e) {
+//     e.stopPropagation();
+//     var node = $(this).parents('.node-info').first().data("node");
+//     $this = $(this)
+//     if(!$this.data('original')) $this.data('original',$this.html())
+//     if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
+//     $this.data('state', !$this.data('state')||false)
+//     let width = 315
+//     if($this.data('state')){
+//         $this.html(devices[node].devicekey)
+//         $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
+//     }else{
+//         $this.html($this.data('original'))
+//         $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
+//     }
+// });
 
 $("#table").on("click",".device-schedule",function(e) {
     e.stopPropagation();
