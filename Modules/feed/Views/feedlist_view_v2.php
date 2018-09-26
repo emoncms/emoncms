@@ -1225,13 +1225,11 @@ $(".feed-delete").click(function(){
           $(".feed-edit").hide();
 
 	    }
-	    
-	    if (num_selected==1) {
-          // There should only ever be one feed that is selected here:
-          var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
-          // Only show feed process button for Virtual feeds
-	        if (feeds[feedid].engine==7) $(".feed-process").show(); else $(".feed-process").hide();
-	    }
+
+        // There should only ever be one feed that is selected here:
+        var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+        // Only show feed process button for Virtual feeds
+        if (feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
   }
   
   
