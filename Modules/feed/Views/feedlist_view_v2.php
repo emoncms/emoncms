@@ -398,12 +398,18 @@ body{padding:0!important}
               
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
-                  var title_lines = ["Feed ID: "+feedid,
-                                    "Feed Interval: "+(nodes[node][feed].interval||'')+'s'
-                  ]
+
+                  var title_lines = ['Feed ID: '+feedid]
+                  // only show interval for feeds using the PHPFina engine (engine.id =5)
+                  if(nodes[node][feed].engine == 5){
+                      title_lines.push("Feed Interval: "+(nodes[node][feed].interval||'')+'s')
+                  }
                   // show the start time if available
-                  if(nodes[node][feed].start_time > 0) title_lines.push("Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL'))
-                  row_title = title_lines.join("\n")
+                  if(nodes[node][feed].start_time > 0){
+                      title_lines.push("Feed Start Time: "+format_time(nodes[node][feed].start_time,'LLLL')+"")
+                  }
+                    
+                  row_title = title_lines.join("\n");
 
                   out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"'>";
                   var checked = ""; if (selected_feeds[feedid]) checked = "checked";
