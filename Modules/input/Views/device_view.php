@@ -191,13 +191,13 @@ function draw_devices()
     var out = "";
     var counter = 0
     isCollapsed = !(Object.keys(devices).length > 1)
-
+    var latest_update = []
     for (var node in devices) {
         counter++
         isCollapsed = !nodes_display[node]
         out += "<div class='node accordion line-height-expanded'>";
         out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
+        out += "     <div class='select text-center has-indicator' data-col='B'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "     <div class='processlist' data-col='G' data-col-width='auto'>"+devices[node].description+"</div>";
         out += "     <div class='pull-right'>"
@@ -213,6 +213,8 @@ function draw_devices()
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : ''
+            latest_update[node] = latest_update > input.time ? latest_update : input.time
+
             out += "<div class='node-input' id="+input.id+">";
             out += "  <div class='select text-center' data-col='B'>"
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
@@ -232,6 +234,11 @@ function draw_devices()
         out += "</div>";
     }
     $("#table").html(out);
+
+    // show the latest time in the node title bar
+    for(let node in latest_update) {
+        $('#table [data-node="'+node+'"] .device-last-updated').html(list_format_updated(latest_update[node]));
+    }
 
     // show tooltip with device key on click 
     $('#table [data-toggle="tooltip"]').tooltip({
