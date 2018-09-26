@@ -18,12 +18,26 @@ var input = {
 
         return inputs;
     },
-
-    'set':function(id, fields)
+    // now returns promise if async == true
+    'set':function(id, fields, async)
     {
+        async = async || false
         var result = {};
-        $.ajax({ url: path+"input/set.json", data: "inputid="+id+"&fields="+JSON.stringify(fields), async: false, success: function(result){ if (!result.success) alert(result.message); } });
-        return result;
+        var options = { 
+            url: path+"input/set.json",
+            data: "inputid="+id+"&fields="+JSON.stringify(fields)
+        }
+        if(!async) options.async = false
+        var jqxhr = $.ajax(options)
+        .done(function(response){
+            result = response
+            if (!result.success) alert(result.message);
+        })
+        .error(function(msg){
+            alert('Error saving data. '+msg)
+        })
+        // return the synchronous result or the asynchronous promise
+        return !async ? result : jqxhr;
     },
 
     'remove':function(id)
