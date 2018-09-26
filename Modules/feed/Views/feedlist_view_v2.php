@@ -595,39 +595,41 @@ function intersectRect(r1, r2) {
       var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
       var feedid = 0;
       // Now allows for multiple feed selection
-      for (var z in selected_feeds) { 
-        if (selected_feeds[z]) feedid = z;
-        if (edited_feeds.length == 1) {
-            $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
-        } else {
-            $("#feed-name").prop('disabled',true).val('').attr('placeholder','<?php echo _("Unable to rename multiple feeds") ?>');
-        }
-        $("#feed-node").val(feeds[feedid].tag);
-        var checked = false; if (feeds[feedid].public==1) checked = true;
-        $("#feed-public")[0].checked = checked;
-        
-        let $dropdown = $('#feed_unit_dropdown')
-        $dropdown.val(feeds[feedid].unit)
-        let options = []
-        $dropdown.find('option').each(function(key,elem){
-            options.push(elem.value)
-        })
-        if (options.indexOf(feeds[feedid].unit) == -1) {
-            $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
-            $dropdown.val('_other')
-        }
-        if($dropdown.val()=='_other') {
-            $dropdown.next('input').show();
-        }else{
-            $dropdown.next('input').hide();
-        }
-        $dropdown.change(function(event){
-            if(event.target.value=='_other') {
-                $(event.target).next('input').show();
-            }else{
-                $(event.target).next('input').hide();
+      for (var z in selected_feeds) {
+        if (selected_feeds[z]){
+            feedid = z;
+            if (edited_feeds.length == 1) {
+                $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
+            } else {
+                $("#feed-name").prop('disabled',true).val('').attr('placeholder','<?php echo _("Unable to rename multiple feeds") ?>');
             }
-        });
+            $("#feed-node").val(feeds[feedid].tag);
+            var checked = false; if (feeds[feedid].public==1) checked = true;
+            $("#feed-public")[0].checked = checked;
+            
+            let $dropdown = $('#feed_unit_dropdown')
+            $dropdown.val(feeds[feedid].unit)
+            let options = []
+            $dropdown.find('option').each(function(key,elem){
+                options.push(elem.value)
+            })
+            if (options.indexOf(feeds[feedid].unit) == -1) {
+                $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
+                $dropdown.val('_other')
+            }
+            if($dropdown.val()=='_other') {
+                $dropdown.next('input').show();
+            }else{
+                $dropdown.next('input').hide();
+            }
+            $dropdown.change(function(event){
+                if(event.target.value=='_other') {
+                    $(event.target).next('input').show();
+                }else{
+                    $(event.target).next('input').hide();
+                }
+            });            
+        }
     }
   });
 
