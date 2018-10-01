@@ -18,7 +18,10 @@ var user = {
          } catch (e) {
              result = data_in;
          }
-      } 
+      },
+      error: function (ajaxContext) {
+        result = ajaxContext.responseText;
+      }
     });
     return result;
   },
@@ -40,6 +43,9 @@ var user = {
          } catch (e) {
              result = data_in;
          }
+      },
+      error: function (ajaxContext) {
+        result = ajaxContext.responseText;
       }
     });
     return result;
