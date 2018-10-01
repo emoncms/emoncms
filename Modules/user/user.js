@@ -19,8 +19,12 @@ var user = {
              result = data_in;
          }
       },
-      error: function (ajaxContext) {
-        result = ajaxContext.responseText;
+      error: function (xhr, ajaxOptions, thrownError) {
+        if(xhr.status==404) {
+            result = "404 Not Found: Is modrewrite configured on your system?"
+        } else {
+            result = xhr.status+" "+thrownError;
+        }
       }
     });
     return result;
@@ -44,8 +48,12 @@ var user = {
              result = data_in;
          }
       },
-      error: function (ajaxContext) {
-        result = ajaxContext.responseText;
+      error: function (xhr, ajaxOptions, thrownError) {
+        if(xhr.status==404) {
+            result = "404 Not Found: Is modrewrite configured on your system?"
+        } else {
+            result = xhr.status+" "+thrownError;
+        }
       }
     });
     return result;
