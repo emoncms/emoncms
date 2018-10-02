@@ -525,7 +525,8 @@ function onTooltipShown(event){
     }
     $('#mouse-position').data('tooltip-shown',true)
 }
-
+// create global variable to store mouse position:
+var mousePos = {x: 0, y: 0}
 // store current mouse position in global scope
 document.onmousemove = function(event) {
     var dot, eventDoc, doc, body, pageX, pageY;
