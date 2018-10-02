@@ -39,6 +39,8 @@ $(function() {
     // saves the state to local storage to recall on next page load
     save_node_state_timeout = null
     // store the state once animation finished
+    //data-toggle="collapse"
+
     $(document).on("shown hidden", '#table .tbody.collapse', function(e){
         e.preventDefault()
         if (e.type == 'hidden'){
@@ -74,7 +76,7 @@ $(function() {
         $this.find('.icon').toggleClass('icon-ban-circle', state)
         $this.find('.icon').toggleClass('icon-check', !state)
         // make the selection with custom event handler
-        $("#table .select input[type='checkbox']").prop('checked', state).trigger('select')
+        $("#table .select input[type='checkbox']").prop('checked', state).trigger('select').trigger('change')
         // set the title
         title = state ? $this.data('alt-title') : $this.data('title-original')
         $this.attr('title', title)
@@ -83,6 +85,19 @@ $(function() {
         $this.data('state',!state)
         // expand all accordions if chosen to select all
         if (state===true) expandAllNodes(false)
+    })
+    
+    // stop accordion from collapsing if any feeds selected within the node
+    $('#table').change('.feed-select', function(e) {
+        let $parent = $(e.target).parents('.collapse')
+        let id = $parent.attr('id')
+        let $collapse = $('.accordion-toggle[data-target="#'+id+'"]')
+        checked_checkboxes = $parent.find(':checkbox:checked').length;
+        if(checked_checkboxes>0){
+            $collapse.attr('data-toggle',false)
+        } else {
+            $collapse.attr('data-toggle','collapse')
+        }
     })
 
     // @todo: not yet implemented. ui element not chosen on to trigger this action
