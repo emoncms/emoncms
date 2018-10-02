@@ -44,6 +44,10 @@ input[type="checkbox"] { margin:0px; }
 
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
+    .modal-wide{
+        width:650px;
+        margin-left:-325px
+    }
 }
 
 @media (max-width: 768px) {
@@ -60,6 +64,7 @@ input[type="checkbox"] { margin:0px; }
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+	<a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
 </div>	
 	
 	<div id="auth-check" class="hide">
@@ -108,7 +113,7 @@ function updaterStart(func, interval){
 	  updater = null;
 	  if (interval > 0) updater = setInterval(func, interval);
 }
-updaterStart(update, 5000);
+// updaterStart(update, 5000);
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
@@ -192,17 +197,21 @@ function draw_devices()
     var counter = 0
     isCollapsed = !(Object.keys(devices).length > 1)
 
+    var latest_update = []
+
     for (var node in devices) {
         counter++
         isCollapsed = !nodes_display[node]
         out += "<div class='node accordion line-height-expanded'>";
         out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B' data-marker='✔'></div>";
+        out += "     <div class='select text-center has-indicator' data-col='B'></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <div class='processlist' data-col='F' data-col-width='auto'>"+devices[node].description+"</div>";
+        out += "     <span class='description' data-col='G'>"+devices[node].description+"</span>";
+        out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
         out += "     <div class='pull-right'>"
-        out += "        <div class='device-schedule text-center hidden' data-col='E' data-col-width='50'><i class='icon-time icon-white'></i></div>";
-        out += "        <div class='device-key text-center' data-col='D' data-col-width='50'><i class='icon-lock icon-white'></i></div>"; 
+        out += "        <div class='device-schedule text-center hidden' data-col='F' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
+        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devices[node].devicekey+"' data-col-width='50'><i class='icon-lock icon-white'></i></a>"; 
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-wrench icon-white'></i></div>";
         out += "     </div>";
         out += "  </div>";
@@ -212,16 +221,20 @@ function draw_devices()
             var input = devices[node].inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': ''
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : ''
+            latest_update[node] = latest_update > input.time ? latest_update : input.time
+
             out += "<div class='node-input' id="+input.id+">";
             out += "  <div class='select text-center' data-col='B'>"
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='processlist' data-col='F'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
+            out += "  <div class='description' data-col='G'>"+input.description+"</div>";
+            out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='pull-right'>";
-            out += "    <div class='time text-center' data-col='C'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='E' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "    <div class='schedule text-center hidden' data-col='F'></div>";
+            out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
@@ -231,6 +244,27 @@ function draw_devices()
     }
     $("#table").html(out);
 
+    // show the latest time in the node title bar
+    for(let node in latest_update) {
+        $('#table [data-node="'+node+'"] .device-last-updated').html(list_format_updated(latest_update[node]));
+    }
+
+    // show tooltip with device key on click 
+    $('#table [data-toggle="tooltip"]').tooltip({
+        trigger: 'manual',
+        container: 'body',
+        placement: 'left',
+        title: function(){
+           return  $(this).data('device-key')
+        }
+    }).hover(
+        // show "fake" title (tooltip-title) on hover
+        function(e){
+            let $btn = $(this)
+            let title = !$btn.data('shown') ? $btn.data('tooltip-title') : ''
+            $btn.attr('title', title)
+        }
+    )
     $('#input-loader').hide();
     if (out=="") {
         $("#noinputs").show();
@@ -272,36 +306,42 @@ function input_selection()
     });
 
     if (num_selected>0) {
-        $(".input-delete").show();
+        $(".input-delete,.input-edit").removeClass('hide');
     } else {
-        $(".input-delete").hide();
+        $(".input-delete,.input-edit").addClass('hide');
     }
 
-    if (num_selected==1) {
-        // $(".feed-edit").show();	  
-    } else {
-        // $(".feed-edit").hide();
-    }
 }
 
 // column title buttons ---
 
+$("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
+$("#table").on("hidden",".device-key",function(e) { $(this).data('shown',false) })
 $("#table").on("click",".device-key",function(e) {
-    e.stopPropagation();
-    var node = $(this).parents('.node-info').first().data("node");
-    $this = $(this)
-    if(!$this.data('original')) $this.data('original',$this.html())
-    if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
-    $this.data('state', !$this.data('state')||false)
-    let width = 315
-    if($this.data('state')){
-        $this.html(devices[node].devicekey)
-        $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
-    }else{
-        $this.html($this.data('original'))
-        $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
+    e.stopPropagation()
+    var $btn = $(this),
+        action = 'show'
+    if($btn.data('shown') && $btn.data('shown')==true){
+        action = 'hide'
     }
-});
+    $(this).tooltip({title:'def'}).tooltip(action)
+})
+// $("#table").on("click",".device-key",function(e) {
+//     e.stopPropagation();
+//     var node = $(this).parents('.node-info').first().data("node");
+//     $this = $(this)
+//     if(!$this.data('original')) $this.data('original',$this.html())
+//     if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
+//     $this.data('state', !$this.data('state')||false)
+//     let width = 315
+//     if($this.data('state')){
+//         $this.html(devices[node].devicekey)
+//         $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
+//     }else{
+//         $this.html($this.data('original'))
+//         $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
+//     }
+// });
 
 $("#table").on("click",".device-schedule",function(e) {
     e.stopPropagation();
@@ -342,7 +382,186 @@ $(".input-delete").click(function(){
 	  update();
 	  $("#inputs-to-delete").html(out);
 });
-  
+
+$("#inputEditModal").on('show',function(e){
+    // show input fields for the selected inputs
+    let template = document.getElementById('edit-input-form').innerHTML
+    let container = document.getElementById('edit-input-form-container')
+    container.innerHTML = ''
+    total_selected = 0
+    for(inputid in selected_inputs){
+        let form = document.createElement('div')
+        // if input has been selected duplicate <template> and modify values
+        if (selected_inputs[inputid]){
+            total_selected ++
+            form.innerHTML += template
+            form.querySelector('[name="inputid"]').value = inputid
+            form.querySelector('[name="name"]').value = inputs[inputid].name
+            form.querySelector('[name="description"]').value = inputs[inputid].description
+            form.querySelector('.input_id').innerText = '#'+inputid
+            let appended = container.appendChild(form.firstElementChild)
+            appended.dataset.originalData = serializeInputData(appended)
+            $(appended).on('submit',submitSingleInputForm)
+        }
+    }
+    if(total_selected>1){
+        $('#inputEditModal .btn.single').addClass('hide')
+        $('#inputEditModal .btn.multiple').removeClass('hide')
+    }else{
+        $('#inputEditModal .btn.single').removeClass('hide')
+        $('#inputEditModal .btn.multiple').addClass('hide')
+    }
+})
+$("#inputEditModal").on('show',function(e){
+    showStatus.clear()
+    update()
+})
+// return fields object that matches the api requirements
+function serializeInputData(form){
+    let formData = $(form).serializeArray()
+    let fields = {}
+    let inputid = void 0
+    for(field in formData) {
+        if(formData[field].name=='description') fields.description = formData[field].value
+        if(formData[field].name=='name' && formData[field].value.length>0) fields.name = formData[field].value
+        if(formData[field].name=='inputid') inputid = formData[field].value
+    }
+    let data = new URLSearchParams({'inputid':inputid})
+    if(Object.keys(fields).length>0) data.set('fields',JSON.stringify(fields))
+    return data.toString()
+}
+
+;var showStatus = (function(){
+    var container = document.getElementById('input-edit-status')
+    const INFO='text-info',
+          ERROR='text-error',
+          SUCCESS='text-success'
+    var allowed = [INFO,ERROR,SUCCESS]
+
+    function switchClass(classNames,elem){
+        elem = typeof elem != 'undefined' && elem instanceof Element ? elem : container
+        classNames = Array.isArray(classNames) ? classNames : [classNames]
+        for(a in allowed) {
+            elem.classList.remove(allowed[a])
+        }
+        for(c in classNames){
+            if(allowed.indexOf(classNames[c])>-1) elem.classList.add(classNames[c])
+            if(classNames[c]=='text-error'){
+                setTimeout(function(){
+                    parent = elem.parentNode
+                    if(parent) parent.removeChild(elem)
+                },3000)
+            }
+        }
+    }
+    function emptyContainer(){
+        $('#inputEditModal .status').remove()
+    }
+    function addText(text,className,id){
+        let elem = document.querySelector('.status[data-inputid="'+id+'"]') || document.createElement('h5')
+        elem.innerText = text
+        elem.style.margin = 0
+        elem.style.marginRight = '1em'
+        elem.style.float = 'left'
+        elem.classList.add('status')
+        elem.setAttribute('data-inputid',id)
+        domBox = container.appendChild(elem)
+        switchClass(className,domBox)
+    }
+    function showInfo(text,id){
+        addText(text,INFO,id)
+    }
+    function showError(text,id){
+        addText(text,ERROR,id)
+    }
+    function showSuccess(text,id){
+        addText(text,SUCCESS,id)
+    }
+    return{
+        clear: emptyContainer,
+        info: showInfo,
+        error: showError,
+        success: showSuccess
+    }
+}());
+
+function getInputFormData(form){
+    let dataString = serializeInputData(form),
+        data = new URLSearchParams(dataString),
+        inputid = data.get('inputid'),
+        fields = JSON.parse(data.get('fields'))
+
+    return {
+        originalData: form.dataset.originalData,
+        dataString: dataString,
+        data: data,
+        inputid: inputid,
+        fields: fields
+    }
+}
+
+
+function submitSingleInputForm(e){
+    e.preventDefault()
+    let form = e.target, 
+        $loader = $(e.target).parents('.modal').find('#inputEdit-loader')
+
+    showStatus.clear()
+    $loader.show()
+    fd = getInputFormData(form)
+
+    showStatus.info('<?php echo _('Saving') ?>...',fd.inputid)
+
+    // if current form data differs from original data saved in data-originalData
+    if(fd.fields && fd.originalData != fd.dataString){
+        input.set(fd.inputid, fd.fields, true)
+        .done(function(response){
+            if(!response.success){
+                showStatus.error('Problem saving data. Error 221',fd.inputid)
+            }else{
+                showStatus.success('Saved input #'+fd.inputid,fd.inputid)
+                // reset the 'original data' marker
+                form.dataset.originalData = serializeInputData(form)
+            }
+            $loader.hide()
+        })
+    }else{
+        $loader.hide()
+        showStatus.error('No changes to save',fd.inputid)
+    }
+}
+
+
+function submitAllInputForms(e){
+    e.preventDefault()
+    var forms = $(e.target).parents('.modal').find('form')
+    $loader = $(e.target).parents('.modal').find('#inputEdit-loader')
+
+    var messages = []
+    forms.each(function(){
+        if (!this.checkValidity()) return false
+        $loader.show()
+        let fd = getInputFormData(this)
+        showStatus.info('<?php echo _('Saving') ?>...',fd.inputid)
+        if(fd.fields && fd.originalData != fd.dataString){
+            $.when(input.set(fd.inputid, fd.fields, true))
+            .then(function(response) {
+                if(!response || !response.success) {
+                    showStatus.error(response.message || '',fd.inputid)
+                } else {
+                    showStatus.success('Saved input #'+fd.inputid,fd.inputid)
+                }
+            })
+            .then(function(){
+                $loader.hide()
+            });
+        }else{
+            $loader.hide()
+            showStatus.error('No changes to save',fd.inputid)
+        }
+    })
+}
+
 $("#inputDelete-confirm").off('click').on('click', function(){
     var ids = [];
 	  for (var inputid in selected_inputs) {
