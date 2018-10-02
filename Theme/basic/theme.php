@@ -194,7 +194,9 @@
                 // get the path as reported by server
                 path = "<?php echo $path; ?>",
                 // create a new instance of the hammerjs api
-                mc = new Hammer.Manager(container),
+                mc = new Hammer.Manager(container, {
+                    inputClass: Hammer.TouchInput
+                }),
                 // make swipes require more velocity
                 swipe = new Hammer.Swipe({ velocity: 1.1, direction: Hammer.DIRECTION_HORIZONTAL }) // default velocity 0.3
                 // CSV list of pages in the navigation
