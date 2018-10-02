@@ -413,7 +413,7 @@ body{padding:0!important}
                   ]
                   
                   // show public feed status in tooltip
-                  title_lines.push("Public: "+(nodes[node][feed]['public']==1 ? 'Yes':'No'))
+                  title_lines.push("<dt>Public :</dt><dd>"+(nodes[node][feed]['public']==1 ? 'Yes':'No')+"</dd>")
                 
                   if(nodes[node][feed].engine == 5){
                       title_lines.push("<dt>Feed Interval :<dt><dd>"+(nodes[node][feed].interval||'')+'s</dd>')
