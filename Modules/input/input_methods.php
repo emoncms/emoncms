@@ -282,6 +282,7 @@ class InputMethods
     public function process_node($userid,$time,$nodeid,$inputs,$names)
     {
         $dbinputs = $this->input->get_inputs($userid);
+        if ($dbinputs===false) return false;
         
         $validate_access = $this->input->validate_access($dbinputs['byindx'], $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
