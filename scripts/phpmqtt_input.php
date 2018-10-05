@@ -2,7 +2,7 @@
 
     // TBD: support user target in message schema
     $mqttsettings = array(
-        'userid' => 9
+        'userid' => 1
     );
 
 
