@@ -23,3 +23,32 @@
         <button id="inputDelete-confirm" class="btn btn-primary"><?php echo _('Delete'); ?></button>
     </div>
 </div>
+
+
+<div id="inputEditModal" class="modal hide modal-wide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" aria-hidden="true" data-backdrop="static">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="inputEditModalLabel"><?php echo _('Edit Input'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <p><?php echo _('Edit the input\'s name and description.'); ?></p>
+        <div id="inputs-to-edit"></div>
+        <div id="inputEdit-loader" class="ajax-loader" style="display:none;"></div>
+        <div id="edit-input-form-container"></div>
+    </div>
+    <div class="modal-footer">
+        <div id="input-edit-status" class="pull-left" style="max-width:75%"></div>
+        <button class="btn" data-dismiss="modal" aria-hidden="true" type="button"><?php echo _('Close'); ?></button>
+        <button class="single btn btn-primary" type="button" onclick="submitAllInputForms(event)"><?php echo _('Save'); ?></button>
+        <button class="multiple btn btn-primary hide" type="button" onclick="submitAllInputForms(event)"><?php echo _('Save All'); ?></button>
+    </div>
+</div>
+<!-- this template will repeat for every selected input -->
+<template id="edit-input-form">
+    <form class="form-inline" style="margin-bottom:.5em">
+        <input name="inputid" type="hidden">
+        <input name="name" required pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo _('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo _('name') ?>" data-lpignore="true">
+        <input name="description" pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo _('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo _('description') ?>" data-lpignore="true">
+        <button class="button-small"><?php echo _('Save') ?> <span class="input_id"></span></button>
+    </form>
+</template>

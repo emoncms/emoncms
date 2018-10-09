@@ -223,7 +223,8 @@ input[type=text][class=variable-name-edit] {
 
 .device-key,
 .device-schedule,
-.device-configure {
+.device-configure,
+.device-last-updated {
     border-left: 1px solid #eee;
     color: white;
 }

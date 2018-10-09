@@ -32,23 +32,34 @@ $(function() {
     $btn_expand.on('click', function(){
         expandAllNodes()
     })
-    
+
     // once accordion has finished opening or closing check if all are open and change the button
-    $(document).on("shown hidden", function(e){
+    // saves the state to local storage to recall on next page load
+    save_node_state_timeout = null
+    // store the state once animation finished
+    //data-toggle="collapse"
+
+    $(document).on("shown hidden", '#table .tbody.collapse', function(e){
     	$header = $('[data-target="#'+e.target.id+'"]')
         if (e.type == 'hidden'){
-        	$header.addClass('collapsed')
+            $header.addClass('collapsed')
             $header.find('.icon-indicator').removeClass('icon-chevron-down').addClass('icon-chevron-right')
         } else {
-        	$header.removeClass('collapsed')
+            $header.removeClass('collapsed')
             $header.find('.icon-indicator').removeClass('icon-chevron-right').addClass('icon-chevron-down')
         }
         state = $container.find('.collapsed').length == 0
         setExpandButtonState(state)
+
+        // debounce the call to save the current state to a local storage (cookie)
+        clearTimeout(save_node_state_timeout)
+        save_node_state_timeout = setTimeout(function(){
+            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display))
+        },100)
     })
-    // once accordion starts open/close change the node state
-    $(document).on("hide show", "#table .tbody.collapse", function(e) {
-        nodes_display[$(this).data('node')] = e.type == 'show'
+    // record the state change before animation starts
+    $(document).on('hide show', '#table .tbody.collapse', function(event){
+        nodes_display[event.target.dataset.node] = event.type == 'show'
     })
     // select/de-select all node checkboxes
     $('#select-all').on('click',function(){
@@ -61,7 +72,7 @@ $(function() {
         $this.find('.icon').toggleClass('icon-ban-circle', state)
         $this.find('.icon').toggleClass('icon-check', !state)
         // make the selection with custom event handler
-        $("#table .select input[type='checkbox']").prop('checked', state).trigger('select')
+        $("#table .select input[type='checkbox']").prop('checked', state).trigger('select').trigger('change')
         // set the title
         title = state ? $this.data('alt-title') : $this.data('title-original')
         $this.attr('title', title)
@@ -69,6 +80,19 @@ $(function() {
         $this.data('state',!state)
         // expand all accordions if chosen to select all
         if (state===true) expandAllNodes(false)
+    })
+    
+    // stop accordion from collapsing if any feeds selected within the node
+    $('#table').change('.feed-select', function(e) {
+        let $parent = $(e.target).parents('.collapse')
+        let id = $parent.attr('id')
+        let $collapse = $('.accordion-toggle[data-target="#'+id+'"]')
+        checked_checkboxes = $parent.find(':checkbox:checked').length;
+        if(checked_checkboxes>0){
+            $collapse.attr('data-toggle',false)
+        } else {
+            $collapse.attr('data-toggle','collapse')
+        }
     })
 
     // @todo: not yet implemented. ui element not chosen on to trigger this action
@@ -290,3 +314,45 @@ Number.prototype.pad = function(size) {
     }
     return s;
 };
+
+// get/set document cookies
+var docCookies = {
+    getItem: function (sKey) {
+      if (!sKey) { return null; }
+      return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+    },
+    setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+      if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+      var sExpires = "";
+      if (vEnd) {
+        switch (vEnd.constructor) {
+          case Number:
+          //   sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; expires=" + (new Date(vEnd * 1e3 + Date.now())).toUTCString();
+            break;
+          case String:
+            sExpires = "; expires=" + vEnd;
+            break;
+          case Date:
+            sExpires = "; expires=" + vEnd.toUTCString();
+            break;
+        }
+      }
+      document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+      return true;
+    },
+    removeItem: function (sKey, sPath, sDomain) {
+      if (!this.hasItem(sKey)) { return false; }
+      document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+      return true;
+    },
+    hasItem: function (sKey) {
+      if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+      return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+    },
+    keys: function () {
+      var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+      for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+      return aKeys;
+    }
+  };
