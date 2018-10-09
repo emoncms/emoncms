@@ -48,7 +48,7 @@ sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
     Allow from all
 </Directory>
 EOF
-printf "ServerName localhost" | sudo tee /etc/apache2/apache2.conf 1>&2
+printf "ServerName localhost" | sudo tee >> /etc/apache2/apache2.conf 1>&2
 sudo a2ensite emoncms
 sudo service apache2 reload
 ```
