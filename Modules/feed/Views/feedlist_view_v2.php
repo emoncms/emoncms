@@ -140,19 +140,15 @@ body{padding:0!important}
         <div class="input-prepend">
         <select id="feed_unit_dropdown" style="width:100px">
             <option value=""></option>
-            <option value="W">W</option>
-            <option value="kWh">kWh</option>
-            <option value="Wh">Wh</option>
-            <option value="V">V</option>
-            <option value="VA">VA</option>
-            <option value="A">A</option>
-            <option value="°C">°C</option>
-            <option value="K">K</option>
-            <option value="°F">°F</option>
-            <option value="%">%</option>
-            <option value="Hz">Hz</option>
-            <option value="pulses">pulses</option>
-            <option value="dB">dB</option>
+        <?php
+        // add available units from units.php
+        include('Lib/units.php');
+        if (defined('UNITS')) {
+            foreach(UNITS as $unit){
+                printf('<option value="%s">%s (%1$s)</option>',$unit['short'],$unit['long']);
+            }
+        }
+        ?>
             <option value="_other">Other</option>
         </select>
         <input type="text" id="feed_unit_dropdown_other" style="width:100px"/>
@@ -529,7 +525,8 @@ function onTooltipShown(event){
     }
     $('#mouse-position').data('tooltip-shown',true)
 }
-
+// create global variable to store mouse position:
+var mousePos = {x: 0, y: 0}
 // store current mouse position in global scope
 document.onmousemove = function(event) {
     var dot, eventDoc, doc, body, pageX, pageY;
