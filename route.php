@@ -131,8 +131,7 @@ class Route
             $this->method = 'PUT';
         } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
-        }
-span class="pl-s1">         elseif($requestMethod === 'OPTIONS') {
+        } elseif($requestMethod === 'OPTIONS') {
             // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Headers: Authorization');
