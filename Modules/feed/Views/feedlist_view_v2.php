@@ -81,11 +81,17 @@ body{padding:0!important}
     max-width:80%;
     position:absolute;
 }
+
 .tooltip {pointer-events: none} /* stops js from triggering mouseleave on underlying element */
 .tooltip h4{margin-bottom:0}
 .tooltip .dl-horizontal{ margin-bottom: .5em;}
 .tooltip .dl-horizontal dt{ width:8.5em }
 .tooltip .dl-horizontal dd{ margin-left:9.3em; text-align: left;min-width:8.5em }
+.tooltip-inner {
+    color: #333;
+    background-color: #fff;
+    border: 1px solid #f5f5f5;
+}
 
 #mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
 @media (min-width: 768px) {
