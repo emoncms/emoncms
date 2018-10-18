@@ -267,8 +267,6 @@ input[type=text][class=variable-name-edit] {
     margin-bottom: .5em
 }
 
-
-#table{margin-top:3rem}
 .controls {
     transition: all .2s ease-out
 }

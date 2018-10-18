@@ -124,8 +124,11 @@
 
     // If the EmonMUC module exists, check if a default local controller should be registered
     if (isset($muc_test) && $muc_test == true && (@include "Modules/muc/muc_model.php") == true) {
-        $muc = new Controller($mysqli, $redis);
-        $muc->test($session['userid']);
+        $userid = $session['userid'];
+        if ($userid) {
+            $muc = new Controller($mysqli, $redis);
+            $muc->test($userid);
+        }
     }
 
     // 4) Language

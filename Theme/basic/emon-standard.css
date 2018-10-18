@@ -223,7 +223,8 @@ input[type=text][class=variable-name-edit] {
 
 .device-key,
 .device-schedule,
-.device-configure {
+.device-configure,
+.device-last-updated {
     border-left: 1px solid #eee;
     color: white;
 }
@@ -266,8 +267,6 @@ input[type=text][class=variable-name-edit] {
     margin-bottom: .5em
 }
 
-
-#table{margin-top:3rem}
 .controls {
     transition: all .2s ease-out
 }

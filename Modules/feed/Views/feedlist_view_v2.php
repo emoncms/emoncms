@@ -52,6 +52,9 @@ function format_time(time,format){
 body{padding:0!important}
 .container-fluid { padding: 0px 10px 0px 10px; }
 
+#table {
+    margin-top:3rem
+}
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -385,7 +388,7 @@ body{padding:0!important}
               isCollapsed = !nodes_display[node]
               out += '<div class="node accordion">';
               out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
+              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
               out += '      <h5 class="name" data-col="A">'+node+':</h5>';
               out += '      <div class="public" class="text-center" data-col="E"></div>';
               out += '      <div class="engine" data-col="F"></div>';
