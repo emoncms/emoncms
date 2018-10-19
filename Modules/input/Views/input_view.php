@@ -1,11 +1,13 @@
 <?php
 	global $path;
+	
+	$v=1;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 
 <style>
 #table input[type="text"] {
@@ -15,13 +17,14 @@
 #table td:nth-of-type(1) { width:5%;}
 #table td:nth-of-type(2) { width:5%;}
 #table td:nth-of-type(3) { width:20%;}
-#table th:nth-of-type(5), td:nth-of-type(5) { text-align: right; }
-#table th:nth-of-type(6), td:nth-of-type(6) { text-align: right; }
+#table th:nth-of-type(5), #table td:nth-of-type(5) { text-align: right; }
+#table th:nth-of-type(6), #table td:nth-of-type(6) { text-align: right; }
 #table th[fieldg="time"] { font-weight:normal; text-align: right; }
 #table th[fieldg="processList"] { font-weight:normal; text-align: left; }
 #table td:nth-of-type(7) { width:14px; text-align: center; }
 #table td:nth-of-type(8) { width:14px; text-align: center; }
 #table td:nth-of-type(9) { width:14px; text-align: center; }
+.overflow-hidden {overflow:hidden}
 </style>
 
 <div>
@@ -63,8 +66,8 @@
   table.fields = {
 	//'id':{'type':"fixed"},
 	'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
-	'name':{'title':'<?php echo _("Key"); ?>','type':"text"},
-	'description':{'title':'<?php echo _("Name"); ?>','type':"text"},
+	'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
+	'description':{'title':'<?php echo _("Description"); ?>','type':"text"},
 	'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
 	'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
 	'value':{'title':'<?php echo _("Value"); ?>','type':"value"},
@@ -74,7 +77,7 @@
 	'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'}
   }
 
-  update();
+  setTimeout(update,50);
 
   function update(){   
 	var requestTime = (new Date()).getTime();
@@ -135,7 +138,7 @@
 
   $("#table").on('click', '.icon-wrench', function() {
 	var i = table.data[$(this).attr('row')];
-	console.log(i);
+	// console.log(i);
 	var contextid = i.id; // Current Input ID
 	// Input name
 	var newfeedname = "";

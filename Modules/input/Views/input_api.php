@@ -25,25 +25,32 @@ td:nth-of-type(2) { width:4%;}
 
 <h3><?php echo _('Posting data to EmonCMS'); ?></h3>
 
-<p><?php echo _('The EmonCMS input API provides three ways of sending data to emoncms:'); ?></p>
+<p><?php echo _('The EmonCMS HTTP input API provides three ways of sending data to EmonCMS:'); ?></p>
 <ul>
-    <li><?php echo _('<b>input/post</b> - Post a single update from a node.'); ?></li>
+    <li><?php echo _('<b>input/post</b> - Post a single update from a node as either one data item or as a JSON data structure.'); ?></li>
     <li><?php echo _('<b>input/bulk</b> - Bulk upload historic data from multiple nodes in a single update.'); ?></li>
     <li><?php echo _('<b>encryption</b> - An encrypted version of both of the above.'); ?></li>
 </ul>
 
-<p><?php echo _("If your starting out with EmonCMS 'input/post' is a good starting point for testing, this was the original input method when EmonCMS . The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote emoncms server as this method provides the option to efficiently bulk upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
+<p><?php echo _("If you're starting out with EmonCMS, 'input/post' is a good starting point for testing. This was the original input method for EmonCMS. The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote EmonCMS server as this method provides the option to efficiently bulk upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
 
-<p><?php echo _("For applications where HTTPS or TLS is not available, emoncms offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
+<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the EmonCMS apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
 
 <h4><?php echo _('input/post'); ?></h4>
 
-<p><?php echo _('The "fulljson" format is recommended for new integrations, it uses the PHP JSON decoder and answer is also in json.<br>The "json like" format is based on the CSV input parsing implementation and maintained for backwards compatibility.'); ?><br><?php echo _('A node name can be a name e.g: emontx or a number e.g: 10.'); ?><br><?php echo _('The input/post API is compatible with both GET and POST request methods (POST examples given use curl).'); ?></p>
-
+<ul>
+    <li><?php echo _('The <b>fulljson</b> format is recommended for new integrations. It uses the PHP JSON decoder and answer is also in json.');?></li>
+    <li><?php echo _('The <b>json like</b> format is based on the CSV input parsing implementation and maintained for backwards compatibility.'); ?></li>
+    <li><?php echo _('The <b>node</b> parameter can be an unquoted string e.g: emontx or a number e.g: 10.'); ?></li>
+    <li><?php echo _('Time is set as system time unless a <b>time</b> element is included. It can be either a parameter &time (unquoted) or as part of the JSON data structure. If both are included the parameter value will take precedence. Time is a UNIX timestamp and can be in seconds or a string PHP can decode (ISO8061 recommended). If you are having problems check you are using seconds not milliseconds. If part of the JSON data structure as a string, the node value will report NULL'); ?></li>
+    <li><?php echo _('The input/post API is compatible with both GET and POST request methods (POST examples given use curl).'); ?></li>
+</ul>
 <table class="table">
-    <tr><th><?php echo _('Description'); ?></th><th><?php echo _('Method'); ?></th><th><?php echo _('Example'); ?></th></tr>
+    <tr><th><?php echo _('Description'); ?></th><th><?php echo _('HTTP Method'); ?></th><th><?php echo _('Example'); ?></th></tr>
     
     <tr><td><?php echo _('JSON format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300}</a></td></tr>
+
+    <tr><td><?php echo _('JSON format - with time (as a string in this example)'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&fulljson={%22power1%22:100,%22power2%22:200,%22power3%22:300,%22time%22:%22<?php echo date(DATE_ATOM);?>%22}"><?php echo $path; ?>input/post?<b>node=emontx</b>&fulljson={"power1":100,"power2":200,"power3":300,"time":"<?php echo date(DATE_ATOM);?>"}</a></td></tr>
     
     <tr><td><?php echo _('JSON like format'); ?></td><td>GET</td><td><a href="<?php echo $path; ?>input/post?node=emontx&json={power1:100,power2:200,power3:300}"><?php echo $path; ?>input/post?<b>node=emontx</b>&json={power1:100,power2:200,power3:300}</a></td></tr>
     
@@ -97,9 +104,9 @@ td:nth-of-type(2) { width:4%;}
 <tr><td><?php echo _('Absolute time format:'); ?></td><td>POST</td><td>curl --data "data=[[-10,16,1137],[-8,17,1437,3164],[-6,19,1412,3077]]&time=<?php echo time(); ?>&apikey=<?php echo $user->get_apikey_write($session['userid']); ?>" "<?php echo $path; ?>input/bulk"</td></tr>
 </table>
 
-<h4><?php echo _('encryption'); ?></h4>
+<h4><?php echo _('Encryption'); ?></h4>
 
-<p><?php echo _("For applications where HTTPS or TLS is not available, emoncms offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/input-improvements/docs/input_encrypted.md">PHP Example source code.</a></p>
+<p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the emoncms apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?><br><?php echo _("There is a PHP example of how to generate an encrypted request here: "); ?><a href="https://github.com/emoncms/emoncms/blob/master/docs/input_encrypted.md">PHP Example source code.</a></p>
 
 <p>
 1. Start with a request string conforming with the API options above e.g: node=emontx&data={power1:100,power2:200,power3:300}<br>
@@ -107,7 +114,7 @@ td:nth-of-type(2) { width:4%;}
 3. Encrypt using AES-128-CBC.<br>
 4. Create a single string starting with the initialization vector followed by the cipher-text result of the AES-128-CBC encryption.<br>
 5. Convert to a base64 encoded string.<br>
-6. Generate a HMAC_HASH of the data string together, using the emoncms apikey for authorization.<br>
+6. Generate a HMAC_HASH of the data string together, using the EmonCMS apikey for authorization.<br>
 7. Send the encrypted string in the POST body of a request to either input/post or input/bulk with headers properties 'Content-type' and 'Authorization' set as below<br>
 8. Verify the result. The result is a base64 encoded sha256 hash of the json data string.
 </p>

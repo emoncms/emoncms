@@ -95,6 +95,7 @@ function user_controller()
                         if ($hash == $row->password || $session['admin']==1) {
                             $result = "PERMANENT DELETE:\n";
                             $result .= delete_user($userid,"permanentdelete");
+                            $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'permanentdelete']);
                             
                             $user->logout();
                         } else {
@@ -106,9 +107,47 @@ function user_controller()
                 } else {
                     $result = "DRY RUN:\n";
                     $result .= delete_user($userid,"dryrun");
+                    $result .= call_hook('on_delete_user',['userid'=>$userid,'mode'=>'dryrun']);
                 }
             } else {
                 $result = "missing mode field";
+            }
+        }
+        // set user peferences
+        if ($route->action == 'preferences' && $session['read']) {
+            $userid = $session['userid'];
+
+            switch ($route->method) {
+                case 'POST':
+                    if(!empty(post('preferences'))){
+                        $preferences = post('preferences');
+                        if($user->set_preferences($userid, $preferences)) {
+                            $result = array('success'=>true, 'message'=>_('Preference Saved'));
+                        } else {
+                            $result = array('success'=>false, 'message'=>_('Problem saving Preferences'));
+                        }
+                    } else {
+                        $result = array('success'=>false, 'message'=>_('Invalid parameters'));
+                    }
+                    break;
+                default:
+                    $property = prop('preferences') ? prop('preferences') : false;
+                    if (!$property) {
+                        $preferences = $user->get_preferences($userid);
+                    } else {
+                        $preferences = $user->get_preferences($userid, $property);
+                    }
+
+                    if(!empty($preferences)){
+                        if(isset($preferences['success']) && $preferences['success']===false){
+                            $error_msg = !empty($preferences['message']) ? $preferences['message'] : _('Error getting data');
+                            $result = array('success'=>false, 'message'=>$error_msg);
+                        }else{
+                            $result = array('success'=>true, 'preferences'=>$preferences);
+                        }
+                    } else {
+                        $result = array('success'=>true, 'message'=>_('Empty'));
+                    }
             }
         }
     }

@@ -38,6 +38,12 @@ class EmonLogger
             if (is_writable($this->logfile)) $this->logenabled = true;
         }
     }
+    
+    public function set($logfile,$log_level) {
+        $this->logfile = $logfile;
+        $this->log_enabled = true;
+        $this->log_level = $log_level;
+    }
 
     public function info ($message){
         if ($this->log_level <= 1) $this->write("INFO",$message);

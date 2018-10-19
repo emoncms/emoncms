@@ -20,15 +20,15 @@ class User
     private $email_verification = false;
     private $redis;
     private $log;
-    
-    public $appname = "emoncms";
+    public $appname;
 
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
-        global $enable_rememberme, $email_verification;
+        global $enable_rememberme, $email_verification, $appname;
         $this->enable_rememberme = $enable_rememberme;
         $this->email_verification = $email_verification;
+        $this->appname = $appname;
 
         $this->mysqli = $mysqli;
 
@@ -141,6 +141,24 @@ class User
         // ini_set('session.gc_maxlifetime', 20);
         // session_set_cookie_params(20);
         
+        $cookie_params = session_get_cookie_params();
+        //name of cookie 
+        session_name('EMONCMS_SESSID'); 
+        //get subdir installation 
+        $cookie_params['path'] = dirname($_SERVER['SCRIPT_NAME']);
+        // Add a slash if the last character isn't already a slash
+        if (substr($cookie_params['path'], -1) !== '/')
+            $cookie_params['path'] .= '/';
+        //not pass cookie to javascript 
+        $cookie_params['httponly'] = 1; 
+        
+        session_set_cookie_params(
+            $cookie_params['lifetime'],
+            $cookie_params['path'],
+            $cookie_params['domain'],
+            $cookie_params['secure'],
+            $cookie_params['httponly'] 
+        );
         session_start();
 
         if ($this->enable_rememberme)
@@ -174,6 +192,7 @@ class User
                             $_SESSION['write'] = 1;
                             //$_SESSION['admin'] = $userData->admin; // Admin mode requires user to login manualy
                             $_SESSION['lang'] = $userData->language;
+                            $_SESSION['timezone'] = $userData->timezone;
                             if (isset($userData->startingpage)) $_SESSION['startingpage'] = $userData->startingpage;
                             // There is a chance that an attacker has stolen the login token, so we store
                             // the fact that the user was logged in via RememberMe (instead of login form)
@@ -193,6 +212,7 @@ class User
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
         if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
+        if (isset($_SESSION['timezone'])) $session['timezone'] = $_SESSION['timezone']; else $session['timezone'] = '';
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
@@ -226,8 +246,9 @@ class User
         $stmt = $this->mysqli->prepare("INSERT INTO users ( username, password, email, salt ,apikey_read, apikey_write, admin) VALUES (?,?,?,?,?,?,0)");
         $stmt->bind_param("ssssss", $username, $password, $email, $salt, $apikey_read, $apikey_write);
         if (!$stmt->execute()) {
+            $error = $this->mysqli->error;
             $stmt->close();
-            return array('success'=>false, 'message'=>_("Error creating user"));
+            return array('success'=>false, 'message'=>_("Error creating user, mysql error: ".$error));
         }
 
         // Make the first user an admin
@@ -340,13 +361,13 @@ class User
 
         // 28/04/17: Changed explicitly stated fields to load all with * in order to access startingpage
         // without cuasing an error if it has not yet been created in the database.
-        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified FROM users WHERE username=?")) {
+        if (!$stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,admin,language,startingpage,email_verified,timezone FROM users WHERE username=?")) {
             return array('success'=>false, 'message'=>_("Database error, you may need to run database update"));
         }
         $stmt->bind_param("s",$username);
         $stmt->execute();
         
-        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified);
+        $stmt->bind_result($userData_id,$userData_password,$userData_salt,$userData_apikey_write,$userData_admin,$userData_language,$userData_startingpage,$email_verified,$userData_timezone);
         $result = $stmt->fetch();
         $stmt->close();
         
@@ -372,6 +393,7 @@ class User
             $_SESSION['write'] = 1;
             $_SESSION['admin'] = $userData_admin;
             $_SESSION['lang'] = $userData_language;
+            $_SESSION['timezone'] = $userData_timezone;
             $_SESSION['startingpage'] = $userData_startingpage;
                             
             if ($this->enable_rememberme) {
@@ -384,6 +406,8 @@ class User
                     $this->rememberme->clearCookie();
                 }
             }
+            
+            if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
 
             return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
         }
@@ -475,24 +499,19 @@ class User
         
         if ($userid!==false && $userid>0)
         {
-            // Generate new random password
-            $newpass = hash('sha256',md5(uniqid(rand(), true)));
-            $newpass = substr($newpass, 0, 10);
-
-            // Hash and salt
-            $hash = hash('sha256', $newpass);
-            $salt = md5(uniqid(rand(), true));
-            $password = hash('sha256', $salt . $hash);
-
-            // Save password and salt
-            $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
-            $stmt->bind_param("ssi", $password, $salt, $userid);
-            $stmt->execute();
-            $stmt->close();
-            //------------------------------------------------------------------------------
             global $enable_password_reset;
             if ($enable_password_reset==true)
             {
+                // Generate new random password
+                $newpass = hash('sha256',md5(uniqid(rand(), true)));
+                $newpass = substr($newpass, 0, 10);
+
+                // Hash and salt
+                $hash = hash('sha256', $newpass);
+                $salt = md5(uniqid(rand(), true));
+                $password = hash('sha256', $salt . $hash);
+                
+                // Sent email with $newpass to $email
                 require "Lib/email.php";
                 $email = new Email();
                 $email->to($emailto);
@@ -500,15 +519,17 @@ class User
                 $email->body("<p>A password reset was requested for your ".$this->appname." account.</p><p>You can now login with password: $newpass </p>");
                 $result = $email->send();
                 if (!$result['success']) {
-                    $this->log->error("Email send returned error. emailto=" + $emailto . " message='" . $result['message'] . "'");
+                    $this->log->error("Email send returned error. emailto=" . $emailto . " message='" . $result['message'] . "'");
                 } else {
                     $this->log->info("Email sent to $emailto");
-                }
+                    // Save password and salt
+                    $stmt = $this->mysqli->prepare("UPDATE users SET password = ?, salt = ? WHERE id = ?");
+                    $stmt->bind_param("ssi", $password, $salt, $userid);
+                    $stmt->execute();
+                    $stmt->close();
+                    return array('success'=>true, 'message'=>"Password recovery email sent!");
+                }                
             }
-            //------------------------------------------------------------------------------
-
-            // Sent email with $newpass to $email
-            return array('success'=>true, 'message'=>"Password recovery email sent!");
         }
 
         return array('success'=>false, 'message'=>"An error occured");
@@ -550,6 +571,16 @@ class User
         $stmt->bind_param("si", $email, $userid);
         $stmt->execute();
         $stmt->close();
+
+        // $stmt = $this->mysqli->prepare("UPDATE users SET email_verified='0' WHERE id = ?");
+        // $stmt->bind_param("i", $userid);
+        // $stmt->execute();
+        // $stmt->close();
+        
+        // global $session;
+        // $session['emailverified'] = 0;
+        // $_SESSION['emailverified'] = 0;
+        
         return array('success'=>true, 'message'=>_("Email updated"));
     }
 
@@ -567,9 +598,9 @@ class User
     public function get_name($userid)
     {
         $userid = (int) $userid;
-        $result = $this->mysqli->query("SELECT username FROM users WHERE id = '$userid';");
+        $result = $this->mysqli->query("SELECT name FROM users WHERE id = '$userid';");
         $row = $result->fetch_array();
-        return $row['username'];
+        return $row['name'];
     }
 
     public function get_email($userid)
@@ -711,8 +742,12 @@ class User
 
     public function set($userid,$data)
     {
+        global $default_language;
+        $default_locale = !empty($default_language) ? $default_language : 'en_GB';
+        $default_timezone = 'Europe/London';
         // Validation
         $userid = (int) $userid;
+        if(!$data || $userid < 1) return array('success'=>false, 'message'=>_("Error updating user info"));
 
         $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
         $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
@@ -721,10 +756,10 @@ class User
         $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
         $language = preg_replace('/[^\w\s-.]/','',$data->language);
         $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s-.]/','', $data->tags);
-        
         $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?#=\/]/u','',$data->startingpage);
         
-        $_SESSION['lang'] = $language;
+        $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
+        $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;
 
         $stmt = $this->mysqli->prepare("UPDATE users SET gravatar = ?, name = ?, location = ?, timezone = ?, language = ?, bio = ?, startingpage = ?, tags = ? WHERE id = ?");
         $stmt->bind_param("ssssssssi", $gravatar, $name, $location, $timezone, $language, $bio, $startingpage, $tags, $userid);
@@ -784,6 +819,100 @@ class User
         $stmt->close();
         
         return $users;
+    }
+    /**
+     * saves user preference to local device
+     * currently uses cookies
+     *
+     * @param array $optIn
+     * @return array
+     */
+    public function set_preferences ($userid, $preference) {
+        $userid = (int) $userid;
+        // add to this array to allow more properties
+        $allowed_properties = array('deviceView');
+
+        // overwrite the current settings with the new
+        $get_preferences = $this->get_preferences($userid);
+        $current_preferences = !empty($get_preferences['preferences']) ? $get_preferences['preferences'] : array();
+        // array_merge only works on top level assoc arrays (not nested)
+        $preferences = array_merge($current_preferences,$preference);
+        
+        // set the sanitize features for each allowed property
+        $filters = array(
+            'deviceView'=>FILTER_VALIDATE_BOOLEAN
+        );
+        $options = array(
+            'deviceView'=>array(
+                'flags'=>FILTER_NULL_ON_FAILURE
+            )
+        );
+        // santize the passed preferences
+        $filtered = array(); // clean preferences
+        foreach($preferences as $key=>$value) {
+            if (in_array($key, $allowed_properties)) {
+                $filtered[$key] = filter_var($value, $filters[$key], $options[$key]);
+            }
+        }
+
+        // encode the sanitized preferences as a JSON string
+        $json = json_encode($filtered, JSON_NUMERIC_CHECK);
+
+        $success = false;
+        $error = '';
+        if ($stmt = $this->mysqli->prepare("UPDATE users SET preferences = ? WHERE id = ?")) {
+            $stmt->bind_param("si", $json, $userid);
+            $success = $stmt->execute();
+            $error = $stmt->error;
+            $stmt->close();
+        } else {
+            $this->log->error("Error preparing SQL for user preferences");
+            return false;
+        }
+        
+        if(!$success){
+            $this->log->error("Error writing to user table");
+            return false;
+        } else {
+            $this->log->info("Succesfully updated user preferences");
+            return true;
+        }
+    }
+
+    /**
+     * returns all or individual user preference
+     * @param int $userid
+     * @param string $key
+     *
+     * @return array
+     */
+    public function get_preferences ($userid, $property = null) {
+        $stmt = $this->mysqli->prepare("SELECT preferences FROM users WHERE id = ?");
+        $preferences = false;
+        if ($stmt) {
+            $stmt->bind_param("i", $userid);
+            $stmt->execute();
+            $stmt->bind_result($preferences);
+            $success = $stmt->fetch();
+            $stmt->close();
+        }else{
+            return array('success'=>false,'message'=>_('Please update database'));
+        }
+        $json = json_decode($preferences,1);
+        // return data and/or success/error message
+        if (!empty($json)) {
+            // only return single property value if called with a $property param
+            if(!empty($property) && $json[$property]===false) {
+                return $json[$property];
+            }elseif(!empty($property) && !empty($json[$property])){
+                return $json[$property];
+            } else {
+                return $json;
+            }
+        } else {
+            return false;
+            // return array('success'=>true, 'message'=>_('Empty'));
+        }
     }
 }
 

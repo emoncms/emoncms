@@ -130,6 +130,11 @@ function put($index) {
     return $val;
 }
 
+function version(){
+    $version_file = file_get_contents('./version.txt');
+    $version = filter_var($version_file, FILTER_SANITIZE_STRING);
+    return $version;
+}
 
 
 function load_db_schema()
@@ -172,7 +177,48 @@ function load_menu()
     return array('dashboard'=>$menu_dashboard, 'left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
 }
 
+function http_request($method,$url,$data) {
+
+    $options = array();
+    $urlencoded = http_build_query($data);
+    
+    if ($method=="GET") { 
+        $url = "$url?$urlencoded";
+    } else if ($method=="POST") {
+        $options[CURLOPT_POST] = 1;
+        $options[CURLOPT_POSTFIELDS] = $data;
+    }
+    
+    $options[CURLOPT_URL] = $url;
+    $options[CURLOPT_RETURNTRANSFER] = 1;
+    $options[CURLOPT_CONNECTTIMEOUT] = 2;
+    $options[CURLOPT_TIMEOUT] = 5;
+
+    $curl = curl_init();
+    curl_setopt_array($curl,$options);
+    $resp = curl_exec($curl);
+    curl_close($curl);
+    return $resp;
+}
+
 function emoncms_error($message) {
     return array("success"=>false, "message"=>$message);
 }
 
+function call_hook($function_name, $args){
+    $dir = scandir("Modules");
+    for ($i=2; $i<count($dir); $i++)
+    {
+        if (filetype("Modules/".$dir[$i])=='dir' || filetype("Modules/".$dir[$i])=='link')
+        {
+            if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_hooks.php"))
+            {
+                require "Modules/".$dir[$i]."/".$dir[$i]."_hooks.php";
+                if (function_exists($dir[$i].'_'.$function_name)==true){
+                    $hook = $dir[$i].'_'.$function_name;
+                    return $hook($args);
+                }
+            }   
+        }
+    }
+}

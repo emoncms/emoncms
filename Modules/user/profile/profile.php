@@ -13,18 +13,19 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-    global $path;
-    $v=1;
+global $path;
+$languages = array();
+$v=1;
 
-    $languages = get_available_languages();
-    $languages_name = languagecode_to_name($languages);
-    //languages order by language name
-    $languages_new = array();
-    foreach ($languages_name as $key=>$lang){
-       $languages_new[$key]=$languages[$key];
-    }
-    $languages= array_values($languages_new);
-    $languages_name= array_values($languages_name);
+$languages = get_available_languages();
+$languages_name = languagecode_to_name($languages);
+//languages order by language name
+$languages_new = array();
+foreach ($languages_name as $key=>$lang){
+    $languages_new[$key]=$languages[$key];
+}
+$languages= array_values($languages_new);
+$languages_name= array_values($languages_name);
 
 
 function languagecode_to_name($langs) {
@@ -114,13 +115,8 @@ function languagecode_to_name($langs) {
         </div>
 	<br>
         <div class="account-item">
-            <button class="btn btn-danger" id="deleteall">Delete my account</button>
+            <button class="btn btn-danger" id="deleteall"><?php echo _('Delete my account'); ?></button>
         </div>
-
-    </div>
-    <div class="span8">
-        <h3><?php echo _('My Profile'); ?></h3>
-        <div id="table"></div>
         
         <h3><?php echo _('Mobile app'); ?></h3>
         <div class="account-item">
@@ -131,15 +127,48 @@ function languagecode_to_name($langs) {
                 <div id="qr_apikey"></div>
                 <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
               </td>
+            </tr>
+            <tr>
               <td style="padding-left:20px">
                 <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
                 <br/>
 	              <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
 	            </td>
 	          </tr>
-	          </table>
-        </div>    
-         
+	        </table>
+        </div>
+    </div>
+    <div class="span8">
+        <h3><?php echo _('My Profile'); ?></h3>
+        <div id="table"></div>
+        
+        <div id="preferences-section_update_warning" class="well hidden">
+            <h4><?php echo _('Please update your database'); ?></h4>
+        </div>
+        <div id="preferences-section" class="well hidden">
+            <h4><?php echo _('Beta Features'); ?>:
+                <small class="text-info" id="preferences-errors"
+                  data-saved-text="<?php echo _('Saved'); ?>" 
+                  data-error-text="<?php echo _('Error'); ?>" 
+                  data-loading-text="<?php echo _('Saving...'); ?>"
+                ></small>
+            </h4>
+            <form id="preferences" class="form-horizontal" style="margin-bottom:.2em">
+            
+                <!-- start preference section  -->
+                <div class="control-group">
+                    <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
+                    <div class="controls" data-prop="deviceView">
+                        <div class="options btn-group" data-toggle="buttons-radio">
+                            <button autocomplete="off" class="btn" data-toggle="button" data-value="true"><?php echo _('On'); ?></button>
+                            <button autocomplete="off" class="btn active" data-toggle="button" data-value="false"><?php echo _('Off'); ?></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- end preference section -->
+
+            </form>
+        </div>
     </div>
 </div>
 
@@ -154,13 +183,13 @@ function languagecode_to_name($langs) {
         </div>
 
         <div class="delete-account-s2" style="display:none">
-        <p><b>Your account has been successfully deleted.</b></p>
+        <p><b><?php echo _('Your account has been successfully deleted.'); ?></b></p>
         </div>
         
         <pre id="deleteall-output"></pre>
         
         <div class="delete-account-s1">
-            <p>Confirm password to delete:<br>
+            <p><?php echo _('Confirm password to delete:'); ?><br>
             <input id="delete-account-password" type="password" /></p>
         </div>
     </div>
@@ -412,5 +441,106 @@ function languagecode_to_name($langs) {
             window.location = path;
         }});
     });
+
+    /**
+     * save user preferences 
+     */
+    $(function(){
+        // highlight the 'Off' button if no value is set
+        $preferencesSection = $('#preferences-section')
+        $.get(path+'user/preferences.json')
+        .done(function(data){
+            if (data.success) {
+                //show options if applicable
+                $preferencesSection.removeClass('hidden')
+                setButtonStates(data.preferences)
+            }else{
+                $('#preferences-section_update_warning').removeClass('hidden')
+            }
+        })
+        function setButtonStates(preferences){
+            // get the preferences options
+            preferences = typeof preferences == 'string' ? JSON.parse(preferences) : preferences
+            // create empty object if no preference saved
+            preferences = preferences || {}
+            // default to false
+            $preferencesSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                preferences[prop] = preferences[prop] || false
+            })
+            // set the buttons for Device Module
+            $preferencesButtons = $preferencesSection.find('.options button')
+            $.each($preferencesButtons, function(n,elem){
+                let $button = $(elem)
+                $button.removeClass('active')
+                let prop = $button.parents('.controls').data('prop')
+
+                if (preferences.hasOwnProperty(prop) && elem.dataset.value == preferences[prop].toString()) {
+                    $(elem).addClass('active')
+                }
+            })
+        }
+        // send user preference to controller via ajax
+        // display status & progress to user
+        $('#preferences').submit(function(event){
+            event.preventDefault()
+
+            let url = path+"user/preferences.json"
+            let states = ['ready','saved','error']
+            let state = 0
+
+            $form = $(event.target)
+            $msg = $('#preferences-errors')
+
+            // ajax promise functions
+            // ----------------------
+            // ajax success
+            success = function(data,textStatus,xhr) {
+                // display error if returned value is not as expected
+                if(!data || !data.success) {
+                    error(xhr, 'not successful', data.message)
+                } else {
+                    state = 1
+                    $msg.text($msg.data('saved-text'))
+                }
+            }
+            // ajax issue
+            error = function(xhr,textStatus,errorThrown) {
+                state = 2
+                $msg.text($msg.data('error-text')+': '+errorThrown)
+            }
+            // success or error
+            always = function(){
+                // reset form state after ajax call
+                timeout = state == 2 ? 4000 : 1300
+                setTimeout(function(){
+                    $msg.fadeOut('fast',function(){ $(this).text('').show()})
+                    state = 0
+                }, timeout)
+            }
+            // serialize any inputs or hidden fields
+            data = $form.serialize()
+            // create preferences object to send to server
+            preferences = {}
+            $preferencesSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                preferences[prop] = $(elem).find('.btn.active').data('value') == true
+            })
+            // add the preferences object to the data object
+            data = $.extend({}, data, {preferences:preferences})
+
+            // show loading message if response time > 200ms
+            setTimeout(function(){
+                if(state == 0) $msg.text($msg.data('loading-text'))
+            }, 200)
+
+            // send request
+            $.post(url, data).done(success).fail(error).always(always)
+
+            // return false and wait for promises to complete
+            return false;
+        })
+        
+    })
 
 </script>

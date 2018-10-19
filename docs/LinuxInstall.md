@@ -48,7 +48,7 @@ sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
     Allow from all
 </Directory>
 EOF
-sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+printf "ServerName localhost" | sudo tee -a /etc/apache2/apache2.conf 1>&2
 sudo a2ensite emoncms
 sudo service apache2 reload
 ```
@@ -79,7 +79,7 @@ Once installed you can pull in updates with:
 
     cd /var/www/html/emoncms
     git pull
-
+    
 ## Create a MYSQL database
 
     mysql -u root -p
@@ -137,6 +137,8 @@ Save (Ctrl-X), type Y and exit
 ### Install add-on emoncms modules (optional)
 
     cd /var/www/html/emoncms/Modules
+    git clone https://github.com/emoncms/graph.git
+    git clone https://github.com/emoncms/device.git
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
 

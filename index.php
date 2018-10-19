@@ -21,7 +21,7 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.31 | 2018.06.21";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
     require "Lib/EmonLogger.php";
@@ -137,6 +137,8 @@
 
     // Return brief device descriptor for hub detection
     if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
+    // read the version file and return the value;
+    if ($route->controller=="version") { header('Content-Type: text'); echo version(); die; }
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
@@ -152,7 +154,7 @@
                     $default_controller = "setup";
                     $default_action = "";
                     // Provide special setup access to WIFI module functions
-                    $_SESSION['setup_access'] = true; 
+                    $_SESSION['setup_access'] = true;
                 }
             }
         }
@@ -204,7 +206,7 @@
             $route->action = $public_profile_action;
             $output = controller($route->controller);
 
-            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists 
+            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists
             if ($output["content"]=="" && $route->subaction=="graph") {
                 $route->controller = "graph";
                 $route->action = "";
@@ -235,13 +237,13 @@
     if ($route->format == 'json')
     {
         if ($route->controller=='time') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='post') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } elseif ($route->controller=='input' && $route->action=='bulk') {
-            header('Content-Type: text');
+            header('Content-Type: text/plain');
             print $output['content'];
         } else {
             header('Content-Type: application/json');
@@ -262,7 +264,7 @@
     }
     else if ($route->format == 'text')
     {
-        header('Content-Type: text');
+        header('Content-Type: text/plain');
         print $output['content'];
     }
     else {

@@ -48,7 +48,7 @@ class Input
                 $this->redis->hMSet("input:$id",array('id'=>$id,'nodeid'=>$nodeid,'name'=>$name,'description'=>"", 'processList'=>""));
             }
         } else {
-           $this->log->warn("create_input mysql error");
+           $this->log->warn("create_input mysql error $userid $nodeid $name ".$this->mysqli->error);
         }
         return $id;
     }
@@ -106,7 +106,7 @@ class Input
             }
         } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
             $success = false;
-            $message = "Reached the maximal allowed number of diferent NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
+            $message = "Reached the maximal allowed number of different NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
         }
         return array('success'=>$success, 'message'=>$message);
     }
@@ -123,6 +123,7 @@ class Input
             if ($stmt = $this->mysqli->prepare("UPDATE input SET time = ?, value = ? WHERE id = ?")) {
                 $stmt->bind_param("idi", $time, $value, $id);
                 $stmt->execute();
+                $stmt->close();
             }
         }
     }
@@ -188,10 +189,14 @@ class Input
     private function redis_get_inputs($userid)
     {
         $userid = (int) $userid;
-        if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
 
         $dbinputs = array();
         $inputids = $this->redis->sMembers("user:inputs:$userid");
+        
+        if ($inputids==null) {
+            $this->load_to_redis($userid);
+            $inputids = $this->redis->sMembers("user:inputs:$userid");
+        }
 
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
@@ -474,6 +479,54 @@ class Input
         }
         return "Deleted $n inputs";
     }
+    
+    public function clean_processlist_feeds($process_class,$userid) 
+    {
+        $processes = $process_class->get_process_list();
+        $out = "";
+        $userid = (int) $userid;
+        $result = $this->mysqli->query("SELECT id, processList FROM input WHERE `userid`='$userid'");
+        while ($row = $result->fetch_object())
+        {
+            $inputid = $row->id;
+            $processlist = $row->processList;
+            $pairs = explode(",",$processlist);
+
+            $pairsout = array();
+            for ($i=0; $i<count($pairs); $i++)
+            {
+                $valid = true;
+                $keyarg = explode(":",$pairs[$i]);
+                if (count($keyarg)==2) {
+                    $key = $keyarg[0];
+                    $arg = $keyarg[1];
+                    
+                    // Map ids to process key names
+                    if (isset($process_class->process_map[$key])) $key = $process_class->process_map[$key];
+
+                    if (!isset($processes[$key])) {
+                        $this->log->error("clean_processlist_feeds() Processor '".$processkey."' does not exists. Module missing?");
+                        return false;
+                    }
+
+                    if ($processes[$key]["argtype"] == ProcessArg::FEEDID) {
+                        if (!$this->feed->exist($arg)) $valid = false;
+                    }
+                } else {
+                    $valid = false;
+                }
+                if ($valid) $pairsout[] = $pairs[$i];
+            }
+            $processlist_after = implode(",",$pairsout);
+
+            if ($processlist_after!=$processlist) {
+                $this->redis->hset("input:$inputid",'processList',$processlist_after);
+                $this->mysqli->query("UPDATE input SET processList = '$processlist_after' WHERE id='$inputid'");
+                $out .= "processlist for input $inputid changed from $processlist to $processlist_after\n";
+            }
+        }
+        return $out;
+    }
 
     // -----------------------------------------------------------------------------------------
     // Processlist functions
@@ -504,10 +557,17 @@ class Input
     public function set_processlist($userid, $id, $processlist, $process_list)
     {    
         $userid = (int) $userid;
+        $id = (int) $id;
         
         // Validate processlist
         $pairs = explode(",",$processlist);
         $pairs_out = array();
+        
+        // Build map of processids where set
+        $map = array();
+        foreach ($process_list as $key=>$process) {
+            if (isset($process['id_num'])) $map[$process['id_num']] = $key;
+        }
         
         foreach ($pairs as $pair)
         {
@@ -515,14 +575,31 @@ class Input
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = $inputprocess[0];
-                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
+                $processkey = $inputprocess[0];
+                // If key is in the map, switch to associated full process key
+                if (isset($map[$processkey])) $processkey = $map[$processkey];
+            
+                // Load process
+                if (isset($process_list[$processkey])) {
+                    $processarg = $process_list[$processkey]['argtype'];
+                    
+                    if ($process_list[$processkey]['group']=="Deleted") {
+                        return array('success'=>false, 'message'=>_("Process list contains depreciated process:$processkey, please delete process"));
+                    }
+                    
+                    // remap process back to use map id if available
+                    if (isset($process_list[$processkey]['id_num']))
+                        $processkey = $process_list[$processkey]['id_num'];
+                    
+                } else {
+                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+                }
                 
                 // Verify argument
                 $arg = $inputprocess[1];
                 
                 // Check argument against process arg type
-                switch($process_list[$processid][1]){
+                switch($processarg){
                 
                     case ProcessArg::FEEDID:
                         $feedid = (int) $arg;
@@ -545,7 +622,7 @@ class Input
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in arg'); 
                         break;
                                                 
@@ -565,7 +642,7 @@ class Input
                         break;
                 }
                 
-                $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processkey,$arg));
             }
         }
         
