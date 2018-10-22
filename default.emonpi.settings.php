@@ -105,7 +105,7 @@
     $enable_password_reset = false;
 
     // Email address to email proccessed input values
-    $default_emailto = 'emrys@localhost';
+    $default_emailto = 'root@localhost';
 
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
