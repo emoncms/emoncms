@@ -7,14 +7,14 @@ td:nth-of-type(2) { width:4%;}
 
 <h2><?php echo _('Input API'); ?></h2>
 <h3><?php echo _('Apikey authentication'); ?></h3>
-<p><?php echo _('If you want to call any of the following actions when your not logged in you can authenticate with your API key:'); ?></p>
+<p><?php echo _('If you want to call any of the following actions when you\'re not logged in, you can authenticate with your API key:'); ?></p>
 <ul>
     <li><?php echo _('Use POST parameter (Recommended): "apikey=APIKEY"'); ?></li>
     <li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY"'); ?></li>
     <li><?php echo _('Append on the URL of your request: &apikey=APIKEY'); ?></li>
 </ul>
 
-<p><?php echo _('Alternatively use the encrypted input method to post data with higher security.'); ?><br>
+<p><?php echo _('Alternatively, use the encrypted input method to post data with higher security.'); ?><br>
 
 <p><b><?php echo _('Read only:'); ?></b><br>
 <input type="text" style="width:255px" readonly="readonly" value="<?php echo $user->get_apikey_read($session['userid']); ?>" />
@@ -32,17 +32,17 @@ td:nth-of-type(2) { width:4%;}
     <li><?php echo _('<b>encryption</b> - An encrypted version of both of the above.'); ?></li>
 </ul>
 
-<p><?php echo _("If you're starting out with EmonCMS, 'input/post' is a good starting point for testing. This was the original input method for EmonCMS. The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote EmonCMS server as this method provides the option to efficiently bulk upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
+<p><?php echo _("If you're starting out with EmonCMS, 'input/post' is a good starting point for testing. This was emonCMS' original input method. The EmonPi/EmonBase uses the 'input/bulk' input method to post to a remote EmonCMS server as that method provides an option to efficiently upload buffered data after an internet connection outage. Combining multiple updates in a single input/bulk request also reduces bandwidth requirements. " ); ?></p>
 
 <p><?php echo _("For applications where HTTPS or TLS is not available, EmonCMS offers an in-built transport layer encryption solution where the EmonCMS apikey is used as the pre-shared key for encrypting the data with AES-128-CBC." ); ?></p>
 
 <h4><?php echo _('input/post'); ?></h4>
 
 <ul>
-    <li><?php echo _('The <b>fulljson</b> format is recommended for new integrations. It uses the PHP JSON decoder and answer is also in json.');?></li>
-    <li><?php echo _('The <b>json like</b> format is based on the CSV input parsing implementation and maintained for backwards compatibility.'); ?></li>
+    <li><?php echo _('The <b>fulljson</b> format is recommended for new integrations. It uses the PHP JSON decoder and the answer is also in json.');?></li>
+    <li><?php echo _('The <b>json like</b> format is based on the CSV input parsing implementation and maintained for backward compatibility.'); ?></li>
     <li><?php echo _('The <b>node</b> parameter can be an unquoted string e.g: emontx or a number e.g: 10.'); ?></li>
-    <li><?php echo _('Time is set as system time unless a <b>time</b> element is included. It can be either a parameter &time (unquoted) or as part of the JSON data structure. If both are included the parameter value will take precedence. Time is a UNIX timestamp and can be in seconds or a string PHP can decode (ISO8061 recommended). If you are having problems check you are using seconds not milliseconds. If part of the JSON data structure as a string, the node value will report NULL'); ?></li>
+    <li><?php echo _('Time is set as system time unless a <b>time</b> element is included. It can be either a parameter &time (unquoted) or as part of the JSON data structure. If both are included the parameter value will take precedence. Time is a UNIX timestamp and can be in seconds or a string PHP can decode (ISO8061 recommended). If you are having problems, ensure you are using seconds not milliseconds. If part of the JSON data structure is a string, the node value will report NULL'); ?></li>
     <li><?php echo _('The input/post API is compatible with both GET and POST request methods (POST examples given use curl).'); ?></li>
 </ul>
 <table class="table">
@@ -79,8 +79,8 @@ td:nth-of-type(2) { width:4%;}
 
 <ul>
 <li><?php echo _('The first number of each node is the time offset (see below).'); ?></li>
-<li><?php echo _('The second number is the node id, this is the unique identifier for the wireless node.'); ?></li>
-<li><?php echo _('All the numbers after the first two are data values. The second node here (node 17) has two data values: 1437 and 3164.'); ?></li>
+<li><?php echo _('The second number is the node id. This is the unique identifier for the wireless node.'); ?></li>
+<li><?php echo _('All the numbers after the first two, are data values. The second node here (node 17) has two data values: 1437 and 3164.'); ?></li>
 <li><?php echo _('Optional offset and time parameters allow the sender to set the time reference for the packets. If none is specified, it is assumed that the last packet just arrived. The time for the other packets is then calculated accordingly.'); ?></li>
 </ul>
 
