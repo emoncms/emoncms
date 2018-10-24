@@ -138,7 +138,7 @@ body{padding:0!important}
 
         <p>Feed Unit</p>
         <div class="input-prepend">
-        <select id="feed_unit_dropdown" style="width:100px">
+        <select id="feed_unit_dropdown" style="width:auto">
             <option value=""></option>
         <?php
         // add available units from units.php
