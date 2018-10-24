@@ -189,7 +189,7 @@ function noProcessNotification(devices){
         }
     }
     if(processList.length<1 && Object.keys(devices).length > 0){
-        message = '<div class="alert pull-right">%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>");
+        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
     }
     $('#noprocesses').html(message);
 }
