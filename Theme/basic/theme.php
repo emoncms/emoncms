@@ -181,6 +181,7 @@
             <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+        <?php if (isset($ui_version_2) && $ui_version_2) { ?>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/hammer.min.js"></script>
 
         <script>
@@ -229,5 +230,6 @@
             }
 
         </script>
+        <?php } ?>
     </body>
 </html>
