@@ -138,7 +138,7 @@ body{padding:0!important}
 
         <p>Feed Unit</p>
         <div class="input-prepend">
-        <select id="feed_unit_dropdown" style="width:100px">
+        <select id="feed_unit_dropdown" style="width:auto">
             <option value=""></option>
         <?php
         // add available units from units.php
@@ -1226,7 +1226,7 @@ $(".feed-delete").click(function(){
         // There should only ever be one feed that is selected here:
         var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
         // Only show feed process button for Virtual feeds
-        if (feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
+        if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
   }
   
   
