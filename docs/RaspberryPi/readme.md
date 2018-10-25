@@ -4,22 +4,22 @@ This guide will install the current full version of emoncms onto a Raspberry Pi 
 
 **Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
 
-An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!  
+An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!
 
-Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)  
+Due to the number of writes that the full version of emoncms makes, the lifespan of an SD card will almost certainly be shortened, and it is therefore recommended that you eventually [move the operating system partition (root) to an USB HDD](USB_HDD.md) or to lower the write frequency to the SD card by enabling the [low-write mode.](Low-write-mode.md)
 Before installing emoncms, it is essential you have a working version of Raspbian Stretch installed on your Raspberry Pi. If not, head over to [raspberrypi.org](https://www.raspberrypi.org/documentation/installation/installing-images/README.md) and follow their installation guide.
 
 ### Preparation
 
 Start by updating the system repositories and packages:
 ```
-sudo apt-get update && sudo apt-get upgrade  
+sudo apt-get update && sudo apt-get upgrade
 sudo apt-get dist-upgrade && sudo rpi-update
 ```
 
 #### Raspberry Pi v3 Compatibility
 
-This section only applies to Raspberry Pi v3 and later.  
+This section only applies to Raspberry Pi v3 and later.
 To avoid UART conflicts, it's necessary to disable Pi3 Bluetooth and restore UART0/ttyAMA0 over GPIOs 14 & 15;
 
 	sudo nano /boot/config.txt
@@ -38,7 +38,7 @@ See [RasPi device tree commit](https://github.com/raspberrypi/firmware/commit/84
 
 Install the dependencies:
 
-    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git build-essential
+    sudo apt-get install -y apache2 mariadb-server mysql-client php7.0 libapache2-mod-php7.0 php7.0-mysql php7.0-gd php7.0-opcache php7.0-curl php-pear php7.0-dev php7.0-mcrypt php7.0-common redis-server php-redis git build-essential php7.0-mbstring
 
 Install the pecl dependencies (swift mailer):
 
@@ -76,11 +76,11 @@ Cd into the www directory and git clone emoncms:
 
 Firstly we should secure the database server, and then create a database and database user for emoncms to use;
 
-The following configuration commands gives 'sudoers' Mariadb root privileges from within the local network, to administer all aspects of the databases and users. It also removes an 'example' database and user, which is no longer required. 
+The following configuration commands gives 'sudoers' Mariadb root privileges from within the local network, to administer all aspects of the databases and users. It also removes an 'example' database and user, which is no longer required.
 
 ```
 sudo mysql -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1'); DELETE FROM mysql.user WHERE User=''; DROP DATABASE IF EXISTS test; DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'; FLUSH PRIVILEGES;"
-``` 
+```
 
 Create the emoncms database using utf8 character decoding:
 
@@ -120,7 +120,7 @@ Further down in settings is an optional 'data structure store' - Redis, which ac
 	//2 #### Redis
 	$redis_enabled = true;
 
-Save and exit.  
+Save and exit.
 Create a symlink to reference emoncms within the web root folder:
 
     cd /var/www/html && sudo ln -s /var/www/emoncms
@@ -130,7 +130,7 @@ Set write permissions for the emoncms logfile:
 
 `sudo touch /var/log/emoncms.log && sudo chmod 666 /var/log/emoncms.log`
 
-To enable the emoncms user-interface to reboot or shutdown the system, it's necessary to give the web-server sufficient privilege to do so.  
+To enable the emoncms user-interface to reboot or shutdown the system, it's necessary to give the web-server sufficient privilege to do so.
 Open the sudoers file :
 
     sudo visudo
@@ -143,7 +143,7 @@ root    ALL=(ALL:ALL) ALL
 www-data   ALL=(ALL) NOPASSWD:/sbin/shutdown
 ```
     
-Save & exit 
+Save & exit
 
 ### In an internet browser, load emoncms:
 
@@ -157,9 +157,9 @@ If you want Emoncms to redirect from web root i.e load Emoncms with `http://loca
 	exit
 
 The first time you run emoncms it will automatically set up the database and you will be taken to the register/login screen.
-Create an account by entering your email and password and clicking register.  
+Create an account by entering your email and password and clicking register.
 
-Once you are logged in;  
+Once you are logged in;
 * Check the Administration page - 'Setup > Administration' noting and acting upon any messages reported.
 * Update your database - 'Setup > Administration > Update database'.
 * Make a note of your 'Write API Key' from the 'Setup > My Account' page, and also ensure that the correct timezone is selected & saved.
@@ -172,12 +172,12 @@ Edit the emonhub configuration file, entering your emoncms 'Write API Key' and s
 
     nano /etc/emonhub/emonhub.conf
 
-Save & exit.  
+Save & exit.
 Edit the cmdline.txt file:
 
     sudo nano /boot/cmdline.txt
 
-by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`  
+by changing the line to - `dwc_otg.lpm_enable=0 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait`
 
 Disable serial console boot
 
@@ -197,5 +197,5 @@ Once your Pi has stopped, disconnect the power lead and connect your RFM69Pi add
 * [Enabling low-write mode](Low-write-mode.md)
 * [Enabling MQTT](MQTT.md)
 * [Installing emoncms Modules](general.md#module-installation)
-* [Updating emoncms](general.md#updating-emoncms-via-git)  
+* [Updating emoncms](general.md#updating-emoncms-via-git)
 * [System Logs](general.md#system-logs)
