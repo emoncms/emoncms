@@ -14,7 +14,6 @@ Before installing emoncms, it is essential you have a working version of Raspbia
 Start by updating the system repositories and packages:
 ```
 sudo apt-get update && sudo apt-get upgrade
-sudo apt-get dist-upgrade && sudo rpi-update
 ```
 
 #### Raspberry Pi v3 Compatibility
