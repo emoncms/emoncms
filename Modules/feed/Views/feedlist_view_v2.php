@@ -635,39 +635,41 @@ function intersectRect(r1, r2) {
       var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
 
       for (var z in selected_feeds) {
-        if (selected_feeds[z]) feedid = z; 
-        
-        var publicfeed = 0;
-        if ($("#feed-public")[0].checked) publicfeed = 1;
-        
-        var unit = $('#feed_unit_dropdown').val()
-        unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
-        
-        var fields = {
-            tag: $("#feed-node").val(), 
-            public: publicfeed,
-            unit: unit
-        };
-        // if only one feed selected add the name value
-        if(edited_feeds.length==1){
-            fields.name = $("#feed-name").val()
+        if (selected_feeds[z]) {
+            feedid = z; 
+            
+            var publicfeed = 0;
+            if ($("#feed-public")[0].checked) publicfeed = 1;
+            
+            var unit = $('#feed_unit_dropdown').val()
+            unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+            
+            var fields = {
+                tag: $("#feed-node").val(), 
+                public: publicfeed,
+                unit: unit
+            };
+            // if only one feed selected add the name value
+            if(edited_feeds.length==1){
+                fields.name = $("#feed-name").val()
+            }
+            // only send changed values
+            var data = {}
+            for(f in fields){
+                // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+                if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+            }
+            // console.log(Object.keys(data).length);
+            // dont send ajax if nothing changed
+            if (Object.keys(data).length==0) {
+                $('#feedEditModal').modal('hide')
+                return
+            }
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
+                update();
+                $('#feedEditModal').modal('hide');
+            }});
         }
-        // only send changed values
-        var data = {}
-        for(f in fields){
-            // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
-            if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
-        }
-        // console.log(Object.keys(data).length);
-        // dont send ajax if nothing changed
-        if (Object.keys(data).length==0) {
-            $('#feedEditModal').modal('hide')
-            return
-        }
-        $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-            update();
-            $('#feedEditModal').modal('hide');
-        }});
       }
   });
 
