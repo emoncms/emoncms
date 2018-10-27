@@ -226,4 +226,4 @@ Now save and close and restart your apache.
 
 ### /user/register.json cannot be found
 
-If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates an problem with apache mod_rewrite.
+If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates a problem with apache mod_rewrite.
