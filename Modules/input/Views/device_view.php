@@ -234,7 +234,7 @@ function draw_devices()
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
             out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
             out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench icon-white'></i></div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
