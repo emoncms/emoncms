@@ -19,8 +19,8 @@
 <h2><?php echo _("Feed API");?></h2>
 
 <h3><?php echo _('Apikey authentication'); ?></h3>
-<p><?php echo _('If you want to call any of the following actions when your not logged in you have this options to authenticate with the API key:'); ?></p>
-<ul><li><?php echo _('Append on the URL of your request: &apikey=APIKEY'); ?></li>
+<p><?php echo _('If you want to call any of the following actions when you\'re not logged in, you have the option to authenticate with the API key:'); ?></p>
+<ul><li><?php echo _('Append to your request URL: &apikey=APIKEY'); ?></li>
 <li><?php echo _('Use POST parameter: "apikey=APIKEY"'); ?></li>
 <li><?php echo _('Add the HTTP header: "Authorization: Bearer APIKEY" e.g. curl http://127.0.0.1/emoncms/feed/value.json?id=1 -H "Authorization: Bearer APIKEY"');?></li></ul>
 <p><b><?php echo _('Read only:'); ?></b><br>
