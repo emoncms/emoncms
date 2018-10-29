@@ -78,11 +78,6 @@ body{padding:0!important}
     max-width:80%;
     position:absolute;
 }
-.tooltip {pointer-events: none} /* stops js from triggering mouseleave on underlying element */
-.tooltip h4{margin-bottom:0}
-.tooltip .dl-horizontal{ margin-bottom: .5em;}
-.tooltip .dl-horizontal dt{ width:8.5em }
-.tooltip .dl-horizontal dd{ margin-left:9.3em; text-align: left;min-width:8.5em }
 
 #mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
 @media (min-width: 768px) {
@@ -138,7 +133,7 @@ body{padding:0!important}
 
         <p>Feed Unit</p>
         <div class="input-prepend">
-        <select id="feed_unit_dropdown" style="width:100px">
+        <select id="feed_unit_dropdown" style="width:auto">
             <option value=""></option>
         <?php
         // add available units from units.php
@@ -380,8 +375,6 @@ body{padding:0!important}
           }
           // display nodes and feeds
           var counter = 0
-          // remove any tooltips added in previous list
-        //   $('#table [data-toggle="tooltip"]').tooltip('destroy')
           for (var node in nodes) {
               counter ++;
               isCollapsed = !nodes_display[node]
@@ -403,23 +396,20 @@ body{padding:0!important}
               for (var feed in nodes[node]) {
                   var feedid = nodes[node][feed].id;
 
-                  var title_lines = ['<h4>'+nodes[node][feed].name+'</h4>',
-                                    '<dl class="dl-horizontal">',
-                                    '<dt>Tag :</dt><dd>'+nodes[node][feed].tag+'</dd>',
-                                    '<dt>Feed ID :</dt><dd>'+feedid+'</dd>'
-                  ]
+                  var title_lines = [nodes[node][feed].name,
+                                    '-----------------------',
+                                    'Tag : '+ nodes[node][feed].tag,
+                                    'Feed ID : '+ feedid]
                   
                   if(nodes[node][feed].engine == 5){
-                      title_lines.push("<dt>Feed Interval :<dt><dd>"+(nodes[node][feed].interval||'')+'s</dd>')
+                      title_lines.push("Feed Interval :"+(nodes[node][feed].interval||'')+'s')
                   }
                   
                   // show the start time if available
                   if(nodes[node][feed].start_time > 0){
-                      title_lines.push("<dt>Feed Start Time:</dt><dd>"+nodes[node][feed].start_time+"</dd>")
-                      title_lines.push("<dt></dt><dd>("+format_time(nodes[node][feed].start_time,'LL LTS')+" UTC)</dd>")
+                      title_lines.push("Feed Start Time : "+nodes[node][feed].start_time)
+                      title_lines.push(format_time(nodes[node][feed].start_time,'LL LTS')+" UTC")
                   }
-                    
-                  title_lines.push('</dl>')
 
                   row_title = title_lines.join("\n");
 
@@ -448,17 +438,6 @@ body{padding:0!important}
           $container = $('#table')
           $container.html(out);
 
-          $tooltips = $('#table [data-toggle="tooltip"]')
-          $tooltips.each(function(){
-              let $this = $(this)
-              if($this.data('tooltip')) $this.tooltip('destory')
-          })
-          
-          // add the tooltips to all the rows
-          $tooltips.tooltip(tooltipOptions)
-          .on('show', onTooltipShow)
-          .on('shown',onTooltipShown)
-
           // reset the toggle state for all collapsable elements once data has loaded
           // css class "in" is used to remember the expanded state of the ".collapse" element
           if(typeof $.fn.collapse == 'function'){
@@ -471,91 +450,6 @@ body{padding:0!important}
       }); // end of ajax callback
   }// end of update() function
 
-var tooltipOptions = {
-    container: '#mouse-position',
-    html: true,
-    delay: { show: 500, hide: 100 },
-    trigger: 'hover',
-    placement: null,
-    animation: false,
-    template: '<div class="tooltip" role="tooltip"><div class="tooltip-inner"></div></div>'
-}
-var tooltipTimeoutIndex = void 0
-// remove previous tooltips if interrupted by new ajax call
-// reset the floating container
-function onTooltipShow(e){
-    let $tooltipContainer = $('#mouse-position')
-    let $tooltip = $tooltipContainer.find('.tooltip')
-    if($tooltip.length > 0) {
-        $tooltip.remove()
-        $tooltipContainer.css({
-            left: mousePos.x,
-            top: mousePos.y
-        })
-    }
-}
-// calculate the position of the tooltip based on mouse and node row position.
-// diplayed to left of mouse if enought space available
-function onTooltipShown(event){ 
-    let $node = event.target.classList.contains('node-feed') ? $(event.target) : $(event.target).parents('.node-feed')
-    if ($node.length==0) return false
-    let tooltipOffset = 10
-    let $tooltipContainer = $('#mouse-position')
-    let $tooltip = $tooltipContainer.find('.tooltip')
-    let mouseX = mousePos.x
-    let mouseY = mousePos.y
-    let tooltipBox = $tooltip[0].getBoundingClientRect()
-    let nodeRowBox = $node[0].getBoundingClientRect()
-    let pointerBox = $tooltipContainer[0].getBoundingClientRect()
-    let distanceFromElementTop = Math.abs(mouseY-nodeRowBox.top)
-    let distanceFromElementBottom = Math.abs(mouseY-nodeRowBox.bottom)
-    let vOffset = nodeRowBox.height/2
-    if(distanceFromElementBottom < distanceFromElementTop){
-        vOffset = -Math.abs(nodeRowBox.height/2)
-    }
-    let left = mouseX+tooltipOffset+tooltipBox.width < $(window).width() ? mouseX+tooltipOffset : $(window).width()-tooltipBox.width-10
-    let top = nodeRowBox.top + nodeRowBox.height/2
-    
-    // only move the tooltip if not already set on the node
-    if(!intersectRect(nodeRowBox,pointerBox)){
-        $tooltipContainer.css({
-            left: left,
-            top: top
-        })
-    }
-    $('#mouse-position').data('tooltip-shown',true)
-}
-// create global variable to store mouse position:
-var mousePos = {x: 0, y: 0}
-// store current mouse position in global scope
-document.onmousemove = function(event) {
-    var dot, eventDoc, doc, body, pageX, pageY;
-    event = event || window.event; // IE-ism
-    if (event.pageX == null && event.clientX != null) {
-        eventDoc = (event.target && event.target.ownerDocument) || document;
-        doc = eventDoc.documentElement;
-        body = eventDoc.body;
-
-        event.pageX = event.clientX +
-            (doc && doc.scrollLeft || body && body.scrollLeft || 0) -
-            (doc && doc.clientLeft || body && body.clientLeft || 0);
-        event.pageY = event.clientY +
-            (doc && doc.scrollTop  || body && body.scrollTop  || 0) -
-            (doc && doc.clientTop  || body && body.clientTop  || 0 );
-    }
-    mousePos = {
-        x: event.pageX,
-        y: event.pageY
-    };
-}
-
-
-function intersectRect(r1, r2) {
-    return !(r2.left > r1.right || 
-        r2.right < r1.left || 
-        r2.top > r1.bottom ||
-        r2.bottom < r1.top);
-}
   // stop checkbox form opening graph view
   $("#table").on("click",".tbody .select",function(e) {
       e.stopPropagation();
@@ -635,39 +529,41 @@ function intersectRect(r1, r2) {
       var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
 
       for (var z in selected_feeds) {
-        if (selected_feeds[z]) feedid = z; 
-        
-        var publicfeed = 0;
-        if ($("#feed-public")[0].checked) publicfeed = 1;
-        
-        var unit = $('#feed_unit_dropdown').val()
-        unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
-        
-        var fields = {
-            tag: $("#feed-node").val(), 
-            public: publicfeed,
-            unit: unit
-        };
-        // if only one feed selected add the name value
-        if(edited_feeds.length==1){
-            fields.name = $("#feed-name").val()
+        if (selected_feeds[z]) {
+            feedid = z; 
+            
+            var publicfeed = 0;
+            if ($("#feed-public")[0].checked) publicfeed = 1;
+            
+            var unit = $('#feed_unit_dropdown').val()
+            unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+            
+            var fields = {
+                tag: $("#feed-node").val(), 
+                public: publicfeed,
+                unit: unit
+            };
+            // if only one feed selected add the name value
+            if(edited_feeds.length==1){
+                fields.name = $("#feed-name").val()
+            }
+            // only send changed values
+            var data = {}
+            for(f in fields){
+                // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+                if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+            }
+            // console.log(Object.keys(data).length);
+            // dont send ajax if nothing changed
+            if (Object.keys(data).length==0) {
+                $('#feedEditModal').modal('hide')
+                return
+            }
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
+                update();
+                $('#feedEditModal').modal('hide');
+            }});
         }
-        // only send changed values
-        var data = {}
-        for(f in fields){
-            // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
-            if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
-        }
-        // console.log(Object.keys(data).length);
-        // dont send ajax if nothing changed
-        if (Object.keys(data).length==0) {
-            $('#feedEditModal').modal('hide')
-            return
-        }
-        $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-            update();
-            $('#feedEditModal').modal('hide');
-        }});
       }
   });
 
@@ -1226,7 +1122,7 @@ $(".feed-delete").click(function(){
         // There should only ever be one feed that is selected here:
         var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
         // Only show feed process button for Virtual feeds
-        if (feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
+        if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
   }
   
   

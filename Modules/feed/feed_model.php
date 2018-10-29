@@ -306,7 +306,7 @@ class Feed
         $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
         $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
         
-        $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND name=? AND tag=?");
+        $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND BINARY name=? AND BINARY tag=?");
         $stmt->bind_param("iss",$userid,$name,$tag);
         $stmt->execute();
         $stmt->bind_result($id);

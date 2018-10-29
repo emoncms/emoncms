@@ -1,7 +1,7 @@
 <?php
 	global $path;
 	
-	$v=1;
+	$v=2;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
