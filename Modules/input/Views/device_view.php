@@ -227,7 +227,7 @@ function draw_devices()
             out += "  <div class='select text-center' data-col='B'>"
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />"
             out += "  </div>";
-            out += "  <div class='name' data-col='A' title='Index: "+input.indx+", Name: "+input.name+"'>"+input.name+"</div>";
+            out += "  <div class='name' data-col='A' title='Index: "+input.indx+", Name: "+input.name+"\nDescription: "+input.description+"'>"+input.name+"</div>";
             out += "  <div class='description' data-col='G'>"+input.description+"</div>";
             out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='pull-right'>";
