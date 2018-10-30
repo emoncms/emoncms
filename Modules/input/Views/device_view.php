@@ -182,7 +182,7 @@ function noProcessNotification(devices){
         }
     }
     if(processList.length<1 && Object.keys(devices).length > 0){
-        message = '<div class="alert pull-right">%s</div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
+        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',"<?php echo _("Configure your device here") ?>")
     }
     $('#noprocesses').html(message)
 }
@@ -211,8 +211,8 @@ function draw_devices()
         out += "     <div class='pull-right'>"
         out += "        <div class='device-schedule text-center hidden' data-col='F' data-col-width='50'><i class='icon-time icon-white'></i></div>";
         out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
-        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devices[node].devicekey+"' data-col-width='50'><i class='icon-lock icon-white'></i></a>"; 
-        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-wrench icon-white'></i></div>";
+        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devices[node].devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog'></i></div>";
         out += "     </div>";
         out += "  </div>";
 
