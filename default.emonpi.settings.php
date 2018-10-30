@@ -167,9 +167,6 @@
     // field separator
     $csv_field_separator = ",";
 
-    // set true on docker installations
-    $allow_config_env_vars = false;
-
     // Dont change - developer updates this when the config format changes
     $config_file_version = "10";
     

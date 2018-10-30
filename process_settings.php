@@ -14,21 +14,68 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
-function ini_merge ($config_ini, $custom_ini) {
-    foreach ($custom_ini AS $k => $v):
-        if (is_array($v)):
-            $config_ini[$k] = ini_merge($config_ini[$k], $custom_ini[$k]);
-        else:
-            $config_ini[$k] = $v;
-        endif;
-    endforeach;
-    return $config_ini;
+// This function takes two arrays of settings and merges them, using
+// the value from $overrides where it differs from the one in $defaults.
+function ini_merge ($defaults, $overrides) {
+    foreach ($overrides as $k => $v) {
+        if (is_array($v)) {
+            $defaults[$k] = ini_merge($defaults[$k], $overrides[$k]);
+        } else {
+            $defaults[$k] = $v;
+        }
+    }
+
+    return $defaults;
 };
+
+// This function iterates over all the config file entries, replacing values
+// of the format {{VAR_NAME}} with the environment variable 'VAR_NAME'.
+//
+// This can be useful in containerised setups, or testing environments.
+function ini_check_envvars($config) {
+    global $error_out;
+
+    foreach ($config as $section => $options) {
+        foreach ($options as $key => $value) {
+            // Find {{ }} vars and replace what's within them with the
+            // named environment var
+            if (strpos($value, '{{') !== false && strpos($value, '}}') !== false) {
+                preg_match_all( '/{{([^}]*)}}/', $value, $matches);
+                foreach ($matches[1] as $match) {
+                    if (!isset($_ENV[$match])) {
+                        $error_out .= "<p>Error: environment var '${match}' not defined in config section [${section}], setting '${key}'</p>";
+                    } else {
+                        $newval = str_replace('{{'.$match.'}}', $_ENV[$match], $value);
+
+                        // Convert booleans from strings
+                        if ($newval === 'true') {
+                            $newval = true;
+                        } else if ($newval === 'false') {
+                            $newval = false;
+
+                        // Convert numbers from strings
+                        } else if (is_numeric($newval)) {
+                            $newval = $newval + 0;
+                        }
+
+                        // Set the new value
+                        $config[$section][$key] = $newval;
+                    }
+                }
+            }
+        }
+    }
+
+    return $config;
+}
+
+$error_out = "";
 
 $CONFIG_INI = parse_ini_file("default-settings.ini", true);
 $CUSTOM_INI = parse_ini_file("settings.ini", true);
 $ini_array = ini_merge($CONFIG_INI, $CUSTOM_INI);
 
+$ini_array = ini_check_envvars($ini_array);
 
 // [database]
 $server   = $ini_array['database']['server'];
@@ -134,7 +181,6 @@ $log_level = $ini_array['log']['level'];
 $allow_emonpi_admin = $ini_array['other']['allow_emonpi_admin'];
 $data_sampling = $ini_array['other']['data_sampling'];
 $display_errors = $ini_array['other']['display_errors'];
-$allow_config_env_vars = $ini_array['other']['allow_config_env_vars'];
 $config_file_version = $ini_array['other']['config_file_version'];
 $updatelogin = $ini_array['other']['updatelogin'];
 $appname = $ini_array['other']['appname'];
@@ -148,49 +194,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     // Load settings.php
     require_once('settings.php');
 
-    if (!isset($allow_config_env_vars)) $allow_config_env_vars = false;
-    if ($allow_config_env_vars) {
-        /*
-            Load settings from environment variables
-
-            Environment settings override settings.php and defaults, 
-            and allow you to run multiple variants of the same
-            installation (e.g. for testing).
-        */
-
-        //1 #### Mysql database settings
-        if (isset($_ENV["EMONCMS_MYSQL_HOST"]))     $server = $_ENV["EMONCMS_MYSQL_HOST"];
-        if (isset($_ENV["EMONCMS_MYSQL_DATABASE"])) $database = $_ENV["EMONCMS_MYSQL_DATABASE"];
-        if (isset($_ENV["EMONCMS_MYSQL_USER"]))     $username = $_ENV["EMONCMS_MYSQL_USER"];
-        if (isset($_ENV["EMONCMS_MYSQL_PASSWORD"])) $password = $_ENV["EMONCMS_MYSQL_PASSWORD"];
-        if (isset($_ENV["EMONCMS_MYSQL_PORT"]))     $port = $_ENV["EMONCMS_MYSQL_PORT"];
-
-        //2 #### redis
-        // create the array if it's not already been done
-        if (!isset($redis_server)) $redis_server = array();
-
-        if (isset($_ENV["EMONCMS_REDIS_ENABLED"]))  $redis_enabled = $_ENV["EMONCMS_REDIS_ENABLED"] === 'true';
-        if (isset($_ENV["EMONCMS_REDIS_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_REDIS_HOST"];
-        if (isset($_ENV["EMONCMS_REDIS_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_REDIS_PORT"];
-        if (isset($_ENV["EMONCMS_REDIS_AUTH"]))     $redis_server['auth'] = $_ENV["EMONCMS_REDIS_AUTH"];
-        if (isset($_ENV["EMONCMS_REDIS_PREFIX"]))   $redis_server['prefix'] = $_ENV["EMONCMS_REDIS_PREFIX"];
-
-        //3 #### MQTT
-        // create the array if it's not already been done
-        if (!isset($mqtt_server)) $mqtt_server = array();
-        if (isset($_ENV["EMONCMS_MQTT_ENABLED"]))  $mqtt_enabled = $_ENV["EMONCMS_MQTT_ENABLED"] === 'true';
-
-        if (isset($_ENV["EMONCMS_MQTT_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_MQTT_HOST"];
-        if (isset($_ENV["EMONCMS_MQTT_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_MQTT_PORT"];
-        if (isset($_ENV["EMONCMS_MQTT_USER"]))     $redis_server['user'] = $_ENV["EMONCMS_MQTT_USER"];
-        if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
-        if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
-    }
-    
     //  Validate settings are complete
-
-    $error_out = "";
-
     if (!isset($config_file_version) || $config_file_version < 9) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
     if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
     if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
@@ -245,20 +249,11 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($csv_field_separator) || $csv_field_separator=="") $csv_field_separator = ',';
 
     if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
-    
+
     if (!isset($appname)) $appname = 'emoncms';
-    
+
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
-
-    if ($error_out!="") {
-      echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
-      echo "<h3>settings.php file error</h3>";
-      echo $error_out;
-      echo "<p>To fix, check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
-      echo "</div>";
-      die;
-    }
 
     if (!isset($default_emailto)) $default_emailto = 'pi@localhost';
 
@@ -276,4 +271,13 @@ else
     echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';
     echo "</div>";
     die;
+}
+
+if ($error_out!="") {
+  echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
+  echo "<h3>settings.php file error</h3>";
+  echo $error_out;
+  echo "<p>To fix, check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
+  echo "</div>";
+  die;
 }
