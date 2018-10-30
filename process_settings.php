@@ -25,31 +25,42 @@ function ini_merge ($config_ini, $custom_ini) {
     return $config_ini;
 };
 
-$CONFIG_INI = parse_ini_file("default-settings.ini");
-$CUSTOM_INI = parse_ini_file("settings.ini");
+$CONFIG_INI = parse_ini_file("default-settings.ini", true);
+$CUSTOM_INI = parse_ini_file("settings.ini", true);
 $ini_array = ini_merge($CONFIG_INI, $CUSTOM_INI);
 
-//$ini_array = parse_ini_file("default-settings.ini");
-//$ini_array = parse_ini_file("settings.ini");
-//************************************************
-$server   = $ini_array['server'];
-$database = $ini_array['database'];
-$username = $ini_array['username'];
-$password = $ini_array['password'];
-$port     = $ini_array['port'];
 
-$dbtest = $ini_array['dbtest'];
-$redis_enabled = $ini_array['redis_enabled'];
-$redis_server = array( 'host'   => $ini_array['redis_server']['host'],
-                       'port'   => $ini_array['redis_server']['port'],
-                       'auth'   => $ini_array['redis_server']['auth'],
-                       'prefix' => $ini_array['redis_server']['prefix']);
-$mqtt_enabled = $ini_array['mqtt_enabled'];          // Activate MQTT by changing to true
-$mqtt_server = array( 'host'     => $ini_array['mqtt_server']['host'],
-                      'port'     => $ini_array['mqtt_server']['port'],
-                      'user'     => $ini_array['mqtt_server']['user'],
-                      'password' => $ini_array['mqtt_server']['password'],
-                      'basetopic'=> $ini_array['mqtt_server']['basetopic']);
+// [database]
+$server   = $ini_array['database']['server'];
+$database = $ini_array['database']['database'];
+$username = $ini_array['database']['username'];
+$password = $ini_array['database']['password'];
+$port     = $ini_array['database']['port'];
+$dbtest   = $ini_array['database']['dbtest'];
+
+// [redis]
+$redis_enabled = !empty($ini_array['redis']) ?
+                        $ini_array['redis']['enabled'] :
+                        false;
+if ($redis_enabled) {
+    $redis_server = array( 'host'   => $ini_array['redis']['host'],
+                           'port'   => $ini_array['redis']['port'],
+                           'auth'   => $ini_array['redis']['auth'],
+                           'prefix' => $ini_array['redis']['prefix']);
+}
+
+// [mqtt]
+$mqtt_enabled = !empty($ini_array['mqtt']) ?
+                        $ini_array['mqtt']['enabled'] :
+                        false;
+
+$mqtt_server = array( 'host'     => $ini_array['mqtt']['host'],
+                      'port'     => $ini_array['mqtt']['port'],
+                      'user'     => $ini_array['mqtt']['user'],
+                      'password' => $ini_array['mqtt']['password'],
+                      'basetopic'=> $ini_array['mqtt']['basetopic']);
+
+// [feed]
 $feed_settings = array(
     'engines_hidden'=>array(
         //Engine::MYSQL         // 0  Mysql traditional
@@ -60,60 +71,73 @@ $feed_settings = array(
         //,Engine::CASSANDRA    // 10 Apache Cassandra
     ),
     'redisbuffer'=>array(
-        'enabled' => $ini_array['redisbuffer']['enabled']      // If enabled is true, requires redis enabled and feedwriter service running
-        ,'sleep' => $ini_array['redisbuffer']['sleep']),       // Number of seconds to wait before write buffer to disk - user selectable option
-    'csvdownloadlimit_mb' => $ini_array['csvdownloadlimit_mb'],     // Max csv download size in MB
+        'enabled' => $ini_array['feed']['redisbuffer_enabled'],      // If enabled is true, requires redis enabled and feedwriter service running
+        'sleep' => $ini_array['feed']['redisbuffer_sleep']        // Number of seconds to wait before write buffer to disk - user selectable option
+    ),
     'phpfiwa'=>array(
-        'datadir' => $ini_array['phpfiwa']['datadir']),
+        'datadir' => $ini_array['feed']['phpfiwa_datadir']),
     'phpfina'=>array(
-        'datadir' => $ini_array['phpfina']['datadir']),
+        'datadir' => $ini_array['feed']['phpfina_datadir']),
     'phptimeseries'=>array(
-        'datadir' => $ini_array['phptimeseries']['datadir']),
+        'datadir' => $ini_array['feed']['phptimeseries_datadir']),
     'cassandra'=>array(
-        'keyspace' => $ini_array['cassandra']['datadir'])
+        'keyspace' => $ini_array['feed']['cassandra_keyspace'])
 );
 
-$max_node_id_limit = $ini_array['max_node_id_limit'];
-$default_language = $ini_array['default_language'];
-$theme = $ini_array['theme'];
-$themecolor = $ini_array['themecolor'];
-$favicon = $ini_array['favicon'];
-$fullwidth = $ini_array['fullwidth'];
-$menucollapses = $ini_array['menucollapses'];
-$enable_multi_user = $ini_array['enable_multi_user'];
-$enable_rememberme = $ini_array['enable_rememberme'];
-$enable_password_reset = $ini_array['enable_password_reset'];
-$default_emailto = $ini_array['default_emailto'];
-$smtp_email_settings = array(
-  'host'=> $ini_array['smtp_email_settings']['host'],
-  'port'=> $ini_array['smtp_email_settings']['port'],  // 25, 465, 587
-  'from'=> array(
-      $ini_array['smtp_email_settings']['from_email'] => $ini_array['smtp_email_settings']['from_name']),
-  'encryption'=> $ini_array['smtp_email_settings']['encryption'], // ssl, tls
-  'username'=> $ini_array['smtp_email_settings']['username'],
-  'password'=>$ini_array['smtp_email_settings']['password']);
+$max_node_id_limit = $ini_array['feed']['max_node_id_limit'];
 
-$default_controller = $ini_array['default_controller'];
-$default_action = $ini_array['default_action'];
-$default_controller_auth = $ini_array['default_controller_auth'];
-$default_action_auth = $ini_array['default_action_auth'];
-$public_profile_enabled = $ini_array['public_profile_enabled'];
-$public_profile_controller = $ini_array['public_profile_controller'];
-$public_profile_action = $ini_array['public_profile_action'];
-$feedviewpath = $ini_array['feedviewpath'];
-$log_enabled = $ini_array['log_enabled'];
-$log_filename = $ini_array['log_filename'];
-$log_level = $ini_array['log_level'];
-$allow_emonpi_admin = $ini_array['allow_emonpi_admin'];
-$data_sampling = $ini_array['data_sampling'];
-$display_errors = $ini_array['display_errors'];
-$csv_decimal_places = $ini_array['csv_decimal_places'];
-$csv_decimal_place_separator = $ini_array['csv_decimal_place_separator'];
-$csv_field_separator = $ini_array['csv_field_separator'];
-$allow_config_env_vars = $ini_array['allow_config_env_vars'];
-$config_file_version = $ini_array['config_file_version'];
-$updatelogin = $ini_array['updatelogin'];
-$appname = $ini_array['appname'];
+// [interface]
+$default_language = $ini_array['interface']['default_language'];
+$theme = $ini_array['interface']['theme'];
+$themecolor = $ini_array['interface']['themecolor'];
+$favicon = $ini_array['interface']['favicon'];
+$fullwidth = $ini_array['interface']['fullwidth'];
+$menucollapses = $ini_array['interface']['menucollapses'];
+$enable_multi_user = $ini_array['interface']['enable_multi_user'];
+$enable_rememberme = $ini_array['interface']['enable_rememberme'];
+$enable_password_reset = $ini_array['interface']['enable_password_reset'];
+$default_emailto = $ini_array['interface']['default_emailto'];
+$default_controller = $ini_array['interface']['default_controller'];
+$default_action = $ini_array['interface']['default_action'];
+$default_controller_auth = $ini_array['interface']['default_controller_auth'];
+$default_action_auth = $ini_array['interface']['default_action_auth'];
+$feedviewpath = $ini_array['interface']['feedviewpath'];
+
+// [public_profile]
+$public_profile_enabled = $ini_array['public_profile']['enabled'];
+$public_profile_controller = $ini_array['public_profile']['controller'];
+$public_profile_action = $ini_array['public_profile']['action'];
+
+// [smtp]
+$smtp_email_settings = array(
+  'host'=> $ini_array['smtp']['host'],
+  'port'=> $ini_array['smtp']['port'],  // 25, 465, 587
+  'from'=> array(
+      $ini_array['smtp']['from_email'] => $ini_array['smtp']['from_name']),
+  'encryption'=> $ini_array['smtp']['encryption'], // ssl, tls
+  'username'=> $ini_array['smtp']['username'],
+  'password'=>$ini_array['smtp']['password']
+);
+
+// [csv]
+$feed_settings['csvdownloadlimit_mb'] = $ini_array['csv']['downloadlimit_mb'];
+$csv_decimal_places = $ini_array['csv']['decimal_places'];
+$csv_decimal_place_separator = $ini_array['csv']['decimal_place_separator'];
+$csv_field_separator = $ini_array['csv']['field_separator'];
+
+// [log]
+$log_enabled = $ini_array['log']['enabled'];
+$log_filename = $ini_array['log']['filename'];
+$log_level = $ini_array['log']['level'];
+
+// [other]
+$allow_emonpi_admin = $ini_array['other']['allow_emonpi_admin'];
+$data_sampling = $ini_array['other']['data_sampling'];
+$display_errors = $ini_array['other']['display_errors'];
+$allow_config_env_vars = $ini_array['other']['allow_config_env_vars'];
+$config_file_version = $ini_array['other']['config_file_version'];
+$updatelogin = $ini_array['other']['updatelogin'];
+$appname = $ini_array['other']['appname'];
 
 //echo "<h3>Got here</h3>";
 
