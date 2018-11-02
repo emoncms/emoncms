@@ -92,11 +92,11 @@ body{padding:0!important}
 <div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-	<button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
-	<button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-	<button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
-	<button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
-	<button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
+    <button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
+    <button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+    <button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
+    <button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
+    <button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -310,262 +310,262 @@ body{padding:0!important}
 <?php require "Modules/process/Views/process_ui.php"; ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
-  var path = "<?php echo $path; ?>";
-  var feedviewpath = "<?php echo $feedviewpath; ?>";
-  
-  var feeds = {};
-  var nodes = {};
-  var selected_feeds = {};
-  var local_cache_key = 'feed_nodes_display';
-  var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
-  var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
+var path = "<?php echo $path; ?>";
+var feedviewpath = "<?php echo $feedviewpath; ?>";
+
+var feeds = {};
+var nodes = {};
+var selected_feeds = {};
+var local_cache_key = 'feed_nodes_display';
+var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
 // auto refresh
-  update();
-  setInterval(update,5000);
-  var firstLoad = true;
-  function update() 
-  {
-      $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
-      
-          // Show/hide no feeds alert
-          $('#feed-loader').hide();
-          if (data.length == 0){
-              $("#nofeeds").show();
-              //$("#localheading").hide();
-              $("#apihelphead").hide();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").hide();
-          } else {
-              $("#nofeeds").hide();
-              //$("#localheading").show();
-              $("#apihelphead").show();
-              $("#bottomtoolbar").show();
-              $("#refreshfeedsize").show();
-          }
-          feeds = {};
-          for (var z in data) feeds[data[z].id] = data[z];
-          nodes = {};
-          for (var z in feeds) {
-              var node = feeds[z].tag;
-              if (nodes[node]==undefined) nodes[node] = [];
-              if (nodes_display[node]==undefined) nodes_display[node] = true;
-              nodes[node].push(feeds[z]);
-          }
-          if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
+update();
+setInterval(update,5000);
+var firstLoad = true;
+function update() 
+{
+    $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
+    
+        // Show/hide no feeds alert
+        $('#feed-loader').hide();
+        if (data.length == 0){
+            $("#nofeeds").show();
+            //$("#localheading").hide();
+            $("#apihelphead").hide();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").hide();
+        } else {
+            $("#nofeeds").hide();
+            //$("#localheading").show();
+            $("#apihelphead").show();
+            $("#bottomtoolbar").show();
+            $("#refreshfeedsize").show();
+        }
+        feeds = {};
+        for (var z in data) feeds[data[z].id] = data[z];
+        nodes = {};
+        for (var z in feeds) {
+            var node = feeds[z].tag;
+            if (nodes[node]==undefined) nodes[node] = [];
+            if (nodes_display[node]==undefined) nodes_display[node] = true;
+            nodes[node].push(feeds[z]);
+        }
+        if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
-            // collapse all if more than one node and not cached in cookie
+                // collapse all if more than one node and not cached in cookie
                 nodes_display[node] = false
             }
-          }
-          // cache state in cookie
-          if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display))
-          firstLoad = false;
-          var out = "";
-          
-          // get node overview
-          var node_size = {},
-              node_time = {}
-            for (node in nodes) {
-                node_size[node] = 0
-                node_time[node] = 0
-                for (let feed in nodes[node]) {
-                    node_size[node] += Number(nodes[node][feed].size)
-                    node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
+        }
+        // cache state in cookie
+        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display))
+        firstLoad = false;
+        var out = "";
+        
+        // get node overview
+        var node_size = {},
+            node_time = {}
+        for (node in nodes) {
+            node_size[node] = 0
+            node_time[node] = 0
+            for (let feed in nodes[node]) {
+                node_size[node] += Number(nodes[node][feed].size)
+                node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
+            }
+        }
+        // display nodes and feeds
+        var counter = 0
+        for (var node in nodes) {
+            counter ++;
+            isCollapsed = !nodes_display[node]
+            out += '<div class="node accordion">';
+            out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+            out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
+            out += '      <h5 class="name" data-col="A">'+node+':</h5>';
+            out += '      <div class="public" class="text-center" data-col="E"></div>';
+            out += '      <div class="engine" data-col="F"></div>';
+            out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="node-feed-right pull-right">';
+            out += '        <div class="value" data-col="C"></div>';
+            out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
+            out += '      </div>';
+            out += '    </div>';
+            
+            out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
+            
+            for (var feed in nodes[node]) {
+                var feedid = nodes[node][feed].id;
+
+                var title_lines = [nodes[node][feed].name,
+                                  '-----------------------',
+                                  'Tag : '+ nodes[node][feed].tag,
+                                  'Feed ID : '+ feedid]
+                
+                if(nodes[node][feed].engine == 5){
+                    title_lines.push("Feed Interval :"+(nodes[node][feed].interval||'')+'s')
                 }
-          }
-          // display nodes and feeds
-          var counter = 0
-          for (var node in nodes) {
-              counter ++;
-              isCollapsed = !nodes_display[node]
-              out += '<div class="node accordion">';
-              out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-              out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
-              out += '      <h5 class="name" data-col="A">'+node+':</h5>';
-              out += '      <div class="public" class="text-center" data-col="E"></div>';
-              out += '      <div class="engine" data-col="F"></div>';
-              out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
-              out += '      <div class="node-feed-right pull-right">';
-              out += '        <div class="value" data-col="C"></div>';
-              out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
-              out += '      </div>';
-              out += '    </div>';
-              
-              out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-              
-              for (var feed in nodes[node]) {
-                  var feedid = nodes[node][feed].id;
+                
+                // show the start time if available
+                if(nodes[node][feed].start_time > 0){
+                    title_lines.push("Feed Start Time : "+nodes[node][feed].start_time)
+                    title_lines.push(format_time(nodes[node][feed].start_time,'LL LTS')+" UTC")
+                }
 
-                  var title_lines = [nodes[node][feed].name,
-                                    '-----------------------',
-                                    'Tag : '+ nodes[node][feed].tag,
-                                    'Feed ID : '+ feedid]
-                  
-                  if(nodes[node][feed].engine == 5){
-                      title_lines.push("Feed Interval :"+(nodes[node][feed].interval||'')+'s')
-                  }
-                  
-                  // show the start time if available
-                  if(nodes[node][feed].start_time > 0){
-                      title_lines.push("Feed Start Time : "+nodes[node][feed].start_time)
-                      title_lines.push(format_time(nodes[node][feed].start_time,'LL LTS')+" UTC")
-                  }
+                row_title = title_lines.join("\n");
 
-                  row_title = title_lines.join("\n");
+                out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                var checked = ""; if (selected_feeds[feedid]) checked = "checked";
+                out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
+                out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
+                
+                var publicfeed = "<i class='icon-lock'></i>"
+                if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                
+                out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
+                out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
+                out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
+                out += '  <div class="node-feed-right pull-right">';
+                if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
+                out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+' '+nodes[node][feed].unit+'</div>';
+                out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
+                out += '  </div>';
+                out += '</div>';
+            }
+            
+            out += "</div>";
+            out += "</div>";
+        }
+        $container = $('#table')
+        $container.html(out);
 
-                  out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
-                  var checked = ""; if (selected_feeds[feedid]) checked = "checked";
-                  out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
-                  out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
-                  
-                  var publicfeed = "<i class='icon-lock'></i>"
-                  if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
-                  
-                  out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                  out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
-                  out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
-                  out += '  <div class="node-feed-right pull-right">';
-                  if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
-                  out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+' '+nodes[node][feed].unit+'</div>';
-                  out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
-                  out += '  </div>';
-                  out += '</div>';
-              }
-              
-              out += "</div>";
-              out += "</div>";
-          }
-          $container = $('#table')
-          $container.html(out);
-
-          // reset the toggle state for all collapsable elements once data has loaded
-          // css class "in" is used to remember the expanded state of the ".collapse" element
-          if(typeof $.fn.collapse == 'function'){
+        // reset the toggle state for all collapsable elements once data has loaded
+        // css class "in" is used to remember the expanded state of the ".collapse" element
+        if(typeof $.fn.collapse == 'function'){
             $("#table .collapse").collapse({toggle: false})
             setExpandButtonState($container.find('.collapsed').length == 0)
-          }
-          
-        autowidth($container) // set each column group to the same width
-      } // end of for loop
-      }); // end of ajax callback
-  }// end of update() function
-
-  // stop checkbox form opening graph view
-  $("#table").on("click",".tbody .select",function(e) {
-      e.stopPropagation();
-  });
-  
-  $("#table").on("click",".public",function(e) {
-      e.stopPropagation();
-  });
-
-  $("#table").on("click select",".feed-select",function(e) {
-      feed_selection();
-  });
-
-  $("#table").on("click",".feed-graph-link",function(e) {
-      // ignore click on feed-info row
-      if ($(this).parent().is('.node-info')) return false
-      var feedid = $(this).attr("feedid");
-      window.location = path+"graph/"+feedid;
-  });
-  
-  $(".feed-graph").click(function(){
-      var graph_feeds = [];
-      for (var feedid in selected_feeds) {
-          if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
-      }
-      window.location = path+"graph/"+graph_feeds.join(",");	  
-  });
-  
-  // ---------------------------------------------------------------------------------------------
-  // EDIT FEED
-  // ---------------------------------------------------------------------------------------------
-  $(".feed-edit").click(function() {
-      $('#feedEditModal').modal('show');
-      var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
-      var feedid = 0;
-      // Now allows for multiple feed selection
-      for (var z in selected_feeds) {
-        if (selected_feeds[z]){
-            feedid = z;
-            if (edited_feeds.length == 1) {
-                $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
-            } else {
-                $("#feed-name").prop('disabled',true).val('').attr('placeholder','<?php echo _("Unable to rename multiple feeds") ?>');
-            }
-            $("#feed-node").val(feeds[feedid].tag);
-            var checked = false; if (feeds[feedid].public==1) checked = true;
-            $("#feed-public")[0].checked = checked;
-            
-            let $dropdown = $('#feed_unit_dropdown')
-            $dropdown.val(feeds[feedid].unit)
-            let options = []
-            $dropdown.find('option').each(function(key,elem){
-                options.push(elem.value)
-            })
-            if (options.indexOf(feeds[feedid].unit) == -1) {
-                $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
-                $dropdown.val('_other')
-            }
-            if($dropdown.val()=='_other') {
-                $dropdown.next('input').show();
-            }else{
-                $dropdown.next('input').hide();
-            }
-            $dropdown.change(function(event){
-                if(event.target.value=='_other') {
-                    $(event.target).next('input').show();
-                }else{
-                    $(event.target).next('input').hide();
-                }
-            });            
         }
+        
+      autowidth($container) // set each column group to the same width
+    } // end of for loop
+    }); // end of ajax callback
+}// end of update() function
+
+// stop checkbox form opening graph view
+$("#table").on("click",".tbody .select",function(e) {
+    e.stopPropagation();
+});
+
+$("#table").on("click",".public",function(e) {
+    e.stopPropagation();
+});
+
+$("#table").on("click select",".feed-select",function(e) {
+    feed_selection();
+});
+
+$("#table").on("click",".feed-graph-link",function(e) {
+    // ignore click on feed-info row
+    if ($(this).parent().is('.node-info')) return false
+    var feedid = $(this).attr("feedid");
+    window.location = path+"graph/"+feedid;
+});
+
+$(".feed-graph").click(function(){
+    var graph_feeds = [];
+    for (var feedid in selected_feeds) {
+        if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
-  });
+    window.location = path+"graph/"+graph_feeds.join(",");
+});
 
-  $("#feed-edit-save").click(function(){
-      var feedid = 0;
-      var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
-
-      for (var z in selected_feeds) {
-        if (selected_feeds[z]) {
-            feedid = z; 
-            
-            var publicfeed = 0;
-            if ($("#feed-public")[0].checked) publicfeed = 1;
-            
-            var unit = $('#feed_unit_dropdown').val()
-            unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
-            
-            var fields = {
-                tag: $("#feed-node").val(), 
-                public: publicfeed,
-                unit: unit
-            };
-            // if only one feed selected add the name value
-            if(edited_feeds.length==1){
-                fields.name = $("#feed-name").val()
-            }
-            // only send changed values
-            var data = {}
-            for(f in fields){
-                // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
-                if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
-            }
-            // console.log(Object.keys(data).length);
-            // dont send ajax if nothing changed
-            if (Object.keys(data).length==0) {
-                $('#feedEditModal').modal('hide')
-                return
-            }
-            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-                update();
-                $('#feedEditModal').modal('hide');
-            }});
-        }
+// ---------------------------------------------------------------------------------------------
+// EDIT FEED
+// ---------------------------------------------------------------------------------------------
+$(".feed-edit").click(function() {
+    $('#feedEditModal').modal('show');
+    var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
+    var feedid = 0;
+    // Now allows for multiple feed selection
+    for (var z in selected_feeds) {
+      if (selected_feeds[z]){
+          feedid = z;
+          if (edited_feeds.length == 1) {
+              $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
+          } else {
+              $("#feed-name").prop('disabled',true).val('').attr('placeholder','<?php echo _("Unable to rename multiple feeds") ?>');
+          }
+          $("#feed-node").val(feeds[feedid].tag);
+          var checked = false; if (feeds[feedid].public==1) checked = true;
+          $("#feed-public")[0].checked = checked;
+          
+          let $dropdown = $('#feed_unit_dropdown')
+          $dropdown.val(feeds[feedid].unit)
+          let options = []
+          $dropdown.find('option').each(function(key,elem){
+              options.push(elem.value)
+          })
+          if (options.indexOf(feeds[feedid].unit) == -1) {
+              $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
+              $dropdown.val('_other')
+          }
+          if($dropdown.val()=='_other') {
+              $dropdown.next('input').show();
+          }else{
+              $dropdown.next('input').hide();
+          }
+          $dropdown.change(function(event){
+              if(event.target.value=='_other') {
+                  $(event.target).next('input').show();
+              }else{
+                  $(event.target).next('input').hide();
+              }
+          });            
       }
-  });
+  }
+});
+
+$("#feed-edit-save").click(function(){
+    var feedid = 0;
+    var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
+
+    for (var z in selected_feeds) {
+      if (selected_feeds[z]) {
+          feedid = z; 
+          
+          var publicfeed = 0;
+          if ($("#feed-public")[0].checked) publicfeed = 1;
+          
+          var unit = $('#feed_unit_dropdown').val()
+          unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
+          
+          var fields = {
+              tag: $("#feed-node").val(), 
+              public: publicfeed,
+              unit: unit
+          };
+          // if only one feed selected add the name value
+          if(edited_feeds.length==1){
+              fields.name = $("#feed-name").val()
+          }
+          // only send changed values
+          var data = {}
+          for(f in fields){
+              // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+              if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+          }
+          // console.log(Object.keys(data).length);
+          // dont send ajax if nothing changed
+          if (Object.keys(data).length==0) {
+              $('#feedEditModal').modal('hide')
+              return
+          }
+          $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
+              update();
+              $('#feedEditModal').modal('hide');
+          }});
+      }
+    }
+});
 
 
 
@@ -1001,78 +1001,78 @@ $(".feed-delete").click(function(){
     initClear()
 });
 
-    function isSelectionValidForClear(){
-        /*
-            const MYSQL = 0;
-            const TIMESTORE = 1;     // Depreciated
-            const PHPTIMESERIES = 2;
-            const GRAPHITE = 3;      // Not included in core
-            const PHPTIMESTORE = 4;  // Depreciated
-            const PHPFINA = 5;
-            const PHPFIWA = 6;
-            const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
-            const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
-            const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
-            const CASSANDRA = 10;    // Cassandra
-        */
-        let allowed_engines = [0,5,8] // array of allowed storage engines 
-        for (var feedid in selected_feeds) {
-            engineid = parseInt(feeds[feedid].engine) // convert string to number
-            // if feed selected and engineid is NOT found in allowed_engines
-            if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
-                return false
-            }
-        }
-        return true
-    }
-    function initClear(){
-        // get the most suitable start_time for all selected feeds
-        if (isSelectionValidForClear()) {
-            enableClear()
-        } else {
-            disableClear()
+function isSelectionValidForClear(){
+    /*
+        const MYSQL = 0;
+        const TIMESTORE = 1;     // Depreciated
+        const PHPTIMESERIES = 2;
+        const GRAPHITE = 3;      // Not included in core
+        const PHPTIMESTORE = 4;  // Depreciated
+        const PHPFINA = 5;
+        const PHPFIWA = 6;
+        const VIRTUALFEED = 7;   // Virtual feed, on demand post processing
+        const MYSQLMEMORY = 8;   // Mysql with MEMORY tables on RAM. All data is lost on shutdown 
+        const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
+        const CASSANDRA = 10;    // Cassandra
+    */
+    let allowed_engines = [0,5,8] // array of allowed storage engines 
+    for (var feedid in selected_feeds) {
+        engineid = parseInt(feeds[feedid].engine) // convert string to number
+        // if feed selected and engineid is NOT found in allowed_engines
+        if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
+            return false
         }
     }
-    function enableClear(){
-        // remove any disable styling
-        $('#clearContainer').attr('title','').removeClass('muted')//.show()
-        .find('h4').addClass('text-info').removeClass('muted').end()
-        .find('button').removeClass('disabled')
+    return true
+}
 
-        $("#feedClear-confirm")
-        .unbind('click')
-        .click(function(){
-            if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == true ){
-                $modal = $('#feedDeleteModal')
-                $("#feedDelete-loader").fadeIn();
+function initClear(){
+    // get the most suitable start_time for all selected feeds
+    if (isSelectionValidForClear()) {
+        enableClear()
+    } else {
+        disableClear()
+    }
+}
 
-                for (let feedid in selected_feeds) {
-                    if (selected_feeds[feedid]) {
-                        let response = feed.clear(feedid);
-                        updateFeedDeleteModalMessage(response)
-                        if (!response.success) {
-                            break;
-                        }
+function enableClear(){
+    // remove any disable styling
+    $('#clearContainer').attr('title','').removeClass('muted')//.show()
+    .find('h4').addClass('text-info').removeClass('muted').end()
+    .find('button').removeClass('disabled')
+
+    $("#feedClear-confirm")
+    .unbind('click')
+    .click(function(){
+        if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == true ){
+            $modal = $('#feedDeleteModal')
+            $("#feedDelete-loader").fadeIn();
+
+            for (let feedid in selected_feeds) {
+                if (selected_feeds[feedid]) {
+                    let response = feed.clear(feedid);
+                    updateFeedDeleteModalMessage(response)
+                    if (!response.success) {
+                        break;
                     }
                 }
-                $("#feedDelete-loader").stop().fadeOut();
-                update();
-                updaterStart(update, 5000);
             }
-        });
-    }
-    function disableClear(){
-        $("#feedClear-confirm").unbind()
+            $("#feedDelete-loader").stop().fadeOut();
+            update();
+            updaterStart(update, 5000);
+        }
+    });
+}
 
-        $('#clearContainer').attr('title','<?php echo _('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
-        .find('h4').removeClass('text-info').addClass('muted').end()
-        .find('button').addClass('disabled')
-    }
+function disableClear(){
+    $("#feedClear-confirm").unbind()
 
+    $('#clearContainer').attr('title','<?php echo _('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
+    .find('h4').removeClass('text-info').addClass('muted').end()
+    .find('button').addClass('disabled')
+}
 
-
-
-  $("#feedDelete-confirm").click(function(){
+$("#feedDelete-confirm").click(function(){
     if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
         for (let feedid in selected_feeds) {
             if (selected_feeds[feedid]) {
@@ -1087,43 +1087,40 @@ $(".feed-delete").click(function(){
             $('#feedDeleteModal').modal('hide')
         }, 5000)
     }
-  });
+});
 
-  $("#refreshfeedsize").click(function(){
+$("#refreshfeedsize").click(function(){
     $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
-  });
+});
 
-  // ---------------------------------------------------------------------------------------------
-  // ---------------------------------------------------------------------------------------------
-  function feed_selection() 
-  {
-	    selected_feeds = {};
-	    var num_selected = 0;
-	    $(".feed-select").each(function(){
-          var feedid = $(this).attr("feedid");
-	        selected_feeds[feedid] = $(this)[0].checked;
-	        if (selected_feeds[feedid]==true) num_selected += 1;
-      });
-	    
-	    if (num_selected>0) {
-	        $(".feed-delete").show();
-          $(".feed-download").show();
-          $(".feed-graph").show();
-          $(".feed-edit").show();
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+function feed_selection(){
+    selected_feeds = {};
+    var num_selected = 0;
+    $(".feed-select").each(function(){
+        var feedid = $(this).attr("feedid");
+        selected_feeds[feedid] = $(this)[0].checked;
+        if (selected_feeds[feedid]==true) num_selected += 1;
+    });
 
-	    } else {
-          $(".feed-delete").hide();
-          $(".feed-download").hide();
-	        $(".feed-graph").hide();
-          $(".feed-edit").hide();
+    if (num_selected>0) {
+        $(".feed-delete").show();
+        $(".feed-download").show();
+        $(".feed-graph").show();
+        $(".feed-edit").show();
+    } else {
+        $(".feed-delete").hide();
+        $(".feed-download").hide();
+        $(".feed-graph").hide();
+        $(".feed-edit").hide();
+    }
 
-	    }
-
-        // There should only ever be one feed that is selected here:
-        var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
-        // Only show feed process button for Virtual feeds
-        if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
-  }
+    // There should only ever be one feed that is selected here:
+    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+    // Only show feed process button for Virtual feeds
+    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
+}
   
   
 // -------------------------------------------------------------------------------------------------------
@@ -1183,13 +1180,13 @@ $("#save-processlist").click(function (){
 // ---------------------------------------------------------------------------------------------
 $(".feed-download").click(function(){
     var ids = [];
-	  for (var feedid in selected_feeds) {
-		    if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
-	  }
-	  
-	  $("#export").attr('feedcount',ids.length);
-	  calculate_download_size(ids.length);
-	  
+    for (var feedid in selected_feeds) {
+        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+    }
+  
+    $("#export").attr('feedcount',ids.length);
+    calculate_download_size(ids.length);
+  
     if ($("#export-timezone-offset").val()=="") {
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
@@ -1234,12 +1231,11 @@ $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
-$("#export").click(function()
-{
+$("#export").click(function(){
     var ids = [];
-	  for (var feedid in selected_feeds) {
-		    if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
-	  }
+    for (var feedid in selected_feeds) {
+        if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
+    }
 
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
@@ -1270,7 +1266,6 @@ $("#export").click(function()
 });
 
 function calculate_download_size(feedcount){
-
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
