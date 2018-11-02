@@ -354,30 +354,30 @@ function update()
         if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
                 // collapse all if more than one node and not cached in cookie
-                nodes_display[node] = false
+                nodes_display[node] = false;
             }
         }
         // cache state in cookie
-        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display))
+        if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
         firstLoad = false;
         var out = "";
         
         // get node overview
         var node_size = {},
-            node_time = {}
+            node_time = {};
         for (node in nodes) {
-            node_size[node] = 0
-            node_time[node] = 0
+            node_size[node] = 0;
+            node_time[node] = 0;
             for (let feed in nodes[node]) {
-                node_size[node] += Number(nodes[node][feed].size)
-                node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node]
+                node_size[node] += Number(nodes[node][feed].size);
+                node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node];
             }
         }
         // display nodes and feeds
-        var counter = 0
+        var counter = 0;
         for (var node in nodes) {
             counter ++;
-            isCollapsed = !nodes_display[node]
+            isCollapsed = !nodes_display[node];
             out += '<div class="node accordion">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
@@ -435,14 +435,14 @@ function update()
             out += "</div>";
             out += "</div>";
         }
-        $container = $('#table')
+        $container = $('#table');
         $container.html(out);
 
         // reset the toggle state for all collapsable elements once data has loaded
         // css class "in" is used to remember the expanded state of the ".collapse" element
         if(typeof $.fn.collapse == 'function'){
-            $("#table .collapse").collapse({toggle: false})
-            setExpandButtonState($container.find('.collapsed').length == 0)
+            $("#table .collapse").collapse({toggle: false});
+            setExpandButtonState($container.find('.collapsed').length == 0);
         }
         
       autowidth($container) // set each column group to the same width
@@ -465,7 +465,7 @@ $("#table").on("click select",".feed-select",function(e) {
 
 $("#table").on("click",".feed-graph-link",function(e) {
     // ignore click on feed-info row
-    if ($(this).parent().is('.node-info')) return false
+    if ($(this).parent().is('.node-info')) return false;
     var feedid = $(this).attr("feedid");
     window.location = path+"graph/"+feedid;
 });
@@ -475,7 +475,7 @@ $(".feed-graph").click(function(){
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
-    window.location = path+"graph/"+graph_feeds.join(",");
+    window.location = path+"graph/"+graph_feeds.join(",");      
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -487,91 +487,89 @@ $(".feed-edit").click(function() {
     var feedid = 0;
     // Now allows for multiple feed selection
     for (var z in selected_feeds) {
-      if (selected_feeds[z]){
-          feedid = z;
-          if (edited_feeds.length == 1) {
-              $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
-          } else {
-              $("#feed-name").prop('disabled',true).val('').attr('placeholder','<?php echo _("Unable to rename multiple feeds") ?>');
-          }
-          $("#feed-node").val(feeds[feedid].tag);
-          var checked = false; if (feeds[feedid].public==1) checked = true;
-          $("#feed-public")[0].checked = checked;
-          
-          let $dropdown = $('#feed_unit_dropdown')
-          $dropdown.val(feeds[feedid].unit)
-          let options = []
-          $dropdown.find('option').each(function(key,elem){
-              options.push(elem.value)
-          })
-          if (options.indexOf(feeds[feedid].unit) == -1) {
-              $('#feed_unit_dropdown_other').val(feeds[feedid].unit)
-              $dropdown.val('_other')
-          }
-          if($dropdown.val()=='_other') {
-              $dropdown.next('input').show();
-          }else{
-              $dropdown.next('input').hide();
-          }
-          $dropdown.change(function(event){
-              if(event.target.value=='_other') {
-                  $(event.target).next('input').show();
-              }else{
-                  $(event.target).next('input').hide();
-              }
-          });            
-      }
-  }
+        if (selected_feeds[z]){
+            feedid = z;
+            if (edited_feeds.length == 1) {
+                $("#feed-name").prop('disabled',false).val(feeds[feedid].name);
+            } else {
+                $("#feed-name").prop('disabled',true).val('').attr('placeholder',"<?php echo _('Unable to rename multiple feeds') ?>");
+            }
+            $("#feed-node").val(feeds[feedid].tag);
+            var checked = false; if (feeds[feedid]['public']==1) checked = true;
+            $("#feed-public")[0].checked = checked;
+            
+            let $dropdown = $('#feed_unit_dropdown');
+            $dropdown.val(feeds[feedid].unit);
+            let options = [];
+            $dropdown.find('option').each(function(key,elem){
+                options.push(elem.value);
+            })
+            if (options.indexOf(feeds[feedid].unit) == -1) {
+                $('#feed_unit_dropdown_other').val(feeds[feedid].unit);
+                $dropdown.val('_other');
+            }
+            if($dropdown.val()=='_other') {
+                $dropdown.next('input').show();
+            }else{
+                $dropdown.next('input').hide();
+            }
+            $dropdown.change(function(event){
+                if(event.target.value=='_other') {
+                    $(event.target).next('input').show();
+                }else{
+                    $(event.target).next('input').hide();
+                }
+            });            
+        }
+    }
 });
 
-$("#feed-edit-save").click(function(){
+$("#feed-edit-save").click(function() {
     var feedid = 0;
     var edited_feeds = $.map(selected_feeds, function(val,key){ return val ? key: null });
 
     for (var z in selected_feeds) {
-      if (selected_feeds[z]) {
-          feedid = z; 
-          
-          var publicfeed = 0;
-          if ($("#feed-public")[0].checked) publicfeed = 1;
-          
-          var unit = $('#feed_unit_dropdown').val()
-          unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit
-          
-          var fields = {
-              tag: $("#feed-node").val(), 
-              public: publicfeed,
-              unit: unit
-          };
-          // if only one feed selected add the name value
-          if(edited_feeds.length==1){
-              fields.name = $("#feed-name").val()
-          }
-          // only send changed values
-          var data = {}
-          for(f in fields){
-              // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
-              if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
-          }
-          // console.log(Object.keys(data).length);
-          // dont send ajax if nothing changed
-          if (Object.keys(data).length==0) {
-              $('#feedEditModal').modal('hide')
-              return
-          }
-          $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-              update();
-              $('#feedEditModal').modal('hide');
-          }});
-      }
+        if (selected_feeds[z]) {
+            feedid = z; 
+            
+            var publicfeed = 0;
+            if ($("#feed-public")[0].checked) publicfeed = 1;
+            
+            var unit = $('#feed_unit_dropdown').val();
+            unit = unit == '_other' ? $('#feed_unit_dropdown_other').val() : unit;
+            
+            var fields = {
+                'tag': $("#feed-node").val(), 
+                'public': publicfeed,
+                'unit': unit
+            };
+            // if only one feed selected add the name value
+            if(edited_feeds.length==1) {
+                fields.name = $("#feed-name").val();
+            }
+            // only send changed values
+            var data = {};
+            for (f in fields) {
+                // console.log(fields[f],feeds[feedid][f],{matched:fields[f]===feeds[feedid][f]})
+                if (!(fields[f]===feeds[feedid][f])) data[f] = fields[f];
+            }
+            // console.log(Object.keys(data).length);
+            // dont send ajax if nothing changed
+            if (Object.keys(data).length==0) {
+                $('#feedEditModal').modal('hide');
+                return;
+            }
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
+                update();
+                $('#feedEditModal').modal('hide');
+            }});
+        }
     }
 });
 
-
-
-  // ---------------------------------------------------------------------------------------------
-  // DELETE FEED
-  // ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+// DELETE FEED
+// ---------------------------------------------------------------------------------------------
 
 /**
  * find which inputs and processess write to a feed
@@ -585,48 +583,48 @@ $("#feed-edit-save").click(function(){
 function getFeedProcess(){
     let inputs = {}, // list of inputs and their processes
         feedProcesses = {}, // list of process that write to feeds
-        let_feeds = {} // list of feeds and their accociated processes
+        let_feeds = {}; // list of feeds and their accociated processes
 
     // create a list of all inputs that have processes
     for (inputid in processlist_ui.inputlist) {
-        let input = processlist_ui.inputlist[inputid]
+        let input = processlist_ui.inputlist[inputid];
         if (input.processList.length>0) {
             inputs[inputid] = {
                 processList: processlist_ui.decode(input.processList),
                 nodeid: input.nodeid,
                 name: input.name,
                 inputid: inputid
-            }
+            };
         }
     }
     // get all the processes that write to a feed - list them by numeric key (if available)
     for (processid in processlist_ui.processlist) {
-        let process = processlist_ui.processlist[processid]
+        let process = processlist_ui.processlist[processid];
         if (process.feedwrite) {
-            key = process.hasOwnProperty('id_num') ? process.id_num : processid
-            feedProcesses[key] = processid
+            key = process.hasOwnProperty('id_num') ? process.id_num : processid;
+            feedProcesses[key] = processid;
         }
     }
 
     // go through all the input processes and get all the feeds they output to
     for (inputid in inputs) {
-        let input = inputs[inputid]
+        let input = inputs[inputid];
         // loop through the key / value pairs of each input processlist
         for (item in input.processList) {
-            let processid = input.processList[item][0]
-            let processval = input.processList[item][1] || null
+            let processid = input.processList[item][0];
+            let processval = input.processList[item][1] || null;
             if(feedProcesses[processid]){
                 //this process writes to feed
-                let_feeds[processval] = let_feeds[processval] || []
+                let_feeds[processval] = let_feeds[processval] || [];
                 let_feeds[processval].push({
                     process: processlist_ui.processlist[feedProcesses[processid]],
                     input: input,
                     feedid: processval
-                })
+                });
             }
         }
     }
-    return let_feeds
+    return let_feeds;
 }
 /**
  * output what feeds have been selected in the overlay modal box
@@ -635,71 +633,70 @@ function getFeedProcess(){
  */
 function showSelectedFeeds(feed_inputs) {
     // loop through selection 
-    let selected = []
+    let selected = [];
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid] == true) {
             selected[feedid] = feeds[feedid];
             if (feed_inputs[feedid]) {
                 if (Array.isArray(feed_inputs[feedid])) {
-                    selected[feedid].input = []
-                    selected[feedid].process = []
+                    selected[feedid].input = [];
+                    selected[feedid].process = [];
                     for (f in feed_inputs[feedid]) {
-                        selected[feedid].input.push(feed_inputs[feedid][f].input)
-                        selected[feedid].process.push(feed_inputs[feedid][f].process)
+                        selected[feedid].input.push(feed_inputs[feedid][f].input);
+                        selected[feedid].process.push(feed_inputs[feedid][f].process);
                     }
                 } else {
-                    selected[feedid].input = [feed_inputs[feedid].input]
-                    selected[feedid].process = [feed_inputs[feedid].process]
+                    selected[feedid].input = [feed_inputs[feedid].input];
+                    selected[feedid].process = [feed_inputs[feedid].process];
                 }
             }
         }
     }
 
     // count the number of processess associated with the selected feeds
-    let list='',titles={},linked=[],total_linked = 0
+    let list='',titles={},linked=[],total_linked = 0;
     for(s in selected) {
-        titles[s] = selected[s].tag+":"+selected[s].name
+        titles[s] = selected[s].tag+":"+selected[s].name;
         // virtual feed processes
         if ( selected[s].hasOwnProperty('processList') && selected[s].processList.length > 0 ) {
-            linked.push(selected[s])
-            let virtualProcesses = processlist_ui.decode(selected[s].processList)
+            linked.push(selected[s]);
+            let virtualProcesses = processlist_ui.decode(selected[s].processList);
             for(p in virtualProcesses) {
-                total_linked ++
+                total_linked++;
             }
         }
         // feed's linked/parent process
         if ( selected[s].hasOwnProperty('process') && selected[s].process && selected[s].process.length > 0 ) {
-            linked.push(selected[s])
+            linked.push(selected[s]);
             for(i=0;i<selected[s].process.length;i++) {
-                total_linked ++
+                total_linked++;
             }
         }
-        
     }
     // create html to display the results
     // notify user that feed is associated to processList
     
     // create a simple list of feed ids and names to display to the user
-    let feedListShort = ''
+    let feedListShort = '';
     for(id in titles){
-        feedListShort += '['+id+'] '+titles[id]+', '
+        feedListShort += '['+id+'] '+titles[id]+', ';
     }
     // remove the last comma
     feedListShort = feedListShort.slice(0, -2);
 
     // create a container to store the result that is displayed to the user
-    total_summary = '<div id="deleteFeedModalSelectedItems">'
-    total_selected = Object.keys(titles).length
+    total_summary = '<div id="deleteFeedModalSelectedItems">';
+    total_selected = Object.keys(titles).length;
     if (total_selected == 1) {
     // if only one is selected display it's id & name
-        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> <?php echo _('1 Input process associated with this feed') ?>':''
-        total_summary += '<h5>'+feedListShort+'</h5>'
+        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> <?php echo _('1 Input process associated with this feed') ?>':'';
+        total_summary += '<h5>'+feedListShort+'</h5>';
     } else {
     // show a summary total if more than one are selected
-        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> '+(' <?php echo _('%s Input processes associated with these feeds') ?>'.replace('%s',total_linked))+'</span>' : ''
-        total_summary += '<h5 title="'+feedListShort+'"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>'.replace('%s', total_selected)
+        feedProcessList = total_linked > 0 ? '<span class="badge badge-default" style="padding-left:4px"><i class="icon icon-white icon-exclamation-sign"></i> '+(' <?php echo _('%s Input processes associated with these feeds') ?>'.replace('%s',total_linked))+'</span>' : '';
+        total_summary += '<h5 title="'+feedListShort+'"><?php echo _('%s Feeds selected') ?> <i class="icon icon-question-sign"></i></h5>'.replace('%s', total_selected);
     }
-    total_summary += '</div>'
+    total_summary += '</div>';
     $("#feeds-to-delete").html(total_summary); // show how many feeds have been selected
     $("#feedProcessList").html(feedProcessList); // show how many processes are associated with the selected feeds
 
@@ -713,19 +710,19 @@ function showSelectedFeeds(feed_inputs) {
  * @param int start_time unix timestamp (seconds)
  */
 function showFeedStartDate(start_time){
-    let startDate = start_time==0 ? new Date() : new Date(start_time*1000)
-    $datetimepicker = $('#feed_trim_datetimepicker')
+    let startDate = start_time==0 ? new Date() : new Date(start_time*1000);
+    $datetimepicker = $('#feed_trim_datetimepicker');
     $datetimepicker
-    .datetimepicker({startDate: startDate}) // restrict calendar selection to the start time
-    .datetimepicker('setValue', startDate) // set the date/time picker to the start time
-    .on('changeDate', function(event){
-        // mark any matching buttons as active
-        $('[data-relative_time]').each(function(i,elem){
-            if ($(elem).data('startdate') != event.date) {
-                $(this).removeClass('active')
-            }
-        })
-    })
+        .datetimepicker({startDate: startDate}) // restrict calendar selection to the start time
+        .datetimepicker('setValue', startDate) // set the date/time picker to the start time
+        .on('changeDate', function(event){
+            // mark any matching buttons as active
+            $('[data-relative_time]').each(function(i,elem){
+                if ($(elem).data('startdate') != event.date) {
+                    $(this).removeClass('active')
+                }
+            });
+        });
 }
 
 /**
@@ -741,62 +738,62 @@ function showFeedStartDate(start_time){
  * @return void
  */
 function initRelativeStartDateButtons(start_time){
-    let startDate = start_time>0 ? new Date(start_time*1000) : new Date()
+    let startDate = start_time>0 ? new Date(start_time*1000) : new Date();
 
     $('[data-relative_time]').each(function(i,v){
-        $btn = $(this)
+        $btn = $(this);
         // add more cases here for additional options (and also data-relative_time='xyz' in the html)
         // returns function so that the dates are calculated to when the user clicks the buttons
         switch ($btn.data('relative_time')) {
         case '-2y':
-            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-2,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) })
-            break
+            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-2,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) });
+            break;
         case '-1y':
-            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-1,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) })
-            break
+            relativeTime = (function(){ now = new Date(); return new Date(now.getFullYear()-1,now.getMonth(),now.getDate(),now.getHours(),now.getMinutes(),now.getSeconds(),now.getMilliseconds()) });
+            break;
         case 'start':
-            relativeTime = startDate
-            break
+            relativeTime = startDate;
+            break;
         default:
-            relativeTime = new Date()
+            relativeTime = new Date();
         }
         relativeTime = typeof relativeTime === 'function' ? relativeTime() : relativeTime;
         // set the timestamp as a data property of the button so that it can be referenced on click
-        $btn.data('startdate', relativeTime.valueOf() )
+        $btn.data('startdate', relativeTime.valueOf() );
         // make sure the calculated date is not beyond the start date
         if (relativeTime < startDate) {
             $btn.hide() // hide button date is beyond start date
-            $btn.css({'font-style':'italic', color:'#9a9eaa'})
-            $btn.attr('title',$btn.attr('title')+' - [<?php echo _('Out of range')?>]')
+            $btn.css({'font-style':'italic', color:'#9a9eaa'});
+            $btn.attr('title',$btn.attr('title')+' - [<?php echo _('Out of range')?>]');
         }
     })
     // open date picker on input focus
-    $('#trim_start_time').on('focus', function(event){ $datetimepicker.datetimepicker('show') })
+    $('#trim_start_time').on('focus', function(event){ $datetimepicker.datetimepicker('show') });
     
     // alter the trim date / time picker on button presses
     $('[data-relative_time]').click(function(event){
-        event.preventDefault()
-        $btn = $(this)
-        $btn.addClass('active').siblings().removeClass('active')
-        $input = $('#trim_start_time')
+        event.preventDefault();
+        $btn = $(this);
+        $btn.addClass('active').siblings().removeClass('active');
+        $input = $('#trim_start_time');
         // get starttime from button's data
-        date = new Date($btn.data('startdate'))
+        date = new Date($btn.data('startdate'));
         // restrict selection to the earliest possible date
         if (date < startDate) {
-            date = startDate
+            date = startDate;
         }
         // rebuild the date string from the new date object
-        Y = date.getFullYear()
-        m = (date.getMonth()+1).pad(2)
-        d = date.getDate().pad(2)
-        h = date.getHours().pad(2)
-        i = date.getMinutes().pad(2)
-        s = date.getSeconds().pad(2)
+        Y = date.getFullYear();
+        m = (date.getMonth()+1).pad(2);
+        d = date.getDate().pad(2);
+        h = date.getHours().pad(2);
+        i = date.getMinutes().pad(2);
+        s = date.getSeconds().pad(2);
         
         // show date in input field - DD/MM/YYYY HH:MM:SS
-        newDateString = [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ')
-        $input.val(newDateString)
-    })
+        newDateString = [[d,m,Y].join('/'),[h,i,s].join(':')].join(' ');
+        $input.val(newDateString);
+    });
 }
 
 /**
@@ -804,27 +801,29 @@ function initRelativeStartDateButtons(start_time){
  * @return int start_time timestamp
  */
 function getEarliestStartTime() { 
-    let start_time = 0
+    let start_time = 0;
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid] == true) {
             // record the earliest possible start_time for all the selected feeds
-            start_time = feeds[feedid].start_time > start_time ? feeds[feedid].start_time : start_time
+            start_time = feeds[feedid].start_time > start_time ? feeds[feedid].start_time : start_time;
         }
     }
-    return start_time
+    return start_time;
 }
+
 /**
  * mark button as selected if chosen date in date/time picker matches
  * jQuery Event handler for datetime picker's changeDate event
  */
 $('#feed_trim_datetimepicker').on('changeDate',function(event){
     $('[data-relative_time]').each(function(){
-        $btn = $(this)
+        $btn = $(this);
         if ($btn.data('startdate') == event.date.valueOf()) {
-            $btn.addClass('active').siblings().removeClass('active')
+            $btn.addClass('active').siblings().removeClass('active');
         }
     })
-})
+});
+
 /**
  * returns true if trim function available for all the selected feed engine types
  *
@@ -846,14 +845,15 @@ function isSelectionValidForTrim(){
     */
     let allowed_engines = [0,5,8] // array of allowed storage engines
     for (var feedid in selected_feeds) {
-        engineid = parseInt(feeds[feedid].engine) // convert string to number
+        engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
         if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
-            return false
+            return false;
         }
     }
-    return true
+    return true;
 }
+
 /**
  * display a message to the user in the delete feed modal
  *
@@ -862,19 +862,19 @@ function isSelectionValidForTrim(){
  * @param string message text to show to user
  */
 function updateFeedDeleteModalMessage(response){
-    let message = response.message
-    let success = response.success
-    let $msg = $('#feedDelete-message')
-    let cssClassName = success ? 'label-success' : 'label-important'
+    let message = response.message;
+    let success = response.success;
+    let $msg = $('#feedDelete-message');
+    let cssClassName = success ? 'label-success' : 'label-important';
 
     $msg.stop().fadeOut(function(){
-        $(this).text(message).removeClass('label-warning').addClass(cssClassName).fadeIn()
-    })
+        $(this).text(message).removeClass('label-warning').addClass(cssClassName).fadeIn();
+    });
     setTimeout(function(){
         $msg.stop().fadeOut(function(){
-            $msg.text($msg.data('default')).removeClass(cssClassName).addClass('label-warning').fadeIn()
+            $msg.text($msg.data('default')).removeClass(cssClassName).addClass('label-warning').fadeIn();
         })
-    }, 3800)
+    }, 3800);
 }
 
 /**
@@ -887,8 +887,6 @@ function updaterStart(func, interval){
     if (interval > 0) updater = setInterval(func, interval);
 }
 
-
-
 /**
  * Enables/Disables the feed trim() feature based on selected feeds
  *
@@ -898,11 +896,12 @@ function initTrim(){
     // get the most suitable start_time for all selected feeds
     if (isSelectionValidForTrim()) {
         let start_time = getEarliestStartTime()
-        enableTrim(start_time)
+        enableTrim(start_time);
     } else {
-        disableTrim()
+        disableTrim();
     }
 }
+
 /**
  * Allows feed(s) to be trimmed to a new start_date
  *
@@ -911,55 +910,56 @@ function initTrim(){
  */
 function enableTrim(start_time){
     // populate the trim() date input with the feed's current start date
-    showFeedStartDate(start_time)
+    showFeedStartDate(start_time);
     // make buttons under the trim date input react on click
-    initRelativeStartDateButtons(start_time)
+    initRelativeStartDateButtons(start_time);
 
     // remove any styling the disableTrim() function created
     $('#trimContainer').attr('title','').removeClass('muted')//.show()
-    .find('h4').addClass('text-info').removeClass('muted').end()
-    .find('button,input').removeClass('disabled')
-    .find('input').val('')
+        .find('h4').addClass('text-info').removeClass('muted').end()
+        .find('button,input').removeClass('disabled')
+        .find('input').val('');
     
     // enable the confirm trim button
     $('#feedTrim-confirm')
-    .unbind('click')
-    .click(function(){
-        $modal = $('#feedDeleteModal')
-        let $input = $modal.find("#trim_start_time")
-        let input_date_string = $input.val()
-        // dont submit if nothing selected
-        // convert uk dd/mm/yyyy h:m:s to RFC2822 date
-        let start_date = new Date(input_date_string.replace( /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/, "$3-$2-$1T$4:$5:$6"))
-        let isValidDate = !isNaN(start_date.getTime()) && input_date_string != ""
-        // exit if supplied date not valid
-        if (!isValidDate) {
-            $('#trim_start_time_container').addClass('error')
-            $input.focus()
-            return false
-        }else{
-            if(confirm("<?php echo _("This is a new feature. Consider backing up your data before you continue. OK to continue?") ?>") == true ) {
-                $('#trim_start_time_container').removeClass('error')
-                // set to seconds from milliseconds
-                let start_time = start_date.getTime()/1000
-                $("#feedDelete-loader").fadeIn()
-                // run the trim() function on all the selected feeds
-                for (let feedid in selected_feeds) {
-                    if (selected_feeds[feedid]) {
-                        let response = feed.trim(feedid, start_time)
-                        updateFeedDeleteModalMessage(response)
-                        if (!response.success) {
-                            break;
+        .unbind('click')
+        .click(function(){
+            $modal = $('#feedDeleteModal');
+            let $input = $modal.find("#trim_start_time");
+            let input_date_string = $input.val();
+            // dont submit if nothing selected
+            // convert uk dd/mm/yyyy h:m:s to RFC2822 date
+            let start_date = new Date(input_date_string.replace( /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2})/, "$3-$2-$1T$4:$5:$6"));
+            let isValidDate = !isNaN(start_date.getTime()) && input_date_string != "";
+            // exit if supplied date not valid
+            if (!isValidDate) {
+                $('#trim_start_time_container').addClass('error');
+                $input.focus();
+                return false;
+            }else{
+                if(confirm("<?php echo _('This is a new feature. Consider backing up your data before you continue. OK to continue?') ?>") == true) {
+                    $('#trim_start_time_container').removeClass('error');
+                    // set to seconds from milliseconds
+                    let start_time = start_date.getTime()/1000;
+                    $("#feedDelete-loader").fadeIn();
+                    // run the trim() function on all the selected feeds
+                    for (let feedid in selected_feeds) {
+                        if (selected_feeds[feedid]) {
+                            let response = feed.trim(feedid, start_time);
+                            updateFeedDeleteModalMessage(response);
+                            if (!response.success) {
+                                break;
+                            }
                         }
                     }
+                    $("#feedDelete-loader").stop().fadeOut();
+                    update();
+                    updaterStart(update, 5000);
                 }
-                $("#feedDelete-loader").stop().fadeOut()
-                update()
-                updaterStart(update, 5000)
             }
-        }
-    })
+        });
 }
+
 /**
  * hide the trim feature
  *
@@ -967,10 +967,10 @@ function enableTrim(start_time){
  */
 function disableTrim(){
     $('#trimContainer').attr('title','<?php echo _('"Trim" not available for this storage engine') ?>').addClass('muted')//.hide()
-    .find('h4').removeClass('text-info').addClass('muted').end()
-    .find('button,input').addClass('disabled')
-    .find('input').val('')
-    $('#feedTrim-confirm').unbind('click') // remove previous click event (if it exists)
+        .find('h4').removeClass('text-info').addClass('muted').end()
+        .find('button,input').addClass('disabled')
+        .find('input').val('');
+    $('#feedTrim-confirm').unbind('click'); // remove previous click event (if it exists)
 }
 
 /**
@@ -985,20 +985,20 @@ $(".feed-delete").click(function(){
     $('#feedDeleteModal').modal('show'); //show the delete modal
 
     // get the list of input processlists that write to feeds
-    let feed_processes = getFeedProcess()
-    let selected_feeds_inputs = {}
+    let feed_processes = getFeedProcess();
+    let selected_feeds_inputs = {};
     for (i in selected_feeds){
         // if a selected feed has an associated process id then save it into an array
         if (selected_feeds[i] && typeof feed_processes[i] != 'undefined') {
-            selected_feeds_inputs[i] = feed_processes[i]
+            selected_feeds_inputs[i] = feed_processes[i];
         }
     }
 
     // show the selected feeds and any associated processList
-    showSelectedFeeds(selected_feeds_inputs)
+    showSelectedFeeds(selected_feeds_inputs);
 
-    initTrim()
-    initClear()
+    initTrim();
+    initClear();
 });
 
 function isSelectionValidForClear(){
@@ -1015,87 +1015,88 @@ function isSelectionValidForClear(){
         const REDISBUFFER = 9;   // (internal use only) Redis Read/Write buffer, for low write mode
         const CASSANDRA = 10;    // Cassandra
     */
-    let allowed_engines = [0,5,8] // array of allowed storage engines 
+    let allowed_engines = [0,5,8]; // array of allowed storage engines 
     for (var feedid in selected_feeds) {
-        engineid = parseInt(feeds[feedid].engine) // convert string to number
+        engineid = parseInt(feeds[feedid].engine); // convert string to number
         // if feed selected and engineid is NOT found in allowed_engines
         if (selected_feeds[feedid] == true && !isNaN(engineid) && allowed_engines.indexOf(engineid) == -1) {
-            return false
+            return false;
         }
     }
-    return true
+    return true;
 }
 
 function initClear(){
     // get the most suitable start_time for all selected feeds
     if (isSelectionValidForClear()) {
-        enableClear()
+        enableClear();
     } else {
-        disableClear()
+        disableClear();
     }
 }
 
 function enableClear(){
     // remove any disable styling
     $('#clearContainer').attr('title','').removeClass('muted')//.show()
-    .find('h4').addClass('text-info').removeClass('muted').end()
-    .find('button').removeClass('disabled')
+        .find('h4').addClass('text-info').removeClass('muted').end()
+        .find('button').removeClass('disabled');
 
     $("#feedClear-confirm")
-    .unbind('click')
-    .click(function(){
-        if( confirm("<?php echo _("Are you sure you want to delete all the feed's data??") ?>") == true ){
-            $modal = $('#feedDeleteModal')
-            $("#feedDelete-loader").fadeIn();
+        .unbind('click')
+        .click(function(){
+            if( confirm("<?php echo _('Are you sure you want to delete all the feeds data?') ?>") == true ){
+                $modal = $('#feedDeleteModal');
+                $("#feedDelete-loader").fadeIn();
 
-            for (let feedid in selected_feeds) {
-                if (selected_feeds[feedid]) {
-                    let response = feed.clear(feedid);
-                    updateFeedDeleteModalMessage(response)
-                    if (!response.success) {
-                        break;
+                for (let feedid in selected_feeds) {
+                    if (selected_feeds[feedid]) {
+                        let response = feed.clear(feedid);
+                        updateFeedDeleteModalMessage(response);
+                        if (!response.success) {
+                            break;
+                        }
                     }
                 }
+                $("#feedDelete-loader").stop().fadeOut();
+                update();
+                updaterStart(update, 5000);
             }
-            $("#feedDelete-loader").stop().fadeOut();
-            update();
-            updaterStart(update, 5000);
-        }
-    });
+        });
 }
 
 function disableClear(){
-    $("#feedClear-confirm").unbind()
+    $("#feedClear-confirm").unbind();
 
     $('#clearContainer').attr('title','<?php echo _('"Clear" not available for this storage engine') ?>').addClass('muted')//.hide()
-    .find('h4').removeClass('text-info').addClass('muted').end()
-    .find('button').addClass('disabled')
+        .find('h4').removeClass('text-info').addClass('muted').end()
+        .find('button').addClass('disabled');
 }
 
 $("#feedDelete-confirm").click(function(){
     if( confirm("<?php echo _('Are you sure you want to delete?') ?>") == true) {
         for (let feedid in selected_feeds) {
             if (selected_feeds[feedid]) {
-                let response = feed.remove(feedid)
-                response = response ? response : {success:true, message: '<?php echo _("Feeds Deleted") ?>'}
-                updateFeedDeleteModalMessage(response)
+                let response = feed.remove(feedid);
+                response = response ? response : {success:true, message: '<?php echo _("Feeds Deleted") ?>'};
+                updateFeedDeleteModalMessage(response);
             }
         }
-        setTimeout(function(){
+        setTimeout(function() {
             update();
             updaterStart(update, 5000);
-            $('#feedDeleteModal').modal('hide')
-        }, 5000)
+            $('#feedDeleteModal').modal('hide');
+        }, 5000);
     }
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert("<?php echo _('Total size of used space for feeds:'); ?>" + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo _("Total size of used space for feeds:"); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------------------
-function feed_selection(){
+function feed_selection() 
+{
     selected_feeds = {};
     var num_selected = 0;
     $(".feed-select").each(function(){
@@ -1103,7 +1104,7 @@ function feed_selection(){
         selected_feeds[feedid] = $(this)[0].checked;
         if (selected_feeds[feedid]==true) num_selected += 1;
     });
-
+    
     if (num_selected>0) {
         $(".feed-delete").show();
         $(".feed-download").show();
@@ -1121,8 +1122,7 @@ function feed_selection(){
     // Only show feed process button for Virtual feeds
     if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
 }
-  
-  
+
 // -------------------------------------------------------------------------------------------------------
 // Interface responsive
 //
@@ -1130,9 +1130,7 @@ function feed_selection(){
 // of the container and the width of the individual fields themselves. It implements a level of responsivness
 // that is one step more advanced than is possible using css alone.
 // -------------------------------------------------------------------------------------------------------
-
 watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
-
 
 // ---------------------------------------------------------------------------------------------
 // Virtual Feed feature
@@ -1168,7 +1166,7 @@ $(".feed-process").click(function() {
     else contextname = feeds[feedid].tag + " : " + feeds[feedid].id;    
     var processlist = processlist_ui.decode(feeds[feedid].processList); // Feed process list
     processlist_ui.load(contextid,processlist,contextname,null,null); // load configs
- });
+});
 
 $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
@@ -1186,7 +1184,7 @@ $(".feed-download").click(function(){
   
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
-  
+
     if ($("#export-timezone-offset").val()=="") {
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
@@ -1231,7 +1229,8 @@ $('#datetimepicker1, #datetimepicker2').on('changeDate', function(e) {
     calculate_download_size($("#export").attr('feedcount')); 
 });
 
-$("#export").click(function(){
+$("#export").click(function()
+{
     var ids = [];
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
@@ -1266,6 +1265,7 @@ $("#export").click(function(){
 });
 
 function calculate_download_size(feedcount){
+
     var export_start = parse_timepicker_time($("#export-start").val());
     var export_end = parse_timepicker_time($("#export-end").val());
     var export_interval = $("#export-interval").val();
@@ -1276,7 +1276,7 @@ function calculate_download_size(feedcount){
     if (!(!$.isNumeric(export_start) || !$.isNumeric(export_end) || !$.isNumeric(export_interval) || export_start > export_end )) { 
         downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
     }
-    $("#downloadsize").html((downloadsize/1024/1024).toFixed(2));
+    $("#downloadsize").html((downloadsize / 1024 / 1024).toFixed(2));
     var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
     $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
     
@@ -1295,5 +1295,4 @@ function parse_timepicker_time(timestr){
 
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
 }
-
 </script>
