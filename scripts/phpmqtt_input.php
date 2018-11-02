@@ -102,7 +102,7 @@
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
     */ 
-    $mqtt_client = new Mosquitto\Client($mqtt_server['client_id'],true);
+    $mqtt_client = new Mosquitto\Client('emoncms',true);
     
     $connected = false;
     $subscribed = 0;

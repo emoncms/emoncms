@@ -26,8 +26,7 @@
                           'port'     => 1883,
                           'user'     => 'emonpi',
                           'password' => 'emonpimqtt2016',
-                          'basetopic'=> 'emon',
-                          'client_id' => 'emoncms'
+                          'basetopic'=> 'emon'
                           );
 
 
