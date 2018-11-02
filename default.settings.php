@@ -26,7 +26,8 @@
                           'port'     => 1883,
                           'user'     => '',
                           'password' => '',
-                          'basetopic'=> 'emon'
+                          'basetopic'=> 'emon',
+                          'client_id' => 'emoncms'
                           );
 
 
