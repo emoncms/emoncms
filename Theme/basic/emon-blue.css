@@ -21,7 +21,7 @@ html, body {
 }
 
 .body-login {
-	background-color: #1d8dbc;
+    background-color: #1d8dbc;
 }
 
 #login-form input[type="text"], #login-form input[type="password"] {
@@ -37,7 +37,7 @@ html, body {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top:10px;
+    padding-top: 10px;
 }
 
 #footer a {
@@ -46,7 +46,7 @@ html, body {
 }
 
 #footer span {
-    color:#999;
+    color: #999;
 }
 
 #submenu {

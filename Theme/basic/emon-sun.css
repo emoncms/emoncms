@@ -21,7 +21,7 @@ html, body {
 }
 
 .body-login {
-	background-color: #eaa400;
+    background-color: #eaa400;
 }
 
 #login-form input[type="text"], #login-form input[type="password"] {
@@ -37,7 +37,7 @@ html, body {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top:10px;
+    padding-top: 10px;
 }
 
 #footer a {
@@ -46,7 +46,7 @@ html, body {
 }
 
 #footer span {
-    color:#999;
+    color: #999;
 }
 
 #submenu {
@@ -115,21 +115,21 @@ input[type=text][class=variable-name-edit] {
     top: 0; bottom:0; left: 0; right:0;
     margin: auto;
     background: rgba(255, 255, 255, .8)
-    	url(ajax-loader.gif)
-    	center
-    	no-repeat;
+    url(ajax-loader.gif)
+    center
+    no-repeat;
 }
 
 .navbar-inner {
-    background-image:none !important;
-    background-color:#ffbe14 !important;
-    border:none !important;
-    padding:0px !important;
+    background-image: none !important;
+    background-color: #ffbe14 !important;
+    border: none !important;
+    padding: 0px !important;
 }
 
 .nav > .active > a {
     background-color: #f7a90c !important;
-    box-shadow:none !important;
+    box-shadow: none !important;
 }
 
 .nav > li > a:hover,
@@ -139,7 +139,7 @@ input[type=text][class=variable-name-edit] {
 
 .nav > li > a {
     color: #fff !important;
-    text-shadow:none !important;
+    text-shadow: none !important;
 }
 
 .caret {
@@ -163,22 +163,22 @@ input[type=text][class=variable-name-edit] {
     font-size: larger
 }
 
-.expand-all .icon-resize-small{
+.expand-all .icon-resize-small {
     display: none
 }
-.expand-all.in .icon-resize-small{
+.expand-all.in .icon-resize-small {
     display: inline-block
 }
-.expand-all.in .icon-resize-full{
+.expand-all.in .icon-resize-full {
     display: none
 }
 
 /* collapsable groups of items */
-.node.accordion{
-    line-height:41px;
+.node.accordion {
+    line-height: 41px;
 }
 
-.node .accordion-toggle{
+.node .accordion-toggle {
     background: #ddd;
     height: 41px;
 }

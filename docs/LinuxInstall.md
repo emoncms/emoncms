@@ -20,6 +20,12 @@ You may need to start by updating the system repositories
 
     sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential php7.0-mbstring -y
 
+**For Ubuntu 18.04:**
+
+*PHP 7.2*
+
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-json git-core redis-server build-essential php7.2-mbstring -y
+
 ### Install PHP pecl dependencies
 
 *Not essential, required for mail sending e.g. password recovery*
@@ -35,6 +41,11 @@ You may need to start by updating the system repositories
  **If running PHP7:** Add pecl modules to php7 config
 
     printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
+    sudo phpenmod redis
+
+ **If running PHP7.2:** Add pecl modules to php7.2 config
+
+    printf "extension=redis.so" | sudo tee /etc/php/7.2/mods-available/redis.ini 1>&2
     sudo phpenmod redis
 
 ### Configure Apache
@@ -226,4 +237,4 @@ Now save and close and restart your apache.
 
 ### /user/register.json cannot be found
 
-If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates an problem with apache mod_rewrite.
+If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates a problem with apache mod_rewrite.
