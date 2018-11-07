@@ -209,7 +209,12 @@ function draw_devices()
         out += "     <span class='description' data-col='G'>"+devices[node].description+"</span>";
         out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
         out += "     <div class='pull-right'>"
-        out += "        <div class='device-schedule text-center hidden' data-col='F' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        
+        
+        var control_node = "hidden";
+        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control!=undefined && device_templates[devices[node].type].control) control_node = "";
+        
+        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
         out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
         
         var devicekey = devices[node].devicekey;
@@ -278,12 +283,6 @@ function draw_devices()
         $("#apihelphead").show();
     }
 
-    for (var node in devices) {
-        indicator = $(".node-info[data-node='"+node+"'] .device-schedule")
-        if (device_templates[devices[node].type]!=undefined && !device_templates[devices[node].type].hasOwnProperty('control')) {
-            indicator.removeClass('hidden')
-        }
-    }
     if(typeof $.fn.collapse == 'function'){
         $("#table .collapse").collapse({toggle: false})
         setExpandButtonState($('#table .collapsed').length == 0)
