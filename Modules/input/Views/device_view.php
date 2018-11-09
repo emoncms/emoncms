@@ -31,6 +31,7 @@ input[type="checkbox"] { margin:0px; }
 #auth-check {
     padding:10px;
     background-color:#dc9696;
+    margin-top:50px;
     margin-bottom:10px;
     font-weight:bold;
     border: 1px solid #de6464;
@@ -189,7 +190,7 @@ function noProcessNotification(devices){
         }
     }
     if(processList.length<1 && Object.keys(devices).length > 0){
-        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',"<?php echo _("Configure your devices here") ?>")
+        message = '<div class="alert pull-right">%s <i class="icon-arrow-down" style="opacity: .7;"></i></div>'.replace('%s',"<?php echo _("Configure your device here") ?>")
     }
     $('#noprocesses').html(message);
 }
@@ -216,10 +217,19 @@ function draw_devices()
         out += "     <span class='description' data-col='G'>"+devices[node].description+"</span>";
         out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
         out += "     <div class='pull-right'>"
-        out += "        <div class='device-schedule text-center hidden' data-col='F' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        
+        
+        var control_node = "hidden";
+        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control!=undefined && device_templates[devices[node].type].control) control_node = "";
+        
+        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
         out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
-        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devices[node].devicekey+"' data-col-width='50'><i class='icon-lock icon-white'></i></a>"; 
-        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-wrench icon-white'></i></div>";
+        
+        var devicekey = devices[node].devicekey;
+        if (devices[node].devicekey=="") devicekey = "No device key created"; 
+        
+        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
         out += "     </div>";
         out += "  </div>";
 
@@ -241,7 +251,7 @@ function draw_devices()
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
             out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
             out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench'></i></div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
             out += "  </div>";
             out += "</div>";
         }
@@ -283,12 +293,6 @@ function draw_devices()
         $("#input-none").hide();
     }
 
-    for (var node in devices) {
-        indicator = $(".node-info[data-node='"+node+"'] .device-schedule");
-        if (device_templates[devices[node].type]!=undefined && !device_templates[devices[node].type].hasOwnProperty('control')) {
-            indicator.removeClass('hidden');
-        }
-    }
     if(typeof $.fn.collapse == 'function'){
         $("#table .collapse").collapse({toggle: false});
         setExpandButtonState($('#table .collapsed').length == 0);
@@ -617,7 +621,9 @@ function auth_check(){
         if (typeof data.ip !== "undefined") {
             $("#auth-check-ip").html(data.ip);
             $("#auth-check").show();
+            $("#table").css("margin-top","0");
         } else {
+            $("#table").css("margin-top","3rem");
             $("#auth-check").hide();
         }
     }});
