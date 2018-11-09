@@ -92,22 +92,22 @@ input[type=text][class=variable-name-edit] {
 }
 
 .menu-text {
-  display: inherit !important;
+    display: inherit !important;
 }
 
 .menu-description {
-  display: none !important;
-  margin-left: 10px;
+    display: none !important;
+    margin-left: 10px;
 }
 
 .menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
-  display: inherit !important;
+    display: inherit !important;
 }
 
 .scrollable-menu {
-  height: auto;
-  max-height: 333px;
-  overflow-y: auto;
+    height: auto;
+    max-height: 333px;
+    overflow-y: auto;
 }
 
 .ajax-loader {
@@ -143,7 +143,7 @@ input[type=text][class=variable-name-edit] {
 }
 
 .caret {
-   border-top-color: #fff !important;
+    border-top-color: #fff !important;
 }
 
 .dropdown-menu > li > a:hover,

@@ -25,7 +25,7 @@ Make a copy of the emoncms application folder usually found under /var/www/emonc
 
 ### 2) Download the latest version of emoncms into a new folder
 
-To test the new version without overwritting your current installation git clone emoncms into new folder with a different name to your exisiting emoncms installation:
+To test the new version without overwritting your current installation git clone emoncms into new folder with a different name to your existing emoncms installation:
 
     cd /var/www
     git clone https://github.com/emoncms/emoncms.git emoncms_new 

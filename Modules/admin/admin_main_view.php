@@ -172,6 +172,21 @@ table tr td.subinfo { border-color:transparent;}
             <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
         </td>
     </tr>
+<?php
+if ($redis_enabled && file_exists("Modules/device")) {
+?>
+    <tr>
+        <td>
+            <h3><?php echo _('Reload templates'); ?></h3>
+            <p><?php echo _('This will reload all cached templates and should only be done after updates or manually changed template files.'); ?></p>
+        </td>
+        <td class="buttons"><br>
+            <span id="devicereload" class="btn btn-info"><?php echo _('Reload'); ?></span>
+        </td>
+    </tr>
+<?php
+}
+?>
     <tr>
         <td>
             <h3><?php echo _('Update database'); ?></h3>
@@ -550,6 +565,14 @@ function getUpdateLog() {
     }
   });
 }
+
+$("#devicereload").click(function() {
+  $.ajax({ url: path+"device/template/reload.json", async: true, dataType: "json", success: function(result)
+    {
+      alert(result.message);
+    }
+  });
+});
 
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush.json", async: true, dataType: "text", success: function(result)
