@@ -1,0 +1,56 @@
+# Systemd unit file for mqtt input script
+
+# INSTALL:
+# sudo cp /var/www/emoncms/scripts/feedwriter.service /etc/systemd/system/feedwriter.service
+
+# RUN AT STARTUP
+# sudo systemctl daemon-reload
+# sudo systemctl enable feedwriter.service
+
+# START / STOP With:
+# sudo systemctl start feedwriter
+# sudo systemctl stop feedwriter    
+
+# VIEW STATUS / LOG
+# sudo systemctl status feedwriter -n50
+# where -nX is the number of log lines to view 
+# sudo journalctl -f -u feedwriter -o cat | grep emontx
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+###
+
+[Unit]
+Description=Emoncms MQTT Input Script
+After=mosquitto.service mysql.service redis.service
+Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/php /var/www/emoncms/scripts/feedwriter.php
+
+# Uncomment instead of above to use standard log file, else use systemd log
+# Type=forking
+# ExecStart=/bin/sh -c '/usr/bin/php /var/www/emoncms/scripts/feedwriter.php 2>&1 > /var/log/feedwriter.log &'
+
+# Restart script if stopped
+Restart=always
+# Wait 60s before restart
+RestartSec=60
+
+# Tag things in the log
+# View with: sudo journalctl -f -u feedwriter -o cat
+SyslogIdentifier=feedwriter
+
+# Un-comment to pipe log to syslog
+#StandardOutput=syslog
+
+[Install]
+WantedBy=multi-user.target
