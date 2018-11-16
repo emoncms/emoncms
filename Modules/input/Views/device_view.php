@@ -29,6 +29,7 @@ input[type="checkbox"] { margin:0px; }
 #auth-check {
     padding:10px;
     background-color:#dc9696;
+    margin-top:50px;
     margin-bottom:10px;
     font-weight:bold;
     border: 1px solid #de6464;
@@ -66,13 +67,14 @@ input[type="checkbox"] { margin:0px; }
 	<button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
 	<a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
 </div>	
-	
-	<div id="auth-check" class="hide">
-	    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
-	    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
-    </div>
     
 	<div id="noprocesses"></div>
+	
+  <div id="auth-check" class="hide">
+    <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
+    <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
+  </div>
+	
 	<div id="table" class="input-list"></div>
 	
 	<div id="output"></div>
@@ -209,7 +211,12 @@ function draw_devices()
         out += "     <span class='description' data-col='G'>"+devices[node].description+"</span>";
         out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
         out += "     <div class='pull-right'>"
-        out += "        <div class='device-schedule text-center hidden' data-col='F' data-col-width='50'><i class='icon-time icon-white'></i></div>";
+        
+        
+        var control_node = "hidden";
+        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control!=undefined && device_templates[devices[node].type].control) control_node = "";
+        
+        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
         out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
         
         var devicekey = devices[node].devicekey;
@@ -278,12 +285,6 @@ function draw_devices()
         $("#apihelphead").show();
     }
 
-    for (var node in devices) {
-        indicator = $(".node-info[data-node='"+node+"'] .device-schedule")
-        if (device_templates[devices[node].type]!=undefined && !device_templates[devices[node].type].hasOwnProperty('control')) {
-            indicator.removeClass('hidden')
-        }
-    }
     if(typeof $.fn.collapse == 'function'){
         $("#table .collapse").collapse({toggle: false})
         setExpandButtonState($('#table .collapsed').length == 0)
@@ -613,7 +614,9 @@ function auth_check(){
         if (typeof data.ip !== "undefined") {
             $("#auth-check-ip").html(data.ip);
             $("#auth-check").show();
+            $("#table").css("margin-top","0");
         } else {
+            $("#table").css("margin-top","3rem");
             $("#auth-check").hide();
         }
     }});

@@ -26,7 +26,29 @@
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        <script>window.onerror = function(event){alert(event)}</script>
+        <script>
+            window.onerror = function(msg, source, lineno, colno, error){
+                var string = msg.toLowerCase();
+                var substring = "script error";
+                if (string.indexOf(substring) > -1){
+                    alert('Script Error: See Browser Console for Detail');
+                } else {
+                    var messages = [
+                        'EmonCMS Error',
+                        '----------------------',
+                        'Message: ' + msg,
+                        // 'URL: ' + source,
+                        'Line: ' + lineno,
+                        'Column: ' + colno
+                    ];
+                    if(Object.keys(error).length > 0){
+                        messages.push('Error object: ' + JSON.stringify(error))
+                    }
+                    alert(messages.join("\n"));
+                }
+                return true; // true == prevents the firing of the default event handler.
+            }
+        </script>
         <?php if ($themecolor=="blue") { ?>
             <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } else if ($themecolor=="sun") { ?>
