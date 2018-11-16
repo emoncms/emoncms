@@ -37,7 +37,7 @@
                         'EmonCMS Error',
                         '----------------------',
                         'Message: ' + msg,
-                        // 'URL: ' + source,
+                        'URL: ' + source,
                         'Line: ' + lineno,
                         'Column: ' + colno
                     ];
