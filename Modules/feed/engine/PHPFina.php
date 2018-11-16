@@ -10,6 +10,7 @@ class PHPFina implements engine_methods
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
+    private $maxpadding = 3153600; // 1 year @ 10s
 
     /**
      * Constructor.
@@ -82,7 +83,6 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($feedid)) return false;
         unlink($this->dir.$feedid.".meta");
         unlink($this->dir.$feedid.".dat");
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
     
     /**
@@ -100,31 +100,25 @@ class PHPFina implements engine_methods
             return false;
         }
 
-        static $metadata_cache = array(); // Array to hold the cache
-        if (isset($metadata_cache[$feedid])) {
-            return $metadata_cache[$feedid]; // Retrieve from static cache
-        } else {
-            // Open and read meta data file
-            // The start_time and interval are saved as two consecutive unsigned integers
-            $meta = new stdClass();
-            $metafile = fopen($this->dir.$feedname, 'rb');
-            fseek($metafile,8);
-            $tmp = unpack("I",fread($metafile,4)); 
-            $meta->interval = $tmp[1];
-            $tmp = unpack("I",fread($metafile,4)); 
-            $meta->start_time = $tmp[1];
-            fclose($metafile);
-            
-            $meta->npoints = $this->get_npoints($feedid);
+        // Open and read meta data file
+        // The start_time and interval are saved as two consecutive unsigned integers
+        $meta = new stdClass();
+        $metafile = fopen($this->dir.$feedname, 'rb');
+        fseek($metafile,8);
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->interval = $tmp[1];
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->start_time = $tmp[1];
+        fclose($metafile);
+        
+        $meta->npoints = $this->get_npoints($feedid);
 
-            if ($meta->start_time>0 && $meta->npoints==0) {
-                $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
-                return false;
-            }
-            
-            $metadata_cache[$feedid] = $meta; // Cache it
-            return $meta;
+        if ($meta->start_time>0 && $meta->npoints==0) {
+            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
+            return false;
         }
+        
+        return $meta;
     }
 
     /**
@@ -199,10 +193,7 @@ class PHPFina implements engine_methods
         // Write padding
         $padding = ($pos - $last_pos)-1;
         
-        // Max padding = 1 million datapoints ~4mb gap of 115 days at 10s
-        $maxpadding = 1000000;
-        
-        if ($padding>$maxpadding) {
+        if ($padding>$this->maxpadding) {
             $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
             return false;
         }
@@ -669,11 +660,17 @@ class PHPFina implements engine_methods
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
 
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-         if ($meta->npoints == 0 && $meta->start_time==0) {
-            $meta->start_time = $timestamp;
-            $this->create_meta($feedid,$meta);
+        if ($meta->start_time==0) {
+            if ($meta->npoints == 0) {
+                $meta->start_time = $timestamp;
+                $this->create_meta($feedid,$meta);
+                $this->log->info("post_bulk_prepare() start_time=0 setting meta start_time=$timestamp");
+            } else {
+                $this->log->error("post_bulk_prepare() start_time=0, npoints>0");
+                return false;
+            }
         }
-
+        
         if ($timestamp < $meta->start_time) {
             $this->log->warn("post_bulk_prepare() timestamp=$timestamp older than feed starttime=$meta->start_time feedid=$feedid");
             return false; // in the past
@@ -687,6 +684,11 @@ class PHPFina implements engine_methods
         
         if ($pos>$last_pos) {
             $npadding = ($pos - $last_pos)-1;
+            
+            if ($npadding>$this->maxpadding) {
+                $this->log->warn("post() padding max block size exeeded id=$feedid, $npadding dp");
+                return false;
+            }
             
             if (!isset($this->writebuffer[$feedid])) {
                 $this->writebuffer[$feedid] = "";    
@@ -812,7 +814,7 @@ class PHPFina implements engine_methods
             clearstatcache($this->dir.$feedid.".dat");
             $bytesize += filesize($this->dir.$feedid.".dat");
         }
-            
+        
         if (isset($this->writebuffer[$feedid]))
             $bytesize += strlen($this->writebuffer[$feedid]);
             
@@ -1280,7 +1282,8 @@ class PHPFina implements engine_methods
             ftruncate($f, 0);
             fclose($f);
         }
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        if (isset($this->writebuffer[$feedid])) $this->writebuffer[$feedid] = "";
+            
         $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
         $this->create($feedid,array('interval'=>$meta->interval));
 
@@ -1333,7 +1336,7 @@ class PHPFina implements engine_methods
         fclose($fh);
 
         $this->log->info(".data file trimmed to $writtenBytes bytes");
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        if (isset($this->writebuffer[$feedid])) $this->writebuffer[$feedid] = "";
         $meta->start_time = $start_time;
         $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
