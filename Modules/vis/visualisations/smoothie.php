@@ -40,6 +40,7 @@
   // Used to filter out repeated data (Might be bad)
   var old = 0;
   var old1  = 0;
+  var lasttime = 0;
 
   var canvas = document.getElementById('mycanvas'),
   context = canvas.getContext('2d');
@@ -66,12 +67,17 @@
 
   function vis_feed_data(apikey,feedid,start,end,line,oldref){
     $.ajax({
-    url: path+'feed/data.json',
-    data: "&apikey="+apikey+"&id="+feedid+"&start="+start+"&end="+end+"&dp=0",
+    url: path+'feed/timevalue.json',
+    data: "&apikey="+apikey+"&id="+feedid, //+"&start="+start+"&end="+end+"&interval=10",
     dataType: 'json',
     async: true, 
     success: function(data)
     {
+      if (data.time!=lasttime) { 
+          lasttime = data.time;
+          line.append(data.time*1000, data.value);
+      }
+      /*
       var prev;
       if (oldref == 0)
       prev = old;
@@ -85,7 +91,7 @@
         old = data[1][1];
       else
         old1 = data[1][1];
-      }
+      }*/
     }
     });
   }
