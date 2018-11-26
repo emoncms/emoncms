@@ -39,6 +39,13 @@ class Email {
     function to($to) {
         if ($this->check()) $this->message->setTo($to);
     }
+    
+    function cc($cc) {
+        if ($this->check()) $this->message->setCc($cc);
+    }
+    function bcc($bcc) {
+        if ($this->check()) $this->message->setBcc($bcc);
+    }
 
     function subject($subject) {
         if ($this->check()) $this->message->setSubject($subject);

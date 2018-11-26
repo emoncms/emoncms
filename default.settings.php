@@ -77,6 +77,9 @@
 
 
 //5 #### User Interface settings
+    // gettext  translations are found under each Module's locale directory
+    $default_language = 'en_GB';
+    
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
@@ -102,6 +105,9 @@
     // Allow user to reset his password
     $enable_password_reset = false;
 
+    // Email address to email proccessed input values
+    $default_emailto = 'root@localhost';
+    
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
@@ -172,3 +178,6 @@
     // Set to true to run database update without logging in
     // URL Example: http://localhost/emoncms/admin/db
     $updatelogin = false;
+    
+    // Applicaton name
+    $appname = "emoncms";

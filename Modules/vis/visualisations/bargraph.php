@@ -10,26 +10,29 @@
     */
 
     global $path, $embed;
+    
+    
+    
 ?>
 
 <!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.touch.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.time.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/date.format.min.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.canvas.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/base64.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/lib/canvas2image.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/plugin/saveAsImage/jquery.flot.saveAsImage.js"></script>
+<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
 
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/api.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
 
 <div id="vis-title"></div>
-
-<div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
+<style>
+    .stats-container{
+        position: absolute;
+        bottom: 0.3em;
+        width: 100%;
+        text-align: center;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+        font-size: 1.3rem;
+    }
+</style>
+<div id="placeholder_bound">
     <div id="placeholder" style="position:absolute; top:0px;"></div>
     <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
         <div class='btn-group'>
@@ -50,7 +53,7 @@
             <button class='btn graph-nav' id='right'>></button>
         </div>
     </div>
-    <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
+    <h3 class="stats-container"><span id="stats"></span></h3>
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -104,8 +107,8 @@
     var height = width * 0.5;
 
     placeholder.width(width);
-    placeholder_bound.height(height);
-    placeholder.height(height-top_offset);
+    //placeholder_bound.height(height);
+    //placeholder.height(height-top_offset);
 
     if (embed) placeholder.height($(window).height()-top_offset);
         

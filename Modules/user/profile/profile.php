@@ -13,17 +13,19 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-    global $path;
+global $path;
+$languages = array();
+$v=1;
 
-    $languages = get_available_languages();
-    $languages_name = languagecode_to_name($languages);
-    //languages order by language name
-    $languages_new = array();
-    foreach ($languages_name as $key=>$lang){
-       $languages_new[$key]=$languages[$key];
-    }
-    $languages= array_values($languages_new);
-    $languages_name= array_values($languages_name);
+$languages = get_available_languages();
+$languages_name = languagecode_to_name($languages);
+//languages order by language name
+$languages_new = array();
+foreach ($languages_name as $key=>$lang){
+    $languages_new[$key]=$languages[$key];
+}
+$languages= array_values($languages_new);
+$languages_name= array_values($languages_name);
 
 
 function languagecode_to_name($langs) {
@@ -41,17 +43,21 @@ function languagecode_to_name($langs) {
 
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/profile/md5.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/qrcode.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/clipboard.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/listjs/list.js?v=<?php echo $v; ?>"></script>
 
 <div class="row-fluid">
     <div class="span4">
         <h3><?php echo _('My account'); ?></h3>
 
         <div id="account">
+            <div class="account-item">
+                <span class="muted"><?php echo _('User ID'); ?></span><br><span class="userid"></span>
+            </div>
+
             <div class="account-item">
                 <span class="muted"><?php echo _('Username'); ?></span>
                 <span id="username-view"><br><span class="username"></span> <a id="edit-username" style="float:right"><?php echo _('Edit'); ?></a></span>
@@ -107,10 +113,10 @@ function languagecode_to_name($langs) {
               <span id="msg"></span>
           </div>
         </div>
-    </div>
-    <div class="span8">
-        <h3><?php echo _('My Profile'); ?></h3>
-        <div id="table"></div>
+	<br>
+        <div class="account-item">
+            <button class="btn btn-danger" id="deleteall"><?php echo _('Delete my account'); ?></button>
+        </div>
         
         <h3><?php echo _('Mobile app'); ?></h3>
         <div class="account-item">
@@ -121,15 +127,76 @@ function languagecode_to_name($langs) {
                 <div id="qr_apikey"></div>
                 <p style="padding-top:10px"><?php echo _('Or using a barcode scanner scan to view MyElectric graph');?></p>
               </td>
+            </tr>
+            <tr>
               <td style="padding-left:20px">
                 <div><a href="https://itunes.apple.com/us/app/emoncms/id1169483587?ls=1&mt=8"><img alt="Download on the App Store" src="<?php echo $path; ?>Modules/user/images/appstore.png" /></a></div>
                 <br/>
 	              <div><a href="https://play.google.com/store/apps/details?id=org.emoncms.myapps"><img alt="Get it on Google Play" src="<?php echo $path; ?>Modules/user/images/en-play-badge.png" /></a></div>
 	            </td>
 	          </tr>
-	          </table>
-        </div>    
-         
+	        </table>
+        </div>
+    </div>
+    <div class="span8">
+        <h3><?php echo _('My Profile'); ?></h3>
+        <div id="table"></div>
+        
+        <div id="preferences-section_update_warning" class="well hidden">
+            <h4><?php echo _('Please update your database'); ?></h4>
+        </div>
+        <div id="preferences-section" class="well hidden">
+            <h4><?php echo _('Beta Features'); ?>:
+                <small class="text-info" id="preferences-errors"
+                  data-saved-text="<?php echo _('Saved'); ?>" 
+                  data-error-text="<?php echo _('Error'); ?>" 
+                  data-loading-text="<?php echo _('Saving...'); ?>"
+                ></small>
+            </h4>
+            <form id="preferences" class="form-horizontal" style="margin-bottom:.2em">
+            
+                <!-- start preference section  -->
+                <div class="control-group">
+                    <label class="control-label"><?php echo _('Device Module Beta'); ?></label>
+                    <div class="controls" data-prop="deviceView">
+                        <div class="options btn-group" data-toggle="buttons-radio">
+                            <button autocomplete="off" class="btn" data-toggle="button" data-value="true"><?php echo _('On'); ?></button>
+                            <button autocomplete="off" class="btn active" data-toggle="button" data-value="false"><?php echo _('Off'); ?></button>
+                        </div>
+                    </div>
+                </div>
+                <!-- end preference section -->
+
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="false">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"><?php echo _('WARNING deleting an account is permanent'); ?></h3>
+    </div>
+    <div class="modal-body">
+        <div class="delete-account-s1">
+        <p><?php echo _('Are you sure you want to delete your account?'); ?></p>
+        </div>
+
+        <div class="delete-account-s2" style="display:none">
+        <p><b><?php echo _('Your account has been successfully deleted.'); ?></b></p>
+        </div>
+        
+        <pre id="deleteall-output"></pre>
+        
+        <div class="delete-account-s1">
+            <p><?php echo _('Confirm password to delete:'); ?><br>
+            <input id="delete-account-password" type="password" /></p>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="canceldelete" class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button id="confirmdelete" class="btn btn-primary"><?php echo _('Delete permanently'); ?></button>
+        <button id="logoutdelete" class="btn btn-primary" style="display:none"><?php echo _('Logout'); ?></button>
     </div>
 </div>
 
@@ -195,6 +262,7 @@ function languagecode_to_name($langs) {
     //------------------------------------------------------
     // Username
     //------------------------------------------------------
+    $(".userid").html(list.data['id']);
     $(".username").html(list.data['username']);
     $("#input-username").val(list.data['username']);
 
@@ -307,8 +375,9 @@ function languagecode_to_name($langs) {
         else
         {
             $.ajax({
+                type: 'POST',
                 url: path+"user/changepassword.json",
-                data: "old="+oldpassword+"&new="+newpassword,
+                data: "old="+encodeURIComponent(oldpassword)+"&new="+encodeURIComponent(newpassword),
                 dataType: 'json',
                 success: function(result)
                 {
@@ -340,6 +409,138 @@ function languagecode_to_name($langs) {
         $("#change-password-form").hide();
         $("#changedetails").show();
     });
+    
+    
+    $("#deleteall").click(function(){
+        $('#myModal').modal('show');
+        
+        $.ajax({type:"POST",url: path+"user/deleteall.json", data: "mode=dryrun", dataType: 'text', success: function(result){
+            $("#deleteall-output").html(result);
+        }});
+    });
 
+    $("#confirmdelete").click(function() {
+        
+        var password = $("#delete-account-password").val();
+        
+        $.ajax({type:"POST", url: path+"user/deleteall.json", data: "mode=permanentdelete&password="+encodeURIComponent(password), dataType: 'text', success: function(result){
+            $("#deleteall-output").html(result);
+            
+            if (result!="invalid password") {
+                $("#canceldelete").hide();
+                $("#confirmdelete").hide();
+                $("#logoutdelete").show();
+                $(".delete-account-s1").hide();
+                $(".delete-account-s2").show();
+            }
+        }});
+    });
+    
+    $("#logoutdelete").click(function() {
+        $.ajax({url: path+"user/logout.json", dataType: 'text', success: function(result){
+            window.location = path;
+        }});
+    });
+
+    /**
+     * save user preferences 
+     */
+    $(function(){
+        // highlight the 'Off' button if no value is set
+        $preferencesSection = $('#preferences-section')
+        $.get(path+'user/preferences.json')
+        .done(function(data){
+            if (data.success) {
+                //show options if applicable
+                $preferencesSection.removeClass('hidden')
+                setButtonStates(data.preferences)
+            }else{
+                $('#preferences-section_update_warning').removeClass('hidden')
+            }
+        })
+        function setButtonStates(preferences){
+            // get the preferences options
+            preferences = typeof preferences == 'string' ? JSON.parse(preferences) : preferences
+            // create empty object if no preference saved
+            preferences = preferences || {}
+            // default to false
+            $preferencesSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                preferences[prop] = preferences[prop] || false
+            })
+            // set the buttons for Device Module
+            $preferencesButtons = $preferencesSection.find('.options button')
+            $.each($preferencesButtons, function(n,elem){
+                let $button = $(elem)
+                $button.removeClass('active')
+                let prop = $button.parents('.controls').data('prop')
+
+                if (preferences.hasOwnProperty(prop) && elem.dataset.value == preferences[prop].toString()) {
+                    $(elem).addClass('active')
+                }
+            })
+        }
+        // send user preference to controller via ajax
+        // display status & progress to user
+        $('#preferences').submit(function(event){
+            event.preventDefault()
+
+            let url = path+"user/preferences.json"
+            let states = ['ready','saved','error']
+            let state = 0
+
+            $form = $(event.target)
+            $msg = $('#preferences-errors')
+
+            // ajax promise functions
+            // ----------------------
+            // ajax success
+            success = function(data,textStatus,xhr) {
+                // display error if returned value is not as expected
+                if(!data || !data.success) {
+                    error(xhr, 'not successful', data.message)
+                } else {
+                    state = 1
+                    $msg.text($msg.data('saved-text'))
+                }
+            }
+            // ajax issue
+            error = function(xhr,textStatus,errorThrown) {
+                state = 2
+                $msg.text($msg.data('error-text')+': '+errorThrown)
+            }
+            // success or error
+            always = function(){
+                // reset form state after ajax call
+                timeout = state == 2 ? 4000 : 1300
+                setTimeout(function(){
+                    $msg.fadeOut('fast',function(){ $(this).text('').show()})
+                    state = 0
+                }, timeout)
+            }
+            // serialize any inputs or hidden fields
+            data = $form.serialize()
+            // create preferences object to send to server
+            preferences = {}
+            $preferencesSection.find('.controls').each(function(n,elem){
+                let prop = $(elem).data('prop')
+                preferences[prop] = $(elem).find('.btn.active').data('value') == true
+            })
+            // add the preferences object to the data object
+            data = $.extend({}, data, {preferences:preferences})
+
+            // show loading message if response time > 200ms
+            setTimeout(function(){
+                if(state == 0) $msg.text($msg.data('loading-text'))
+            }, 200)
+
+            // send request
+            $.post(url, data).done(success).fail(error).always(always)
+
+            // return false and wait for promises to complete
+            return false;
+        })
+        
+    })
 
 </script>

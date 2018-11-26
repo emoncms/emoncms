@@ -1,4 +1,3 @@
-
 <?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
 
   // Retrieve server information
@@ -11,7 +10,7 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
-
+    //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
       $data = explode("\n", file_get_contents("/proc/meminfo"));
@@ -41,12 +40,11 @@
         }
         $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
     }
-
     return array('date' => date('Y-m-d H:i:s T'),
                  'system' => $system,
                  'kernel' => $kernel,
                  'host' => $host,
-                 'ip' => gethostbyname($host),
+                 'ip' => server('SERVER_ADDR'),
                  'uptime' => @exec('uptime'),
                  'http_server' => $_SERVER['SERVER_SOFTWARE'],
                  'php' => PHP_VERSION,
@@ -72,7 +70,9 @@
                  'php_modules' => get_loaded_extensions(),
                  'mem_info' => $meminfo,
                  'partitions' => disk_list(),
-                 'emoncms_modules' => $emoncms_modules
+                 'emoncms_modules' => $emoncms_modules,
+                 'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
+                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin")
                  );
   }
 
@@ -88,16 +88,9 @@
   }
   if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
 
-  //Shutdown Command Check
-  function chkRebootBtn(){
-    $chkReboot = shell_exec('sudo shutdown -k --no-wall 2>&1'); //Try and run a fake shutdown
-    if (stripos($chkReboot, "scheduled ") > 0) {
-      shell_exec('sudo shutdown -c --no-wall'); //Cancel the fake shutdown
+  //Shutdown button
+  function RebootBtn(){
       return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
-    }
-    else {
-      return "<button id=\"noshut\" class=\"btn btn-info btn-small pull-right\">"._('Shutdown Unsupported')."</button>";
-    }
   }
 
   function disk_list()
@@ -264,6 +257,8 @@ if ($allow_emonpi_admin) {
             <table class="table table-hover table-condensed" id="serverinformationtabular">
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Git URL</td><td><?php echo $system['git_URL']; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Git Branch</td><td><?php echo $system['git_branch']; ?></td></tr>
 <?php
 if ($feed_settings['redisbuffer']['enabled']) {
 ?>
@@ -294,22 +289,80 @@ if ($redis_enabled) {
 }
 if ($mqtt_enabled) {
 ?>
-              <tr><td><b>MQTT</b></td><td>Version</td><td><?php if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*\(build)\''); } } ?></td></tr>
+              <tr><td><b>MQTT Server</b></td><td>Version</td><td>Mosquitto <?php if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\''); } } ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
 <?php
 }
 
 // Raspberry Pi
 if ( @exec('ifconfig | grep b8:27:eb:') ) {
-              echo "<tr><td><b>Pi</b></td><td>CPU Temp</td><td>".number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC".chkRebootBtn()."</td></tr>\n";
+
+    $rpi_info = array();
+    $rpi_info['model'] = "Unknown";
+    if (@is_readable('/proc/cpuinfo')) {
+      //load model information
+      $rpi_revision = array();
+      if (@is_readable(__DIR__."/pi-model.json")) { 
+        $rpi_revision = json_decode(file_get_contents(__DIR__."/pi-model.json"), true);  
+        foreach ($rpi_revision as $k => $rev) {
+          if(empty($rev['Code'])) continue;
+          $rpi_revision[$rev['Code']] = $rev;
+          unset($rpi_revision[$k]);
+        }
+      }
+      //get cpu info
+      preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
+      $rpi_info['hw'] = "Broadcom ".$matches[2][0];
+      $rpi_info['rev'] = $matches[2][1];
+      $rpi_info['sn'] = $matches[2][2];
+      //build model string
+      if(!empty($rpi_revision[$rpi_info['rev']]))  {
+        $model_info = $rpi_revision[$rpi_info['rev']];
+        $rpi_info['model'] = "Raspberry Pi ";
+        $model = $model_info['Model'];
+        if (ctype_digit($model[0])) { //Raspberry Pi >= 2
+           $ver = $model[0];
+           $model = substr($model, 1);
+           $rpi_info['model'] .= $ver." Model ".$model;
+        }
+        else if (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
+           $rpi_info['model'] .= " Compute Module";
+           if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2]; 
+        }
+        else { //Raspberry Pi
+           $rpi_info['model'] .= " Model ".$model;
+        }
+        $rpi_info['model'] .= " Rev ".$model_info['Revision']." - ".$model_info['RAM']." (".$model_info['Manufacturer'].")";
+      }
+    }
+              echo "<tr><td><b>Pi</b></td><td>Model</td><td>".$rpi_info['model']."</td></tr>\n";
+              if(!empty($rpi_info['hw'])) echo "<tr><td class=\"subinfo\"></td><td>SoC</td><td>".$rpi_info['hw']."</td></tr>\n";
+              if(!empty($rpi_info['sn'])) echo "<tr><td class=\"subinfo\"></td><td>Serial num.</td><td>".strtoupper(ltrim($rpi_info['sn'], '0'))."</td></tr>\n";
+              $cputmp = number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
+              $gputmp = @exec('/opt/vc/bin/vcgencmd measure_temp');
+              if(strpos($gputmp, 'temp=' ) !== false ){
+                $gputmp = " - GPU: ".str_replace("temp=","", $gputmp);
+              }
+              else $gputmp = " - GPU: N/A"." (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )";
+               echo "<tr><td class=\"subinfo\"></td><td>Temperature</td><td>CPU: ".$cputmp.$gputmp.RebootBtn()."</td></tr>\n";
     if (glob('/boot/emonSD-*')) {
               foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
               if (isset($emonpiRelease)) {
-                echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Set root file-system temporarily to read-write, (default read-only)<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button> <button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button></td></tr>\n";
-              }
+                 $currentfs = "<b>read-only</b>"; 
+                 $btnactionfs = "<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button>";
+                 exec('mount', $resexec);
+                 $matches = null;
+                 preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
+                 if (!empty($matches)) {
+                     $currentfs = "<b>read-write</b>"; 
+                     $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
+                 } 
+                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
+                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+               }
+      
       }
 }
 
@@ -352,7 +405,15 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php natcasesort($system['php_modules']); while ( list($key, $val) = each($system['php_modules']) ) { $ver = phpversion($val); echo $val; if (!empty($ver) && is_numeric($ver[0])) { $first = explode(" ", $ver); echo " v" .$first[0]; } echo "&nbsp;|&nbsp;"; } ?></td></tr>
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php 
+              natcasesort($system['php_modules']);// sort case insensitive
+              $modules = [];// empty list
+              foreach($system['php_modules'] as $ver=>$extension){
+                $module_version = phpversion($extension);// returns false if no version information
+                $modules[] = $module_version ? "$extension v$module_version" : $extension; // show version if available
+              }
+              echo implode(' | ', $modules);//isplay list with | separator
+              ?></td></tr>
             </table>
             <h3><?php echo _('Client Information'); ?></h3>
             <table class="table table-hover table-condensed">
@@ -397,7 +458,7 @@ $("#copyserverinfo").on('click', function(event) {
     if ( event.ctrlKey ) {
         copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
     } else {
-        copyTextToClipboard('<details><summary>Server Information</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</pre></details>\n<details><summary>Client Information</summary><pre>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</pre></details>');
+        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
     }
 } );
 

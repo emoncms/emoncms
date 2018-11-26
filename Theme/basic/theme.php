@@ -11,6 +11,8 @@
   */
   global $ltime,$path,$fullwidth,$menucollapses,$emoncms_version,$theme,$themecolor,$favicon,$menu;
 
+  $v = 2;
+
 ?>
 <html>
     <head>
@@ -24,13 +26,35 @@
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-        
+        <script>
+            window.onerror = function(msg, source, lineno, colno, error){
+                var string = msg.toLowerCase();
+                var substring = "script error";
+                if (string.indexOf(substring) > -1){
+                    alert('Script Error: See Browser Console for Detail');
+                } else {
+                    var messages = [
+                        'EmonCMS Error',
+                        '----------------------',
+                        'Message: ' + msg,
+                        'URL: ' + source,
+                        'Line: ' + lineno,
+                        'Column: ' + colno
+                    ];
+                    if(Object.keys(error).length > 0){
+                        messages.push('Error object: ' + JSON.stringify(error))
+                    }
+                    alert(messages.join("\n"));
+                }
+                return true; // true == prevents the firing of the default event handler.
+            }
+        </script>
         <?php if ($themecolor=="blue") { ?>
-            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css" rel="stylesheet">
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-blue.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } else if ($themecolor=="sun") { ?>
-            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-sun.css" rel="stylesheet">
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-sun.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } else { ?>
-            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css" rel="stylesheet">
+            <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-standard.css?v=<?php echo $v; ?>" rel="stylesheet">
         <?php } ?>
 
         <?php //compute dynamic @media properties depending on numbers and lengths of shortcuts
@@ -90,7 +114,7 @@
     </head>
     <body>
         <div id="wrap">
-        
+
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <div class="navbar-inner">
                     <?php  if ($menucollapses) { ?>
@@ -179,5 +203,55 @@
             <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
         </div>
         <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+        <?php if (isset($ui_version_2) && $ui_version_2) { ?>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/hammer.min.js"></script>
+
+        <script>
+            // only use hammerjs on the relevent pages
+            // CSV list of pages in the navigation
+            var pages = ['feed/list','input/view'],
+            // strip off the domain/ip and just get the path
+            currentPage = (""+window.location).replace(path,''),
+            // find where in the list the current page is
+            currentIndex = pages.indexOf(currentPage)
+
+            if (currentIndex > -1) {
+                // uses hammerjs to detect mobile gestures. navigates between input and feed view
+                
+                // allow text on page to be highlighted. 
+                delete Hammer.defaults.cssProps.userSelect
+
+                // SETUP VARIABLES:
+                var container = document.getElementById('wrap'),
+                    // get the path as reported by server
+                    path = "<?php echo $path; ?>",
+                    // create a new instance of the hammerjs api
+                    mc = new Hammer.Manager(container, {
+                        inputClass: Hammer.TouchInput
+                    }),
+                    // make swipes require more velocity
+                    swipe = new Hammer.Swipe({ velocity: 1.1, direction: Hammer.DIRECTION_HORIZONTAL }) // default velocity 0.3
+                
+                // enable the altered swipe gesture
+                mc.add([swipe]);
+
+                // CREATE EVENT LIST:
+                // add a callback function on the swipe gestures
+                mc.on("swipeleft swiperight", function(event) {              
+                        // increase or decrease the currentIndex
+                        index = event.type=='swipeleft' ? currentIndex+1 : currentIndex-1;
+                        // wrap back to start if beyond end
+                        index = index > pages.length-1 ? 0 : index
+                        // wrap forward to end if beyond start
+                        index = index < 0 ? pages.length-1 : index
+                        // get the page to load
+                        url = path+pages[index]
+                        // load the page
+                        window.location.href = url
+                });
+            }
+
+        </script>
+        <?php } ?>
     </body>
 </html>

@@ -1,13 +1,16 @@
 <?php
-
 // This timeseries engine implements:
 // Fixed Interval No Averaging
 
-class PHPFina
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
+
+class PHPFina implements engine_methods
 {
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
+    private $maxpadding = 3153600; // 1 year @ 10s
 
     /**
      * Constructor.
@@ -35,8 +38,8 @@ class PHPFina
         if ($interval<5) $interval = 5;
         
         // Check to ensure we dont overwrite an existing feed
-        
-        if (!file_exists($this->dir.$feedid.".meta")) {
+        $feedname = "$feedid.meta";
+        if (!file_exists($this->dir.$feedname)) {
             // Set initial feed meta data
             $meta = new stdClass();
             $meta->interval = $interval;
@@ -51,7 +54,8 @@ class PHPFina
 
             $fh = @fopen($this->dir.$feedid.".dat", 'c+');
             if (!$fh) {
-                $msg = "could not create meta data file " . error_get_last()['message'];
+                $error = error_get_last();
+                $msg = "could not create meta data file ".$error['message'];
                 $this->log->error("create() ".$msg);
                 return $msg;
             }
@@ -59,7 +63,6 @@ class PHPFina
             $this->log->info("create() feedid=$feedid");
         }
 
-        $feedname = "$feedid.meta";
         if (file_exists($this->dir.$feedname)) {
             return true;
         } else {
@@ -77,13 +80,11 @@ class PHPFina
     public function delete($feedid)
     {
         $feedid = (int)$feedid;
-        $meta = $this->get_meta($feedid);
-        if (!$meta) return false;
+        if (!$meta = $this->get_meta($feedid)) return false;
         unlink($this->dir.$feedid.".meta");
         unlink($this->dir.$feedid.".dat");
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
-
+    
     /**
      * Gets engine metadata
      *
@@ -99,25 +100,25 @@ class PHPFina
             return false;
         }
 
-        static $metadata_cache = array(); // Array to hold the cache
-        if (isset($metadata_cache[$feedid])) {
-            return $metadata_cache[$feedid]; // Retrieve from static cache
-        } else {
-            // Open and read meta data file
-            // The start_time and interval are saved as two consecutive unsigned integers
-            $meta = new stdClass();
-            $metafile = fopen($this->dir.$feedname, 'rb');
-            fseek($metafile,8);
-            $tmp = unpack("I",fread($metafile,4)); 
-            $meta->interval = $tmp[1];
-            $tmp = unpack("I",fread($metafile,4)); 
-            $meta->start_time = $tmp[1];
-            $meta->npoints = $this->get_npoints($feedid);
-            fclose($metafile);
+        // Open and read meta data file
+        // The start_time and interval are saved as two consecutive unsigned integers
+        $meta = new stdClass();
+        $metafile = fopen($this->dir.$feedname, 'rb');
+        fseek($metafile,8);
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->interval = $tmp[1];
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->start_time = $tmp[1];
+        fclose($metafile);
+        
+        $meta->npoints = $this->get_npoints($feedid);
 
-            $metadata_cache[$feedid] = $meta; // Cache it
-            return $meta;
+        if ($meta->start_time>0 && $meta->npoints==0) {
+            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
+            return false;
         }
+        
+        return $meta;
     }
 
     /**
@@ -192,10 +193,7 @@ class PHPFina
         // Write padding
         $padding = ($pos - $last_pos)-1;
         
-        // Max padding = 1 million datapoints ~4mb gap of 115 days at 10s
-        $maxpadding = 1000000;
-        
-        if ($padding>$maxpadding) {
+        if ($padding>$this->maxpadding) {
             $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
             return false;
         }
@@ -266,7 +264,7 @@ class PHPFina
             $fh = fopen($this->dir.$feedid.".dat", 'rb');
             $size = filesize($this->dir.$feedid.".dat");
             fseek($fh,$size-4);
-             $d = fread($fh,4);
+            $d = fread($fh,4);
             fclose($fh);
 
             $value = null;
@@ -292,12 +290,16 @@ class PHPFina
     */
     public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        $skipmissing = (int) $skipmissing;
+        $limitinterval = (int) $limitinterval;
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
 
         // Minimum interval
         if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
         if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
@@ -306,7 +308,7 @@ class PHPFina
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
         $meta->npoints = $this->get_npoints($name);
         
-        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval; 
+        if ($limitinterval && $interval<$meta->interval) $interval = $meta->interval;
 
         $this->log->info("get_data() feed=$name st=$start end=$end int=$interval sk=$skipmissing lm=$limitinterval pts=$meta->npoints st=$meta->start_time");
 
@@ -347,7 +349,7 @@ class PHPFina
         return $data;
     }
     
-    public function get_data_DMY($id,$start,$end,$mode,$timezone) 
+    public function get_data_DMY($id,$start,$end,$mode,$timezone)
     {
         if ($mode!="daily" && $mode!="weekly" && $mode!="monthly") return false;
 
@@ -413,9 +415,7 @@ class PHPFina
         $start = intval($start/1000);
         $end = intval($end/1000);
         $split = json_decode($split);
-
         if (gettype($split)!="array") return false;
-        /* SP Increase to 48 points to allow a days worth of half hour readings */
         if (count($split)>48) return false;
 
         // If meta data file does not exist exit
@@ -546,10 +546,10 @@ class PHPFina
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
 
-        $feedid = intval($feedid);
-        $start = intval($start);
-        $end = intval($end);
-        $outinterval= (int) $outinterval;
+        $feedid = (int) $feedid;
+        $start = (int) $start;
+        $end = (int) $end;
+        $outinterval = (int) $outinterval;
 
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($feedid)) return false;
@@ -660,11 +660,17 @@ class PHPFina
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
 
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-         if ($meta->npoints == 0 && $meta->start_time==0) {
-            $meta->start_time = $timestamp;
-            $this->create_meta($feedid,$meta);
+        if ($meta->start_time==0) {
+            if ($meta->npoints == 0) {
+                $meta->start_time = $timestamp;
+                $this->create_meta($feedid,$meta);
+                $this->log->info("post_bulk_prepare() start_time=0 setting meta start_time=$timestamp");
+            } else {
+                $this->log->error("post_bulk_prepare() start_time=0, npoints>0");
+                return false;
+            }
         }
-
+        
         if ($timestamp < $meta->start_time) {
             $this->log->warn("post_bulk_prepare() timestamp=$timestamp older than feed starttime=$meta->start_time feedid=$feedid");
             return false; // in the past
@@ -679,6 +685,11 @@ class PHPFina
         if ($pos>$last_pos) {
             $npadding = ($pos - $last_pos)-1;
             
+            if ($npadding>$this->maxpadding) {
+                $this->log->warn("post() padding max block size exeeded id=$feedid, $npadding dp");
+                return false;
+            }
+            
             if (!isset($this->writebuffer[$feedid])) {
                 $this->writebuffer[$feedid] = "";    
             }
@@ -688,7 +699,8 @@ class PHPFina
                 if ($padding_mode!=null) {
                     static $lastvalue_static_cache = array(); // Array to hold the cache
                     if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
-                        $lastvalue_static_cache[$feedid] = $this->lastvalue($feedid)['value'];
+                        $lastvalue = $this->lastvalue($feedid);
+                        $lastvalue_static_cache[$feedid] = $lastvalue['value'];
                     }
                     $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
                     $padding_value = $lastvalue_static_cache[$feedid];
@@ -774,7 +786,8 @@ class PHPFina
         $metafile = @fopen($this->dir.$feedname, 'wb');
         
         if (!$metafile) {
-            $msg = "could not write meta data file " . error_get_last()['message'];
+            $error = error_get_last();
+            $msg = "could not write meta data file ".$error['message'];
             $this->log->error("create_meta() ".$msg);
             return $msg;
         }
@@ -801,7 +814,7 @@ class PHPFina
             clearstatcache($this->dir.$feedid.".dat");
             $bytesize += filesize($this->dir.$feedid.".dat");
         }
-            
+        
         if (isset($this->writebuffer[$feedid]))
             $bytesize += strlen($this->writebuffer[$feedid]);
             
@@ -1248,4 +1261,85 @@ class PHPFina
         
         return true;
     }
+
+    /**
+     * delete feed .dat, re-create blank .dat and .meta with same interval
+     *
+     * @param integer $feedid
+     * @return boolean true == success
+     */
+    public function clear($feedid) {
+        $feedid = (int)$feedid;
+        $meta = $this->get_meta($feedid);
+        if (!$meta) return false;
+        $meta->start_time = 0;
+        $datafilePath = $this->dir.$feedid.".dat";
+        $f = @fopen($datafilePath, "r+");
+        if (!$f) {
+            $this->log->error("unable to open $datafilePath for reading");
+            return array('success'=>false,'message'=>'Error opening data file');
+        } else {
+            ftruncate($f, 0);
+            fclose($f);
+        }
+        if (isset($this->writebuffer[$feedid])) $this->writebuffer[$feedid] = "";
+            
+        $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
+        $this->create($feedid,array('interval'=>$meta->interval));
+
+        $this->log->info("Feed $feedid datapoints deleted");
+        return array('success'=>true,'message'=>"Feed cleared successfully");
+    }
+    
+    /**
+     * clear out data from file before $start_time
+     *
+     * @param integer $feedid
+     * @param integer $start_time new timestamp to start the feed data from
+     * @return boolean
+     */
+    public function trim($feedid,$start_time) {
+        $meta = $this->get_meta($feedid); // get .dat meta info
+        $bytesize = $meta->npoints * 4.0; // total .dat file size
+        if($bytesize <= 0) return array('success'=>false,'message'=>'Empty data file, nothing to trim.'); // empty data file - nothing to trim
+        if($start_time < $meta->start_time) return array('success'=>false,'message'=>'New start time out of range'); //new start_time out of range
+        
+        $start_bytes = ceil((($start_time - $meta->start_time) / $meta->interval) * 4.0); // number of seconds devided by interval
+        $datFileName = $this->dir.$feedid.'.dat';
+        // non php file handling
+        // ----------------------
+        // $tmpFileName = $this->dir.'temp-trim.tmp';
+        // exec(sprintf("tail -c +%s %s > %s",$start_bytes, $datFileName, $tmpFileName),$exec['tail']); // save byte safe output of tail to temp file
+        // exec(sprintf("cp %s %s", $tmpFileName, $datFileName),$exec['cat']);// overwrite original .dat file with temp file
+        // exec(sprintf("rm %s", $tmpFileName),$exec['rm']);// remove the temp file
+        // $writtenBytes = filesize($datFileName);
+
+        $fh = @fopen($datFileName,'rb');
+        if (!$fh){
+            $this->log->error("unable to open $datFileName for reading");
+            return array('success'=>false,'message'=>'Error opening data file');
+        }
+        fseek($fh,$start_bytes);
+        $tmp = @fread($fh,$bytesize-$start_bytes);
+        if (!$tmp){
+            $this->log->error("Error reading $datFileName");
+            return array('success'=>false,'message'=>'Error reading data file');
+        }
+        fclose($fh);
+        
+        $fh = @fopen($datFileName,'wb');
+        if (!$fh){
+            $this->log->error("unable to open $datFileName for writing");
+            return array('success'=>false,'message'=>'Error writing to data file');
+        }
+        $writtenBytes = fwrite($fh,$tmp);
+        fclose($fh);
+
+        $this->log->info(".data file trimmed to $writtenBytes bytes");
+        if (isset($this->writebuffer[$feedid])) $this->writebuffer[$feedid] = "";
+        $meta->start_time = $start_time;
+        $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
+        return array('success'=>true,'message'=>"$writtenBytes bytes written");
+    }
+
 }

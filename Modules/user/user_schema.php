@@ -17,14 +17,14 @@ $schema['users'] = array(
     'location'=>array('type'=>'varchar(30)', 'default'=>''),
     'timezone' => array('type'=>'varchar(64)', 'default'=>'UTC'),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
-    'bio' => array('type' => 'text', 'default'=>''),
+    'bio' => array('type' => 'text'),
 
-    'tags' => array('type' => 'text', 'default'=>NULL),
+    'tags' => array('type' => 'text'),
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int(11)', 'default'=>0),
     'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
-    
-    'mqtthash' => array('type' => 'varchar(67)')
+    'mqtthash' => array('type' => 'varchar(67)'),
+    'preferences' => array('type' => 'varchar(255)', 'default'=>NULL, 'Null'=>true)
 );
 
 $schema['rememberme'] = array(

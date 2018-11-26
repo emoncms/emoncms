@@ -11,5 +11,7 @@ $schema['feeds'] = array(
     'public' => array('type' => 'tinyint(1)', 'default'=>0),
     'size' => array('type' => 'int(11)'),
     'engine' => array('type' => 'int(11)', 'Null'=>false, 'default'=>0),
-    'processList' => array('type' => 'text')
+    'server' => array('type' => 'int(11)', 'Null'=>false, 'default'=>0),
+    'processList' => array('type' => 'text'),
+    'unit' => array('type' => 'varchar(10)','default'=>'')
 );

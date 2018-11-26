@@ -3,9 +3,17 @@ var feed = {
 
   apikey: "",
   
-  'create':function(tag, name, datatype, engine, options){
+  'create':function(tag, name, datatype, engine, options, unit){
     var result = {};
-    $.ajax({ url: path+"feed/create.json", data: "tag="+tag+"&name="+name+"&datatype="+datatype+"&engine="+engine+"&options="+JSON.stringify(options), dataType: 'json', async: false, success: function(data){result = data;} });
+    var data = {
+      tag: tag,
+      name: name,
+      datatype: datatype,
+      engine: engine,
+      options: JSON.stringify(options),
+      unit: unit || ''
+    }
+    $.ajax({ url: path+"feed/create.json", data: data, dataType: 'json', async: false, success: function(data){result = data;} });
     return result;
   },
   
@@ -62,13 +70,36 @@ var feed = {
   },
 
   'set':function(id, fields){
-    var result = {};
-    $.ajax({ url: path+"feed/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), async: false, success: function(data){} });
-    return result;
+    $.ajax({ url: path+"feed/set.json", data: "id="+id+"&fields="+JSON.stringify(fields), success: function(result) {
+      if (result.success!=undefined && !result.success) {
+        alert(result.message);
+      }
+    }});
   },
 
   'remove':function(id){
-    $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){} });
+    $.ajax({ url: path+"feed/delete.json", data: "id="+id, async: false, success: function(data){
+         // Clean processlists of deleted feeds
+         $.ajax({ url: path+"input/cleanprocesslistfeeds.json", async: true, success: function(data){} });
+    }});
+  },
+
+  'clear':function(id){
+    let response = false;
+    let data = {
+      id: id
+    }
+    $.ajax({ url: path+"feed/clear.json", data: data, async: false, success: function(data){ response = data} });
+    return response;
+  },
+  'trim':function(id,start_time){
+    let response = false;
+    let data = {
+      id: id,
+      start_time: start_time
+    }
+    $.ajax({ url: path+"feed/trim.json", data: data, async: false, success: function(data){ response = data} });
+    return response;
   },
 
   'get_data':function(feedid,start,end,interval,skipmissing,limitinterval){
@@ -138,6 +169,20 @@ var feed = {
   'reset_processlist':function(feedid,processid){
     var result = {};
     $.ajax({ url: path+"feed/process/reset.json", data: "id="+feedid, async: false, success: function(data){result = data;} });
+    return result;
+  },
+  
+  'meta':function(feedid)
+  {
+    var result = {};
+    var apikeystr = ""; if (feed.apikey!="") apikeystr = "&apikey="+feed.apikey;
+    $.ajax({                                      
+      url: path+'feed/getmeta.json',                         
+      data: apikeystr+"&id="+feedid,
+      dataType: 'json',
+      async: false,                      
+      success: function(data_in) { result = data_in; } 
+    });
     return result;
   }
 }

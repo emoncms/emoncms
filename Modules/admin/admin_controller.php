@@ -20,22 +20,6 @@ function admin_controller()
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
     // after the update is complete.
-    if ($updatelogin===true) {
-        $route->format = 'html';
-        if ($route->action == 'db')
-        {
-            $applychanges = false;
-            if (isset($_GET['apply']) && $_GET['apply']==true) $applychanges = true;
-
-            require_once "Lib/dbschemasetup.php";
-            $updates = array(array(
-                'title'=>"Database schema", 'description'=>"",
-                'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
-            ));
-
-            return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
-        }
-    }
     
     if ($session['admin']) {
         
@@ -56,8 +40,8 @@ function admin_controller()
                     'description'=>"",
                     'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
                 );
-
-                $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates));
+                $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
+                $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
             }
 
             else if ($route->action == 'users' && $session['write'])
@@ -112,11 +96,11 @@ function admin_controller()
                         while ($linecounter > 0) {
                           $t = " ";
                           while ($t != "\n") {
-                            if(fseek($handle, $pos, SEEK_END) == -1) {
+                            if(!empty($handle) && fseek($handle, $pos, SEEK_END) == -1) {
                             $beginning = true;
                             break;
                             }
-                          $t = fgetc($handle);
+                          if(!empty($handle)) $t = fgetc($handle);
                           $pos --;
                           }
                         $linecounter --;
@@ -161,14 +145,9 @@ function admin_controller()
                     if (isset($_POST['argument'])) {
                       $argument = $_POST['argument'];
                     }
-                    $fh = @fopen($update_flag,"w");
-                    if (!$fh) {
-                        $result = "ERROR: Can't write the flag $update_flag.";
-                    } else {
-                        fwrite($fh,"$update_script $argument>$update_logfile");
-                        $result = "Update flag set";
-                    }
-                    @fclose($fh);
+                    
+                    $redis->rpush("service-runner","$update_script $argument>$update_logfile");
+                    $result = "service-runner trigger sent";
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -201,6 +180,7 @@ function admin_controller()
                 
                 if ($route->subaction == 'backup' && $session['write'] && $session['admin']) {
                     $route->format = "text";
+                    
                     $fh = @fopen($backup_flag,"w");
                     if (!$fh) $result = "ERROR: Can't write the flag $backup_flag.";
                     else $result = "Update flag file $backup_flag created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
@@ -266,13 +246,89 @@ function admin_controller()
                 $redis->flushDB();
                 $result = array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
             }
-            else if ($route->action == 'userlist' && $session['write'])
+            
+            else if ($route->action == 'numberofusers')
             {
+                $route->format = "text";
+                $result = $mysqli->query("SELECT COUNT(*) FROM users");
+                $row = $result->fetch_array();
+                $result = (int) $row[0];
+            }
+
+            else if ($route->action == 'userlist')
+            {
+
+                $limit = "";
+                if (isset($_GET['page']) && isset($_GET['perpage'])) {
+                    $page = (int) $_GET['page'];
+                    $perpage = (int) $_GET['perpage'];
+                    $offset = $page * $perpage;
+                    $limit = "LIMIT $perpage OFFSET $offset";
+                }
+                
+                $orderby = "id";
+                if (isset($_GET['orderby'])) {
+                    if ($_GET['orderby']=="id") $orderby = "id";
+                    if ($_GET['orderby']=="username") $orderby = "username";
+                    if ($_GET['orderby']=="email") $orderby = "email";
+                    if ($_GET['orderby']=="email_verified") $orderby = "email_verified";
+                }
+                
+                $order = "DESC";
+                if (isset($_GET['order'])) {
+                    if ($_GET['order']=="decending") $order = "DESC";
+                    if ($_GET['order']=="ascending") $order = "ASC";
+                }
+                
+                $search = false;
+                $searchstr = "";
+                if (isset($_GET['search'])) {
+                    $search = $_GET['search'];
+                    $search_out = preg_replace('/[^\p{N}\p{L}_\s-@.]/u','',$search);
+                    if ($search_out!=$search || $search=="") { 
+                        $search = false; 
+                    }
+                    if ($search!==false) $searchstr = "WHERE username LIKE '%$search%' OR email LIKE '%$search%'";
+                }
+            
                 $data = array();
-                $result = $mysqli->query("SELECT id,username,email FROM users");
+                $result = $mysqli->query("SELECT id,username,email,email_verified FROM users $searchstr ORDER BY $orderby $order ".$limit);
+                
                 while ($row = $result->fetch_object()) $data[] = $row;
                 $result = $data;
             }
+
+            else if ($route->action == 'setuser' && $session['write'])
+            {
+                $_SESSION['userid'] = intval(get('id'));
+                header("Location: ../user/view");
+            }
+            
+            else if ($route->action == 'setuserfeed' && $session['write'])
+            {
+                $feedid = (int) get("id");
+                $result = $mysqli->query("SELECT userid FROM feeds WHERE id=$feedid");
+                $row = $result->fetch_object();
+                $userid = $row->userid;
+                $_SESSION['userid'] = $userid;
+                header("Location: ../user/view");
+            }
+        }
+    }
+    else if ($updatelogin===true) {
+        $route->format = 'html';
+        if ($route->action == 'db')
+        {
+            $applychanges = false;
+            if (isset($_GET['apply']) && $_GET['apply']==true) $applychanges = true;
+
+            require_once "Lib/dbschemasetup.php";
+            $updates = array(array(
+                'title'=>"Database schema", 'description'=>"",
+                'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+            ));
+
+            return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
         }
     }
 

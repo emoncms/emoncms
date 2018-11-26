@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-30 20:57+0200\n"
-"PO-Revision-Date: 2017-07-30 20:58+0200\n"
+"POT-Creation-Date: 2018-08-06 17:18+0200\n"
+"PO-Revision-Date: 2018-08-06 17:18+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,193 +14,300 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.0.3\n"
+"X-Generator: Poedit 2.1.1\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../login_block.php:34 ../../../profile/profile.php:65
+#: ../../../login_block.php:40 ../../../profile/profile.php:70
 msgid "Email"
 msgstr "Adresse email"
 
-#: ../../../login_block.php:40 ../../../profile/profile.php:56
+#: ../../../login_block.php:46 ../../../profile/profile.php:61
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
-#: ../../../login_block.php:47
+#: ../../../login_block.php:53
 msgid "Password"
 msgstr "Mot de passe"
 
-#: ../../../login_block.php:53
+#: ../../../login_block.php:59
 msgid "Confirm password"
 msgstr "Confirmation du mot de passe"
 
-#: ../../../login_block.php:64
+#: ../../../login_block.php:70
 msgid "Remember me"
 msgstr "Se souvenir de moi"
 
-#: ../../../login_block.php:68
+#: ../../../login_block.php:74
 msgid "Login"
 msgstr "Connexion"
 
-#: ../../../login_block.php:69 ../../../login_block.php:76
-#: ../../../login_block.php:94
+#: ../../../login_block.php:75 ../../../login_block.php:82
+#: ../../../login_block.php:100
 msgid "or"
 msgstr "ou"
 
-#: ../../../login_block.php:70
+#: ../../../login_block.php:76
 msgid "register"
 msgstr "s'inscrire"
 
-#: ../../../login_block.php:75
+#: ../../../login_block.php:81
 msgid "Register"
 msgstr "S'inscrire"
 
-#: ../../../login_block.php:77 ../../../login_block.php:95
+#: ../../../login_block.php:83 ../../../login_block.php:101
 msgid "login"
 msgstr "connexion"
 
-#: ../../../profile/profile.php:52
+#: ../../../profile/profile.php:53
 msgid "My account"
 msgstr "Mon Compte"
 
-#: ../../../profile/profile.php:57 ../../../profile/profile.php:66
+#: ../../../profile/profile.php:57
+msgid "User ID"
+msgstr "ID utilisateur :"
+
+#: ../../../profile/profile.php:62 ../../../profile/profile.php:71
 msgid "Edit"
 msgstr "Éditer"
 
-#: ../../../profile/profile.php:60 ../../../profile/profile.php:69
-#: ../../../profile/profile.php:94
+#: ../../../profile/profile.php:65 ../../../profile/profile.php:74
+#: ../../../profile/profile.php:99
 msgid "Save"
 msgstr "Sauvegarder"
 
-#: ../../../profile/profile.php:75
+#: ../../../profile/profile.php:80
 msgid "Change Password"
 msgstr "Modifier le mot de passe"
 
-#: ../../../profile/profile.php:82
+#: ../../../profile/profile.php:87
 msgid "Current password"
 msgstr "Ancien mot de passe"
 
-#: ../../../profile/profile.php:86
+#: ../../../profile/profile.php:91
 msgid "New password"
 msgstr "Nouveau mot de passe"
 
-#: ../../../profile/profile.php:90
+#: ../../../profile/profile.php:95
 msgid "Repeat new password"
 msgstr "Répétez le mot de passe"
 
-#: ../../../profile/profile.php:95
+#: ../../../profile/profile.php:100 ../../../profile/profile.php:197
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../profile/profile.php:101
+#: ../../../profile/profile.php:106
 msgid "Write API Key"
 msgstr "Clé API accès en écriture"
 
-#: ../../../profile/profile.php:101 ../../../profile/profile.php:105
+#: ../../../profile/profile.php:106 ../../../profile/profile.php:110
 msgid "Copy"
 msgstr "Copier"
 
-#: ../../../profile/profile.php:105
+#: ../../../profile/profile.php:110
 msgid "Read API Key"
 msgstr "Clé API accès en lecture"
 
-#: ../../../profile/profile.php:112
+#: ../../../profile/profile.php:117
+msgid "Delete my account"
+msgstr "Supprimer mon compte"
+
+#: ../../../profile/profile.php:122
 msgid "My Profile"
 msgstr "Mon profil"
 
-#: ../../../profile/profile.php:115
+#: ../../../profile/profile.php:127
+msgid "Please update your database"
+msgstr "Mettre à jour la base de données s'il vous plait"
+
+#: ../../../profile/profile.php:130
+msgid "Beta Features"
+msgstr "Fonctionnalités Bêta"
+
+#: ../../../profile/profile.php:132
+msgid "Saved"
+msgstr "Sauvegardé"
+
+#: ../../../profile/profile.php:133
+msgid "Error"
+msgstr "Erreur"
+
+#: ../../../profile/profile.php:134
+msgid "Saving..."
+msgstr "Sauvegarde…"
+
+#: ../../../profile/profile.php:141
+msgid "Device Module Beta"
+msgstr "Module Dispositif Bêta"
+
+#: ../../../profile/profile.php:144
+msgid "On"
+msgstr "On"
+
+#: ../../../profile/profile.php:145
+msgid "Off"
+msgstr "Off"
+
+#: ../../../profile/profile.php:154
 msgid "Mobile app"
 msgstr "Application Mobile"
 
-#: ../../../profile/profile.php:120
+#: ../../../profile/profile.php:159
 msgid "Scan QR code from the iOS or Android app to connect:"
 msgstr ""
 "Scanner le QR code depuis l'application iOS ou Android pour se connecter : "
 
-#: ../../../profile/profile.php:122
+#: ../../../profile/profile.php:161
 msgid "Or using a barcode scanner scan to view MyElectric graph"
 msgstr "Ou scanner le code-barres pour visualiser MyElectric graph"
 
-#: ../../../profile/profile.php:173
+#: ../../../profile/profile.php:178
+msgid "WARNING deleting an account is permanent"
+msgstr "AVERTISSEMENT la suppression d'un compte est irréversible"
+
+#: ../../../profile/profile.php:182
+msgid "Are you sure you want to delete your account?"
+msgstr "Êtes-vous sûr de vouloir supprimer ce compte?"
+
+#: ../../../profile/profile.php:186
+msgid "Your account has been successfully deleted."
+msgstr "Votre compte a été supprimé avec succès."
+
+#: ../../../profile/profile.php:192
+msgid "Confirm password to delete:"
+msgstr "Confirmer le mot de passe pour la suppression :"
+
+#: ../../../profile/profile.php:198
+msgid "Delete permanently"
+msgstr "Supprimer de façon permanente"
+
+#: ../../../profile/profile.php:199 ../../../user_menu.php:9
+msgid "Logout"
+msgstr "Déconnexion"
+
+#: ../../../profile/profile.php:240
 msgid "Gravatar"
 msgstr "Gravatar"
 
-#: ../../../profile/profile.php:174
+#: ../../../profile/profile.php:241
 msgid "Name"
 msgstr "Nom"
 
-#: ../../../profile/profile.php:175
+#: ../../../profile/profile.php:242
 msgid "Location"
 msgstr "Localisation"
 
-#: ../../../profile/profile.php:176
+#: ../../../profile/profile.php:243
 msgid "Bio"
 msgstr "Bio"
 
-#: ../../../profile/profile.php:177
+#: ../../../profile/profile.php:244
 msgid "Timezone"
 msgstr "Fuseau horaire"
 
-#: ../../../profile/profile.php:178
+#: ../../../profile/profile.php:245
 msgid "Language"
 msgstr "Langage"
 
-#: ../../../profile/profile.php:179
+#: ../../../profile/profile.php:246
 msgid "Starting page"
 msgstr "Page de démarrage"
 
-#: ../../../profile/profile.php:305
+#: ../../../profile/profile.php:373
 msgid "Passwords do not match"
 msgstr "Les mots de passe ne correspondent pas"
+
+#: ../../../user_controller.php:125
+msgid "Preference Saved"
+msgstr "Préférences sauvegardées"
+
+#: ../../../user_controller.php:127
+msgid "Problem saving Preferences"
+msgstr "Problème lors de la sauvegarde des préférences"
+
+#: ../../../user_controller.php:130
+msgid "Invalid parameters"
+msgstr "Paramètres non valides"
+
+#: ../../../user_controller.php:143
+msgid "Error getting data"
+msgstr "Erreur lors de la récupération des données"
+
+#: ../../../user_controller.php:149
+msgid "Empty"
+msgstr "Vide"
 
 #: ../../../user_menu.php:8
 msgid "My Account"
 msgstr "Mon Compte"
 
-#: ../../../user_menu.php:9
-msgid "Logout"
-msgstr "Déconnexion"
-
 #: ../../../user_menu.php:10
 msgid "Log In"
 msgstr "Connexion"
 
-#: ../../../user_model.php:183
+#: ../../../user_model.php:230
 msgid "Missing username, password or email parameter"
 msgstr "Il manque le nom d'utilisateur, le mot de passe ou l'adresse email"
 
-#: ../../../user_model.php:185 ../../../user_model.php:395
+#: ../../../user_model.php:231 ../../../user_model.php:545
 msgid "Username must only contain a-z and 0-9 characters"
 msgstr ""
 "Le nom d'utilisateur doit contenir uniquement des chiffres [0-9] et des "
 "lettres [a-z]"
 
-#: ../../../user_model.php:189 ../../../user_model.php:406
+#: ../../../user_model.php:232 ../../../user_model.php:559
 msgid "Username already exists"
 msgstr "Désolé, ce nom d'utilisateur existe déjà"
 
-#: ../../../user_model.php:191 ../../../user_model.php:338
-#: ../../../user_model.php:415
+#: ../../../user_model.php:234 ../../../user_model.php:327
+#: ../../../user_model.php:491 ../../../user_model.php:568
 msgid "Email address format error"
 msgstr "Le format de l'adresse email est incorrect"
 
-#: ../../../user_model.php:193 ../../../user_model.php:393
+#: ../../../user_model.php:236 ../../../user_model.php:543
 msgid "Username length error"
 msgstr "La longueur du nom d'utilisateur est incorrecte"
 
-#: ../../../user_model.php:194 ../../../user_model.php:312
-#: ../../../user_model.php:313
+#: ../../../user_model.php:237 ../../../user_model.php:460
+#: ../../../user_model.php:461
 msgid "Password length error"
 msgstr "La longueur du mot de passe est incorrect"
 
-#: ../../../user_model.php:208
-msgid "Error creating user"
-msgstr "Erreur lors de la création de l'utilisateur"
+#: ../../../user_model.php:253
+msgid "Error creating user, mysql error: "
+msgstr "Erreur lors de la création de l'utilisateur, erreur mysql :"
 
-#: ../../../user_model.php:222 ../../../user_model.php:275
+#: ../../../user_model.php:273
+msgid "Invalid username"
+msgstr "Nom utilisateur non valide"
+
+#: ../../../user_model.php:277 ../../../user_model.php:367
+msgid "Database error, you may need to run database update"
+msgstr ""
+"Erreur de base de données, vous devrez peut-être exécuter la mise à jour de "
+"base de données"
+
+#: ../../../user_model.php:287 ../../../user_model.php:380
+msgid "Username does not exist"
+msgstr "Cet utilisateur n'existe pas"
+
+#: ../../../user_model.php:289
+msgid "Email already verified"
+msgstr "Email déjà vérifié"
+
+#: ../../../user_model.php:322
+msgid "Email verification email sent, please check your inbox"
+msgstr ""
+"Email de vérification envoyé, veuillez vérifier votre boîte de réception"
+
+#: ../../../user_model.php:328
+msgid "Invalid verification key"
+msgstr "Clé de vérification non valide"
+
+#: ../../../user_model.php:356 ../../../user_model.php:421
 msgid "Username or password empty"
 msgstr "L'identifiant ou le mot de passe saisi est vide"
 
-#: ../../../user_model.php:228
+#: ../../../user_model.php:362
 msgid ""
 "Username must only contain a-z 0-9 dash and underscore, if you created an "
 "account before this rule was in place enter your username without the non a-"
@@ -213,36 +320,42 @@ msgstr ""
 "passe habituel et éventuellement modifier votre nom d'utilisateur depuis la "
 "page de configuration de votre profil."
 
-#: ../../../user_model.php:238
-msgid "Username does not exist"
-msgstr "Cet utilisateur n'existe pas"
+#: ../../../user_model.php:381
+msgid "Please verify email address"
+msgstr "S'il vous plaît vérifier l'adresse e-mail"
 
-#: ../../../user_model.php:245
+#: ../../../user_model.php:387
 msgid ""
 "Incorrect password, if your sure its correct try clearing your browser cache"
 msgstr ""
 "Mot de passe incorrect, si vous êtes sûr de votre mot de passe, "
 "rafraîchissez le cache de votre navigateur"
 
-#: ../../../user_model.php:266
+#: ../../../user_model.php:405
+msgid "Error creating rememberme cookie, try login without rememberme"
+msgstr ""
+"Erreur lors de la création du cookie de connexion automatique, essayez de "
+"vous connecter sans l'option se souvenir de moi"
+
+#: ../../../user_model.php:412
 msgid "Login successful"
 msgstr "Connexion réussie"
 
-#: ../../../user_model.php:278
+#: ../../../user_model.php:423
 msgid "Username must only contain a-z 0-9 dash and underscore"
 msgstr ""
 "Le nom d'utilisateur doit contenir uniquement des chiffres [0-9], des "
 "lettres [a-z], des tirets et des soulignés"
 
-#: ../../../user_model.php:285 ../../../user_model.php:292
+#: ../../../user_model.php:436 ../../../user_model.php:441
 msgid "Incorrect authentication"
 msgstr "Authentification incorrecte"
 
-#: ../../../user_model.php:331
+#: ../../../user_model.php:484
 msgid "Old password incorect"
 msgstr "Ancien mot de passe incorrect"
 
-#: ../../../user_model.php:390
+#: ../../../user_model.php:540
 msgid ""
 "As you are using a cookie based remember me login, please logout and log "
 "back in to change username"
@@ -250,11 +363,11 @@ msgstr ""
 "La connexion automatique est basée sur des cookies. Pour prendre en compte "
 "le changement de nom d'utilisateur il suffit de se déconnecter et reconnecter"
 
-#: ../../../user_model.php:402
+#: ../../../user_model.php:555
 msgid "Username updated"
 msgstr "Nom d'utilisateur mis à jour"
 
-#: ../../../user_model.php:412
+#: ../../../user_model.php:565
 msgid ""
 "As you are using a cookie based remember me login, please logout and log "
 "back in to change email"
@@ -262,13 +375,17 @@ msgstr ""
 "La connexion automatique est basée sur des cookies. Pour prendre en compte "
 "le changement d'adresse email il suffit de se déconnecter et reconnecter"
 
-#: ../../../user_model.php:420
+#: ../../../user_model.php:574
 msgid "Email updated"
 msgstr "Email mis à jour"
 
-#: ../../../user_model.php:589
+#: ../../../user_model.php:740 ../../../user_model.php:758
 msgid "Error updating user info"
 msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
+
+#: ../../../user_model.php:889
+msgid "Please update database"
+msgstr "Mettre à jour la base de données s'il vous plait"
 
 #~ msgid "Username:"
 #~ msgstr "Identifiant : "
@@ -303,9 +420,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 #~ msgid "Please enter a password that is 4 to 30 characters long"
 #~ msgstr "Mercir de taper un mot de passe contenant "
 
-#~ msgid "Your new account has been created"
-#~ msgstr "Votre compte a &eacute;t&eacute; cr&eacute;&eacute;"
-
 #~ msgid "Your password has been changed"
 #~ msgstr "Votre mot de passe a &eacute;t&eacute; chang&eacute;"
 
@@ -320,12 +434,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
 #~ msgid "You are logged out"
 #~ msgstr "Vous &ecirc;tes d&eacute;connect&eacute;"
-
-#~ msgid "Invalid token"
-#~ msgstr "Jeton invalide"
-
-#~ msgid "User: "
-#~ msgstr "Identifiant : "
 
 #~ msgid "Select preferred language"
 #~ msgstr "S&eacute;lectionner la langue principale"
@@ -770,9 +878,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 #~ msgid "Set notification behavior for this feed"
 #~ msgstr "Configurer les notifications pour ce flux"
 
-#~ msgid "Delete feed?"
-#~ msgstr "Supprimer le flux ?"
-
 #~ msgid "Are you sure you want to delete feed: "
 #~ msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer ce flux : "
 
@@ -821,9 +926,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 #~ msgid "Reset process list?"
 #~ msgstr "R&eacute;initialis&eacute; les actions : "
 
-#~ msgid "Are you sure you want to delete input: "
-#~ msgstr "&Ecirc;tes vous s&ucirc;r de vouloir supprimer cette source ? "
-
 #~ msgid "Delete input?"
 #~ msgstr "Supprimer source ?"
 
@@ -849,9 +951,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
 #~ msgid "feed: "
 #~ msgstr "fuente:"
-
-#~ msgid " already converted"
-#~ msgstr " ya convertido"
 
 #~ msgid "Embed this graph"
 #~ msgstr "Incrustar este gráfico"
@@ -888,9 +987,6 @@ msgstr "Erreur lors de la mise à jour des infos de l'utilisateur"
 
 #~ msgid "Loading...  please wait about 5s"
 #~ msgstr "Cargando... por favor espere unos 5s"
-
-#~ msgid "Loading..."
-#~ msgstr "Cargando..."
 
 #~ msgid "2 Months"
 #~ msgstr "2 Meses"

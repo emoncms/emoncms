@@ -106,7 +106,7 @@ input[type=text][class=variable-name-edit] {
 
 .scrollable-menu {
   height: auto;
-  max-height: 290px;
+  max-height: 333px;
   overflow-y: auto;
 }
 
@@ -118,4 +118,190 @@ input[type=text][class=variable-name-edit] {
     	url(ajax-loader.gif)
     	center
     	no-repeat;
+}
+
+/*
+.navbar-inner {
+    background-image:none !important;
+    background-color:#44b3e2 !important;
+    border:none !important;
+    padding:0px !important;
+}
+
+.nav > .active > a {
+    background-color:#209ed3 !important;
+    box-shadow:none !important;
+}
+
+.nav > .open > a {
+    background-color:#2eaadf !important;
+}
+
+.nav > li > a {
+    color: #fff !important;
+    text-shadow:none !important;
+}
+
+.caret {
+   border-top-color: #fff !important;
+}*/
+
+.text-larger {
+    font-size: larger
+}
+
+.expand-all .icon-resize-small{
+    display: none
+}
+.expand-all.in .icon-resize-small{
+    display: inline-block
+}
+.expand-all.in .icon-resize-full{
+    display: none
+}
+
+/* collapsable groups of items */
+.node.accordion{
+    line-height:41px;
+}
+
+.node .accordion-toggle{
+    background: #ddd;
+    height: 41px;
+}
+/* dropdown indicator */
+.node .accordion-toggle .has-indicator:before {
+    content: '';
+    transition: border .2s ease-out;
+    border-bottom: 5px solid darkgrey;
+    border-top: 0 solid transparent;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+    display: inline-block;
+    margin-bottom: .2em;
+}
+.node .accordion-toggle.collapsed .has-indicator:before {
+    content: '';
+    border-bottom: 0 solid transparent;
+    border-top: 5px solid darkgrey;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
+.node .select input { margin-top: -1px}
+.node .collapse{
+    transition-duration: 150ms;
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.950, 0.050, 0.795, 0.035);
+    background-color: #ddd;
+}
+.node .collapse > * {
+    border-bottom:1px solid #fff;
+    background: #f0f0f0;
+    width: 100%;
+}
+.node .collapse > *{
+    position: relative
+}
+.node .collapse > *:before{
+    content: '';
+    width: 0px;
+    background: #44b3e2;
+    height: 100%;
+    display: block;
+    position: absolute;
+    transition: width .2s ease-out;
+}
+.node .collapse > *:hover:before{
+    width: 2px;
+}
+.node .collapse > *:last-child {
+    border-bottom-width: 0
+}
+.node > * > * ,
+.node > * > * > * ,
+.node > * > * > .pull-right > *{
+    float: left;
+    min-height: 1px;
+}
+.pull-right{float:right!important}
+.line-height-expanded{line-height: 2;}
+.line-height-normal{line-height: 1.5;}
+.cursor-pointer{ cursor: pointer; }
+
+.device-key,
+.device-schedule,
+.device-configure {
+    border-left: 1px solid #eee;
+    color: white;
+}
+
+.device-key:hover {background-color:#eaeaea;}
+.device-configure:hover {background-color:#eaeaea;}
+
+.label-container{padding-top:.6em; display:inline-block; min-width: 200px}
+
+/* select all button */
+/*
+.has-indicator{position:relative}
+.has-indicator:after{
+    transition:all 200ms ease-in-out;
+    display:block;
+    width: 1.1em;
+    height: 1.1em;
+    background: #FBFBFB;
+    border: 1px solid #C7C7C7;
+    color: #909090;
+    border-radius: 3px;
+    position: absolute;
+    margin: .85em .55em;
+    left:0;
+    top:0;
+    line-height: 1.1em;
+    opacity: 0;
+    content: attr(data-marker);
+}
+.has-indicator:hover:after{
+    opacity: 1;
+}
+.has-indicator:active:after{
+    border: 1px solid #B1522E;
+    color: #FBFBFB;
+    background: #D65C29;
+}
+*/
+#table .accordion{
+    margin-bottom:.5em
+}
+
+
+#table{margin-top:3rem}
+.controls{
+    transition: all .2s ease-out
+}
+.controls.affix:before{
+    content: '';
+    background: rgba(5,4,4,0.7);
+    width: 100%;
+    display:block;
+    position: fixed;
+    z-index: -1;
+    height: 2.5rem;
+    left:0;
+    margin-top:-.3rem;
+}
+.controls.affix > *{
+    z-index: 2
+}
+.controls.affix{
+    z-index: 2;
+    top: 2.5rem;
+    padding: .3rem 0;
+}
+.controls.affix-top{position: absolute;}
+
+@media only screen and (max-width:979px) {
+    .controls.affix{top:0}
+}
+@media only screen and (min-width:870px) {
+    body{font-size:16px}
 }

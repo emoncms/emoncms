@@ -1,4 +1,6 @@
 .project
+.buildpath
+.settings*
 debian/emoncms*
 settings.php
 old.settings.php
@@ -25,3 +27,5 @@ Modules/*/
 Theme/*
 Theme/*/
 !Theme/basic/
+
+/vendor/

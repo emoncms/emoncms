@@ -18,7 +18,14 @@ var user = {
          } catch (e) {
              result = data_in;
          }
-      } 
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        if(xhr.status==404) {
+            result = "404 Not Found: Is modrewrite configured on your system?"
+        } else {
+            result = xhr.status+" "+thrownError;
+        }
+      }
     });
     return result;
   },
@@ -40,6 +47,13 @@ var user = {
          } catch (e) {
              result = data_in;
          }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        if(xhr.status==404) {
+            result = "404 Not Found: Is modrewrite configured on your system?"
+        } else {
+            result = xhr.status+" "+thrownError;
+        }
       }
     });
     return result;
@@ -66,7 +80,7 @@ var user = {
   'set':function(data)
   {
     var result = {};
-    $.ajax({ url: path+"user/set.json", data: "&data="+encodeURIComponent(JSON.stringify(data)) ,dataType: "json", async: false, success: function(data) {result = data;} });
+    $.ajax({ type: "POST", url: path+"user/set.json", data: "&data="+encodeURIComponent(JSON.stringify(data)) ,dataType: "json", async: false, success: function(data) {result = data;} });
     return result;
   },
 

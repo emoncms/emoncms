@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings, $device, $param;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings,$param,$device;
 
     // There are no actions in the input module that can be performed with less than write privileges
     if (!isset($session['write'])) return array('content'=>false);
@@ -31,12 +31,13 @@ function input_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
-    // Device module not yet included
-    // if (!$device) {
-    //    require_once "Modules/device/device_model.php";
-    //    $device = new Device($mysqli,$redis);
-    // }
-    
+    if (!$device) {
+        if (file_exists("Modules/device/device_model.php")) {
+            require_once "Modules/device/device_model.php";
+            $device = new Device($mysqli,$redis);
+        }
+    }
+
     require_once "Modules/input/input_methods.php";
     $inputMethods = new InputMethods($mysqli,$redis,$user,$input,$feed,$process,$device);
     
@@ -64,6 +65,7 @@ function input_controller()
     else if ($route->action == 'bulk') {
         $result = $inputMethods->bulk($session['userid']);
         if ($result=="ok") {
+            if ($param->exists('fulljson')) $result = '{"success": true}';
             if ($param->sha256base64_response) $result = $param->sha256base64_response;
         } else {
             $result = '{"success": false, "message": "'.str_replace("\"","'",$result).'"}';
@@ -122,6 +124,9 @@ function input_controller()
     else if ($route->action == "clean") {
         $route->format = 'text';
         $result = $input->clean($session['userid']);
+    } else if ($route->action == "cleanprocesslistfeeds") {
+        $route->format = 'text';
+        $result = $input->clean_processlist_feeds($process,$session['userid']);
     }
     else if ($route->action == "list") $result = $input->getlist($session['userid']);
     else if ($route->action == "getinputs") $result = $input->get_inputs($session['userid']);
@@ -151,11 +156,23 @@ function input_controller()
     // -------------------------------------------------------------------------
     else if ($route->action == 'api') {
         $route->format = "html";
+        textdomain("messages");
         $result = view("Modules/input/Views/input_api.php", array());
         
     } else if ($route->action == 'view') {
         $route->format = "html";
-        $result =  view("Modules/input/Views/input_view.php", array());
+        textdomain("messages");
+        $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
+        if ($device && isset($ui_version_2) && $ui_version_2) {
+            $result =  view("Modules/input/Views/device_view.php", array());
+        } else {
+            $result =  view("Modules/input/Views/input_view.php", array());
+        }
+        
+    } else if ($device && $route->action == 'schedule') {
+        $route->format = "html";
+        textdomain("messages");
+        $result =  view("Modules/input/Views/schedule.php", array());
     }
 
     return array('content'=>$result);

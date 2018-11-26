@@ -1,6 +1,6 @@
 <?php
 
-class TemplateEngine
+class TemplateEngine implements engine_methods
 {
     private $log;
     private $writebuffer = array();
@@ -15,7 +15,7 @@ class TemplateEngine
         $this->log = new EmonLogger(__FILE__);
     }
 
-// #### \/ Below are required methods
+// #### \/ Below are required methods outlined in the engine_methods interface in shared_helper.php
 
     /**
      * Create feed

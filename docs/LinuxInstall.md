@@ -10,11 +10,21 @@ You may need to start by updating the system repositories
 
 **For Ubuntu 14.04:**
 
+*PHP5*
+
     sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential -y
 
 **For Ubuntu 16.04:**
 
-    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential -y
+*PHP7*
+
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential php7.0-mbstring -y
+
+**For Ubuntu 18.04:**
+
+*PHP 7.2*
+
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-json git-core redis-server build-essential php7.2-mbstring -y
 
 ### Install PHP pecl dependencies
 
@@ -33,6 +43,11 @@ You may need to start by updating the system repositories
     printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
     sudo phpenmod redis
 
+ **If running PHP7.2:** Add pecl modules to php7.2 config
+
+    printf "extension=redis.so" | sudo tee /etc/php/7.2/mods-available/redis.ini 1>&2
+    sudo phpenmod redis
+
 ### Configure Apache
 
 Emoncms uses a front controller to route requests, modrewrite needs to be configured:
@@ -48,7 +63,7 @@ sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
     Allow from all
 </Directory>
 EOF
-sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+printf "ServerName localhost" | sudo tee -a /etc/apache2/apache2.conf 1>&2
 sudo a2ensite emoncms
 sudo service apache2 reload
 ```
@@ -79,7 +94,7 @@ Once installed you can pull in updates with:
 
     cd /var/www/html/emoncms
     git pull
-
+    
 ## Create a MYSQL database
 
     mysql -u root -p
@@ -137,6 +152,8 @@ Save (Ctrl-X), type Y and exit
 ### Install add-on emoncms modules (optional)
 
     cd /var/www/html/emoncms/Modules
+    git clone https://github.com/emoncms/graph.git
+    git clone https://github.com/emoncms/device.git
     git clone https://github.com/emoncms/dashboard.git
     git clone https://github.com/emoncms/app.git
 
@@ -220,4 +237,4 @@ Now save and close and restart your apache.
 
 ### /user/register.json cannot be found
 
-If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates an problem with apache mod_rewrite.
+If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates a problem with apache mod_rewrite.

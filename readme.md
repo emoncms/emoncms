@@ -1,3 +1,10 @@
+## Standard Emoncms and Emoncms.org
+
+There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms, currently in version 9. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
+
+The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
+
+
 # Emoncms 9
 
 [![Build Status](https://travis-ci.org/emoncms/emoncms.svg?branch=master)](https://travis-ci.org/emoncms/emoncms)
@@ -85,6 +92,8 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 
 - [Graph module](https://github.com/emoncms/graph) advanced graphing module that integrates with the emoncms feed list, highly recommended, examples of use can be found in emoncms guide [[1]](http://guide.openenergymonitor.org/setup/daily-kwh)[[2]](http://guide.openenergymonitor.org/setup/daily-averages/)[[3]](http://guide.openenergymonitor.org/setup/export-csv/)[[4]](http://guide.openenergymonitor.org/setup/histograms)
 
+- [Device module](https://github.com/emoncms/device) automatically configure inputs and feeds using device templates. 
+
 - [Dashboards module](https://github.com/emoncms/dashboard), required for creating, viewing and publishing dashboards: 
 
 - [App Module](https://github.com/emoncms/app.git) - Application specific dashboards e.g. MyElectric, MySolar
@@ -160,9 +169,3 @@ For developers: The following lists the locations of the files that define emonc
 - Cloud hosted platform - http://emoncms.org
 - [OpenEnergyMonitor Forums](https://community.openenergymonitor.org)
 - [OpenEnergyMonitor Homepage](https://openenergymonitor.org)
-
-## Standard Emoncms and Emoncms.org
-
-There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms, currently in version 9. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
-
-The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.

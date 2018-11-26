@@ -47,6 +47,12 @@ class Route
      */
     public $format = 'html';
 
+
+    /**
+     * @var bool
+     */
+    public $is_ajax = false;
+
     /**
      * @param string $q
      * @param string $documentRoot
@@ -55,6 +61,8 @@ class Route
     public function __construct($q, $documentRoot, $requestMethod)
     {
         $this->decode($q, $documentRoot, $requestMethod);
+        //this can be faked by the client. not to be trusted.
+        $this->is_ajax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
     }
 
     /**
@@ -90,8 +98,8 @@ class Route
         // trim slashes: '/user/view' => 'user/view'
         $q = trim($q, '/');
 
-        // filter out all except a-z and / .
-        $q = preg_replace('/[^.\/A-Za-z0-9-]/', '', $q);
+        // filter out all except alphanumerics and / . _ -
+        $q = preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q);
 
         // Split by /
         $args = preg_split('/[\/]/', $q);
@@ -116,9 +124,19 @@ class Route
         if (count($args) > 3) {
             $this->subaction2 = $args[3];
         }
-        
-        if (in_array($requestMethod, ['POST', 'DELETE', 'PUT'])) {
+        // allow for method to be added as post variable
+        if(post('_method')=='DELETE') {
+            $this->method = 'DELETE';
+        } elseif(post('_method')=='PUT') {
+            $this->method = 'PUT';
+        } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
+        } elseif($requestMethod === 'OPTIONS') {
+            // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Headers: Authorization');
+            header('Access-Control-Allow-Methods: GET');
+            exit();
         }
     }
 
