@@ -12,6 +12,7 @@
     @exec('ps ax | grep emonhub.py | grep -v grep', $emonhubproc);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
     @exec('ps ax | grep phpmqtt_input.php | grep -v grep', $mqttinputproc);
+    @exec('ps ax | grep service-runner.py | grep -v grep', $servicerunnerproc);
     //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
@@ -63,7 +64,8 @@
                  'emonhub' => !empty($emonhubproc),
                  'mqttinput' => !empty($mqttinputproc),
                  'feedwriter' => !empty($feedwriterproc),
-
+                 'servicerunner' => !empty($servicerunnerproc),
+                 
                  'mqtt_server' => $mqtt_server['host'],
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
                  'mqtt_port' => $mqtt_server['port'],
@@ -294,6 +296,16 @@ if ($allow_emonpi_admin) {
                 </td>
               </tr>
               <?php } ?>
+              
+              <tr class="<?php if ($system['servicerunner']) echo "success"; else echo "error"; ?>">
+                <td class="subinfo"></td><td>service-runner</td>
+                <td><?php echo ($system['servicerunner'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
+                <button id="servicerunner-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
+                <button id="servicerunner-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
+                <button id="servicerunner-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
+                <button id="servicerunner-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
+                </td>
+              </tr>
 
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
