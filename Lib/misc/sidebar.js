@@ -1,4 +1,5 @@
 function init_sidebar(options){
+
     default_options = {
         max_wrapper_width: 1150,
         sidebar_enabled: true,
@@ -8,7 +9,7 @@ function init_sidebar(options){
     options = options || {};
     options = $.extend({}, default_options, options);
     $menu_element = $(options.menu_element);
-
+    
     if($menu_element.length>0){
         $menu_element.find("i").removeClass("icon-home").addClass("icon-list");        
         $menu_element.parent().click(function(e){
