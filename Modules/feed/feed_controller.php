@@ -85,6 +85,57 @@ function feed_controller()
             // Export multiple feeds on the same csv
             // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
             $result = $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
+        
+        } else if ($route->action == "data" && get('ids')) {
+            // get data for a list of existing feeds
+            $result = array('success'=>false, 'message'=>'bad parameters');
+            // return $_REQUEST;
+            $feedids = (array) explode(",", get('ids'));
+            if (!empty($feedids)) {
+                $missing = array();
+                foreach($feedids as $key => $feedid) {
+                    if ($feed->exist($feedid)) { // if the feed exists
+                        $f = $feed->get($feedid);
+                        // if public or belongs to user
+                        if ($f['public'] || ($session['userid']>0 
+                            && $f['userid']==$session['userid'] 
+                            && $session['read']))
+                        {
+                            if ($route->action == 'data') {
+                                $skipmissing = 1;
+                                $limitinterval = 1;
+                                if (isset($_GET['skipmissing']) && $_GET['skipmissing']==0) $skipmissing = 0;
+                                if (isset($_GET['limitinterval']) && $_GET['limitinterval']==0) $limitinterval = 0;
+                                $results[$key] = array('feedid'=>$feedid);
+                                if (isset($_GET['interval'])) {
+                                    $results[$key]['data'] = $feed->get_data($feedid,get('start'),get('end'),get('interval'),$skipmissing,$limitinterval);
+                                } else if (isset($_GET['mode'])) {
+                                    if (isset($_GET['split'])) {
+                                        $results[$key]['data'] = $feed->get_data_DMY_time_of_day($feedid,get('start'),get('end'),get('mode'),get('split'));
+                                    } else {
+                                        $results[$key]['data'] = $feed->get_data_DMY($feedid,get('start'),get('end'),get('mode'));
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        $missing = $feedid;
+                    }
+                }
+                if (!empty($missing)) {
+                    // return error if any feed ids not found
+                    $result = array('success'=>false, 'message'=> count($missing) .' feeds do not exist');
+                } else {
+                    // return array of results
+                    $result = (object) $results;
+                    // @todo: return array for each feed's data 
+                    // and a single array for each interval timestamp
+                }
+            } else {
+                // no ids passed
+                $result = array('success'=>false, 'message'=>'no ids given');
+            }
+            return $result;
         } else {
             $feedid = (int) get('id');
             // Actions that operate on a single existing feed that all use the feedid to select:
