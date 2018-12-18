@@ -17,7 +17,7 @@
     if (!$feed_settings['redisbuffer']['sleep'] || (int)$feed_settings['redisbuffer']['sleep'] < 1) { echo "Error: setting must be > 0 : feed_settings['redisbuffer']['sleep']\n"; die; }
 
     $log = new EmonLogger(__FILE__);
-    $log->info("Starting feedwriter script");
+    $log->error("Starting feedwriter script");
 
     $mysqli = @new mysqli($server,$username,$password,$database,$port);
     if ($mysqli->connect_error) { $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }

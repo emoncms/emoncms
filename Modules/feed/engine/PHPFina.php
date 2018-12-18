@@ -10,6 +10,7 @@ class PHPFina implements engine_methods
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
+    private $lastvalue_cache = array();
     private $maxpadding = 3153600; // 1 year @ 10s
 
     /**
@@ -697,14 +698,12 @@ class PHPFina implements engine_methods
             if ($npadding>0) {
                 $padding_value = NAN;
                 if ($padding_mode!=null) {
-                    static $lastvalue_static_cache = array(); // Array to hold the cache
-                    if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
+                    if (!isset($this->lastvalue_cache[$feedid])) { // Not set, cache it from file data
                         $lastvalue = $this->lastvalue($feedid);
-                        $lastvalue_static_cache[$feedid] = $lastvalue['value'];
+                        $this->lastvalue_cache[$feedid] = $lastvalue['value'];
                     }
-                    $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
-                    $padding_value = $lastvalue_static_cache[$feedid];
-                    $lastvalue_static_cache[$feedid] = $value; // Set static cache last value
+                    $div = ($value - $this->lastvalue_cache[$feedid]) / ($npadding+1);
+                    $padding_value = $this->lastvalue_cache[$feedid];
                 }
                 
                 for ($n=0; $n<$npadding; $n++)
@@ -716,6 +715,8 @@ class PHPFina implements engine_methods
             }
             
             $this->writebuffer[$feedid] .= pack("f",$value);
+            $this->lastvalue_cache[$feedid] = $value; // cache last value
+            
             //$this->log->info("post_bulk_prepare() ##### value saved $value");
         } else {
             // if data is in past, its not supported, could call update here to fix on file before continuing
