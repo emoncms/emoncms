@@ -15,7 +15,6 @@ as an appropriate user. The service is configured to run as the user 'pi' by def
 Install the service using the following commands:
 ```
 sudo ln -s /var/www/emoncms/scripts/services/feedwriter/feedwriter.service /lib/systemd/system
-sudo systemctl daemon-reload
 sudo systemctl enable feedwriter.service
 sudo systemctl start feedwriter.service
 systemctl status feedwriter.service
