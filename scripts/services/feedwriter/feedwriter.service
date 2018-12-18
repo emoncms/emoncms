@@ -1,4 +1,4 @@
-# Systemd unit file for mqtt input script
+# Systemd unit file for feedwriter script
 
 # INSTALL:
 
@@ -34,10 +34,10 @@
 ###
 
 [Unit]
-Description=Emoncms MQTT Input Script
+Description=Emoncms feedwriter script
 Wants=mysql.service redis.service
 After=mysql.service redis.service
-Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+Documentation=https://github.com/emoncms/emoncms
 
 # Uncomment this line to use a dedicated log file for StdOut and StdErr.
 # NOTE: only works in systemd v236+
