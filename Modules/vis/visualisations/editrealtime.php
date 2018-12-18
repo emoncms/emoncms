@@ -45,18 +45,18 @@
     <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
 </div>
 
+
 <div style="width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
     <?php echo _("Edit feed_"); ?><?php echo $feedid; ?> <?php echo _("@ time:"); ?> <input type="text" id="time" style="width:150px;" value="" /> <?php echo _("new value:"); ?>
     <input type="text" id="newvalue" style="width:150px;" value="" />
     <button id="okb" class="btn btn-info"><?php echo _('Save'); ?></button>
-    <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button>
+    <!-- <button id="delete-button" class="btn btn-danger"><i class="icon-trash"></i><?php echo _('Delete data in window'); ?></button> -->
 </div>
 
-<div style="width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
+<div style="display:none; width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
     <?php echo _("Multiply data in window by:"); ?> <input type="text" id="multiplyvalue" style="width:150px;" value="" />
     <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
 </div>
-
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
