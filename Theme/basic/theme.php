@@ -61,7 +61,7 @@ $maxwidth2=intval(($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbsh
 if($maxwidth2>$maxwidth1){$maxwidth2=$maxwidth1-1;}
 if($maxwidth3>$maxwidth2){$maxwidth3=$maxwidth2-1;}
 
-if (is_dir("Theme/".$theme)) {
+if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
 }
 if (!in_array($themecolor, ["blue", "sun", "standard"])) {
