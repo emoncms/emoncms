@@ -198,8 +198,15 @@ class InputMethods
     public function bulk($userid)
     {
         global $param;
+
+        $data = $param->val('data');
+
+        if ($param->exists('c')) {
+            // data is compressed
+            $data = gzuncompress(hex2bin($data));
+        }
         
-        $data = json_decode($param->val('data'));
+        $data = json_decode($data);
 
         $len = count($data);
         
