@@ -48,8 +48,8 @@ Documentation=https://github.com/emoncms/emoncms
 Type=idle
 ExecStart=/usr/bin/php /var/www/emoncms/scripts/feedwriter.php
 
-# Restart script if stopped
-Restart=always
+# Restart script if stopped on a failure. Will not restart if not configured correctly
+Restart=on-failure
 # Wait 60s before restart
 RestartSec=60
 
