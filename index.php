@@ -139,7 +139,14 @@
     if ($route->controller=="describe") { 
         header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
-        echo "emonbase";
+        if(file_exists('/home/pi/data/emonbase')) {
+            $type = 'emonbase';
+        } elseif(file_exists('/home/pi/data/emonpi')) {
+            $type = 'emonpi';
+        } else {
+            $type = 'node';
+        }
+        echo $type;
         die;
     }
     // read the version file and return the value;
