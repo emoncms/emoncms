@@ -144,7 +144,7 @@
         } elseif(file_exists('/home/pi/data/emonpi')) {
             $type = 'emonpi';
         } else {
-            $type = 'node';
+            $type = 'emoncms';
         }
         echo $type;
         die;
