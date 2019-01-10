@@ -46,7 +46,7 @@
                     }
                     alert(messages.join("\n"));
                 }
-                return true; // true == prevents the firing of the default event handler.
+                return false; // true == prevents the firing of the default event handler.
             }
         </script>
         <?php if ($themecolor=="blue") { ?>
