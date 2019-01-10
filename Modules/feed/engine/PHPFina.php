@@ -247,6 +247,104 @@ class PHPFina implements engine_methods
     }
 
     /**
+     * scale a portion of a feed
+     * added by Alexandre CUER - january 2019 
+     
+     * @param integer $feedid The id of the feed
+     * @param integer $start unix time stamp in ms of the start of the data range
+     * @param integer $end unix time stamp in ms of the end of the data rage
+     * @param float $scale : numeric value for the scaling 
+    */
+    public function scalerange($id,$start,$end,$scale){
+        //echo("test on $scale not started");
+        //case1: NAN
+        if(preg_match("/^NAN$/i",$scale)){
+            $this->log->warn("scale_range() : going to erase data range with NAN");
+            $scale = NAN;
+        //case2: scaling value - possible to use a fraction
+        } else if(preg_match("/^(1\/|-1\/|-)?([0-9]+((\.|,)[0-9]+)?)$/",$scale,$a)){
+            $this->log->warn("scale_range() : being given a float scale parameter");
+            $scale = (float) $a[2];
+            if ($a[1]=="1/")$scale = 1/$scale;
+            else if ($a[1]=="-1/") $scale = -1/$scale;
+            else if ($a[1]=="-") $scale = -$scale;
+            //print_r($a);
+        //case3: absolute value
+        } else if(preg_match("/^abs\(x\)$/i",$scale)){
+            $this->log->warn("scale_range() : conversion to absolute values on the data range");
+            $scale="abs(x)"; 
+        } else return false;
+        
+        //echo("test finished>");
+        
+        //echo("<br>$scale");
+        //echo("<br>$start and $end");
+        $id = (int) $id;
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        //echo("<br>$start and $end");
+        
+        if(!$meta=$this->get_meta($id)){
+            $this->log->warn("scale_range() failed to fetch meta id = $id");
+            return false;
+        }
+        
+        $this->log->warn("scale_range() successfully fetched meta id = $id");
+        
+        //integrity checks
+        $start=floor($start/$meta->interval)*$meta->interval;
+        $end=floor($end/$meta->interval)*$meta->interval;
+        //debug
+        //echo("<br>$start and $end");
+        if($start>$end) {
+            $this->log->warn("scale_range() : start should not be greater than end");
+            return false;
+        }
+        if($start<$meta->start_time) $start=$meta->start_time;
+        $end_time=$this->lastvalue($id)['time'];
+        if($end>$end_time) $end=$end_time;
+        
+        //calculates address in dat file and number of values to write
+        $pos_start=4*floor(($start-$meta->start_time)/$meta->interval);
+        $pos_end=4*floor(($end-$meta->start_time)/$meta->interval);
+        $nbwrites=($pos_end-$pos_start)/4;
+        //echo("<br>$nbwrites");
+        
+        //open the dat file
+        $fh = fopen ($this->dir.$id.".dat","c+");
+        if (!$fh){
+            $this->log->warn("scale_range() : unable to open data file with id=$id");
+            return false;
+        }
+        $this->log->warn("scale_range() : going to write $nbwrites values from address $pos_start to $pos_end");
+        
+        //fetch the values to process
+        fseek($fh,$pos_start);
+        $values=unpack("f$nbwrites",fread($fh,4*$nbwrites));
+        //print_r($values);
+        
+        //create a buffer with the processed values
+        $buffer="";
+        for($i=1;$i<=$nbwrites;$i++) {
+            if($scale==NAN) $val=NAN;
+            else if($scale=="abs(x)") $val=abs($values[$i]);
+            else $val=$values[$i]*$scale;
+            $buffer.=pack("f",$val);
+        }
+        
+        //write the processed buffer to the dat file
+        fseek($fh,$pos_start);
+        if(!$written_bytes = fwrite($fh,$buffer)){
+            $this->log->warn("scale_range() : unable to write to the file with id=$id");
+            fclose($fh);
+            return false;
+        }
+        $this->log->warn("scale_range() : wrote $written_bytes bytes");
+        fclose($fh);
+        return $written_bytes;
+    }
+    
+    /**
      * Get array with last time and value from a feed
      *
      * @param integer $feedid The id of the feed
