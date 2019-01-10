@@ -158,12 +158,12 @@ Change MYSQL config to use database in new RW location change the config file:
 	socket=/home/pi/data/mysql/mysql.sock
 	
 If using mariadb (Stretch default) we need another change to run the database from the home folder
+
+	sudo systemctl edit mariadb.service
 	
-	sudo nano /etc/systemd/system/mysqld.service
+Enter
 
-Change: 
-
-	ProtectHome=true
-to:
-
+	[Service]
 	ProtectHome=false
+	
+Exit and save.
