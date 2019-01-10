@@ -268,31 +268,24 @@ if ($allow_emonpi_admin) {
               <tr class="<?php if ($system['emonhub']) echo "success"; else echo "error"; ?>">
                 <td class="subinfo"></td><td>emonhub</td>
                 <td><?php echo ($system['emonhub'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
+                <!--
                 <button id="emonhub-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
                 <button id="emonhub-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
                 <button id="emonhub-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
+                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>-->
                 </td>
               </tr>
               
               <tr class="<?php if ($system['mqttinput']) echo "success"; else echo "error"; ?>">
                 <td class="subinfo"></td><td>mqtt_input</td>
                 <td><?php echo ($system['mqttinput'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
-                <button id="mqttinput-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
-                <button id="mqttinput-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
-                <button id="mqttinput-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="mqttinput-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
                 </td>
               </tr>
               
               <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
               <tr class="<?php if ($system['feedwriter']) echo "success"; else echo "error"; ?>">
                 <td class="subinfo"></td><td>feedwriter</td>
-                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>                
-                <button id="feedwriter-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
-                <button id="feedwriter-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
-                <button id="feedwriter-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="feedwriter-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
+                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>
                 </td>
               </tr>
               <?php } ?>
@@ -300,10 +293,6 @@ if ($allow_emonpi_admin) {
               <tr class="<?php if ($system['servicerunner']) echo "success"; else echo "error"; ?>">
                 <td class="subinfo"></td><td>service-runner</td>
                 <td><?php echo ($system['servicerunner'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
-                <button id="servicerunner-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
-                <button id="servicerunner-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
-                <button id="servicerunner-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="servicerunner-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
                 </td>
               </tr>
 
