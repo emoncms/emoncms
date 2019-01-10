@@ -39,6 +39,9 @@
                 echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
             }
         }
+        if (!empty($redis_server['dbnum'])) {
+            $redis->select($redis_server['dbnum']);
+        }
     } else {
         $redis = false;
     }
