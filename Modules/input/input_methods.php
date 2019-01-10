@@ -282,12 +282,12 @@ class InputMethods
         
         $validate_access = $this->input->validate_access($dbinputs, $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
-
+        
         if (!isset($dbinputs[$nodeid])) {
             $dbinputs[$nodeid] = array();
             if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
-                
+        
         $tmp = array();
         foreach ($inputs as $name => $value)
         {
