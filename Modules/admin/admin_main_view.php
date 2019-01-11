@@ -9,7 +9,10 @@
     $db = $result->fetch_array();
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
+    @exec('ps ax | grep emonhub.py | grep -v grep', $emonhubproc);
     @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
+    @exec('ps ax | grep phpmqtt_input.php | grep -v grep', $mqttinputproc);
+    @exec('ps ax | grep service-runner.py | grep -v grep', $servicerunnerproc);
     //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
@@ -57,8 +60,12 @@
 
                  'redis_server' => $redis_server['host'].":".$redis_server['port'],
                  'redis_ip' => gethostbyname($redis_server['host']),
+                 
+                 'emonhub' => !empty($emonhubproc),
+                 'mqttinput' => !empty($mqttinputproc),
                  'feedwriter' => !empty($feedwriterproc),
-
+                 'servicerunner' => !empty($servicerunnerproc),
+                 
                  'mqtt_server' => $mqtt_server['host'],
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
                  'mqtt_port' => $mqtt_server['port'],
@@ -172,21 +179,6 @@ table tr td.subinfo { border-color:transparent;}
             <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
         </td>
     </tr>
-<?php
-if ($redis_enabled && file_exists("Modules/device")) {
-?>
-    <tr>
-        <td>
-            <h3><?php echo _('Reload templates'); ?></h3>
-            <p><?php echo _('This will reload all cached templates and should only be done after updates or manually changed template files.'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <span id="devicereload" class="btn btn-info"><?php echo _('Reload'); ?></span>
-        </td>
-    </tr>
-<?php
-}
-?>
     <tr>
         <td>
             <h3><?php echo _('Update database'); ?></h3>
@@ -270,18 +262,47 @@ if ($allow_emonpi_admin) {
              <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
             </div>
             <table class="table table-hover table-condensed" id="serverinformationtabular">
+            
+              <tr><td><b>Services</b></td><td></td><td></td></tr>
+              
+              <tr class="<?php if ($system['emonhub']) echo "success"; else echo "error"; ?>">
+                <td class="subinfo"></td><td>emonhub</td>
+                <td><?php echo ($system['emonhub'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
+                <!--
+                <button id="emonhub-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
+                <button id="emonhub-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
+                <button id="emonhub-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
+                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>-->
+                </td>
+              </tr>
+              
+              <tr class="<?php if ($system['mqttinput']) echo "success"; else echo "error"; ?>">
+                <td class="subinfo"></td><td>mqtt_input</td>
+                <td><?php echo ($system['mqttinput'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
+                </td>
+              </tr>
+              
+              <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
+              <tr class="<?php if ($system['feedwriter']) echo "success"; else echo "error"; ?>">
+                <td class="subinfo"></td><td>feedwriter</td>
+                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>
+                </td>
+              </tr>
+              <?php } ?>
+              
+              <tr class="<?php if ($system['servicerunner']) echo "success"; else echo "error"; ?>">
+                <td class="subinfo"></td><td>service-runner</td>
+                <td><?php echo ($system['servicerunner'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
+                </td>
+              </tr>
+
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Git URL</td><td><?php echo $system['git_URL']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Git Branch</td><td><?php echo $system['git_branch']; ?></td></tr>
-<?php
-if ($feed_settings['redisbuffer']['enabled']) {
-?>
-              <tr><td class="subinfo"></td><td>Buffer</td><td><span id="bufferused">loading...</span></td></tr>
-              <tr><td class="subinfo"></td><td>Writer</td><td><?php echo ($system['feedwriter'] ? "Daemon is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Daemon is not running, start it at ~/scripts/feedwriter</font>"); ?></td></tr>
-<?php
-}
-?>
+
+
+
               <tr><td><b>Server</b></td><td>OS</td><td><?php echo $system['system'] . ' ' . $system['kernel']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['date']; ?></td></tr>
@@ -565,14 +586,6 @@ function getUpdateLog() {
     }
   });
 }
-
-$("#devicereload").click(function() {
-  $.ajax({ url: path+"device/template/reload.json", async: true, dataType: "json", success: function(result)
-    {
-      alert(result.message);
-    }
-  });
-});
 
 $("#redisflush").click(function() {
   $.ajax({ url: path+"admin/redisflush.json", async: true, dataType: "text", success: function(result)

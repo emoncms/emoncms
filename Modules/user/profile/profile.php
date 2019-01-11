@@ -143,36 +143,6 @@ function languagecode_to_name($langs) {
         <h3><?php echo _('My Profile'); ?></h3>
         <div id="table"></div>
         
-        <?php
-        if (file_exists("Modules/muc") || file_exists("Modules/device")) {
-        ?>
-        <h3><?php echo _('My Modules'); ?></h3>
-        <table class="table table-hover">
-          <?php
-          if (file_exists("Modules/device")) {
-          ?>
-          <tr>
-              <td class="muted" style="width:150px;"><span><?php echo _('EmonMUC'); ?></span></td>
-              <td><a href="<?php echo $path; ?>muc/view" style="float:right" class="btn btn-small btn-info"><?php echo _('Controllers'); ?></a></td>
-          </tr>
-          <?php
-          }
-          ?>
-          <?php
-          if (file_exists("Modules/device")) {
-          ?>
-          <tr>
-              <td class="muted" style="width:150px;"><span><?php echo _('Device'); ?></span></td>
-              <td><a href="<?php echo $path; ?>device/view" style="float:right" class="btn btn-small btn-info"><?php echo _('Devices'); ?></a></td>
-          </tr>
-          <?php
-          }
-          ?>
-        </table>
-        <?php
-        }
-        ?>
-        
         <div id="preferences-section_update_warning" class="well hidden">
             <h4><?php echo _('Please update your database'); ?></h4>
         </div>

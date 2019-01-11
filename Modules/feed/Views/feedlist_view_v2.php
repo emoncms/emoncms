@@ -87,21 +87,58 @@ body{padding:0!important}
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
 
+
+.autocomplete {
+  position: relative;
+  display: inline-block;
+}
+.autocomplete input {
+    z-index:100;
+}
+.autocomplete-items {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  border-bottom: none;
+  border-top: none;
+  z-index: 99;
+  /*position the autocomplete items to be the same width as the container:*/
+  top: 100%;
+  left: 0;
+  right: 0;
+}
+.autocomplete-items div {
+  padding: 10px;
+  cursor: pointer;
+  background-color: #fff;
+  border-bottom: 1px solid #d4d4d4;
+}
+.autocomplete-items div:hover {
+  /*when hovering an item:*/
+  background-color: #e9e9e9;
+}
+.autocomplete-active {
+  /*when navigating through the items using the arrow keys:*/
+  background-color: DodgerBlue !important;
+  color: #ffffff;
+}
+
+
+
 </style>
 <div id="mouse-position"></div>
-<div id="feed-header" class="hide">
+<div id="feed-header">
     <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
     <h3><?php echo _('Feeds'); ?></h3>
-    
-    <div class="controls" data-spy="affix" data-offset-top="100">
-        <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-        <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-        <button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
-        <button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-        <button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
-        <button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
-        <button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
-    </div>
+</div>
+
+<div class="controls" data-spy="affix" data-offset-top="100">
+    <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+    <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
+    <button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
+    <button class="btn feed-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+    <button class="btn feed-download hide" title="Download"><i class="icon-download"></i></button>
+    <button class="btn feed-graph hide" title="Graph view"><i class="icon-eye-open"></i></button>
+    <button class="btn feed-process hide" title="Process config"><i class="icon-wrench"></i></button>
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -127,11 +164,14 @@ body{padding:0!important}
         <h3 id="feedEditModalLabel"><?php echo _('Edit feed'); ?></h3>
     </div>
     <div class="modal-body">
+        <p>Feed node:<br>
+        <div class="autocomplete">
+            <input id="feed-node" type="text" style="margin-bottom:0">
+        </div>
+        </p>
+
         <p>Feed name:<br>
         <input id="feed-name" type="text"></p>
-
-        <p>Feed node:<br>
-        <input id="feed-node" type="text"></p>
 
         <p>Make feed public: 
         <input id="feed-public" type="checkbox"></p>
@@ -448,8 +488,9 @@ function update() {
             setExpandButtonState($container.find('.collapsed').length == 0);
         }
         
-        autowidth($container); // set each column group to the same width
-    }}); // end of ajax callback
+        autowidth($container) // set each column group to the same width
+        } // end of for loop
+    }); // end of ajax callback
 }// end of update() function
 
 // stop checkbox form opening graph view
@@ -480,6 +521,100 @@ $(".feed-graph").click(function(){
     window.location = path+"graph/"+graph_feeds.join(",");      
 });
 
+function buildFeedNodeList() {
+    node_names = [];
+    for (n in nodes) {
+        let feed = nodes[n];
+        node_names.push(feed[0].tag)
+    }
+    autocomplete(document.getElementById("feed-node"), node_names);
+}
+function autocomplete(input, arr) {
+    // the autocomplete function takes two arguments,
+    var currentFocus;
+    // execute a function when someone writes in the text field:
+    input.addEventListener("input", function(e) {
+        var a, b, i, val = this.value;
+        // close any already open lists of autocompleted values
+        closeAllLists();
+        if (!val) { return false;}
+        currentFocus = -1;
+        // create a DIV element that will contain the items (values):
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        // append the DIV element as a child of the autocomplete container:
+        this.parentNode.appendChild(a);
+        // for each item in the array...
+        for (i = 0; i < arr.length; i++) {
+            // check if the item starts with the same letters as the text field value:
+            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                // create a DIV element for each matching element:
+                b = document.createElement("DIV");
+                // make the matching letters bold:
+                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].substr(val.length);
+                // insert a input field that will hold the current array item's value:
+                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+                // execute a function when someone clicks on the item value (DIV element):
+                b.addEventListener("click", function(e) {
+                    // insert the value for the autocomplete text field:
+                    input.value = this.getElementsByTagName("input")[0].value;
+                    //close the list of autocompleted values,
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+    input.addEventListener("keydown", function(e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode == 38) { //up
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode == 13) {
+            // If the ENTER key is pressed, prevent the form from being submitted,
+            e.preventDefault();
+            if (currentFocus > -1) {
+                // and simulate a click on the "active" item:
+                if (x) x[currentFocus].click();
+            }
+        }
+    });
+    function addActive(x) {
+        // add class "active"
+        if (!x) return false;
+        // remove the "active" class on all items:
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        // add class "autocomplete-active":
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+        // a function to remove the "active" class from all autocomplete items:
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+    function closeAllLists(elem) {
+        // close all autocomplete lists in the document,
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elem != x[i] && elem != input) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    //execute a function when someone clicks in the document
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+}
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
 // ---------------------------------------------------------------------------------------------
@@ -524,6 +659,12 @@ $(".feed-edit").click(function() {
             });            
         }
     }
+    
+    buildFeedNodeList();
+});
+
+$(".feed-node").on('input', function(event){
+    $('#feed-node').val($(this).val());
 });
 
 $("#feed-edit-save").click(function() {
