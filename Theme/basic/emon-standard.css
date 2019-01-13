@@ -21,7 +21,7 @@ html, body {
 }
 
 .body-login {
-	background-color: #ffffff;
+    background-color: #ffffff;
 }
 
 #login-form input[type="text"], #login-form input[type="password"] {
@@ -37,7 +37,7 @@ html, body {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top:10px;
+    padding-top: 10px;
 }
 
 #footer a {
@@ -46,7 +46,7 @@ html, body {
 }
 
 #footer span {
-    color:#999;
+    color: #999;
 }
 
 #submenu {
@@ -92,22 +92,22 @@ input[type=text][class=variable-name-edit] {
 }
 
 .menu-text {
-  display: inherit !important;
+    display: inherit !important;
 }
 
 .menu-description {
-  display: none !important;
-  margin-left: 10px;
+    display: none !important;
+    margin-left: 10px;
 }
 
 .menu-dashboard,.menu-left,.menu-extra,.menu-setup,.menu-right {
-  display: inherit !important;
+    display: inherit !important;
 }
 
 .scrollable-menu {
-  height: auto;
-  max-height: 333px;
-  overflow-y: auto;
+    height: auto;
+    max-height: 333px;
+    overflow-y: auto;
 }
 
 .ajax-loader {
@@ -115,94 +115,87 @@ input[type=text][class=variable-name-edit] {
     top: 0; bottom:0; left: 0; right:0;
     margin: auto;
     background: rgba(255, 255, 255, .8)
-    	url(ajax-loader.gif)
-    	center
-    	no-repeat;
+        url(ajax-loader.gif)
+        center
+        no-repeat;
 }
 
-/*
 .navbar-inner {
-    background-image:none !important;
-    background-color:#44b3e2 !important;
-    border:none !important;
-    padding:0px !important;
+    background-color: #44b3e2 !important;
+    background-image: none !important;
+    border: none !important;
+    padding: 0px !important;
 }
 
 .nav > .active > a {
-    background-color:#209ed3 !important;
-    box-shadow:none !important;
+    background-color: #209ed3 !important;
+    box-shadow: none !important;
 }
 
+.nav > li > a:hover,
 .nav > .open > a {
-    background-color:#2eaadf !important;
+    background-color: #2eaadf !important;
 }
 
 .nav > li > a {
     color: #fff !important;
-    text-shadow:none !important;
+    text-shadow: none !important;
 }
 
 .caret {
-   border-top-color: #fff !important;
-}*/
+    border-top-color: #fff !important;
+}
 
 .text-larger {
     font-size: larger
 }
 
-.expand-all .icon-resize-small{
+.expand-all .icon-resize-small {
     display: none
 }
-.expand-all.in .icon-resize-small{
+.expand-all.in .icon-resize-small {
     display: inline-block
 }
-.expand-all.in .icon-resize-full{
+.expand-all.in .icon-resize-full {
     display: none
 }
 
 /* collapsable groups of items */
-.node.accordion{
-    line-height:41px;
+.node.accordion {
+    line-height: 41px;
 }
 
-.node .accordion-toggle{
+.node .accordion-toggle {
     background: #ddd;
     height: 41px;
 }
+.node .accordion-toggle:hover {
+    background-color: #e3e3e3;
+}
+
 /* dropdown indicator */
-.node .accordion-toggle .has-indicator:before {
-    content: '';
-    transition: border .2s ease-out;
-    border-bottom: 5px solid darkgrey;
-    border-top: 0 solid transparent;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
-    display: inline-block;
-    margin-bottom: .2em;
+.node .has-indicator .icon-indicator {
+    opacity: 0.333;
+    float: none;
 }
-.node .accordion-toggle.collapsed .has-indicator:before {
-    content: '';
-    border-bottom: 0 solid transparent;
-    border-top: 5px solid darkgrey;
-    border-right: 5px solid transparent;
-    border-left: 5px solid transparent;
-}
-.node .select input { margin-top: -1px}
-.node .collapse{
-    transition-duration: 150ms;
+
+.node .select input {margin-top: -1px}
+.node .collapse {
+    width: 100%;
+    transition-duration: 350ms;
     transition-property: all;
-    transition-timing-function: cubic-bezier(0.950, 0.050, 0.795, 0.035);
-    background-color: #ddd;
+    transition-timing-function: ease;
 }
 .node .collapse > * {
-    border-bottom:1px solid #fff;
-    background: #f0f0f0;
     width: 100%;
+    position: relative;
+    border-bottom: 1px solid #fff;
+    background: #f0f0f0;
 }
-.node .collapse > *{
-    position: relative
+.node .collapse > *:hover {
+    background-color: #f5f5f5;
 }
-.node .collapse > *:before{
+.node .collapse > *:before {
     content: '';
     width: 0px;
     background: #44b3e2;
@@ -211,7 +204,7 @@ input[type=text][class=variable-name-edit] {
     position: absolute;
     transition: width .2s ease-out;
 }
-.node .collapse > *:hover:before{
+.node .collapse > *:hover:before {
     width: 2px;
 }
 .node .collapse > *:last-child {
@@ -219,7 +212,7 @@ input[type=text][class=variable-name-edit] {
 }
 .node > * > * ,
 .node > * > * > * ,
-.node > * > * > .pull-right > *{
+.node > * > * > .pull-right > * {
     float: left;
     min-height: 1px;
 }
@@ -230,7 +223,8 @@ input[type=text][class=variable-name-edit] {
 
 .device-key,
 .device-schedule,
-.device-configure {
+.device-configure,
+.device-last-updated {
     border-left: 1px solid #eee;
     color: white;
 }
@@ -238,14 +232,14 @@ input[type=text][class=variable-name-edit] {
 .device-key:hover {background-color:#eaeaea;}
 .device-configure:hover {background-color:#eaeaea;}
 
-.label-container{padding-top:.6em; display:inline-block; min-width: 200px}
+.label-container{padding-top:.6em; display:inline-block; min-width:200px}
 
 /* select all button */
 /*
 .has-indicator{position:relative}
 .has-indicator:after{
-    transition:all 200ms ease-in-out;
-    display:block;
+    transition: all 200ms ease-in-out;
+    display: block;
     width: 1.1em;
     height: 1.1em;
     background: #FBFBFB;
@@ -254,8 +248,8 @@ input[type=text][class=variable-name-edit] {
     border-radius: 3px;
     position: absolute;
     margin: .85em .55em;
-    left:0;
-    top:0;
+    left: 0;
+    top: 0;
     line-height: 1.1em;
     opacity: 0;
     content: attr(data-marker);
@@ -269,35 +263,34 @@ input[type=text][class=variable-name-edit] {
     background: #D65C29;
 }
 */
-#table .accordion{
-    margin-bottom:.5em
+#table .accordion {
+    margin-bottom: .5em
 }
 
-
-#table{margin-top:3rem}
-.controls{
+.controls {
     transition: all .2s ease-out
 }
-.controls.affix:before{
+.controls.affix:before {
     content: '';
-    background: rgba(5,4,4,0.7);
+    background: #323232;
+    opacity: 0.85;
     width: 100%;
-    display:block;
+    display: block;
     position: fixed;
     z-index: -1;
     height: 2.5rem;
-    left:0;
-    margin-top:-.3rem;
+    left: 0;
+    margin-top: -.3rem;
 }
-.controls.affix > *{
+.controls.affix > * {
     z-index: 2
 }
-.controls.affix{
+.controls.affix {
     z-index: 2;
     top: 2.5rem;
     padding: .3rem 0;
 }
-.controls.affix-top{position: absolute;}
+.controls.affix-top{position:absolute;}
 
 @media only screen and (max-width:979px) {
     .controls.affix{top:0}

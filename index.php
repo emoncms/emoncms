@@ -39,6 +39,9 @@
                 echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
             }
         }
+        if (!empty($redis_server['dbnum'])) {
+            $redis->select($redis_server['dbnum']);
+        }
     } else {
         $redis = false;
     }
@@ -264,6 +267,28 @@
         } else {
             header('Content-Type: application/json');
             print json_encode($output['content']);
+            if (json_last_error()!=JSON_ERROR_NONE) {
+                switch (json_last_error()) {
+                    case JSON_ERROR_DEPTH:
+                        $log->error("json_encode - $route->controller: Maximum stack depth exceeded");
+                        break;
+                    case JSON_ERROR_STATE_MISMATCH:
+                        $log->error("json_encode - $route->controller: Underflow or the modes mismatch");
+                        break;
+                    case JSON_ERROR_CTRL_CHAR:
+                        $log->error("json_encode - $route->controller: Unexpected control character found");
+                        break;
+                    case JSON_ERROR_SYNTAX:
+                        $log->error("json_encode - $route->controller: Syntax error, malformed JSON");
+                        break;
+                    case JSON_ERROR_UTF8:
+                        $log->error("json_encode - $route->controller: Malformed UTF-8 characters, possibly incorrectly encoded");
+                        break;
+                    default:
+                        $log->error("json_encode - $route->controller: Unknown error");
+                        break;
+                }
+            }
         }
     }
     else if ($route->format == 'html')
