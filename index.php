@@ -136,9 +136,25 @@
     // Special routes
 
     // Return brief device descriptor for hub detection
-    if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
+    if ($route->controller=="describe") { 
+        header('Content-Type: text/plain');
+        header('Access-Control-Allow-Origin: *');
+        if(file_exists('/home/pi/data/emonbase')) {
+            $type = 'emonbase';
+        } elseif(file_exists('/home/pi/data/emonpi')) {
+            $type = 'emonpi';
+        } else {
+            $type = 'emoncms';
+        }
+        echo $type;
+        die;
+    }
     // read the version file and return the value;
-    if ($route->controller=="version") { header('Content-Type: text'); echo version(); die; }
+    if ($route->controller=="version") { 
+        header('Content-Type: text/plain; charset=utf-8'); 
+        echo version();
+        exit; 
+    }
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
