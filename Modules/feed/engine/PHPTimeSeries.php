@@ -218,8 +218,7 @@ class PHPTimeSeries implements engine_methods
     /**
      * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $limitinterval When set to 1 , return the calculated timestamp if difference between calculated and hardcoded timestamps (based on metadata) is less than $interval
-/ When set top 0, return the harcoded timestamp
+     * @param integer $limitinterval When set to 1 , return the calculated timestamp if difference between calculated and hardcoded timestamps (based on metadata) is less than $interval - When set to 0, return the harcoded timestamp
     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
