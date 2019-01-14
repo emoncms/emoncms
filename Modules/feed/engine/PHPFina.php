@@ -250,7 +250,7 @@ class PHPFina implements engine_methods
     /**
      * scale a portion of a feed
      * added by Alexandre CUER - january 2019 
-     
+     *
      * @param integer $feedid The id of the feed
      * @param integer $start unix time stamp in ms of the start of the data range
      * @param integer $end unix time stamp in ms of the end of the data rage
