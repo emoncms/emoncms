@@ -221,6 +221,9 @@
 
             global $mqtt_server, $user, $input, $process, $device, $log, $count;
 
+            //remove characters that emoncms topics cannot handle
+            $topic = str_replace(":","",$topic);
+
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
             $jsondata = json_decode($value,true,2);
             if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
