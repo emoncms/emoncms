@@ -10,6 +10,8 @@ class PHPFina implements engine_methods
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
+    private $lastvalue_cache = array();
+    private $maxpadding = 3153600; // 1 year @ 10s
 
     /**
      * Constructor.
@@ -82,7 +84,6 @@ class PHPFina implements engine_methods
         if (!$meta = $this->get_meta($feedid)) return false;
         unlink($this->dir.$feedid.".meta");
         unlink($this->dir.$feedid.".dat");
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
     }
     
     /**
@@ -100,31 +101,25 @@ class PHPFina implements engine_methods
             return false;
         }
 
-        static $metadata_cache = array(); // Array to hold the cache
-        if (isset($metadata_cache[$feedid])) {
-            return $metadata_cache[$feedid]; // Retrieve from static cache
-        } else {
-            // Open and read meta data file
-            // The start_time and interval are saved as two consecutive unsigned integers
-            $meta = new stdClass();
-            $metafile = fopen($this->dir.$feedname, 'rb');
-            fseek($metafile,8);
-            $tmp = unpack("I",fread($metafile,4)); 
-            $meta->interval = $tmp[1];
-            $tmp = unpack("I",fread($metafile,4)); 
-            $meta->start_time = $tmp[1];
-            fclose($metafile);
-            
-            $meta->npoints = $this->get_npoints($feedid);
+        // Open and read meta data file
+        // The start_time and interval are saved as two consecutive unsigned integers
+        $meta = new stdClass();
+        $metafile = fopen($this->dir.$feedname, 'rb');
+        fseek($metafile,8);
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->interval = $tmp[1];
+        $tmp = unpack("I",fread($metafile,4)); 
+        $meta->start_time = $tmp[1];
+        fclose($metafile);
+        
+        $meta->npoints = $this->get_npoints($feedid);
 
-            if ($meta->start_time>0 && $meta->npoints==0) {
-                $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
-                return false;
-            }
-            
-            $metadata_cache[$feedid] = $meta; // Cache it
-            return $meta;
+        if ($meta->start_time>0 && $meta->npoints==0) {
+            $this->log->warn("PHPFina:get_meta start_time already defined but npoints is 0");
+            return false;
         }
+        
+        return $meta;
     }
 
     /**
@@ -199,10 +194,7 @@ class PHPFina implements engine_methods
         // Write padding
         $padding = ($pos - $last_pos)-1;
         
-        // Max padding = 1 million datapoints ~4mb gap of 115 days at 10s
-        $maxpadding = 1000000;
-        
-        if ($padding>$maxpadding) {
+        if ($padding>$this->maxpadding) {
             $this->log->warn("post() padding max block size exeeded id=$id, $padding dp");
             return false;
         }
@@ -255,6 +247,104 @@ class PHPFina implements engine_methods
         return $this->post($feedid,$timestamp,$value);  //post can also update 
     }
 
+    /**
+     * scale a portion of a feed
+     * added by Alexandre CUER - january 2019 
+     
+     * @param integer $feedid The id of the feed
+     * @param integer $start unix time stamp in ms of the start of the data range
+     * @param integer $end unix time stamp in ms of the end of the data rage
+     * @param float $scale : numeric value for the scaling 
+    */
+    public function scalerange($id,$start,$end,$scale){
+        //echo("test on $scale not started");
+        //case1: NAN
+        if(preg_match("/^NAN$/i",$scale)){
+            $this->log->warn("scale_range() : going to erase data range with NAN");
+            $scale = NAN;
+        //case2: scaling value - possible to use a fraction
+        } else if(preg_match("/^(1\/|-1\/|-)?([0-9]+((\.|,)[0-9]+)?)$/",$scale,$a)){
+            $this->log->warn("scale_range() : being given a float scale parameter");
+            $scale = (float) $a[2];
+            if ($a[1]=="1/")$scale = 1/$scale;
+            else if ($a[1]=="-1/") $scale = -1/$scale;
+            else if ($a[1]=="-") $scale = -$scale;
+            //print_r($a);
+        //case3: absolute value
+        } else if(preg_match("/^abs\(x\)$/i",$scale)){
+            $this->log->warn("scale_range() : conversion to absolute values on the data range");
+            $scale="abs(x)"; 
+        } else return false;
+        
+        //echo("test finished>");
+        
+        //echo("<br>$scale");
+        //echo("<br>$start and $end");
+        $id = (int) $id;
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        //echo("<br>$start and $end");
+        
+        if(!$meta=$this->get_meta($id)){
+            $this->log->warn("scale_range() failed to fetch meta id = $id");
+            return false;
+        }
+        
+        $this->log->warn("scale_range() successfully fetched meta id = $id");
+        
+        //integrity checks
+        $start=floor($start/$meta->interval)*$meta->interval;
+        $end=floor($end/$meta->interval)*$meta->interval;
+        //debug
+        //echo("<br>$start and $end");
+        if($start>$end) {
+            $this->log->warn("scale_range() : start should not be greater than end");
+            return false;
+        }
+        if($start<$meta->start_time) $start=$meta->start_time;
+        $end_time=$this->lastvalue($id)['time'];
+        if($end>$end_time) $end=$end_time;
+        
+        //calculates address in dat file and number of values to write
+        $pos_start=4*floor(($start-$meta->start_time)/$meta->interval);
+        $pos_end=4*floor(($end-$meta->start_time)/$meta->interval);
+        $nbwrites=($pos_end-$pos_start)/4;
+        //echo("<br>$nbwrites");
+        
+        //open the dat file
+        $fh = fopen ($this->dir.$id.".dat","c+");
+        if (!$fh){
+            $this->log->warn("scale_range() : unable to open data file with id=$id");
+            return false;
+        }
+        $this->log->warn("scale_range() : going to write $nbwrites values from address $pos_start to $pos_end");
+        
+        //fetch the values to process
+        fseek($fh,$pos_start);
+        $values=unpack("f$nbwrites",fread($fh,4*$nbwrites));
+        //print_r($values);
+        
+        //create a buffer with the processed values
+        $buffer="";
+        for($i=1;$i<=$nbwrites;$i++) {
+            if($scale==NAN) $val=NAN;
+            else if($scale=="abs(x)") $val=abs($values[$i]);
+            else $val=$values[$i]*$scale;
+            $buffer.=pack("f",$val);
+        }
+        
+        //write the processed buffer to the dat file
+        fseek($fh,$pos_start);
+        if(!$written_bytes = fwrite($fh,$buffer)){
+            $this->log->warn("scale_range() : unable to write to the file with id=$id");
+            fclose($fh);
+            return false;
+        }
+        $this->log->warn("scale_range() : wrote $written_bytes bytes");
+        fclose($fh);
+        return $written_bytes;
+    }
+    
     /**
      * Get array with last time and value from a feed
      *
@@ -669,11 +759,17 @@ class PHPFina implements engine_methods
         $timestamp = floor($timestamp / $meta->interval) * $meta->interval;
 
         // If this is a new feed (npoints == 0) then set the start time to the current datapoint
-         if ($meta->npoints == 0 && $meta->start_time==0) {
-            $meta->start_time = $timestamp;
-            $this->create_meta($feedid,$meta);
+        if ($meta->start_time==0) {
+            if ($meta->npoints == 0) {
+                $meta->start_time = $timestamp;
+                $this->create_meta($feedid,$meta);
+                $this->log->info("post_bulk_prepare() start_time=0 setting meta start_time=$timestamp");
+            } else {
+                $this->log->error("post_bulk_prepare() start_time=0, npoints>0");
+                return false;
+            }
         }
-
+        
         if ($timestamp < $meta->start_time) {
             $this->log->warn("post_bulk_prepare() timestamp=$timestamp older than feed starttime=$meta->start_time feedid=$feedid");
             return false; // in the past
@@ -688,6 +784,11 @@ class PHPFina implements engine_methods
         if ($pos>$last_pos) {
             $npadding = ($pos - $last_pos)-1;
             
+            if ($npadding>$this->maxpadding) {
+                $this->log->warn("post() padding max block size exeeded id=$feedid, $npadding dp");
+                return false;
+            }
+            
             if (!isset($this->writebuffer[$feedid])) {
                 $this->writebuffer[$feedid] = "";    
             }
@@ -695,14 +796,12 @@ class PHPFina implements engine_methods
             if ($npadding>0) {
                 $padding_value = NAN;
                 if ($padding_mode!=null) {
-                    static $lastvalue_static_cache = array(); // Array to hold the cache
-                    if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
+                    if (!isset($this->lastvalue_cache[$feedid])) { // Not set, cache it from file data
                         $lastvalue = $this->lastvalue($feedid);
-                        $lastvalue_static_cache[$feedid] = $lastvalue['value'];
+                        $this->lastvalue_cache[$feedid] = $lastvalue['value'];
                     }
-                    $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
-                    $padding_value = $lastvalue_static_cache[$feedid];
-                    $lastvalue_static_cache[$feedid] = $value; // Set static cache last value
+                    $div = ($value - $this->lastvalue_cache[$feedid]) / ($npadding+1);
+                    $padding_value = $this->lastvalue_cache[$feedid];
                 }
                 
                 for ($n=0; $n<$npadding; $n++)
@@ -714,6 +813,8 @@ class PHPFina implements engine_methods
             }
             
             $this->writebuffer[$feedid] .= pack("f",$value);
+            $this->lastvalue_cache[$feedid] = $value; // cache last value
+            
             //$this->log->info("post_bulk_prepare() ##### value saved $value");
         } else {
             // if data is in past, its not supported, could call update here to fix on file before continuing
@@ -812,7 +913,7 @@ class PHPFina implements engine_methods
             clearstatcache($this->dir.$feedid.".dat");
             $bytesize += filesize($this->dir.$feedid.".dat");
         }
-            
+        
         if (isset($this->writebuffer[$feedid]))
             $bytesize += strlen($this->writebuffer[$feedid]);
             
@@ -1280,7 +1381,8 @@ class PHPFina implements engine_methods
             ftruncate($f, 0);
             fclose($f);
         }
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        if (isset($this->writebuffer[$feedid])) $this->writebuffer[$feedid] = "";
+            
         $this->create_meta($feedid, $meta); // create meta first to avoid $this->create() from creating new one
         $this->create($feedid,array('interval'=>$meta->interval));
 
@@ -1333,7 +1435,7 @@ class PHPFina implements engine_methods
         fclose($fh);
 
         $this->log->info(".data file trimmed to $writtenBytes bytes");
-        if (isset($metadata_cache[$feedid])) { unset($metadata_cache[$feedid]); } // Clear static cache
+        if (isset($this->writebuffer[$feedid])) $this->writebuffer[$feedid] = "";
         $meta->start_time = $start_time;
         $this->create_meta($feedid, $meta); // set the new start time in the feed's meta
         return array('success'=>true,'message'=>"$writtenBytes bytes written");
