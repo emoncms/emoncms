@@ -20,7 +20,10 @@
     if ($status['LoadState'] === 'not-found') {
         $return = null;
     } else {
-        $return = $status['ActiveState'] === 'active';
+        return array(
+            'ActiveState' => $status["ActiveState"],
+            'SubState' => $status["SubState"]
+        );
     }
     return $return;
   }
@@ -33,11 +36,12 @@
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
 
     $services['emonhub'] = getServiceStatus('emonhub.service');
-    $services['mqtt'] = getServiceStatus('mosquitto.service');
+    $services['mqtt_input'] = getServiceStatus('mqtt_input.service');
     $services['feedwriter'] = getServiceStatus('feedwriter.service');
-    $services['servicerunner'] = getServiceStatus('service-runner.service');
-    $services['redis'] = getServiceStatus('redis-server.service');
-    $services['lcd'] = getServiceStatus('emonPiLCD.service');
+    $services['service-runner'] = getServiceStatus('service-runner.service');
+    $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
+    $services['redis-server'] = getServiceStatus('redis-server.service');
+    $services['mosquitto'] = getServiceStatus('mosquitto.service');
 
     //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
@@ -298,21 +302,13 @@ if ($allow_emonpi_admin) {
             -->
               <?php foreach($system['services'] as $key=>$value): ?>
                 <?php if (!is_null($system['services'][$key])) { ?>
-                <tr class="<?php if ($system['services'][$key] === true) echo "success"; else echo "error"; ?>">
+                <tr class="<?php if ($system['services'][$key]['ActiveState'] === 'active') echo "success"; else echo "error"; ?>">
                     <td class="subinfo"></td><td><?php echo $key ?></td>
-                    <td><?php echo ($system['services'][$key] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
+                    <td><strong><?php echo ucfirst($system['services'][$key]['ActiveState']); ?></strong> <?php echo ucfirst($system['services'][$key]['SubState']); ?>
                     </td>
                 </tr>
                 <?php } ?>
               <?php endforeach; ?>
-
-              <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
-              <tr class="<?php if ($system['feedwriter']) echo "success"; else echo "error"; ?>">
-                <td class="subinfo"></td><td>feedwriter</td>
-                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>
-                </td>
-              </tr>
-              <?php } ?>
 
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
