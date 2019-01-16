@@ -20,11 +20,10 @@
     if ($status['LoadState'] === 'not-found') {
         $return = null;
     } else {
-        if ($status['ActiveState'] === 'active') {
-            return implode("|", array($status["LoadState"],$status["ActiveState"],$status["SubState"]));
-        } else {
-            return false;
-        }
+        return array(
+            'ActiveState' => $status["ActiveState"],
+            'SubState' => $status["SubState"]
+        );
     }
     return $return;
   }
@@ -303,9 +302,9 @@ if ($allow_emonpi_admin) {
             -->
               <?php foreach($system['services'] as $key=>$value): ?>
                 <?php if (!is_null($system['services'][$key])) { ?>
-                <tr class="<?php if ($system['services'][$key] !== false) echo "success"; else echo "error"; ?>">
+                <tr class="<?php if ($system['services'][$key]['ActiveState'] === 'active') echo "success"; else echo "error"; ?>">
                     <td class="subinfo"></td><td><?php echo $key ?></td>
-                    <td><?php echo $system['services'][$key] ? $system['services'][$key] : '<font color="red">' . $system['services'][$key]. '</font>'; ?>
+                    <td><strong><?php echo ucfirst($system['services'][$key]['ActiveState']); ?></strong> <?php echo ucfirst($system['services'][$key]['SubState']); ?>
                     </td>
                 </tr>
                 <?php } ?>
