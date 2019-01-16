@@ -250,7 +250,7 @@ class PHPFina implements engine_methods
     /**
      * scale a portion of a feed
      * added by Alexandre CUER - january 2019 
-     
+     *
      * @param integer $feedid The id of the feed
      * @param integer $start unix time stamp in ms of the start of the data range
      * @param integer $end unix time stamp in ms of the end of the data rage
@@ -378,14 +378,8 @@ class PHPFina implements engine_methods
     }
 
     /**
-     * Return the data for the given timerange
+     * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-     * @param integer $skipmissing Skip null values from returned data (used by some engines)
-     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
     */
     public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {

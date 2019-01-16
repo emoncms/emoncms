@@ -324,7 +324,12 @@ class PHPFiwa implements engine_methods
         return $data;
     }
     
-
+    /**
+     * Return the data for the given timerange - cf shared_helper.php
+     *
+     * @param integer $limitinterval not implemented
+     *
+     */
     public function get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval)
     {
         $feedid = intval($feedid);
