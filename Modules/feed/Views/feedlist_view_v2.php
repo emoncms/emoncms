@@ -130,8 +130,7 @@ body{padding:0!important}
     <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
     <h3><?php echo _('Feeds'); ?></h3>
 </div>
-
-<div class="controls" data-spy="affix" data-offset-top="100">
+<div id="feed-controls" class="controls hide" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
     <button class="btn feed-edit hide" title="Edit"><i class="icon-pencil"></i></button>
@@ -378,10 +377,12 @@ function update() {
         $('#feed-loader').hide();
         if (data.length == 0){
             $("#feed-header").hide();
+            $("#feed-controls").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
         } else {
             $("#feed-header").show();
+            $("#feed-controls").show();
             $("#feed-footer").show();
             $("#feed-none").hide();
         }
