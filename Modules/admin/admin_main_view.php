@@ -3,16 +3,46 @@
   // Retrieve server information
   $system = system_information();
 
+  /**
+   * get running status of service
+   *
+   * @param string $name
+   * @return mixed true == running | false == stopped | null == not installed
+   */
+  function getServiceStatus($name) {
+    @exec('systemctl show '.$name.' | grep State', $exec);
+    $status = array();
+    
+    foreach ($exec as $line) {
+        $parts = explode('=',$line);
+        $status[$parts[0]] = $parts[1];
+    }
+    if ($status['LoadState'] === 'not-found') {
+        $return = null;
+    } else {
+        return array(
+            'ActiveState' => $status["ActiveState"],
+            'SubState' => $status["SubState"]
+        );
+    }
+    return $return;
+  }
+
   function system_information() {
     global $mysqli, $server, $redis_server, $mqtt_server;
     $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
     $db = $result->fetch_array();
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-    @exec('ps ax | grep emonhub.py | grep -v grep', $emonhubproc);
-    @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
-    @exec('ps ax | grep phpmqtt_input.php | grep -v grep', $mqttinputproc);
-    @exec('ps ax | grep service-runner.py | grep -v grep', $servicerunnerproc);
+
+    $services['emonhub'] = getServiceStatus('emonhub.service');
+    $services['mqtt_input'] = getServiceStatus('mqtt_input.service');
+    $services['feedwriter'] = getServiceStatus('feedwriter.service');
+    $services['service-runner'] = getServiceStatus('service-runner.service');
+    $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
+    $services['redis-server'] = getServiceStatus('redis-server.service');
+    $services['mosquitto'] = getServiceStatus('mosquitto.service');
+
     //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
@@ -61,10 +91,7 @@
                  'redis_server' => $redis_server['host'].":".$redis_server['port'],
                  'redis_ip' => gethostbyname($redis_server['host']),
                  
-                 'emonhub' => !empty($emonhubproc),
-                 'mqttinput' => !empty($mqttinputproc),
-                 'feedwriter' => !empty($feedwriterproc),
-                 'servicerunner' => !empty($servicerunnerproc),
+                 'services' => $services,
                  
                  'mqtt_server' => $mqtt_server['host'],
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
@@ -79,7 +106,8 @@
                  'partitions' => disk_list(),
                  'emoncms_modules' => $emoncms_modules,
                  'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
-                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin")
+                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
+                 'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                  );
   }
 
@@ -262,49 +290,33 @@ if ($allow_emonpi_admin) {
              <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
             </div>
             <table class="table table-hover table-condensed" id="serverinformationtabular">
-            
               <tr><td><b>Services</b></td><td></td><td></td></tr>
-              
-              <tr class="<?php if ($system['emonhub']) echo "success"; else echo "error"; ?>">
-                <td class="subinfo"></td><td>emonhub</td>
-                <td><?php echo ($system['emonhub'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
-                <!--
+            <!--
+              <tr>
+                <td>
                 <button id="emonhub-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
                 <button id="emonhub-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
                 <button id="emonhub-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>-->
+                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
                 </td>
               </tr>
-              
-              <tr class="<?php if ($system['mqttinput']) echo "success"; else echo "error"; ?>">
-                <td class="subinfo"></td><td>mqtt_input</td>
-                <td><?php echo ($system['mqttinput'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
-                </td>
-              </tr>
-              
-              <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
-              <tr class="<?php if ($system['feedwriter']) echo "success"; else echo "error"; ?>">
-                <td class="subinfo"></td><td>feedwriter</td>
-                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>
-                </td>
-              </tr>
-              <?php } ?>
-              
-              <tr class="<?php if ($system['servicerunner']) echo "success"; else echo "error"; ?>">
-                <td class="subinfo"></td><td>service-runner</td>
-                <td><?php echo ($system['servicerunner'] ? "Service is running" : "<font color='red'>Service is not running</font>"); ?>
-                </td>
-              </tr>
+            -->
+              <?php foreach($system['services'] as $key=>$value): ?>
+                <?php if (!is_null($system['services'][$key])) { ?>
+                <tr class="<?php if ($system['services'][$key]['SubState'] === 'running') echo "success"; else echo "error"; ?>">
+                    <td class="subinfo"></td><td><?php echo $key ?></td>
+                    <td><strong><?php echo ucfirst($system['services'][$key]['ActiveState']); ?></strong> <?php echo ucfirst($system['services'][$key]['SubState']); ?>
+                    </td>
+                </tr>
+                <?php } ?>
+              <?php endforeach; ?>
 
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git URL</td><td><?php echo $system['git_URL']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git Branch</td><td><?php echo $system['git_branch']; ?></td></tr>
-
-
+              <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
 
               <tr><td><b>Server</b></td><td>OS</td><td><?php echo $system['system'] . ' ' . $system['kernel']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['date']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $system['uptime']; ?></td></tr>
 
