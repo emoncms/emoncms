@@ -636,7 +636,9 @@ var processlist_ui =
     for (z in feedgroups) {
       out += "<optgroup label='"+z+"'>";
       for (p in feedgroups[z]) {
-        out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
+          if (this.contextid !== feedgroups[z][p]['id']) {
+            out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
+          }
       }
       out += "</optgroup>";
     }
