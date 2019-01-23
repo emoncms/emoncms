@@ -374,7 +374,8 @@
 
             placeholder.width(width);
             // placeholder_bound.height(height);
-            placeholder.height(height-top_offset);
+            // placeholder.height(height-top_offset);
+            placeholder.height('75vh');
 
             if (embed) placeholder.height($(window).height()-top_offset);
             plot();
