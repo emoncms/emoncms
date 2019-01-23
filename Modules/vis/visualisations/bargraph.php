@@ -32,7 +32,7 @@
         font-size: 1.3rem;
     }
 </style>
-<div id="placeholder_bound">
+<div id="placeholder_bound" style="position: relative; height: 75vh">
     <div id="placeholder" style="position:absolute; top:0px;"></div>
     <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
         <div class='btn-group'>
@@ -104,11 +104,12 @@
     var placeholder = $('#placeholder');
 
     var width = placeholder_bound.width();
-    var height = width * 0.5;
+    var height = placeholder_bound.height();
 
     placeholder.width(width);
-    //placeholder_bound.height(height);
-    //placeholder.height(height-top_offset);
+
+    placeholder_bound.height(height);
+    placeholder.height(height-top_offset);
 
     if (embed) placeholder.height($(window).height()-top_offset);
         
@@ -312,7 +313,6 @@
                ;
 
             stats.calc(data);
-
             plot();
         }
         
@@ -370,10 +370,10 @@
         
         $(window).resize(function(){
             var width = placeholder_bound.width();
-            var height = width * 0.5;
+            var height = placeholder_bound.width();
 
             placeholder.width(width);
-            placeholder_bound.height(height);
+            // placeholder_bound.height(height);
             placeholder.height(height-top_offset);
 
             if (embed) placeholder.height($(window).height()-top_offset);
