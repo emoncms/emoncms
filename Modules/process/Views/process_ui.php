@@ -105,10 +105,10 @@
                                 <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Data'); ?></span>
                                 <div class="btn-group">
                                     <select id="feed-data-type" class="input-medium" style="width: 105px;" readonly>
-                                        <option value=0>Any type</option>
-                                        <option value=1>Realtime</option>
-                                        <option value=2>Daily</option>
-                                        <option value=3>Histogram</option>
+                                        <option value="0">Any type</option>
+                                        <option value="1">Realtime</option>
+                                        <option value="2">Daily</option>
+                                        <option value="3">Histogram</option>
                                     </select>
                                 </div>
                             </div>
@@ -127,30 +127,30 @@
                                 <div class="btn-group">
                                     <select id="feed-engine" class="input-medium">
 <?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
-                                        <option value=6>PHPFIWA Fixed Interval With Averaging</option>
-                                        <option value=5>PHPFINA Fixed Interval No Averaging</option>
-                                        <option value=2>PHPTIMESERIES Variable Interval No Averaging</option>
-                                        <option value=0>MYSQL TimeSeries</option>
-                                        <option value=8>MYSQL Memory (RAM data lost on power off)</option>
-                                        <option value=10>CASSANDRA TimeSeries</option>
+                                        <option value="6">PHPFIWA Fixed Interval With Averaging</option>
+                                        <option value="5">PHPFINA Fixed Interval No Averaging</option>
+                                        <option value="2">PHPTIMESERIES Variable Interval No Averaging</option>
+                                        <option value="0">MYSQL TimeSeries</option>
+                                        <option value="8">MYSQL Memory (RAM data lost on power off)</option>
+                                        <option value="10">CASSANDRA TimeSeries</option>
                                     </select>
 
                                     <select id="feed-interval" class="input-mini">
                                         <option value=""><?php echo dgettext('process_messages','Select interval'); ?></option>
-                                        <option value=5>5<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=10>10<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=15>15<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=20>20<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=30>30<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=60>60<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=120>2<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=300>5<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=600>10<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=900>15<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=1200>20<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=1800>30<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=3600>1<?php echo dgettext('process_messages','h'); ?></option>
-                                        <option value=86400>1<?php echo dgettext('process_messages','d'); ?></option>
+                                        <option value="5">5<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="10">10<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="15">15<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="20">20<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="30">30<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="60">60<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="120">2<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="300">5<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="600">10<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="900">15<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="1200">20<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="1800">30<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
+                                        <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
                                     </select>
                                 </div>
                             </div>
