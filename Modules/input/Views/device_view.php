@@ -600,10 +600,10 @@ $("#table").on('click', '.configure', function() {
         contextname = "Node " + i.nodeid + " : " + newfeedname;
     }
     else { 
-        newfeedname = "node:" + i.nodeid+":" + i.name;
-        contextname = "Node " + i.nodeid + " : " + i.name;
+        newfeedname = i.name;
+        contextname = i.nodeid;
     }
-    var newfeedtag = "Node " + i.nodeid;
+    var newfeedtag = i.nodeid;
     var processlist = processlist_ui.decode(i.processList); // Input process list
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
 });

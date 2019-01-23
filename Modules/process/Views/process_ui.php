@@ -19,10 +19,15 @@
    #process-table th:nth-of-type(6), td:nth-of-type(6) {
     text-align: right;
    }
+
+
+   #new-feed-tag_autocomplete-list{width: 120px}
+
 </style>
 <script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
-
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
 <script>
   processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
   <?php if ($redis_enabled) echo "processlist_ui.has_redis = 1;"; ?>
@@ -116,9 +121,13 @@
                             <div class="input-prepend">
                                 <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Feed'); ?></span>
                                 <div class="btn-group">
-                                    <select id="feed-select" class="input-medium"></select>
-                                    <input type="text" id="new-feed-name" style="width:140px" placeholder="<?php echo dgettext('process_messages','Type feed name...'); ?>" />
-                                    <input type="hidden" id="new-feed-tag"/>
+                                    <select id="feed-select" class="input-medium" style="border-bottom-right-radius: 0;border-top-right-radius: 0;"></select>
+
+                                    <div class="autocomplete">
+                                        <input type="text" id="new-feed-tag" style="width:3.5em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo dgettext('process_messages','Type feed tag...'); ?>" placeholder="<?php echo dgettext('process_messages','Tag'); ?>" />
+                                    </div>
+
+                                    <input type="text" id="new-feed-name" style="width:4em" title="<?php echo dgettext('process_messages','Type feed name...'); ?>" placeholder="<?php echo dgettext('process_messages','Name'); ?>" />
                                 </div>
                             </div>
                             
