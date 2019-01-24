@@ -19,10 +19,15 @@
    #process-table th:nth-of-type(6), td:nth-of-type(6) {
     text-align: right;
    }
+
+
+   #new-feed-tag_autocomplete-list{width: 120px}
+
 </style>
 <script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
-
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
 <script>
   processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
   <?php if ($redis_enabled) echo "processlist_ui.has_redis = 1;"; ?>
@@ -105,10 +110,10 @@
                                 <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Data'); ?></span>
                                 <div class="btn-group">
                                     <select id="feed-data-type" class="input-medium" style="width: 105px;" readonly>
-                                        <option value=0>Any type</option>
-                                        <option value=1>Realtime</option>
-                                        <option value=2>Daily</option>
-                                        <option value=3>Histogram</option>
+                                        <option value="0">Any type</option>
+                                        <option value="1">Realtime</option>
+                                        <option value="2">Daily</option>
+                                        <option value="3">Histogram</option>
                                     </select>
                                 </div>
                             </div>
@@ -116,9 +121,13 @@
                             <div class="input-prepend">
                                 <span class="add-on feed-select-label"><?php echo dgettext('process_messages','Feed'); ?></span>
                                 <div class="btn-group">
-                                    <select id="feed-select" class="input-medium"></select>
-                                    <input type="text" id="new-feed-name" style="width:140px" placeholder="<?php echo dgettext('process_messages','Type feed name...'); ?>" />
-                                    <input type="hidden" id="new-feed-tag"/>
+                                    <select id="feed-select" class="input-medium" style="border-bottom-right-radius: 0;border-top-right-radius: 0;"></select>
+
+                                    <div class="autocomplete">
+                                        <input type="text" id="new-feed-tag" style="width:3.5em; border-right: none; border-bottom-right-radius: 0; border-top-right-radius: 0;" title="<?php echo dgettext('process_messages','Type feed tag...'); ?>" placeholder="<?php echo dgettext('process_messages','Tag'); ?>" />
+                                    </div>
+
+                                    <input type="text" id="new-feed-name" style="width:4em" title="<?php echo dgettext('process_messages','Type feed name...'); ?>" placeholder="<?php echo dgettext('process_messages','Name'); ?>" />
                                 </div>
                             </div>
                             
@@ -127,30 +136,30 @@
                                 <div class="btn-group">
                                     <select id="feed-engine" class="input-medium">
 <?php // All supported engines must be here, add to engines_hidden array in settings.php to hide them from user ?>
-                                        <option value=6>PHPFIWA Fixed Interval With Averaging</option>
-                                        <option value=5>PHPFINA Fixed Interval No Averaging</option>
-                                        <option value=2>PHPTIMESERIES Variable Interval No Averaging</option>
-                                        <option value=0>MYSQL TimeSeries</option>
-                                        <option value=8>MYSQL Memory (RAM data lost on power off)</option>
-                                        <option value=10>CASSANDRA TimeSeries</option>
+                                        <option value="6">PHPFIWA Fixed Interval With Averaging</option>
+                                        <option value="5">PHPFINA Fixed Interval No Averaging</option>
+                                        <option value="2">PHPTIMESERIES Variable Interval No Averaging</option>
+                                        <option value="0">MYSQL TimeSeries</option>
+                                        <option value="8">MYSQL Memory (RAM data lost on power off)</option>
+                                        <option value="10">CASSANDRA TimeSeries</option>
                                     </select>
 
                                     <select id="feed-interval" class="input-mini">
                                         <option value=""><?php echo dgettext('process_messages','Select interval'); ?></option>
-                                        <option value=5>5<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=10>10<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=15>15<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=20>20<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=30>30<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=60>60<?php echo dgettext('process_messages','s'); ?></option>
-                                        <option value=120>2<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=300>5<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=600>10<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=900>15<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=1200>20<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=1800>30<?php echo dgettext('process_messages','m'); ?></option>
-                                        <option value=3600>1<?php echo dgettext('process_messages','h'); ?></option>
-                                        <option value=86400>1<?php echo dgettext('process_messages','d'); ?></option>
+                                        <option value="5">5<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="10">10<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="15">15<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="20">20<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="30">30<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="60">60<?php echo dgettext('process_messages','s'); ?></option>
+                                        <option value="120">2<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="300">5<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="600">10<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="900">15<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="1200">20<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="1800">30<?php echo dgettext('process_messages','m'); ?></option>
+                                        <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
+                                        <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
                                     </select>
                                 </div>
                             </div>

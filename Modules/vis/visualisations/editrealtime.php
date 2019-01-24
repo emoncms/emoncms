@@ -53,8 +53,9 @@
 </div>
 
 <div style="width:100%; height:50px; background-color:#ddd; padding:10px; margin:10px;">
-    <?php echo _("Multiply data in window by:"); ?> <input type="text" id="multiplyvalue" style="width:150px;" value="" />
+    <?php echo _("Multiply data in the window by a float or a fraction"); ?> <input type="text" id="multiplyvalue" style="width:150px;" value="" />
     <button id="multiply-submit" class="btn btn-info"><?php echo _('Save'); ?></button>
+    <?php echo _("<br>To erase all the window with NAN > type NAN - To convert all the window to absolute values > type abs(x)"); ?>
 </div>
 
 <div id="myModal" class="modal hide" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">

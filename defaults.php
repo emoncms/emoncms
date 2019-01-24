@@ -15,6 +15,7 @@
     $redis_server = array( 'host'   => 'localhost',
                            'port'   => 6379,
                            'auth'   => '',
+                           'dbnum'   => '',
                            'prefix' => 'emoncms');
 
 
@@ -70,7 +71,7 @@
     );
     
     // For use with emoncms module that require installation in home directory
-    // $homedir = "/home/username";
+    $homedir = "/home/pi";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
@@ -106,7 +107,7 @@
     $enable_password_reset = false;
 
     // Email address to email proccessed input values
-    $default_emailto = 'pi@localhost';
+    $default_emailto = 'root@localhost';
     
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(

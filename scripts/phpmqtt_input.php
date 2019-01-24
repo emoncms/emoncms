@@ -58,7 +58,15 @@
         die;
     }
     
-    $mysqli = new mysqli($server,$username,$password,$database,$port);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+    if ( $mysqli->connect_error ) {
+        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+        if ( $display_errors ) {
+            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+        }
+        die();
+    }
+
     if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
 
     // Enable for testing
@@ -220,6 +228,9 @@
             $time = time();
 
             global $mqtt_server, $user, $input, $process, $device, $log, $count;
+
+            //remove characters that emoncms topics cannot handle
+            $topic = str_replace(":","",$topic);
 
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
             $jsondata = json_decode($value,true,2);

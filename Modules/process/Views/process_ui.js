@@ -518,18 +518,24 @@ var processlist_ui =
 
       if (feedid == -1) {
         $("#new-feed-name").show();
+        $("#new-feed-tag").show();
+        $('#feed-select').css({'border-radius': 0, 'border-right': 0})
+        
         $("#processlist-ui #feed-engine").change(); // select available interval for engine
         // If there's only one feed engine to choose from then dont show feed engine selector
         // CHAVEIRO: Commented for now so user can see what processor it's using.
         //var processid = $('#process-select').val();
         //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
         //if (engines.length > 1) 
-          $("#feed-engine, .feed-engine-label").show();
-      } else {
+        $("#feed-engine, .feed-engine-label").show();
+    } else {
         $("#new-feed-name").hide();
+        $("#new-feed-tag").hide();
+        $('#feed-select').css({'border-radius': 4, 'border-right': 4})
         $("#feed-interval").hide();
         $("#feed-engine, .feed-engine-label").hide(); 
       }
+      autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
     });
 
     $('#processlist-ui .table').on('click', '.delete-process', function(){
@@ -636,7 +642,9 @@ var processlist_ui =
     for (z in feedgroups) {
       out += "<optgroup label='"+z+"'>";
       for (p in feedgroups[z]) {
-        out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
+          if (this.contextid !== feedgroups[z][p]['id']) {
+            out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
+          }
       }
       out += "</optgroup>";
     }
