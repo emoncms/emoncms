@@ -241,7 +241,7 @@ if(is_writable($log_filename)) {
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
                     <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
-                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy to clipboard'); ?></button>
+                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
 <?php } ?>
                 </td>
             </tr>
@@ -287,7 +287,7 @@ if ($allow_emonpi_admin) {
         <td colspan=2>
             <div>
              <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
-             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
+             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button></div>
             </div>
             <table class="table table-hover table-condensed" id="serverinformationtabular">
               <tr><td><b>Services</b></td><td></td><td></td></tr>
