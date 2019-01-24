@@ -1034,7 +1034,7 @@ class Feed
     }
 
     public function set_processlist($userid, $id, $processlist, $process_list)
-    {    
+    {
         $userid = (int) $userid;
         
         // Validate processlist
@@ -1086,8 +1086,11 @@ class Feed
                 
                     case ProcessArg::FEEDID:
                         $feedid = (int) $arg;
+                        $isVirtual = $this->get($id)['engine']==7;
                         if (!$this->access($userid,$feedid)) {
                             return array('success'=>false, 'message'=>_("Invalid feed"));
+                        } else if ($isVirtual) {
+                            return array('success'=>false, 'message'=>_("Cannot use virtual feed as source"));
                         }
                         break;
                         

@@ -628,7 +628,7 @@ var processlist_ui =
     var feedgroups = [];
     for (z in this.feedlist) {
         if (datatype == 0 || this.feedlist[z].datatype == datatype) {
-            if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
+            if (parseInt(this.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
                 continue; // Dont list virtual feed
             }
             var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
@@ -642,9 +642,7 @@ var processlist_ui =
     for (z in feedgroups) {
       out += "<optgroup label='"+z+"'>";
       for (p in feedgroups[z]) {
-          if (this.contextid !== feedgroups[z][p]['id']) {
-            out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
-          }
+          out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
       }
       out += "</optgroup>";
     }
