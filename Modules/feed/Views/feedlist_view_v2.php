@@ -374,12 +374,15 @@ function update() {
         // get node overview
         var node_size = {},
             node_time = {};
-        for (node in nodes) {
-            node_size[node] = 0;
-            node_time[node] = 0;
-            for (let feed in nodes[node]) {
-                node_size[node] += Number(nodes[node][feed].size);
-                node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node];
+
+        for (let n in nodes) {
+            let node = nodes[n];
+            node_size[n] = 0;
+            node_time[n] = 0;
+            for (let f in node) {
+                let feed = node[f];
+                node_size[n] += Number(feed.size);
+                node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
         // display nodes and feeds
