@@ -47,9 +47,10 @@ Documentation=https://github.com/emoncms/emoncms/blob/master/scripts/services/in
 [Service]
 Type=idle
 ExecStart=/usr/bin/python /var/www/emoncms/scripts/services/service-runner/service-runner.py
+User=pi
 
 # Restart script if stopped on a failure. Will not restart if not configured correctly
-Restart=on-failure
+Restart=always
 # Wait 30s before restart
 RestartSec=30s
 

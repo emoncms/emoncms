@@ -12,8 +12,8 @@ The process is as follows:
 
 ## Install python systemd service
 **Check the old version has been uninstalled**
-Install the service using the following commands:
-```
+Install the service using the following commands (if redis is already installed skip that command):
+```bash
 sudo pip install redis
 sudo ln -s /var/www/emoncms/scripts/services/service-runner/service-runner.service /lib/systemd/system
 sudo systemctl enable service-runner.service
@@ -26,6 +26,23 @@ View the log with:
 
 Tested on Raspiban Stretch
 
+## Non Raspbian setup ##
+If you are not using Raspbian as your base OS you will need to change the **User** the service runs as.
+To do that;
+```
+sudo systemctl edit service-runner.service
+```
+this opens a blank file. Add the following lines and save the file (the user can be blank for root or any other user you wish to use)
+```
+[Service]
+User=
+```
+Then
+```
+sudo systemctl daemon-reload
+sudo systemctl restart service-runner.service
+```
+### Old systems ##
 Prior to September 2018 the service runner ran as a bash script triggered by cron. The
 bash script had to connect to redis every iteration of the loop which on a RPi 3 caused
 service runner to consume 100% of the CPU.
