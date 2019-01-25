@@ -311,6 +311,14 @@ if ($allow_emonpi_admin) {
                 <?php } ?>
               <?php endforeach; ?>
 
+              <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
+              <tr class="<?php if ($system['feedwriter']) echo "success"; else echo "error"; ?>">
+                <td class="subinfo"></td><td>feedwriter</td>
+                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>
+                </td>
+              </tr>
+              <?php } ?>
+
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
