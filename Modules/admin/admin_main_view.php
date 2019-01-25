@@ -301,24 +301,38 @@ if ($allow_emonpi_admin) {
                 </td>
               </tr>
             -->
-              <?php foreach($system['services'] as $key=>$value): ?>
-                <?php if (!is_null($system['services'][$key])) { ?>
-                <tr class="<?php if ($system['services'][$key]['SubState'] === 'running') echo "success"; else echo "error"; ?>">
-                    <td class="subinfo"></td><td><?php echo $key ?></td>
-                    <td><strong><?php echo ucfirst($system['services'][$key]['ActiveState']); ?></strong> <?php echo ucfirst($system['services'][$key]['SubState']); ?>
+
+
+              <?php
+              // create array of installed services
+              foreach($system['services'] as $key=>$value): if (!is_null($system['services'][$key])):
+                $services[$key] = array(
+                    'state' => ucfirst($value['ActiveState']),
+                    'text' => ucfirst($value['SubState']),
+                    'cssClass' => $value['SubState']==='running' ? 'success': 'error',
+                    'running' => $value['SubState']==='running'
+                );
+              endif; endforeach;
+              
+              // add custom messages for feedwriter service
+              if(isset($services['feedwriter'])) {
+                  $message = '<font color="red">Service is not running</font>';
+                  if ($services['feedwriter']['running']) {
+                    $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                  }
+                  $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+              }
+              // render list as html rows <tr>
+              foreach ($services as $key=>$value):
+              echo <<<services
+              <tr class="{$value['cssClass']}">
+                    <td class="subinfo"></td><td>{$key}</td>
+                    <td><strong>{$value['state']}</strong> {$value['text']}
                     </td>
-                </tr>
-                <?php } ?>
-              <?php endforeach; ?>
-
-              <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
-              <tr class="<?php if ($system['feedwriter']) echo "success"; else echo "error"; ?>">
-                <td class="subinfo"></td><td>feedwriter</td>
-                <td><?php echo ($system['feedwriter'] ? "Service is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Service is not running</font>"); ?>, <span id="bufferused">loading...</span>
-                </td>
               </tr>
-              <?php } ?>
-
+services;
+              endforeach;
+?>
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
