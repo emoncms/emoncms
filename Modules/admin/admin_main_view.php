@@ -408,7 +408,10 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
                      $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
                  } 
                  echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+                 
+                 if (file_exists('/usr/bin/rpi-rw')) {
+                    echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+                 }
                }
       
       }
