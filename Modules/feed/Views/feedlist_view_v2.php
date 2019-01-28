@@ -91,6 +91,9 @@ body{padding:0!important}
 }
 
 
+.node .accordion-toggle{
+    border-bottom: 1px solid white;
+}
 .node .accordion-toggle,
 .node-feeds .node-feed {
     position: relative;
