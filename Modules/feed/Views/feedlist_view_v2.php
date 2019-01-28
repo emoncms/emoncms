@@ -124,7 +124,7 @@ body{padding:0!important}
 
 .node.status-warning .accordion-toggle .last-update,
 .node-feeds .node-feed.status-warning .last-update{
-    color: #FFC107!important;
+    color: #C70!important;
 }
 .node.status-success .accordion-toggle .last-update,
 .node-feeds .node-feed.status-success .last-update{
