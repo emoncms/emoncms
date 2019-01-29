@@ -36,7 +36,7 @@ function drawItem($item) {
                         if (is_active($dropdownitem)) { $subactive = true; }
                         if (isset($dropdownitem['divider']) && $dropdownitem['divider']) { $outdrop .= '<li class="divider"></li>'; }
                         // TODO: Remove dependency of index position on APPs module
-                        $outdrop .= '<li class="'. (is_active($dropdownitem) ? 'active' : '') . '"><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : $dropdownitem['0']) . '</a></li>';
+                        $outdrop .= '<li class="'. (is_active($dropdownitem) ? 'active' : '') . '"><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:(isset($dropdownitem['1'])?$dropdownitem['0']:"undefined")) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : (isset($dropdownitem['0'])?$dropdownitem['0']:"undefined")) . '</a></li>';
                     }
                 }
             }
