@@ -17,13 +17,15 @@
         $parts = explode('=',$line);
         $status[$parts[0]] = $parts[1];
     }
-    if ($status['LoadState'] === 'not-found') {
+    if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
         $return = null;
-    } else {
+    } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
         return array(
             'ActiveState' => $status["ActiveState"],
             'SubState' => $status["SubState"]
         );
+    } else {
+       $return = null;
     }
     return $return;
   }
@@ -35,6 +37,7 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
 
+    $services = array();
     $services['emonhub'] = getServiceStatus('emonhub.service');
     $services['mqtt_input'] = getServiceStatus('mqtt_input.service');
     $services['feedwriter'] = getServiceStatus('feedwriter.service');
@@ -305,14 +308,17 @@ if ($allow_emonpi_admin) {
 
               <?php
               // create array of installed services
-              foreach($system['services'] as $key=>$value): if (!is_null($system['services'][$key])):
-                $services[$key] = array(
-                    'state' => ucfirst($value['ActiveState']),
-                    'text' => ucfirst($value['SubState']),
-                    'cssClass' => $value['SubState']==='running' ? 'success': 'error',
-                    'running' => $value['SubState']==='running'
-                );
-              endif; endforeach;
+              $services = array();
+              foreach($system['services'] as $key=>$value) {
+                  if (!is_null($system['services'][$key])) {
+                      $services[$key] = array(
+                          'state' => ucfirst($value['ActiveState']),
+                          'text' => ucfirst($value['SubState']),
+                          'cssClass' => $value['SubState']==='running' ? 'success': 'error',
+                          'running' => $value['SubState']==='running'
+                      );
+                  }
+              }
               
               // add custom messages for feedwriter service
               if(isset($services['feedwriter'])) {
