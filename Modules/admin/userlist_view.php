@@ -49,6 +49,7 @@
     <th><?php echo _("Id"); ?></th>
     <th><?php echo _("Username"); ?></th>
     <th><?php echo _("Email"); ?></th>
+    <th><?php echo _("Feeds"); ?></th>
   </tr>
   <tbody id="users"></tbody>
 </table>
@@ -146,6 +147,7 @@ function table_draw() {
       out += "<td><a href='../admin/setuser.json?id="+users[z].id+"'>"+users[z].id+"</a></td>";
       out += "<td>"+users[z].username+"</td>";
       out += "<td>"+users[z].email+"</td>";
+      out += "<td>"+users[z].feeds+"</td>";
       out += "</tr>";
   }
   $("#users").html(out);
