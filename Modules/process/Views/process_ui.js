@@ -535,7 +535,7 @@ var processlist_ui =
         $("#feed-interval").hide();
         $("#feed-engine, .feed-engine-label").hide(); 
       }
-      if (nodes_display!=undefined) {
+      if (typeof nodes_display !== 'undefined') {
           autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
       }
     });
