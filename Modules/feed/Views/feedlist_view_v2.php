@@ -1186,7 +1186,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo _("Total size of used space for feeds:"); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------
