@@ -365,7 +365,7 @@ var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE
 
 // auto refresh
 update();
-setInterval(update,5000);
+// setInterval(update,5000);
 
 var firstLoad = true;
 function update() {
