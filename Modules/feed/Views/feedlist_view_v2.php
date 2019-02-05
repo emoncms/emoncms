@@ -7,26 +7,12 @@
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-user.lang = "<?php echo $_SESSION['lang']; ?>"
-// rework to fit the momentjs naming scheme for the locale files
-momentjs_locales = {
-    da_DK:'da',
-    nl_BE:'nl-be',
-    nl_NL:'nl',
-    en_GB:'en-gb',
-    et_EE:'et',
-    fr_FR:'fr',
-    de_DE:'de',
-    it_IT:'it',
-    es_ES:'es',
-    cy_GB:'cy'
-}
-// match supported locales with momentjs file names
-user.locale = momentjs_locales.hasOwnProperty(user.lang) ? momentjs_locales[user.lang] : 'en-gb'
-// load the moment js locale file for the user's language
-var script = document.createElement('script');
-script.src = "<?php echo $path; ?>Lib/momentjs-locales/%s.js".replace("%s",user.locale);
-document.head.appendChild(script);
+    var user = {};
+    var path = "<?php echo $path; ?>";
+    user.lang = "<?php echo $_SESSION['lang']; ?>";
+</script>
+<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script>
 
 /**
  * uses moment.js to format to local time 
@@ -206,6 +192,7 @@ body{padding:0!important}
         </div>
     </div>
     <div class="modal-footer">
+        <div id="feed-edit-save-message" style="position:absolute"></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
@@ -379,7 +366,7 @@ var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE
 
 // auto refresh
 update();
-setInterval(update,5000);
+// setInterval(update,5000);
 
 var firstLoad = true;
 function update() {
@@ -601,8 +588,10 @@ $(".feed-edit").click(function() {
             var checked = false; if (feeds[feedid]['public']==1) checked = true;
             $("#feed-public")[0].checked = checked;
             
+            // pre-select item if already set
             let $dropdown = $('#feed_unit_dropdown');
             $dropdown.val(feeds[feedid].unit);
+            // set the dropdown to "other" if value not in list
             let options = [];
             $dropdown.find('option').each(function(key,elem){
                 options.push(elem.value);
@@ -611,6 +600,7 @@ $(".feed-edit").click(function() {
                 $('#feed_unit_dropdown_other').val(feeds[feedid].unit);
                 $dropdown.val('_other');
             }
+            // show / hide "other" free text field on load and on change if "other" selected in dropdown
             if($dropdown.val()=='_other') {
                 $dropdown.next('input').show();
             }else{
@@ -622,7 +612,7 @@ $(".feed-edit").click(function() {
                 }else{
                     $(event.target).next('input').hide();
                 }
-            });            
+            });
         }
     }
     
@@ -668,10 +658,19 @@ $("#feed-edit-save").click(function() {
                 $('#feedEditModal').modal('hide');
                 return;
             }
-            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-                update();
-                $('#feedEditModal').modal('hide');
-            }});
+            $('#feed-edit-save-message').text('').hide();
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json'})
+            .done(function(response) {
+                if(response.success !== true) {
+                    // error
+                    $('#feed-edit-save-message').text(response.message).fadeIn();
+                } else {
+                    // ok
+                    update();
+                    $('#feedEditModal').modal('hide');
+                    $('#feed-edit-save-message').text('').hide();
+                }
+            })
         }
     }
 });
@@ -1200,7 +1199,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo _("Total size of used space for feeds:"); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------

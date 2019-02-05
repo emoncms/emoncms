@@ -57,6 +57,53 @@ input[type="checkbox"] { margin:0px; }
     body {padding:0};
 }
 
+.node .node-info{
+    border-bottom: 1px solid white;
+}
+.node .node-info,
+.node .node-input {
+    position: relative;
+}
+.node .node-info::after,
+.node .node-input::after {
+    content: '';
+    width: .4em;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0,0,0,.1);
+}
+.buttons{ 
+    padding-right: .4em;
+}
+.status-success.node-info::after,
+.status-success.node-input::after{
+    background: #28A745!important;
+}
+.status-danger.node-info::after,
+.status-danger.node-input::after{
+    background: #DC3545!important;
+}
+.status-warning.node-info::after,
+.status-warning.node-input::after{
+    background: #FFC107!important;
+}
+
+.status-success.node-info .last-update,
+.status-success.node-input .last-update{
+    color: #28A745!important;
+}
+.status-danger.node-info .last-update,
+.status-danger.node-input .last-update{
+    color: #DC3545!important;
+}
+.status-warning.node-info .last-update,
+.status-warning.node-input .last-update{
+    color: #C70!important;
+}
+
 </style>
 
 <div>
@@ -208,25 +255,25 @@ function draw_devices()
     var latest_update = [];
 
     for (var node in devices) {
+        var device = devices[node]
         counter++
         isCollapsed = !nodes_display[node];
         out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(device) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
         out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <span class='description' data-col='G'>"+devices[node].description+"</span>";
+        out += "     <span class='description' data-col='G'>"+device.description+"</span>";
         out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
-        out += "     <div class='pull-right'>"
-        
+        out += "     <div class='buttons pull-right'>"
         
         var control_node = "hidden";
-        if (device_templates[devices[node].type]!=undefined && device_templates[devices[node].type].control!=undefined && device_templates[devices[node].type].control) control_node = "";
+        if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
         
         out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
         out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
         
-        var devicekey = devices[node].devicekey;
-        if (devices[node].devicekey=="") devicekey = "No device key created"; 
+        var devicekey = device.devicekey;
+        if (device.devicekey=="") devicekey = "No device key created"; 
         
         out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
@@ -234,20 +281,20 @@ function draw_devices()
         out += "  </div>";
 
         out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-        for (var i in devices[node].inputs) {
-            var input = devices[node].inputs[i];
+        for (var i in device.inputs) {
+            var input = device.inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': '';
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : '';
             latest_update[node] = latest_update > input.time ? latest_update : input.time;
 
-            out += "<div class='node-input' id="+input.id+">";
+            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+">";
             out += "  <div class='select text-center' data-col='B'>";
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
             out += "  <div class='description' data-col='G'>"+input.description+"</div>";
             out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
-            out += "  <div class='pull-right'>";
+            out += "  <div class='buttons pull-right'>";
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
             out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
             out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
@@ -650,5 +697,69 @@ $(".auth-check-allow").click(function(){
 
 // debouncing causes odd rendering during resize - run this at all resize points...
 $(window).on("resize",onResize);
+
+
+
+/**
+ * find out how many intervals an feed/input has missed
+ * 
+ * @param {object} nodeItem
+ * @return mixed
+ */
+function missedIntervals(nodeItem) {
+    // @todo: interval currently fixed to 5s
+    var interval = 5;
+    if (!nodeItem.time) return null;
+    var lastUpdated = new Date(nodeItem.time * 1000);
+    var now = new Date().getTime();
+    var elapsed = (now - lastUpdated) / 1000;
+    let missedIntervals = parseInt(elapsed / interval);
+    return missedIntervals;
+}
+/**
+ * get css class name based on number of missed intervals
+ * 
+ * @param {mixed} missed - number of missed intervals, false if error
+ * @return string
+ */
+function missedIntervalClassName (missed) {
+    let result = 'status-success';
+    // @todo: interval currently fixed to 5s
+    if (missed > 4) result = 'status-warning'; 
+    if (missed > 11) result = 'status-danger';
+    if (missed === null) result = 'status-danger';
+    return result;
+}
+/**
+ * get css class name for node item status
+ * 
+ * first gets number of missed intervals since last update
+ * @param {object} nodeItem
+ * @return {string} 
+ */
+function nodeItemIntervalClass (nodeItem) {
+    let missed = missedIntervals(nodeItem);
+    return missedIntervalClassName(missed);
+}
+/**
+ * get css class name for latest node status
+ * 
+ * only returns the status for the most recent update
+ * @param {array} - array of nodeItems
+ * @return {string} 
+ */
+function nodeIntervalClass (node) {
+    let nodeMissed = 0;
+    let missed = null;
+    // find most recent interval status
+    for (f in node.inputs) {
+        let nodeItem = node.inputs[f];
+        missed = missedIntervals(nodeItem);
+        if (missed > nodeMissed) {
+            nodeMissed = missed;
+        }
+    }
+    return missedIntervalClassName(missed);
+}
 
 </script>
