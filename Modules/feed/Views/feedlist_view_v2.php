@@ -192,6 +192,7 @@ body{padding:0!important}
         </div>
     </div>
     <div class="modal-footer">
+        <div id="feed-edit-save-message" style="position:absolute"></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
@@ -365,7 +366,7 @@ var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE
 
 // auto refresh
 update();
-setInterval(update,5000);
+// setInterval(update,5000);
 
 var firstLoad = true;
 function update() {
@@ -587,8 +588,10 @@ $(".feed-edit").click(function() {
             var checked = false; if (feeds[feedid]['public']==1) checked = true;
             $("#feed-public")[0].checked = checked;
             
+            // pre-select item if already set
             let $dropdown = $('#feed_unit_dropdown');
             $dropdown.val(feeds[feedid].unit);
+            // set the dropdown to "other" if value not in list
             let options = [];
             $dropdown.find('option').each(function(key,elem){
                 options.push(elem.value);
@@ -597,6 +600,7 @@ $(".feed-edit").click(function() {
                 $('#feed_unit_dropdown_other').val(feeds[feedid].unit);
                 $dropdown.val('_other');
             }
+            // show / hide "other" free text field on load and on change if "other" selected in dropdown
             if($dropdown.val()=='_other') {
                 $dropdown.next('input').show();
             }else{
@@ -608,7 +612,7 @@ $(".feed-edit").click(function() {
                 }else{
                     $(event.target).next('input').hide();
                 }
-            });            
+            });
         }
     }
     
@@ -654,10 +658,19 @@ $("#feed-edit-save").click(function() {
                 $('#feedEditModal').modal('hide');
                 return;
             }
-            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-                update();
-                $('#feedEditModal').modal('hide');
-            }});
+            $('#feed-edit-save-message').text('').hide();
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json'})
+            .done(function(response) {
+                if(response.success !== true) {
+                    // error
+                    $('#feed-edit-save-message').text(response.message).fadeIn();
+                } else {
+                    // ok
+                    update();
+                    $('#feedEditModal').modal('hide');
+                    $('#feed-edit-save-message').text('').hide();
+                }
+            })
         }
     }
 });
