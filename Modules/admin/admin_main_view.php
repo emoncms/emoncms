@@ -39,7 +39,8 @@
 
     $services = array();
     $services['emonhub'] = getServiceStatus('emonhub.service');
-    $services['mqtt_input'] = getServiceStatus('mqtt_input.service');
+    $services['mqtt_input'] = getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
+    $services['emoncms_mqtt'] = getServiceStatus('emoncms_mqtt.service');
     $services['feedwriter'] = getServiceStatus('feedwriter.service');
     $services['service-runner'] = getServiceStatus('service-runner.service');
     $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
