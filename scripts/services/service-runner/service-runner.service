@@ -65,4 +65,3 @@ SyslogIdentifier=service-runner
 
 [Install]
 WantedBy=multi-user.target
-
