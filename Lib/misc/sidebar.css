@@ -19,7 +19,107 @@ Side nav
   background: #333;
   position: fixed;
   overflow-y: auto;
-  z-index: 1000; 
+  z-index: 1000;
+  height: calc(100% - 2.5rem);
+  transition: all .3s ease-out;
+}
+.sidebarnav.hide{
+  left: 0;
+}
+.sidenav #topnav .btn{
+  background: none;
+  border-radius: 0;
+  border: 0;
+}
+.sidebar-switch{
+  padding-left:.25em!important;
+}
+.sidebar-switch:hover{
+  background: #666;
+}
+.sidebar-switch:after {
+  content: "";
+  width: 0; 
+  height: 0; 
+  border-top: .3rem solid transparent;
+  border-bottom: .3rem solid transparent; 
+  border-right: .3rem solid #b2b2b2; 
+  margin-left: .1rem;
+  transition: all .2s ease-out;
+}
+.sidebar-switch:hover:after{
+  border-width: .4rem;
+  margin-left: 0;
+}
+.sidebar-switch:active,
+.sidebar-switch:focus{
+  outline: none;
+}
+.sidebar-switch:active{
+  background: transparent;
+}
+#open-sidebar{
+  height: 100%;
+  left: 0;
+  position: fixed;
+  width: .3rem;
+  background: #e3e3e3;
+}
+#open-sidebar:hover{
+  width: .5rem;
+  background: #999;
+}
+#open-sidebar:after{
+  border-top: .3rem solid transparent;
+  border-bottom: .3rem solid transparent;
+  border-left: .3rem solid #e3e3e3; 
+  border-right: none;
+  border-width: .3rem;
+  margin-left: .3rem;
+}
+#open-sidebar:hover:after{
+  border-width: .4rem;
+  margin-left: .5rem;
+  border-left: .3rem solid #999; 
+}
+.menu-overlay {
+  display: none;
+  background-color: #000;
+  bottom: 0;
+  left: 0;
+  opacity: 0.3;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 49;
+}
+
+
+/* "bs4 style" utility styles */
+.d-flex { display: flex!important; }
+.justify-content-between { justify-content: space-between!important; }
+.justify-content-center { justify-content: center!important; }
+.align-items-center { align-items: center!important; }
+.flex-column{ flex-direction: column!important; }
+.h-100{ height: 100%!important; }
+.w-100{ width: 100%!important; }
+.bg-dark{ background: #333!important}
+.flex-fill{  flex: 1 1 auto !important; }
+.mb-3, .my-3 { margin-bottom: 1rem !important; }
+.mt-3, .my-3 { margin-top: 1rem !important; }
+.pr-1, .px-1 { padding-right: .25rem !important; }
+.pl-1, .px-1 { padding-left: .25rem !important; }
+.p-0 {padding: 0!important}
+
+/* svg icons */
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+    vertical-align: -.15em;
 }
 
 .sidenav-inner {

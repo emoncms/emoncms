@@ -125,7 +125,7 @@ body{padding:0!important}
 <div id="mouse-position"></div>
 <div id="feed-header">
     <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
-    <h3><?php echo _('Feeds'); ?></h3>
+    <a href="#" data-toggle="slide-collapse" data-target="#sidebar"><h3>&#9776; <?php echo _('Feeds'); ?></h3></a>
 </div>
 
 <div class="controls" data-spy="affix" data-offset-top="100">
