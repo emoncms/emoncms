@@ -173,30 +173,27 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <br>
 <?php } ?>
 
-<div id="sidebar" style="left: 0" class="sidenav d-flex bg-dark justify-content-between">
+<div id="sidebar" style="left: 0" class="sidenav d-flex bg-dark justify-content-between text-light">
     <div class="sidebar-content d-flex flex-column flex-fill">
         <div class="sidenav-inner flex-fill">
             <ul id="topnav" class="sidenav-menu btn-group d-flex">
-                <li class="flex-fill"><a href="<?php echo $path; ?>" class="btn" title="Quick links"><svg class="icon"><use xlink:href="#icon-home"></use></svg></a></li>
-                <li class="flex-fill"><a href="<?php echo $path; ?>admin/view" class="btn" title="Settings"><svg class="icon"><use xlink:href="#icon-wrench"></use></svg></a></li>
-                <li class="flex-fill"><a href="<?php echo $path; ?>app/view" class="btn" title="Apps"><svg class="icon"><use xlink:href="#icon-leaf"></use></svg></a></li>
-                <li class="flex-fill"><a href="<?php echo $path; ?>dashboard/list" class="btn" title="Dashboards"><svg class="icon"><use xlink:href="#icon-dashboard"></use></svg></a></li>
+                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-home"></use></svg>','feed/list',_('Home'),'btn') ?></li>
+                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-wrench"></use></svg>','user/view',_('Settings'),'btn') ?></li>
+                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-leaf"></use></svg>','app/view',_('Apps'),'btn') ?></li>
+                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-dashboard"></use></svg>','dashboard/list',_('Dashboards'),'btn') ?></li>
             </ul>
-            <ul id="subnav" class="sidenav-menu my-3 nav">
-                <li><a href="<?php echo $path; ?>input/view"><svg class="icon"><use xlink:href="#icon-input"></use></svg> Inputs</a></li>
-                <li><a href="<?php echo $path; ?>feed/list"><svg class="icon"><use xlink:href="#icon-format_list_bulleted"></use></svg> Feeds</a></li>
-                <li><a href="<?php echo $path; ?>graph"><svg class="icon"><use xlink:href="#icon-show_chart"></use></svg> Graphs</a></li>
+            <ul id="subnav" class="sidenav-menu nav">
+                <?php echo $route->makeListLink('<svg class="icon"><use xlink:href="#icon-input"></use></svg> ' . _("Inputs"), 'input/view') ?>
+                <?php echo $route->makeListLink('<svg class="icon"><use xlink:href="#icon-format_list_bulleted"></use></svg> ' . _("Feeds"), 'feed/list') ?>
+                <?php echo $route->makeListLink('<svg class="icon"><use xlink:href="#icon-show_chart"></use></svg> ' . _("Graphs"), 'graph') ?>
             </ul>
-            <?php 
-            if (isset($submenu)) { 
-                echo $submenu;
-            } ?>
+            <?php echo $route->sidebar; ?>
         </div>
         <a href="#"><small class="muted">[beta]</small></a>
     </div>
-    <a title="<?php echo _("Hide Sidebar") ?>" id="close-sidebar" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column"></a>
+    <a title="<?php echo _("Toggle Sidebar") ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column"></a>
 </div>
-<a id="open-sidebar" title="<?php echo _("Show Sidebar") ?>" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar" href="#"></a>
+<a title="<?php echo _("Toggle Sidebar") ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column"></a>
 
 <span class="menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
 

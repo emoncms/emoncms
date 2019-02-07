@@ -23,65 +23,38 @@ Side nav
   height: calc(100% - 2.5rem);
   transition: all .3s ease-out;
 }
-.sidebarnav.hide{
-  left: 0;
-}
 .sidenav #topnav .btn{
   background: none;
   border-radius: 0;
   border: 0;
 }
-.sidebar-switch{
-  padding-left:.25em!important;
+.sidenav #subnav {
+    margin-bottom: 1rem;
 }
-.sidebar-switch:hover{
-  background: #666;
-}
+
+
 .sidebar-switch:after {
   content: "";
-  width: 0; 
-  height: 0; 
-  border-top: .3rem solid transparent;
-  border-bottom: .3rem solid transparent; 
-  border-right: .3rem solid #b2b2b2; 
-  margin-left: .1rem;
+  position: fixed;
+  width: 1rem;
+  height: 100vh;
+  background: #b2b2b2;
+  background: #424242;
+  top: 0;
+  opacity: .1;
   transition: all .2s ease-out;
+  margin-left: -.2rem;
 }
-.sidebar-switch:hover:after{
-  border-width: .4rem;
-  margin-left: 0;
-}
+
 .sidebar-switch:active,
 .sidebar-switch:focus{
   outline: none;
 }
-.sidebar-switch:active{
-  background: transparent;
+.sidenav:hover .sidebar-switch:after,
+.sidebar-switch:hover:after {
+  opacity: .8;
 }
-#open-sidebar{
-  height: 100%;
-  left: 0;
-  position: fixed;
-  width: .3rem;
-  background: #e3e3e3;
-}
-#open-sidebar:hover{
-  width: .5rem;
-  background: #999;
-}
-#open-sidebar:after{
-  border-top: .3rem solid transparent;
-  border-bottom: .3rem solid transparent;
-  border-left: .3rem solid #e3e3e3; 
-  border-right: none;
-  border-width: .3rem;
-  margin-left: .3rem;
-}
-#open-sidebar:hover:after{
-  border-width: .4rem;
-  margin-left: .5rem;
-  border-left: .3rem solid #999; 
-}
+
 .menu-overlay {
   display: none;
   background-color: #000;
@@ -103,7 +76,9 @@ Side nav
 .flex-column{ flex-direction: column!important; }
 .h-100{ height: 100%!important; }
 .w-100{ width: 100%!important; }
-.bg-dark{ background: #333!important}
+.bg-dark{ background: #333!important; }
+.text-dark{ color: #333!important; }
+.text-light{ color: #f8f9fa !important; }
 .flex-fill{  flex: 1 1 auto !important; }
 .mb-3, .my-3 { margin-bottom: 1rem !important; }
 .mt-3, .my-3 { margin-top: 1rem !important; }
@@ -113,13 +88,13 @@ Side nav
 
 /* svg icons */
 .icon {
-    display: inline-block;
-    width: 1em;
-    height: 1em;
-    stroke-width: 0;
-    stroke: currentColor;
-    fill: currentColor;
-    vertical-align: -.15em;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -.15em;
 }
 
 .sidenav-inner {

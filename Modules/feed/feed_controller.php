@@ -32,6 +32,7 @@ function feed_controller()
     if ($route->format == 'html')
     {
         if ($route->action=="") $route->action = "list";
+        $route->sidebar = view("Modules/feed/Views/sidebar.php");
 
         textdomain("messages");
         if ($route->action == "list" && $session['write']) {

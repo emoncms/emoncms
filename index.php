@@ -299,7 +299,7 @@
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-            $output['mainmenu'] = view($themeDir . "menu_view.php", array());
+            $output['mainmenu'] = view($themeDir . "menu_view.php");
             print view($themeDir . "theme.php", $output);
         }
     }

@@ -47,6 +47,12 @@ class Route
      */
     public $format = 'html';
 
+    /**
+     * <ul><li><a> list of links to be shown below main menu
+     *
+     * @var string
+     */
+    public $sidebar = '';
 
     /**
      * @var bool
@@ -146,5 +152,83 @@ class Route
     public function isRouteNotDefined()
     {
         return empty($this->controller) && empty($this->action);
+    }
+    
+    // --- LINK BUILDING CODE ---
+
+    /**
+     * build <li><a> style nav link with 'active' class added if is current page
+     *
+     * @param string $text text or html to use as the link content
+     * @param string $path relative path to destination
+     * @param string $title title to use as a tooltip
+     * @param string $css css class names to add to the <li> tag
+     * @param string $id unique id for a <li> tag
+     * @return string <li><a> link
+     */
+    public function makeListLink($text='',$path='',$title='',$css='',$id='') {
+        $link = $this->makeLink($text, $path, $title, $css, $id);
+        $url = $this->getAbsoluteUrl($path);
+        $current_path = $this->getCurrentPath();
+        $css = $this->addCssClass($url === $current_path ? 'active': '', $css);
+        return sprintf('<li class="%s">%s</li>', $css, $link);
+    }
+    /**
+     * build <a> link with 'active' class added if is current page
+     *
+     * @param string $text
+     * @param string $path
+     * @param string $title
+     * @param string $css
+     * @param string $id
+     * @return string <a> tag
+     */
+    public function makeLink($text='',$path='',$title='',$css='',$id='') {
+        $url = $this->getAbsoluteUrl($path);
+        return sprintf('<a id="%s" href="%s" title="%s" class="%s">%s</a>', $id, $url, $title, $css, $text);
+    }
+    /**
+     * return full url of given relative path of controller/action
+     *
+     * @param string $_path
+     * @return string
+     */
+    private function getAbsoluteUrl($_path) {
+        global $path;
+        $url = rtrim($path.$_path, '/');
+        return $url;
+    }
+    /**
+     * add a css class name to a given list (if not already there)
+     *
+     * @param string $classname
+     * @param string $css
+     * @return string
+     */
+    private function addCssClass($classname, $css = '') {
+        $css = explode(' ', $css);
+        $css = array_unique(array_filter($css));
+        if (!in_array($classname, $css)){
+            $css[] = $classname;
+        }
+        $css = implode(' ', $css);
+        return $css;
+    }
+    /**
+     * get current path from $route parts
+     *
+     * @return string
+     */
+    private function getCurrentPath(){
+        global $path;
+        $spearator = '/';
+        $parts[] = $path;
+        $parts[] = $this->controller;
+        $parts[] = $this->action;
+        $parts = array_filter($parts);
+        $parts = array_map(function($val) use ($spearator){
+            return rtrim($val, $spearator);
+        }, $parts);
+        return implode($spearator, $parts);
     }
 }

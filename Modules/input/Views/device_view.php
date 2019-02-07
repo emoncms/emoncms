@@ -109,7 +109,8 @@ input[type="checkbox"] { margin:0px; }
 <div>
     <div id="input-header">
         <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
-        <h2><?php echo _('Inputs'); ?></h2>
+        <a href="#" data-toggle="slide-collapse" data-target="#sidebar"><h3>&#9776; <?php echo _('Inputs'); ?></h3></a>
+
     </div>
     
     <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
