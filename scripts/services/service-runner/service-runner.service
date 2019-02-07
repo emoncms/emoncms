@@ -1,4 +1,4 @@
-# Systemd unit file for mqtt input script
+# Systemd unit file for service runner script
 
 # INSTALL:
 # sudo ln -s /var/www/emoncms/scripts/services/service-runner/service-runner.service /lib/systemd/system
