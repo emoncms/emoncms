@@ -1,9 +1,5 @@
 # Systemd unit file for mqtt input script
 
-# ***** NOTE: RUNS AS USER "pi" BY DEFAULT *****
-#  If running on a non-Raspbian environment, change "User=pi" in the [Service] section
-#  to the user of your choice (user must exist and should be the "emoncms" admin account)
-
 # INSTALL:
 # sudo ln -s /var/www/emoncms/scripts/services/service-runner/service-runner.service /lib/systemd/system
 
@@ -41,7 +37,7 @@ Description=Emoncms service-runner Input Script
 Wants=redis-server.service
 After=redis-server.service
 StartLimitIntervalSec=5
-#Documentation=https://github.com/emoncms/emoncms/blob/master/docs/service-runner.md
+Documentation=https://github.com/emoncms/emoncms/blob/master/scripts/services/install-service-runner-update.md
 
 # Uncomment this line to use a dedicated log file for StdOut and StdErr.
 # NOTE: only works in systemd v236+
@@ -55,7 +51,7 @@ User=pi
 
 # Restart script if stopped
 Restart=always
-# Wait 60s before restart
+# Wait 30s before restart
 RestartSec=30s
 
 # Tag things in the log

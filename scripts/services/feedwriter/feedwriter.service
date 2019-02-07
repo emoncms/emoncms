@@ -34,9 +34,9 @@
 
 [Unit]
 Description=Emoncms feedwriter script
-Wants=mysql.service redis.service
-After=mysql.service redis.service
-Documentation=https://github.com/emoncms/emoncms
+Wants=mysql.service redis-server.service
+After=mysql.service redis-server.service
+Documentation=https://github.com/emoncms/emoncms/blob/master/scripts/services/install-service-feedwriter.md
 
 # Uncomment this line to use a dedicated log file for StdOut and StdErr.
 # NOTE: only works in systemd v236+
