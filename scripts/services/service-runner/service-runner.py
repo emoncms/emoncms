@@ -42,9 +42,13 @@ server = connect_redis()
 while True:
   try:
     # Check for the existence of a redis 'service-runner' key
-    if server.exists('service-runner'):
+    if server.exists('service-runner') or server.exists('emoncms:service-runner'):
       # We've got one, now to turn it into a cmdline
-      flag = server.lpop('service-runner')
+      if server.exists('service-runner'):
+        flag = server.lpop('service-runner')
+      else:
+        flag = server.lpop('emoncms:service-runner')
+
       print("Got flag: %s\n" % flag)
       sys.stdout.flush()
       script, logfile = flag.split('>')
