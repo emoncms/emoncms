@@ -197,7 +197,7 @@ class Input
             $this->load_to_redis($userid);
             $inputids = $this->redis->sMembers("user:inputs:$userid");
         }
-
+        
         $pipe = $this->redis->multi(Redis::PIPELINE);
         foreach ($inputids as $id) $row = $this->redis->hGetAll("input:$id");
         $result = $pipe->exec();
@@ -207,7 +207,6 @@ class Input
             if (!isset($dbinputs[$row['nodeid']])) $dbinputs[$row['nodeid']] = array();
             $dbinputs[$row['nodeid']][$row['name']] = array('id'=>$row['id'], 'processList'=>$row['processList']);
         }
-
         return $dbinputs;
     }
 
@@ -306,16 +305,16 @@ class Input
     // -----------------------------------------------------------------------------------------
     // getlist: returns a list of user inputs (no grouping)
     // -----------------------------------------------------------------------------------------
-    public function getlist($userid)
+    public function get_list($userid)
     {
         if ($this->redis) {
-            return $this->redis_getlist($userid);
+            return $this->redis_get_list($userid);
         } else {
-            return $this->mysql_getlist($userid);
+            return $this->mysql_get_list($userid);
         }
     }
 
-    private function redis_getlist($userid)
+    private function redis_get_list($userid)
     {
         $userid = (int) $userid;
         if (!$this->redis->exists("user:inputs:$userid")) $this->load_to_redis($userid);
@@ -347,10 +346,15 @@ class Input
             }
             $inputs[] = $row;
         }
+        usort($inputs, function($i1, $i2) {
+            if($i1['nodeid'] == $i2['nodeid'])
+                return strcmp($i1['name'], $i2['name']);
+            return strcmp($i1['nodeid'], $i2['nodeid']);
+        });
         return $inputs;
     }
 
-    private function mysql_getlist($userid)
+    private function mysql_get_list($userid)
     {
         $userid = (int) $userid;
         $inputs = array();

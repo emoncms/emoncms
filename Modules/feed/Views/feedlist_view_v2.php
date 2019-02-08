@@ -384,14 +384,12 @@ function update() {
             $("#feed-footer").show();
             $("#feed-none").hide();
         }
-        feeds = {};
-        for (var z in data) feeds[data[z].id] = data[z];
         nodes = {};
-        for (var z in feeds) {
-            var node = feeds[z].tag;
-            if (nodes[node]==undefined) nodes[node] = [];
-            if (nodes_display[node]==undefined) nodes_display[node] = true;
-            nodes[node].push(feeds[z]);
+        for (var z in data) {
+            var node = data[z].tag;
+            if (nodes[node] == undefined) nodes[node] = [];
+            if (nodes_display[node] == undefined) nodes_display[node] = true;
+            nodes[node].push(data[z]);
         }
         if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
@@ -418,6 +416,8 @@ function update() {
                 node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
+        
+        
         // display nodes and feeds
         var counter = 0;
         for (var node in nodes) {

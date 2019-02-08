@@ -185,36 +185,32 @@ function update(){
         var requestTime = (new Date()).getTime();
         $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
             table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-              
-            // Associative array of inputs by id
-            inputs = {};
-            for (var z in data) inputs[data[z].id] = data[z];
             
             // Assign inputs to devices
-            for (var z in inputs) {
+            for (var i in data) {
                 // Device does not exist which means this is likely a new system or that the device was deleted
                 // There needs to be a corresponding device for every node and so the system needs to recreate the device here
-                if (devices[inputs[z].nodeid]==undefined) {
-                    devices[inputs[z].nodeid] = {description:""};
+                if (devices[data[i].nodeid]==undefined) {
+                    devices[data[i].nodeid] = {description:""};
                     // Device creation
-                    $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: false, success: function(deviceid) {
+                    $.ajax({ url: path+"device/create.json?nodeid="+data[i].nodeid, dataType: 'json', async: false, success: function(deviceid) {
                         if (!deviceid) {
-                            alert("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid); 
+                            alert("There was an error creating device: nodeid="+data[i].nodeid+" deviceid="+deviceid); 
                         } else {
                             $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
-                                devices[inputs[z].nodeid] = result;
+                                devices[data[i].nodeid] = result;
                             }});
                         }
                     }});
                 }
-                if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                if (nodes_display[data[i].nodeid]==undefined) nodes_display[data[i].nodeid] = true;
                 // expand if only one feed available
-                if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
+                if (devices[data[i].nodeid].inputs==undefined) devices[data[i].nodeid].inputs = [];
                 // expand if only one feed available or state locally cached in cookie
                 if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
-                    nodes_display[inputs[z].nodeid] = false;
+                    nodes_display[data[i].nodeid] = false;
                 }
-                devices[inputs[z].nodeid].inputs.push(inputs[z]);
+                devices[data[i].nodeid].inputs.push(data[i]);
             }
             // cache state in cookie
             if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));

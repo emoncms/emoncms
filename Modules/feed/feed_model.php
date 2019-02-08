@@ -373,6 +373,11 @@ class Feed
         } else {
             $feeds = $this->mysql_get_user_feeds($userid);
         }
+        usort($feeds, function($f1, $f2) {
+            if($f1['tag'] == $f2['tag'])
+                return strcmp($f1['name'], $f2['name']);
+            return strcmp($f1['tag'], $f2['tag']);
+        });
         return $feeds;
     }
 
