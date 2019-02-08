@@ -58,7 +58,15 @@
         die;
     }
     
-    $mysqli = new mysqli($server,$username,$password,$database,$port);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+    if ( $mysqli->connect_error ) {
+        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+        if ( $display_errors ) {
+            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+        }
+        die();
+    }
+
     if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
 
     // Enable for testing
@@ -102,7 +110,7 @@
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
     */ 
-    $mqtt_client = new Mosquitto\Client('emoncms',true);
+    $mqtt_client = new Mosquitto\Client($mqtt_server['client_id'],true);
     
     $connected = false;
     $subscribed = 0;

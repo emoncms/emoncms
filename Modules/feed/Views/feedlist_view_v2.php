@@ -7,26 +7,12 @@
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-user.lang = "<?php echo $_SESSION['lang']; ?>"
-// rework to fit the momentjs naming scheme for the locale files
-momentjs_locales = {
-    da_DK:'da',
-    nl_BE:'nl-be',
-    nl_NL:'nl',
-    en_GB:'en-gb',
-    et_EE:'et',
-    fr_FR:'fr',
-    de_DE:'de',
-    it_IT:'it',
-    es_ES:'es',
-    cy_GB:'cy'
-}
-// match supported locales with momentjs file names
-user.locale = momentjs_locales.hasOwnProperty(user.lang) ? momentjs_locales[user.lang] : 'en-gb'
-// load the moment js locale file for the user's language
-var script = document.createElement('script');
-script.src = "<?php echo $path; ?>Lib/momentjs-locales/%s.js".replace("%s",user.locale);
-document.head.appendChild(script);
+    var user = {};
+    var path = "<?php echo $path; ?>";
+    user.lang = "<?php echo $_SESSION['lang']; ?>";
+</script>
+<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script>
 
 /**
  * uses moment.js to format to local time 
@@ -47,6 +33,9 @@ function format_time(time,format){
 
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
+
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
 
 <style>
 body{padding:0!important}
@@ -88,41 +77,49 @@ body{padding:0!important}
 }
 
 
-.autocomplete {
-  position: relative;
-  display: inline-block;
+.node .accordion-toggle{
+    border-bottom: 1px solid white;
 }
-.autocomplete input {
-    z-index:100;
+.node .accordion-toggle,
+.node-feeds .node-feed {
+    position: relative;
 }
-.autocomplete-items {
-  position: absolute;
-  border: 1px solid #d4d4d4;
-  border-bottom: none;
-  border-top: none;
-  z-index: 99;
-  /*position the autocomplete items to be the same width as the container:*/
-  top: 100%;
-  left: 0;
-  right: 0;
-}
-.autocomplete-items div {
-  padding: 10px;
-  cursor: pointer;
-  background-color: #fff;
-  border-bottom: 1px solid #d4d4d4;
-}
-.autocomplete-items div:hover {
-  /*when hovering an item:*/
-  background-color: #e9e9e9;
-}
-.autocomplete-active {
-  /*when navigating through the items using the arrow keys:*/
-  background-color: DodgerBlue !important;
-  color: #ffffff;
+.node .accordion-toggle:after,
+.node-feeds .node-feed:after{
+    content: '';
+    width: .4em;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
+.node-feeds .node-feed.status-warning:after,
+.node.status-warning .accordion-toggle:after {
+    background: #FFC107;
+}
+.node-feeds .node-feed.status-success:after,
+.node.status-success .accordion-toggle:after {
+    background: #28A745;
+}
+.node-feeds .node-feed.status-danger:after,
+.node.status-danger .accordion-toggle:after {
+    background: #DC3545;
+}
 
+.node.status-warning .accordion-toggle .last-update,
+.node-feeds .node-feed.status-warning .last-update{
+    color: #C70!important;
+}
+.node.status-success .accordion-toggle .last-update,
+.node-feeds .node-feed.status-success .last-update{
+    color: #28A745!important; 
+}
+.node.status-danger .accordion-toggle .last-update,
+.node-feeds .node-feed.status-danger .last-update{
+    color: #DC3545!important;
+}
 
 </style>
 <div id="mouse-position"></div>
@@ -194,6 +191,7 @@ body{padding:0!important}
         </div>
     </div>
     <div class="modal-footer">
+        <div id="feed-edit-save-message" style="position:absolute"></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
@@ -367,7 +365,7 @@ var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE
 
 // auto refresh
 update();
-setInterval(update,5000);
+// setInterval(update,5000);
 
 var firstLoad = true;
 function update() {
@@ -409,12 +407,15 @@ function update() {
         // get node overview
         var node_size = {},
             node_time = {};
-        for (node in nodes) {
-            node_size[node] = 0;
-            node_time[node] = 0;
-            for (let feed in nodes[node]) {
-                node_size[node] += Number(nodes[node][feed].size);
-                node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node];
+
+        for (let n in nodes) {
+            let node = nodes[n];
+            node_size[n] = 0;
+            node_time[n] = 0;
+            for (let f in node) {
+                let feed = node[f];
+                node_size[n] += Number(feed.size);
+                node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
         // display nodes and feeds
@@ -422,9 +423,9 @@ function update() {
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-            out += '<div class="node accordion">';
+            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-            out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
+            out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
             out += '      <div class="engine" data-col="F"></div>';
@@ -438,40 +439,41 @@ function update() {
             out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
             
             for (var feed in nodes[node]) {
-                var feedid = nodes[node][feed].id;
+                var feed = nodes[node][feed];
+                var feedid = feed.id;
 
-                var title_lines = [nodes[node][feed].name,
+                var title_lines = [feed.name,
                                   '-----------------------',
-                                  'Tag: '+ nodes[node][feed].tag,
+                                  'Tag: '+ feed.tag,
                                   'Feed ID: '+ feedid]
                 
-                if(nodes[node][feed].engine == 5) {
-                    title_lines.push("Feed Interval: "+(nodes[node][feed].interval||'')+'s')
+                if(feed.engine == 5) {
+                    title_lines.push("Feed Interval: "+(feed.interval||'')+'s')
                 }
                 
                 // show the start time if available
-                if(nodes[node][feed].start_time > 0) {
-                    title_lines.push("Feed Start Time: "+nodes[node][feed].start_time);
-                    title_lines.push(format_time(nodes[node][feed].start_time,'LL LTS')+" UTC");
+                if(feed.start_time > 0) {
+                    title_lines.push("Feed Start Time: "+feed.start_time);
+                    title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
                 }
 
                 row_title = title_lines.join("\n");
 
-                out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
-                out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
+                out += "<div class='name' data-col='A'>"+feed.name+"</div>";
                 
                 var publicfeed = "<i class='icon-lock'></i>";
-                if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
-                out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
+                out += '  <div class="engine" data-col="F">'+feed_engines[feed.engine]+'</div>';
+                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
-                if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
-                out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+' '+nodes[node][feed].unit+'</div>';
-                out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
+                if (feed.unit==undefined) feed.unit = "";
+                out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
+                out += '    <div class="time" data-col="D">'+list_format_updated(feed.time)+'</div>';
                 out += '  </div>';
                 out += '</div>';
             }
@@ -530,92 +532,43 @@ function buildFeedNodeList() {
     }
     autocomplete(document.getElementById("feed-node"), node_names);
 }
-function autocomplete(input, arr) {
-    // the autocomplete function takes two arguments,
-    var currentFocus;
-    // execute a function when someone writes in the text field:
-    input.addEventListener("input", function(e) {
-        var a, b, i, val = this.value;
-        // close any already open lists of autocompleted values
-        closeAllLists();
-        if (!val) { return false;}
-        currentFocus = -1;
-        // create a DIV element that will contain the items (values):
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        // append the DIV element as a child of the autocomplete container:
-        this.parentNode.appendChild(a);
-        // for each item in the array...
-        for (i = 0; i < arr.length; i++) {
-            // check if the item starts with the same letters as the text field value:
-            if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                // create a DIV element for each matching element:
-                b = document.createElement("DIV");
-                // make the matching letters bold:
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
-                // insert a input field that will hold the current array item's value:
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                // execute a function when someone clicks on the item value (DIV element):
-                b.addEventListener("click", function(e) {
-                    // insert the value for the autocomplete text field:
-                    input.value = this.getElementsByTagName("input")[0].value;
-                    //close the list of autocompleted values,
-                    closeAllLists();
-                });
-                a.appendChild(b);
-            }
-        }
-    });
-    input.addEventListener("keydown", function(e) {
-        var x = document.getElementById(this.id + "autocomplete-list");
-        if (x) x = x.getElementsByTagName("div");
-        if (e.keyCode == 40) {
-            currentFocus++;
-            addActive(x);
-        } else if (e.keyCode == 38) { //up
-            currentFocus--;
-            addActive(x);
-        } else if (e.keyCode == 13) {
-            // If the ENTER key is pressed, prevent the form from being submitted,
-            e.preventDefault();
-            if (currentFocus > -1) {
-                // and simulate a click on the "active" item:
-                if (x) x[currentFocus].click();
-            }
-        }
-    });
-    function addActive(x) {
-        // add class "active"
-        if (!x) return false;
-        // remove the "active" class on all items:
-        removeActive(x);
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
-        // add class "autocomplete-active":
-        x[currentFocus].classList.add("autocomplete-active");
-    }
-    function removeActive(x) {
-        // a function to remove the "active" class from all autocomplete items:
-        for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-        }
-    }
-    function closeAllLists(elem) {
-        // close all autocomplete lists in the document,
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elem != x[i] && elem != input) {
-                x[i].parentNode.removeChild(x[i]);
-            }
-        }
-    }
-    //execute a function when someone clicks in the document
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
-    });
+
+
+function missedIntervals(feed) {
+    if (!feed) return void 0;
+    var lastUpdated = new Date(feed.time * 1000);
+    var now = new Date().getTime();
+    var elapsed = (now - lastUpdated) / 1000;
+    let missedIntervals = parseInt(elapsed / feed.interval);
+    return missedIntervals;
 }
+function feedListItemIntervalClass (feed) {
+    if (!feed) return void 0;
+    let missed = missedIntervals(feed);
+    let result = [];
+    if (missed < 3) result.push('status-success');
+    if (missed > 2 && missed < 9) result.push('status-warning');
+    if (missed > 8) result.push('status-danger');
+    return result.join(' ');
+}
+function nodeIntervalClass (feeds) {
+    let nodeMissed = 0;
+    for (f in feeds) {
+        let missed = missedIntervals(feeds[f]);
+        if (missed > nodeMissed) {
+            nodeMissed = missed;
+        }
+    }
+    let result = [];
+    if (nodeMissed < 3) result.push('status-success');
+    if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
+    if (nodeMissed > 8) result.push('status-danger');
+    return result.join(' ');
+
+    return result;
+}
+
+
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
 // ---------------------------------------------------------------------------------------------
@@ -636,8 +589,10 @@ $(".feed-edit").click(function() {
             var checked = false; if (feeds[feedid]['public']==1) checked = true;
             $("#feed-public")[0].checked = checked;
             
+            // pre-select item if already set
             let $dropdown = $('#feed_unit_dropdown');
             $dropdown.val(feeds[feedid].unit);
+            // set the dropdown to "other" if value not in list
             let options = [];
             $dropdown.find('option').each(function(key,elem){
                 options.push(elem.value);
@@ -646,6 +601,7 @@ $(".feed-edit").click(function() {
                 $('#feed_unit_dropdown_other').val(feeds[feedid].unit);
                 $dropdown.val('_other');
             }
+            // show / hide "other" free text field on load and on change if "other" selected in dropdown
             if($dropdown.val()=='_other') {
                 $dropdown.next('input').show();
             }else{
@@ -657,7 +613,7 @@ $(".feed-edit").click(function() {
                 }else{
                     $(event.target).next('input').hide();
                 }
-            });            
+            });
         }
     }
     
@@ -703,10 +659,19 @@ $("#feed-edit-save").click(function() {
                 $('#feedEditModal').modal('hide');
                 return;
             }
-            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-                update();
-                $('#feedEditModal').modal('hide');
-            }});
+            $('#feed-edit-save-message').text('').hide();
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json'})
+            .done(function(response) {
+                if(response.success !== true) {
+                    // error
+                    $('#feed-edit-save-message').text(response.message).fadeIn();
+                } else {
+                    // ok
+                    update();
+                    $('#feedEditModal').modal('hide');
+                    $('#feed-edit-save-message').text('').hide();
+                }
+            })
         }
     }
 });
@@ -1235,7 +1200,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo _("Total size of used space for feeds:"); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------

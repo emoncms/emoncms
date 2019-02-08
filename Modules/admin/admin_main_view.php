@@ -17,13 +17,15 @@
         $parts = explode('=',$line);
         $status[$parts[0]] = $parts[1];
     }
-    if ($status['LoadState'] === 'not-found') {
+    if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
         $return = null;
-    } else {
+    } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
         return array(
             'ActiveState' => $status["ActiveState"],
             'SubState' => $status["SubState"]
         );
+    } else {
+       $return = null;
     }
     return $return;
   }
@@ -35,8 +37,10 @@
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
 
+    $services = array();
     $services['emonhub'] = getServiceStatus('emonhub.service');
-    $services['mqtt_input'] = getServiceStatus('mqtt_input.service');
+    $services['mqtt_input'] = getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
+    $services['emoncms_mqtt'] = getServiceStatus('emoncms_mqtt.service');
     $services['feedwriter'] = getServiceStatus('feedwriter.service');
     $services['service-runner'] = getServiceStatus('service-runner.service');
     $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
@@ -241,7 +245,7 @@ if(is_writable($log_filename)) {
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
                     <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
-                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy to clipboard'); ?></button>
+                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
 <?php } ?>
                 </td>
             </tr>
@@ -287,7 +291,7 @@ if ($allow_emonpi_admin) {
         <td colspan=2>
             <div>
              <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
-             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
+             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button></div>
             </div>
             <table class="table table-hover table-condensed" id="serverinformationtabular">
               <tr><td><b>Services</b></td><td></td><td></td></tr>
@@ -301,16 +305,41 @@ if ($allow_emonpi_admin) {
                 </td>
               </tr>
             -->
-              <?php foreach($system['services'] as $key=>$value): ?>
-                <?php if (!is_null($system['services'][$key])) { ?>
-                <tr class="<?php if ($system['services'][$key]['SubState'] === 'running') echo "success"; else echo "error"; ?>">
-                    <td class="subinfo"></td><td><?php echo $key ?></td>
-                    <td><strong><?php echo ucfirst($system['services'][$key]['ActiveState']); ?></strong> <?php echo ucfirst($system['services'][$key]['SubState']); ?>
-                    </td>
-                </tr>
-                <?php } ?>
-              <?php endforeach; ?>
 
+
+              <?php
+              // create array of installed services
+              $services = array();
+              foreach($system['services'] as $key=>$value) {
+                  if (!is_null($system['services'][$key])) {
+                      $services[$key] = array(
+                          'state' => ucfirst($value['ActiveState']),
+                          'text' => ucfirst($value['SubState']),
+                          'cssClass' => $value['SubState']==='running' ? 'success': 'error',
+                          'running' => $value['SubState']==='running'
+                      );
+                  }
+              }
+              
+              // add custom messages for feedwriter service
+              if(isset($services['feedwriter'])) {
+                  $message = '<font color="red">Service is not running</font>';
+                  if ($services['feedwriter']['running']) {
+                    $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                  }
+                  $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+              }
+              // render list as html rows <tr>
+              foreach ($services as $key=>$value):
+              echo <<<services
+              <tr class="{$value['cssClass']}">
+                    <td class="subinfo"></td><td>{$key}</td>
+                    <td><strong>{$value['state']}</strong> {$value['text']}
+                    </td>
+              </tr>
+services;
+              endforeach;
+?>
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
@@ -408,7 +437,10 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
                      $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
                  } 
                  echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+                 
+                 if (file_exists('/usr/bin/rpi-rw')) {
+                    echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+                 }
                }
       
       }
