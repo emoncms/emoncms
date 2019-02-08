@@ -42,34 +42,36 @@ server = connect_redis()
 while True:
   try:
     # Check for the existence of a redis 'service-runner' key
-     if server.exists('service-runner'):
-       flag = server.lpop('service-runner')
-     elif server.exists('emoncms:service-runner'):
-       flag = server.lpop('emoncms:service-runner')
+      flag = False
+      if server.exists('service-runner'):
+        flag = server.lpop('service-runner')
+      elif server.exists('emoncms:service-runner'):
+        flag = server.lpop('emoncms:service-runner')
 
-      print("Got flag: %s\n" % flag)
-      sys.stdout.flush()
-      script, logfile = flag.split('>')
-      cmdstring = "{s} > {l} 2>&1".format(s=script, l=logfile)
-      print("STARTING: " + cmdstring)
-      sys.stdout.flush()
-      # Got a cmdline, now run it.
-      try:
-        subprocess.call(cmdstring, shell=True)
-      except SystemExit:
-        # If the sys.exit(0) from the interrupt handler gets caught here,
-        # just break from the while True: and let the script exit normally.
-        break
-      except:
-        # if an error occurs running the subprocess, add the error to
-        #  the specified logfile
-        f = open(logfile, 'a')
-        f.write("Error running [%s]" % cmdstring)
-        f.write("Exception occurred: %s" % sys.exc_info()[0])
-        f.close()
-        raise # Now pass the exception upwards
-      print("COMPLETE: " + cmdstring)
-      sys.stdout.flush()
+      if flag:
+        print("Got flag: %s\n" % flag)
+        sys.stdout.flush()
+        script, logfile = flag.split('>')
+        cmdstring = "{s} > {l} 2>&1".format(s=script, l=logfile)
+        print("STARTING: " + cmdstring)
+        sys.stdout.flush()
+        # Got a cmdline, now run it.
+        try:
+          subprocess.call(cmdstring, shell=True)
+        except SystemExit:
+          # If the sys.exit(0) from the interrupt handler gets caught here,
+          # just break from the while True: and let the script exit normally.
+          break
+        except:
+          # if an error occurs running the subprocess, add the error to
+          #  the specified logfile
+          f = open(logfile, 'a')
+          f.write("Error running [%s]" % cmdstring)
+          f.write("Exception occurred: %s" % sys.exc_info()[0])
+          f.close()
+          raise # Now pass the exception upwards
+        print("COMPLETE: " + cmdstring)
+        sys.stdout.flush()
   except redis.exceptions.ConnectionError:
     print("Connection to redis-server lost, attempting to reconnect")
     sys.stdout.flush()
