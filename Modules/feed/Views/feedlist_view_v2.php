@@ -95,30 +95,38 @@ body{padding:0!important}
     right: 0;
 }
 
-.node-feeds .node-feed.status-warning:after,
-.node.status-warning .accordion-toggle:after {
-    background: #FFC107;
+.node-feeds .node-feed.status-info:after,
+.node.status-info .accordion-toggle:after {
+    background: #3a87ad;
 }
 .node-feeds .node-feed.status-success:after,
 .node.status-success .accordion-toggle:after {
-    background: #28A745;
+    background: #28a745;
+}
+.node-feeds .node-feed.status-warning:after,
+.node.status-warning .accordion-toggle:after {
+    background: #ffc107;
 }
 .node-feeds .node-feed.status-danger:after,
 .node.status-danger .accordion-toggle:after {
-    background: #DC3545;
+    background: #dc3545;
 }
 
-.node.status-warning .accordion-toggle .last-update,
-.node-feeds .node-feed.status-warning .last-update{
-    color: #C70!important;
+.node.status-info .accordion-toggle .last-update,
+.node-feeds .node-feed.status-info .last-update {
+    color: #3c87aa;
 }
 .node.status-success .accordion-toggle .last-update,
-.node-feeds .node-feed.status-success .last-update{
-    color: #28A745!important; 
+.node-feeds .node-feed.status-success .last-update {
+    color: #28a745;
+}
+.node.status-warning .accordion-toggle .last-update,
+.node-feeds .node-feed.status-warning .last-update {
+    color: #cc7700;
 }
 .node.status-danger .accordion-toggle .last-update,
-.node-feeds .node-feed.status-danger .last-update{
-    color: #DC3545!important;
+.node-feeds .node-feed.status-danger .last-update {
+    color: #dc3545;
 }
 
 </style>
@@ -384,12 +392,14 @@ function update() {
             $("#feed-footer").show();
             $("#feed-none").hide();
         }
+        feeds = {};
         nodes = {};
         for (var z in data) {
             var node = data[z].tag;
             if (nodes[node] == undefined) nodes[node] = [];
             if (nodes_display[node] == undefined) nodes_display[node] = true;
             nodes[node].push(data[z]);
+        	feeds[data[z].id] = data[z];
         }
         if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
@@ -423,16 +433,16 @@ function update() {
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
+            out += '<div class="node accordion ' + nodeUpdateStatus(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
             out += '      <div class="engine" data-col="F"></div>';
-            out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="size text-center" data-col="G">'+itemSizeFormat(node_size[node])+'</div>';
             out += '      <div class="node-feed-right pull-right">';
             out += '        <div class="value" data-col="C"></div>';
-            out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
+            out += '        <div class="time" data-col="D">'+itemUpdateFormat(node_time[node])+'</div>';
             out += '      </div>';
             out += '    </div>';
             
@@ -459,7 +469,7 @@ function update() {
 
                 row_title = title_lines.join("\n");
 
-                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                out += "<div class='" + itemUpdateStatus(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
                 out += "<div class='name' data-col='A'>"+feed.name+"</div>";
@@ -469,11 +479,11 @@ function update() {
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
                 out += '  <div class="engine" data-col="F">'+feed_engines[feed.engine]+'</div>';
-                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="size text-center" data-col="G">'+itemSizeFormat(feed.size)+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
-                out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
-                out += '    <div class="time" data-col="D">'+list_format_updated(feed.time)+'</div>';
+                out += '    <div class="value" data-col="C">'+itemValueFormat(feed.value)+' '+feed.unit+'</div>';
+                out += '    <div class="time" data-col="D">'+itemUpdateFormat(feed.time)+'</div>';
                 out += '  </div>';
                 out += '</div>';
             }
@@ -532,42 +542,6 @@ function buildFeedNodeList() {
     }
     autocomplete(document.getElementById("feed-node"), node_names);
 }
-
-
-function missedIntervals(feed) {
-    if (!feed) return void 0;
-    var lastUpdated = new Date(feed.time * 1000);
-    var now = new Date().getTime();
-    var elapsed = (now - lastUpdated) / 1000;
-    let missedIntervals = parseInt(elapsed / feed.interval);
-    return missedIntervals;
-}
-function feedListItemIntervalClass (feed) {
-    if (!feed) return void 0;
-    let missed = missedIntervals(feed);
-    let result = [];
-    if (missed < 3) result.push('status-success');
-    if (missed > 2 && missed < 9) result.push('status-warning');
-    if (missed > 8) result.push('status-danger');
-    return result.join(' ');
-}
-function nodeIntervalClass (feeds) {
-    let nodeMissed = 0;
-    for (f in feeds) {
-        let missed = missedIntervals(feeds[f]);
-        if (missed > nodeMissed) {
-            nodeMissed = missed;
-        }
-    }
-    let result = [];
-    if (nodeMissed < 3) result.push('status-success');
-    if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
-    if (nodeMissed > 8) result.push('status-danger');
-    return result.join(' ');
-
-    return result;
-}
-
 
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
@@ -1200,7 +1174,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + itemSizeFormat(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------

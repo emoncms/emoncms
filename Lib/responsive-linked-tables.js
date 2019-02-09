@@ -115,15 +115,10 @@ $(function() {
         // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
 });
 
-
-// Calculate and color updated time
-function list_format_updated(time) {
-    time = time * 1000;
-    var servertime = new Date().getTime(); // - table.timeServerLocalOffset;
-    var update = new Date(time).getTime();
-    
-    var delta = servertime - update;
-    var secs = Math.abs(delta) / 1000;
+// Calculate and format updated time
+function itemUpdateFormat(time) {
+    var elapsed = itemElapsedTime(time);
+    var secs = Math.abs(elapsed);
     var mins = secs / 60;
     var hour = secs / 3600;
     var day = hour / 24;
@@ -131,23 +126,127 @@ function list_format_updated(time) {
     var updated = secs.toFixed(0) + "s";
     if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
     else if (secs.toFixed(0) == 0) updated = "now";
-    else if (day > 7 && delta > 0) updated = "inactive";
+    else if (day > 7 && elapsed > 0) updated = "inactive";
     else if (day > 2) updated = day.toFixed(1) + " days";
     else if (hour > 2) updated = hour.toFixed(0) + " hrs";
     else if (secs > 180) updated = mins.toFixed(0) + " mins";
     
-    secs = Math.abs(secs);
-    var color = "rgb(255,0,0)";
-    if (delta < 0) color = "rgb(60,135,170)"
-    else if (secs < 25) color = "rgb(50,200,50)"
-    else if (secs < 60) color = "rgb(240,180,20)"; 
-    else if (secs < (3600*2)) color = "rgb(255,125,20)"
-    
-    return "<span class='last-update' style='color:" + color + ";'>" + updated + "</span>";
+    return "<span class='last-update'>" + updated + "</span>";
+}
+
+/**
+ * Get the CSS class name for a set of node items. Returnes the class based on 
+ * the highest number of missed intervals, if an interval is configured.
+ * Otherwise based on the furthest elapsed time since the last update.
+ * 
+ * @param {array} - array of items
+ * @return {string} 
+ */
+function nodeUpdateStatus(items) {
+	var status = 'status-danger';
+	var elapsed = -31536000; // Use one year in the future as error threshold
+	var missed = 0;
+	var now = new Date().getTime();
+    for (i in items) {
+        var item = items[i];
+        if (!item.time) {
+    		continue;
+    	}
+        
+        let e = (now - new Date(item.time*1000).getTime())/1000;
+        if (e > 0 && typeof item.interval !== 'undefined' && item.interval > 1) {
+        	missed = Math.max(missed, parseInt(e/item.interval));
+        }
+        elapsed = Math.max(elapsed, e);
+    }
+    if (missed > 0) {
+    	status = itemMissedStatus(missed);
+    }
+    else if (elapsed > -31536000) {
+    	status = itemElapsedStatus(elapsed);
+    }
+    return status;
+}
+
+/**
+ * Get the CSS class name based on the number of missed intervals, if an interval
+ * is configured. Otherwise based on the elapsed time since the last update.
+ * 
+ * @param {object} item
+ * @return string
+ */
+function itemUpdateStatus(item) {
+	var status = 'status-danger';
+	if (!item || !item.time) {
+		return status;
+	}
+	
+    var elapsed = itemElapsedTime(item.time);
+    if (elapsed > 0 && typeof item.interval !== 'undefined' && item.interval > 1) {
+    	status = itemMissedStatus(parseInt(elapsed/item.interval));
+    }
+    else {
+    	status = itemElapsedStatus(elapsed);
+    }
+	return status;
+}
+
+/**
+ * Returns the CSS class name based on the number of missed intervals.
+ * 
+ * @param integer missed: number of missed intervals since last update
+ * @return string
+ */
+function itemMissedStatus(missed) {
+	var status;
+    if (missed < 5) {
+    	status = 'status-success'; 
+    }
+    else if (missed < 12) {
+    	status = 'status-warning';
+    }
+    else {
+    	status = 'status-danger';
+    }
+    return status;
+}
+
+/**
+ * Returns the css class name based on the elapsed time since the last update.
+ * 
+ * @param integer elapsed: elapsed time since last update in seconds
+ * @return string
+ */
+function itemElapsedStatus(elapsed) {
+	var status;
+    var secs = Math.abs(elapsed);
+    if (elapsed < 0) {
+    	status = 'status-info'; 
+    }
+    else if (secs < 60) {
+    	status = 'status-success'; 
+    }
+    else if (secs < 7200) {
+    	status = 'status-warning';
+    }
+    else {
+    	status = 'status-danger';
+    }
+    return status;
+}
+
+/**
+ * Returns the elapsed time in seconds since the item was updated.
+ * 
+ * @param integer time: unix timestamp of the item in seconds
+ * @return integer
+ */
+function itemElapsedTime(time) {
+    return (new Date().getTime() - new Date(time*1000).getTime())/1000;
 }
 
 // Format value dynamically
-function list_format_value(value) {
+function itemValueFormat(value) {
     if (value == null) return "NULL";
     value = parseFloat(value);
     if (value >= 1000) value = parseFloat(value.toFixed(0));
@@ -157,6 +256,22 @@ function list_format_value(value) {
     else if (value <= -100) value = parseFloat(value.toFixed(1));
     else if (value < 10) value = parseFloat(value.toFixed(2));
     return value;
+}
+
+function itemSizeFormat(bytes) {
+    if (!$.isNumeric(bytes)) {
+        return "n/a";
+    } else if (bytes < 1024) {
+        return bytes + "B";
+    } else if (bytes < 1024 * 100) {
+        return (bytes / 1024).toFixed(1) + "KB";
+    } else if (bytes < 1024 * 1024) {
+        return Math.round(bytes / 1024) + "KB";
+    } else if (bytes <= 1024 * 1024 * 1024) {
+        return Math.round(bytes / (1024 * 1024)) + "MB";
+    } else {
+        return (bytes / (1024 * 1024 * 1024)).toFixed(1) + "GB";
+    }
 }
 
 /**
@@ -265,6 +380,7 @@ function onResize() {
         if (hidden[key]) $('[data-col="' + key + '"]').hide();
     }
 }
+
 /**
 *
 * @param {Function} callback function to call after callback delay
@@ -284,22 +400,6 @@ function watchResize(callback, timeout) {
             callback();
         });
     });
-}
-
-function list_format_size(bytes) {
-    if (!$.isNumeric(bytes)) {
-        return "n/a";
-    } else if (bytes < 1024) {
-        return bytes + "B";
-    } else if (bytes < 1024 * 100) {
-        return (bytes / 1024).toFixed(1) + "KB";
-    } else if (bytes < 1024 * 1024) {
-        return Math.round(bytes / 1024) + "KB";
-    } else if (bytes <= 1024 * 1024 * 1024) {
-        return Math.round(bytes / (1024 * 1024)) + "MB";
-    } else {
-        return (bytes / (1024 * 1024 * 1024)).toFixed(1) + "GB";
-    }
 }
 
 /**
