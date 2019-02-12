@@ -140,7 +140,7 @@ function languagecode_to_name($langs) {
         </div>
     </div>
     <div class="span8">
-        <h3><?php echo _('My Profile'); ?></h3>
+        <h4><?php echo _('My Profile'); ?></h4>
         <div id="table"></div>
         
         <div id="preferences-section_update_warning" class="well hidden">

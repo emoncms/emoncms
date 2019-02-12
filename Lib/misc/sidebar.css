@@ -42,8 +42,25 @@ Side nav
   width: 100vw;
   z-index: 1;
 }
-
-
+.navbar a img.grav{
+  border: 1px solid #ccc;
+}
+.navbar a:hover img.grav{
+  transition: border .2s ease-in;
+  border: 1px solid #efefef;
+}
+.navbar .grav_container{
+  position: absolute;
+  display: inline-block;
+  width: 1.5rem;
+  left: .75rem;
+  top: .4rem;
+}
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+  width: 100%;
+}
 
 
 #sidebar{

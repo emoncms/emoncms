@@ -28,6 +28,8 @@ function makeListLink($params) {
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
     $href = getKeyValue('href', $params);
+    $style = getKeyValue('style', $params);
+    $li_style = getKeyValue('li_style', $params);
     $title = getKeyValue('title', $params);
     $class = getKeyValue('class', $params);
     $li_class = getKeyValue('li_class', $params);
@@ -53,7 +55,8 @@ function makeListLink($params) {
         'href'=> $href,
         'path'=> $path,
         'active'=> $active,
-        'data'=> $data
+        'data'=> $data,
+        'style'=> $style
     ));
 
     // partial match current url with fragment '$active'
@@ -66,8 +69,9 @@ function makeListLink($params) {
     }
 
     $attr = buildAttributes(array(
-        'id'=>$li_id,
-        'class'=>$li_class
+        'id' => $li_id,
+        'class' => $li_class,
+        'style' => $li_style
     ));
     if(!empty($attr)) $attr = ' '.$attr;
 
@@ -107,6 +111,7 @@ function makeLink($params) {
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
     $href = getKeyValue('href', $params);
+    $style = getKeyValue('style', $params);
     $title = getKeyValue('title', $params);
     $class = getKeyValue('class', $params);
     $id = getKeyValue('id', $params);
@@ -134,6 +139,7 @@ function makeLink($params) {
     $attr = buildAttributes(array(
         'id'=>$id,
         'href'=>$href,
+        'style'=>$style,
         'title'=>$title,
         'class'=>$class,
         'data'=>$data
@@ -295,14 +301,28 @@ function is_active($item) {
     return false;
 }
 
+/**
+ * call the makeListLink() function after modifiying the menu item to act as a dropdown
+ *
+ * @param array $item - $menu array item
+ * @return void
+ */
 function makeDropdown($item){
     global $session;
+    // add empty text value to avoid title from being used
     if(empty($item['text'])) $item['text'] = '';
+    // add empty title value to avoid text with icon from being used
     if(empty($item['title'])) $item['title'] = $item['text'];
+    // add the dropdown indicator
     $item['text'] .= ' <b class="caret"></b>';
+    // add the correct class to the <li>
     $item['li_class'] .= ' dropdown';
+    // create variable if empty
     if(empty($item['class'])) $item['class'] = '';
+    // add additional css classes to <li>
     addCssClass('dropdown-toggle', $item['class']);
+    // add data-* attributes
     $item['data']['toggle'] = 'dropdown';
+    // return <li><a> with sub <ul><li><a>
     return makeListLink($item);
 }
