@@ -15,6 +15,7 @@
     $redis_server = array( 'host'   => 'localhost',
                            'port'   => 6379,
                            'auth'   => '',
+                           'dbnum'   => '',
                            'prefix' => 'emoncms');
 
 
@@ -26,7 +27,8 @@
                           'port'     => 1883,
                           'user'     => '',
                           'password' => '',
-                          'basetopic'=> 'emon'
+                          'basetopic'=> 'emon',
+                          'client_id' => 'emoncms'
                           );
 
 

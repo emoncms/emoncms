@@ -7,26 +7,12 @@
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-user.lang = "<?php echo $_SESSION['lang']; ?>"
-// rework to fit the momentjs naming scheme for the locale files
-momentjs_locales = {
-    da_DK:'da',
-    nl_BE:'nl-be',
-    nl_NL:'nl',
-    en_GB:'en-gb',
-    et_EE:'et',
-    fr_FR:'fr',
-    de_DE:'de',
-    it_IT:'it',
-    es_ES:'es',
-    cy_GB:'cy'
-}
-// match supported locales with momentjs file names
-user.locale = momentjs_locales.hasOwnProperty(user.lang) ? momentjs_locales[user.lang] : 'en-gb'
-// load the moment js locale file for the user's language
-var script = document.createElement('script');
-script.src = "<?php echo $path; ?>Lib/momentjs-locales/%s.js".replace("%s",user.locale);
-document.head.appendChild(script);
+    var user = {};
+    var path = "<?php echo $path; ?>";
+    user.lang = "<?php echo $_SESSION['lang']; ?>";
+</script>
+<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script>
 
 /**
  * uses moment.js to format to local time 
@@ -35,10 +21,10 @@ document.head.appendChild(script);
  * @see date format options - https://momentjs.com/docs/#/displaying/
  */
 function format_time(time,format){
-    if(!Number.isInteger(time)) return time
-    format = format || 'YYYY-MM-DD'
-    formatted_date = moment.unix(time).utc().format(format)
-    return formatted_date
+    if(!Number.isInteger(time)) return time;
+    format = format || 'YYYY-MM-DD';
+    formatted_date = moment.unix(time).utc().format(format);
+    return formatted_date;
 }
 </script>
 
@@ -48,10 +34,16 @@ function format_time(time,format){
 <link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
 <script src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
 
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
+
 <style>
 body{padding:0!important}
 .container-fluid { padding: 0px 10px 0px 10px; }
 
+#table {
+    margin-top:3rem
+}
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -84,10 +76,57 @@ body{padding:0!important}
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
 
+
+.node .accordion-toggle{
+    border-bottom: 1px solid white;
+}
+.node .accordion-toggle,
+.node-feeds .node-feed {
+    position: relative;
+}
+.node .accordion-toggle:after,
+.node-feeds .node-feed:after{
+    content: '';
+    width: .4em;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.node-feeds .node-feed.status-warning:after,
+.node.status-warning .accordion-toggle:after {
+    background: #FFC107;
+}
+.node-feeds .node-feed.status-success:after,
+.node.status-success .accordion-toggle:after {
+    background: #28A745;
+}
+.node-feeds .node-feed.status-danger:after,
+.node.status-danger .accordion-toggle:after {
+    background: #DC3545;
+}
+
+.node.status-warning .accordion-toggle .last-update,
+.node-feeds .node-feed.status-warning .last-update{
+    color: #C70!important;
+}
+.node.status-success .accordion-toggle .last-update,
+.node-feeds .node-feed.status-success .last-update{
+    color: #28A745!important; 
+}
+.node.status-danger .accordion-toggle .last-update,
+.node-feeds .node-feed.status-danger .last-update{
+    color: #DC3545!important;
+}
+
 </style>
 <div id="mouse-position"></div>
-<div id="apihelphead" style="float:right; padding-top:10px"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></div>
-<div id="localheading"><h3><?php echo _('Feeds'); ?></h3></div>
+<div id="feed-header">
+    <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
+    <h3><?php echo _('Feeds'); ?></h3>
+</div>
 
 <div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
@@ -101,17 +140,17 @@ body{padding:0!important}
 
 <div id="table" class="feed-list"></div>
 
-<div id="nofeeds" class="alert alert-block hide">
+<div id="feed-none" class="alert alert-block hide">
     <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
 
-<div id="feed-loader" class="ajax-loader"></div>
-    
-<div id="bottomtoolbar" class="hide">
+<div id="feed-footer" class="hide">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
 </div>
+<div id="feed-loader" class="ajax-loader"></div>
+
 
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
@@ -122,11 +161,14 @@ body{padding:0!important}
         <h3 id="feedEditModalLabel"><?php echo _('Edit feed'); ?></h3>
     </div>
     <div class="modal-body">
+        <p>Feed node:<br>
+        <div class="autocomplete">
+            <input id="feed-node" type="text" style="margin-bottom:0">
+        </div>
+        </p>
+
         <p>Feed name:<br>
         <input id="feed-name" type="text"></p>
-
-        <p>Feed node:<br>
-        <input id="feed-node" type="text"></p>
 
         <p>Make feed public: 
         <input id="feed-public" type="checkbox"></p>
@@ -150,6 +192,7 @@ body{padding:0!important}
         </div>
     </div>
     <div class="modal-footer">
+        <div id="feed-edit-save-message" style="position:absolute"></div>
         <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
@@ -175,7 +218,7 @@ body{padding:0!important}
                 </div>
             </td>
             <td>
-                <p><b><?php echo _('End date & time ');?></b></b></p>
+                <p><b><?php echo _('End date & time ');?></b></p>
                 <div id="datetimepicker2" class="input-append date">
                     <input id="export-end" data-format="dd/MM/yyyy hh:mm:ss" type="text" />
                     <span class="add-on"> <i data-time-icon="icon-time" data-date-icon="icon-calendar"></i></span>
@@ -209,7 +252,7 @@ body{padding:0!important}
                 <div class="checkbox">
                   <label><input type="checkbox" id="export-timeformat" value="" checked>Excel (d/m/Y H:i:s)</label>
                 </div>
-                <label><?php echo _('Offset secs (for daily)');?>&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled=""></label>
+                <label><?php echo _('Offset secs (for daily)');?>&nbsp;<input id="export-timezone-offset" type="text" class="input-mini" disabled></label>
             </td>
         </tr>
         </table>
@@ -310,6 +353,7 @@ body{padding:0!important}
 <?php require "Modules/process/Views/process_ui.php"; ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
+
 var path = "<?php echo $path; ?>";
 var feedviewpath = "<?php echo $feedviewpath; ?>";
 
@@ -319,28 +363,25 @@ var selected_feeds = {};
 var local_cache_key = 'feed_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
 var feed_engines = ['MYSQL','TIMESTORE','PHPTIMESERIES','GRAPHITE','PHPTIMESTORE','PHPFINA','PHPFIWA','VIRTUAL','MEMORY','REDISBUFFER','CASSANDRA'];
+
 // auto refresh
 update();
-setInterval(update,5000);
+// setInterval(update,5000);
+
 var firstLoad = true;
-function update() 
-{
+function update() {
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(data) {
     
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
-            $("#nofeeds").show();
-            //$("#localheading").hide();
-            $("#apihelphead").hide();
-            $("#bottomtoolbar").show();
-            $("#refreshfeedsize").hide();
+            $("#feed-header").hide();
+            $("#feed-footer").hide();
+            $("#feed-none").show();
         } else {
-            $("#nofeeds").hide();
-            //$("#localheading").show();
-            $("#apihelphead").show();
-            $("#bottomtoolbar").show();
-            $("#refreshfeedsize").show();
+            $("#feed-header").show();
+            $("#feed-footer").show();
+            $("#feed-none").hide();
         }
         feeds = {};
         for (var z in data) feeds[data[z].id] = data[z];
@@ -365,12 +406,15 @@ function update()
         // get node overview
         var node_size = {},
             node_time = {};
-        for (node in nodes) {
-            node_size[node] = 0;
-            node_time[node] = 0;
-            for (let feed in nodes[node]) {
-                node_size[node] += Number(nodes[node][feed].size);
-                node_time[node] = nodes[node][feed].time > node_time[node] ? nodes[node][feed].time : node_time[node];
+
+        for (let n in nodes) {
+            let node = nodes[n];
+            node_size[n] = 0;
+            node_time[n] = 0;
+            for (let f in node) {
+                let feed = node[f];
+                node_size[n] += Number(feed.size);
+                node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
         // display nodes and feeds
@@ -378,9 +422,9 @@ function update()
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-            out += '<div class="node accordion">';
+            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-            out += '      <div class="select text-center has-indicator" data-col="B" data-marker="✔"></div>';
+            out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
             out += '      <div class="engine" data-col="F"></div>';
@@ -394,40 +438,41 @@ function update()
             out += "<div id='collapse"+counter+"' class='node-feeds collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
             
             for (var feed in nodes[node]) {
-                var feedid = nodes[node][feed].id;
+                var feed = nodes[node][feed];
+                var feedid = feed.id;
 
-                var title_lines = [nodes[node][feed].name,
+                var title_lines = [feed.name,
                                   '-----------------------',
-                                  'Tag : '+ nodes[node][feed].tag,
-                                  'Feed ID : '+ feedid]
+                                  'Tag: '+ feed.tag,
+                                  'Feed ID: '+ feedid]
                 
-                if(nodes[node][feed].engine == 5){
-                    title_lines.push("Feed Interval :"+(nodes[node][feed].interval||'')+'s')
+                if(feed.engine == 5) {
+                    title_lines.push("Feed Interval: "+(feed.interval||'')+'s')
                 }
                 
                 // show the start time if available
-                if(nodes[node][feed].start_time > 0){
-                    title_lines.push("Feed Start Time : "+nodes[node][feed].start_time)
-                    title_lines.push(format_time(nodes[node][feed].start_time,'LL LTS')+" UTC")
+                if(feed.start_time > 0) {
+                    title_lines.push("Feed Start Time: "+feed.start_time);
+                    title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
                 }
 
                 row_title = title_lines.join("\n");
 
-                out += "<div class='node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
-                out += "<div class='name' data-col='A'>"+nodes[node][feed].name+"</div>";
+                out += "<div class='name' data-col='A'>"+feed.name+"</div>";
                 
-                var publicfeed = "<i class='icon-lock'></i>"
-                if (nodes[node][feed]['public']==1) publicfeed = "<i class='icon-globe'></i>";
+                var publicfeed = "<i class='icon-lock'></i>";
+                if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="F">'+feed_engines[nodes[node][feed].engine]+'</div>';
-                out += '  <div class="size text-center" data-col="G">'+list_format_size(nodes[node][feed].size)+'</div>';
+                out += '  <div class="engine" data-col="F">'+feed_engines[feed.engine]+'</div>';
+                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
-                if (nodes[node][feed].unit==undefined) nodes[node][feed].unit = "";
-                out += '    <div class="value" data-col="C">'+list_format_value(nodes[node][feed].value)+' '+nodes[node][feed].unit+'</div>';
-                out += '    <div class="time" data-col="D">'+list_format_updated(nodes[node][feed].time)+'</div>';
+                if (feed.unit==undefined) feed.unit = "";
+                out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
+                out += '    <div class="time" data-col="D">'+list_format_updated(feed.time)+'</div>';
                 out += '  </div>';
                 out += '</div>';
             }
@@ -440,13 +485,13 @@ function update()
 
         // reset the toggle state for all collapsable elements once data has loaded
         // css class "in" is used to remember the expanded state of the ".collapse" element
-        if(typeof $.fn.collapse == 'function'){
+        if(typeof $.fn.collapse == 'function') {
             $("#table .collapse").collapse({toggle: false});
             setExpandButtonState($container.find('.collapsed').length == 0);
         }
         
-      autowidth($container) // set each column group to the same width
-    } // end of for loop
+        autowidth($container) // set each column group to the same width
+        } // end of for loop
     }); // end of ajax callback
 }// end of update() function
 
@@ -478,6 +523,51 @@ $(".feed-graph").click(function(){
     window.location = path+"graph/"+graph_feeds.join(",");      
 });
 
+function buildFeedNodeList() {
+    node_names = [];
+    for (n in nodes) {
+        let feed = nodes[n];
+        node_names.push(feed[0].tag)
+    }
+    autocomplete(document.getElementById("feed-node"), node_names);
+}
+
+
+function missedIntervals(feed) {
+    if (!feed) return void 0;
+    var lastUpdated = new Date(feed.time * 1000);
+    var now = new Date().getTime();
+    var elapsed = (now - lastUpdated) / 1000;
+    let missedIntervals = parseInt(elapsed / feed.interval);
+    return missedIntervals;
+}
+function feedListItemIntervalClass (feed) {
+    if (!feed) return void 0;
+    let missed = missedIntervals(feed);
+    let result = [];
+    if (missed < 3) result.push('status-success');
+    if (missed > 2 && missed < 9) result.push('status-warning');
+    if (missed > 8) result.push('status-danger');
+    return result.join(' ');
+}
+function nodeIntervalClass (feeds) {
+    let nodeMissed = 0;
+    for (f in feeds) {
+        let missed = missedIntervals(feeds[f]);
+        if (missed > nodeMissed) {
+            nodeMissed = missed;
+        }
+    }
+    let result = [];
+    if (nodeMissed < 3) result.push('status-success');
+    if (nodeMissed > 2 && nodeMissed < 9) result.push('status-warning');
+    if (nodeMissed > 8) result.push('status-danger');
+    return result.join(' ');
+
+    return result;
+}
+
+
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
 // ---------------------------------------------------------------------------------------------
@@ -498,8 +588,10 @@ $(".feed-edit").click(function() {
             var checked = false; if (feeds[feedid]['public']==1) checked = true;
             $("#feed-public")[0].checked = checked;
             
+            // pre-select item if already set
             let $dropdown = $('#feed_unit_dropdown');
             $dropdown.val(feeds[feedid].unit);
+            // set the dropdown to "other" if value not in list
             let options = [];
             $dropdown.find('option').each(function(key,elem){
                 options.push(elem.value);
@@ -508,6 +600,7 @@ $(".feed-edit").click(function() {
                 $('#feed_unit_dropdown_other').val(feeds[feedid].unit);
                 $dropdown.val('_other');
             }
+            // show / hide "other" free text field on load and on change if "other" selected in dropdown
             if($dropdown.val()=='_other') {
                 $dropdown.next('input').show();
             }else{
@@ -519,9 +612,15 @@ $(".feed-edit").click(function() {
                 }else{
                     $(event.target).next('input').hide();
                 }
-            });            
+            });
         }
     }
+    
+    buildFeedNodeList();
+});
+
+$(".feed-node").on('input', function(event){
+    $('#feed-node').val($(this).val());
 });
 
 $("#feed-edit-save").click(function() {
@@ -559,10 +658,19 @@ $("#feed-edit-save").click(function() {
                 $('#feedEditModal').modal('hide');
                 return;
             }
-            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json', async: true, success: function(data) {
-                update();
-                $('#feedEditModal').modal('hide');
-            }});
+            $('#feed-edit-save-message').text('').hide();
+            $.ajax({ url: path+"feed/set.json?id="+feedid+"&fields="+JSON.stringify(data), dataType: 'json'})
+            .done(function(response) {
+                if(response.success !== true) {
+                    // error
+                    $('#feed-edit-save-message').text(response.message).fadeIn();
+                } else {
+                    // ok
+                    update();
+                    $('#feedEditModal').modal('hide');
+                    $('#feed-edit-save-message').text('').hide();
+                }
+            })
         }
     }
 });
@@ -626,6 +734,7 @@ function getFeedProcess(){
     }
     return let_feeds;
 }
+
 /**
  * output what feeds have been selected in the overlay modal box
  *
@@ -1090,7 +1199,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo _("Total size of used space for feeds:"); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -1181,7 +1290,7 @@ $(".feed-download").click(function(){
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) ids.push(parseInt(feedid));
     }
-  
+
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
 

@@ -3,13 +3,50 @@
   // Retrieve server information
   $system = system_information();
 
+  /**
+   * get running status of service
+   *
+   * @param string $name
+   * @return mixed true == running | false == stopped | null == not installed
+   */
+  function getServiceStatus($name) {
+    @exec('systemctl show '.$name.' | grep State', $exec);
+    $status = array();
+    
+    foreach ($exec as $line) {
+        $parts = explode('=',$line);
+        $status[$parts[0]] = $parts[1];
+    }
+    if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
+        $return = null;
+    } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
+        return array(
+            'ActiveState' => $status["ActiveState"],
+            'SubState' => $status["SubState"]
+        );
+    } else {
+       $return = null;
+    }
+    return $return;
+  }
+
   function system_information() {
     global $mysqli, $server, $redis_server, $mqtt_server;
     $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
     $db = $result->fetch_array();
 
     @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-    @exec('ps ax | grep feedwriter.php | grep -v grep', $feedwriterproc);
+
+    $services = array();
+    $services['emonhub'] = getServiceStatus('emonhub.service');
+    $services['mqtt_input'] = getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
+    $services['emoncms_mqtt'] = getServiceStatus('emoncms_mqtt.service');
+    $services['feedwriter'] = getServiceStatus('feedwriter.service');
+    $services['service-runner'] = getServiceStatus('service-runner.service');
+    $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
+    $services['redis-server'] = getServiceStatus('redis-server.service');
+    $services['mosquitto'] = getServiceStatus('mosquitto.service');
+
     //@exec("hostname -I", $ip); $ip = $ip[0];
     $meminfo = false;
     if (@is_readable('/proc/meminfo')) {
@@ -57,8 +94,9 @@
 
                  'redis_server' => $redis_server['host'].":".$redis_server['port'],
                  'redis_ip' => gethostbyname($redis_server['host']),
-                 'feedwriter' => !empty($feedwriterproc),
-
+                 
+                 'services' => $services,
+                 
                  'mqtt_server' => $mqtt_server['host'],
                  'mqtt_ip' => gethostbyname($mqtt_server['host']),
                  'mqtt_port' => $mqtt_server['port'],
@@ -72,7 +110,8 @@
                  'partitions' => disk_list(),
                  'emoncms_modules' => $emoncms_modules,
                  'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
-                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin")
+                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
+                 'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
                  );
   }
 
@@ -206,7 +245,7 @@ if(is_writable($log_filename)) {
                     <br>
                     <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
                     <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
-                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy to clipboard'); ?></button>
+                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
 <?php } ?>
                 </td>
             </tr>
@@ -252,23 +291,56 @@ if ($allow_emonpi_admin) {
         <td colspan=2>
             <div>
              <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
-             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy to clipboard'); ?></button></div>
+             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button></div>
             </div>
             <table class="table table-hover table-condensed" id="serverinformationtabular">
+              <tr><td><b>Services</b></td><td></td><td></td></tr>
+            <!--
+              <tr>
+                <td>
+                <button id="emonhub-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
+                <button id="emonhub-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
+                <button id="emonhub-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
+                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
+                </td>
+              </tr>
+            -->
+              <?php
+              // create array of installed services
+              $services = array();
+              foreach($system['services'] as $key=>$value) {
+                  if (!is_null($system['services'][$key])) {
+                      $services[$key] = array(
+                          'state' => ucfirst($value['ActiveState']),
+                          'text' => ucfirst($value['SubState']),
+                          'cssClass' => $value['SubState']==='running' ? 'success': 'error',
+                          'running' => $value['SubState']==='running'
+                      );
+                  }
+              }
+              
+              // add custom messages for feedwriter service
+              if(isset($services['feedwriter'])) {
+                  $message = '<font color="red">Service is not running</font>';
+                  if ($services['feedwriter']['running']) {
+                    $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                  }
+                  $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+              }
+              // render list as html rows <tr>
+              foreach ($services as $key=>$value):
+              echo <<<services
+              <tr class="{$value['cssClass']}"><td class="subinfo"></td><td>{$key}</td><td><strong>{$value['state']}</strong> {$value['text']}</td><td></td>
+              </tr>
+services;
+              endforeach;
+?>
               <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
               <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git URL</td><td><?php echo $system['git_URL']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git Branch</td><td><?php echo $system['git_branch']; ?></td></tr>
-<?php
-if ($feed_settings['redisbuffer']['enabled']) {
-?>
-              <tr><td class="subinfo"></td><td>Buffer</td><td><span id="bufferused">loading...</span></td></tr>
-              <tr><td class="subinfo"></td><td>Writer</td><td><?php echo ($system['feedwriter'] ? "Daemon is running with sleep ".$feed_settings['redisbuffer']['sleep'] . "s" : "<font color='red'>Daemon is not running, start it at ~/scripts/feedwriter</font>"); ?></td></tr>
-<?php
-}
-?>
+              <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
+
               <tr><td><b>Server</b></td><td>OS</td><td><?php echo $system['system'] . ' ' . $system['kernel']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' ' . $system['hostbyaddress'] . ' (' . $system['ip'] . ')'; ?></td></tr>
+              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'; ?></td></tr>
               <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['date']; ?></td></tr>
               <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $system['uptime']; ?></td></tr>
 
@@ -360,7 +432,10 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
                      $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
                  } 
                  echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                 echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+                 
+                 if (file_exists('/usr/bin/rpi-rw')) {
+                    echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
+                 }
                }
       
       }
@@ -450,15 +525,14 @@ function copyTextToClipboard(text) {
   }
   document.body.removeChild(textArea);
 }
-var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|');
-
+var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<tr class=\"[a-z]*\">/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|').replace(/<span.*<\/span>/g, '').replace(/<!--[\S\s]*-->/g,'');
 var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
 
 $("#copyserverinfo").on('click', function(event) {
     if ( event.ctrlKey ) {
         copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
     } else {
-        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
+        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails.replace(/\n+/g, '\n') + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
     }
 } );
 

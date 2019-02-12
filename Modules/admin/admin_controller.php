@@ -294,7 +294,13 @@ function admin_controller()
                 $data = array();
                 $result = $mysqli->query("SELECT id,username,email,email_verified FROM users $searchstr ORDER BY $orderby $order ".$limit);
                 
-                while ($row = $result->fetch_object()) $data[] = $row;
+                while ($row = $result->fetch_object()) {
+                    $data[] = $row;
+                    $userid = (int) $row->id;
+                    $result1 = $mysqli->query("SELECT * FROM feeds WHERE `userid`='$userid'");
+                    $row->feeds = $result1->num_rows;
+                    
+                }
                 $result = $data;
             }
 

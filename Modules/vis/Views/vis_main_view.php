@@ -54,8 +54,8 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
         <div style="padding:5px;  border-top: 1px solid #fff">
             <div style="float:left; padding-top:2px; font-weight:bold;">3) </div>
             <div style="float:right;">
-                <input id="viewbtn" type="submit" value="<?php echo dgettext('vis_messages','View'); ?>" class="btn btn-info" />
-                <input id="fullscreen" type="submit" value="<?php echo dgettext('vis_messages','Full screen'); ?>" class="btn btn-info" />
+                <input id="viewbtn" type="button" value="<?php echo dgettext('vis_messages','View'); ?>" class="btn btn-info" />
+                <input id="fullscreen" type="button" value="<?php echo dgettext('vis_messages','Full screen'); ?>" class="btn btn-info" />
             </div>
             <div style="clear:both"></div>
         </div>

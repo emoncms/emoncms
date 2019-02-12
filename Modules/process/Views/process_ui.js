@@ -518,17 +518,25 @@ var processlist_ui =
 
       if (feedid == -1) {
         $("#new-feed-name").show();
+        $("#new-feed-tag").show();
+        $('#feed-select').css({'border-radius': 0, 'border-right': 0})
+        
         $("#processlist-ui #feed-engine").change(); // select available interval for engine
         // If there's only one feed engine to choose from then dont show feed engine selector
         // CHAVEIRO: Commented for now so user can see what processor it's using.
         //var processid = $('#process-select').val();
         //var engines = processlist_ui.processlist[processid][6];   // 0:MYSQL, 5:PHPFINA, 6:PHPFIWA
         //if (engines.length > 1) 
-          $("#feed-engine, .feed-engine-label").show();
-      } else {
+        $("#feed-engine, .feed-engine-label").show();
+    } else {
         $("#new-feed-name").hide();
+        $("#new-feed-tag").hide();
+        $('#feed-select').css({'border-radius': 4, 'border-right': 4})
         $("#feed-interval").hide();
         $("#feed-engine, .feed-engine-label").hide(); 
+      }
+      if (typeof nodes_display !== 'undefined') {
+          autocomplete(document.getElementById("new-feed-tag"), Object.keys(nodes_display));
       }
     });
 
@@ -622,7 +630,7 @@ var processlist_ui =
     var feedgroups = [];
     for (z in this.feedlist) {
         if (datatype == 0 || this.feedlist[z].datatype == datatype) {
-            if (this.contexttype == 0 && this.feedlist[z].engine == 7 && feedwrite == true) { //input context and virtual feed and process writes to feed ?
+            if (parseInt(this.feedlist[z].engine) == 7) { //input context and virtual feed and process writes to feed ?
                 continue; // Dont list virtual feed
             }
             var group = (this.feedlist[z].tag === null ? "NoGroup" : this.feedlist[z].tag);
@@ -636,7 +644,7 @@ var processlist_ui =
     for (z in feedgroups) {
       out += "<optgroup label='"+z+"'>";
       for (p in feedgroups[z]) {
-        out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
+          out += "<option value="+feedgroups[z][p]['id']+">"+feedgroups[z][p].name+"</option>";
       }
       out += "</optgroup>";
     }

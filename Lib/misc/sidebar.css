@@ -23,7 +23,7 @@ Side nav
 }
 
 .sidenav-inner {
-  padding-top:20px;
+  padding-top:0px;
 }
 
 .sidenav-open {
@@ -62,6 +62,7 @@ Side nav: app list
 }
 
 .sidenav-menu li {
+  border-bottom:1px solid #444;
 }
 
 .sidenav-menu li:hover {

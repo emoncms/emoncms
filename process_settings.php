@@ -95,6 +95,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (!isset($mqtt_server['user'])) $mqtt_server['user'] = null;
         if (!isset($mqtt_server['password'])) $mqtt_server['password'] = null;
         if (!isset($mqtt_server['basetopic'])) $mqtt_server['basetopic'] = "nodes";
+        if (!isset($mqtt_server['client_id'])) $mqtt_server['client_id'] = "emoncms";
     }
 
     if (!isset($feed_settings)) $feed_settings = array();
