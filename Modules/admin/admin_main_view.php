@@ -305,8 +305,6 @@ if ($allow_emonpi_admin) {
                 </td>
               </tr>
             -->
-
-
               <?php
               // create array of installed services
               $services = array();
@@ -332,10 +330,7 @@ if ($allow_emonpi_admin) {
               // render list as html rows <tr>
               foreach ($services as $key=>$value):
               echo <<<services
-              <tr class="{$value['cssClass']}">
-                    <td class="subinfo"></td><td>{$key}</td>
-                    <td><strong>{$value['state']}</strong> {$value['text']}
-                    </td>
+              <tr class="{$value['cssClass']}"><td class="subinfo"></td><td>{$key}</td><td><strong>{$value['state']}</strong> {$value['text']}</td><td></td>
               </tr>
 services;
               endforeach;
@@ -530,15 +525,14 @@ function copyTextToClipboard(text) {
   }
   document.body.removeChild(textArea);
 }
-var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|');
-
+var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<tr class=\"[a-z]*\">/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|').replace(/<span.*<\/span>/g, '').replace(/<!--[\S\s]*-->/g,'');
 var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
 
 $("#copyserverinfo").on('click', function(event) {
     if ( event.ctrlKey ) {
         copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
     } else {
-        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
+        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails.replace(/\n+/g, '\n') + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
     }
 } );
 
