@@ -43,18 +43,19 @@ Side nav
   z-index: 1;
 }
 .navbar a img.grav{
-  border: 1px solid #ccc;
+  border: 2px solid #ccc;
 }
 .navbar a:hover img.grav{
   transition: border .2s ease-in;
-  border: 1px solid #efefef;
+  border-color: #dedede;
 }
-.navbar .grav_container{
-  position: absolute;
+.navbar a:hover.is_admin img.grav{
+  border-color: #efefef;
+}
+.navbar .grav-container{
   display: inline-block;
   width: 1.5rem;
-  left: .75rem;
-  top: .4rem;
+  padding: .4rem 1rem!important;
 }
 .img-fluid {
   max-width: 100%;

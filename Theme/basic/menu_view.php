@@ -55,24 +55,24 @@ endforeach; endif;
 
 if($session['userid']>0){
     $item = array(
-        'style' => 'padding-left: 3em',
         'li_class' => 'menu-user',
         'text' => $session['username'],
-        'href' => '#'
+        'href' => '#',
+        'class' => 'grav-container'
     );
     // use the text as the title if not available
     if(empty($item['title'])) $item['title'] = $item['text'];
 
     // indicate if user is admin
     if ($session['admin'] == 1) {
+        $item['class'] = addCssClass('is_admin', $item['class']);
         $item['title'] .= sprintf(' (%s)',_('Admin'));
     }
     // add gravitar
     $grav_email = $user->get($session['userid'])->gravatar;
     if(!empty($grav_email)) {
-        
         $atts['class'] = 'grav img-circle img-fluid';
-        $item['text'] = sprintf('<span class="grav_container">%s</span>', get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts ));
+        $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts );
     }
     // add user_menu.php items
     $controller = 'user';

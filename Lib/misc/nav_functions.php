@@ -314,7 +314,7 @@ function makeDropdown($item){
     // add empty title value to avoid text with icon from being used
     if(empty($item['title'])) $item['title'] = $item['text'];
     // add the dropdown indicator
-    $item['text'] .= ' <b class="caret"></b>';
+    // $item['text'] .= ' <b class="caret"></b>';
     // add the correct class to the <li>
     $item['li_class'] .= ' dropdown';
     // create variable if empty
