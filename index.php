@@ -299,7 +299,10 @@
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-            $output['mainmenu'] = view($themeDir . "menu_view.php");
+            include ("Lib/misc/nav_functions.php");
+            sortMenuArrays($menu);
+            $output['mainmenu'] = view($themeDir . "menu_view.php", array('sidebar'=>$menu['sidebar']));
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", array('sidebar'=>$menu['sidebar']));
             print view($themeDir . "theme.php", $output);
         }
     }
@@ -319,3 +322,31 @@
     //  $redis->incr("user:postcount:".$session['userid']);
     //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
     // }
+
+    function sortMenuArrays (array &$array = array()) {
+        if(!isSequential($array)){
+            usort($array, 'sortMenuItems');
+        }
+        foreach($array as $key=>&$item){
+            if(is_array($item)) {
+                sortMenuArrays($item);
+            }
+        }
+    }
+    // return true if all array keys are not a string (aka 'non-associative' array)
+    function isSequential(array $array = array()) {
+        return count(array_filter(array_keys($array), 'is_string'))!== 0;
+    }
+    function sortMenuItems ($a, $b) {
+        $key = 'sort';
+        if (!isset($a[$key]) || !isset($b[$key])) {
+            $key = 'order';
+        }
+        if (!isset($a[$key]) || !isset($b[$key])) {
+            return 0;
+        }
+        if($a[$key] == $b[$key]) {
+            return 0;
+        }
+        return ($a[$key] < $b[$key]) ? -1 : 1;
+    }

@@ -107,14 +107,21 @@ function menu_sort($a,$b) {
 
 echo "<ul class='nav'>";
 
-foreach ($menu['dashboard'] as $item) {
-    $item['class'] = 'menu-dashboard';
-    echo drawItem($item);
-}
+
+echo '<li class="btn-li"><a data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn"><svg class="icon"><use xlink:href="#icon-menu"></use></svg></a></li>';
+
+// foreach ($menu['dashboard'] as $item) {
+//     $item['class'] = 'menu-dashboard';
+//     echo drawItem($item);
+// }
 foreach ($menu['left'] as $item) {
     $item['class'] = 'menu-left';
     echo drawItem($item);
 }
+// top level menu icons
+if(!empty($sidebar['category'])): foreach($sidebar['category'] as $item):
+    echo makeListLink($item);
+endforeach; endif;
 
 echo "</ul>";
 echo "<ul class='nav pull-right'>";
@@ -129,20 +136,51 @@ if (count($menu['dropdown']) && $session['read']) {
     echo drawItem($extra);
 }
 
-if (count($menu['dropdownconfig'])) {
-    $setup = array();
-    $setup['name'] = 'Setup';
-    $setup['icon'] = 'icon-wrench icon-white';
-    $setup['class'] = 'menu-setup';
-    $setup['session'] = 'read';
-    $setup['dropdown'] = $menu['dropdownconfig'];
-    echo drawItem($setup);
-}
+// if (count($menu['dropdownconfig'])) {
+//     $setup = array();
+//     $setup['name'] = 'Setup';
+//     $setup['icon'] = 'icon-wrench icon-white';
+//     $setup['class'] = 'menu-setup';
+//     $setup['session'] = 'read';
+//     $setup['dropdown'] = $menu['dropdownconfig'];
+//     echo drawItem($setup);
+// }
 
 foreach ($menu['right'] as $item) {
     $item['class'] = 'menu-right';
     echo drawItem($item);
 }
-echo "</ul>";
-
+    $link = array(
+        'text' => $session['username'],
+        'class'=> 'dropdown-toggle',
+        'href' => '#',
+        'icon' => 'user',
+        'data' => array(
+            'toggle' => 'collapse',
+            'target' => '#sidebar_user_dropdown'
+        )
+    );
+    if ($session['admin'] == 1) {
+        $link['text'] .= ' <small><strong>(' . _('Admin') . ')</strong></small>';
+    }
+    //echo makeLink($link);
 ?>
+<li class="dropdown menu-user">
+    <a href="<?php echo $link['href'] ?>" class="<?php echo $link['class'] ?>" data-toggle="dropdown">
+        <span>
+            <svg class="icon"><use xlink:href="#icon-<?php echo $link['text'] ?>"></use></svg>
+            <span class="menu-text"><?php echo $link['text'] ?></span>
+        </span>
+        <b class="caret"></b>
+    </a>
+<ul class="dropdown-menu scrollable-menu">
+<?php 
+    $controller = 'user';
+    if(!empty($sidebar['footer'][$controller])): foreach($sidebar['footer'][$controller] as $item): 
+        echo makeListLink($item);
+    endforeach; endif;
+?>
+</ul>
+</li>
+</ul>
+

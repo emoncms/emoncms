@@ -161,6 +161,7 @@ function load_menu()
     $menu_dropdown = array(); // Extra
     $menu_dropdown_config = array(); //Setup
     $menu_right = array(); // Right
+    $sidebar = array(); // Sidebar
 
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
@@ -174,7 +175,40 @@ function load_menu()
         }
     }
 
-    return array('dashboard'=>$menu_dashboard, 'left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
+    return array(
+        'dashboard' => $menu_dashboard,
+        'left' => $menu_left,
+        'dropdown' => $menu_dropdown,
+        'dropdownconfig' => $menu_dropdown_config,
+        'right' => $menu_right,
+        'sidebar' => $sidebar
+    );
+}
+
+function load_sidebar()
+{
+    global $route;
+    $sidebar = array(); // Sidebar 1st level nav
+    $sidebar_footer = array(); // Sidebar footer
+    $sidebar_sub = array(); // Sidebar 2nd level nav
+
+    $dir = $route->controller;
+    $path = implode(DIRECTORY_SEPARATOR, array('Modules', $dir, $dir . "_menu.php"));
+    
+    if (is_file($path)) require $path;
+
+    if (!empty($sidebar)) $sidebar['sidebar'] = $sidebar;
+    if (!empty($subnav)) $sidebar['subnav'] = $subnav;
+    if (!empty($sidebar_footer)) $sidebar['footer'] = $sidebar_footer;
+
+    if (!empty($sidebar_includes)) {
+        foreach($sidebar_includes as $file) {
+            if (file_exists($file)) {
+                $sidebar['includes'][] = view($file);
+            }
+        }
+    }
+    return $sidebar;
 }
 
 function http_request($method,$url,$data) {

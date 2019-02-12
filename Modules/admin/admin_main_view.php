@@ -200,7 +200,7 @@ pre {
 table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
 </style>
-<h2><?php echo _('Administration'); ?></h2>
+<h3><?php echo _('Administration'); ?></h3>
 <table class="table table-hover">
     <tr>
         <td>

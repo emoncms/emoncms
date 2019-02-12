@@ -84,10 +84,9 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/misc/sidebar.css" rel="stylesheet">
-
+<?php /*
 <?php if ($menucollapses) { ?>
     <style>
-        /* this is menu colapsed */
         @media (max-width: 979px){
             .menu-description {
                 display: inherit !important ;
@@ -118,6 +117,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         }
     </style>
 <?php } ?>
+<?php */ ?>
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script>
@@ -163,57 +163,44 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         </div>
     </div>
 
-    <div id="topspacer"></div>
-<?php if (isset($submenu) && ($submenu)) { ?>
-    <div id="submenu">
-        <div class="container">
-            <?php echo $submenu; ?>
+    <!-- <div id="topspacer"></div> -->
+    <?php if (isset($submenu) && ($submenu)) { ?>
+        <div id="submenu">
+            <div class="container">
+                <?php echo $submenu; ?>
+            </div>
         </div>
-    </div>
-    <br>
-<?php } ?>
+        <br>
+    <?php } ?>
 
-<div id="sidebar" style="left: 0" class="sidenav d-flex bg-dark justify-content-between text-light">
-    <div class="sidebar-content d-flex flex-column flex-fill">
-        <div class="sidenav-inner flex-fill">
-            <ul id="topnav" class="sidenav-menu btn-group d-flex">
-                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-home"></use></svg>','feed/list',_('Home'),'btn') ?></li>
-                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-wrench"></use></svg>','user/view',_('Settings'),'btn') ?></li>
-                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-leaf"></use></svg>','app/view',_('Apps'),'btn') ?></li>
-                <li class="flex-fill"><?php echo $route->makeLink('<svg class="icon"><use xlink:href="#icon-dashboard"></use></svg>','dashboard/list',_('Dashboards'),'btn') ?></li>
-            </ul>
-            <ul id="subnav" class="sidenav-menu nav">
-                <?php echo $route->makeListLink('<svg class="icon"><use xlink:href="#icon-input"></use></svg> ' . _("Inputs"), 'input/view') ?>
-                <?php echo $route->makeListLink('<svg class="icon"><use xlink:href="#icon-format_list_bulleted"></use></svg> ' . _("Feeds"), 'feed/list') ?>
-                <?php echo $route->makeListLink('<svg class="icon"><use xlink:href="#icon-show_chart"></use></svg> ' . _("Graphs"), 'graph') ?>
-            </ul>
-            <?php echo $route->sidebar; ?>
+    <div id="sidebar" style="left: 0" class="sidenav bg-dark text-light">
+        <div class="sidebar-content d-flex flex-column flex-fill">
+            <?php echo $sidebar; ?>
         </div>
-        <a href="#"><small class="muted">[beta]</small></a>
     </div>
     <a title="<?php echo _("Toggle Sidebar") ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column"></a>
-</div>
-<a title="<?php echo _("Toggle Sidebar") ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column"></a>
 
-<span class="menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
+    <span class="menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
 
+    <?php if ($fullwidth && $route->controller=="dashboard") { ?>
+        <div id="dashboard-container">
+            <?php echo $content; ?>
+        </div>
+    <?php } else if ($fullwidth) { ?>
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div class="span12">
+                    <?php echo $content; ?>
+                </div>
+            </div>
+        </div>
+    <?php } else { ?>
+        <div class="container">
+            <?php echo $content; ?>
+        </div>
+    <?php } ?>
 
-<?php if ($fullwidth && $route->controller=="dashboard") { ?>
-    <div>
-        <?php echo $content; ?>
-    </div>
-<?php } else if ($fullwidth) { ?>
-    <div class = "container-fluid"><div class="row-fluid"><div class="span12">
-        <?php echo $content; ?>
-    </div></div></div>
-<?php } else { ?>
-    <div class="container">
-        <?php echo $content; ?>
-    </div>
-<?php } ?>
-
-    <div style="clear:both; height:60px;"></div>
-    </div>
+    </div><!-- eof #wrap -->
 
     <div id="footer">
         <?php echo _('Powered by '); ?><a href="http://openenergymonitor.org">OpenEnergyMonitor.org</a>
@@ -312,6 +299,42 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <symbol id="icon-phonelink_setup" viewBox="0 0 32 32">
             <!-- <title>phonelink_setup</title> -->
             <path d="M25.313 1.313c1.438 0 2.688 1.25 2.688 2.688v24c0 1.438-1.25 2.688-2.688 2.688h-13.313c-1.438 0-2.688-1.25-2.688-2.688v-4h2.688v2.688h13.313v-21.375h-13.313v2.688h-2.688v-4c0-1.438 1.25-2.688 2.688-2.688h13.313zM10.688 18.688c1.438 0 2.625-1.25 2.625-2.688s-1.188-2.688-2.625-2.688-2.688 1.25-2.688 2.688 1.25 2.688 2.688 2.688zM15.75 16.688l1.438 1.188c0.125 0.125 0.25 0.25 0.125 0.375l-1.313 2.313c-0.125 0.125-0.25 0.125-0.375 0.125l-1.75-0.688c-0.375 0.25-0.813 0.563-1.188 0.688l-0.313 1.688c-0.125 0.125-0.25 0.313-0.375 0.313h-2.688c-0.125 0-0.375-0.188-0.25-0.313l-0.25-1.688c-0.375-0.125-0.813-0.438-1.188-0.688l-1.875 0.563c-0.125 0.125-0.313-0.063-0.438-0.188l-1.313-2.25c0-0.125 0-0.25 0.125-0.5l1.5-1.063v-1.375l-1.5-1.063c-0.125-0.125-0.25-0.25-0.125-0.375l1.313-2.313c0.125-0.125 0.313-0.125 0.438-0.125l1.688 0.688c0.375-0.25 0.875-0.563 1.25-0.688l0.25-1.688c0.125-0.125 0.25-0.313 0.375-0.313h2.688c0.25 0 0.375 0.188 0.375 0.313l0.313 1.688c0.375 0.125 0.813 0.438 1.188 0.688l1.75-0.563c0.125-0.125 0.25 0.063 0.375 0.188l1.313 2.25c0 0.125 0 0.25-0.125 0.375l-1.438 1.063v1.375z"></path>
+        </symbol>
+        <symbol id="icon-plus" viewBox="0 0 32 32">
+            <!-- <title>plus</title> -->
+            <path d="M31 12h-11v-11c0-0.552-0.448-1-1-1h-6c-0.552 0-1 0.448-1 1v11h-11c-0.552 0-1 0.448-1 1v6c0 0.552 0.448 1 1 1h11v11c0 0.552 0.448 1 1 1h6c0.552 0 1-0.448 1-1v-11h11c0.552 0 1-0.448 1-1v-6c0-0.552-0.448-1-1-1z"></path>
+        </symbol>
+        <symbol id="icon-user" viewBox="0 0 32 32">
+            <!-- <title>person</title> -->
+            <path d="M16 18.688c3.563 0 10.688 1.75 10.688 5.313v2.688h-21.375v-2.688c0-3.563 7.125-5.313 10.688-5.313zM16 16c-2.938 0-5.313-2.375-5.313-5.313s2.375-5.375 5.313-5.375 5.313 2.438 5.313 5.375-2.375 5.313-5.313 5.313z"></path>
+        </symbol>
+        <symbol id="icon-device" viewBox="0 0 32 32">
+            <!-- <title>device</title> -->
+            <path d="M 18.060541,2.0461144 1.9645265,12.44571 2.0034027,13.48277 16.817103,19.713445 17.248421,19.665439 32.215116,7.6225947 32.23142,6.8258092 31.625754,6.2292635 19.164948,2.0479158 c -0.127529,-1.775e-4 -0.657029,-8.874e-4 -1.104414,-0.00266 z m 14.023267,6.7084964 -14.847629,11.9899932 -0.398512,0.02742 -14.7394919,-6.378638 0.023076,5.97283 c 0.074472,0.08969 0.455743,0.529648 0.526693,0.612962 l 13.5117559,6.121658 0.825578,-0.03088 14.729774,-12.28646 0.359026,-0.63118 z M 3.0422101,15.333109 6.3919049,16.701161 v 0.919128 l -3.3496948,-1.368061 -0.00981,-0.277542 2.8137021,1.179093 0.00981,-0.526284 -2.8162961,-1.199846 z m 4.893323,1.880778 0.7561734,0.289213 v 1.258893 l 2.5935155,1.187593 v 0.983632 L 8.6917065,19.719501 v 1.406664 l 2.5935155,1.213105 v 0.04375 L 7.9355331,20.876439 Z m 4.6096209,1.920265 0.756176,0.289222 v 1.259506 l 2.594122,1.187584 v 0.983019 L 13.30133,21.639775 v 1.406664 l 2.594122,1.213709 v 0.04375 L 12.545154,22.79732 Z"></path>
+        </symbol>
+        <symbol id="icon-menu" viewBox="0 0 32 32">
+            <!-- <title>menu</title> -->
+            <path d="m 2,6 h 28 v 4.571429 H 2 Z m 0,8 h 28 v 4.571429 H 2 Z m 0,8 h 28 v 4.571429 H 2 Z"></path>
+        </symbol>
+        <symbol id="icon-apps" viewBox="0 0 32 32">
+            <!-- <title>apps</title> -->
+            <path d="m 5.1256556,0.32091057 c -1.5502497,0 -2.8314932,1.34817863 -2.8314932,2.89950673 V 29.111936 c 0,1.551328 1.2801643,2.900061 2.8314932,2.900061 H 19.554617 c 1.550249,0 2.832052,-1.348733 2.832052,-2.900061 V 3.2204173 c 0,-1.5513281 -1.280725,-2.89950673 -2.832052,-2.89950673 z m 0,4.31497453 H 19.554617 v 9.1634669 l -0.857976,-0.857421 -6.144658,6.917339 -3.4592268,-3.499366 -3.9671006,3.9671 z M 19.554617,14.571476 V 27.695353 H 5.1256556 v -4.76431 l 3.9671006,-3.967102 3.4592268,3.499366 z"></path>
+        </symbol>
+        <symbol id="icon-tasks" viewBox="0 0 32 32">
+            <!-- <title>tasks</title> -->
+            <path d="M18.286 25.143h11.429v-2.286h-11.429v2.286zM11.429 16h18.286v-2.286h-18.286v2.286zM22.857 6.857h6.857v-2.286h-6.857v2.286zM32 21.714v4.571c0 0.625-0.518 1.143-1.143 1.143h-29.714c-0.625 0-1.143-0.518-1.143-1.143v-4.571c0-0.625 0.518-1.143 1.143-1.143h29.714c0.625 0 1.143 0.518 1.143 1.143zM32 12.571v4.571c0 0.625-0.518 1.143-1.143 1.143h-29.714c-0.625 0-1.143-0.518-1.143-1.143v-4.571c0-0.625 0.518-1.143 1.143-1.143h29.714c0.625 0 1.143 0.518 1.143 1.143zM32 3.429v4.571c0 0.625-0.518 1.143-1.143 1.143h-29.714c-0.625 0-1.143-0.518-1.143-1.143v-4.571c0-0.625 0.518-1.143 1.143-1.143h29.714c0.625 0 1.143 0.518 1.143 1.143z"></path>
+        </symbol>
+        <symbol id="icon-logout" viewBox="0 0 32 32">
+            <!-- <title>logout</title> -->
+            <path d="M23.75 6.875c2.563 2.188 4.25 5.5 4.25 9.125 0 6.625-5.375 12-12 12s-12-5.375-12-12c0-3.625 1.688-6.938 4.25-9.125l1.875 1.875c-2.063 1.688-3.438 4.313-3.438 7.25 0 5.188 4.125 9.313 9.313 9.313s9.313-4.125 9.313-9.313c0-2.938-1.313-5.5-3.438-7.188zM17.313 4v13.313h-2.625v-13.313h2.625z"></path>
+        </symbol>
+        <symbol id="icon-expand" viewBox="0 0 32 32">
+            <!-- <title>expand</title> -->
+            <path d="M32 0v13l-5-5-6 6-3-3 6-6-5-5zM14 21l-6 6 5 5h-13v-13l5 5 6-6z"></path>
+        </symbol>
+        <symbol id="icon-contract" viewBox="0 0 32 32">
+            <!-- <title>contract</title> -->
+            <path d="M14 18v13l-5-5-6 6-3-3 6-6-5-5zM32 3l-6 6 5 5h-13v-13l5 5 6-6z"></path>
         </symbol>
     </defs>
 </svg>
