@@ -10,8 +10,6 @@ The feedwriter service writes emoncms feed data to disk when redisbuffer is enab
 
 ## Install feedwriter service
 
-If you are not running EmonCMS on Raspbian, modify the .service file to run the service
-as an appropriate user. The service is configured to run as the user 'pi' by default.
 Install the service using the following commands:
 ```
 sudo ln -s /var/www/emoncms/scripts/services/feedwriter/feedwriter.service /lib/systemd/system
