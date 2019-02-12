@@ -299,10 +299,32 @@
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
+
+            $menu['category'][] = array(
+                'li_class'=>'btn-li',
+                'icon'=>'wrench',
+                'title'=> _("Setup"),
+                'path'=> 'input/view',
+                'active'=> explode(',','input,feed,graph,device,config'),
+                'sort'=> 1
+            );
+        
+            if(true){
+                $menu['right'][] = array(
+                    'li_class'=>'btn-li',
+                    'icon'=>'folder-plus',
+                    'title'=> _("Extra"),
+                    'href'=> '#',
+                    'active'=> explode(',','vis,remoteaccess'),
+                    'sort'=> 7
+                );
+            }
             include ("Lib/misc/nav_functions.php");
             sortMenuArrays($menu);
-            $output['mainmenu'] = view($themeDir . "menu_view.php", array('sidebar'=>$menu['sidebar']));
-            $output['sidebar'] = view($themeDir . "sidebar_view.php", array('sidebar'=>$menu['sidebar']));
+            // debugMenu('category');
+
+            $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", array('menu'=>$menu));
             print view($themeDir . "theme.php", $output);
         }
     }
@@ -322,31 +344,3 @@
     //  $redis->incr("user:postcount:".$session['userid']);
     //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
     // }
-
-    function sortMenuArrays (array &$array = array()) {
-        if(!isSequential($array)){
-            usort($array, 'sortMenuItems');
-        }
-        foreach($array as $key=>&$item){
-            if(is_array($item)) {
-                sortMenuArrays($item);
-            }
-        }
-    }
-    // return true if all array keys are not a string (aka 'non-associative' array)
-    function isSequential(array $array = array()) {
-        return count(array_filter(array_keys($array), 'is_string'))!== 0;
-    }
-    function sortMenuItems ($a, $b) {
-        $key = 'sort';
-        if (!isset($a[$key]) || !isset($b[$key])) {
-            $key = 'order';
-        }
-        if (!isset($a[$key]) || !isset($b[$key])) {
-            return 0;
-        }
-        if($a[$key] == $b[$key]) {
-            return 0;
-        }
-        return ($a[$key] < $b[$key]) ? -1 : 1;
-    }

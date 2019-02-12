@@ -11,33 +11,44 @@
 
  
     // not sure if this is usefull yet?? need to add an ability to create "favorite" pages
-    // $sidebar['setup'][] = array(
-    //     'text' => _("Admin"),
-    //     'path' => 'admin/view',
-    //     'icon' => 'tasks',
-    //     'active' => 'admin',
-    //     'sort' => 6
-    // );
+    $menu['setup'][] = array(
+        'text' => _("Admin"),
+        'path' => 'admin/view',
+        'icon' => 'tasks',
+        'active' => 'admin',
+        'sort' => 6
+    );
+
 
     // links specific to 'user' controller
-    $sidebar['user'][] = array(
-        'text' => _("Add New Shortcut"),
-        'path' => 'user/shortcut/add',
-        'icon' => 'plus'
+    $menu['user'][] = array(
+        'text' => _("Add Shortcut"),
+        'icon' => 'plus',
+        'path' => 'user/links/add',
+        'sort' => 0
     );
-    
+    $menu['user'][] = array(
+        'text' => _("All Shortcuts"),
+        'path' => 'user/links',
+        'icon' => 'favorite'
+    );
     // shown at bottom of sidebar
-    $sidebar['footer']['user'][] = array(
-        'text' => _("Logout"),
-        'icon' => 'logout',
-        'path' => 'user/logout',
-        'sort' => 1
-    );
-    $sidebar['footer']['user'][] = array(
+    $menu['user'][] = array(
         'text' => _("My Account"),
         'icon' => 'user',
         'path' => 'user/view',
-        'sort' => 0
-    );    
+        'sort' => 1
+    );
+    $menu['user'][] = array(
+        'li_class' => 'divider',
+        'sort' => 2
+    );
+    $menu['user'][] = array(
+        'text' => _("Logout"),
+        'icon' => 'logout',
+        'path' => 'user/logout',
+        'sort' => 3
+    );
 
-    $sidebar['includes']['user'][] = view('Modules/user/Views/sidebar.php');
+
+    $menu['includes']['user'][] = view('Modules/user/Views/sidebar.php');

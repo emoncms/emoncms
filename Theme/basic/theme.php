@@ -14,52 +14,56 @@ global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$men
 $v = 2;
 
 //compute dynamic @media properties depending on numbers and lengths of shortcuts
-$maxwidth1=1200;
-$maxwidth2=480;
-$maxwidth3=340;
-$sumlength1 = 0;
-$sumlength2 = 0;
-$sumlength3 = 0;
-$sumlength4 = 0;
-$sumlength5 = 0;
-$nbshortcuts1 = 0;
-$nbshortcuts2 = 0;
-$nbshortcuts3 = 0;
-$nbshortcuts4 = 0;
-$nbshortcuts5 = 0;
+// $maxwidth1=1200;
+// $maxwidth2=480;
+// $maxwidth3=340;
+// $sumlength1 = 0;
+// $sumlength2 = 0;
+// $sumlength3 = 0;
+// $sumlength4 = 0;
+// $sumlength5 = 0;
+// $nbshortcuts1 = 0;
+// $nbshortcuts2 = 0;
+// $nbshortcuts3 = 0;
+// $nbshortcuts4 = 0;
+// $nbshortcuts5 = 0;
 
-foreach($menu['dashboard'] as $item){
-    if(isset($item['name'])){$name = $item['name'];}
-    if(isset($item['published'])){$published = $item['published'];} //only published dashboards
-    if($name && $published){
-        $sumlength1 += strlen($name);
-        $nbshortcuts1 ++;
-    }
-}
-foreach($menu['left'] as $item){
-    if(isset($item['name'])) {$name = $item['name'];}
-    $sumlength2 += strlen($name);
-    $nbshortcuts2 ++;
-}
-if(count($menu['dropdown']) && $session['read']){
-    $extra['name'] = 'Extra';
-    $sumlength3 = strlen($extra['name']);
-    $nbshortcuts3 ++;
-}
-if (count($menu['dropdownconfig'])){
-    $setup['name'] = 'Setup';
-    $sumlength4 = strlen($setup['name']);
-    $nbshortcuts4 ++;
-}
-foreach ($menu['right'] as $item) {
-    if (isset($item['name'])){$name = $item['name'];}
-    $sumlength5 += strlen($name);
-    $nbshortcuts5 ++;
-}
-$maxwidth1=intval((($sumlength1+$sumlength2+$sumlength3+$sumlength4+$sumlength5)+($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+1)*6)*85/9);
-$maxwidth2=intval(($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+3)*6*75/9);
-if($maxwidth2>$maxwidth1){$maxwidth2=$maxwidth1-1;}
-if($maxwidth3>$maxwidth2){$maxwidth3=$maxwidth2-1;}
+// foreach($menu['dashboard'] as $item){
+//     if(isset($item['name'])) $name = $item['name'];
+//     if(isset($item['published'])) $published = $item['published']; //only published dashboards
+//     if(isset($name) && $name && isset($published) && $published){
+//         $sumlength1 += strlen($name);
+//         $nbshortcuts1 ++;
+//     }
+// }
+// if(!empty($menu['left'])):foreach($menu['left'] as $item):
+//     if(isset($item['name'])) {$name = $item['name'];}
+//     $sumlength2 += strlen($name);
+//     $nbshortcuts2 ++;
+// endforeach; endif;
+
+// if(!empty($menu['dropdown']) && count($menu['dropdown']) && $session['read']){
+//     $extra['name'] = 'Extra';
+//     $sumlength3 = strlen($extra['name']);
+//     $nbshortcuts3 ++;
+// }
+// if (!empty($menu['dropdownconfig']) && count($menu['dropdownconfig'])){
+//     $setup['name'] = 'Setup';
+//     $sumlength4 = strlen($setup['name']);
+//     $nbshortcuts4 ++;
+// }
+// if(!empty($menu['right'])):foreach($menu['right'] as $item):
+//     if (isset($item['name'])){
+//         $name = $item['name'];
+//         $sumlength5 += strlen($name);
+//         $nbshortcuts5 ++;
+//     }
+// endforeach; endif;
+
+// $maxwidth1=intval((($sumlength1+$sumlength2+$sumlength3+$sumlength4+$sumlength5)+($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+1)*6)*85/9);
+// $maxwidth2=intval(($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+3)*6*75/9);
+// if($maxwidth2>$maxwidth1){$maxwidth2=$maxwidth1-1;}
+// if($maxwidth3>$maxwidth2){$maxwidth3=$maxwidth2-1;}
 
 if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
@@ -335,6 +339,30 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <symbol id="icon-contract" viewBox="0 0 32 32">
             <!-- <title>contract</title> -->
             <path d="M14 18v13l-5-5-6 6-3-3 6-6-5-5zM32 3l-6 6 5 5h-13v-13l5 5 6-6z"></path>
+        </symbol>
+        <symbol id="icon-favorite" viewBox="0 0 32 32">
+            <!-- <title>favorite</title> -->
+            <path d="M16 28.438l-1.938-1.75c-6.875-6.25-11.375-10.313-11.375-15.375 0-4.125 3.188-7.313 7.313-7.313 2.313 0 4.563 1.125 6 2.813 1.438-1.688 3.688-2.813 6-2.813 4.125 0 7.313 3.188 7.313 7.313 0 5.063-4.5 9.188-11.375 15.438z"></path>
+        </symbol>
+        <symbol id="icon-cydynni" viewBox="0 0 32 32">
+            <!-- <title>cydynni</title> -->
+            <path d="m 22.051367,2.692342 c -0.572053,0.2919087 0.219921,0.7687035 0.49506,0.9596313 2.35741,1.722664 4.17818,4.3403366 4.391463,7.3111817 0.354926,2.472887 -0.404392,4.993486 -1.906343,6.977869 -1.451917,2.14211 -3.769212,3.652201 -6.337598,4.033862 -0.972948,0.196311 -1.982065,0.253178 -2.957442,0.294039 -0.486073,0.232051 -0.07716,0.802016 0.336414,0.841809 2.85142,1.263645 6.176712,0.790306 8.933304,-0.492993 3.366355,-1.798339 5.778493,-5.46159 5.652884,-9.335348 C 30.694431,10.342144 29.520962,7.3948964 27.319263,5.4151733 25.864275,4.0298764 24.019673,3.0659855 22.051367,2.692342 Z M 7.2057616,2.9207518 C 5.9519983,3.4272018 5.1198983,4.6416928 4.2142129,5.6043091 -0.20107634,10.708906 -0.2246082,18.872267 3.9144897,24.145296 c 2.9296453,3.851015 7.7580893,6.284978 12.6307533,5.943305 2.768021,-0.01093 5.463677,-0.930232 7.750431,-2.467033 1.786018,-1.102177 3.412559,-2.591182 4.227131,-4.567161 -1.79162,0.88555 -3.257594,2.342916 -5.197097,2.944523 C 18.376334,27.855349 12.392154,26.879208 8.6005084,23.120035 4.8217245,19.665294 3.0410409,14.007825 4.6467447,9.0764486 5.2303761,7.0426566 6.2778295,5.1454179 7.5747313,3.4814412 7.6713018,3.2289345 7.4881046,2.9159425 7.2057616,2.9207518 Z m 8.1684934,2.2215699 c -0.144492,-0.003 -0.289136,-0.00209 -0.434082,0.0031 -3.722382,0.06041 -7.0671306,3.0163333 -7.715291,6.6605753 -0.5340067,2.437721 0.1792063,5.151894 1.9332151,6.932393 0.5863564,0.208494 0.7140073,-0.626811 0.3772379,-0.958081 -1.5253882,-3.558474 0.624852,-8.2591008 4.467428,-9.1456947 3.491227,-1.1447904 7.518075,1.268508 8.396386,4.7759357 0.167385,0.781284 0.34081,1.57074 0.797884,2.245858 0.762035,-2.778632 0.06801,-5.9515091 -2.032951,-7.9772909 C 19.6409,6.1426494 17.541642,5.1872657 15.374255,5.1423217 Z"></path>
+        </symbol>
+        <symbol id="icon-earth" viewBox="0 0 32 32">
+            <!-- <title>earth</title> -->
+            <path d="M16 0c-8.837 0-16 7.163-16 16s7.163 16 16 16 16-7.163 16-16-7.163-16-16-16zM16 30c-1.967 0-3.84-0.407-5.538-1.139l7.286-8.197c0.163-0.183 0.253-0.419 0.253-0.664v-3c0-0.552-0.448-1-1-1-3.531 0-7.256-3.671-7.293-3.707-0.188-0.188-0.442-0.293-0.707-0.293h-4c-0.552 0-1 0.448-1 1v6c0 0.379 0.214 0.725 0.553 0.894l3.447 1.724v5.871c-3.627-2.53-6-6.732-6-11.489 0-2.147 0.484-4.181 1.348-6h3.652c0.265 0 0.52-0.105 0.707-0.293l4-4c0.188-0.188 0.293-0.442 0.293-0.707v-2.419c1.268-0.377 2.61-0.581 4-0.581 2.2 0 4.281 0.508 6.134 1.412-0.13 0.109-0.256 0.224-0.376 0.345-1.133 1.133-1.757 2.64-1.757 4.243s0.624 3.109 1.757 4.243c1.139 1.139 2.663 1.758 4.239 1.758 0.099 0 0.198-0.002 0.297-0.007 0.432 1.619 1.211 5.833-0.263 11.635-0.014 0.055-0.022 0.109-0.026 0.163-2.541 2.596-6.084 4.208-10.004 4.208z"></path>
+        </symbol>
+        <symbol id="icon-schedule" viewBox="0 0 32 32">
+            <!-- <title>schedule</title> -->
+            <path d="M16.688 9.313v7l6 3.563-1 1.688-7-4.25v-8h2zM16 26.688c5.875 0 10.688-4.813 10.688-10.688s-4.813-10.688-10.688-10.688-10.688 4.813-10.688 10.688 4.813 10.688 10.688 10.688zM16 2.688c7.375 0 13.313 5.938 13.313 13.313s-5.938 13.313-13.313 13.313-13.313-5.938-13.313-13.313 5.938-13.313 13.313-13.313z"></path>
+        </symbol>
+        <symbol id="icon-present_to_all" viewBox="0 0 32 32">
+            <!-- <title>present_to_all</title> -->
+            <path d="M13.313 16h-2.625l5.313-5.313 5.313 5.313h-2.625v5.313h-5.375v-5.313zM28 25.375v-18.75h-24v18.75h24zM28 4c1.5 0 2.688 1.188 2.688 2.688v18.625c0 1.5-1.188 2.688-2.688 2.688h-24c-1.5 0-2.688-1.188-2.688-2.688v-18.625c0-1.5 1.188-2.688 2.688-2.688h24z"></path>
+        </symbol>
+        <symbol id="icon-folder-plus" viewBox="0 0 32 32">
+            <!-- <title>folder-plus</title> -->
+            <path d="M18 8l-4-4h-14v26h32v-22h-14zM22 22h-4v4h-4v-4h-4v-4h4v-4h4v4h4v4z"></path>
         </symbol>
     </defs>
 </svg>

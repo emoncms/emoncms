@@ -12,175 +12,75 @@ if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 
-// Example how to add a fixed menu item:
-//$menu['dropdownconfig'][] = array('name'=>'Documentation', 'icon'=>'icon-book', 'path'=>"docs", 'session'=>"write", 'order' => 60,'divider' => true);
+?>
 
-usort($menu['left'], "menu_sort");
-usort($menu['dropdown'], "menu_sort");
-usort($menu['dropdownconfig'], "menu_sort");
-usort($menu['right'], "menu_sort");
-
-function drawItem($item) {
-    global $path, $session;
-    $out = "";
-    if (isset($item['session'])) {
-        if ((isset($session[$item['session']]) && ($session[$item['session']]==1)) || $item['session'] == 'all') {
-            $i = 0;
-            $subactive = false;
-            if (isset($item['dropdown']) && count($item['dropdown']) > 0) {
-                usort($item['dropdown'], "menu_sort");
-                $outdrop="";
-                foreach ($item['dropdown'] as $dropdownitem) {
-                    if (!isset($dropdownitem['session']) || (isset($dropdownitem['session']) && $session[$dropdownitem['session']]==1)) {
-                        $i++;
-                        if (is_active($dropdownitem)) { $subactive = true; }
-                        if (isset($dropdownitem['divider']) && $dropdownitem['divider']) { $outdrop .= '<li class="divider"></li>'; }
-                        // TODO: Remove dependency of index position on APPs module
-                        $outdrop .= '<li class="'. (is_active($dropdownitem) ? 'active' : '') . '"><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:(isset($dropdownitem['1'])?$dropdownitem['0']:"undefined")) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : (isset($dropdownitem['0'])?$dropdownitem['0']:"undefined")) . '</a></li>';
-                    }
-                }
-            }
-            
-            $show = true; if (isset($item['hideinactive']) && $item['hideinactive']) $show = false;
-            if (is_active($item)) $show = true;
-            
-            if ($i > 0) {
-                $out .= '<li class="dropdown' . ($subactive ? " active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . '">';
-                $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . drawNameIcon($item,false) . '<b class="caret"></b></a>';
-                $out .= '<ul class="dropdown-menu scrollable-menu">';
-                $out .= $outdrop;
-                $out .= '</ul></li>';
-            }
-            else if (isset($item['path']) && isset($item['name'])) {
-                if ($show) $out .= "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") ."'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
-            }
-        }
-    } else {
-        $out .=  "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . "'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
-    }
-    return $out;
-}
-
-function drawNameIcon($item, $alwaysshowname=false) {
-    $out = "";
-    $name = false;
-    $desc = false;
-    $icon = false;
-    $published = false;
-    $divid = "";
-    if (isset($item['name'])) $name = $item['name'];
-    if (isset($item['desc'])) $desc = $item['desc'];
-    if (isset($item['icon'])) $icon = $item['icon'];
-    if (isset($item['published'])) $published = $item['published'];
-    if (isset($item['id'])) $divid = "id='".$item['id']."'";
-
-    $title = ($desc ? $desc : $name);
-    if($name && $published) $name = "<b>".$name."</b>";
-
-    $out = "<div $divid style='display: inline'>";
-    if ($icon) $out .= "<i class='".$icon."'" . ($title ? " title='".$title."'" : "") . "></i>";
-    if ($name) {
-        if ($alwaysshowname || !$icon) {
-            $out .= " " . $name;
-        } else {
-            $out .= " <span class='menu-text'>" . $name . "</span>";
-        }
-    } else {
-        $out .= 'unknown';
-    }
-    if ($desc) $out .= "<span class='menu-description'><small>".$desc."</small></span>";
-    $out .= "</div>";
-    return $out;
-}
-
-function is_active($item) {
-    global $route;
-    if (isset($item['path']) && ($item['path'] == $route->controller || $item['path'] == $route->controller."/".$route->action || $item['path'] == $route->controller."/".$route->action."/".$route->subaction || $item['path'] == $route->controller."/".$route->action."&id=".get('id')))
-        return true;
-    return false;
-}
-
-// Menu sort by order
-function menu_sort($a,$b) {
-    return $a['order']>$b['order'];
-}
-
-echo "<ul class='nav'>";
-
-
+<ul class='nav'>
+<?php
 echo '<li class="btn-li"><a data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn"><svg class="icon"><use xlink:href="#icon-menu"></use></svg></a></li>';
 
-// foreach ($menu['dashboard'] as $item) {
-//     $item['class'] = 'menu-dashboard';
-//     echo drawItem($item);
-// }
-foreach ($menu['left'] as $item) {
+if(!empty($menu['left'])): foreach ($menu['left'] as $item):
     $item['class'] = 'menu-left';
-    echo drawItem($item);
-}
-// top level menu icons
-if(!empty($sidebar['category'])): foreach($sidebar['category'] as $item):
     echo makeListLink($item);
 endforeach; endif;
 
-echo "</ul>";
-echo "<ul class='nav pull-right'>";
+// top level menu icons
+if(!empty($menu['category'])): foreach($menu['category'] as $item):
+    echo makeListLink($item);
+endforeach; endif;
+?>
+</ul>
 
-if (count($menu['dropdown']) && $session['read']) {
-    $extra = array();
-    $extra['name'] = 'Extra';
-    $extra['icon'] = 'icon-plus icon-white';
-    $extra['class'] = 'menu-extra';
-    $extra['session'] = 'read';
-    $extra['dropdown'] = $menu['dropdown'];
-    echo drawItem($extra);
-}
 
-// if (count($menu['dropdownconfig'])) {
-//     $setup = array();
-//     $setup['name'] = 'Setup';
-//     $setup['icon'] = 'icon-wrench icon-white';
-//     $setup['class'] = 'menu-setup';
-//     $setup['session'] = 'read';
-//     $setup['dropdown'] = $menu['dropdownconfig'];
-//     echo drawItem($setup);
+<ul class='nav pull-right'>
+<?php
+
+// if (!empty($menu['dropdown']) && count($menu['dropdown']) && $session['read']) {
+//     $extra = array();
+//     $extra['name'] = 'Extra';
+//     $extra['icon'] = 'icon-plus icon-white';
+//     $extra['class'] = 'menu-extra';
+//     $extra['session'] = 'read';
+//     $extra['dropdown'] = $menu['dropdown'];
+//     echo makeListLink($extra);
 // }
 
-foreach ($menu['right'] as $item) {
+if(!empty($menu['right'])): foreach ($menu['right'] as $item):
     $item['class'] = 'menu-right';
-    echo drawItem($item);
-}
-    $link = array(
-        'text' => $session['username'],
-        'class'=> 'dropdown-toggle',
-        'href' => '#',
-        'icon' => 'user',
-        'data' => array(
-            'toggle' => 'collapse',
-            'target' => '#sidebar_user_dropdown'
-        )
-    );
-    if ($session['admin'] == 1) {
-        $link['text'] .= ' <small><strong>(' . _('Admin') . ')</strong></small>';
-    }
-    //echo makeLink($link);
+    echo makeListLink($item);
+endforeach; endif;
 ?>
-<li class="dropdown menu-user">
-    <a href="<?php echo $link['href'] ?>" class="<?php echo $link['class'] ?>" data-toggle="dropdown">
-        <span>
-            <svg class="icon"><use xlink:href="#icon-<?php echo $link['text'] ?>"></use></svg>
-            <span class="menu-text"><?php echo $link['text'] ?></span>
-        </span>
-        <b class="caret"></b>
-    </a>
-<ul class="dropdown-menu scrollable-menu">
-<?php 
-    $controller = 'user';
-    if(!empty($sidebar['footer'][$controller])): foreach($sidebar['footer'][$controller] as $item): 
-        echo makeListLink($item);
-    endforeach; endif;
-?>
-</ul>
-</li>
-</ul>
 
+
+<?php
+
+if($session['userid']>0){
+    $item = array(
+        'li_class' => 'menu-user',
+        'text' => $session['username'],
+        'href' => '#',
+        'icon' => 'user'
+    );
+    // add user_menu.php items
+    $controller = 'user';
+    if(!empty($menu[$controller])): foreach($menu[$controller] as $sub_item): 
+        $item['sub_items'][] = makeListLink($sub_item);
+    endforeach; endif;
+    
+    // indicate if user is admin
+    if ($session['admin'] == 1) {
+        $item['text'] .= ' <small>(' . _('Admin') . ')</small>';
+    }
+
+    // build dropdown with above items
+    echo makeDropdown($item);
+
+} else {
+    // show login link to non-logged in users
+    echo makeListLink(array(
+        'path'=>'/',
+        'text'=>_('Login'),
+        'icon'=>'user'
+    ));
+
+} ?>
+</ul>

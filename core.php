@@ -174,15 +174,15 @@ function load_menu()
             }
         }
     }
-
-    return array(
-        'dashboard' => $menu_dashboard,
-        'left' => $menu_left,
-        'dropdown' => $menu_dropdown,
-        'dropdownconfig' => $menu_dropdown_config,
-        'right' => $menu_right,
-        'sidebar' => $sidebar
-    );
+    return $menu;
+    // return array(
+    //     'dashboard' => $menu_dashboard,
+    //     'left' => $menu_left,
+    //     'dropdown' => $menu_dropdown,
+    //     'dropdownconfig' => $menu_dropdown_config,
+    //     'right' => $menu_right,
+    //     'sidebar' => $sidebar
+    // );
 }
 
 function load_sidebar()

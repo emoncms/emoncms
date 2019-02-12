@@ -27,12 +27,20 @@ function makeListLink($params) {
     $id = getKeyValue('id', $params);
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
+    $href = getKeyValue('href', $params);
     $title = getKeyValue('title', $params);
     $class = getKeyValue('class', $params);
     $li_class = getKeyValue('li_class', $params);
     $li_id = getKeyValue('li_id', $params);
     $icon = getKeyValue('icon', $params);
-    $active = (array) getKeyValue('active', $params);
+    $active = getKeyValue('active', $params);
+    $data = getKeyValue('data', $params);
+    $sub_items = getKeyValue('sub_items', $params);
+
+    if(empty($active)){
+        $path_parts = explode('/', $path);
+        $active = array($path_parts[0]);
+    }
 
     if(empty($title)) $title = $text;
 
@@ -42,13 +50,14 @@ function makeListLink($params) {
         'class'=> $class,
         'id'=> $id,
         'icon'=> $icon,
+        'href'=> $href,
         'path'=> $path,
-        'active'=> $active
+        'active'=> $active,
+        'data'=> $data
     ));
 
     // partial match current url with fragment '$active'
     if (!empty($active)) {
-        
         if(is_current($active)){
             $li_class = addCssClass($activeClassName, $li_class);
         }
@@ -60,7 +69,12 @@ function makeListLink($params) {
         'id'=>$li_id,
         'class'=>$li_class
     ));
-    return sprintf('<li %s>%s</li>', $attr, $link);
+    if(!empty($attr)) $attr = ' '.$attr;
+
+    if(!empty($sub_items)) {
+        $link .= '<ul class="dropdown-menu">'.implode("\n", $sub_items).'</ul>';
+    }
+    return sprintf('<li%s>%s</li>', $attr, $link);
 }
 function is_current($path) {
     $current_path = getCurrentPath();
@@ -82,24 +96,25 @@ function getKeyValue($key, $array) {
 
 /**
  * build <a> link with 'active' class added if is current page
+ * $params = assoc array with keys: [text|path|title|class|id|icon|active|href|data]
  *
- * @param string $text
- * @param string $path
- * @param string $title
- * @param string $css
- * @param string $id
+ * @param array $params associative array
  * @return string <a> tag
  */
 function makeLink($params) {
+    $activeClassName = 'active';
+
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
+    $href = getKeyValue('href', $params);
     $title = getKeyValue('title', $params);
     $class = getKeyValue('class', $params);
     $id = getKeyValue('id', $params);
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
-    $href = getKeyValue('href', $params);
     $data = getKeyValue('data', $params);
+    
+    // create url if pre-built url not passed
     if(empty($href)) $href = getAbsoluteUrl($path);
 
     // append icon to link text
@@ -107,11 +122,15 @@ function makeLink($params) {
         $icon = sprintf('<svg class="icon"><use xlink:href="#icon-%s"></use></svg> ',$icon);
         $text = $icon . $text;
     }
-
-    if (true) {
-        $class = addCssClass('active',$class);
+    // add active class to link if link is to current page
+    if (!empty($active)) {
+        if(is_current($active)){
+            $class = addCssClass($activeClassName, $class);
+        }
+    } elseif(is_current($path)){
+        $class = addCssClass($activeClassName, $class);
     }
-
+    // create the <a> tag attribute list
     $attr = buildAttributes(array(
         'id'=>$id,
         'href'=>$href,
@@ -119,8 +138,13 @@ function makeLink($params) {
         'class'=>$class,
         'data'=>$data
     ));
+    // pad attributes with space before adding to the output
     if(!empty($attr)) $attr = ' '.$attr;
     
+    // exit function if no href value available
+    if(empty($href)) return $text;
+
+    // return <a> tag with all the attributes and child elements
     return sprintf('<a%s>%s</a>', $attr, $text);
 }
 /**
@@ -152,6 +176,7 @@ function buildAttributes($attributes){
  * @return string
  */
 function getAbsoluteUrl($_path) {
+    if(empty($_path)) return '';
     global $path;
     $url = rtrim($path.$_path, '/');
     return $url;
@@ -190,4 +215,94 @@ function getCurrentPath(){
 
     // return implode($spearator, $parts);
     return $_SERVER['REQUEST_URI'];
+}
+
+/**
+ * for development only
+ *
+ * @param string $key - print sub array if $key supplied
+ * @return void - exits php after printing array
+ */
+function debugMenu($key = '') {
+    global $menu;
+    echo "<pre>";
+    if(!empty($key) && isset($menu[$key])){
+        printf("%s:\n-------------\n",strtoupper($key));
+        print_r($menu[$key]);
+    } else {
+        print_r($menu);
+    }
+    exit();
+}
+
+
+function sortMenuArrays (array &$array = array()) {
+    if(!isSequential($array)){
+        usort($array, 'sortMenuItems');
+    }
+    foreach($array as $key=>&$item){
+        if(is_array($item)) {
+            sortMenuArrays($item);
+        }
+    }
+}
+
+/**
+ * return true if all array keys are not a string (aka 'non-associative' array)
+ *
+ * @param array $array
+ * @return boolean
+ */ 
+function isSequential(array $array = array()) {
+    return count(array_filter(array_keys($array), 'is_string'))!== 0;
+}
+
+/**
+ * used as usort() sorting function
+ * 
+ * return -1 if $a['sort'] is less than $b['sort']
+ * return 0 if $a['sort'] is equal to $b['sort']
+ * return 1 if $a['sort'] is greater than $b['sort']
+ *
+ * @param array $a
+ * @param array $b
+ * @return int
+ */
+function sortMenuItems ($a, $b) {
+    $key = 'sort';
+    if (!isset($a[$key]) || !isset($b[$key])) {
+        $key = 'order';
+    }
+    if (!isset($a[$key]) || !isset($b[$key])) {
+        return 0;
+    }
+    if($a[$key] == $b[$key]) {
+        return 0;
+    }
+    return ($a[$key] < $b[$key]) ? -1 : 1;
+}
+
+/**
+ * return true if menu item path is the current page
+ *
+ * @param array $item
+ * @return boolean
+ */
+function is_active($item) {
+    global $route;
+    if (isset($item['path']) && ($item['path'] == $route->controller || $item['path'] == $route->controller."/".$route->action || $item['path'] == $route->controller."/".$route->action."/".$route->subaction || $item['path'] == $route->controller."/".$route->action."&id=".get('id')))
+        return true;
+    return false;
+}
+
+function makeDropdown($item){
+    global $session;
+    if(empty($item['text'])) $item['text'] = '';
+    if(empty($item['title'])) $item['title'] = $item['text'];
+    $item['text'] .= ' <b class="caret"></b>';
+    $item['li_class'] .= ' dropdown';
+    if(empty($item['class'])) $item['class'] = '';
+    addCssClass('dropdown-toggle', $item['class']);
+    $item['data']['toggle'] = 'dropdown';
+    return makeListLink($item);
 }

@@ -6,11 +6,10 @@
 
     // $menu_dropdown_config[] = array('name'=> dgettext($domain, "Feeds"), 'icon'=>'icon-list-alt', 'path'=>"feed/list" , 'session'=>"write", 'order' => 20 );
 
-    $sidebar['setup'][] = array(
+    $menu['setup'][] = array(
         'text' => _("Feeds"),
         'path' => 'feed/list',
         'icon' => 'format_list_bulleted',
         'active' => 'feed',
         'sort' => 1
     );
-    
