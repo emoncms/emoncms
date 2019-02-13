@@ -475,8 +475,13 @@ if ($system['mem_info']) {
                         $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
                         $diskPercent = sprintf('%.2f',$diskPercentRaw);
                         $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
-
-                        echo "<tr><td class='subinfo'></td><td>".$fs['Partition']['text']."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercentTable."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
+                        if (strlen($fs['Partition']['text'])>30) {
+                          $mountpoint = substr($fs['Partition']['text'],0,30)."...";
+                        } else {
+                          $mountpoint = $fs['Partition']['text'];
+                        }
+                        
+                        echo "<tr><td class='subinfo'></td><td>".$mountpoint."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercentTable."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
                         echo "<b>Total:</b> ".formatSize($diskTotal)."<b> Used:</b> ".formatSize($diskUsed)."<b> Free:</b> ".formatSize($diskFree)."</td></tr>\n";
 
                       }
