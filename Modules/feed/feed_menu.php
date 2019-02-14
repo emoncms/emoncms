@@ -1,5 +1,5 @@
 <?php
-
+    defined('EMONCMS_EXEC') or die('Restricted access');
     $domain = "messages";
     bindtextdomain($domain, "Modules/feed/locale");
     bind_textdomain_codeset($domain, 'UTF-8');
@@ -10,6 +10,5 @@
         'text' => _("Feeds"),
         'path' => 'feed/list',
         'icon' => 'format_list_bulleted',
-        'active' => 'feed',
         'sort' => 1
     );

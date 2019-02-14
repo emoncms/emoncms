@@ -126,6 +126,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script>
         window.onerror = function(msg, source, lineno, colno, error) {
+            // return false;
             if (msg.toLowerCase().indexOf("script error") > -1) {
                 alert('Script Error: See Browser Console for Detail');
             }
@@ -147,27 +148,26 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         }
     </script>
 </head>
-<body>
+<body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
     <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
         <div class="navbar-inner">
-        <?php if ($menucollapses) { ?>
+        <?php /*if ($menucollapses) { ?>
             <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                 <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/favicon.png" style="width:28px;"/>
             </button>
             <div class="nav-collapse collapse">
-        <?php } ?>
+        <?php } */?>
 
             <?php echo $mainmenu; ?>
 
-        <?php if ($menucollapses) { ?>
-            </div>
-        <?php } ?>
+        <?php /*if ($menucollapses) { ?>
+        </div>
+        <?php } */ ?>
 
         </div>
     </div>
 
-    <!-- <div id="topspacer"></div> -->
     <?php if (isset($submenu) && ($submenu)) { ?>
         <div id="submenu">
             <div class="container">
@@ -177,17 +177,19 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <br>
     <?php } ?>
 
-    <div id="sidebar" style="left: 0" class="sidenav bg-dark text-light">
+    <div id="sidebar" class="sidenav bg-dark text-light">
         <div class="sidebar-content d-flex flex-column flex-fill">
             <?php echo $sidebar; ?>
         </div>
     </div>
-    <a title="<?php echo _("Toggle Sidebar") ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="sidebar-switch h-100 p-0 d-flex justify-content-center flex-column"></a>
 
-    <span class="menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
-
+    <!-- open and close sidebar -->
+    <div title="<?php echo _("Toggle Sidebar") ?>" class="collapsed sidebar-switch h-100 p-0 d-flex justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar"></div>
+    <span id="sidebar-overlay" class="collapsed menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
+    <!-- end of open and close sidebar -->
+    
     <?php if ($fullwidth && $route->controller=="dashboard") { ?>
-        <div id="dashboard-container">
+        <div>
             <?php echo $content; ?>
         </div>
     <?php } else if ($fullwidth) { ?>
@@ -212,7 +214,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     </div>
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-<?php if (isset($ui_version_2) && $ui_version_2) { ?>
+<?php if (isset($v) && $v === 2) { ?>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/hammer.min.js"></script>
     <script>
         // only use hammerjs on the relevent pages
@@ -223,20 +225,22 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         // find where in the list the current page is
         currentIndex = pages.indexOf(currentPage)
 
-        if (currentIndex > -1) {
+        // removed this functionality temporarily
+        if (false && currentIndex > -1) {
             // uses hammerjs to detect mobile gestures. navigates between input and feed view
             
             // allow text on page to be highlighted. 
             delete Hammer.defaults.cssProps.userSelect
 
             // SETUP VARIABLES:
+            var hammerOptions = {
+                xinputClass: Hammer.TouchInput
+            }
             var container = document.getElementById('wrap'),
                 // get the path as reported by server
                 path = "<?php echo $path; ?>",
                 // create a new instance of the hammerjs api
-                mc = new Hammer.Manager(container, {
-                    inputClass: Hammer.TouchInput
-                }),
+                mc = new Hammer.Manager(container, hammerOptions),
                 // make swipes require more velocity
                 swipe = new Hammer.Swipe({ velocity: 1.1, direction: Hammer.DIRECTION_HORIZONTAL }) // default velocity 0.3
             
@@ -316,9 +320,17 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <!-- <title>device</title> -->
             <path d="M 18.060541,2.0461144 1.9645265,12.44571 2.0034027,13.48277 16.817103,19.713445 17.248421,19.665439 32.215116,7.6225947 32.23142,6.8258092 31.625754,6.2292635 19.164948,2.0479158 c -0.127529,-1.775e-4 -0.657029,-8.874e-4 -1.104414,-0.00266 z m 14.023267,6.7084964 -14.847629,11.9899932 -0.398512,0.02742 -14.7394919,-6.378638 0.023076,5.97283 c 0.074472,0.08969 0.455743,0.529648 0.526693,0.612962 l 13.5117559,6.121658 0.825578,-0.03088 14.729774,-12.28646 0.359026,-0.63118 z M 3.0422101,15.333109 6.3919049,16.701161 v 0.919128 l -3.3496948,-1.368061 -0.00981,-0.277542 2.8137021,1.179093 0.00981,-0.526284 -2.8162961,-1.199846 z m 4.893323,1.880778 0.7561734,0.289213 v 1.258893 l 2.5935155,1.187593 v 0.983632 L 8.6917065,19.719501 v 1.406664 l 2.5935155,1.213105 v 0.04375 L 7.9355331,20.876439 Z m 4.6096209,1.920265 0.756176,0.289222 v 1.259506 l 2.594122,1.187584 v 0.983019 L 13.30133,21.639775 v 1.406664 l 2.594122,1.213709 v 0.04375 L 12.545154,22.79732 Z"></path>
         </symbol>
+        <symbol id="icon-menu2" viewBox="0 0 32 32">
+            <!-- <title>menu</title> -->
+            <path d="M 2,4.4124999 H 30 V 8.9839286 H 2 Z"></path>
+            <path d="m 2,13.20625 h 28 v 4.571429 H 2 Z"></path>
+            <path d="m 2,22 h 28 v 4.571429 H 2 Z"></path>
+        </symbol>
         <symbol id="icon-menu" viewBox="0 0 32 32">
             <!-- <title>menu</title> -->
-            <path d="m 2,6 h 28 v 4.571429 H 2 Z m 0,8 h 28 v 4.571429 H 2 Z m 0,8 h 28 v 4.571429 H 2 Z"></path>
+            <path id="icon-menu-top" d="m 27.93924,5.3202643 v 2.65165 H 4.2497483 v -2.65165 z"></path>
+            <path id="icon-menu-middle" d="m 27.93924,14.202737 v 2.65165 H 4.2497483 v -2.65165 z"></path>
+            <path id="icon-menu-bottom" d="m 27.93924,23.085145 v 2.65165 H 4.2497483 v -2.65165 z"></path>
         </symbol>
         <symbol id="icon-apps" viewBox="0 0 32 32">
             <!-- <title>apps</title> -->
@@ -363,6 +375,10 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <symbol id="icon-folder-plus" viewBox="0 0 32 32">
             <!-- <title>folder-plus</title> -->
             <path d="M18 8l-4-4h-14v26h32v-22h-14zM22 22h-4v4h-4v-4h-4v-4h4v-4h4v4h4v4z"></path>
+        </symbol>
+        <symbol id="icon-close" viewBox="0 0 32 32">
+            <!-- <title>close</title> -->
+            <path d="M25.313 8.563l-7.438 7.438 7.438 7.438-1.875 1.875-7.438-7.438-7.438 7.438-1.875-1.875 7.438-7.438-7.438-7.438 1.875-1.875 7.438 7.438 7.438-7.438z"></path>
         </symbol>
     </defs>
 </svg>

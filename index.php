@@ -24,6 +24,8 @@
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
+    $sidebarFixed = true;
+
     require "Lib/EmonLogger.php";
     $log = new EmonLogger(__FILE__);
     if (isset($_GET['q'])) $log->info($_GET['q']);
@@ -300,31 +302,34 @@
         } else {
             $menu = load_menu();
 
+            // custom sidebar spanning multiple modules
             $menu['category'][] = array(
                 'li_class'=>'btn-li',
                 'icon'=>'wrench',
                 'title'=> _("Setup"),
                 'path'=> 'input/view',
-                'active'=> explode(',','input,feed,graph,device,config'),
+                'active'=> explode(',','input,feed,graph,device,config,admin'),
                 'sort'=> 1
             );
         
-            if(true){
-                $menu['right'][] = array(
-                    'li_class'=>'btn-li',
-                    'icon'=>'folder-plus',
-                    'title'=> _("Extra"),
-                    'href'=> '#',
-                    'active'=> explode(',','vis,remoteaccess'),
-                    'sort'=> 7
-                );
-            }
+            // custom dropdown (right) spanning multiple modules
+            $key = 'extras';
+            if(!empty($menu[$key])): foreach($menu[$key] as $item):
+                $extras[] = $item;
+            endforeach; endif;
+
             include ("Lib/misc/nav_functions.php");
             sortMenuArrays($menu);
             // debugMenu('category');
 
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
             $output['sidebar'] = view($themeDir . "sidebar_view.php", array('menu'=>$menu));
+
+            // add css class names to <body> tag based on controller's options
+            $output['page_classes'][] = $route->controller;
+            if($fullwidth) $output['page_classes'][] = 'fullwidth';
+            if($menucollapses) $output['page_classes'][] = 'menucollapses';
+
             print view($themeDir . "theme.php", $output);
         }
     }

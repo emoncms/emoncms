@@ -10,6 +10,5 @@
         'text' => _("Inputs"),
         'path' => 'input/view',
         'icon' => 'input',
-        'active' => 'input',
         'sort' => 0
     );

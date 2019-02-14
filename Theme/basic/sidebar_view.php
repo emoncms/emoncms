@@ -14,7 +14,14 @@ if (!isset($session['profile'])) {
 <div class="sidenav-inner">
     <h4 id="sidebar-title">
 <?php
+    //
+    // index.php adds category menus items based on item 'path'
+    //
     if(isset($menu['category'])):foreach($menu['category'] as $item):
+        if(empty($item['active'])){
+            $path_parts = explode('/', $item['path']);
+            $item['active'] = array($path_parts[0]);
+        }
         if(!empty($item['active'])) {
             $matches = (array) $item['active'];
             if (in_array($route->controller, $matches)) {

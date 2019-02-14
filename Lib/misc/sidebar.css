@@ -1,10 +1,7 @@
 /* -------------------------------------------------------------------
 Page wrapper
 --------------------------------------------------------------------*/
-#wrapper {
-  padding:0px;
-  margin:0 auto;
-  padding-left: 0px;
+body.app #wrap {
   max-width:1150px;
 }
 
@@ -24,17 +21,29 @@ Side nav
 }
 
 
+/* -------------------------------------------------------------------
+site-wide overriding css
+@todo: move to blue.css
+--------------------------------------------------------------------*/
+html,body{height: initial}
+
 #wrap{
-  min-height: calc(100vh - 2.5rem)!important;
+  min-height: calc(100vh - 5rem)!important;
   margin: 0!important;
+  transition: margin .3s ease-out;
+}
+.fullwidth.collapsed #wrap{
+  margin-left: 0!important;
 }
 .container,
 .container-fluid{
   height: 100%;
   margin-top: 2.5rem;
+  padding-bottom: 2rem!important;
+  box-sizing: border-box;
 }
-#dashboard-container{
-  min-height: calc(100vh - 2.5rem);
+.dashboard #page-container{
+  height: calc(100vh - 2.5rem)!important;
 }
 #footer1{
   position: absolute;
@@ -42,39 +51,127 @@ Side nav
   width: 100vw;
   z-index: 1;
 }
-.navbar a img.grav{
+/* eof site css changes */ 
+
+
+/* -------------------------------------------------------------------
+gravitar icon in toolbar
+--------------------------------------------------------------------*/
+a.grav-container{
+  display: inline-block;
+  width: 1.75rem;
+  padding: 2px .5rem 5px .5rem !important
+}
+a.grav-container img.grav{
+  max-height: 1.6rem;
+  margin-top: .2rem;
+}
+a.grav-container img.grav{
   border: 2px solid #ccc;
 }
-.navbar a:hover img.grav{
+a.grav-container:hover img.grav{
   transition: border .2s ease-in;
   border-color: #dedede;
 }
-.navbar a:hover.is_admin img.grav{
+a.is_admin.grav-container:hover img.grav{
   border-color: #efefef;
 }
-.navbar .grav-container{
-  display: inline-block;
-  width: 1.5rem;
-  padding: .4rem 1rem!important;
+#icon-menu path{
+  transition: all .2s cubic-bezier(.46,.03,.52,.96);
+  transform-origin: center;
 }
-.img-fluid {
-  max-width: 100%;
-  height: auto;
+/* eof gravitar */
+
+/* -------------------------------------------------------------------
+top navbar override
+@todo: move to blue.css
+--------------------------------------------------------------------*/
+
+/* sidebar hidden indicator */
+#sidebar-toggle:active,
+#sidebar-toggle:focus{
+  outline: none;
+}
+#sidebar-toggle:before{
+  content: "";
+  display: block;
+  width: .2em;
+  background: #A1D57D;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all .2s cubic-bezier(.46,.03,.52,.96);
+}
+#sidebar-toggle:hover:before{
+  background: #B2DE84;
+}
+
+body.collapsed #sidebar-toggle:before{
+  width: 0!important;
+}
+#icon-menu .icon-menu-top{
+  transform: translate(-1px, 0) rotate(-38deg);
+}
+#icon-menu .icon-menu-middle{
+  transform: scaleY(1.12) scaleX(1.6) translate(2px,0)
+}
+#icon-menu .icon-menu-bottom{
+  transform: translate(-1px, 0) rotate(38deg);
+}
+.collapsed #icon-menu path{
+  transform: none;
+}
+
+/* collapse sidebar */
+.collapsed #sidebar{
+  left: 0;
+}
+
+
+
+/* active top nav indicator */
+#left-nav li.active a{
+  position: relative
+}
+#left-nav li a:before{
+  content: "";
+  display: block;
   width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  transition: all .1s cubic-bezier(.46,.03,.52,.96);
 }
+.collapsed #left-nav li.active a:before{
+  background: #209ed3;
+}
+.collapsed #left-nav li.active a:hover:before{
+  background: #333;
+  opacity: .3;
+}
+#left-nav li.active a:before{
+  background: #333;
+  height: 2px;
+}
+/* custom menu icon formatting */
+#emoncms-navbar .icon.folder-plus{margin-bottom: 1px}
+/* eof navbar override */
+
 
 
 #sidebar{
-    position: fixed;
-    top: 2.5rem;
+  position: fixed;
+  top: 2.5rem;
 }
 #sidebar-title {
-    text-indent: 1rem;
-    background: #333;
-    padding: 1em 0 .75em 0;
-    margin: 0;
+  text-indent: 1rem;
+  background: #333;
+  padding: 1em 0 .75em 0;
+  margin: 0;
 }
-.sidenav {
+#sidebar {
   margin-top:0px;
   margin-left: -250px;
   left: 250px;
@@ -87,14 +184,15 @@ Side nav
   transition: all .3s ease-out;
 }
 .btn-li .btn,
-#top_nav li .btn    {
+#top_nav li .btn {
   background: none;
   border-radius: 0;
   border: 0;
   margin: 0;
 }
-.sidenav #top_nav li {border-bottom: 1px solid #209ed3}
-/* .sidenav #module_nav {border-top: 1px solid #444; margin-top: 1rem;} */
+#sidebar #top_nav li {border-bottom: 1px solid #209ed3}
+
+/* bottom of sidebar */
 #footer_nav{
   position: absolute;
   bottom: 2.1rem;
@@ -104,23 +202,25 @@ Side nav
   margin-bottom: 0;
 }
 #sidebar_user_toggle{
-    background: #333;
+  background: #333;
+  padding-top: .66rem;
 }
 .expanded #sidebar_user_toggle,
 #sidebar_user_toggle:hover{
-    background: #212121;
+  background: #212121;
 }
-
-
 #footer_nav #sidebar_user_dropdown li a{
   background: #212121;
 }
+
+/* sidebar toggle switch */
 .sidebar-switch{
   position: fixed;
   width: 1rem;
   height: 100vh;
   top: 0;
   z-index: 999;
+  cursor: pointer;
 }
 .sidebar-switch:after {
   content: "";
@@ -139,7 +239,6 @@ Side nav
 .sidebar-switch:focus{
   outline: none;
 }
-.sidenav:hover .sidebar-switch:after,
 .sidebar-switch:hover:after {
   opacity: .8;
 }
@@ -231,28 +330,39 @@ Side nav: app list
 
 
 .arrow-up {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid white;
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid white;
 }
 
 .arrow-down {
-    width: 0; 
-    height: 0; 
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid white;
+  width: 0; 
+  height: 0; 
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
 }
 .arrow{
-    margin: .4em 0;
-    transform: scaleY(-1);
-    filter: FlipH;
-    /* transition: transform .15s ease-out; */
+  margin: .4em 0;
+  transform: scaleY(-1);
+  filter: FlipH;
+  /* transition: transform .15s ease-out; */
 }
 .collapsed .arrow{
-    transform: scaleY(1);
-    filter: none;
+  transform: scaleY(1);
+  filter: none;
 }
 
+/* 
+ * #sidebar above #wrap on narrow screens
+ */
+@media only screen and (min-width:870px) {
+  .fullwidth #wrap{
+    margin-left: 250px!important;
+  }
+  #sidebar {
+    position: fixed;
+  }
+}

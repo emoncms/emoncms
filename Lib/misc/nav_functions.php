@@ -24,20 +24,22 @@ function makeListLink($params) {
     global $route;
     $activeClassName = 'active';
 
+    $li_id = getKeyValue('li_id', $params);
+    $li_class = (array) getKeyValue('li_class', $params);
+    $li_style = (array) getKeyValue('li_style', $params);
+
     $id = getKeyValue('id', $params);
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
     $href = getKeyValue('href', $params);
-    $style = getKeyValue('style', $params);
-    $li_style = getKeyValue('li_style', $params);
     $title = getKeyValue('title', $params);
-    $class = getKeyValue('class', $params);
-    $li_class = getKeyValue('li_class', $params);
-    $li_id = getKeyValue('li_id', $params);
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
-    $data = getKeyValue('data', $params);
-    $sub_items = getKeyValue('sub_items', $params);
+
+    $sub_items = (array) getKeyValue('sub_items', $params);
+    $style = (array) getKeyValue('style', $params);
+    $class = (array) getKeyValue('class', $params);
+    $data = (array) getKeyValue('data', $params);
 
     if(empty($active)){
         $path_parts = explode('/', $path);
@@ -76,6 +78,11 @@ function makeListLink($params) {
     if(!empty($attr)) $attr = ' '.$attr;
 
     if(!empty($sub_items)) {
+        foreach($sub_items as $key=>$item) {
+            if(is_array($item)) {
+                $sub_items[$key] = makeListLink($item);
+            }
+        }
         $link .= '<ul class="dropdown-menu">'.implode("\n", $sub_items).'</ul>';
     }
     return sprintf('<li%s>%s</li>', $attr, $link);
@@ -111,30 +118,32 @@ function makeLink($params) {
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
     $href = getKeyValue('href', $params);
-    $style = getKeyValue('style', $params);
     $title = getKeyValue('title', $params);
-    $class = getKeyValue('class', $params);
     $id = getKeyValue('id', $params);
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
-    $data = getKeyValue('data', $params);
+
+    $style = (array) getKeyValue('style', $params);
+    $class = (array) getKeyValue('class', $params);
+    $data = (array) getKeyValue('data', $params);
     
     // create url if pre-built url not passed
     if(empty($href)) $href = getAbsoluteUrl($path);
 
     // append icon to link text
     if (!empty($icon)) {
-        $icon = sprintf('<svg class="icon"><use xlink:href="#icon-%s"></use></svg> ',$icon);
+        $icon = sprintf('<svg class="icon %1$s"><use xlink:href="#icon-%1$s"></use></svg> ', $icon);
         $text = $icon . $text;
     }
     // add active class to link if link is to current page
     if (!empty($active)) {
         if(is_current($active)){
-            $class = addCssClass($activeClassName, $class);
+            $class[] = $activeClassName;
         }
     } elseif(is_current($path)){
-        $class = addCssClass($activeClassName, $class);
+        $class[] = $activeClassName;
     }
+
     // create the <a> tag attribute list
     $attr = buildAttributes(array(
         'id'=>$id,
@@ -161,15 +170,21 @@ function makeLink($params) {
  */
 function buildAttributes($attributes){
     return implode(' ', array_map(function($key) use ($attributes) {
-        if (!empty($attributes[$key])) {
-            if($key!=='data') {
-                return $key.'="'.$attributes[$key].'"';
+        $value = $attributes[$key];
+        if (!empty($value)) {
+            if(!is_array($value)) {
+                return $key.'="'.$value.'"';
             } else {
                 // add the data-* attribute names to array of data[] items
-                foreach($attributes[$key] as $key2=>$value2) {
-                    $data['data-'.$key2] = $value2;
+                foreach($value as $key2=>$value2) {
+                    if($key==='data') $key2 = 'data-'.$key2;
+                    if(isSequential($value)) {
+                        $list[$key2] = $value2;
+                    } else {
+                        $list[$key] = $value2;
+                    }
                 }
-                return buildAttributes($data);
+                return buildAttributes($list);
             }
         }
     }, array_keys($attributes)));
@@ -191,11 +206,11 @@ function getAbsoluteUrl($_path) {
  * add a css class name to a given list (if not already there)
  *
  * @param string $classname
- * @param string $css
+ * @param mixed $css array | string
  * @return string
  */
-function addCssClass($classname, $css = '') {
-    $css = explode(' ', $css);
+function addCssClass($classname, $css) {
+    if(!is_array($css)) $css = explode(' ', $css);
     $css = array_unique(array_filter($css));
     if (!in_array($classname, $css)){
         $css[] = $classname;
@@ -260,7 +275,7 @@ function sortMenuArrays (array &$array = array()) {
  * @return boolean
  */ 
 function isSequential(array $array = array()) {
-    return count(array_filter(array_keys($array), 'is_string'))!== 0;
+    return count(array_filter(array_keys($array), 'is_string')) > 0;
 }
 
 /**
@@ -311,18 +326,42 @@ function makeDropdown($item){
     global $session;
     // add empty text value to avoid title from being used
     if(empty($item['text'])) $item['text'] = '';
+    
     // add empty title value to avoid text with icon from being used
     if(empty($item['title'])) $item['title'] = $item['text'];
+    
     // add the dropdown indicator
     // $item['text'] .= ' <b class="caret"></b>';
     // add the correct class to the <li>
-    $item['li_class'] .= ' dropdown';
+    if (empty($item['li_class'])) $item['li_class'] = '';
+    $item['li_class'] = addCssClass('dropdown', $item['li_class']);
+    
     // create variable if empty
-    if(empty($item['class'])) $item['class'] = '';
+    if(!isset($item['class'])) $item['class'] = '';
+    
     // add additional css classes to <li>
     addCssClass('dropdown-toggle', $item['class']);
+    
     // add data-* attributes
     $item['data']['toggle'] = 'dropdown';
+    
     // return <li><a> with sub <ul><li><a>
     return makeListLink($item);
+}
+
+/**
+ * return a clickable link that opens / closes sidebar
+ *
+ * @param [type] $item
+ * @return void
+ */
+function sidebarCollapseBtn($item) {
+    global $sidebar_collapsed;
+    if(!empty($sidebar_collapsed) && $sidebar_collapsed){
+        $item['class'][] = 'collapsed';
+    }
+    $item['data']['toggle'] = 'slide-collapse';
+    $item['data']['target'] = '#sidebar';
+    $item['href'] = '#';
+    echo makeLink($item);
 }

@@ -14,10 +14,17 @@ if (!isset($session['profile'])) {
 
 ?>
 
-<ul class='nav'>
+<ul id="left-nav" class='nav'>
+    <li class="btn-li">
+        <a id="sidebar-toggle" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn">
+            <svg id="icon-menu" class="icon" viewBox="0 0 32 32">
+                <path class="icon-menu-top" d="m 27.93924,5.3202643 v 2.65165 H 4.2497483 v -2.65165 z"></path>
+                <path class="icon-menu-middle" d="m 27.93924,14.202737 v 2.65165 H 4.2497483 v -2.65165 z"></path>
+                <path class="icon-menu-bottom" d="m 27.93924,23.085145 v 2.65165 H 4.2497483 v -2.65165 z"></path>
+            </svg>
+        </a>
+    </li>
 <?php
-echo '<li class="btn-li"><a data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn"><svg class="icon"><use xlink:href="#icon-menu"></use></svg></a></li>';
-
 if(!empty($menu['left'])): foreach ($menu['left'] as $item):
     $item['class'] = 'menu-left';
     echo makeListLink($item);
@@ -44,10 +51,22 @@ endforeach; endif;
 //     echo makeListLink($extra);
 // }
 
-if(!empty($menu['right'])): foreach ($menu['right'] as $item):
-    $item['class'] = 'menu-right';
-    echo makeListLink($item);
+// add user_menu.php items
+$menu_key = 'extras';
+$item = array(
+    'text' => 'Extras',
+    'href' => '#',
+    'icon' => 'folder-plus'
+);
+if(!empty($menu[$menu_key])): foreach($menu[$menu_key] as $sub_item): 
+// use the text as the title if not available
+if(empty($item['title'])) $item['title'] = !empty($item['text']) ? $item['text']: '';
+    $item['sub_items'][] = $sub_item;
 endforeach; endif;
+
+// build dropdown with above items
+echo makeDropdown($item);
+
 ?>
 
 
@@ -77,7 +96,7 @@ if($session['userid']>0){
     // add user_menu.php items
     $controller = 'user';
     if(!empty($menu[$controller])): foreach($menu[$controller] as $sub_item): 
-        $item['sub_items'][] = makeListLink($sub_item);
+        $item['sub_items'][] = $sub_item;
     endforeach; endif;
 
     // build dropdown with above items
