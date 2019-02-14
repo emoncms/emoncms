@@ -10,5 +10,5 @@
         'text' => _("Feeds"),
         'path' => 'feed/list',
         'icon' => 'format_list_bulleted',
-        'sort' => 1
+        'sort' => 0
     );

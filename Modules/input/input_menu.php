@@ -10,5 +10,5 @@
         'text' => _("Inputs"),
         'path' => 'input/view',
         'icon' => 'input',
-        'sort' => 0
+        'sort' => 1
     );

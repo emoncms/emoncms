@@ -87,49 +87,6 @@ top navbar override
 @todo: move to blue.css
 --------------------------------------------------------------------*/
 
-/* sidebar hidden indicator */
-#sidebar-toggle:active,
-#sidebar-toggle:focus{
-  outline: none;
-}
-#sidebar-toggle:before{
-  content: "";
-  display: block;
-  width: .2em;
-  background: #A1D57D;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: all .2s cubic-bezier(.46,.03,.52,.96);
-}
-#sidebar-toggle:hover:before{
-  background: #B2DE84;
-}
-
-body.collapsed #sidebar-toggle:before{
-  width: 0!important;
-}
-#icon-menu .icon-menu-top{
-  transform: translate(-1px, 0) rotate(-38deg);
-}
-#icon-menu .icon-menu-middle{
-  transform: scaleY(1.12) scaleX(1.6) translate(2px,0)
-}
-#icon-menu .icon-menu-bottom{
-  transform: translate(-1px, 0) rotate(38deg);
-}
-.collapsed #icon-menu path{
-  transform: none;
-}
-
-/* collapse sidebar */
-.collapsed #sidebar{
-  left: 0;
-}
-
-
-
 /* active top nav indicator */
 #left-nav li.active a{
   position: relative
@@ -155,6 +112,58 @@ body.collapsed #sidebar-toggle:before{
   background: #333;
   height: 2px;
 }
+
+
+/* sidebar status indicator */
+#sidebar-toggle:active,
+#sidebar-toggle:focus{
+  outline: none;
+}
+#sidebar-toggle:before{
+  content: "";
+  display: block;
+  background: #A1D57D;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all .2s cubic-bezier(.46,.03,.52,.96);
+  width: .2em!important;
+  height: 100%!important;
+}
+#sidebar-toggle:hover:before{
+  background: #B2DE84;
+}
+
+/* SVG animation */
+body.collapsed #sidebar-toggle:before{
+  width: 0!important;
+}
+#icon-menu .icon-menu-top{
+  transform: translate(-1px, 0) rotate(-38deg);
+}
+#icon-menu .icon-menu-middle{
+  transform: scaleY(1.12) scaleX(1.6) translate(2px,0)
+}
+#icon-menu .icon-menu-bottom{
+  transform: translate(-1px, 0) rotate(38deg);
+}
+.collapsed #icon-menu path{
+  transform: none;
+}
+
+/* collapse sidebar */
+.collapsed #sidebar{
+  left: 0;
+}
+
+
+
+
+
+
+
+
+
 /* custom menu icon formatting */
 #emoncms-navbar .icon.folder-plus{margin-bottom: 1px}
 /* eof navbar override */
@@ -177,7 +186,6 @@ body.collapsed #sidebar-toggle:before{
   left: 250px;
   width: 250px;
   background: #333;
-  position: absolute;
   overflow-y: auto;
   z-index: 1000;
   height: 100vh;
@@ -195,7 +203,7 @@ body.collapsed #sidebar-toggle:before{
 /* bottom of sidebar */
 #footer_nav{
   position: absolute;
-  bottom: 2.1rem;
+  bottom: 2.09rem;
   width: 250px;
   background: #212121;
   border-top: 1px solid #444;
@@ -359,7 +367,7 @@ Side nav: app list
  * #sidebar above #wrap on narrow screens
  */
 @media only screen and (min-width:870px) {
-  .fullwidth #wrap{
+  .fullwidth #wrap {
     margin-left: 250px!important;
   }
   #sidebar {

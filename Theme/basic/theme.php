@@ -88,40 +88,6 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
     <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/misc/sidebar.css" rel="stylesheet">
-<?php /*
-<?php if ($menucollapses) { ?>
-    <style>
-        @media (max-width: 979px){
-            .menu-description {
-                display: inherit !important ;
-            }
-        }
-        @media (min-width: 980px) and (max-width: <?php if($maxwidth1<981){$maxwidth1=981;} echo $maxwidth1; ?>px){
-            .menu-text {
-                display: none !important;
-            }
-        }
-    </style>
-<?php } else { ?>
-    <style>
-        @media (max-width: <?php echo $maxwidth1; ?>px){
-            .menu-text {
-                display: none !important;
-            }
-        }
-        @media (max-width: <?php echo $maxwidth2; ?>px){
-            .menu-dashboard {
-                display: none !important;
-            }
-        }
-        @media (max-width: <?php echo $maxwidth3; ?>px){
-            .menu-extra {
-                display: none !important;
-            }
-        }
-    </style>
-<?php } ?>
-<?php */ ?>
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script>
@@ -150,62 +116,50 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 </head>
 <body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-    <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-        <div class="navbar-inner">
-        <?php /*if ($menucollapses) { ?>
-            <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-                <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/favicon.png" style="width:28px;"/>
-            </button>
-            <div class="nav-collapse collapse">
-        <?php } */?>
-
-            <?php echo $mainmenu; ?>
-
-        <?php /*if ($menucollapses) { ?>
-        </div>
-        <?php } */ ?>
-
-        </div>
-    </div>
-
-    <?php if (isset($submenu) && ($submenu)) { ?>
-        <div id="submenu">
-            <div class="container">
-                <?php echo $submenu; ?>
+        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
+            <div class="navbar-inner">
+                <?php echo $mainmenu; ?>
             </div>
         </div>
-        <br>
-    <?php } ?>
 
-    <div id="sidebar" class="sidenav bg-dark text-light">
-        <div class="sidebar-content d-flex flex-column flex-fill">
-            <?php echo $sidebar; ?>
-        </div>
-    </div>
-
-    <!-- open and close sidebar -->
-    <div title="<?php echo _("Toggle Sidebar") ?>" class="collapsed sidebar-switch h-100 p-0 d-flex justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar"></div>
-    <span id="sidebar-overlay" class="collapsed menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
-    <!-- end of open and close sidebar -->
-    
-    <?php if ($fullwidth && $route->controller=="dashboard") { ?>
-        <div>
-            <?php echo $content; ?>
-        </div>
-    <?php } else if ($fullwidth) { ?>
-        <div class="container-fluid">
-            <div class="row-fluid">
-                <div class="span12">
-                    <?php echo $content; ?>
+        <?php if (isset($submenu) && ($submenu)) { ?>
+            <div id="submenu">
+                <div class="container">
+                    <?php echo $submenu; ?>
                 </div>
             </div>
-        </div>
-    <?php } else { ?>
-        <div class="container">
-            <?php echo $content; ?>
-        </div>
-    <?php } ?>
+            <br>
+        <?php } ?>
 
+        <div id="sidebar" class="sidenav bg-dark text-light">
+            <div class="sidebar-content d-flex flex-column flex-fill">
+                <?php echo $sidebar; ?>
+            </div>
+        </div>
+
+        <!-- open and close sidebar -->
+        <div title="<?php echo _("Toggle Sidebar") ?>" class="collapsed sidebar-switch h-100 p-0 d-flex justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar"></div>
+        <span id="sidebar-overlay" class="collapsed menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
+        <!-- end of open and close sidebar -->
+        
+        <?php if ($fullwidth && $route->controller=="dashboard") { ?>
+            <div>
+                <?php echo $content; ?>
+            </div>
+        <?php } else if ($fullwidth) { ?>
+            <div class="container-fluid">
+                <div class="row-fluid">
+                    <div class="span12">
+                        <?php echo $content; ?>
+                    </div>
+                </div>
+            </div>
+        <?php } else { ?>
+            <div class="container">
+                <?php echo $content; ?>
+            </div>
+        <?php } ?>
+        
     </div><!-- eof #wrap -->
 
     <div id="footer">
@@ -225,17 +179,20 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         // find where in the list the current page is
         currentIndex = pages.indexOf(currentPage)
 
-        // removed this functionality temporarily
+
+        // SETUP VARIABLES:
+        var hammerOptions = {
+            inputClass: Hammer.TouchInput // only works on devices with touch screens
+        }
+
+        // REMOVED THIS FUNCTIONALITY TEMPORARILY - need to implement a pager interface (eg next, first, last etc)
+
         if (false && currentIndex > -1) {
             // uses hammerjs to detect mobile gestures. navigates between input and feed view
             
             // allow text on page to be highlighted. 
             delete Hammer.defaults.cssProps.userSelect
 
-            // SETUP VARIABLES:
-            var hammerOptions = {
-                xinputClass: Hammer.TouchInput
-            }
             var container = document.getElementById('wrap'),
                 // get the path as reported by server
                 path = "<?php echo $path; ?>",
@@ -264,7 +221,9 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         }
     </script>
 <?php } ?>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js"></script>
 
+<!-- ICONS --------------------------------------------- -->
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
         <symbol id="icon-dashboard" viewBox="0 0 32 32">
@@ -383,6 +342,5 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     </defs>
 </svg>
 
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js"></script>
 </body>
 </html>

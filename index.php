@@ -307,7 +307,7 @@
                 'li_class'=>'btn-li',
                 'icon'=>'wrench',
                 'title'=> _("Setup"),
-                'path'=> 'input/view',
+                'path'=> 'feed/list',
                 'active'=> explode(',','input,feed,graph,device,config,admin'),
                 'sort'=> 1
             );

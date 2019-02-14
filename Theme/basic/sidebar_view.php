@@ -34,7 +34,7 @@ if (!isset($session['profile'])) {
 
     <?php 
     // 2nd level links
-    if (in_array($route->controller, explode(',','graph,input,feed,device,config,admin,vis,remoteaccess,schedule'))): ?>
+    if (in_array($route->controller, explode(',','graph,input,feed,device,config,admin'))): ?>
     <ul id="sub_nav" class="nav sidenav-menu">
     <?php if(!empty($menu['setup'])): foreach($menu['setup'] as $item): ?>
         <?php echo makeListLink($item) ?>
