@@ -41,9 +41,13 @@ function makeListLink($params) {
     $class = (array) getKeyValue('class', $params);
     $data = (array) getKeyValue('data', $params);
 
+    // partial match current url with fragment '$active'
     if(empty($active)){
         $path_parts = explode('/', $path);
         $active = array($path_parts[0]);
+    }
+    if(is_current($path) || is_current($active)){
+        $li_class[] = $activeClassName;
     }
 
     if(empty($title)) $title = $text;
@@ -60,15 +64,6 @@ function makeListLink($params) {
         'data'=> $data,
         'style'=> $style
     ));
-
-    // partial match current url with fragment '$active'
-    if (!empty($active)) {
-        if(is_current($active)){
-            $li_class = addCssClass($activeClassName, $li_class);
-        }
-    } elseif(is_current($path)){
-        $li_class = addCssClass($activeClassName, $li_class);
-    }
 
     $attr = buildAttributes(array(
         'id' => $li_id,
@@ -98,7 +93,8 @@ function is_current($path) {
         }
     } else {
         $url = getAbsoluteUrl($path);
-        return $url === $current_path;
+        $current_url = getAbsoluteUrl($current_path);
+        return $url === $current_url;
     }
 }
 function getKeyValue($key, $array) {
@@ -199,8 +195,11 @@ function buildAttributes($attributes){
 function getAbsoluteUrl($_path) {
     if(empty($_path)) return '';
     global $path;
-    $url = rtrim($path.$_path, '/');
-    return $url;
+    // if $_path begins with /emoncms remove it
+    $_path_parts = array_values(array_filter(explode('/',parse_url($_path, PHP_URL_PATH))));
+    if($_path_parts[0]=='emoncms') array_shift($_path_parts);
+    // return emoncms $path with the relative $_path component;
+    return $path . implode('/',$_path_parts);
 }
 /**
  * add a css class name to a given list (if not already there)
