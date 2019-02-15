@@ -1,11 +1,4 @@
 /* -------------------------------------------------------------------
-Page wrapper
---------------------------------------------------------------------*/
-body.app #wrap {
-  max-width:1150px;
-}
-
-/* -------------------------------------------------------------------
 Side nav
 --------------------------------------------------------------------*/
 .sidenav-inner{
@@ -25,33 +18,7 @@ Side nav
 site-wide overriding css
 @todo: move to blue.css
 --------------------------------------------------------------------*/
-html,body{height: initial}
 
-#wrap{
-  min-height: calc(100vh - 5rem)!important;
-  margin: 0!important;
-  transition: margin .3s ease-out;
-}
-.fullwidth.collapsed #wrap,
-.fullwidth.collapsed #footer{
-  margin-left: 0!important;
-}
-.container,
-.container-fluid{
-  height: 100%;
-  margin-top: 2.5rem;
-  padding-bottom: 2rem!important;
-  box-sizing: border-box;
-}
-.dashboard #page-container{
-  height: calc(100vh - 2.5rem)!important;
-}
-#footer1{
-  position: absolute;
-  bottom: 0;
-  width: 100vw;
-  z-index: 1;
-}
 /* eof site css changes */ 
 
 
@@ -156,13 +123,6 @@ body.collapsed #sidebar-toggle:before{
 .collapsed #sidebar{
   left: 0;
 }
-
-
-
-
-
-
-
 
 
 /* custom menu icon formatting */
@@ -370,15 +330,3 @@ Side nav: app list
   filter: none;
 }
 
-/* 
- * #sidebar above #wrap on narrow screens
- */
-@media only screen and (min-width:870px) {
-  .fullwidth #wrap,
-  .fullwidth #footer {
-    margin-left: 250px!important;
-  }
-  #sidebar {
-    position: fixed;
-  }
-}

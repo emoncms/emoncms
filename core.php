@@ -174,6 +174,15 @@ function load_menu()
             }
         }
     }
+    // add old menu structure if module not updated
+    if(isset($menu_dropdown_config)) {
+        foreach($menu_dropdown_config as $item){
+            if(!empty($item['name'])) $item['text'] = $item['name'];
+            $item['icon'] .= ' icon-white';
+            $menu['setup'][] = $item;
+        }
+    }
+
     return $menu;
     // return array(
     //     'dashboard' => $menu_dashboard,
