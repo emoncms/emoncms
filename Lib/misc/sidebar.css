@@ -32,7 +32,8 @@ html,body{height: initial}
   margin: 0!important;
   transition: margin .3s ease-out;
 }
-.fullwidth.collapsed #wrap{
+.fullwidth.collapsed #wrap,
+.fullwidth.collapsed #footer{
   margin-left: 0!important;
 }
 .container,
@@ -115,8 +116,8 @@ top navbar override
 
 
 /* sidebar status indicator */
-#sidebar-toggle:active,
-#sidebar-toggle:focus{
+#left-nav > li > a:active,
+#left-nav > li > a:focus{
   outline: none;
 }
 #sidebar-toggle:before{
@@ -224,17 +225,23 @@ body.collapsed #sidebar-toggle:before{
 /* sidebar toggle switch */
 .sidebar-switch{
   position: fixed;
-  width: 1rem;
+  width: 0;
   height: 100vh;
   top: 0;
   z-index: 999;
   cursor: pointer;
+  overflow: hidden;
+  transition: all .3s ease-in;
+  transition-delay: 0;
+}
+body.collapsed .sidebar-switch{
+  width: 1rem;
+  transition-delay: 1s;
 }
 .sidebar-switch:after {
   content: "";
-  position: fixed;
   width: 1rem;
-  height: 100vh;
+  height: 100%;
   background: #8c8b8b;
   top: 0;
   left: 0;
@@ -367,7 +374,8 @@ Side nav: app list
  * #sidebar above #wrap on narrow screens
  */
 @media only screen and (min-width:870px) {
-  .fullwidth #wrap {
+  .fullwidth #wrap,
+  .fullwidth #footer {
     margin-left: 250px!important;
   }
   #sidebar {
