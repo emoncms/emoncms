@@ -1,12 +1,6 @@
 <?php
     global $session;
 
-    $domain = "messages";
-    bindtextdomain($domain, "Modules/user/locale");
-    bind_textdomain_codeset($domain, 'UTF-8');
-
-    if (!$session['write']) $menu_right[] = array('name'=>dgettext($domain, "Log In"), 'icon'=>'icon-home icon-white', 'path'=>"user/login", 'order' => 1000);
-
     // not sure if this is usefull yet?? need to add an ability to create "favorite" pages
     // $menu['setup'][] = array(
     //     'text' => _("Admin"),
@@ -15,7 +9,6 @@
     //     'active' => 'admin',
     //     'sort' => 6
     // );
-
 
     // links specific to 'user' controller
     $menu['user'][] = array(
@@ -51,6 +44,5 @@
         'sort' => 4,
         'active' => 'none'
     );
-
 
     $menu['includes']['user'][] = view('Modules/user/Views/sidebar.php');

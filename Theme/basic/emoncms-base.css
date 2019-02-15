@@ -24,13 +24,19 @@ body.app #wrap {
   height: calc(100vh - 2.5rem)!important;
 }
 
+
+
 /* 
  * #sidebar above #wrap on narrow screens
  */
  @media only screen and (min-width:870px) {
-  .fullwidth #wrap,
-  .fullwidth #footer {
+  .fullwidth.has-sidebar #wrap,
+  .fullwidth.has-sidebar #footer {
     margin-left: 250px!important;
+  }
+  .fullwidth.has-sidebar.collapsed #wrap,
+  .fullwidth.has-sidebar.collapsed #footer {
+    margin-left: 0px!important;
   }
   #sidebar {
     position: fixed;

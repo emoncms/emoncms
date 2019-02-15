@@ -82,21 +82,30 @@ function makeListLink($params) {
     }
     return sprintf('<li%s>%s</li>', $attr, $link);
 }
+/**
+ * returns true if current view's path matches passed $path
+ *
+ * @param mixed $path - array can be passed to match multiple paths
+ * @return boolean
+ */
 function is_current($path) {
     $current_path = getCurrentPath();
-
-    if (is_array($path)) {
-        foreach($path as $search) {
-            if (!empty($search) && strpos($current_path, $search) > -1) {
-                return true;
-            }
-        }
-    } else {
-        $url = getAbsoluteUrl($path);
+    foreach((array) $path as $search) {
+        $url = getAbsoluteUrl($search);
         $current_url = getAbsoluteUrl($current_path);
-        return $url === $current_url;
+        if($url === $current_url) return true;
     }
+    return false;
 }
+
+/**
+ * return $array[$key] value if not empty
+ * else return empty string
+ *
+ * @param string $key
+ * @param array $array
+ * @return mixed
+ */
 function getKeyValue($key, $array) {
     return isset($array[$key]) ? $array[$key] : '';
 }
@@ -196,11 +205,15 @@ function getAbsoluteUrl($_path) {
     if(empty($_path)) return '';
     global $path;
     // if $_path begins with /emoncms remove it
-    $_path_parts = array_values(array_filter(explode('/',parse_url($_path, PHP_URL_PATH))));
-    if($_path_parts[0]=='emoncms') array_shift($_path_parts);
+    $_parsedPath = getPathParts($_path);
+    $_parsedPathParts = array_values(array_filter($_parsedPath));
+    if(getKeyValue(0, $_parsedPathParts)=='emoncms') {
+        array_shift($_parsedPathParts);
+    }
     // return emoncms $path with the relative $_path component;
-    return $path . implode('/',$_path_parts);
+    return $path . implode('/',$_parsedPathParts);
 }
+
 /**
  * add a css class name to a given list (if not already there)
  *
@@ -254,7 +267,6 @@ function debugMenu($key = '') {
     }
     exit();
 }
-
 
 function sortMenuArrays (array &$array = array()) {
     if(!isSequential($array)){
@@ -363,4 +375,82 @@ function sidebarCollapseBtn($item) {
     $item['data']['target'] = '#sidebar';
     $item['href'] = '#';
     echo makeLink($item);
+}
+/**
+ * return array that holds the current pages's menu item
+ *
+ * @param array $menu - the full menu
+ * @return void
+ */
+function getCurrentMenuItem($menu){
+    $currentPath = getCurrentPath();
+    $match = null;
+    $currentPageIndex = getCurrentMenuItemIndex($menu);
+    if(isset($menu[$currentPageIndex[0]][$currentPageIndex[1]])){
+        $match = $menu[$currentPageIndex[0]][$currentPageIndex[1]];
+    }
+    return $match;
+}
+/**
+ * return an array of indexes that identify the current page's menu item
+ *
+ * @param array $menu - the full menu
+ * @return void
+ */
+function getCurrentMenuItemIndex($menu){
+    $currentPath = getCurrentPath();
+    $keys = null;
+    foreach($menu as $key=>$item){
+        foreach($item as $key2=>$item2){
+            $path = !empty($item2['path']) ? $item2['path']: '';
+            if(is_current($path)){
+                $keys = array($key, $key2);
+            }
+        }
+    }
+    return $keys;
+}
+/**
+ * return true if current page requires a sidebar
+ *
+ * @param array $menu - the full menu
+ * @return void
+ */
+function currentPageRequiresSidebar($menu){
+    global $route;
+
+    $currentMenuItem = getCurrentMenuItem($menu);
+    $currentPath = getKeyValue('path',$currentMenuItem);
+    $currentPathParts = getPathParts($currentPath);
+    $counter = 0;
+    foreach($menu['setup'] as $item):
+        $itemPathParts = getPathParts(getKeyValue('path',$item));
+        if(!empty($currentPathParts) && !empty($itemPathParts[0]) && $currentPathParts[0] == $itemPathParts[0]){
+            $counter++;
+        }
+    endforeach;
+    if(!empty($menu[$route->controller])): foreach($menu[$route->controller] as $item):
+        if(!empty($currentPathParts) && !empty($itemPathParts[0]) && $currentPathParts[0] == $itemPathParts[0]){
+            $counter++;
+        }
+    endforeach; endif;
+    if(!empty($menu['includes'][$route->controller])): foreach($menu['includes'][$route->controller] as $item):
+        $counter++;
+    endforeach; endif;
+    return true;
+    return $counter > 0;
+}
+/**
+ * return array of url path split by forward slash (/)
+ * empty elements removed from array
+ *
+ * @param string $url
+ * @return array
+ */
+function getPathParts($path) {
+    $url_parts = parse_url($path);
+    $path = getKeyValue('path',$url_parts).getKeyValue('query',$url_parts);
+    $pathParts = explode('/', $path);
+    $cleanedPathParts = array_values(array_filter($pathParts));
+    return $cleanedPathParts;
 }

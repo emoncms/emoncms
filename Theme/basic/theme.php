@@ -140,8 +140,8 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         </div>
 
         <!-- open and close sidebar -->
-        <div title="<?php echo _("Toggle Sidebar") ?>" class="collapsed sidebar-switch h-100 p-0 d-flex justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar"></div>
-        <span id="sidebar-overlay" class="collapsed menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span>
+        <div id="sidebar-toggle-bar" title="<?php echo _("Toggle Sidebar") ?>" class="collapsed h-100 p-0 justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar"></div>
+        <!-- <span id="sidebar-overlay" class="collapsed menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span> -->
         <!-- end of open and close sidebar -->
         
         <?php if ($fullwidth && $route->controller=="dashboard") { ?>

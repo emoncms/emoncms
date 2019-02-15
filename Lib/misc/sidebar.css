@@ -87,6 +87,12 @@ top navbar override
 #left-nav > li > a:focus{
   outline: none;
 }
+#sidebar-toggle{
+  display: none!important;
+}
+.has-sidebar #sidebar-toggle{
+  display: block!important;
+}
 #sidebar-toggle:before{
   content: "";
   display: block;
@@ -95,8 +101,11 @@ top navbar override
   top: 0;
   left: 0;
   transition: all .2s cubic-bezier(.46,.03,.52,.96);
-  width: .2em!important;
+  width: 0!important;
   height: 100%!important;
+}
+.has-sidebar #sidebar-toggle:before{
+  width: .2em!important;
 }
 #sidebar-toggle:hover:before{
   background: #B2DE84;
@@ -131,17 +140,10 @@ body.collapsed #sidebar-toggle:before{
 
 
 
-#sidebar{
+#sidebar {
   position: fixed;
   top: 2.5rem;
-}
-#sidebar-title {
-  text-indent: 1rem;
-  background: #333;
-  padding: 1em 0 .75em 0;
-  margin: 0;
-}
-#sidebar {
+  display: none;
   margin-top:0px;
   margin-left: -250px;
   left: 250px;
@@ -152,6 +154,17 @@ body.collapsed #sidebar-toggle:before{
   height: 100vh;
   transition: all .3s ease-out;
 }
+.has-sidebar #sidebar{
+  display: block;
+}
+
+#sidebar-title {
+  text-indent: 1rem;
+  background: #333;
+  padding: 1em 0 .75em 0;
+  margin: 0;
+}
+
 .btn-li .btn,
 #top_nav li .btn {
   background: none;
@@ -183,7 +196,7 @@ body.collapsed #sidebar-toggle:before{
 }
 
 /* sidebar toggle switch */
-.sidebar-switch{
+#sidebar-toggle-bar{
   position: fixed;
   width: 0;
   height: 100vh;
@@ -193,12 +206,16 @@ body.collapsed #sidebar-toggle:before{
   overflow: hidden;
   transition: all .3s ease-in;
   transition-delay: 0;
+  display: none!important;
 }
-body.collapsed .sidebar-switch{
+.has-sidebar #sidebar-toggle-bar {
+  display: flex!important;
+}
+body.collapsed #sidebar-toggle-bar{
   width: 1rem;
   transition-delay: 1s;
 }
-.sidebar-switch:after {
+#sidebar-toggle-bar:after {
   content: "";
   width: 1rem;
   height: 100%;
@@ -210,11 +227,11 @@ body.collapsed .sidebar-switch{
   margin-left: -.2rem;
 }
 
-.sidebar-switch:active,
-.sidebar-switch:focus{
+#sidebar-toggle-bar:active,
+#sidebar-toggle-bar:focus{
   outline: none;
 }
-.sidebar-switch:hover:after {
+#sidebar-toggle-bar:hover:after {
   opacity: .8;
 }
 

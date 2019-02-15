@@ -92,11 +92,18 @@ $(function(){
 // disabled on devices with a mouse
 // @todo: test on more devices (emrys,-02-14)
 var sidebarSwipeOptions = typeof hammerOptions !== 'undefined' ? hammerOptions:{};
-var mc_switch = new Hammer(document.querySelector('.sidebar-switch'),sidebarSwipeOptions);
-var mc_sidebar = new Hammer(document.querySelector('#sidebar'),sidebarSwipeOptions);
+var sidebar_switch = document.querySelector('#sidebar-toggle-bar');
+var sidebar = document.querySelector('#sidebar');
+
+if(sidebar_switch) {
+    var mc_switch = new Hammer(sidebar_switch, sidebarSwipeOptions);
+    mc_switch.on('swiperight', onSidebarSwipe);
+}
+if(sidebar) {
+    var mc_sidebar = new Hammer(sidebar, sidebarSwipeOptions);
+    mc_sidebar.on('swipeleft', onSidebarSwipe);
+}
 var onSidebarSwipe = function(event) {
     // console.log('hammer js ' + event.type + ' event');
     document.querySelector('#sidebar-toggle').click()
 }
-mc_switch.on('swiperight', onSidebarSwipe);
-mc_sidebar.on('swipeleft', onSidebarSwipe);

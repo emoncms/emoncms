@@ -156,13 +156,6 @@ function load_db_schema()
 
 function load_menu()
 {
-    $menu_dashboard = array(); // Published Dashboards
-    $menu_left = array();  // Left
-    $menu_dropdown = array(); // Extra
-    $menu_dropdown_config = array(); //Setup
-    $menu_right = array(); // Right
-    $sidebar = array(); // Sidebar
-
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
     {
@@ -175,6 +168,7 @@ function load_menu()
         }
     }
     // add old menu structure if module not updated
+    // @todo: remove this once all users updated (2019-02-15)
     if(isset($menu_dropdown_config)) {
         foreach($menu_dropdown_config as $item){
             if(!empty($item['name'])) $item['text'] = $item['name'];
@@ -184,14 +178,6 @@ function load_menu()
     }
 
     return $menu;
-    // return array(
-    //     'dashboard' => $menu_dashboard,
-    //     'left' => $menu_left,
-    //     'dropdown' => $menu_dropdown,
-    //     'dropdownconfig' => $menu_dropdown_config,
-    //     'right' => $menu_right,
-    //     'sidebar' => $sidebar
-    // );
 }
 
 function load_sidebar()

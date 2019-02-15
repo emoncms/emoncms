@@ -323,13 +323,27 @@
             // debugMenu('category');
 
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
-            $output['sidebar'] = view($themeDir . "sidebar_view.php", array('menu'=>$menu));
+            $output['sidebar'] = '';
+            if(currentPageRequiresSidebar($menu)){
+                $output['sidebar'] = view($themeDir . "sidebar_view.php", array('menu'=>$menu));
+            }
 
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
             if($fullwidth) $output['page_classes'][] = 'fullwidth';
-            if($menucollapses) $output['page_classes'][] = 'menucollapses';
-
+            if(!empty($menucollapses)) {
+                foreach((array) $menucollapses as $key=>$item){
+                    if(is_current($key)) {
+                        // menu settings auto collapsing sidebar
+                        if($menucollapses[$key] === true) $output['page_classes'][] = 'collapsed';
+                    }
+                }
+            }
+            // hide sidebar functionality if no sidebar required
+            if(!empty($output['sidebar'])) {
+                $output['page_classes'][] = 'has-sidebar';
+            }
+            
             print view($themeDir . "theme.php", $output);
         }
     }
