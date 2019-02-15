@@ -1,49 +1,3 @@
-// function init_sidebar(options){
-
-//     default_options = {
-//         max_wrapper_width: 1150,
-//         sidebar_enabled: true,
-//         sidebar_visible: true,
-//         menu_element: "#example_menu"
-//     }
-//     options = options || {};
-//     options = $.extend({}, default_options, options);
-//     $menu_element = $(options.menu_element);
-    
-//     if($menu_element.length>0){
-//         $menu_element.find("i").removeClass("icon-home").addClass("icon-list");        
-//         $menu_element.parent().click(function(e){
-//             e.preventDefault()
-//             if (options.sidebar_visible) {
-//                 options.sidebar_enabled = false;
-//                 hide_sidebar(options);
-//             } else {
-//                 options.sidebar_enabled = true;
-//                 show_sidebar(options);
-//             }
-//         });
-//         sidebar_resize(options);
-//         $(window).resize(function(){
-//             sidebar_resize(options);
-//         });
-//     }
-// }
-
-// function sidebar_resize(options) {
-//     options = options || {}; 
-//     options.width = $(window).width();
-//     var height = $(window).height();
-//     var nav = $(".navbar").height();
-    
-//     $(".sidenav").height(height-nav);
-    
-//     if (options.width<options.max_wrapper_width) {
-//         hide_sidebar(options)
-//     } else {
-//         if (options.sidebar_enabled) show_sidebar(options)
-//     }
-// }
-
 $(function(){
     // recreate the bootstrap collapse... but slide from left
     $(document).on('click', '[data-toggle="slide-collapse"]', function(event) {
@@ -82,7 +36,7 @@ $(function(){
     $('#left-nav li.active a').on('mouseenter', function(event){
         event.preventDefault();
         if($('body').hasClass('collapsed')) {
-            $('#sidebar-toggle').click();
+            // $('#sidebar-toggle').click();
         }
     });
     // open sidebar if active page link clicked
