@@ -17,7 +17,8 @@ $config['units'] = array(
     array("short" => "%", "long" => "Percent"),
     array("short" => "Hz", "long" => "Hertz"),
     array("short" => "pulses", "long" => "Pulses"),
-    array("short" => "dB", "long" => "Decibel")
+    array("short" => "dB", "long" => "Decibel"),
+    array("short" => "hPa", "long" => "Hectopascal")
 );
 // list of PHP includes
 $includes = get_included_files();
