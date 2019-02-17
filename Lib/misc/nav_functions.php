@@ -449,7 +449,11 @@ function currentPageRequiresSidebar($menu){
  */
 function getPathParts($path) {
     $url_parts = parse_url($path);
-    $path = getKeyValue('path',$url_parts).getKeyValue('query',$url_parts);
+    $path = getKeyValue('path',$url_parts);
+    $query = getKeyValue('query',$url_parts);
+    if(!empty($query)) {
+        $path .= '?'.$query;
+    }
     $pathParts = explode('/', $path);
     $cleanedPathParts = array_values(array_filter($pathParts));
     return $cleanedPathParts;

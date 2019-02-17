@@ -199,6 +199,7 @@ body.collapsed #sidebar-toggle:before{
 #sidebar-toggle-bar{
   position: fixed;
   width: 0;
+  left: 0;
   height: 100vh;
   top: 0;
   z-index: 999;

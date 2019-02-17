@@ -323,10 +323,8 @@
             // debugMenu('category');
 
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
-            $output['sidebar'] = '';
-            if(currentPageRequiresSidebar($menu)){
-                $output['sidebar'] = view($themeDir . "sidebar_view.php", array('menu'=>$menu));
-            }
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", array('menu'=>$menu));
+  
 
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
@@ -340,8 +338,18 @@
                 }
             }
             // hide sidebar functionality if no sidebar required
-            if(!empty($output['sidebar'])) {
-                $output['page_classes'][] = 'has-sidebar';
+            if($session['read']){
+                if (!isset($has_sidebar[$route->controller])) {
+                    $output['page_classes'][] = 'has-sidebar';
+                } else { 
+                    if ($has_sidebar[$route->controller] === true) {
+                        // if global $has_sidebar not available use this 
+                        // function to determine if a sidebar is required
+                        // if(currentPageRequiresSidebar($menu)) {
+                        // }
+                        $output['page_classes'][] = 'has-sidebar';
+                    }
+                }
             }
             
             print view($themeDir . "theme.php", $output);

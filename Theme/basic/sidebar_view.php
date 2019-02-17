@@ -60,22 +60,25 @@ if (!isset($session['profile'])) {
 </div>
 <div id="footer_nav" class="nav">
     <?php
-        $link = array(
-            'text' => $session['username'],
-            'class'=> 'collapsed',
-            'href' => '#',
-            'id' => 'sidebar_user_toggle',
-            'icon' => 'user',
-            'data' => array(
-                'toggle' => 'collapse',
-                'target' => '#sidebar_user_dropdown'
-            )
-        );
-        if ($session['admin'] == 1) {
-            $link['text'] .= ' <small class="muted">Admin</small>';
+    // sidebar user footer menu
+        if($session['read']){
+            $link = array(
+                'text' => $session['username'],
+                'class'=> 'collapsed',
+                'href' => '#',
+                'id' => 'sidebar_user_toggle',
+                'icon' => 'user',
+                'data' => array(
+                    'toggle' => 'collapse',
+                    'target' => '#sidebar_user_dropdown'
+                )
+            );
+            if ($session['admin'] == 1) {
+                $link['text'] .= ' <small class="muted">Admin</small>';
+            }
+            $link['text'] .= '<span class="arrow arrow-up pull-right"></span>';
+            echo makeLink($link);
         }
-        $link['text'] .= '<span class="arrow arrow-up pull-right"></span>';
-        echo makeLink($link);
     ?>
     <ul id="sidebar_user_dropdown" class="nav sidenav-menu collapse">
     <?php 
@@ -90,10 +93,13 @@ if (!isset($session['profile'])) {
 
 <script>
     var list = document.getElementById('sidebar_user_dropdown');
-    document.getElementById('sidebar_user_toggle').addEventListener('click', function(){
-        // list.classList.toggle('collapsed');
-        if(list.parentNode) list.parentNode.classList.toggle('expanded');
-    })
+    var user_toggle = document.getElementById('sidebar_user_toggle');
+    if(user_toggle) {
+        user_toggle.addEventListener('click', function(event){
+            if(list.parentNode) list.parentNode.classList.toggle('expanded');
+            event.preventDefault();
+        })
+    }
     document.querySelectorAll('a[data-toggle="collapse"]').forEach(function(item){
         item.addEventListener('click', function(event){
             event.preventDefault();

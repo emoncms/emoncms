@@ -12,11 +12,12 @@ if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 
+if ($session['read']) {
 ?>
 
 <ul id="left-nav" class='nav'>
     <li class="btn-li">
-        <a id="sidebar-toggle" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn">
+        <a id="sidebar-toggle" title="<?php echo _('Open/Close Sidebar') ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn">
             <svg id="icon-menu" class="icon" viewBox="0 0 32 32">
                 <path class="icon-menu-top" d="m 27.93924,5.3202643 v 2.65165 H 4.2497483 v -2.65165 z"></path>
                 <path class="icon-menu-middle" d="m 27.93924,14.202737 v 2.65165 H 4.2497483 v -2.65165 z"></path>
@@ -25,54 +26,47 @@ if (!isset($session['profile'])) {
         </a>
     </li>
 <?php
-if(!empty($menu['left'])): foreach ($menu['left'] as $item):
-    $item['class'] = 'menu-left';
-    echo makeListLink($item);
-endforeach; endif;
 
 // top level menu icons
 if(!empty($menu['category'])): foreach($menu['category'] as $item):
     echo makeListLink($item);
 endforeach; endif;
+
+// left aligned menu items
+if(!empty($menu['left'])): foreach ($menu['left'] as $item):
+    $item['class'] = 'menu-left';
+    echo makeListLink($item);
+endforeach; endif;
 ?>
 </ul>
 
-
+<?php } ?>
 <ul class='nav pull-right'>
 <?php
 
-// if (!empty($menu['dropdown']) && count($menu['dropdown']) && $session['read']) {
-//     $extra = array();
-//     $extra['name'] = 'Extra';
-//     $extra['icon'] = 'icon-plus icon-white';
-//     $extra['class'] = 'menu-extra';
-//     $extra['session'] = 'read';
-//     $extra['dropdown'] = $menu['dropdown'];
-//     echo makeListLink($extra);
-// }
+if ($session['read']) {
+    // add user_menu.php items
+    $menu_key = 'extras';
+    $item = array(
+        'text' => 'Extras',
+        'href' => '#',
+        'icon' => 'folder-plus'
+    );
+    if(!empty($menu[$menu_key])): foreach($menu[$menu_key] as $sub_item): 
+    // use the text as the title if not available
+    if(empty($item['title'])) $item['title'] = !empty($item['text']) ? $item['text']: '';
+        $item['sub_items'][] = $sub_item;
+    endforeach; endif;
 
-// add user_menu.php items
-$menu_key = 'extras';
-$item = array(
-    'text' => 'Extras',
-    'href' => '#',
-    'icon' => 'folder-plus'
-);
-if(!empty($menu[$menu_key])): foreach($menu[$menu_key] as $sub_item): 
-// use the text as the title if not available
-if(empty($item['title'])) $item['title'] = !empty($item['text']) ? $item['text']: '';
-    $item['sub_items'][] = $sub_item;
-endforeach; endif;
-
-// build dropdown with above items
-echo makeDropdown($item);
-
+    // build dropdown with above items
+    echo makeDropdown($item);
+    }
 ?>
 
 
 <?php
-
-if($session['userid']>0){
+// sidebar footer user menu
+if($session['read']){
     $item = array(
         'li_class' => 'menu-user',
         'text' => $session['username'],
@@ -104,11 +98,10 @@ if($session['userid']>0){
 
 } else {
     // show login link to non-logged in users
-    echo makeListLink(array(
-        'path'=>'/',
-        'text'=>_('Login'),
-        'icon'=>'user'
-    ));
+    $controller = 'user';
+    if(!empty($menu[$controller])): foreach($menu[$controller] as $item): 
+        echo makeListLink($item);
+    endforeach; endif;
 
 } ?>
 </ul>
