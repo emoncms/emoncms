@@ -298,3 +298,17 @@ input[type=text][class=variable-name-edit] {
 @media only screen and (min-width:870px) {
     body{font-size:16px}
 }
+
+.app-header,
+.graph-header {
+    color: #fff;
+    background-color: #ddd;
+}
+.app-header .action:hover,
+.graph-header .action:hover {
+    background-color: #e3e3e3;
+}
+
+.graph-body {
+    background-color: #f9f9f9;
+}
