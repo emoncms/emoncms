@@ -108,7 +108,7 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
               print "Invalid API key";
-              $log->error("Invalid API key '" . $apikey. "'");
+              $log->error("Invalid API key '" . $apikey. "' | ".$_SERVER["REMOTE_ADDR"]);
               exit();
         }
     } else if ($devicekey && (@include "Modules/device/device_model.php")) {
