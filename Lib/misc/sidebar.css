@@ -44,6 +44,7 @@ a.grav-container:hover img.grav{
 a.is_admin.grav-container:hover img.grav{
   border-color: #efefef;
 }
+
 #icon-menu path{
   transition: all .2s cubic-bezier(.46,.03,.52,.96);
   transform-origin: center;
@@ -112,7 +113,7 @@ top navbar override
 }
 
 /* SVG animation */
-body.collapsed #sidebar-toggle:before{
+/* body.collapsed #sidebar-toggle:before{
   width: 0!important;
 }
 #icon-menu .icon-menu-top{
@@ -126,7 +127,7 @@ body.collapsed #sidebar-toggle:before{
 }
 .collapsed #icon-menu path{
   transform: none;
-}
+} */
 
 /* collapse sidebar */
 .collapsed #sidebar{
@@ -268,7 +269,7 @@ body.collapsed #sidebar-toggle-bar{
 .p-0 {padding: 0!important}
 
 /* svg icons */
-.icon {
+svg.icon {
   display: inline-block;
   width: 1em;
   height: 1em;

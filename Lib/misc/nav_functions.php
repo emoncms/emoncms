@@ -119,7 +119,7 @@ function getKeyValue($key, $array) {
  */
 function makeLink($params) {
     $activeClassName = 'active';
-
+    
     $text = getKeyValue('text', $params);
     $path = getKeyValue('path', $params);
     $href = getKeyValue('href', $params);
@@ -127,14 +127,14 @@ function makeLink($params) {
     $id = getKeyValue('id', $params);
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
-
+    
     $style = (array) getKeyValue('style', $params);
     $class = (array) getKeyValue('class', $params);
     $data = (array) getKeyValue('data', $params);
     
     // create url if pre-built url not passed
     if(empty($href)) $href = getAbsoluteUrl($path);
-
+    
     // append icon to link text
     if (!empty($icon)) {
         $icon = sprintf('<svg class="icon %1$s"><use xlink:href="#icon-%1$s"></use></svg> ', $icon);
@@ -158,23 +158,21 @@ function makeLink($params) {
         'class'=>$class,
         'data'=>$data
     ));
-    // pad attributes with space before adding to the output
-    if(!empty($attr)) $attr = ' '.$attr;
-    
+      
     // exit function if no href value available
     if(empty($href)) return $text;
 
     // return <a> tag with all the attributes and child elements
-    return sprintf('<a%s>%s</a>', $attr, $text);
+    return sprintf('<a %s>%s</a>', $attr, $text);
 }
 /**
- * return array as key=value pairs
+ * return array as html element attribute string (eg. key="value" key="value")
  *
  * @param array $attributes
  * @return string
  */
 function buildAttributes($attributes){
-    return implode(' ', array_map(function($key) use ($attributes) {
+    return implode(' ', array_filter( array_map(function($key) use ($attributes) {
         $value = $attributes[$key];
         if (!empty($value)) {
             if(!is_array($value)) {
@@ -183,7 +181,7 @@ function buildAttributes($attributes){
                 // add the data-* attribute names to array of data[] items
                 foreach($value as $key2=>$value2) {
                     if($key==='data') $key2 = 'data-'.$key2;
-                    if(isSequential($value)) {
+                    if(!isSequential($value)) {
                         $list[$key2] = $value2;
                     } else {
                         $list[$key] = $value2;
@@ -192,7 +190,7 @@ function buildAttributes($attributes){
                 return buildAttributes($list);
             }
         }
-    }, array_keys($attributes)));
+    }, array_keys($attributes))));
 }
 
 /**
@@ -210,8 +208,12 @@ function getAbsoluteUrl($_path) {
     if(getKeyValue(0, $_parsedPathParts)=='emoncms') {
         array_shift($_parsedPathParts);
     }
+    $absoluteUrl = $path . implode('/', $_parsedPathParts);
+    // url query parts
+    $query = getQueryParts($_path);
     // return emoncms $path with the relative $_path component;
-    return $path . implode('/',$_parsedPathParts);
+    if(!empty($query)) $absoluteUrl .= '?' . implode('&', $query);
+    return $absoluteUrl;
 }
 
 /**
@@ -241,6 +243,8 @@ function getCurrentPath(){
     $parts[] = $path;
     $parts[] = $route->controller;
     $parts[] = $route->action;
+    $parts[] = $route->subaction;
+    $parts[] = $route->subaction2;
     $parts = array_filter($parts);
     $parts = array_map(function($val) use ($spearator){
         return rtrim($val, $spearator);
@@ -267,14 +271,52 @@ function debugMenu($key = '') {
     }
     exit();
 }
+/**
+ * sort all the menus individually. items without sort are added to bottom a-z
+ * calls itself again until $array is a menu item
+ *
+ * @param array $array
+ * @return void
+ */
+function sortMenu (&$menus) {
+    foreach($menus as $name=>&$menu) {
+        // includes don't follow same structure
+        if ($name === 'includes') return;
+        
+        // if $menu has numeric keys it has menu items
+        // eg $menu[0]
+        if (isSequential($menu)) {
+            // collect indexes for unordered items
+            $orders = array();
+            $unordered = array();
+            foreach($menu as $key=>$item) {
+                if (isset($item['order'])) {
+                    $orders[] = $item['order'];
+                } else {
+                    $unordered[] = $key;
+                }
+            }
+            // get next sort (max_order) for a menu
+            $next_order = !empty($orders) ? max($orders)+1: 0;
+            
+            // set order field for un-ordered menu items
+            foreach($unordered as $item) {
+                // sort by title if available
+                if(isset($menu[$item]['text'])) {
+                    $menu[$item]['order'] = $menu[$item]['text'];
+                } else {
+                // sort by integer if not title available
+                    $menu[$item]['order'] = $next_order++;
+                }
+            }
+            // re-index menu based on 'order' value
+            usort($menu, 'sortMenuItems');
 
-function sortMenuArrays (array &$array = array()) {
-    if(!isSequential($array)){
-        usort($array, 'sortMenuItems');
-    }
-    foreach($array as $key=>&$item){
-        if(is_array($item)) {
-            sortMenuArrays($item);
+        // if $menu has alpha-numeric keys it is a menu group
+        // eg. $menu['setup']
+        } else {
+            // call sort again for sub-menu
+            sortMenu($menu);
         }
     }
 }
@@ -286,32 +328,26 @@ function sortMenuArrays (array &$array = array()) {
  * @return boolean
  */ 
 function isSequential(array $array = array()) {
-    return count(array_filter(array_keys($array), 'is_string')) > 0;
+    $string_keys = array_filter(array_keys($array), 'is_string');
+    return count($string_keys) == 0;
 }
 
 /**
  * used as usort() sorting function
  * 
- * return -1 if $a['sort'] is less than $b['sort']
- * return 0 if $a['sort'] is equal to $b['sort']
- * return 1 if $a['sort'] is greater than $b['sort']
+ * return -1 if $a['order'] is less than $b['order']
+ * return 0 if $a['order'] is equal to $b['order']
+ * return 1 if $a['order'] is greater than $b['order']
  *
  * @param array $a
  * @param array $b
  * @return int
  */
 function sortMenuItems ($a, $b) {
-    $key = 'sort';
-    if (!isset($a[$key]) || !isset($b[$key])) {
-        $key = 'order';
-    }
-    if (!isset($a[$key]) || !isset($b[$key])) {
-        return 0;
-    }
-    if($a[$key] == $b[$key]) {
-        return 0;
-    }
-    return ($a[$key] < $b[$key]) ? -1 : 1;
+    $orderby = 'order';
+    $ac = getKeyValue($orderby, $a);
+    $bc = getKeyValue($orderby, $b);
+    return strcmp($ac, $bc);
 }
 
 /**
@@ -320,11 +356,21 @@ function sortMenuItems ($a, $b) {
  * @param array $item
  * @return boolean
  */
-function is_active($item) {
+function is_active($item = null) {
     global $route;
-    if (isset($item['path']) && ($item['path'] == $route->controller || $item['path'] == $route->controller."/".$route->action || $item['path'] == $route->controller."/".$route->action."/".$route->subaction || $item['path'] == $route->controller."/".$route->action."&id=".get('id')))
+    if (!$item) $item = getCurrentMenuItem();
+    $path = getKeyValue('path', $item);
+    if (
+        $path == $route->controller ||
+        $path == $route->controller."/".$route->action ||
+        $path == $route->controller."/".$route->action."/".$route->subaction ||
+        $path == $route->controller."/".$route->action."/".$route->subaction."/".$route->subaction2 ||
+        $path == $route->controller."/".$route->action."?".$route->query
+    ) {
         return true;
-    return false;
+    } else {
+        return false;
+    }
 }
 
 /**
@@ -379,13 +425,13 @@ function sidebarCollapseBtn($item) {
 /**
  * return array that holds the current pages's menu item
  *
- * @param array $menu - the full menu
  * @return void
  */
-function getCurrentMenuItem($menu){
+function getCurrentMenuItem(){
+    global $menu;
     $currentPath = getCurrentPath();
     $match = null;
-    $currentPageIndex = getCurrentMenuItemIndex($menu);
+    $currentPageIndex = getCurrentMenuItemIndex();
     if(isset($menu[$currentPageIndex[0]][$currentPageIndex[1]])){
         $match = $menu[$currentPageIndex[0]][$currentPageIndex[1]];
     }
@@ -394,10 +440,10 @@ function getCurrentMenuItem($menu){
 /**
  * return an array of indexes that identify the current page's menu item
  *
- * @param array $menu - the full menu
  * @return void
  */
-function getCurrentMenuItemIndex($menu){
+function getCurrentMenuItemIndex(){
+    global $menu;
     $currentPath = getCurrentPath();
     $keys = null;
     foreach($menu as $key=>$item){
@@ -413,31 +459,35 @@ function getCurrentMenuItemIndex($menu){
 /**
  * return true if current page requires a sidebar
  *
- * @param array $menu - the full menu
  * @return void
  */
-function currentPageRequiresSidebar($menu){
-    global $route;
-
-    $currentMenuItem = getCurrentMenuItem($menu);
+function currentPageRequiresSidebar(){
+    $currentMenuItem = getCurrentMenuItem();
     $currentPath = getKeyValue('path',$currentMenuItem);
-    $currentPathParts = getPathParts($currentPath);
+    return pathRequiresSidebar($currentPath);
+}
+/**
+ * return true if passed path requires a sidebar
+ *
+ * @param string $path
+ * @return void
+ */
+function pathRequiresSidebar($path){
+    global $route, $menu;
     $counter = 0;
     foreach($menu['setup'] as $item):
-        $itemPathParts = getPathParts(getKeyValue('path',$item));
-        if(!empty($currentPathParts) && !empty($itemPathParts[0]) && $currentPathParts[0] == $itemPathParts[0]){
+        if(is_current($item)){
             $counter++;
         }
     endforeach;
     if(!empty($menu[$route->controller])): foreach($menu[$route->controller] as $item):
-        if(!empty($currentPathParts) && !empty($itemPathParts[0]) && $currentPathParts[0] == $itemPathParts[0]){
+        if(is_current($item)){
             $counter++;
         }
     endforeach; endif;
     if(!empty($menu['includes'][$route->controller])): foreach($menu['includes'][$route->controller] as $item):
         $counter++;
     endforeach; endif;
-    return true;
     return $counter > 0;
 }
 /**
@@ -448,13 +498,43 @@ function currentPageRequiresSidebar($menu){
  * @return array
  */
 function getPathParts($path) {
-    $url_parts = parse_url($path);
-    $path = getKeyValue('path',$url_parts);
-    $query = getKeyValue('query',$url_parts);
-    if(!empty($query)) {
-        $path .= '?'.$query;
-    }
+    $path = parse_url($path, PHP_URL_PATH);
+    // separate the path by a forward slash
     $pathParts = explode('/', $path);
-    $cleanedPathParts = array_values(array_filter($pathParts));
-    return $cleanedPathParts;
+    return array_values(array_filter($pathParts));
+}
+/**
+ * return array of url query parameters in given url
+ * empty elements removed from array
+ *
+ * @param string $url
+ * @return array
+ */
+function getQueryParts($path) {
+    $query = parse_url($path, PHP_URL_QUERY);
+    $query_items = array();
+    foreach(explode('&', $query) as $item) {
+        if (strpos($item,'=') > -1) {
+            list($key, $value) = explode('=', $item);
+            $query_items[$key] = $value;
+        }
+    }
+    return array_filter($query_items);
+}
+
+/**
+ * return true if current route is in given list of menu items
+ *
+ * @param array $menu
+ * @return bool
+ */
+function route_in_menu($menu) {
+    if(empty($menu)) return false;
+    foreach($menu as $item) {
+        $path = $item['path'];
+        if(is_current($path)) {
+            return true;
+        }
+    }
+    return false;
 }

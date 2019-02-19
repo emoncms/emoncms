@@ -91,19 +91,23 @@ $(function(){
 // open / close sidebar based on swipe
 // disabled on devices with a mouse
 // @todo: test on more devices (emrys,-02-14)
-var sidebarSwipeOptions = typeof hammerOptions !== 'undefined' ? hammerOptions:{};
-var sidebar_switch = document.querySelector('#sidebar-toggle-bar');
-var sidebar = document.querySelector('#sidebar');
+if(typeof Hammer !== 'undefined') {
+    var sidebarSwipeOptions = typeof hammerOptions !== 'undefined' ? hammerOptions:{};
+    var sidebar_switch = document.querySelector('#sidebar-toggle-bar');
+    var sidebar = document.querySelector('#sidebar');
 
-if(sidebar_switch) {
-    var mc_switch = new Hammer(sidebar_switch, sidebarSwipeOptions);
-    mc_switch.on('swiperight', onSidebarSwipe);
+    if(sidebar_switch) {
+        var mc_switch = new Hammer(sidebar_switch, sidebarSwipeOptions);
+        mc_switch.on('swiperight', onSidebarSwipe);
+    }
+    if(sidebar) {
+        var mc_sidebar = new Hammer(sidebar, sidebarSwipeOptions);
+        mc_sidebar.on('swipeleft', onSidebarSwipe);
+    }
+    var onSidebarSwipe = function(event) {
+        // console.log('hammer js ' + event.type + ' event');
+        document.querySelector('#sidebar-toggle').click()
+    }
 }
-if(sidebar) {
-    var mc_sidebar = new Hammer(sidebar, sidebarSwipeOptions);
-    mc_sidebar.on('swipeleft', onSidebarSwipe);
-}
-var onSidebarSwipe = function(event) {
-    // console.log('hammer js ' + event.type + ' event');
-    document.querySelector('#sidebar-toggle').click()
-}
+// backward compatible empty function
+if(typeof init_sidebar !== 'function') var init_sidebar = function(){}

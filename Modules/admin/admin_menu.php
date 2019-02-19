@@ -10,5 +10,5 @@
         'text' => _("Admin"),
         'path' => 'admin/view',
         'icon' => 'tasks',
-        'sort' => 6
+        'order' => 6
     );

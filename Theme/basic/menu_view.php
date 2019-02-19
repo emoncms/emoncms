@@ -16,7 +16,7 @@ if ($session['read']) {
 ?>
 
 <ul id="left-nav" class='nav'>
-    <li class="btn-li">
+    <li class="btn-li" style="width: 0;overflow:hidden; visibility: hidden">
         <a id="sidebar-toggle" title="<?php echo _('Open/Close Sidebar') ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn">
             <svg id="icon-menu" class="icon" viewBox="0 0 32 32">
                 <path class="icon-menu-top" d="m 27.93924,5.3202643 v 2.65165 H 4.2497483 v -2.65165 z"></path>

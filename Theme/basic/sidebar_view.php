@@ -6,10 +6,14 @@
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
-global $path, $session, $route;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
+// echo "<pre>";
+// var_dump($menu);
+// exit();
+
+foreach($menu['category'] as $menu_key=>$menu_list) :
 ?>
 <div class="sidenav-inner">
     <h4 id="sidebar-title">
@@ -17,7 +21,7 @@ if (!isset($session['profile'])) {
     //
     // index.php adds category menus items based on item 'path'
     //
-    if(isset($menu['category'])):foreach($menu['category'] as $item):
+    if(is_array($menu['category'])):foreach($menu['category'] as $item):
         if(empty($item['active'])){
             $path_parts = explode('/', $item['path']);
             $item['active'] = array($path_parts[0]);
@@ -34,11 +38,14 @@ if (!isset($session['profile'])) {
 
     <?php 
     // 2nd level links
-    if (in_array($route->controller, explode(',','graph,input,feed,device,config,admin'))): ?>
+    if (route_in_menu($menu['setup'])) :
+    ?>
     <ul id="sub_nav" class="nav sidenav-menu">
-    <?php if(!empty($menu['setup'])): foreach($menu['setup'] as $item): ?>
-        <?php echo makeListLink($item) ?>
-    <?php endforeach; endif;?>
+    <?php
+    if(!empty($menu['setup'])): foreach($menu['setup'] as $item): 
+        echo makeListLink($item);
+    endforeach; endif;
+    ?>
     </ul>
     <?php endif; ?>
 
@@ -58,7 +65,11 @@ if (!isset($session['profile'])) {
     <?php endforeach; endif; ?>
 
 </div>
-<div id="footer_nav" class="nav">
+
+<?php endforeach; ?>
+
+
+<div id="footer_nav" class="nav hide">
     <?php
     // sidebar user footer menu
         if($session['read']){
@@ -90,6 +101,8 @@ if (!isset($session['profile'])) {
     ?>
     </ul>
 </div>
+
+
 
 <script>
     var list = document.getElementById('sidebar_user_dropdown');

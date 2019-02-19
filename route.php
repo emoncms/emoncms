@@ -36,6 +36,11 @@ class Route
      * @var string
      */
     public $subaction2 = '';
+
+    /**
+     * @var string
+     */
+    public $query = '';
     
     /**
      * @var string
@@ -123,6 +128,8 @@ class Route
         if (count($args) > 3) {
             $this->subaction2 = $args[3];
         }
+        $this->query = parse_url($q, PHP_URL_QUERY);
+        
         // allow for method to be added as post variable
         if(post('_method')=='DELETE') {
             $this->method = 'DELETE';
