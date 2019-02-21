@@ -20,7 +20,8 @@
     require "route.php";
     require "param.php";
     require "locale.php";
-
+    require "Modules/remoteaccess/RemoteAccess.php";
+    
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
@@ -126,7 +127,7 @@
     }
     
     // 4) Language
-    if (!isset($session['lang'])) $session['lang']='';
+    if (!isset($session['lang'])) $session['lang']='cy_GB';    
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
@@ -184,15 +185,15 @@
             $route->action = $default_action;
             $route->subaction = "";
         } else {
-            if (isset($session["startingpage"]) && $session["startingpage"]!="") {
-                header('Location: '.$session["startingpage"]);
-                die;
-            } else {
+            //if (isset($session["startingpage"]) && $session["startingpage"]!="") {
+            //    header('Location: '.$session["startingpage"]);
+            //    die;
+            //} else {
                 // Authenticated defaults
                 $route->controller = $default_controller_auth;
                 $route->action = $default_action_auth;
                 $route->subaction = "";
-            }
+            //}
         }
     }
 
@@ -205,6 +206,8 @@
 
     if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json';
     else if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json';
+
+    if ($route->controller == 'bethesda') $route->controller = 'cydynni';
 
     // 6) Load the main page controller
     $output = controller($route->controller);
@@ -234,6 +237,15 @@
             }
         }
     }
+
+    // HTTP to MQTT bridge
+    /*if ($output["content"] === "#UNDEFINED#" && $session["write"]) {
+        if (in_array($route->controller."/".$route->action,$remoteaccess_whitelist)) {
+            $route->format = "json";
+            $remoteaccess = new RemoteAccess($session["username"],$session["password"]);
+            $output["content"] = $remoteaccess->request($route->controller,$route->action,$route->subaction,$_GET);
+        }
+    }*/
 
     // If no controller found or nothing is returned, give friendly error
     if ($output['content'] === "#UNDEFINED#") {

@@ -7,7 +7,7 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-global $path, $session, $menu;
+global $path, $session, $menu, $advanced_users;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
@@ -118,6 +118,11 @@ foreach ($menu['left'] as $item) {
 
 echo "</ul>";
 echo "<ul class='nav pull-right'>";
+?>
+
+<li><a id="togglelang" style="cursor:pointer"></a></li>
+
+<?php
 
 if (count($menu['dropdown']) && $session['read']) {
     $extra = array();
@@ -129,16 +134,17 @@ if (count($menu['dropdown']) && $session['read']) {
     echo drawItem($extra);
 }
 
-if (count($menu['dropdownconfig'])) {
-    $setup = array();
-    $setup['name'] = 'Setup';
-    $setup['icon'] = 'icon-wrench icon-white';
-    $setup['class'] = 'menu-setup';
-    $setup['session'] = 'read';
-    $setup['dropdown'] = $menu['dropdownconfig'];
-    echo drawItem($setup);
+if (($session["write"]) && in_array($session["userid"],$advanced_users) || $session["admin"]) {
+    if (count($menu['dropdownconfig'])) {
+        $setup = array();
+        $setup['name'] = 'Setup';
+        $setup['icon'] = 'icon-wrench icon-white';
+        $setup['class'] = 'menu-setup';
+        $setup['session'] = 'read';
+        $setup['dropdown'] = $menu['dropdownconfig'];
+        echo drawItem($setup);
+    }
 }
-
 foreach ($menu['right'] as $item) {
     $item['class'] = 'menu-right';
     echo drawItem($item);

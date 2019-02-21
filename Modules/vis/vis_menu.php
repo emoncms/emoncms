@@ -4,4 +4,4 @@
     bindtextdomain($domain3, "Modules/vis/locale");
     bind_textdomain_codeset($domain3, 'UTF-8');
 
-    $menu_dropdown[] = array('name'=> dgettext($domain3, "Visualization"),'icon'=>'icon-tint', 'path'=>"vis/list" , 'session'=>"write", 'order' => 20);
+    $menu_dropdown_config[] = array('name'=> dgettext($domain3, "Visualization"),'icon'=>'icon-tint', 'path'=>"vis/list" , 'session'=>"write", 'order' => 20);
