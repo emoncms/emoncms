@@ -211,11 +211,10 @@ class User
         if (isset($_SESSION['read'])) $session['read'] = $_SESSION['read']; else $session['read'] = 0;
         if (isset($_SESSION['write'])) $session['write'] = $_SESSION['write']; else $session['write'] = 0;
         if (isset($_SESSION['userid'])) $session['userid'] = $_SESSION['userid']; else $session['userid'] = 0;
-        if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = 'cy_GB';
+        if (isset($_SESSION['lang'])) $session['lang'] = $_SESSION['lang']; else $session['lang'] = '';
         if (isset($_SESSION['timezone'])) $session['timezone'] = $_SESSION['timezone']; else $session['timezone'] = '';
         if (isset($_SESSION['startingpage'])) $session['startingpage'] = $_SESSION['startingpage']; else $session['startingpage'] = '';
         if (isset($_SESSION['username'])) $session['username'] = $_SESSION['username']; else $session['username'] = 'REMEMBER_ME';
-        if (isset($_SESSION['password'])) $session['password'] = $_SESSION['password']; else $session['password'] = 'REMEMBER_ME';
         if (isset($_SESSION['cookielogin'])) $session['cookielogin'] = $_SESSION['cookielogin']; else $session['cookielogin'] = 0;
         if (isset($_SESSION['emailverified'])) $session['emailverified'] = $_SESSION['emailverified'];
 
@@ -378,12 +377,6 @@ class User
         
         if (!$result) return array('success'=>false, 'message'=>_("Username does not exist"));
         if ($this->email_verification && !$email_verified) return array('success'=>false, 'message'=>_("Please verify email address"));
-
-        //--------------------------------------------------------------------
-        include "Modules/remoteaccess/remoteaccess_userlink.php";
-        $result = remoteaccess_userlink_existing($this->mysqli,$userData_id,$username,$password);
-        if (!isset($result["success"]) || !$result["success"]) return $result;
-        //--------------------------------------------------------------------
         
         $hash = hash('sha256', $userData_salt . hash('sha256', $password));
 
@@ -396,7 +389,6 @@ class User
             session_regenerate_id();
             $_SESSION['userid'] = $userData_id;
             $_SESSION['username'] = $username;
-            $_SESSION['password'] = $password;
             $_SESSION['read'] = 1;
             $_SESSION['write'] = 1;
             $_SESSION['admin'] = $userData_admin;
