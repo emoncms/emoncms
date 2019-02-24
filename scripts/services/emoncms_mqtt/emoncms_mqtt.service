@@ -45,7 +45,7 @@ Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQ
 
 [Service]
 Type=idle
-ExecStart=/usr/bin/php /var/www/emoncms/scripts/phpmqtt_input.php
+ExecStart=/usr/bin/php /var/www/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.php
 
 # Restart script if stopped on a failure. Will not restart if not configured correctly
 Restart=on-failure
