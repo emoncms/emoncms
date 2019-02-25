@@ -303,14 +303,16 @@
             $menu = load_menu();
 
             // custom sidebar spanning multiple modules
-            $menu['category'][] = array(
-                'li_class'=>'btn-li',
+            $menu['tabs'][] = array(
                 'icon'=>'menu',
                 'title'=> _("Setup"),
-                'path'=> 'feed/list',
-                'order'=> -1
+                'path' => 'feed/list',
+                'order' => 0,
+                'data'=> array(
+                    'sidebar' => '#sidebar_setup'
+                )
             );
-        
+            
             // custom dropdown (right) spanning multiple modules
             $key = 'extras';
             if(!empty($menu[$key])): foreach($menu[$key] as $item):
@@ -319,12 +321,13 @@
 
             include ("Lib/misc/nav_functions.php");
             sortMenu($menu);
-            // debugMenu('category');
-
+            // debugMenu('sidebar');
+            
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
             
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
+            
             if($fullwidth) $output['page_classes'][] = 'fullwidth';
 
             if($session['read']){

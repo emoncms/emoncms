@@ -6,7 +6,7 @@
 
     // $menu_dropdown_config[] = array('name'=> dgettext($domain, "Administration"), 'icon'=>'icon-tasks', 'path'=>"admin/view" , 'session'=>"admin", 'order' => 50 );
 
-    $menu['setup'][] = array(
+    $menu['sidebar']['setup'][] = array(
         'text' => _("Admin"),
         'path' => 'admin/view',
         'icon' => 'tasks',

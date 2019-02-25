@@ -9,67 +9,34 @@
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
-// echo "<pre>";
-// var_dump($menu);
-// exit();
 
-foreach($menu['category'] as $menu_key=>$menu_list) :
-?>
-<div class="sidenav-inner">
-    <h4 id="sidebar-title">
-<?php
-    //
-    // index.php adds category menus items based on item 'path'
-    //
-    if(is_array($menu['category'])):foreach($menu['category'] as $item):
-        if(empty($item['active'])){
-            $path_parts = explode('/', $item['path']);
-            $item['active'] = array($path_parts[0]);
-        }
-        if(!empty($item['active'])) {
-            $matches = (array) $item['active'];
-            if (in_array($route->controller, $matches)) {
-                echo $item['title'];
-            }
-        }
-    endforeach;endif;
-?>
-    </h4>
+foreach($menu['sidebar'] as $menu_key => $sub_menu) : ?>
+    <?php if($menu_key!=='includes') { ?>
+        <div id="sidebar_<?php echo $menu_key ?>" class="sidebar-inner<?php if(is_current_menu($sub_menu)) echo ' active' ?>">
+            <a href="#" class="close btn btn-large btn-link pull-right" data-toggle="slide-collapse" data-target="#sidebar">&times;</a>
+            <h4 id="sidebar-title"><?php echo $menu_key ?></h4>
+            <?php if(!empty($sub_menu)) { ?>
+                <ul id="menu-<?php echo $menu_key ?>" class="nav sidebar-menu">
+                    <?php
+                        foreach($sub_menu as $item): 
+                            echo makeListLink($item);
+                        endforeach; 
+                    ?>
+                </ul>
+            <?php }
 
-    <?php 
-    // 2nd level links
-    if (route_in_menu($menu['setup'])) :
-    ?>
-    <ul id="sub_nav" class="nav sidenav-menu">
-    <?php
-    if(!empty($menu['setup'])): foreach($menu['setup'] as $item): 
-        echo makeListLink($item);
-    endforeach; endif;
-    ?>
-    </ul>
-    <?php endif; ?>
+            // controller specific includes
+            if(!empty($menu['sidebar']['includes'][$menu_key])): foreach($menu['sidebar']['includes'][$menu_key] as $item):
+                printf('<section id="%s-sidebar-include">%s</section>', $menu_key, $item);
+            endforeach; endif;
+            ?>
 
-    <ul id="module_nav" class="nav sidenav-menu">
-    <?php 
-    // controller specific links
-    if(!empty($menu[$route->controller])): foreach($menu[$route->controller] as $key=>$item):
-        echo makeListLink($item);
-    endforeach; endif;
-    ?>
-    </ul>
+        </div>
+    <?php } ?>
 
-    <?php 
-    // controller specific includes
-    if(!empty($menu['includes'][$route->controller])): foreach($menu['includes'][$route->controller] as $item): ?>
-        <?php echo $item; ?>
-    <?php endforeach; endif; ?>
+<?php endforeach;?>
 
-</div>
-
-<?php endforeach; ?>
-
-
-<div id="footer_nav" class="nav hide">
+<div id="footer_nav" class="nav">
     <?php
     // sidebar user footer menu
         if($session['read']){
@@ -91,7 +58,7 @@ foreach($menu['category'] as $menu_key=>$menu_list) :
             echo makeLink($link);
         }
     ?>
-    <ul id="sidebar_user_dropdown" class="nav sidenav-menu collapse">
+    <ul id="sidebar_user_dropdown" class="nav sidebar-menu collapse">
     <?php 
         $controller = 'user';
         // @todo: check for controller specific footer menus

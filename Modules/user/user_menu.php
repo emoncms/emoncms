@@ -1,17 +1,5 @@
 <?php
-    global $session, $fullwidth, $has_sidebar;
-    $has_sidebar['user'] = false;
-    // $fullwidth['user'] = true;
-
-    // not sure if this is usefull yet?? need to add an ability to create "favorite" pages
-    // $menu['setup'][] = array(
-    //     'text' => _("Admin"),
-    //     'path' => 'admin/view',
-    //     'icon' => 'tasks',
-    //     'active' => 'admin',
-    //     'sort' => 6
-    // );
-
+    global $session;
     if($session['userid']>0){
         // $menu['user'][] = array(
         //     'text' => _("Add Shortcut"),

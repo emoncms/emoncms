@@ -133,7 +133,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <br>
         <?php } ?>
 
-        <div id="sidebar" class="sidenav bg-dark text-light">
+        <div id="sidebar" class="bg-dark text-light">
             <div class="sidebar-content d-flex flex-column flex-fill">
                 <?php echo $sidebar; ?>
             </div>

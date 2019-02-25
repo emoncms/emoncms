@@ -16,21 +16,39 @@ if ($session['read']) {
 ?>
 
 <ul id="left-nav" class='nav'>
-    <li class="btn-li" style="width: 0;overflow:hidden; visibility: hidden">
-        <a id="sidebar-toggle" title="<?php echo _('Open/Close Sidebar') ?>" data-toggle="slide-collapse" data-target="#sidebar" href="#" class="btn">
-            <svg id="icon-menu" class="icon" viewBox="0 0 32 32">
-                <path class="icon-menu-top" d="m 27.93924,5.3202643 v 2.65165 H 4.2497483 v -2.65165 z"></path>
-                <path class="icon-menu-middle" d="m 27.93924,14.202737 v 2.65165 H 4.2497483 v -2.65165 z"></path>
-                <path class="icon-menu-bottom" d="m 27.93924,23.085145 v 2.65165 H 4.2497483 v -2.65165 z"></path>
-            </svg>
-        </a>
-    </li>
-<?php
 
+<?php
+$menu['tabs'][] = array(
+    'title'=> _("Open/Close Sidebar"),
+    'id' => 'sidebar-toggle',
+    'href' => '#',
+    'icon' => 'icon-menu',
+    'order' => -1,
+    'li_style' => 'width:0; overflow:hidden; visibility:hidden',
+    'data'=> array(
+        'toggle' => 'slide-collapse',
+        'target' => '#sidebar'
+    )
+);
 // top level menu icons
-if(!empty($menu['category'])): foreach($menu['category'] as $item):
-    echo makeListLink($item);
-endforeach; endif;
+if(!empty($menu['tabs'])) {
+    foreach($menu['tabs'] as &$item) {
+        // @todo: mark tab button <li> as active
+        // foreach($menu as $name=>$sub) {
+        //     if ($name!=='path') {
+        //         foreach($sub as $_item) {
+        //             $paths[] = !empty($_item['path']) ? $_item['path'] : '';
+
+        //             if(getKeyValue('path',  $_item) === getKeyValue('path',  $item)){
+        //                 $item['li_class'][] = 'active';
+        //             }
+        //         }
+        //         print_r($paths);
+        //     }
+        // }
+        echo makeListLink($item);
+    }
+}
 
 // left aligned menu items
 if(!empty($menu['left'])): foreach ($menu['left'] as $item):
@@ -46,26 +64,31 @@ endforeach; endif;
 
 if ($session['read']) {
     // add user_menu.php items
-    $menu_key = 'extras';
-    $item = array(
-        'text' => 'Extras',
-        'href' => '#',
-        'icon' => 'folder-plus'
-    );
-    if(!empty($menu[$menu_key])): foreach($menu[$menu_key] as $sub_item): 
-    // use the text as the title if not available
-    if(empty($item['title'])) $item['title'] = !empty($item['text']) ? $item['text']: '';
-        $item['sub_items'][] = $sub_item;
-    endforeach; endif;
-
-    // build dropdown with above items
-    echo makeDropdown($item);
+    $menu_key = 'right';
+    if(!empty($menu[$menu_key])) {
+        $item = array(
+            'text' => 'Extras',
+            'href' => '#',
+            'icon' => 'folder-plus'
+        );
+        if(!empty($menu[$menu_key])): foreach($menu[$menu_key] as $sub_item): 
+        // use the text as the title if not available
+            if(empty($item['title'])) {
+                $item['title'] = !empty($item['text']) ? $item['text']: '';
+            }
+            $item['sub_items'][] = $sub_item;
+        endforeach; endif;
+    
+        // build dropdown with above items
+        echo makeDropdown($item);
     }
+}
 ?>
 
 
 <?php
 // sidebar footer user menu
+$menu_index = 'user';
 if($session['read']){
     $item = array(
         'li_class' => 'menu-user',
@@ -88,8 +111,7 @@ if($session['read']){
         $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts );
     }
     // add user_menu.php items
-    $controller = 'user';
-    if(!empty($menu[$controller])): foreach($menu[$controller] as $sub_item): 
+    if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $sub_item): 
         $item['sub_items'][] = $sub_item;
     endforeach; endif;
 
@@ -98,8 +120,7 @@ if($session['read']){
 
 } else {
     // show login link to non-logged in users
-    $controller = 'user';
-    if(!empty($menu[$controller])): foreach($menu[$controller] as $item): 
+    if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $item): 
         echo makeListLink($item);
     endforeach; endif;
 

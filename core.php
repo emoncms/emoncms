@@ -173,7 +173,7 @@ function load_menu()
         foreach($menu_dropdown_config as $item){
             if(!empty($item['name'])) $item['text'] = $item['name'];
             $item['icon'] .= ' icon-white';
-            $menu['setup'][] = $item;
+            $menu['sidebar']['setup'][] = $item;
         }
     }
 

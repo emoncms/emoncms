@@ -1,6 +1,6 @@
 <?php
 
-    $menu['setup'][] = array(
+    $menu['sidebar']['setup'][] = array(
         'text' => _("Inputs"),
         'path' => 'input/view',
         'icon' => 'input',

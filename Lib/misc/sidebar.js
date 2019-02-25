@@ -1,5 +1,5 @@
 $(function(){
-    // recreate the bootstrap collapse... but slide from left
+    // re-create the bootstrap collapse... but slide from left
     $(document).on('click', '[data-toggle="slide-collapse"]', function(event) {
         event.preventDefault(event);
         var collapsed = this.classList.contains('collapsed');
@@ -33,16 +33,32 @@ $(function(){
     }
 
     // open sidebar if active page link clicked
-    $('#left-nav li.active a').on('mouseenter', function(event){
+    $('#left-nav li a').on('mouseenter', function(event){
         event.preventDefault();
-        if($('body').hasClass('collapsed')) {
-            // $('#sidebar-toggle').click();
+        $link = $(this);
+        // if the [data-sidebar] attribute has a selector that matches a menu, then show/hide it
+        $sidebar = $($link.data('sidebar'));
+        if ($sidebar.length > 0 && !$('body').hasClass('collapsed')) {
+            $link.parent().addClass('active').siblings().removeClass('active');
+            $('#sidebar .sidebar-inner').removeClass('active');
+            $sidebar.addClass('active');
         }
     });
     // open sidebar if active page link clicked
-    $('#left-nav li.active a').on('click', function(event){
+    $('#left-nav li a').on('click', function(event){
         event.preventDefault();
-        $('#sidebar-toggle').click();
+        // open sidebar if collapsed
+        if (!$('body').hasClass('collapsed')) {
+            hide_sidebar();
+        } else {
+            show_sidebar();
+        }
+    });
+    $(document).on('click', '#left-nav li.active a', function(event){
+        event.preventDefault();
+        if($(this).attr('id') !== 'sidebar-toggle') {
+            $('#sidebar-toggle').click();
+        }
     });
 
     // on trigger sidebar hide/show
@@ -85,6 +101,18 @@ $(function(){
             var toggle = $('#sidebar_user_toggle').addClass('collapsed');
         }
     });
+    // hide sidebar on smaller devices
+    window.addEventListener('resize', function(event) {
+        if ($(window).width() < 870) {
+            hide_sidebar();
+            document.body.classList.add('narrow');
+        }
+        if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
+            show_sidebar();
+            document.body.classList.remove('narrow');
+        }
+    })
+
 
 });
 

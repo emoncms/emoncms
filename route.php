@@ -128,7 +128,7 @@ class Route
         if (count($args) > 3) {
             $this->subaction2 = $args[3];
         }
-        $this->query = parse_url($q, PHP_URL_QUERY);
+        $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
         
         // allow for method to be added as post variable
         if(post('_method')=='DELETE') {
