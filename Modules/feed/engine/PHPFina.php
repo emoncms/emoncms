@@ -977,9 +977,9 @@ class PHPFina implements engine_methods
         fclose($metafile);
         $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
         
-        if ((($end-$start) / $meta->interval)>69120) {
-            return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
-        }
+        //if ((($end-$start) / $meta->interval)>69120) {
+        //    return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
+        //}
         
         if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
         
@@ -1034,7 +1034,7 @@ class PHPFina implements engine_methods
                 if ($n>0) $average = $sum / $n;
             }
             
-            if ($time>=$start && $time<$end) {
+            if ($time>=$start) {
                 $data[] = array($time*1000,$average);
             }
 
