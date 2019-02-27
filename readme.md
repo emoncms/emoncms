@@ -20,7 +20,7 @@ _*Redis is recommended to reduces disk write load prolonging disk life (noticabl
 
 ### Important: Standard Emoncms and Emoncms.org
 
-There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms, currently in version 9. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
+There are differences between the standard version of emoncms and the version of emoncms running on emoncms.org. This repository contains the code for the standard version of emoncms. This is the version installed on the OpenEnergyMonitor SD Card that comes with the EmonPi and EmonBase and is recommended for all self-install versions of emoncms.
 
 The emoncms.org version [Github: emoncms/emoncmsorg](http://github.com/emoncms/emoncmsorg) is a fork that is specific for multi-server installations. While both versions share the same roots the code for emoncms.org differs significantly to the standard version of emoncms, the user experience is intended to be similar but there are currently a number of differences in the API and look of the inputs and feeds interfaces as well as a reduced feature set in general on emoncms.org in order to ensure stability. In general development on emoncms.org moves slower than the standard emoncms for this reason.
 
@@ -97,6 +97,10 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
     
 - [Wifi Module]( https://github.com/emoncms/wifi.git) - [Wifi configuration interface designed for use on the emonPi](https://guide.openenergymonitor.org/setup/connect/)
 
+- [DemandShaper Module]( http://github.com/emoncms/demandshaper) - Schedule smartplugs, EmonEVSE smart EV charger, heatpump to run at best time in terms of: carbon, cost, grid strain. Based on day ahead forecasts.
+
+- [RemoteAccess Module](http://github.com/emoncms/remoteaccess-client) - Emoncms Remote Access client Beta
+
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
 
 ## Branches
@@ -120,7 +124,6 @@ There are many other modules such as the event module and openbem (open source b
 ## Development
 
 * [Emoncms Community Forum](https://community.openenergymonitor.org/c/emoncms)
-* [V9 Development thread](http://openenergymonitor.org/emon/node/11009) (archive)
 
 ### Documentation development
 
