@@ -187,7 +187,6 @@ body.dashboard.has-sidebar.fullwidth #footer {
   border: 0;
   margin: 0;
 }
-#sidebar #top_nav li {border-bottom: 1px solid #209ed3}
 
 /* bottom of sidebar */
 #footer_nav{
@@ -316,12 +315,9 @@ svg.icon {
   display: block;
   padding:.94em;
 }
- #sidebar .nav.sidebar-menu li.active a{
-  background: #212121ab!important;
-}
+#sidebar .nav.sidebar-menu li.active a,
 #sidebar .nav.sidebar-menu li a:focus{
-  background: #a2a2a2!important;
-  background: #212121ab!important;
+  background: rgba(33, 33, 33, 0.7) !important
 }
 /* When you mouse over the navigation links, change their color */
 #sidebar .nav a:hover, .offcanvas a:focus{
@@ -333,17 +329,18 @@ svg.icon {
 /* -------------------------------------------------------------------
 Side nav: app list
 --------------------------------------------------------------------*/
-.sidenav-menu {
+.sidebar-menu {
   list-style: none;
-  margin:0px;
-  padding:0px;
+  margin: 0px;
+  padding: 0px;
+  border-top: 1px solid #444;
 }
 
-.sidenav-menu li {
+.sidebar-menu li {
   border-bottom:1px solid #444;
 }
 
-.sidenav-menu li:hover {
+.sidebar-menu li:hover {
   background-color: #444;
 }
 
@@ -415,19 +412,6 @@ Side nav: app list
 #setup-sidebar-include .include-container #graph-list select{
     width:13rem;
 }
-
-/*
-
-// hide sidebar on load
-if ($(window).width() < 870) {
-    document.body.classList.add('narrow','collapsed','no-animation');
-    $('#sidebar').trigger('hidden.sidebar.collapse');
-    setTimeout(function(){
-        document.body.classList.remove('no-animation');
-    }, 300);
-}
-
-*/
 
 /* On screens that are 870px or less, hide the sidebar on load */
 @media screen and (max-width: 870px) {
