@@ -164,9 +164,10 @@ body.dashboard.has-sidebar.fullwidth #footer {
   overflow-y: auto;
   z-index: 1000;
   height: 100vh;
+}
+.has-animation #sidebar {
   transition: all .3s ease-out;
 }
-
 .has-sidebar #sidebar{
   display: block;
 }
@@ -413,4 +414,38 @@ Side nav: app list
 }
 #setup-sidebar-include .include-container #graph-list select{
     width:13rem;
+}
+
+/*
+
+// hide sidebar on load
+if ($(window).width() < 870) {
+    document.body.classList.add('narrow','collapsed','no-animation');
+    $('#sidebar').trigger('hidden.sidebar.collapse');
+    setTimeout(function(){
+        document.body.classList.remove('no-animation');
+    }, 300);
+}
+
+*/
+
+/* On screens that are 870px or less, hide the sidebar on load */
+@media screen and (max-width: 870px) {
+  #sidebar {
+    transition: none;
+    left: 0;
+  }
+  /* js adds .has-animation on load */
+  .has-animation #sidebar {
+    transition: all .3s ease-out;
+  }
+  /* js adds .expanded on click */
+  .expanded #sidebar {
+    left: 250px;
+  }
+}
+@media screen and (min-width: 871px) {
+  #sidebar {
+    left: 250px
+  }
 }

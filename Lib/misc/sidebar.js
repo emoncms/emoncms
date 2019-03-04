@@ -21,7 +21,7 @@ $(function(){
         setTimeout(function(){
             $('#sidebar').trigger('shown.sidebar.collapse');
         }, 350);
-        $('body').removeClass('collapsed');
+        $('body').removeClass('collapsed').addClass('expanded');
     }
     function hide_sidebar(options) {
         // @note: assumes the css animation takes 300ms
@@ -29,7 +29,7 @@ $(function(){
         setTimeout(function(){
             $('#sidebar').trigger('hidden.sidebar.collapse');
         }, 350);
-        $('body').addClass('collapsed');
+        $('body').addClass('collapsed').removeClass('expanded');
     }
 
     // open sidebar if active page link clicked
@@ -112,13 +112,23 @@ $(function(){
             document.body.classList.remove('narrow');
         }
     })
-
+    
+    // hide sidebar on load on narrow devices
+    if ($(window).width() < 870) {
+        document.body.classList.add('narrow','collapsed');
+        $('#sidebar').trigger('hidden.sidebar.collapse');
+        hide_sidebar();
+        // allow narrow screens to expand sidebar after delay to avoid animation of hiding sidebar
+        setTimeout(function(){
+            document.body.classList.add('has-animation');
+        }, 500);
+    }
 
 });
 
 // open / close sidebar based on swipe
 // disabled on devices with a mouse
-// @todo: test on more devices (emrys,-02-14)
+// @todo: test on more devices (emrys,2019-02-14)
 if(typeof Hammer !== 'undefined') {
     var sidebarSwipeOptions = typeof hammerOptions !== 'undefined' ? hammerOptions:{};
     var sidebar_switch = document.querySelector('#sidebar-toggle-bar');
