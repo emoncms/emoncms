@@ -33,33 +33,39 @@ $(function(){
     }
 
     // open sidebar if active page link clicked
-    $('#left-nav li a').on('mouseenter', function(event){
-        event.preventDefault();
-        $link = $(this);
-        // if the [data-sidebar] attribute has a selector that matches a menu, then show/hide it
-        $sidebar = $($link.data('sidebar'));
-        if ($sidebar.length > 0 && !$('body').hasClass('collapsed')) {
-            $link.parent().addClass('active').siblings().removeClass('active');
-            $('#sidebar .sidebar-inner').removeClass('active');
-            $sidebar.addClass('active');
-        }
-    });
-    // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event){
         event.preventDefault();
-        // open sidebar if collapsed
-        if (!$('body').hasClass('collapsed')) {
+        // if the [data-sidebar] attribute has a selector that matches a menu, then show/hide it
+        $link = $(this);
+        $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
+
+        // alter tab states
+        $link.parent().addClass('active').siblings().removeClass('active');
+
+        // hide if not sidebar found
+        if ($sidebar_inner.length == 0) {
             hide_sidebar();
         } else {
-            show_sidebar();
+            if ($('body').hasClass('collapsed')) {
+                show_sidebar();
+            } else {
+                if ($sidebar_inner.hasClass('active')) {
+                    // hide sidebar if clicked item already active
+                    hide_sidebar();
+                } else {
+                    // enable correct sidebar inner based on clicked tab
+                    $sidebar_inner.addClass('active').siblings().removeClass('active');
+                }
+            }
         }
     });
-    $(document).on('click', '#left-nav li.active a', function(event){
-        event.preventDefault();
-        if($(this).attr('id') !== 'sidebar-toggle') {
-            $('#sidebar-toggle').click();
-        }
-    });
+
+    // $(document).on('click', '#left-nav li.active a', function(event){
+    //     event.preventDefault();
+    //     if($(this).attr('id') !== 'sidebar-toggle') {
+    //         $('#sidebar-toggle').click();
+    //     }
+    // });
 
     // on trigger sidebar hide/show
     $('#sidebar').on('hide.sidebar.collapse show.sidebar.collapse', function(event){

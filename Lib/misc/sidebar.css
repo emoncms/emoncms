@@ -446,6 +446,7 @@ if ($(window).width() < 870) {
 }
 @media screen and (min-width: 871px) {
   #sidebar {
-    left: 250px
+    left: 250px;
+    transition: all .3s ease-out;
   }
 }
