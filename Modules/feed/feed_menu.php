@@ -4,5 +4,5 @@
         'text' => _("Feeds"),
         'path' => 'feed/list',
         'icon' => 'format_list_bulleted',
-        'order' => 0
+        'order' => 1
     );

@@ -22,11 +22,11 @@
             'sort' => 2,
             'active' => 'none'
         );
-        $menu['user'][] = array(
-            'li_class' => 'divider',
-            'sort' => 3,
-            'active' => 'none'
-        );
+        // $menu['user'][] = array(
+        //     'li_class' => 'divider',
+        //     'sort' => 3,
+        //     'active' => 'none'
+        // );
         $menu['user'][] = array(
             'text' => _("Logout"),
             'icon' => 'logout',
