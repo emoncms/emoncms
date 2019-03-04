@@ -191,7 +191,7 @@ body.dashboard.has-sidebar.fullwidth #footer {
 /* bottom of sidebar */
 #footer_nav{
   position: absolute;
-  bottom: 2.49rem;
+  bottom: 2.3em;
   width: 250px;
   background: #212121;
   border-top: 1px solid #444;
@@ -216,6 +216,7 @@ body.dashboard.has-sidebar.fullwidth #footer {
 }
 #footer_nav #sidebar_user_dropdown li a{
   background: #212121;
+  padding: .67em .94em
 }
 
 #footer_nav #sidebar_user_dropdown li a:hover{

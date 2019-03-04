@@ -19,7 +19,7 @@
             'text' => _("My Account"),
             'icon' => 'user',
             'path' => 'user/view',
-            'sort' => 2,
+            'order' => 2,
             'active' => 'none'
         );
         // $menu['user'][] = array(
@@ -31,7 +31,7 @@
             'text' => _("Logout"),
             'icon' => 'logout',
             'path' => 'user/logout',
-            'sort' => 4,
+            'order' => 4,
             'active' => 'none'
         );
         
