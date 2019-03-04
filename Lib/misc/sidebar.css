@@ -191,16 +191,24 @@ body.dashboard.has-sidebar.fullwidth #footer {
 /* bottom of sidebar */
 #footer_nav{
   position: absolute;
-  bottom: 1.09rem;
+  bottom: 2.49rem;
   width: 250px;
   background: #212121;
   border-top: 1px solid #444;
   margin-bottom: 0;
 }
+#sidebar-toggle-bar:active,
+#sidebar-toggle-bar:focus{
+  outline: none;
+}
 #sidebar_user_toggle{
   background: #333;
   padding-top: .6em !important;
   padding-bottom: .75em !important;
+}
+#sidebar_user_toggle:active,
+#sidebar_user_toggle:focus{
+  outline: none;
 }
 .expanded #sidebar_user_toggle,
 #sidebar_user_toggle:hover{

@@ -48,6 +48,7 @@ $(function(){
         } else {
             if ($('body').hasClass('collapsed')) {
                 show_sidebar();
+                $sidebar_inner.addClass('active').siblings().removeClass('active')
             } else {
                 if ($sidebar_inner.hasClass('active')) {
                     // hide sidebar if clicked item already active
