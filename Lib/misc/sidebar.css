@@ -306,23 +306,15 @@ svg.icon {
   vertical-align: -.15em;
 }
 
-/* .sidenav-open {
-  float:left;
-  margin-right:10px;
-}
-
-.sidenav-close {
-  float:right; 
-  cursor:pointer; 
-  padding:10px;
-} */
-
 /* The navigation menu links */
 #sidebar .nav a {
   text-decoration: none;
   color: #fff;
   display: block;
   padding:.94em;
+}
+#sidebar .nav.sub-nav{
+    border-top: 0 solid transparent;
 }
 #sidebar .nav.sidebar-menu li.active a,
 #sidebar .nav.sidebar-menu li a:focus{
@@ -346,13 +338,17 @@ Side nav: app list
 }
 
 .sidebar-menu li {
-  border-bottom:1px solid #444;
+  border-bottom: 0px solid transparent;
+  transition: all .2s ease-in!important;
 }
-
-.sidebar-menu li:hover {
-  background-color: #444;
+.sidebar-menu li.in {
+  border-bottom: 1px solid #444;
+  height: 3.13em;
 }
-
+.sidebar-menu li a:focus,
+.sidebar-menu li a:active{
+  outline: none;
+}
 
 .arrow-up {
   width: 0; 
@@ -384,43 +380,32 @@ Side nav: app list
 
 /* specific to single view's sidebar */
 
-#setup-sidebar-include .include-container{
+.include-container{
     width: 0;
     height: 0;
     opacity: 0;
     transition: all .2s ease-out;
     overflow: hidden;
+    box-sizing: border-box;
 }
 /* show #feeds when expanded */
-#setup-sidebar-include .include-container.in{
+.include-container.in{
     width: 99%;
     opacity: 1;
     height: auto;
 }
 
-#setup-sidebar-include .include-container h4{
-    padding: 1rem;
+.include-container h4{
+    padding-bottom: .5rem;
 }
-#setup-sidebar-include .include-container h4 a{
+.include-container h4 a{
     color: white;
     display: block;
 }
-#setup-sidebar-include .include-container h4 a:hover{
+.include-container h4 a:hover{
     text-decoration: underline;
 }
-#setup-sidebar-include .include-container #graph-list{
-    width: 14rem;
-    padding-left: 1rem;
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 3rem;
-}
-#setup-sidebar-include .include-container #graph-list input{
-    width:12rem;
-}
-#setup-sidebar-include .include-container #graph-list select{
-    width:13rem;
-}
+
 
 /* On screens that are 870px or less, hide the sidebar on load */
 @media screen and (max-width: 870px) {

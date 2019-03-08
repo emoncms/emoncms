@@ -18,16 +18,26 @@ foreach($menu['sidebar'] as $menu_key => $sub_menu) : ?>
             <?php if(!empty($sub_menu)) { ?>
                 <ul id="menu-<?php echo $menu_key ?>" class="nav sidebar-menu">
                     <?php
-                        foreach($sub_menu as $item): 
+                        foreach($sub_menu as $item):
+                            $item['li_class'] = array('collapse','in');
                             echo makeListLink($item);
                         endforeach; 
                     ?>
                 </ul>
             <?php }
-
             // controller specific includes
-            if(!empty($menu['sidebar']['includes'][$menu_key])): foreach($menu['sidebar']['includes'][$menu_key] as $item):
-                printf('<section id="%s-sidebar-include">%s</section>', $menu_key, $item);
+            if(!empty($menu['sidebar']['includes'][$menu_key])): foreach($menu['sidebar']['includes'][$menu_key] as $name=>$items):
+                if(is_array($items)) {
+                    $items_html = '';
+                    foreach($items as $item) {
+                        if (is_menu_item($item)) {
+                            $item['li_class'][] = 'in';
+                            $items_html .= makeListLink($item);
+                        }
+                    }
+                    $items = !empty($items_html) ? sprintf('<ul class="nav sidebar-menu sub-nav">%s</ul>', $items_html): '';
+                }
+                printf('<section class="collapse include-container" id="%s-%s-sidebar-include">%s</section>', $menu_key, $name, $items);
             endforeach; endif;
             ?>
 

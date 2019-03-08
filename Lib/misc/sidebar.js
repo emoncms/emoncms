@@ -61,13 +61,6 @@ $(function(){
         }
     });
 
-    // $(document).on('click', '#left-nav li.active a', function(event){
-    //     event.preventDefault();
-    //     if($(this).attr('id') !== 'sidebar-toggle') {
-    //         $('#sidebar-toggle').click();
-    //     }
-    // });
-
     // on trigger sidebar hide/show
     $('#sidebar').on('hide.sidebar.collapse show.sidebar.collapse', function(event){
         // resize after slight delay
@@ -130,8 +123,40 @@ $(function(){
             document.body.classList.add('has-animation');
         }, 500);
     }
+    /** 
+     * If menu 3rd level menu shown shrink 2nd level entries
+     * 
+     * @param {object} [event] mouse event if triggered by click
+     */
+    function hideMenuItems(event) {
+        if (typeof event !== 'undefined') {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        let link = $('#menu-setup li.active a');
+        let active_menu = link.parents('.sidebar-menu').first();
+        if(active_menu.length !== 1) return; // no menu found
+        
+        let active_menu_name = active_menu.attr('id').split('-');
+        active_menu_name.shift(); 
+        let relative_path = window.location.pathname.replace(path,''); // eg /emoncms/feed/list
+        let controller = relative_path.replace('/emoncms/','').split('/')[0]; // eg. feed
+        let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
+        let include = $('#' + include_id);
+        if (include.length == 1) {
+            // show 3rd level menu
+            include.toggleClass('in');
+            // hide 2nd level menu items
+            $('#menu-setup li').not('.active').toggleClass('in');
+        }
+    }
 
-});
+    // show/hide sidebar includes
+    $(document).on('click', '#menu-setup li.active a', hideMenuItems);
+    // show hide 2nd / 3rd menu items
+    setTimeout(hideMenuItems, 100);
+    
+}); // end of jquery ready()
 
 // open / close sidebar based on swipe
 // disabled on devices with a mouse

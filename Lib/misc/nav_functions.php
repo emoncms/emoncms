@@ -68,8 +68,8 @@ function makeListLink($params) {
 
     $attr = buildAttributes(array(
         'id' => $li_id,
-        'class' => $li_class,
-        'style' => $li_style
+        'class' => implode(' ', $li_class),
+        'style' => implode(';', $li_style)
     ));
     if(!empty($attr)) $attr = ' '.$attr;
 
@@ -107,6 +107,7 @@ function path_is_current($path) {
     $current_path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     foreach((array) $path as $search) {
         $search_path = parse_url(getAbsoluteUrl($search), PHP_URL_PATH);
+        if (strpos($current_path, $search_path) === 0) return true;
         if($search_path === $current_path) return true;
     }
     return false;
@@ -435,7 +436,25 @@ function is_active($item = null, $passed_path = null) {
         return false;
     }
 }
-
+/**
+ * return true if passed $item has desired properties for bing a menu item
+ *
+ * @param array $item
+ * @return boolean
+ */
+function is_menu_item($item) {
+    if(is_array($item) && (
+        !empty($item['id'])   ||
+        !empty($item['path']) ||
+        !empty($item['href']) ||
+        !empty($item['icon']) ||
+        !empty($item['text']) ||
+        !empty($item['title'])
+    )) {
+        return true;
+    }
+    return false;
+}
 /**
  * call the makeListLink() function after modifiying the menu item to act as a dropdown
  *

@@ -2,9 +2,7 @@
     global $path;
 ?>
 <?php
-    $domain4 = "schedule_messages";
-    bindtextdomain($domain4, "Modules/schedule/locale");
-    bind_textdomain_codeset($domain4, 'UTF-8');
+    load_language_files("Modules/schedule/locale", "schedule_messages");
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/schedule/Views/schedule.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>

@@ -54,11 +54,7 @@ function controller($controller_name)
         $controllerScript = "Modules/".$controller_name."/".$controller.".php";
         if (is_file($controllerScript))
         {
-            // Load language files for module
-            $domain = "messages";
-            bindtextdomain($domain, "Modules/".$controller_name."/locale");
-            bind_textdomain_codeset($domain, 'UTF-8');
-            textdomain($domain);
+            load_language_files("Modules/".$controller_name."/locale");
 
             require_once $controllerScript;
             $output = $controller();
@@ -153,6 +149,19 @@ function load_db_schema()
     }
     return $schema;
 }
+/**
+ * binds the gettext translations to the correct file and domain/type
+ *
+ * @param string $path path to the directory containing the .mo files for each language
+ * @param [string] $domain
+ * @return void
+ */
+function load_language_files($path, $domain='messages'){
+    // Load language files for module
+    bindtextdomain($domain, $path);
+    bind_textdomain_codeset($domain, 'UTF-8');
+    textdomain($domain);
+}
 
 function load_menu()
 {
@@ -163,6 +172,7 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
+                load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
