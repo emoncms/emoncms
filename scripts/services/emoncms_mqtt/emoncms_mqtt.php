@@ -125,7 +125,7 @@
     $mqtt_client->onMessage('message');
 
     // Option 1: extend on this:
-     while(true){
+    while(true){
         try {
             $mqtt_client->loop();
         } catch (Exception $e) {
@@ -181,7 +181,6 @@
 
         usleep(10000);
     }
-    
 
     function connect($r, $message) {
         global $log, $connected, $mqtt_server, $mqtt_client, $subscribed;
@@ -222,58 +221,49 @@
         $log->info("Disconnected cleanly");
     }
 
-    function message($message)
-    {
+    function message($message) {
+        global $mqtt_server, $user, $input, $process, $device, $log, $count;
         try {
-            $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
             $time = time();
-
-            global $mqtt_server, $user, $input, $process, $device, $log, $count;
-
+            
             //remove characters that emoncms topics cannot handle
             $topic = str_replace(":","",$topic);
-
+            
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
+            $jsoninput = false;
             $jsondata = json_decode($value,true,2);
             if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
                 // JSON is valid - is it an array
                 $jsoninput = true;
                 $log->info("MQTT Valid JSON found ");
-                //Create temporary array and change all keys to lower case to look for a 'time' key
-                $jsondataLC = array_change_key_case($jsondata);
-
+                
                 // If JSON, check to see if there is a time value else set to time now.
-                if (array_key_exists('time',$jsondataLC)){
-                    $inputtime = $jsondataLC['time'];
-
-                    // validate time
-                    if (is_numeric($inputtime)){
-                        $log->info("Valid time in seconds used ".$inputtime);
-                        $time = (int) $inputtime;
-                    } elseif (is_string($inputtime)){
-                        if (($timestamp = strtotime($inputtime)) === false) {
-                            //If time string is not valid, use system time.
-                            $log->warn("Time string not valid ".$inputtime);
-                            $time = time();
-                        } else {
-                            $log->info("Valid time string used ".$inputtime);
-                            $time = $timestamp;
+                foreach ($jsondata as $key=>$value) {
+                    if (strtolower($key) == 'time') {
+                        // validate time
+                        if (is_numeric($value)) {
+                            $log->info("Found valid time in seconds: ".$value);
+                            $time = intval($value);
                         }
-                    } else {
-                        $log->warn("Time value not valid ".$inputtime);
-                        $time = time();
+                        elseif (is_string($value)) {
+                            if (($timestamp = strtotime($value)) === false) {
+                                //If time string is not valid, use system time.
+                                $log->warn("Time string not valid: ".$value);
+                            } else {
+                                $log->info("Found valid time string: ".$value);
+                                $time = $timestamp;
+                            }
+                        }
+                        else {
+                            $log->warn("Time value not valid: ".$value);
+                        }
+                        unset($jsondata[$key]);
+                        break;
                     }
-                } else {
-                    $log->info("No time element found in JSON - System time used");
-                    $time = time();
                 }
-            } else {
-                $jsoninput = false;
-                $time = time();
             }
-
             $log->info($topic." ".$value);
             $count ++;
             
@@ -285,37 +275,35 @@
             
             $route = explode("/",$topic);
             $basetopic = explode("/",$mqtt_server['basetopic']);
-
+            
             /*Iterate over base topic to determine correct sub-topic*/
-            $st=-1;
+            $st = -1;
             foreach ($basetopic as $subtopic) {
                 if(isset($route[$st+1])) {
-                    if($basetopic[$st+1]==$route[$st+1]) {
+                    if($basetopic[$st+1] == $route[$st+1]) {
                         $st = $st + 1;
-                    } else {
+                    }
+                    else {
                         break;
                     }
                 } else {
                     $log->error("MQTT base topic is longer than input topics! Will not produce any inputs! Base topic is ".$mqtt_server['basetopic'].". Topic is ".$topic.".");
                 }
             }
-     
-            if ($st>=0)
-            {
-                if (isset($route[$st+1]))
-                {
+            if ($st >= 0) {
+                if (isset($route[$st+1])) {
                     $nodeid = $route[$st+1];
                     $dbinputs = $input->get_inputs($userid);
-
+                    
                     if ($jsoninput) {
                         foreach ($jsondata as $key=>$value) {
                             $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$key, "value"=>$value);
                         }
-                    } else if (isset($route[$st+2])) {
+                    }
+                    else if (isset($route[$st+2])) {
                         $inputs[] = array("userid"=>$userid, "time"=>$time, "nodeid"=>$nodeid, "name"=>$route[$st+2], "value"=>$value);
                     }
-                    else
-                    {
+                    else {
                         $values = explode(",",$value);
                         $name = 0;
                         foreach ($values as $value) {
@@ -323,18 +311,18 @@
                         }
                     }
                 }
-            } else {
-                $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
-
+            else {
+                $log->error("No matching MQTT topics! None or null inputs will be recorded!");
+            }
+            
             if (!isset($dbinputs[$nodeid])) {
                 $dbinputs[$nodeid] = array();
-                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
+                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
             }
-
+            
             $tmp = array();
-            foreach ($inputs as $i)
-            {
+            foreach ($inputs as $i) {
                 $userid = $i['userid'];
                 $time = $i['time'];
                 $nodeid = $i['nodeid'];
@@ -348,8 +336,7 @@
                         $log->info(json_encode($result));
                     }
                 }
-                else 
-                {
+                else {
                     if (!isset($dbinputs[$nodeid][$name])) {
                         $inputid = $input->create_input($userid, $nodeid, $name);
                         if (!$inputid) {

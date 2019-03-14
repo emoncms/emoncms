@@ -124,7 +124,7 @@
     $mqtt_client->onMessage('message');
 
     // Option 1: extend on this:
-     while(true){
+    while(true) {
         try { 
             $mqtt_client->loop(); 
         } catch (Exception $e) {
@@ -224,10 +224,10 @@
             $topic = $message->topic;
             $value = $message->payload;
             $time = time();
-
+            
             //remove characters that emoncms topics cannot handle
             $topic = str_replace(":","",$topic);
-
+            
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
             $jsoninput = false;
             $jsondata = json_decode($value,true,2);
