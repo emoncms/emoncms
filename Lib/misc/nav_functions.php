@@ -78,19 +78,21 @@ function makeListLink($params) {
         }
         $link .= '<ul class="dropdown-menu">'.implode("\n", $sub_items).'</ul>';
     }
-    return empty($link) ? '' : sprintf('<li%s>%s</li>'."\n", $attr, $link);
+    return empty($link) ? '' : sprintf('<li%s>%s</li>', $attr, $link);
 }
 /**
  * returns true if current view's url matches passed $path(s)
  *
- * @param mixed $_url - array can be passed to match multiple paths
+ * @param mixed $_url single or list of urls to check
  * @return boolean
  */
-function is_current($_url) {
+function is_current($_url = array()) {
     $current_url = getAbsoluteUrl($_SERVER['REQUEST_URI']);
     foreach((array) $_url as $search) {
         $search_url = getAbsoluteUrl($search);
-        if($search_url === $current_url) return true;
+        if($search_url === $current_url) {
+            return true;
+        }
     }
     return false;
 }
@@ -195,7 +197,16 @@ function makeLink($params) {
     return sprintf('<a %s>%s</a>', $attr, $text);
 }
 /**
- * return array as html element attribute string (eg. key="value" key="value")
+ * return html element attribute string (eg. key1="value1" key2="value2")
+ * if value is array multiples are grouped (eg. key="value1 value2")
+ * if value is array and key is "data" then array values are prefixed with data-[key]. (eg. data-name="value" data-size="value")
+ * 
+ * example of use:
+ * ---------------
+ * simple pairs: buildAttributes(array('id'=>'menu-item-2'))  ==> 'id="menu-item-2"'
+ * data-* style:  buildAttributes(array('data'=>array('toggle'=>'collapse','target'=>'#sidebar')))
+ *  ==> 'data-toggle="collapse" data-target="#sidebar"'
+ * grouped style: buildAttributes(array('class'=>array('dark','large')))  ==> 'class="dark large"'
  *
  * @param array $attributes
  * @return string
@@ -203,25 +214,25 @@ function makeLink($params) {
 function buildAttributes($attributes){
     return implode(' ', array_filter( array_map(function($key) use ($attributes) {
         $value = $attributes[$key];
+        // print_r($value);
         if (!empty($value)) {
             if(!is_array($value)) {
+                // return simple key=value pair
                 return $key.'="'.$value.'"';
             } else {
-                // add the data-* attribute names to array of data[] items
-                foreach($value as $key2=>$value2) {
-                    if($key==='data') $key2 = 'data-'.$key2;
-                    if(!isSequential($value)) {
+                if(isSequential($value)){
+                    // join multi-value properties
+                    // eg css="a b c" etc
+                    $list[$key] = implode(' ', array_unique($value));
+                } else {
+                    foreach($value as $key2=>$value2) {
+                        if($key==='data') $key2 = 'data-'.$key2;
+                        // add the data-* attribute 
                         // eg data-'close' data-'open'
                         $list[$key2] = $value2;
-                    } else {
-                        // eg style, css etc
-                        if(!isset($list[$key])) {
-                            $list[$key] = $value2;
-                        } else {
-                            $list[$key] .= ' '.$value2;
-                        }
                     }
                 }
+                // call itself array values as strings
                 return buildAttributes($list);
             }
         }
@@ -533,14 +544,24 @@ function sidebarCollapseBtn($item) {
 function getCurrentMenuItem(){
     global $menu;
     list($group,$_menu,$index) = getCurrentMenuItemIndex()[0];
-    // echo __LINE__."\n----$group,$_menu,$index\n";
-    // var_dump($menu[$group][$_menu][$index]);
     return !empty($menu[$group][$_menu][$index]) ? $menu[$group][$_menu][$index]: array();
 }
+/**
+ * return menu that contains the current menu item
+ * returns empty array if not found
+ * returns first occurance of path only
+ *
+ * @return void
+ */
 function getCurrentMenu() {
     global $menu;
-    list($group,$_menu,$index) = getCurrentMenuItemIndex()[0];
-    return $menu[$group][$_menu];
+    $index = getCurrentMenuItemIndex();
+    if(!empty($index)) {
+        list($group,$_menu,$index) = $index[0];
+        return $menu[$group][$_menu];
+    } else {
+        return array();
+    }
 }
 /**
  * return an array of indexes that identify the current page's menu item
@@ -562,24 +583,40 @@ function getCurrentMenuItemIndex(){
     }
     return $keys;
 }
+
 /**
- * return an array of indexes that identify the given path's menu item(s)
- * 
- * @return void
+ * return an array of indexes
+ * where the matching "path" is found the menu
+ *
+ * @param string $path
+ * @param string $group index for menu group - all groups checked if empty
+ * @return array
  */
-function getRouteMenuItemIndex($_path = '') {
+function getRouteMenuItemIndex($path='', $group='') {
     global $menu;
+    echo "getindex: $path,$group\n";
     if (empty($path)) $_path = current_route();
-    $_path = getAbsoluteUrl($_path);
-    $keys = array();
-    foreach($menu['sidebar'] as $key=>$item){
-        foreach($item as $key2=>$item2){
-            if($_path== getKeyValue('path',$item2)){
-                $keys[] = array($key, $key2);
+    $_menu = empty($group) ? $menu : $menu[$group];
+
+    $search = getAbsoluteUrl($path);
+    $results = array();
+
+    foreach ($_menu as $key=>$item){
+        foreach ($item as $key2=>$item2) {
+            if (is_menu_item($item2)) {
+                if($search == getAbsoluteUrl(getKeyValue('path',$item2))){
+                    $results[] = array($key, $key2, null);
+                }
+            } else {
+                foreach($item2 as $key3=>$item3){
+                    if($search == getKeyValue('path',$item3)){
+                        $results[] = array($key, $key2, $key3);
+                    }
+                }
             }
         }
     }
-    return $keys;
+    return $results;
 }
 
 /**
@@ -708,24 +745,17 @@ function getQueryParts($path) {
 /**
  * return true if current route is in given list of menu items
  * 
- * matches on path only eg. /feed/list
- * ignores url query eg. ?sort=asc
- *
  * @param array $menu
  * @return bool
  */
-function is_current_menu($menu = '') {
-    if(empty($menu)) $menu = getCurrentMenu();
-    foreach($menu as $item) {
-        $_path = parse_url(getKeyValue('path', $item), PHP_URL_PATH);
-        if (path_is_current($_path)) return true;
+function is_current_menu($_menu = array()) {
+    foreach($_menu as $k=>$item){
+        $_path = getKeyValue('path', $item);
+        if(is_current($_path)) return true;
     }
     return false;
 }
 
-function getPathParts2(){
-
-}
 /**
  * return true if current route is in given list of menus
  * 
@@ -738,22 +768,11 @@ function getPathParts2(){
 function is_current_group($group) {
     if(empty($group)) return false;
     foreach($group as $menu) {
-        // var_dump($menu);
         if (is_current_menu($menu)) return true;
     }
     return false;
 }
 
-function get_route_menu_depth($_path='') {
-    global $menu;
-    if(empty($_path)) $_path = current_route();
-
-    // $menu['sidebar']['includes']['setup']['graph']
-    // $menu['sidebar']['setup']
-
-    // echo "\n------------$_path----------\n";
-    return 3;
-}
 /**
  * return true if passed menu item has children/siblings that are currently being viewed
  *
@@ -858,15 +877,13 @@ function is_third_level($item) {
 }
 
 /**
- * get a list of menu items that is ref. in the parent menu
+ * if a menu item has a [data][sidebar] property, return matching sidebar menu
  *
- * @param array $parent
+ * @param array $parent parent menu item
  * @return array
  */
 function getChildMenuItems($parent) {
     global $menu;
-    // echo __LINE__;
-    // var_dump(array_keys($parent));
     $children = array();
     if(!empty($parent['data']['sidebar'])) {
         $child_selector = $parent['data']['sidebar'];

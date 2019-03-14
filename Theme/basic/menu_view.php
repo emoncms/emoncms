@@ -33,7 +33,11 @@ $menu['tabs'][] = array(
 // top level menu icons (MAIN MENU)
 if(!empty($menu['tabs'])) {
     foreach($menu['tabs'] as &$item) {
-        // @todo: mark tab button <li> as active
+        // find matching sidebar
+        $matching_menu = getChildMenuItems($item);
+        // add active class to <li>  if item in matching sidebar is current page/route
+        if(is_current_menu($matching_menu)) $item['li_class'][] = 'active';
+        // render menu item
         echo makeListLink($item);
     }
 }
@@ -90,7 +94,7 @@ if($session['read']){
 
     // indicate if user is admin
     if ($session['admin'] == 1) {
-        $item['class'] = addCssClass('is_admin', $item['class']);
+        $item['class'][] = 'is_admin';
         $item['title'] .= sprintf(' (%s)',_('Admin'));
     }
     // add gravitar

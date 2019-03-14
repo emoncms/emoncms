@@ -1,6 +1,11 @@
 <?php
     global $session;
     if($session['userid']>0){
+        $menu['sidebar']['setup'][] = array(
+            'text' => _("My Account"),
+            'icon' => 'user',
+            'path' => 'user/view'
+        );
         // $menu['user'][] = array(
         //     'text' => _("Add Shortcut"),
         //     'icon' => 'plus',
@@ -19,27 +24,24 @@
             'text' => _("My Account"),
             'icon' => 'user',
             'path' => 'user/view',
-            'order' => 2,
-            'active' => 'none'
+            'order' => 2
         );
         // $menu['user'][] = array(
         //     'li_class' => 'divider',
-        //     'sort' => 3,
-        //     'active' => 'none'
+        //     'sort' => 3
         // );
         $menu['user'][] = array(
             'text' => _("Logout"),
             'icon' => 'logout',
             'path' => 'user/logout',
-            'order' => 4,
-            'active' => 'none'
+            'order' => 4
         );
         
     } else {
         $menu['user'][] = array(
             'text' => _("Login"),
             'icon' => 'user',
-            'path' => '/',
+            'path' => '',
         );
     }
 
