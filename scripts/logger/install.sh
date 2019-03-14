@@ -1,15 +1,17 @@
 #! /bin/sh
 # Run with sudo ./install
-echo "Installing rc.local to create"
-echo "directory for emoncms log files"
-echo "after a reboot..."
-echo "Backing up old rc.local..."
-sudo mv /etc/rc.local /var/www/html/emoncms/scripts/logger/rc.local.old
-echo "Linked to new rc.local..."
-sudo ln -s /var/www/html/emoncms/scripts/logger/rc.local /etc/rc.local
-sudo chmod a+x /etc/rc.local
-echo ""
-echo "Completed"
+
+# DONT INSTALL RC.LOCAL
+#echo "Installing rc.local to create"
+#echo "directory for emoncms log files"
+#echo "after a reboot..."
+#echo "Backing up old rc.local..."
+#sudo mv /etc/rc.local /var/www/html/emoncms/scripts/logger/rc.local.old
+#echo "Linked to new rc.local..."
+#sudo ln -s /var/www/html/emoncms/scripts/logger/rc.local /etc/rc.local
+#sudo chmod a+x /etc/rc.local
+#echo ""
+#echo "Completed"
 
 echo "Now setting up Logrotate..."
 echo "Backing up old logrotate configuration..."
