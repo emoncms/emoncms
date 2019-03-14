@@ -157,9 +157,9 @@ function load_db_schema()
  * @return void
  */
 function load_language_files($path, $domain='messages'){
-    // Load language files for module
-    bindtextdomain($domain, $path);
+    // Load language files for module    
     bind_textdomain_codeset($domain, 'UTF-8');
+    bindtextdomain($domain, $path);
     textdomain($domain);
 }
 

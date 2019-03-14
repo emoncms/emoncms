@@ -129,9 +129,11 @@ $(function(){
      * @param {object} [event] mouse event if triggered by click
      */
     function hideMenuItems(event) {
+        var clicked = false;
         if (typeof event !== 'undefined') {
             event.preventDefault();
             event.stopPropagation();
+            clicked = true;
         }
         let link = $('#menu-setup li.active a');
         let active_menu = link.parents('.sidebar-menu').first();
@@ -143,7 +145,8 @@ $(function(){
         let controller = relative_path.replace('/emoncms/','').split('/')[0]; // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
         let include = $('#' + include_id);
-        if (include.length == 1) {
+
+        if (include.length == 1 && clicked) {
             // show 3rd level menu
             include.toggleClass('in');
             // hide 2nd level menu items

@@ -10,7 +10,7 @@
     http://openenergymonitor.org
 
     */
-
+    
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 

@@ -30,22 +30,10 @@ $menu['tabs'][] = array(
         'target' => '#sidebar'
     )
 );
-// top level menu icons
+// top level menu icons (MAIN MENU)
 if(!empty($menu['tabs'])) {
     foreach($menu['tabs'] as &$item) {
         // @todo: mark tab button <li> as active
-        // foreach($menu as $name=>$sub) {
-        //     if ($name!=='path') {
-        //         foreach($sub as $_item) {
-        //             $paths[] = !empty($_item['path']) ? $_item['path'] : '';
-
-        //             if(getKeyValue('path',  $_item) === getKeyValue('path',  $item)){
-        //                 $item['li_class'][] = 'active';
-        //             }
-        //         }
-        //         print_r($paths);
-        //     }
-        // }
         echo makeListLink($item);
     }
 }
@@ -78,7 +66,7 @@ if ($session['read']) {
             }
             $item['sub_items'][] = $sub_item;
         endforeach; endif;
-    
+    $item['active'] = 'http://localhost/emoncms/example/view/1';
         // build dropdown with above items
         echo makeDropdown($item);
     }
@@ -91,11 +79,12 @@ if ($session['read']) {
 $menu_index = 'user';
 if($session['read']){
     $item = array(
-        'li_class' => 'menu-user',
         'text' => $session['username'],
-        'href' => '#',
-        'class' => 'grav-container'
+        'href' => '#'
     );
+    $item['li_class'][] = 'menu-user';
+    $item['class'][] = 'grav-container';
+
     // use the text as the title if not available
     if(empty($item['title'])) $item['title'] = $item['text'];
 
