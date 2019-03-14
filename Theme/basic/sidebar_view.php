@@ -58,16 +58,18 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     foreach($second_level_menu as $controller_name => $second_level_items) {
         $items = array();
         $active = "";
+
         foreach($second_level_items as $item_key => $item) {
             if (is_menu_item($item)) {
-                if ( $third_level_open) {
+                if ( $third_level_open && is_current_group($second_level_menu) ) {
+                    // active 2nd level menu item (parent)
                     if ($route->controller === getPathController(getKeyValue('path', $item))) {
                         $item['li_class'][] = 'in';
                     }
                 } else {
+                    // all 2nd level items
                     $item['li_class'][] = 'in';
                 }
-
                 $items[] = is_menu_item($item) ? makeListLink($item): $item;
             } else {
                 $items[] = $item;
