@@ -165,9 +165,24 @@ Once you are logged in;
 
 ### Install Emonhub
 
+Install emon-pi variant of emonhub (this assumes emonhub.conf location is /home/pi/data/emonhub.conf).
+
+    git clone https://github.com/openenergymonitor/emonhub.git
+    mkdir data
+    sudo apt-get install -y python-serial python-configobj python-requests
+    sudo pip install paho-mqtt
+    sudo ./install.systemd
+    sudo systemctl start emonhub.service
+
+Install original emonhub:
+
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/upgrade
 
 Edit the emonhub configuration file, entering your emoncms 'Write API Key' and set the "local" emoncms address `url = http://localhost/emoncms` (emonhub sends to http://emoncms.org by default). Also set your RFM2Pi frequency, group & base id if necessary:
+
+    nano /home/pi/data/emonhub.conf
+
+or: 
 
     nano /etc/emonhub/emonhub.conf
 
