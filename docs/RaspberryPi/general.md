@@ -90,11 +90,6 @@ The dashboard module enables users to create customisable workspaces, by draggin
 
 The 'dashboard' module needs to save it's configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
 
-#### Install OpenBEM Module
-OpenBEM is an open source energy assessment tool to help you explore how you can achieve this level of performance improvement in your own home.
-
-`cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/openbem.git`
-
 ***
 
 ### System Logs
