@@ -2,7 +2,7 @@
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
 
-**Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
+**Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log).
 
 An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!
 
