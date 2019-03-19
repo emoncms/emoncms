@@ -45,12 +45,29 @@ a.grav-container img.grav{
   border: 2px solid #ccc;
 }
 a.grav-container:hover img.grav{
-  transition: border .2s ease-in;
   border-color: #dedede;
 }
 a.is_admin.grav-container:hover img.grav{
   border-color: #efefef;
 }
+.no-gravitar a.grav-container {
+    border-radius: 50%;
+    background: #c5c5c5;
+    padding: 0 !important;
+    text-align: center;
+    width: 1.6em;
+    height: 1.6em;
+    line-height: 1.6em;
+    border: 2px solid #ccc;
+    overflow: hidden;
+    margin: .3rem;
+}
+.no-gravitar a.grav-container .icon.user{
+    font-size: 1.8em;
+    margin-left: -2px;
+}
+
+
 
 #icon-menu path{
   transition: all .2s cubic-bezier(.46,.03,.52,.96);

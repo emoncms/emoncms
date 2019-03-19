@@ -510,6 +510,7 @@ function makeDropdown($item){
     if(!isset($item['class'])) $item['class'] = '';
     
     // add additional css classes to <li>
+    settype($item['class'], 'array');
     $item['class'][] = 'dropdown-toggle';
 
     // add data-* attributes

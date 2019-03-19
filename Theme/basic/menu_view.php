@@ -83,11 +83,12 @@ if ($session['read']) {
 $menu_index = 'user';
 if($session['read']){
     $item = array(
-        'text' => $session['username'],
-        'href' => '#'
+        'title' => $session['username'],
+        'href' => '#',
+        'icon' => 'user',
+        'class'=> 'grav-container'
     );
     $item['li_class'][] = 'menu-user';
-    $item['class'][] = 'grav-container';
 
     // use the text as the title if not available
     if(empty($item['title'])) $item['title'] = $item['text'];
@@ -100,8 +101,11 @@ if($session['read']){
     // add gravitar
     $grav_email = $user->get($session['userid'])->gravatar;
     if(!empty($grav_email)) {
+        $item['icon'] = '';
         $atts['class'] = 'grav img-circle img-fluid';
         $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts );
+    } else {
+        $item['li_class'][] = 'no-gravitar';
     }
     // add user_menu.php items
     if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $sub_item): 
