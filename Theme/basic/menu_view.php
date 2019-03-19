@@ -95,6 +95,7 @@ if($session['read']){
 
     // indicate if user is admin
     if ($session['admin'] == 1) {
+        settype($item['class'],'array');
         $item['class'][] = 'is_admin';
         $item['title'] .= sprintf(' (%s)',_('Admin'));
     }
