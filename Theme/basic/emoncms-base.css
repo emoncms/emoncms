@@ -6,9 +6,11 @@ body.app #wrap {
 
 #wrap{
   min-height: calc(100vh - 6.55rem)!important;
-  margin: 0!important;
-  margin-top: 4rem!important;
   transition: margin .3s ease-out;
+  margin-top:  -1.25rem!important;
+}
+body.dashboard #wrap{
+  margin-top:  2.75rem!important;
 }
 .fullwidth.collapsed #wrap,
 .fullwidth.collapsed #footer{

@@ -27,19 +27,14 @@ Top nav
   margin: 0;
 }
 #emoncms-navbar .navbar-inner {
-  height: 4rem;
-  padding: 0.7rem !important;
-  padding-left: 0!important;
-  box-sizing: border-box;
+  height: 2.75rem;
+  padding: 0 !important;
 }
 #emoncms-navbar .navbar-inner .nav {
   font-size: 1.5rem;
 }
 #emoncms-navbar .navbar-inner .nav ul li{
   font-size: 1.1rem;
-}
-#emoncms-navbar .navbar-inner .nav ul li a{
-  line-height: 2em;
 }
 
 /* -------------------------------------------------------------------
@@ -87,8 +82,11 @@ Sidebar sub menus----------------------------------------------------*/
 /* -------------------------------------------------------------------
 gravitar icon in toolbar
 --------------------------------------------------------------------*/
+a.grav-container {
+  padding: .25rem!important;
+}
 a.grav-container img.grav {
-  max-height: 2.3rem;
+  max-height: 1.9rem;
 }
 a.grav-container img.grav {
   border: 2px solid #ccc;
@@ -514,15 +512,11 @@ Side nav: app list
 // Extra small devices (portrait phones, 320px and up)
 */
 @media (min-width: 320px) {
-
 }
 /* 
 // Small devices (landscape phones, 576px and up)
 */
 @media (min-width: 576px) {
-    #emoncms-navbar .navbar-inner {
-        padding: 0.7rem !important;
-    }
 }
 /* 
 // Medium devices (tablets, 768px and up)
