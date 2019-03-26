@@ -84,11 +84,10 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
         $markup[] = implode(tab(5), $items);
     }
     $active_css = is_current_group($second_level_menu) ? ' active': '';
-    
+    $_close = _('Close');
     echo <<<SIDEBARSTART
-
     <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
-        <a href="#" class="close btn btn-large btn-link pull-right" data-toggle="slide-collapse" data-target="#sidebar">&times;</a>
+        <a href="#" style="padding: .8em" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
         <h4 id="sidebar-title">{$menu_key}</h4>
 
 SIDEBARSTART;

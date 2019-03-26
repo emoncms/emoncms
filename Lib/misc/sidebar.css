@@ -8,8 +8,8 @@ Side nav
   height: 0;
 }
 .sidebar-inner.active {
-  padding-bottom: 5rem;
-  height: calc(100vh - 10rem);
+  padding-bottom: 2rem;
+  height: calc(100vh - 8.8rem);
 }
 
 .sidebar-inner .close {
@@ -29,6 +29,7 @@ Top nav
 #emoncms-navbar .navbar-inner {
   height: 4rem;
   padding: 0.7rem !important;
+  padding-left: 0!important;
   box-sizing: border-box;
 }
 #emoncms-navbar .navbar-inner .nav {
@@ -77,6 +78,9 @@ Sidebar sub menus----------------------------------------------------*/
   padding: 1em 0 0.75em 0;
   margin: 0;
   text-transform: capitalize;
+}
+#sidebar .close:hover {
+    text-decoration: none;
 }
 
 
@@ -242,6 +246,9 @@ body.dashboard.has-sidebar.fullwidth #footer {
 .expanded #sidebar_user_toggle,
 #sidebar_user_toggle:hover {
   background: #212121;
+}
+#footer_nav #sidebar_user_dropdown li {
+    border-bottom: 1px solid #444;
 }
 #footer_nav #sidebar_user_dropdown li a {
   background: #212121;
@@ -497,4 +504,38 @@ Side nav: app list
     left: 250px;
     transition: all 0.3s ease-out;
   }
+}
+
+
+
+/** MOBILE FIRST **/
+/*-------------------------------------*/
+/* 
+// Extra small devices (portrait phones, 320px and up)
+*/
+@media (min-width: 320px) {
+
+}
+/* 
+// Small devices (landscape phones, 576px and up)
+*/
+@media (min-width: 576px) {
+    #emoncms-navbar .navbar-inner {
+        padding: 0.7rem !important;
+    }
+}
+/* 
+// Medium devices (tablets, 768px and up)
+*/
+@media (min-width: 768px) {
+}
+/* 
+// Large devices (desktops, 992px and up)
+*/
+@media (min-width: 992px) {
+}
+/* 
+// Extra large devices (large desktops, 1200px and up)
+*/
+@media (min-width: 1200px) {
 }

@@ -30,10 +30,14 @@ body.app #wrap {
 /* 
  * #sidebar above #wrap on narrow screens
  */
+ body {
+   padding: 0;
+   margin: 0;
+ }
  @media only screen and (min-width:870px) {
   .fullwidth.has-sidebar #wrap,
   .fullwidth.has-sidebar #footer {
-    margin-left: 250px!important;
+    margin-left: 15.4rem!important;
   }
   .fullwidth.has-sidebar.collapsed #wrap,
   .fullwidth.has-sidebar.collapsed #footer {
