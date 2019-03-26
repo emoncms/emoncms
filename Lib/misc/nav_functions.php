@@ -801,7 +801,6 @@ function hasActiveChildren($item = '') {
  * @return bool
  */
 function thirdLevelActive($input) {
-    // @todo: finish and test the correct logic here
     // function accepts multiple inputs types. ensure they are all the same
     $items = array(); // list to store all the inputs;
 
@@ -832,7 +831,7 @@ function thirdLevelActive($input) {
             return true;
         }
     }
-    // return false;
+    return false;
 }
 /**
  * return true if passed item's path is in a 3rd level menu

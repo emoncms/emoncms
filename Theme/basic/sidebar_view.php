@@ -65,6 +65,10 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
                     // active 2nd level menu item (parent)
                     if ($route->controller === getPathController(getKeyValue('path', $item))) {
                         $item['li_class'][] = 'in';
+                        if( empty($item['title'])) $item['title'] = stripslashes($item['text']);
+                        $item['text'].='<span class="pull-right third-level-indicator">';
+                        $item['text'].='  <svg class="icon"><use xlink:href="#icon-arrow_back"></use></svg>';
+                        $item['text'].='</span>';
                     }
                 } else {
                     // all 2nd level items

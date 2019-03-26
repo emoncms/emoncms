@@ -70,7 +70,7 @@ if ($session['read']) {
             }
             $item['sub_items'][] = $sub_item;
         endforeach; endif;
-    $item['active'] = 'http://localhost/emoncms/example/view/1';
+        // $item['active'] = 'http://localhost/emoncms/example/view/1';
         // build dropdown with above items
         echo makeDropdown($item);
     }
@@ -86,7 +86,7 @@ if($session['read']){
         'title' => $session['username'],
         'href' => '#',
         'icon' => 'user',
-        'class'=> 'grav-container'
+        'class'=> 'grav-container img-circle p-0 m-0'
     );
     $item['li_class'][] = 'menu-user';
 
@@ -103,7 +103,7 @@ if($session['read']){
     $grav_email = $user->get($session['userid'])->gravatar;
     if(!empty($grav_email)) {
         $item['icon'] = '';
-        $atts['class'] = 'grav img-circle img-fluid';
+        $atts['class'] = 'grav img-circle';
         $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts );
     } else {
         $item['li_class'][] = 'no-gravitar';

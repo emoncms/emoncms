@@ -136,11 +136,18 @@ $(function(){
             clicked = true;
         }
         let link = $('#menu-setup li.active a');
+        if (clicked) {
+            // hide the back arrow from active third level links - on click
+            $(event.target).parents('.nav').first().find('.active .third-level-indicator .icon')[0].classList.toggle('hidden');
+        }
         let active_menu = link.parents('.sidebar-menu').first();
         if(active_menu.length !== 1) return; // no menu found
         
         let active_menu_name = active_menu.attr('id').split('-');
-        active_menu_name.shift(); 
+        active_menu_name.shift();
+        if(typeof path === 'undefined') {
+            var path = '';
+        }
         let relative_path = window.location.pathname.replace(path,''); // eg /emoncms/feed/list
         let controller = relative_path.replace('/emoncms/','').split('/')[0]; // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
@@ -149,6 +156,7 @@ $(function(){
         if (include.length == 1 && clicked) {
             // show 3rd level menu
             include.toggleClass('in');
+            // @todo toggle visibility of indicator icon
             // hide 2nd level menu items
             $('#menu-setup li').not('.active').toggleClass('in');
         }

@@ -5,8 +5,9 @@ body.app #wrap {
 }
 
 #wrap{
-  min-height: calc(100vh - 5rem)!important;
+  min-height: calc(100vh - 6.55rem)!important;
   margin: 0!important;
+  margin-top: 4rem!important;
   transition: margin .3s ease-out;
 }
 .fullwidth.collapsed #wrap,
@@ -16,12 +17,12 @@ body.app #wrap {
 .container,
 .container-fluid{
   height: 100%;
-  margin-top: 2.5rem;
+  margin-top: 4rem;
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }
 .dashboard #page-container{
-  height: calc(100vh - 2.5rem)!important;
+  height: calc(100vh - 4rem)!important;
 }
 
 
