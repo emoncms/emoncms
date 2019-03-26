@@ -11,59 +11,7 @@
 */
 global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
 
-$v = 2;
-
-//compute dynamic @media properties depending on numbers and lengths of shortcuts
-// $maxwidth1=1200;
-// $maxwidth2=480;
-// $maxwidth3=340;
-// $sumlength1 = 0;
-// $sumlength2 = 0;
-// $sumlength3 = 0;
-// $sumlength4 = 0;
-// $sumlength5 = 0;
-// $nbshortcuts1 = 0;
-// $nbshortcuts2 = 0;
-// $nbshortcuts3 = 0;
-// $nbshortcuts4 = 0;
-// $nbshortcuts5 = 0;
-
-// foreach($menu['dashboard'] as $item){
-//     if(isset($item['name'])) $name = $item['name'];
-//     if(isset($item['published'])) $published = $item['published']; //only published dashboards
-//     if(isset($name) && $name && isset($published) && $published){
-//         $sumlength1 += strlen($name);
-//         $nbshortcuts1 ++;
-//     }
-// }
-// if(!empty($menu['left'])):foreach($menu['left'] as $item):
-//     if(isset($item['name'])) {$name = $item['name'];}
-//     $sumlength2 += strlen($name);
-//     $nbshortcuts2 ++;
-// endforeach; endif;
-
-// if(!empty($menu['dropdown']) && count($menu['dropdown']) && $session['read']){
-//     $extra['name'] = 'Extra';
-//     $sumlength3 = strlen($extra['name']);
-//     $nbshortcuts3 ++;
-// }
-// if (!empty($menu['dropdownconfig']) && count($menu['dropdownconfig'])){
-//     $setup['name'] = 'Setup';
-//     $sumlength4 = strlen($setup['name']);
-//     $nbshortcuts4 ++;
-// }
-// if(!empty($menu['right'])):foreach($menu['right'] as $item):
-//     if (isset($item['name'])){
-//         $name = $item['name'];
-//         $sumlength5 += strlen($name);
-//         $nbshortcuts5 ++;
-//     }
-// endforeach; endif;
-
-// $maxwidth1=intval((($sumlength1+$sumlength2+$sumlength3+$sumlength4+$sumlength5)+($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+1)*6)*85/9);
-// $maxwidth2=intval(($nbshortcuts1+$nbshortcuts2+$nbshortcuts3+$nbshortcuts4+$nbshortcuts5+3)*6*75/9);
-// if($maxwidth2>$maxwidth1){$maxwidth2=$maxwidth1-1;}
-// if($maxwidth3>$maxwidth2){$maxwidth3=$maxwidth2-1;}
+$v = 3;
 
 if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
@@ -166,60 +114,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     </div>
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
-<?php if (isset($v) && $v === 2) { ?>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/hammer.min.js"></script>
-    <script>
-        // only use hammerjs on the relevent pages
-        // CSV list of pages in the navigation
-        var pages = ['feed/list','input/view'],
-        // strip off the domain/ip and just get the path
-        currentPage = (""+window.location).replace(path,''),
-        // find where in the list the current page is
-        currentIndex = pages.indexOf(currentPage)
-
-
-        // SETUP VARIABLES:
-        var hammerOptions = {
-            inputClass: Hammer.TouchInput // only works on devices with touch screens
-        }
-
-        // REMOVED THIS FUNCTIONALITY TEMPORARILY - need to implement a pager interface (eg next, first, last etc)
-
-        if (false && currentIndex > -1) {
-            // uses hammerjs to detect mobile gestures. navigates between input and feed view
-            
-            // allow text on page to be highlighted. 
-            delete Hammer.defaults.cssProps.userSelect
-
-            var container = document.getElementById('wrap'),
-                // get the path as reported by server
-                path = "<?php echo $path; ?>",
-                // create a new instance of the hammerjs api
-                mc = new Hammer.Manager(container, hammerOptions),
-                // make swipes require more velocity
-                swipe = new Hammer.Swipe({ velocity: 1.1, direction: Hammer.DIRECTION_HORIZONTAL }) // default velocity 0.3
-            
-            // enable the altered swipe gesture
-            mc.add([swipe]);
-
-            // CREATE EVENT LIST:
-            // add a callback function on the swipe gestures
-            mc.on("swipeleft swiperight", function(event) {              
-                    // increase or decrease the currentIndex
-                    index = event.type=='swipeleft' ? currentIndex+1 : currentIndex-1;
-                    // wrap back to start if beyond end
-                    index = index > pages.length-1 ? 0 : index
-                    // wrap forward to end if beyond start
-                    index = index < 0 ? pages.length-1 : index
-                    // get the page to load
-                    url = path+pages[index]
-                    // load the page
-                    window.location.href = url
-            });
-        }
-    </script>
-<?php } ?>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js"></script>
 
 <!-- ICONS --------------------------------------------- -->
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
