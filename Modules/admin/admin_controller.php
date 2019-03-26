@@ -141,12 +141,13 @@ function admin_controller()
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
-                    $argument="";
-                    if (isset($_POST['argument'])) {
-                      $argument = $_POST['argument'];
-                    }
+                    $firmware="";
+                    if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
+                    // Type: all, emoncms, firmware
+                    $type="";
+                    if (isset($_POST['type'])) $type = $_POST['type'];
                     
-                    $redis->rpush("service-runner","$update_script $argument>$update_logfile");
+                    $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
                     $result = "service-runner trigger sent";
                 }
                 
