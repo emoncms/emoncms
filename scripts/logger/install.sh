@@ -12,6 +12,7 @@ sudo mv /etc/cron.daily/logrotate /home/pi/logrotate.old
 echo "Linked to new logrotate cron job..."
 sudo chmod a+x /var/www/html/emoncms/scripts/logger/logrotate
 sudo ln -s /var/www/html/emoncms/scripts/logger/logrotate /etc/cron.daily/logrotate
+sudo mv /etc/cron.daily/logrotate /etc/cron.hourly/logrotate
 echo ""
 echo "Completed"
 echo ""
