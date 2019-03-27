@@ -58,7 +58,7 @@ The `basetopic` option sets the base MQTT topic to which Emoncms subscribes. The
 Install `emoncms_mqtt` systemd unit script and make it start on boot:
 
 ```
-sudo ln -s /var/www/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.service /etc/systemd/system
+sudo ln -s /var/www/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.service /lib/systemd/system
 sudo systemctl enable emoncms_mqtt.service
 ```
 

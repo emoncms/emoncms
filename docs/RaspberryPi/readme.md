@@ -2,7 +2,7 @@
 
 This guide will install the current full version of emoncms onto a Raspberry Pi running the Raspbian Stretch operating system.
 
-**Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log). Full image build guide/notes are available [here](https://github.com/openenergymonitor/emonpi/blob/master/docs/SD-card-build.md).**
+**Highly Recommended: A pre-built Raspberry Pi SD card image is available with Emoncms pre-installed & optimised for low-write. [SD card image download & change log repository](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log).**
 
 An alternative (older) installation guide is avaliable for [Raspbian Jessie](jessie.md) - they are different, so ensure that you use the correct guide!
 
@@ -165,9 +165,24 @@ Once you are logged in;
 
 ### Install Emonhub
 
+Install emon-pi variant of emonhub (this assumes emonhub.conf location is /home/pi/data/emonhub.conf).
+
+    git clone https://github.com/openenergymonitor/emonhub.git
+    mkdir data
+    sudo apt-get install -y python-serial python-configobj python-requests
+    sudo pip install paho-mqtt
+    sudo ./install.systemd
+    sudo systemctl start emonhub.service
+
+Install original emonhub:
+
     git clone https://github.com/emonhub/dev-emonhub.git ~/dev-emonhub && ~/dev-emonhub/upgrade
 
 Edit the emonhub configuration file, entering your emoncms 'Write API Key' and set the "local" emoncms address `url = http://localhost/emoncms` (emonhub sends to http://emoncms.org by default). Also set your RFM2Pi frequency, group & base id if necessary:
+
+    nano /home/pi/data/emonhub.conf
+
+or: 
 
     nano /etc/emonhub/emonhub.conf
 
