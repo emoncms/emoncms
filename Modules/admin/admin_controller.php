@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir;
     $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4>"._('Admin re-authentication required')."</h4></div>";
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
@@ -131,12 +131,12 @@ function admin_controller()
                 //placed some other variables here as well so they are grouped
                 //together for the emonpi action even though they might not be used
                 //in the subaction
-                $update_logfile = "/home/pi/data/emonpiupdate.log";
-                $backup_logfile = "/home/pi/data/emonpibackup.log";
+                $update_logfile = "$homedir/data/emonpiupdate.log";
+                $backup_logfile = "$homedir/data/emonpibackup.log";
                 $update_flag = "/tmp/emoncms-flag-update";
                 $backup_flag = "/tmp/emonpibackup";
-                $update_script = "/home/pi/emonpi/service-runner-update.sh";
-                $backup_file = "/home/pi/data/backup.tar.gz";
+                $update_script = "$homedir/emonpi/service-runner-update.sh";
+                $backup_file = "$homedir/data/backup.tar.gz";
                                 
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
