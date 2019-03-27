@@ -53,13 +53,15 @@ Sidebar sub menus----------------------------------------------------*/
   position: fixed;
   display: none;
   margin-top: 0px;
-  margin-left: -250px;
-  left: 250px;
-  width: 250px;
+  top: 2.7rem;
   background: #333;
   overflow-y: auto;
   z-index: 1000;
   height: 100vh;
+  
+  left: 15rem;
+  margin-left: -15rem;
+  width: 15rem;
 }
 .has-animation #sidebar {
   transition: all 0.3s ease-out;
@@ -222,11 +224,11 @@ body.dashboard.has-sidebar.fullwidth #footer {
 /* bottom of sidebar */
 #footer_nav {
   position: absolute;
-  bottom: 3.8rem;
-  width: 250px;
+  bottom: 2.7rem;
   background: #212121;
   border-top: 1px solid #444;
   margin-bottom: 0;
+  width: 15rem;
 }
 #sidebar-toggle-bar:active,
 #sidebar-toggle-bar:focus {
@@ -494,12 +496,12 @@ Side nav: app list
   }
   /* js adds .expanded on click */
   .expanded #sidebar {
-    left: 250px;
+    left: 15rem;
   }
 }
 @media screen and (min-width: 871px) {
   #sidebar {
-    left: 250px;
+    left: 15rem;
     transition: all 0.3s ease-out;
   }
 }

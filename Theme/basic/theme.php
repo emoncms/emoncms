@@ -87,24 +87,18 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             </div>
         </div>
 
-        <!-- open and close sidebar -->
-        <!-- <div id="sidebar-toggle-bar" title="<?php echo _("Toggle Sidebar") ?>" class="collapsed h-100 p-0 justify-content-center flex-column" data-toggle="slide-collapse" data-target="#sidebar"></div> -->
-        <!-- <span id="sidebar-overlay" class="collapsed menu-overlay" data-toggle="slide-collapse" data-target="#sidebar"></span> -->
-        <!-- end of open and close sidebar -->
-        
-        <?php if ($fullwidth && $route->controller=="dashboard") { ?>
-            <div>
-                <?php echo $content; ?>
-            </div>
-        <?php } else if ($fullwidth) { ?>
-            <div class="container-fluid">
-                <?php echo $content; ?>
-            </div>
-        <?php } else { ?>
-            <div class="container">
-                <?php echo $content; ?>
-            </div>
-        <?php } ?>
+        <?php
+        $contentContainerClasses[] = 'content-container';
+        if ($fullwidth && $route->controller=="dashboard") { 
+            $contentContainerClasses[] = '';
+        } else if ($fullwidth) { 
+            $contentContainerClasses[] = 'container-fluid';
+        } else { 
+            $contentContainerClasses[] = 'container';
+        }?>
+        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+            <?php echo $content; ?>
+        </main>
         
     </div><!-- eof #wrap -->
 
