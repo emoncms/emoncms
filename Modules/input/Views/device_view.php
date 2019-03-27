@@ -284,7 +284,7 @@ function draw_devices()
         for (var i in device.inputs) {
             var input = device.inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': '';
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList) : '';
+            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
             latest_update[node] = latest_update > input.time ? latest_update : input.time;
 
             out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+">";
