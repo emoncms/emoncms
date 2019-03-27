@@ -129,7 +129,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
                     'EmonCMS Error',
                     '-------------',
                     'Message: ' + msg,
-                    'URL: ' + source,
+                    'Route: ' + source.replace('<?php echo $path; ?>',''),
                     'Line: ' + lineno,
                     'Column: ' + colno
                 ];
