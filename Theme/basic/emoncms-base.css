@@ -6,12 +6,15 @@ body.app #wrap {
 
 #wrap{
   min-height: calc(100vh - 5.4rem)!important;
-  transition: margin .3s ease-out;
   margin-top: 0;
+}
+/* animate both elements at same speed to get shift effect */
+#wrap,#footer {
+    transition: margin .3s ease-out;
 }
 .fullwidth.collapsed #wrap,
 .fullwidth.collapsed #footer{
-  margin-left: 0!important;
+    margin-left: 0!important;
 }
 #wrap main.content-container{
   height: 100%;
