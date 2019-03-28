@@ -38,11 +38,11 @@
         );
         
     } else {
-        $menu['user'][] = array(
-            'text' => _("Login"),
-            'icon' => 'user',
-            'path' => '',
-        );
+        // $menu['user'][] = array(
+        //     'text' => _("Login"),
+        //     'icon' => 'user',
+        //     'path' => '',
+        // );
     }
 
     // $menu['includes']['user'][] = view('Modules/user/Views/sidebar.php');

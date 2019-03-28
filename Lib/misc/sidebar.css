@@ -104,16 +104,16 @@ a.is_admin.grav-container:hover img.grav {
   background: #c5c5c5;
   padding: 0 !important;
   text-align: center;
-  width: 1.6em;
-  height: 1.6em;
-  line-height: 1.6em;
+  width: 1.36em;
+  height: 1.36em;
+  line-height: 1.37em;
   border: 2px solid #ccc;
   overflow: hidden;
-  margin: 0.3rem;
+  margin: 0.2rem;
 }
 .no-gravitar a.grav-container .icon.user {
-  font-size: 1.8em;
-  margin-left: -2px;
+  font-size: 1.66em;
+  margin-left: -.1em;
 }
 
 #icon-menu path {

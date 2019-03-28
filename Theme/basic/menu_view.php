@@ -86,7 +86,7 @@ if($session['read']){
         'title' => $session['username'],
         'href' => '#',
         'icon' => 'user',
-        'class'=> 'grav-container img-circle p-0 m-0'
+        'class'=> 'grav-container img-circle'
     );
     $item['li_class'][] = 'menu-user';
 
