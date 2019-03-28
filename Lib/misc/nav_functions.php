@@ -34,16 +34,18 @@ function makeListLink($params) {
     $href = getKeyValue('href', $params);
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
-    $active = getKeyValue('active', $params);
+    $active = getAbsoluteUrl(getKeyValue('active', $params));
 
     $sub_items = (array) getKeyValue('sub_items', $params);
     $style = (array) getKeyValue('style', $params);
     $class = (array) getKeyValue('class', $params);
     $data = (array) getKeyValue('data', $params);
+    $data['active'] = $active;
+    
     $data = array_filter($data);// clean out empty entries
 
-    // if(is_current($path) || is_current($active) || is_active($path)){
-    if(is_current($path) || is_current($active)){
+    if(is_current($path) || is_current($active) || is_active($params)){
+    // if(is_current($path) || is_current($active)){
         $li_class[] = $activeClassName;
     }
 
@@ -458,11 +460,12 @@ function is_active($item = null, $passed_path = null) {
     if (!$item) $item = getCurrentMenuItem();
     // remove the full $path from the link's absolute url
     $_path = str_replace($base, '', getKeyValue('path', $item));
+    $_active = str_replace($base, '', getKeyValue('active', $item));
     $q = !empty($route->query) ? "?".$route->query: '';
-
     // check for different combos of controllers and actions for a match
     if ($_path === implode($slash, array_filter(array($route->controller, $route->action, $route->subaction, $route->subaction2))) ||
-        $_path === implode($slash, array_filter(array($route->controller, $route->action))).$q) {
+        $_path === implode($slash, array_filter(array($route->controller, $route->action))).$q ||
+        $_active === implode($slash, array_filter(array($route->controller))) ) {
         return true;
     }
     return false;
@@ -544,8 +547,11 @@ function sidebarCollapseBtn($item) {
  */
 function getCurrentMenuItem(){
     global $menu;
-    list($group,$_menu,$index) = getCurrentMenuItemIndex()[0];
-    return !empty($menu[$group][$_menu][$index]) ? $menu[$group][$_menu][$index]: array();
+    if(!empty(getCurrentMenuItemIndex())) {
+        list($group,$_menu,$index) = getCurrentMenuItemIndex()[0];
+        return !empty($menu[$group][$_menu][$index]) ? $menu[$group][$_menu][$index]: array();
+    }
+    return array();
 }
 /**
  * return menu that contains the current menu item
@@ -752,7 +758,8 @@ function getQueryParts($path) {
 function is_current_menu($_menu = array()) {
     foreach($_menu as $k=>$item){
         $_path = getKeyValue('path', $item);
-        if(is_current($_path)) return true;
+        $_active = getKeyValue('active', $item);
+        if(is_current($_path) || is_current($_active)|| is_active($item)) return true;
     }
     return false;
 }
