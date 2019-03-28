@@ -224,12 +224,22 @@ table tr td.subinfo { border-color:transparent;}
     
     <tr>
         <td>
-            <h4><?php echo _('EmonHub & Emoncms Only'); ?></h4>
-            <p><?php echo _('EmonHub, Emoncms, Emoncms Modules and Services'); ?></p>
+            <h4><?php echo _('Emoncms Only'); ?></h4>
+            <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
         </td>
         <td class="buttons"><br>
             <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <h4><?php echo _('EmonHub Only'); ?></h4>
+            <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
+        </td>
+        <td class="buttons"><br>
+            <a class="update btn btn-info" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
         </td>
     </tr>
     
