@@ -120,7 +120,7 @@ $(function(){
         let link = $('#menu-setup li.active a');
         if (clicked) {
             // hide the back arrow from active third level links - on click
-            $(event.target).parents('.nav').first().find('.active .third-level-indicator .icon')[0].classList.toggle('hidden');
+            $(event.target).parents('.nav').first().find('.active .third-level-indicator .icon').toggleClass('hidden');
         }
         let active_menu = link.parents('.sidebar-menu').first();
         if(active_menu.length !== 1) return; // no menu found
