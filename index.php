@@ -341,6 +341,7 @@
                 $output['page_classes'][] = 'has-sidebar';
             }
             
+
             print view($themeDir . "theme.php", $output);
         }
     }
