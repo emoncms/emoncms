@@ -115,11 +115,6 @@ a.is_admin.grav-container:hover img.grav {
   font-size: 1.66em;
   margin-left: -.1em;
 }
-
-#icon-menu path {
-  transition: all 0.2s cubic-bezier(0.46, 0.03, 0.52, 0.96);
-  transform-origin: center;
-}
 /* eof gravitar */
 
 /* -------------------------------------------------------------------
