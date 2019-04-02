@@ -43,6 +43,7 @@ foreach($menu['sidebar'] as $menu_key => $sub_menu) {
         // create array of 2nd level navigation markup
         foreach($sub_menu as $second_level_item) {
             $path_controller = getPathController($second_level_item['path']);
+            settype($second_level_item['li_class'], 'array');
             $second_level_item['li_class'][] = 'collapse';
             if(!$third_level_open) {
                 $second_level_item['li_class'][] = 'in';
