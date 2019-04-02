@@ -1,4 +1,4 @@
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
+<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
 
   // Retrieve server information
   $system = system_information();
@@ -211,7 +211,8 @@ table tr td.subinfo { border-color:transparent;}
             <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
         </td>
     </tr>
-    
+
+    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>    
     <tr>
         <td>
             <h3><?php echo _('Update All'); ?></h3>
@@ -267,38 +268,8 @@ table tr td.subinfo { border-color:transparent;}
     <tr>
         <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
     </tr>
+    <?php } ?>
 
-<?php /*if ($allow_emonpi_admin) { ?>
-    <tr>
-        <td colspan="2" style="margin:0px; padding:0px;">
-            <table class="table table-condensed" style="background-color: transparent">
-            <tr>
-                <td style="border-top: 0px">
-                    <h3><?php echo _('Update'); ?></h3>
-                    
-                    <table class="table" style="width:100%">
-                      <tr><td><b>Update All</b><br><span style="font-size:14px">OS, Packages, EmonHub, Emoncms & Firmware (if new version)</span></td><td><button class="btn btn-info">Update All</button></td></tr>
-                      <tr>
-                        <td><b>Update Firmware Only</b><br><span style="font-size:14px">Select your hardware type and firmware version</span></td>
-                        <td><div class="input-append"><select><option>EmonPi</option><option>RFM69Pi</option><option>RFM12Pi</option></select><button class="btn">Update Firmware</button></div></td>
-                      </tr>
-                      <tr>
-                        <td><b>MySQL Database Only</b><br><span style="font-size:14px">Run this after a manual emoncms update, after installing a new module or to check emoncms database status.</span></td>
-                        <td><a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a></td>
-                      </tr>
-                    </table>
-                    
-                    
-                    <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
-            </tr>
-            </table>
-        </td>
-    </tr>
-<?php } */ ?>
 <?php if ($log_enabled) { ?>
     <tr colspan="2" >
         <td colspan="2" >
