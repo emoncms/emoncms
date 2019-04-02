@@ -251,7 +251,7 @@ table tr td.subinfo { border-color:transparent;}
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
         </td>
         <td class="buttons"><br>
-            <div class="input-append"><select id="selected_firmware"><option value="emonpi">EmonPi</option><option value="rfm69pi">RFM69Pi</option><option value="rfm12pi">RFM12Pi</option></select>
+            <div class="input-append"><select id="selected_firmware"><option value="emonpi">EmonPi</option><option value="rfm69pi">RFM69Pi</option><option value="rfm12pi">RFM12Pi</option><option value="custom">Custom</option></select>
             <button class="update btn btn-info" type="firmware">Update Firmware</button></div>
         </td>
     </tr>
