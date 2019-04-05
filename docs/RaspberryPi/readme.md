@@ -165,14 +165,11 @@ Once you are logged in;
 
 ### Install Emonhub
 
-Install emon-pi variant of emonhub (this assumes emonhub.conf location is /home/pi/data/emonhub.conf).
+Install emon-pi variant of emonhub (Used on the emonpi but applicable for all debian systems). 
 
     git clone https://github.com/openenergymonitor/emonhub.git
-    mkdir data
-    sudo apt-get install -y python-serial python-configobj python-requests
-    sudo pip install paho-mqtt
-    sudo ./install.systemd
-    sudo systemctl start emonhub.service
+    cd emonhub
+    sudo ./install.sh
 
 Install original emonhub:
 
