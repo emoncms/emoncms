@@ -5,11 +5,10 @@ $(function(){
         var collapsed = this.classList.contains('collapsed');
         $btn = $(this);
         target = $btn.data('target');
+        $('[data-toggle="slide-collapse"][data-target="' + target + '"]').toggleClass('collapsed', collapsed);
         if (!collapsed) {
-            $('[data-toggle="slide-collapse"][data-target="' + target + '"]').addClass('collapsed');
             hide_sidebar();
         } else {
-            $('[data-toggle="slide-collapse"][data-target="' + target + '"]').removeClass('collapsed');
             show_sidebar();
         }
     });
@@ -17,27 +16,39 @@ $(function(){
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event){
         event.preventDefault();
-        // if the [data-sidebar] attribute has a selector that matches a menu, then show/hide it
-        $link = $(this);
-        $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
+        const $link = $(this);
+        const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
+        const activeClass = 'active';
+
+        // show 2nd level - if on 3rd level
+        let secondlevel_menuitems = $('.sidebar-menu > li.collapse').length;
+        let open_secondlevel_menuitems = $('.sidebar-menu > li.collapse.in').length
+        let thirdLevelOpen = secondlevel_menuitems !== open_secondlevel_menuitems;
 
         // alter tab states
-        $link.parent().addClass('active').siblings().removeClass('active');
+        $link.parent().addClass(activeClass).siblings().removeClass(activeClass);
 
         // hide if not sidebar found
         if ($sidebar_inner.length == 0) {
             hide_sidebar();
         } else {
             if ($('body').hasClass('collapsed')) {
+                // closed sidebar
                 show_sidebar();
-                $sidebar_inner.addClass('active').siblings().removeClass('active')
+                $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
             } else {
-                if ($sidebar_inner.hasClass('active')) {
-                    // hide sidebar if clicked item already active
-                    hide_sidebar();
+                // already open sidebar
+                if ($sidebar_inner.hasClass(activeClass)) {
+                    // hide sidebar if clicked item already active and on 2nd level
+                    if(!thirdLevelOpen) {
+                        hide_sidebar();
+                    } else {
+                        $('.third-level-indicator').toggleClass('hidden', true);
+                        hideMenuItems(event);
+                    }
                 } else {
                     // enable correct sidebar inner based on clicked tab
-                    $sidebar_inner.addClass('active').siblings().removeClass('active');
+                    $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass);
                 }
             }
         }
@@ -138,7 +149,6 @@ $(function(){
         if (include.length == 1 && clicked) {
             // show 3rd level menu
             include.toggleClass('in');
-            // @todo toggle visibility of indicator icon
             // hide 2nd level menu items
             $('#menu-setup li').not('.active').toggleClass('in');
         }
