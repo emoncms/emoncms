@@ -32,6 +32,137 @@ body.app #wrap {
 }
 
 
+/*-------------------------------------*/
+/* utilities */
+/*-------------------------------------*/
+
+/* text colours */
+.text-white{color:white!important}
+.text-light{color:#aaa!important}
+.text-primary{color:#0699fa!important}
+.text-warning{color:#dccc1f!important}
+.text-success{color:#89ae65!important}
+.text-tertiary{color:#b7aa1f!important}
+.text-quaternary {color: #fb7b50!important}
+.text-danger{color:#d52e2e!important}
+.text-exporting{color:#2ed52e!important}
+
+
+/* spaces: 
+    1 = .25rem
+    2 = .5rem
+    3 = 1rem
+*/
+:root{
+    --spacer: 1rem;
+    --s1: calc(var(--spacer) * .25);
+    --s2: calc(var(--spacer) * .5);
+    --s3: var(--spacer);
+    --s4: calc(var(--spacer) * 1.25);
+    --s5: calc(var(--spacer) * 1.5);
+    --s6: calc(var(--spacer) * 2);
+}
+/*-------------------------------------*/
+/* @see: bootstrap 4 documentation for examples */
+/* remove margins */
+.my-0,.mb-0{margin-bottom:0!important}
+.my-0,.mt-0{margin-top:0!important}
+.mx-0,.ml-0{margin-left:0!important}
+.mx-0,.mr-0{margin-right:0!important}
+
+/*-------------------------------------*/
+/* margin top */
+.my-1,.mt-1{margin-top: var(--s1)}
+.my-2,.mt-2{margin-top: var(--s2)}
+.my-3,.mt-3{margin-top: var(--s3)}
+.my-4,.mt-4{margin-top: var(--s4)}
+.my-5,.mt-5{margin-top: var(--s5)}
+.my-6,.mt-6{margin-top: var(--s6)}
+
+/* margin right */
+.mx-1,.mr-1{margin-right: var(--s1)}
+.mx-2,.mr-2{margin-right: var(--s2)}
+.mx-3,.mr-3{margin-right: var(--s3)}
+.mx-4,.mr-4{margin-right: var(--s4)}
+.mx-5,.mr-5{margin-right: var(--s5)}
+.mx-6,.mr-6{margin-right: var(--s6)}
+
+/* margin bottom */
+.my-1,.mb-1{margin-bottom: var(--s1)}
+.my-2,.mb-2{margin-bottom: var(--s2)}
+.my-3,.mb-3{margin-bottom: var(--s3)}
+.my-4,.mb-4{margin-bottom: var(--s4)}
+.my-5,.mb-5{margin-bottom: var(--s5)}
+.my-6,.mb-6{margin-bottom: var(--s6)}
+
+/* margin left */
+.mx-1,.ml-1{margin-left: var(--s1)}
+.mx-2,.ml-2{margin-left: var(--s2)}
+.mx-3,.ml-3{margin-left: var(--s3)}
+.mx-4,.ml-4{margin-left: var(--s4)}
+.mx-5,.ml-5{margin-left: var(--s5)}
+.mx-6,.ml-6{margin-left: var(--s6)}
+
+/*-------------------------------------*/
+/* padding top */
+.py-1,.pt-1{padding-top: var(--s1)}
+.py-2,.pt-2{padding-top: var(--s2)}
+.py-3,.pt-3{padding-top: var(--s3)}
+.py-4,.pt-4{padding-top: var(--s4)}
+.py-5,.pt-5{padding-top: var(--s5)}
+.py-6,.pt-6{padding-top: var(--s6)}
+
+/* padding right */
+.px-1,.pr-1{padding-right: var(--s1)}
+.px-2,.pr-2{padding-right: var(--s2)}
+.px-3,.pr-3{padding-right: var(--s3)}
+.px-4,.pr-4{padding-right: var(--s4)}
+.px-5,.pr-5{padding-right: var(--s5)}
+.px-6,.pr-6{padding-right: var(--s6)}
+
+/* padding bottom */
+.py-1,.pb-1{padding-bottom: var(--s1)}
+.py-2,.pb-2{padding-bottom: var(--s2)}
+.py-3,.pb-3{padding-bottom: var(--s3)}
+.py-4,.pb-4{padding-bottom: var(--s4)}
+.py-5,.pb-5{padding-bottom: var(--s5)}
+.py-6,.pb-6{padding-bottom: var(--s6)}
+
+/* padding left */
+.px-1,.pl-1{padding-left: var(--s1)}
+.px-2,.pl-2{padding-left: var(--s2)}
+.px-3,.pl-3{padding-left: var(--s3)}
+.px-4,.pl-4{padding-left: var(--s4)}
+.px-5,.pl-5{padding-left: var(--s5)}
+.px-6,.pl-6{padding-left: var(--s6)}
+
+.d-none{display:none}
+.d-block{display:block}
+.d-inline{display:inline}
+.d-inline-block{display:inline-block}
+
+/* flexbox classes */
+.d-flex{
+    display:flex!important
+}
+.justify-content-between{
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+.justify-content-start{
+    justify-content: start;
+    flex-wrap: wrap;
+}
+.justify-content-end{
+    justify-content: end;
+    flex-wrap: wrap;
+}
+.text-uppercase {
+    text-transform: uppercase;
+}
+/*-------------------------------------*/
+
+
 
 /* 
  * #sidebar above #wrap on narrow screens
