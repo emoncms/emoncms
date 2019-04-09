@@ -67,6 +67,7 @@ The following API references apply to emoncms.org they differ slightly to the AP
 
 Recommended: 
 
+* [New: Debian build script](https://github.com/openenergymonitor/emonpi/tree/master/install)
 * [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Raspberry Pi](docs/RaspberryPi/readme.md)
   * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
