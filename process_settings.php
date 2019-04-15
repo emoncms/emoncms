@@ -124,6 +124,14 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
 
+    if (!isset($linked_modules_dir)) {
+        if (is_dir("$homedir/modules")) {
+            $linked_modules_dir = "$homedir/modules";
+        } else {
+            $linked_modules_dir = $homedir;
+        }
+    }
+
     if ($error_out!="") {
       echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
       echo "<h3>settings.php file error</h3>";
