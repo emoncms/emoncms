@@ -104,6 +104,12 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
 
+**3rd party modules**
+
+- [CarbonCoop: ServiceAPI module](https://github.com/carboncoop/emonCMS_serviceapi)
+- [CarbonCoop: Auth0 module](https://github.com/carboncoop/emonCMS_auth0)
+
+
 ## Branches
 
 * [master](https://github.com/emoncms/emoncms) - The latest and greatest developments. Potential bugs, use at your own risk! All pull-requests should be made to the *master* branch.
