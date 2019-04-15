@@ -14,6 +14,12 @@ The latest version of the emoncms master branch (todo: link stable release here)
 
 Update all can be used to run all the updates above sequentially.
 
+**Update Log**
+
+Once an update starts the update log is shown on the same page, allowing for tracking of progress and catching of any errors in the update process. 
+
+If you encounter any problems as a result of running any of the above update options please copy the update log in any forum support request. 
+
 ---
 
 ### Installation of service-runner
