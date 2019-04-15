@@ -112,6 +112,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
     if (!isset($email_verification)) $email_verification = false;
+    if (!isset($admin_show_update)) $admin_show_update = true;
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';
