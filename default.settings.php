@@ -151,6 +151,9 @@
 
     // If installed on Emonpi, allow admin menu tools
     $allow_emonpi_admin = false;
+    
+    // Show update section in admin
+    $admin_show_update = true;
 
     //experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     $data_sampling = false;

@@ -1,4 +1,4 @@
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi;
+<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
 
   // Retrieve server information
   $system = system_information();
@@ -211,18 +211,66 @@ table tr td.subinfo { border-color:transparent;}
             <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
         </td>
     </tr>
+
+    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>    
     <tr>
         <td>
-            <h3><?php echo _('Update database'); ?></h3>
-            <p><?php echo _('Run this after updating emoncms, after installing a new module or to check emoncms database status.'); ?></p>
+            <h3><?php echo _('Update All'); ?></h3>
+            <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
         </td>
         <td class="buttons"><br>
-            <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update & check'); ?></a>
+            <a class="update btn btn-info" type="all"><?php echo _('Update All'); ?></a>
         </td>
     </tr>
-<?php
-if ($log_enabled) {
-?>
+    
+    <tr>
+        <td>
+            <h4><?php echo _('Emoncms Only'); ?></h4>
+            <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
+            <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
+        </td>
+        <td class="buttons"><br>
+            <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <h4><?php echo _('EmonHub Only'); ?></h4>
+            <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
+        </td>
+        <td class="buttons"><br>
+            <a class="update btn btn-info" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <h4><?php echo _('Update Firmware Only'); ?></h4>
+            <p><?php echo _('Select your hardware type and firmware version'); ?></p>
+            <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
+        </td>
+        <td class="buttons"><br>
+            <div class="input-append"><select id="selected_firmware"><option value="emonpi">EmonPi</option><option value="rfm69pi">RFM69Pi</option><option value="rfm12pi">RFM12Pi</option><option value="custom">Custom</option></select>
+            <button class="update btn btn-info" type="firmware">Update Firmware</button></div>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <h4><?php echo _('MySQL Database Only'); ?></h4>
+            <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
+        </td>
+        <td class="buttons"><br>
+            <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
+    </tr>
+    <?php } ?>
+
+<?php if ($log_enabled) { ?>
     <tr colspan="2" >
         <td colspan="2" >
             <table class="table table-condensed" style="background-color: transparent">
@@ -255,37 +303,7 @@ if(is_writable($log_filename)) {
             </table>
         </td>
     </tr>
-<?php
-}
-
-if ($allow_emonpi_admin) {
-?>
-    <tr>
-        <td colspan="2" style="margin:0px; padding:0px;">
-            <table class="table table-condensed" style="background-color: transparent">
-            <tr>
-                <td style="border-top: 0px">
-                    <h3><?php echo _('Update'); ?></h3>
-                    <p><b>emonPi Update:</b> updates emonPi firmware &amp; Emoncms</p>
-                    <p><b>emonBase Update:</b> updates emonBase (RFM69Pi firmware) &amp; Emoncms</p>
-                    <p><b>Change Logs:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a> | <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
-                    <p><i>Caution: ensure RFM69Pi is populated with RFM69CW module not RFM12B before running RFM69Pi update: <a href="https://learn.openenergymonitor.org/electricity-monitoring/networking/which-radio-module">Identifying different RF Modules</a>.</i></p>
-                </td>
-                <td class="buttons" style="border-top: 0px"><br>
-                    <button id="emonpiupdate" class="btn btn-warning"><?php echo _('emonPi Update'); ?></button>
-                    <button id="rfm69piupdate" class="btn btn-danger"><?php echo _('emonBase Update'); ?></button><br></br>
-                    <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download Log'); ?></a><br><br>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
-            </tr>
-            </table>
-        </td>
-    </tr>
-<?php
-}
-?>
+<?php } ?>
 
     <tr colspan=2>
         <td colspan=2>
@@ -592,8 +610,12 @@ $("#getlog").click(function() {
 
 var refresher_update;
 
-$("#emonpiupdate").click(function() {
-  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "argument=emonpi", async: true, success: function(result)
+$(".update").click(function() {
+
+  var type = $(this).attr("type");
+  var firmware = $("#selected_firmware").val();
+  
+  $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "type="+type+"&firmware="+firmware, async: true, success: function(result)
     {
       $("#update-log").html(result);
       $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
