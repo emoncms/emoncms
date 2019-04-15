@@ -4,7 +4,17 @@ The latest version of the emoncms master branch (todo: link stable release here)
 
 ![emoncms_update.png](files/emoncms_update.png)
 
-Click on Update Emoncms to start an update of emoncms core and associated emoncms modules.
+1. Click on Update Emoncms to start an update of emoncms core and associated emoncms modules.
+
+2. Click on Update EmonHub if you have emonhub installed on your system in the base directory e.g /opt/emon/emonhub
+
+3. If you have either a rfm69pi adapter board or emonpi hardware connected via serial on port /dev/ttyAMA0 the Update Firmware board can be used to update the firmware. Select the firmware type as applicable. (This feature is primarily designed for a emonpi or emonbase installation but could be expanded to provide further direct serial or USB-to-serial firmware updates).
+
+4. To update only the emoncms MYSQL Database click on 'Update Database'. The update emoncms process includes this step as part of its automatic update process.
+
+Update all can be used to run all the updates above sequentially.
+
+---
 
 ### Installation of service-runner
 
