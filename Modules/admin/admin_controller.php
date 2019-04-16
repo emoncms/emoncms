@@ -287,7 +287,7 @@ function admin_controller()
                 $searchstr = "";
                 if (isset($_GET['search'])) {
                     $search = $_GET['search'];
-                    $search_out = preg_replace('/[^\p{N}\p{L}_\s-@.]/u','',$search);
+                    $search_out = preg_replace('/[^\p{N}\p{L}_\s\-@.]/u','',$search);
                     if ($search_out!=$search || $search=="") { 
                         $search = false; 
                     }
