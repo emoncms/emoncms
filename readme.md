@@ -9,10 +9,10 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Requirements
 
-- PHP (5.6 - 7 recomended) 
-- MYSQL (14.14 recomended) 
-- Apache (2.4 recomended)
-- Redis (recommended)*
+- PHP (tested with 7.0.30) 
+- MYSQL / MariaDB(testted with 15.1) 
+- Apache (tested with 2.4.25)
+- Redis* (tested with 3.2.6)
 
 _*Redis is recommended to reduces disk write load prolonging disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
 
