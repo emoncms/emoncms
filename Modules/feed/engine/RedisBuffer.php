@@ -189,13 +189,12 @@ class RedisBuffer implements engine_methods
             // process if there is data on buffer and no write lock from real data
             if ($len > 0 && !$this->checkLock($feedid,"write")) {
                 $this->setLock($feedid,"read"); // set read lock
-                echo "Processing feed=$feedid len=$len :\n";
                 $this->log->info("process_buffer() engine=$engine feed=$feedid len=$len");
                 $lasttime=0;
                 $range = 50000; // step range number of points to extract on each iteration 50k-100k is ok
                 for ($i=$range; $i<=$len+$range; $i++)
                 {
-                    echo " Reading block $i\n";
+                    $this->log->info(" Reading block $i");
                     if ($i > $len)  $range =  $range-($i-$len);
                     $i = $i + $range-1;
                     $buf_item = $this->redis->zRange("feed:$feedid:buffer", 0, $range-1, true);
@@ -218,13 +217,13 @@ class RedisBuffer implements engine_methods
                         $matchcnt++;
                     }
                     if ($matchcnt > 0) {
-                        echo " Invoking post_bulk_save engine=" . $engine . "\n";
+                        $this->log->info(" Invoking post_bulk_save engine=" . $engine);
                         $this->feed->EngineClass($engine)->post_bulk_save();
                     }
                     
-                    if ($range != $matchcnt) { echo "WARN: expected $range but found $matchcnt items\n"; }
+                    if ($range != $matchcnt) { $this->log->info("WARN: expected $range but found $matchcnt items"); }
                     $remcnt = $this->redis->zRemRangeByRank("feed:$feedid:buffer", 0, $range-1); // Remove processed range
-                    if ($remcnt != $matchcnt) { echo "WARN: found $matchcnt but deleted $remcnt items\n"; }
+                    if ($remcnt != $matchcnt) { $this->log->info("WARN: found $matchcnt but deleted $remcnt items"); }
                 }
             }
             $this->removeLock($feedid,"read"); // remove read lock
