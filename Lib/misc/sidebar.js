@@ -113,13 +113,14 @@ $(function(){
      * @param {object} [event] mouse event if triggered by click
      */
     function hideMenuItems(event) {
+        var $menu = $('#menu-emoncms');
         var clicked = false;
         if (typeof event !== 'undefined') {
             event.preventDefault();
             event.stopPropagation();
             clicked = true;
         }
-        let link = $('#menu-setup li.active a');
+        let link = $menu.find('li.active a');
         if (clicked) {
             // hide the back arrow from active third level links - on click
             $(event.target).parents('.nav').first().find('.active .third-level-indicator').toggleClass('hidden');
@@ -141,7 +142,7 @@ $(function(){
             // show 3rd level menu
             include.toggleClass('in');
             // hide 2nd level menu items
-            $('#menu-setup li').not('.active').toggleClass('in');
+            $menu.find('li').not('.active').toggleClass('in');
         }
     }
     function getQueryStringValue (key) {  
@@ -234,7 +235,7 @@ $(function(){
     });
 
     // show/hide sidebar includes
-    $(document).on('click', '#menu-setup li.active a', hideMenuItems);
+    $(document).on('click', '#menu-emoncms li.active a', hideMenuItems);
     // show hide 2nd / 3rd menu items
     setTimeout(hideMenuItems, 100);
     
