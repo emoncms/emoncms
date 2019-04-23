@@ -147,7 +147,6 @@ input[type="checkbox"] { margin:0px; }
 <script>
 
 var path = "<?php echo $path; ?>";
-
 var devices = {};
 var inputs = {};
 var nodes = {};

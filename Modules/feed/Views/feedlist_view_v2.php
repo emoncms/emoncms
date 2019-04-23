@@ -388,6 +388,7 @@ function update() {
         for (var z in feeds) {
             var node = feeds[z].tag;
             if (nodes[node]==undefined) nodes[node] = [];
+
             if (nodes_display[node]==undefined) nodes_display[node] = true;
             nodes[node].push(feeds[z]);
         }

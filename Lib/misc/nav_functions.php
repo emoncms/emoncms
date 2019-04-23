@@ -7,7 +7,7 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-global $path, $session, $route;
+global $path, $session, $route, $user;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
@@ -35,7 +35,6 @@ function makeListLink($params) {
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
     $active = getAbsoluteUrl(getKeyValue('active', $params));
-
     $sub_items = (array) getKeyValue('sub_items', $params);
     $style = (array) getKeyValue('style', $params);
     $class = (array) getKeyValue('class', $params);
@@ -45,7 +44,6 @@ function makeListLink($params) {
     $data = array_filter($data);// clean out empty entries
 
     if(is_current($path) || is_current($active) || is_active($params)){
-    // if(is_current($path) || is_current($active)){
         $li_class[] = $activeClassName;
     }
 
@@ -66,7 +64,7 @@ function makeListLink($params) {
 
     $attr = buildAttributes(array(
         'id' => $li_id,
-        'class' => implode(' ', $li_class),
+        'class' => implode(' ', array_unique($li_class)),
         'style' => implode(';', $li_style)
     ));
     if(!empty($attr)) $attr = ' '.$attr;
@@ -508,6 +506,10 @@ function makeDropdown($item){
 
     // add the correct class to the <li>
     $item['li_class'][] = 'dropdown';
+    
+    if(is_current_menu($item['sub_items'])){
+        $item['li_class'][] = 'active';
+    }
     
     // create variable if empty
     if(!isset($item['class'])) $item['class'] = '';
@@ -954,4 +956,76 @@ function getParents($child) {
         }
     }
     return $parents;
+}
+
+/**
+ * return true if current route is bookmarked by user
+ *
+ * @return void
+ */
+function currentPageIsBookmarked(){
+    // @todo: change this to retreive current bookmarks when user logs in
+    global $mysqli, $user, $session, $route;
+    require_once "Modules/dashboard/dashboard_model.php";
+    $current_path = str_replace('/emoncms/','',current_route());
+    if(!empty($route->query)) $current_path.='?'.$route->query;
+
+    if($bookmarks = $user->getUserBookmarks($session['userid'])) {
+        foreach($bookmarks as $b) {
+            if (!empty($b['path']) && $b['path']===$current_path){
+                return true;
+            }
+        }
+    }
+    
+    if($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
+        foreach($dashboard_bookmarks as $b) {
+            if (!empty($b['path']) && $b['path']===$current_path){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+function getUserBookmarkedDashboards($userid){
+    // @todo: should this be in user model or dashboard model??
+    global $mysqli, $user;
+    $bookmarks = array();
+    require_once "Modules/dashboard/dashboard_model.php";
+    $dashboard = new Dashboard($mysqli);
+    $default_dashboard = array();
+    foreach($dashboard->get_list($userid,false,false) as $item){
+        if($item['main']===true){
+            $default_dash = $item;
+        }
+        if($item['published']===true){
+            $fav_dash[] = $item;
+        }
+    }
+    $orderbase = 1  ;
+
+    // ADD DEFAULT DASHBOARD
+    if (!empty($default_dash)) {
+        $bookmarks[] = array(
+            'text' => _('Main Dashboard'),
+            'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
+            'icon' => 'star',
+            'order'=> $orderbase,
+            'path' => 'dashboard/view?id='.$default_dash['id']
+        );
+    }
+    // ADD BOOKMARKED DASHBOARDS
+    if (!empty($fav_dash)) {
+        foreach($fav_dash as $fav) {
+            $bookmarks[] = array(
+                'text' => $fav['name'],
+                'path' => 'dashboard/view?id='.$fav['id'],
+                'order'=> $orderbase++,
+                'title'=> $fav['description']
+            );
+        }
+    }
+    return $bookmarks;
 }

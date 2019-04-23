@@ -18,18 +18,19 @@ if ($session['read']) {
 <ul id="left-nav" class='nav'>
 
 <?php
-$menu['tabs'][] = array(
-    'title'=> _("Open/Close Sidebar"),
-    'id' => 'sidebar-toggle',
-    'href' => '#',
-    'icon' => 'icon-menu',
-    'order' => -1,
-    'li_style' => 'width:0; overflow:hidden; visibility:hidden',
-    'data'=> array(
-        'toggle' => 'slide-collapse',
-        'target' => '#sidebar'
-    )
-);
+// $menu['tabs'][] = array(
+//     'title'=> _("Open/Close Sidebar"),
+//     'id' => 'sidebar-toggle',
+//     'href' => '#',
+//     'icon' => 'icon-menu',
+//     'order' => -1,
+//     'li_style' => 'width:0; overflow:hidden; visibility:hidden',
+//     'data'=> array(
+//         'toggle' => 'slide-collapse',
+//         'target' => '#sidebar'
+//     )
+// );
+
 // top level menu icons (MAIN MENU)
 if(!empty($menu['tabs'])) {
     foreach($menu['tabs'] as &$item) {
@@ -51,28 +52,47 @@ endforeach; endif;
 </ul>
 
 <?php } ?>
-<ul class='nav pull-right'>
+<ul id="right-nav" class='nav pull-right'>
 <?php
+$isBookmarked = currentPageIsBookmarked();
+$addBookmark = array(
+    'icon'=>'star_border',
+    'href'=>'#',
+    'id'=>'set-bookmark',
+    'title'=>_('Add Bookmark')
+);
+$removeBookmark = array(
+    'icon'=>'star',
+    'href'=>'#',
+    'id'=>'remove-bookmark',
+    'title'=>_('Remove Bookmark')
+);
+if($isBookmarked){
+    $addBookmark['li_class'] = 'd-none';
+} else {
+    $removeBookmark['li_class'] = 'd-none';
+}
+if ($session['write']) {
+    echo makeListLink($removeBookmark);
+    echo makeListLink($addBookmark);
+}
 
 if ($session['read']) {
     // add user_menu.php items
-    $menu_key = 'right';
-    if(!empty($menu[$menu_key])) {
-        $item = array(
-            'text' => 'Extras',
-            'href' => '#',
-            'icon' => 'folder-plus'
-        );
-        if(!empty($menu[$menu_key])): foreach($menu[$menu_key] as $sub_item): 
-        // use the text as the title if not available
-            if(empty($item['title'])) {
-                $item['title'] = !empty($item['text']) ? $item['text']: '';
-            }
-            $item['sub_items'][] = $sub_item;
-        endforeach; endif;
-        // $item['active'] = 'http://localhost/emoncms/example/view/1';
+    if (!empty($menu['setup'])) {
+        $sub_items = array();
+
+        foreach($menu['setup'] as $sub_item) {
+            $sub_items[] = $sub_item;
+        }
         // build dropdown with above items
-        echo makeDropdown($item);
+        echo makeDropdown(array(
+            'title' => _("Setup"),
+            'href' => '#',
+            'icon' => 'cog',
+            'sub_items' => $sub_items
+        ));
+
     }
 }
 ?>

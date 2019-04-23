@@ -6,10 +6,77 @@
     Emoncms - open source energy visualisation
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
+
+
+
+
+// logic starts here
+// -------------------------------------------------------
+// creates all second and third level menus with their associated hierarch
+// built up from each Module's `*_menu.php` file
+// will mark the active menu and any parent menus
+/* EXAMPLE MARKUP OF A SINGLE MENU ---------
+http://localhost/emoncms/example/1
+
+<div id="sidebar_apps" class="sidebar-inner active">
+    <h4 class="sidebar-title">Apps</h4>
+    <ul id="menu-apps" class="nav sidebar-menu">
+        <li class="collapse in active"><a class="active" href="http://localhost/emoncms/example/1" title="Example 1">Example 1</a></li>
+        <li class="collapse in"><a href="http://localhost/emoncms/example/2" title="Example 2">Example 2</a></li>
+    </ul>
+</div>
+
+
+
+--------- EXAMPLE END */
+
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 $third_level_open_status = array();
+$default_nav = 'emoncms';
+// blank menus
+$second_level_menus = array(); // sidebars & dropdowns
+$third_level_menus = array(); // sub menu sidebars
+$third_level_includes = array(); // module specific sidebar include
+$bookmarks = array();
+
+global $mysqli,$user;
+require_once "Modules/dashboard/dashboard_model.php";
+$dashboard = new Dashboard($mysqli);
+$default_dashboard = array();
+foreach($dashboard->get_list($session['userid'],false,false) as $item){
+    if($item['main']===true){
+        $default_dash = $item;
+    }
+    if($item['published']===true){
+        $fav_dash[] = $item;
+    }
+}
+// ADD DEFAULT DASHBOARD
+if (!empty($default_dash)) {
+    $bookmarks[] = array(
+        'text' => $default_dash['name'],
+        'title'=> sprintf('%s - %s',_('Main Dashboard'), $default_dash['description']),
+        'icon' => 'star',
+        'order'=> 999,
+        'path' => 'dashboard/view?id='.$default_dash['id']
+    );
+}
+// ADD BOOKMARKED DASHBOARDS
+if (!empty($fav_dash)) {
+    $orderbase = 999;
+    foreach($fav_dash as $fav) {
+        $bookmarks[] = array(
+            'text' => $fav['name'],
+            'path' => 'dashboard/view?id='.$fav['id'],
+            'order'=> $orderbase++,
+            'icon' => 'dashboard',
+            'title'=> $fav['description']
+        );
+    }
+}
+
 
 // build the individual menu parts
 foreach($menu['sidebar'] as $menu_key => $sub_menu) {
@@ -42,6 +109,10 @@ foreach($menu['sidebar'] as $menu_key => $sub_menu) {
         
         // create array of 2nd level navigation markup
         foreach($sub_menu as $second_level_item) {
+            if(empty($second_level_item['path'])) {
+                settype($second_level_item, 'array');
+                $second_level_item['path'] = '';
+            }
             $path_controller = getPathController($second_level_item['path']);
             settype($second_level_item['li_class'], 'array');
             $second_level_item['li_class'][] = 'collapse';
@@ -50,6 +121,14 @@ foreach($menu['sidebar'] as $menu_key => $sub_menu) {
             }
             $second_level_menus[$menu_key][$path_controller][] = $second_level_item;
         }
+    }
+}
+
+// highlight default sidebar if none selected
+$empty_sidebar = true;
+foreach($second_level_menus as $menu_key => $second_level_menu) {
+    if(is_current_group($second_level_menu)) {
+        $empty_sidebar = false;
     }
 }
 
@@ -82,14 +161,30 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
  
         }
         // build the complete list of 2nd level items for each group
-        $markup[] = implode(tab(5), $items);
+        // # CLEAN OUT ARRAY VALUES
+        $markup[] = implode(tab(5), array_filter($items, function($var){
+            return gettype($var)!=='array';
+        }));
     }
-    $active_css = is_current_group($second_level_menu) ? ' active': '';
+    // activate active menu item or default menu
+    $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
+    
     $_close = _('Close');
+
+
+
+// logic ends here (should be in a controller or model??)
+// -------------------------------------------------------
+// view starts here
+
+
+
+
+
     echo <<<SIDEBARSTART
     <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
-        <a href="#" style="padding: .8em" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
-        <h4 id="sidebar-title">{$menu_key}</h4>
+        <a href="#" style="padding: .8em" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
+        <h4 class="sidebar-title">{$menu_key}</h4>
 
 SIDEBARSTART;
 
@@ -118,40 +213,58 @@ SIDEBARSTART;
 }
 ?>
 
-                <div id="footer_nav" class="nav">
-                    <?php
-                    // sidebar user footer menu
-                        if($session['read']){
-                            $link = array(
-                                'text' => $session['username'],
-                                'class'=> 'collapsed',
-                                'href' => '#',
-                                'id' => 'sidebar_user_toggle',
-                                'icon' => 'user',
-                                'data' => array(
-                                    'toggle' => 'collapse',
-                                    'target' => '#sidebar_user_dropdown'
-                                )
-                            );
-                            if ($session['admin'] == 1) {
-                                $link['text'] .= ' <small class="muted">Admin</small>';
-                            }
-                            $link['text'] .= '<span class="arrow arrow-up pull-right"></span>';
-                            echo makeLink($link);
+<?php
+// sidebar user shortcut footer menu
+$user_bookmarks = $user->getUserBookmarks($session['userid']);
+if(!empty($user_bookmarks)) {
+    $bookmarks = array_merge($bookmarks, $user_bookmarks);
+}
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+// $expanded = !empty($_COOKIE['bookmarks_collapsed']) && $_COOKIE['bookmarks_collapsed']!=='true';
+$expanded = true;
+
+if(!empty($bookmarks) && $session['write']){ ?>
+                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>">
+                <?php
+                    echo makeLink(array(
+                        'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
+                        'class'=> array('d-none',!$expanded ? 'collapsed':''),
+                        'href' => '#',
+                        'id' => 'sidebar_user_toggle',
+                        'data' => array(
+                            'toggle' => 'collapse',
+                            'target' => '#sidebar_user_dropdown'
+                        )
+                    ));
+                ?>
+                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">Bookmarks <a id="edit_bookmarks" class="btn btn-inverse btn-sm btn-link pull-right" type="button" href="/emoncms/user/bookmarks">Edit</a></h4>
+                    <ul id="sidebar_user_dropdown" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
+                    <?php 
+                        // bookmarks
+                        // make menu item link to the original and not the bookmark
+                        foreach ($bookmarks as $item){
+                            $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
+                            $item['path'] = ''; // empty original relative path
+                            echo makeListLink($item);
                         }
                     ?>
-                    <ul id="sidebar_user_dropdown" class="nav sidebar-menu collapse">
-                    <?php 
-                        $controller = 'user';
-                        // @todo: check for controller specific footer menus
-                        if(!empty($menu[$controller])): foreach($menu[$controller] as $item): 
-                            echo makeListLink($item);
-                        endforeach; endif;
-                    ?>
                     </ul>
+                    <!-- used to add more bookmarks -->
+                    <template id="bookmark_link"><li><a href=""></a></li></template>
                 </div>
+<?php } ?>
+
+<?php
 
 
+// view ends here
+// -------------------------------------------------------
+// assets start here  (should be in a .js or .css file??)
+
+
+?>
                 <script>
                     // manage the open/close of the user menu in the sidebar
                     var list = document.getElementById('sidebar_user_dropdown');
@@ -170,3 +283,5 @@ SIDEBARSTART;
                     })
 
                 </script>
+                <style>
+                </style>

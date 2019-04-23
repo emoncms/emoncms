@@ -85,15 +85,6 @@ $(function(){
         }
     });
 
-    $('#sidebar_user_dropdown').collapse({'toggle':false});
-    $(window).click(function(event) {
-        //Hide the footer menus if visible
-        if(event.target.id !== 'sidebar_user_toggle'){
-            var footer_nav = $('#footer_nav').removeClass('expanded');
-            var list = $('#sidebar_user_dropdown').collapse('hide');
-            var toggle = $('#sidebar_user_toggle').addClass('collapsed');
-        }
-    });
     // hide sidebar on smaller devices
     window.addEventListener('resize', function(event) {
         if ($(window).width() < 870) {
@@ -153,6 +144,94 @@ $(function(){
             $('#menu-setup li').not('.active').toggleClass('in');
         }
     }
+    function getQueryStringValue (key) {  
+        return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
+    }
+    // add current page to user's bookmark list
+    $('#set-bookmark, #remove-bookmark').click(function(event){
+        event.preventDefault();
+        var bookmarks = [];
+        var currentPage = window.location.href.replace(path,'');
+        var key = 'bookmarks';
+        var $button = $(this);
+        var $icon = $button.find('.icon');
+        var remove = $icon.is('.star');
+        var currentTitle = $('h2').first().text();
+        if(currentTitle.length==0) currentTitle = $('h3').first().text();
+        if(getQueryStringValue("name")) {
+            currentTitle = decodeURI(getQueryStringValue("name").replace('+',' '));
+        }
+        //document.title.replace('Emoncms - ','');
+        // get current bookmarks
+        $.get(path+'user/preferences.json',{preferences:key})
+        .done(function(data){
+            // catch json parsing errors
+            try{
+                // url decimal decode database value
+                var tmp = document.createElement('textarea');
+                tmp.innerHTML = data;
+                var decoded = tmp.value;
+                // add user's prefs bookmarks to list
+                bookmarks = JSON.parse(decoded);
+            } catch(e) {
+                console.error(e);
+            }
+            if(!remove) {
+            // remove current page to bookmarks
+                var unique = false;
+                for(b in bookmarks) {
+                    if (bookmarks[b]['path'] && bookmarks[b]['path'] !== currentPage){
+                        unique = true;
+                    }
+                }
+                if(unique || bookmarks.length === 0){
+                    bookmarks.push({
+                        'path': currentPage,
+                        'text': currentTitle
+                    })
+                }
+            } else {
+            // remove current page from bookmarks
+                var newBookmarks = [];
+                for(b in bookmarks) {
+                    if (bookmarks[b]['path'] && bookmarks[b]['path'] !== currentPage){
+                        newBookmarks.push(bookmarks[b]);
+                    }
+                }
+                bookmarks = newBookmarks;
+            }
+            // save new user preferences
+            $.post(path+'user/preferences.json', {
+                preferences: {
+                    bookmarks: JSON.stringify(bookmarks)
+                }
+            }, function(data) {
+                var $menu = $('#sidebar_user_dropdown');
+                var $template = $('#bookmark_link');
+                if(data.success) {
+                    // saved successfully change icon
+                    $('#set-bookmark, #remove-bookmark').parent().toggleClass('d-none');
+                    if(!remove) {
+                        // add new item to menu
+                        $($template.html()).appendTo($menu)
+                        .find('a').attr('href', path+currentPage)
+                        .text(currentTitle).hide().fadeIn();
+                    } else {
+                        // remove entry from menu
+                        $.each($menu.find('li'), function(n, elem){
+                            $li = $(elem);
+                            var relative = $li.find('a').attr('href').replace(path,'');
+                            if(relative === currentPage) {
+                                $li.animate({height:0},function(){
+                                    $(this).remove();
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    });
 
     // show/hide sidebar includes
     $(document).on('click', '#menu-setup li.active a', hideMenuItems);
@@ -184,3 +263,54 @@ function hide_sidebar(options) {
 
 // backward compatible empty function
 if(typeof init_sidebar !== 'function') var init_sidebar = function(){}
+
+
+
+// get/set document cookies
+var docCookies = {
+    getItem: function (sKey) {
+      if (!sKey) { return null; }
+      return decodeURIComponent(document.cookie.replace(new RegExp("(?:(?:^|.*;)\\s*" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*([^;]*).*$)|^.*$"), "$1")) || null;
+    },
+    setItem: function (sKey, sValue, vEnd, sPath, sDomain, bSecure) {
+      if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+      var sExpires = "";
+      if (vEnd) {
+        switch (vEnd.constructor) {
+          case Number:
+          //   sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; max-age=" + vEnd;
+            sExpires = vEnd === Infinity ? "; expires=Fri, 31 Dec 9999 23:59:59 GMT" : "; expires=" + (new Date(vEnd * 1e3 + Date.now())).toUTCString();
+            break;
+          case String:
+            sExpires = "; expires=" + vEnd;
+            break;
+          case Date:
+            sExpires = "; expires=" + vEnd.toUTCString();
+            break;
+        }
+      }
+      document.cookie = encodeURIComponent(sKey) + "=" + encodeURIComponent(sValue) + sExpires + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "") + (bSecure ? "; secure" : "");
+      return true;
+    },
+    removeItem: function (sKey, sPath, sDomain) {
+      if (!this.hasItem(sKey)) { return false; }
+      document.cookie = encodeURIComponent(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT" + (sDomain ? "; domain=" + sDomain : "") + (sPath ? "; path=" + sPath : "");
+      return true;
+    },
+    hasItem: function (sKey) {
+      if (!sKey || /^(?:expires|max\-age|path|domain|secure)$/i.test(sKey)) { return false; }
+      return (new RegExp("(?:^|;\\s*)" + encodeURIComponent(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+    },
+    keys: function () {
+      var aKeys = document.cookie.replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "").split(/\s*(?:\=[^;]*)?;\s*/);
+      for (var nLen = aKeys.length, nIdx = 0; nIdx < nLen; nIdx++) { aKeys[nIdx] = decodeURIComponent(aKeys[nIdx]); }
+      return aKeys;
+    }
+  };
+
+
+// save a cookie to remember user's choice to hide or show the bookmarks
+$('#sidebar_user_dropdown').on('show hide', function(event) {
+    var bookmarks_collapsed = event.type !== 'show';
+    docCookies.setItem('bookmarks_collapsed', bookmarks_collapsed)
+})

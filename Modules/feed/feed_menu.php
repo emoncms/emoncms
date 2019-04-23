@@ -1,6 +1,6 @@
 <?php
 
-    $menu['sidebar']['setup'][] = array(
+    $menu['sidebar']['emoncms'][] = array(
         'text' => _("Feeds"),
         'path' => 'feed/list',
         'icon' => 'format_list_bulleted',

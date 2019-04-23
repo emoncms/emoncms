@@ -301,23 +301,17 @@
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-
-            // custom sidebar spanning multiple modules
+            
+            // EMONCMS MENU
             $menu['tabs'][] = array(
                 'icon'=>'menu',
-                'title'=> _("Setup"),
+                'title'=> _("Emoncms"),
                 'path' => 'feed/list',
                 'order' => 0,
                 'data'=> array(
-                    'sidebar' => '#sidebar_setup'
+                    'sidebar' => '#sidebar_emoncms'
                 )
             );
-            
-            // custom dropdown (right) spanning multiple modules
-            $key = 'extras';
-            if(!empty($menu[$key])): foreach($menu[$key] as $item):
-                $extras[] = $item;
-            endforeach; endif;
 
             include ("Lib/misc/nav_functions.php");
             sortMenu($menu);

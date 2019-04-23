@@ -18,12 +18,15 @@
     <div id="apihelphead" style="float:right;"><a href="api"><?php echo dgettext('schedule_messages','Schedule Help'); ?></a></div>
     <div id="localheading"><h2><?php echo dgettext('schedule_messages','Schedules'); ?></h2></div>
 
-    <div id="table"></div>
-
-    <div id="noschedules" class= "alert alert-block hide">
+    <div id="noschedules" class= "hide">
+        <h2><?php echo dgettext('schedule_messages','Schedules'); ?></h2>
+        <div id="noschedules" class= "alert alert-block">
             <h4 class="alert-heading"><?php echo dgettext('schedule_messages','No schedules'); ?></h4><br>
             <p><?php echo dgettext('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
+        </div>
     </div>
+
+    <div id="table"></div>
 
     <div id="schedule-loader" class="ajax-loader"></div>
 

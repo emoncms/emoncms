@@ -1,6 +1,6 @@
 <?php
 
-    $menu['sidebar']['setup'][] = array(
+    $menu['sidebar']['emoncms'][] = array(
         'text' => _("Inputs"),
         'path' => 'input/view',
         'icon' => 'input',
