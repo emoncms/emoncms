@@ -113,7 +113,9 @@ $(function(){
      * @param {object} [event] mouse event if triggered by click
      */
     function hideMenuItems(event) {
-        var $menu = $('#menu-emoncms');
+        if (!event) return;
+
+        var $menu = $(event.target).parents('ul').first();
         var clicked = false;
         if (typeof event !== 'undefined') {
             event.preventDefault();
@@ -237,7 +239,7 @@ $(function(){
     // show/hide sidebar includes
     $(document).on('click', '#menu-emoncms li.active a', hideMenuItems);
     // show hide 2nd / 3rd menu items
-    setTimeout(hideMenuItems, 100);
+    // setTimeout(hideMenuItems, 100);
     
 }); // end of jquery ready()
 
