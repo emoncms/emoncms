@@ -268,6 +268,7 @@ class User
     public function send_verification_email($username)
     {
         // check for valid username format
+        if (preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username)!=$username) return array('success'=>false, 'message'=>_("Invalid username"));
 
         // check that username exists and load email and verification status
         if (!$stmt = $this->mysqli->prepare("SELECT id,email,email_verified FROM users WHERE username=?")) {
@@ -354,7 +355,7 @@ class User
 
         // filter out all except for alphanumeric white space and dash
         // if (!ctype_alnum($username))
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
@@ -418,7 +419,7 @@ class User
     public function get_apikeys_from_login($username, $password)
     {
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
         $stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,apikey_read FROM users WHERE username=?");
@@ -486,7 +487,7 @@ class User
 
     public function passwordreset($username,$emailto)
     {
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
         if (!filter_var($emailto, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username=? AND email=?");
@@ -718,7 +719,7 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = (int) $userid;
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$timezone);
+        $timezone = preg_replace('/[^\w\-.\\/_]/','',$timezone);
         
         $stmt = $this->mysqli->prepare("UPDATE users SET timezone = ? WHERE id = ?");
         $stmt->bind_param("si", $timezone, $userid);
@@ -748,14 +749,14 @@ class User
         $userid = (int) $userid;
         if(!$data || $userid < 1) return array('success'=>false, 'message'=>_("Error updating user info"));
 
-        $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
-        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
-        $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
-        $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
-        $language = preg_replace('/[^\w\s-.]/','',$data->language);
-        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s-.]/','', $data->tags);
-        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?#=\/]/u','',$data->startingpage);
+        $gravatar = preg_replace('/[^\w\s\-.@]/','',$data->gravatar);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->name);
+        $location = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->location);
+        $timezone = preg_replace('/[^\w\-.\\/_]/','',$data->timezone);
+        $bio = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->bio);
+        $language = preg_replace('/[^\w\s\-.]/','',$data->language);
+        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s\-.]/','', $data->tags);
+        $startingpage = preg_replace('/[^\p{N}\p{L}_\s\-?#=\/]/u','',$data->startingpage);
         
         $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
         $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;

@@ -125,7 +125,7 @@ function admin_controller()
                 }
             }
 
-            else if ($allow_emonpi_admin && $route->action == 'emonpi') {
+            else if (($admin_show_update || $allow_emonpi_admin) && $route->action == 'emonpi') {
                 //put $update_logfile here so it can be referenced in other if statements
                 //before it was only accesable in the update subaction
                 //placed some other variables here as well so they are grouped
@@ -141,13 +141,16 @@ function admin_controller()
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
-                    $argument="";
-                    if (isset($_POST['argument'])) {
-                      $argument = $_POST['argument'];
-                    }
+                    $firmware="";
+                    if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
+                    if (!in_array($firmware,array("emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
+                    // Type: all, emoncms, firmware
+                    $type="";
+                    if (isset($_POST['type'])) $type = $_POST['type'];
+                    if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
                     
-                    $redis->rpush("service-runner","$update_script $argument>$update_logfile");
-                    $result = "service-runner trigger sent";
+                    $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
+                    return "service-runner trigger sent";
                 }
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
@@ -284,7 +287,7 @@ function admin_controller()
                 $searchstr = "";
                 if (isset($_GET['search'])) {
                     $search = $_GET['search'];
-                    $search_out = preg_replace('/[^\p{N}\p{L}_\s-@.]/u','',$search);
+                    $search_out = preg_replace('/[^\p{N}\p{L}_\s\-@.]/u','',$search);
                     if ($search_out!=$search || $search=="") { 
                         $search = false; 
                     }
