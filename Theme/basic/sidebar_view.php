@@ -241,11 +241,13 @@ if($session['write']){ ?>
                         )
                     ));
                 ?>
-                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">Bookmarks <a id="edit_bookmarks" class="btn btn-inverse btn-sm btn-link pull-right" type="button" href="/emoncms/user/bookmarks">Edit</a></h4>
+                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">Bookmarks 
+                    <a id="edit_bookmarks" class="btn btn-inverse btn-sm btn-link pull-right" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+                    </h4>
                     <ul id="sidebar_user_dropdown" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
                     <?php 
                         // bookmarks
-                        // make menu item link to the original and not the bookmark
+                        // make menu item link to the original and not the bookmark 
                         foreach ($bookmarks as $item){
                             $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
                             $item['path'] = ''; // empty original relative path

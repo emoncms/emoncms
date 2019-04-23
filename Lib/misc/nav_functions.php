@@ -170,7 +170,8 @@ function makeLink($params) {
     // append icon to link text
     if (!empty($icon)) {
         $icon = sprintf('<svg class="icon %1$s"><use xlink:href="#icon-%1$s"></use></svg> ', $icon);
-        $text = sprintf('%s<span>%s</span>', $icon, $text);
+        $text = sprintf('%s<span class="ml-1 flex-fill">%s</span>', $icon, $text);
+        $class[] = 'd-flex flex-nowrap justify-items-between';
     }
     // add active class to link if link is to current page
     if (!empty($active)) {

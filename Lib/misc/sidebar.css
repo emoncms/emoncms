@@ -59,13 +59,16 @@ Sidebar sub menus----------------------------------------------------*/
   margin-top: 0px;
   top: 2.7rem;
   background: #333;
-  overflow-y: auto;
   z-index: 1000;
-  height: 100vh;
+  height: calc(100vh - 2.7rem);
+  margin-bottom: 2rem;
   
   left: 15rem;
   margin-left: -15rem;
   width: 15rem;
+
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .has-animation #sidebar {
   transition: all 0.3s ease-out;
@@ -226,10 +229,6 @@ body.dashboard.has-sidebar.fullwidth #footer {
 
 /* bottom of sidebar */
 #footer_nav {
-  /* position: absolute; */
-  bottom: 2.7rem;
-  /* background: #212121; */
-  /* border-top: 1px solid #444; */
   margin-bottom: 0;
   width: 15rem;
 }
@@ -374,19 +373,19 @@ Side nav: app list
   transition: all 0.2s ease-in !important;
 }
 .sidebar-menu li.collapse {
-  height: 0;
   border-bottom: 0px solid transparent;
 }
 .include-container.collapse.in > li,
 .sidebar-menu li.collapse.in {
   border-bottom: 1px solid #444;
-  height: 3.13em;
 }
 .sidebar-menu li a:focus,
 .sidebar-menu li a:active {
   outline: none;
 }
-
+#sidebar svg.icon {
+  margin-top: .1em;
+}
 .arrow-up {
   width: 0;
   height: 0;
