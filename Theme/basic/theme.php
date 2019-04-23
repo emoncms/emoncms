@@ -64,6 +64,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             }
             return true; // true == prevents the firing of the default event handler.
         }
+        var path = "<?php echo $path ?>";
     </script>
 </head>
 <body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">

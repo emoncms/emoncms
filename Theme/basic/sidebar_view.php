@@ -56,13 +56,14 @@ foreach($dashboard->get_list($session['userid'],false,false) as $item){
 // ADD DEFAULT DASHBOARD
 if (!empty($default_dash)) {
     $bookmarks[] = array(
-        'text' => $default_dash['name'],
-        'title'=> sprintf('%s - %s',_('Main Dashboard'), $default_dash['description']),
+        'text' => _('Default Dashboard'),
+        'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
         'icon' => 'star',
         'order'=> 999,
         'path' => 'dashboard/view?id='.$default_dash['id']
     );
 }
+/*
 // ADD BOOKMARKED DASHBOARDS
 if (!empty($fav_dash)) {
     $orderbase = 999;
@@ -76,6 +77,7 @@ if (!empty($fav_dash)) {
         );
     }
 }
+*/
 
 
 // build the individual menu parts
@@ -225,8 +227,8 @@ if (session_status() == PHP_SESSION_NONE) {
 // $expanded = !empty($_COOKIE['bookmarks_collapsed']) && $_COOKIE['bookmarks_collapsed']!=='true';
 $expanded = true;
 
-if(!empty($bookmarks) && $session['write']){ ?>
-                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>">
+if($session['write']){ ?>
+                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
                 <?php
                     echo makeLink(array(
                         'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',

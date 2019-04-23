@@ -154,6 +154,7 @@ $(function(){
     $('#set-bookmark, #remove-bookmark').click(function(event){
         event.preventDefault();
         var bookmarks = [];
+        var $nav = $('#footer_nav');
         var currentPage = window.location.href.replace(path,'');
         var key = 'bookmarks';
         var $button = $(this);
@@ -164,21 +165,11 @@ $(function(){
         if(getQueryStringValue("name")) {
             currentTitle = decodeURI(getQueryStringValue("name").replace('+',' '));
         }
-        //document.title.replace('Emoncms - ','');
         // get current bookmarks
         $.get(path+'user/preferences.json',{preferences:key})
         .done(function(data){
             // catch json parsing errors
-            try{
-                // url decimal decode database value
-                var tmp = document.createElement('textarea');
-                tmp.innerHTML = data;
-                var decoded = tmp.value;
-                // add user's prefs bookmarks to list
-                bookmarks = JSON.parse(decoded);
-            } catch(e) {
-                console.error(e);
-            }
+            bookmarks = data || [];
             if(!remove) {
             // remove current page to bookmarks
                 var unique = false;
@@ -219,6 +210,8 @@ $(function(){
                         $($template.html()).appendTo($menu)
                         .find('a').attr('href', path+currentPage)
                         .text(currentTitle).hide().fadeIn();
+                        $nav.fadeIn();
+
                     } else {
                         // remove entry from menu
                         $.each($menu.find('li'), function(n, elem){
@@ -227,6 +220,12 @@ $(function(){
                             if(relative === currentPage) {
                                 $li.animate({height:0},function(){
                                     $(this).remove();
+                                    setTimeout(function(){
+                                        if($menu.find('li').length == 0) {
+                                            $nav.fadeOut();
+                                        }
+                                        // $nav.toggleClass('d-none', $menu.find('li').length == 0);
+                                    },400)
                                 });
                             }
                         });
