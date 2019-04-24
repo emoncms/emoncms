@@ -256,6 +256,8 @@ function draw_devices()
 
     var latest_update = [];
 
+    <?php $emptyDiv = user_has_capability('device_write') || user_has_capability('input_write'); ?>
+
     for (var node in devices) {
         var device = devices[node]
         counter++
@@ -278,7 +280,11 @@ function draw_devices()
         if (device.devicekey=="") devicekey = "No device key created"; 
         
         out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
+        <?php if (user_has_capability('device_write')) { ?>
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
+        <?php } else if ($emptyDiv){ ?>
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'></div>";
+        <?php } ?>
         out += "     </div>";
         out += "  </div>";
 
@@ -302,11 +308,11 @@ function draw_devices()
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
             out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
             out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'>";
             <?php if (user_has_capability('input_write')) { ?>
-            out += "        <i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
+            <?php } else if ($emptyDiv) { ?>
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'></div>";
             <?php } ?>
-            out += "     </div>";
             out += "  </div>";
             out += "</div>";
         }

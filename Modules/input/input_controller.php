@@ -40,7 +40,7 @@ function input_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
-    if (!$device) {
+    if (!$device && user_has_capability('device_enabled')) {
         if (file_exists("Modules/device/device_model.php")) {
             require_once "Modules/device/device_model.php";
             $device = new Device($mysqli,$redis);
