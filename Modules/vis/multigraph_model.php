@@ -50,8 +50,8 @@ class Multigraph
     {
         $id = (int) $id;
         $userid = (int) $userid;
-        $feedlist = preg_replace('/[^\p{L}_\p{N}\s-.",:{}\[\]]/u','',$feedlist);
-        $name = preg_replace('/[^\p{L}_\p{N}\s-.]/u','',$name);
+        $feedlist = preg_replace('/[^\p{L}_\p{N}\s\-.",:{}\[\]]/u','',$feedlist);
+        $name = preg_replace('/[^\p{L}_\p{N}\s\-.]/u','',$name);
 
         $stmt = $this->mysqli->prepare("UPDATE multigraph SET name=?, feedlist=? WHERE id=? AND userid=?");
         $stmt->bind_param("ssii", $name, $feedlist, $id, $userid);

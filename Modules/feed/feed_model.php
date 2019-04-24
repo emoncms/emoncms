@@ -100,8 +100,8 @@ class Feed
     public function create($userid,$tag,$name,$datatype,$engine,$options_in,$unit='')
     {
         $userid = (int) $userid;
-        if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
-        if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag)!=$tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
+        if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
+        if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$tag)!=$tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
@@ -288,7 +288,7 @@ class Feed
     public function get_id($userid,$name)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\w\s-:]/','',$name);
+        $name = preg_replace('/[^\w\s\-:]/','',$name);
         
         $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND name=?");
         $stmt->bind_param("is",$userid,$name);
@@ -303,8 +303,8 @@ class Feed
     public function exists_tag_name($userid,$tag,$name)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
-        $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$name);
+        $tag = preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$tag);
         
         $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND BINARY name=? AND BINARY tag=?");
         $stmt->bind_param("iss",$userid,$name,$tag);
@@ -502,7 +502,7 @@ class Feed
 
         if ($field!=null) // if the feed exists
         {
-            $field = preg_replace('/[^\w\s-]/','',$field);
+            $field = preg_replace('/[^\w\s\-]/','',$field);
          
             if ($field=='time' || $field=='value') {
                 $lastvalue = $this->get_timevalue($id);
@@ -749,7 +749,7 @@ class Feed
             $feedids[$i] = $feedid;
         }
         // Basic name input sanitisation
-        $name = preg_replace('/[^\w\s-]/','',$name);
+        $name = preg_replace('/[^\w\s\-]/','',$name);
         
         global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
         
@@ -845,7 +845,7 @@ class Feed
         }
         
         if (isset($fields->tag)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->tag)!=$fields->tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->tag)!=$fields->tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET tag = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->tag,$id);
                 if ($stmt->execute()) $success = true;
@@ -855,7 +855,7 @@ class Feed
         }
 
         if (isset($fields->unit)) {
-            if (preg_replace('/[^\p{N}\p{L}_°\/%\s-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed unit');
+            if (preg_replace('/[^\p{N}\p{L}_°\/%\s\-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed unit');
             if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->unit,$id);
@@ -1113,7 +1113,7 @@ class Feed
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in argx'); 
                         break;
                                                 

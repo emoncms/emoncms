@@ -149,7 +149,7 @@ function input_controller()
         } else {
             // Node
             if ($route->subaction) { $nodeid = $route->subaction; } else { $nodeid = get('node'); }
-            $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+            $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
             
             // If no node variable name specified return all node variables
             if (!$route->subaction2 && !isset($_GET['name'])) {
@@ -163,7 +163,7 @@ function input_controller()
             } else {
                 // Property
                 if ($route->subaction2) { $name = $route->subaction2; } else { $name = get('name'); }
-                $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
+                $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
                 
                 if (isset($dbinputs[$nodeid])) {
                     if (isset($dbinputs[$nodeid][$name])) {
