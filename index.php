@@ -207,6 +207,14 @@
     else if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json';
 
     // 6) Load the main page controller
+
+    // 6a) Load the capabilities module or create the function stub
+    if (! @include "Modules/user_capabilities/user_capabilities.php") {
+        function user_has_capability($args) {
+            return true;
+        }
+    }
+    
     $output = controller($route->controller);
 
     // If no controller of this name - then try username
