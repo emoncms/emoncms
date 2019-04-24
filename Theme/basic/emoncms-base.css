@@ -255,3 +255,75 @@ html {
 @media (min-width: 1200px) {
     .d-xl-none{display:none!important}
 }
+
+
+
+
+/** MOBILE FIRST **/
+/*-------------------------------------*/
+
+/* 
+// Extra small devices (portrait phones, 320px and up)
+*/
+@media (min-width: 320px) {
+    .text-xs-right {
+        text-align: right!important;
+    }
+    .text-xs-center {
+        text-align: center!important;
+    }
+    .d-xs-none{display:none!important}
+
+    .d-xs-inline-block {
+        display: inline-block!important;
+    }
+}
+/* 
+// Small devices (landscape phones, 576px and up)
+*/
+@media (min-width: 576px) {
+    .d-sm-none {
+        display: none!important;
+    }
+    .d-sm-inline-block {
+        display: inline-block!important;
+    }
+    .d-xs-inline-block {
+        display: inline-block!important;
+    }
+}
+/* 
+// Medium devices (tablets, 768px and up)
+*/
+@media (min-width: 768px) {
+    .d-md-none {
+        display: none!important;
+    }
+    .d-md-inline-block {
+        display: inline-block!important;
+    }
+}
+/* 
+// Large devices (desktops, 992px and up)
+*/
+@media (min-width: 992px) {
+    .mb-lg-3{
+        margin-bottom: .3em!important;
+    }
+    .py-lg-3,.pt-lg-3{
+        padding-top: calc(var(--spacer) * .8)
+    }
+    .py-lg-3,.pb-lg-3{
+        padding-bottom: calc(var(--spacer) * .8)
+    }
+    .d-lg-none{display:none!important}
+
+}
+/* 
+// Extra large devices (large desktops, 1200px and up)
+*/
+@media (min-width: 1200px) {
+    .d-xl-none{
+        display:none!important
+    }
+}

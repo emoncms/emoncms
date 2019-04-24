@@ -462,33 +462,3 @@ Side nav: app list
     transition: all 0.3s ease-out;
   }
 }
-
-
-
-/** MOBILE FIRST **/
-/*-------------------------------------*/
-/* 
-// Extra small devices (portrait phones, 320px and up)
-*/
-@media (min-width: 320px) {
-}
-/* 
-// Small devices (landscape phones, 576px and up)
-*/
-@media (min-width: 576px) {
-}
-/* 
-// Medium devices (tablets, 768px and up)
-*/
-@media (min-width: 768px) {
-}
-/* 
-// Large devices (desktops, 992px and up)
-*/
-@media (min-width: 992px) {
-}
-/* 
-// Extra large devices (large desktops, 1200px and up)
-*/
-@media (min-width: 1200px) {
-}
