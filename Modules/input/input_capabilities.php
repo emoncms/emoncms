@@ -1,8 +1,8 @@
 <?php
 
 $capabilities['input'] = [
-	'input_enabled'            => 'Enable module',
+	'input_enabled'            => 'Enable module controller',
 	'input_menuitem'           => 'Show module menu item',
-	'input_write'              => 'writing data to inputs, modifying inputs',
-	'input_read'               => 'read input value',
+	'input_read'               => 'Read input values',
+	'input_write'              => 'Writing data to inputs, modify inputs',
 ];
