@@ -7,7 +7,6 @@
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-    var user = {};
     var path = "<?php echo $path; ?>";
     user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
@@ -131,11 +130,15 @@ body{padding:0!important}
 <div class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
+    <?php if (user_has_capability('feed_write')) { ?>
     <button class="btn feed-edit hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i></button>
     <button class="btn feed-delete hide" title="<?php echo _('Delete') ?>"><i class="icon-trash" ></i></button>
+    <?php } ?>
     <button class="btn feed-download hide" title="<?php echo _('Download') ?>"><i class="icon-download"></i></button>
     <button class="btn feed-graph hide" title="<?php echo _('Graph view') ?>"><i class="icon-eye-open"></i></button>
+    <?php if (user_has_capability('feed_write')) { ?>
     <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
+    <?php } ?>
 </div>
 
 <div id="table" class="feed-list"></div>
@@ -146,12 +149,14 @@ body{padding:0!important}
 </div>
 
 <div id="feed-footer" class="hide">
+    <?php if (user_has_capability('feed_write')) { ?>
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
     <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
+    <?php } ?>
 </div>
 <div id="feed-loader" class="ajax-loader"></div>
 
-
+<?php if (user_has_capability('feed_write')) { ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EDIT MODAL                                                                                                                               -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
@@ -197,7 +202,7 @@ body{padding:0!important}
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
 </div>
-
+<?php } ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED EXPORT                                                                                                                                   -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
@@ -268,6 +273,7 @@ body{padding:0!important}
     </div>
 </div>
 
+<?php if (user_has_capability('feed_write')) { ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <!-- FEED DELETE MODAL                                                                                                                             -->
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
@@ -351,6 +357,7 @@ body{padding:0!important}
 </div>
 
 <?php require "Modules/process/Views/process_ui.php"; ?>
+<?php } ?>
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
 
@@ -567,7 +574,17 @@ function nodeIntervalClass (feeds) {
     return result;
 }
 
+/**
+ * function call queue - clears previous interval if interrupted
+ */
+var updater;
+function updaterStart(func, interval){
+    clearInterval(updater);
+    updater = null;
+    if (interval > 0) updater = setInterval(func, interval);
+}
 
+<?php if (user_has_capability('feed_write')) { ?>
 // ---------------------------------------------------------------------------------------------
 // EDIT FEED
 // ---------------------------------------------------------------------------------------------
@@ -987,16 +1004,6 @@ function updateFeedDeleteModalMessage(response){
 }
 
 /**
- * function call queue - clears previous interval if interrupted
- */
-var updater;
-function updaterStart(func, interval){
-    clearInterval(updater);
-    updater = null;
-    if (interval > 0) updater = setInterval(func, interval);
-}
-
-/**
  * Enables/Disables the feed trim() feature based on selected feeds
  *
  * @return void
@@ -1203,45 +1210,6 @@ $("#refreshfeedsize").click(function(){
 });
 
 // ---------------------------------------------------------------------------------------------
-// ---------------------------------------------------------------------------------------------
-function feed_selection() 
-{
-    selected_feeds = {};
-    var num_selected = 0;
-    $(".feed-select").each(function(){
-        var feedid = $(this).attr("feedid");
-        selected_feeds[feedid] = $(this)[0].checked;
-        if (selected_feeds[feedid]==true) num_selected += 1;
-    });
-    
-    if (num_selected>0) {
-        $(".feed-delete").show();
-        $(".feed-download").show();
-        $(".feed-graph").show();
-        $(".feed-edit").show();
-    } else {
-        $(".feed-delete").hide();
-        $(".feed-download").hide();
-        $(".feed-graph").hide();
-        $(".feed-edit").hide();
-    }
-
-    // There should only ever be one feed that is selected here:
-    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
-    // Only show feed process button for Virtual feeds
-    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
-}
-
-// -------------------------------------------------------------------------------------------------------
-// Interface responsive
-//
-// The following implements the showing and hiding of the device fields depending on the available width
-// of the container and the width of the individual fields themselves. It implements a level of responsivness
-// that is one step more advanced than is possible using css alone.
-// -------------------------------------------------------------------------------------------------------
-watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
-
-// ---------------------------------------------------------------------------------------------
 // Virtual Feed feature
 // ---------------------------------------------------------------------------------------------
 $("#newfeed-save").click(function (){
@@ -1281,6 +1249,46 @@ $("#save-processlist").click(function (){
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
 }); 
+<?php } ?>
+
+// -------------------------------------------------------------------------------------------------------
+// Interface responsive
+//
+// The following implements the showing and hiding of the device fields depending on the available width
+// of the container and the width of the individual fields themselves. It implements a level of responsivness
+// that is one step more advanced than is possible using css alone.
+// -------------------------------------------------------------------------------------------------------
+watchResize(onResize, 20) // only call onResize() after 20ms of delay (similar to debounce)
+
+// ---------------------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------
+function feed_selection() 
+{
+    selected_feeds = {};
+    var num_selected = 0;
+    $(".feed-select").each(function(){
+        var feedid = $(this).attr("feedid");
+        selected_feeds[feedid] = $(this)[0].checked;
+        if (selected_feeds[feedid]==true) num_selected += 1;
+    });
+    
+    if (num_selected>0) {
+        $(".feed-delete").show();
+        $(".feed-download").show();
+        $(".feed-graph").show();
+        $(".feed-edit").show();
+    } else {
+        $(".feed-delete").hide();
+        $(".feed-download").hide();
+        $(".feed-graph").hide();
+        $(".feed-edit").hide();
+    }
+
+    // There should only ever be one feed that is selected here:
+    var feedid = 0; for (var z in selected_feeds) { if (selected_feeds[z]) feedid = z; }
+    // Only show feed process button for Virtual feeds
+    if (feeds[feedid] && feeds[feedid].engine==7 && num_selected==1) $(".feed-process").show(); else $(".feed-process").hide();
+}
 
 // ---------------------------------------------------------------------------------------------
 // Export feature
