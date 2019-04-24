@@ -20,6 +20,15 @@ function feed_controller()
     global $mysqli, $redis, $user, $session, $route, $feed_settings;
     $result = false;
 
+    if (!user_has_capability('feed_enabled')) {
+        http_response_code(403);
+        $route->format = "json";
+        return array('content' => 'Permission denied');
+    }
+    
+    $access_write = user_has_capability('feed_write') && $session['write'];
+    $access_read = user_has_capability('feed_read') && $session['read'];
+
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$feed_settings);
 
@@ -36,6 +45,7 @@ function feed_controller()
         textdomain("messages");
         if ($route->action == "list" && $session['write']) {
             $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
+            if (!user_has_capability('feed_read')) return "<div class='alert alert-error'>Permission denied</div>";
 
             if (isset($ui_version_2) && $ui_version_2) {
                 return view("Modules/feed/Views/feedlist_view_v2.php",array());
@@ -51,22 +61,26 @@ function feed_controller()
         // Public actions available on public feeds.
         if ($route->action == "list")
         {
-            if ($session['read']) {
+            if ($access_read) {
                 if (!isset($_GET['userid']) || (isset($_GET['userid']) && $_GET['userid'] == $session['userid'])) return $feed->get_user_feeds($session['userid']);
                 else if (isset($_GET['userid']) && $_GET['userid'] != $session['userid']) return $feed->get_user_public_feeds(get('userid'));
             }
-            else if (isset($_GET['userid'])) return $feed->get_user_public_feeds(get('userid'));
-
-        } elseif ($route->action == "listwithmeta" && $session['read']) {
+            else if (isset($_GET['userid'])) {
+                return $feed->get_user_public_feeds(get('userid'));
+            }
+            else {
+                return array();
+            }
+        } elseif ($route->action == "listwithmeta" && $access_read) {
             return $feed->get_user_feeds_with_meta($session['userid']);
-        } elseif ($route->action == "getid" && $session['read']) { 
+        } elseif ($route->action == "getid" && $access_read) { 
             $route->format = "text";
             return $feed->get_id($session['userid'],get("name"));
-        } elseif ($route->action == "create" && $session['write']) {
+        } elseif ($route->action == "create" && $access_write) {
             return $feed->create($session['userid'],get('tag'),get('name'),get('datatype'),get('engine'),json_decode(get('options')),get('unit'));
-        } elseif ($route->action == "updatesize" && $session['write']) {
+        } elseif ($route->action == "updatesize" && $access_write) {
             return $feed->update_user_feeds_size($session['userid']);
-        } elseif ($route->action == "buffersize" && $session['write']) {
+        } elseif ($route->action == "buffersize" && $access_write) {
             return $feed->get_buffer_size();
         // To "fetch" multiple feed values in a single request
         // http://emoncms.org/feed/fetch.json?ids=123,567,890
@@ -76,13 +90,13 @@ function feed_controller()
                 $feedid = (int) $feedids[$i];
                 if ($feed->exist($feedid)) {  // if the feed exists
                    $f = $feed->get($feedid);
-                   if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read'])) {
+                   if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $access_read)) {
                        $result[$i] = $feed->get_value($feedid); // null is a valid response
                    } else { $result[$i] = false; }
                 } else { $result[$i] = false; } // false means feed not found
             }
             return $result;
-        } else if ($route->action == "csvexport" && $session['write'] && isset($_GET['ids'])) {
+        } else if ($route->action == "csvexport" && $access_read && isset($_GET['ids'])) {
             // Export multiple feeds on the same csv
             // http://emoncms.org/feed/csvexport.json?ids=1,3,4,5,6,7,8,157,156,169&start=1450137600&end=1450224000&interval=10&timeformat=1
             return $feed->csv_export_multi(get('ids'),get('start'),get('end'),get('interval'),get('timeformat'),get('name'));
@@ -91,6 +105,7 @@ function feed_controller()
         // Multi feed actions
         // ----------------------------------------------------------------------------
         } else if (in_array($route->action,array("data","average"))) {
+            if (!user_has_capability('feed_read')) return array('success'=>false, 'message'=>'permission denied');
             // get data for a list of existing feeds
             $result = array('success'=>false, 'message'=>'bad parameters');
             // return $_REQUEST;
@@ -170,7 +185,7 @@ function feed_controller()
             {
                 $f = $feed->get($feedid);
                 // if public or belongs to user
-                if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $session['read']))
+                if ($f['public'] || ($session['userid']>0 && $f['userid']==$session['userid'] && $access_read))
                 {
                     if ($route->action == "timevalue") return $feed->get_timevalue($feedid);
                     else if ($route->action == "value") return $feed->get_value($feedid); // null is a valid response
@@ -192,7 +207,7 @@ function feed_controller()
                 }
 
                 // write session required
-                if (isset($session['write']) && $session['write'] && $session['userid']>0 && $f['userid']==$session['userid'])
+                if (isset($session['write']) && $access_write && $session['userid']>0 && $f['userid']==$session['userid'])
                 {
                     // Storage engine agnostic
 
