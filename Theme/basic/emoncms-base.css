@@ -217,46 +217,13 @@ body.app #wrap {
   }
 }
 
-
 html {
     scroll-behavior: smooth;
 }
 
-
-/** MOBILE FIRST RESPONSIVE MEDIA QUERIES **/
-/*-------------------------------------*/
-/* 
-// Extra small devices (portrait phones, 320px and up)
-*/
-@media (min-width: 320px) {
-    .d-xs-none{display:none!important}
+ul.nav > li > [disabled] {
+    opacity: .2!important;
 }
-/* 
-// Small devices (landscape phones, 576px and up)
-*/
-@media (min-width: 576px) {
-    .d-sm-none{display:none!important}
-}
-/* 
-// Medium devices (tablets, 768px and up)
-*/
-@media (min-width: 768px) {
-    .d-md-none{display:none!important}
-}
-/* 
-// Large devices (desktops, 992px and up)
-*/
-@media (min-width: 992px) {
-    .d-lg-none{display:none!important}
-}
-/* 
-// Extra large devices (large desktops, 1200px and up)
-*/
-@media (min-width: 1200px) {
-    .d-xl-none{display:none!important}
-}
-
-
 
 
 /** MOBILE FIRST **/
@@ -276,6 +243,9 @@ html {
 
     .d-xs-inline-block {
         display: inline-block!important;
+    }
+    .d-xs-inline {
+        display: inline!important;
     }
 }
 /* 

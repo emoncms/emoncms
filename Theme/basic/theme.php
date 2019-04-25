@@ -86,7 +86,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 
         <div id="sidebar" class="bg-dark text-light">
             <div class="sidebar-content d-flex flex-column">
-                <?php echo $sidebar; ?>
+                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
             </div>
         </div>
 
