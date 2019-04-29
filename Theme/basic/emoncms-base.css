@@ -192,6 +192,9 @@ body.app #wrap {
     border: 0;
     border-top: 1px solid currentColor;
 }
+.border-bottom{
+    border-bottom: 1px solid rgba(222, 226, 230, .5) !important
+}
 /*-------------------------------------*/
 
 
@@ -224,6 +227,18 @@ html {
 ul.nav > li > [disabled] {
     opacity: .2!important;
 }
+.alert .alert-link {
+    color: inherit;
+    opacity: .8;
+    transition: all .2s ease-in-out;
+    font-weight: bold;
+}
+.alert .alert-link:hover {
+    opacity: 1;
+    color: inherit;
+}
+
+
 
 
 /** MOBILE FIRST **/
