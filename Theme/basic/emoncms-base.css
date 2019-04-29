@@ -65,10 +65,10 @@ body.app #wrap {
 /*-------------------------------------*/
 /* @see: bootstrap 4 documentation for examples */
 /* remove margins */
-.my-0,.mb-0{margin-bottom:0!important}
-.my-0,.mt-0{margin-top:0!important}
-.mx-0,.ml-0{margin-left:0!important}
-.mx-0,.mr-0{margin-right:0!important}
+.my-0,.mb-0,.m-0{margin-bottom:0!important}
+.my-0,.mt-0,.m-0{margin-top:0!important}
+.mx-0,.ml-0,.m-0{margin-left:0!important}
+.mx-0,.mr-0,.m-0{margin-right:0!important}
 
 /*-------------------------------------*/
 /* margin top */
@@ -104,6 +104,12 @@ body.app #wrap {
 .mx-6,.ml-6{margin-left: var(--s6)!important}
 
 /*-------------------------------------*/
+/* remove padding */
+.py-0,.pb-0,.p-0{margin-bottom:0!important}
+.py-0,.pt-0,.p-0{margin-top:0!important}
+.px-0,.pl-0,.p-0{margin-left:0!important}
+.px-0,.pr-0,.p-0{margin-right:0!important}
+
 /* padding top */
 .py-1,.pt-1{padding-top: var(--s1)!important}
 .py-2,.pt-2{padding-top: var(--s2)!important}
@@ -194,6 +200,11 @@ body.app #wrap {
 }
 .border-bottom{
     border-bottom: 1px solid rgba(222, 226, 230, .5) !important
+}
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 /*-------------------------------------*/
 

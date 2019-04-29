@@ -97,6 +97,7 @@ ul#right-nav li:last-child{
 }
 a.grav-container {
   padding: .25rem!important;
+  display: block!important;
 }
 a.grav-container img.grav {
   max-height: 1.9rem;
