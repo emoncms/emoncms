@@ -198,13 +198,13 @@ body.app #wrap {
 /*-------------------------------------*/
 
 /* override topnav styling in tabs */
-.nav-tabs > li > a {
+.nav.nav-tabs > li > a {
     color: #999!important;
 }
-.nav-tabs > li.active > a {
+.nav.nav-tabs > li.active > a {
     color: #EFEFEF!important;
 }
-.nav-tabs > li > a:hover {
+.nav.nav-tabs > li > a:hover {
     color: #FFF!important;
 }
 
