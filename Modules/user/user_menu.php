@@ -32,7 +32,8 @@ if($session['userid']>0){
         'text' => _("Logout"),
         'icon' => 'logout',
         'path' => 'user/logout',
-        'order' => 4
+        'order' => 4,
+        'id' => 'logout-link'
     );
 } else {
     $menu['user'][] = array(

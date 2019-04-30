@@ -92,7 +92,6 @@ if ($session['read']) {
             'icon' => 'cog',
             'sub_items' => $sub_items
         ));
-
     }
 }
 ?>
@@ -106,7 +105,8 @@ if($session['read']){
         'title' => $session['username'],
         'href' => '#',
         'icon' => 'user',
-        'class'=> 'grav-container img-circle'
+        'class'=> 'grav-container img-circle',
+        'id'=>'user-dropdown'
     );
     $item['li_class'][] = 'menu-user';
 
