@@ -249,7 +249,9 @@ if($session['write']){ ?>
                         // bookmarks
                         // make menu item link to the original and not the bookmark 
                         foreach ($bookmarks as $item){
+                            $url_parts = parse_url($item['path']);
                             $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
+                            if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
                             $item['path'] = ''; // empty original relative path
                             echo makeListLink($item);
                         }
