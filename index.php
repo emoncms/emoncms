@@ -298,7 +298,7 @@
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {
-            $menu = load_menu();
+            $menu = function_exists('load_menu') ? load_menu(): array(); 
             $output['mainmenu'] = view($themeDir . "menu_view.php", array());
             print view($themeDir . "theme.php", $output);
         }

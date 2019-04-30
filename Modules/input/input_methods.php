@@ -49,7 +49,7 @@ class InputMethods
         } else if ($param->exists('node')) {
             $nodeid = $param->val('node');
         }
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
         if ($nodeid=="") $nodeid = 0;
         
         // Time
@@ -135,7 +135,7 @@ class InputMethods
                 return "Input in not a valid JSON object";
             }
         } else {
-            $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);
+            $json = preg_replace('/[^\p{N}\p{L}_\s\-.:,]/u','',$datain);
             $datapairs = explode(',', $json);
             
             $inputs = array();

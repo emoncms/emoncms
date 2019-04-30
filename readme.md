@@ -9,10 +9,10 @@ Emoncms is an open-source web application for processing, logging and visualisin
 
 ## Requirements
 
-- PHP (5.6 - 7 recomended) 
-- MYSQL (14.14 recomended) 
-- Apache (2.4 recomended)
-- Redis (recommended)*
+- PHP (tested with 7.0.30) 
+- MYSQL or MariaDB (tested with 15.1) 
+- Apache (tested with 2.4.25)
+- Redis* (tested with 3.2.6)
 
 _*Redis is recommended to reduces disk write load prolonging disk life (noticably on SD cards e.g. RaspberryPi). Some input-processors also require redis and fail silently if redis is not installed. Some environments such as shared hosting or as far as we have tried windows servers dont support redis hence why emoncms has a fall back mode that allows core operation without redis._
 
@@ -67,6 +67,7 @@ The following API references apply to emoncms.org they differ slightly to the AP
 
 Recommended: 
 
+* [New: Debian build script](https://github.com/openenergymonitor/emonpi/tree/master/install)
 * [Ubuntu / Debian Linux via git](docs/LinuxInstall.md)
 * [Raspberry Pi](docs/RaspberryPi/readme.md)
   * [Pre built emonSD SD-card Image Download](https://github.com/openenergymonitor/emonpi/wiki/emonSD-pre-built-SD-card-Download-&-Change-Log)
@@ -102,6 +103,12 @@ Modules can be installed by downloading or git cloning into the emoncms/Modules 
 - [RemoteAccess Module](http://github.com/emoncms/remoteaccess-client) - Emoncms Remote Access client Beta
 
 There are many other modules such as the event module and openbem (open source building energy modelling module) that are available, check out the [Emoncms repo list](https://github.com/emoncms)
+
+**3rd party modules**
+
+- [CarbonCoop: ServiceAPI module](https://github.com/carboncoop/emonCMS_serviceapi)
+- [CarbonCoop: Auth0 module](https://github.com/carboncoop/emonCMS_auth0)
+
 
 ## Branches
 
