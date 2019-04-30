@@ -93,10 +93,11 @@ $(function(){
             try{
                 // url decimal decode database value
                 var tmp = document.createElement('textarea');
-                tmp.innerHTML = response;
+                tmp.innerHTML = JSON.stringify(response);
                 var decoded = tmp.value;
                 // add user's prefs bookmarks to list
                 bookmarks = JSON.parse(decoded);
+
             } catch(e) {
                 console.error(e);
             }

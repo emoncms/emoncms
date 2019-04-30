@@ -253,6 +253,10 @@ if($session['write']){ ?>
                             $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
                             if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
                             $item['path'] = ''; // empty original relative path
+                            // highlight active bookmark
+                            if(is_current($item['href'])) {
+                                $item['li_class'][] = 'active';
+                            }
                             echo makeListLink($item);
                         }
                     ?>
