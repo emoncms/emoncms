@@ -60,8 +60,10 @@ input[type="range"]{
     <div id="feed-loader" class="ajax-loader"></div>
 
     <div id="bottomtoolbar" class="hide"><hr>
+        <?php if (user_has_capability('feed_write')) { ?>
         <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
         <button id="addnewvirtualfeed" class="btn btn-small" data-toggle="modal" data-target="#newFeedNameModal"><i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New virtual feed'); ?></button>
+        <?php } ?>
     </div>
 </div>
 
@@ -262,15 +264,17 @@ input[type="range"]{
       Hz: "Hz",
       pulses: "pulses",
       dB: "dB"
-    }},
-    'start_time':{title:"<?php echo _('Days'); ?>",type:'relative_days'},
-    // Actions
-    'edit-action':{'title':'', 'type':"edit"},
-    'delete-action':{'title':'', 'type':"delete"},
-    'view-action':{'title':'', 'type':"iconlink", 'link':path+feedviewpath},
-    'processlist-action':{'title':'', 'type':"iconconfig", 'icon':'icon-wrench'},
-    'export-action':{'title':'', 'type':"iconbasic", 'icon':'icon-download'}
+    }}
   }
+  <?php if (user_has_capability('feed_write')) { ?>
+  // Actions
+  table.fields['edit-action'] = {'title':'', 'type':"edit"};
+  table.fields['delete-action'] = {'title':'', 'type':"delete"};
+  table.fields['processlist-action'] = {'title':'', 'type':"iconbasic", 'icon':'icon-wrench'};
+  <?php } ?>
+  table.fields['view-action'] = {'title':'', 'type':"iconlink", 'link':path+feedviewpath};
+  table.fields['export-action'] = {'title':'', 'type':"iconbasic", 'icon':'icon-download'};
+  
 
   update();
 
@@ -285,6 +289,9 @@ input[type="range"]{
         if (data[z]['engine'] != 7){
           data[z]['#NO_CONFIG#'] = true;  // if the data field #NO_CONFIG# is true, the field type: iconconfig will be ommited from the table row
         }
+        <?php if (!user_has_capability('feed_write')) { ?>        
+        data[z]['#READ_ONLY#'] = true;
+        <?php } ?>
       }
       table.draw();
       $('#feed-loader').hide();
@@ -312,6 +319,7 @@ input[type="range"]{
   }
   updaterStart(update, 5000);
 
+  <?php if (user_has_capability('feed_write')) { ?>
   $("#table").bind("onEdit", function(e){
     updaterStart(update, 0);
   });
@@ -427,6 +435,7 @@ input[type="range"]{
   $(document).on('keyup', '#table td[field="unit"] input:text', function(event){
     event.target.value = event.target.value.substring(0,10);
   });
+  <?php } ?>
 
   // Export feature
   $("#table").on("click",".icon-circle-arrow-down,.icon-download", function(){
@@ -566,7 +575,10 @@ input[type="range"]{
     return new Date(date[2],date[1]-1,date[0],time[0],time[1],time[2],0).getTime() / 1000;
   }
 
+  // Process list UI js
+  processlist_ui.init(1); // is virtual feed
 
+  <?php if (user_has_capability('feed_write')) { ?>
   // Virtual Feed feature
   $("#newfeed-save").click(function (){
     var newfeedname = $('#newfeed-name').val();
@@ -587,9 +599,6 @@ input[type="range"]{
     }
   });
 
-  // Process list UI js
-  processlist_ui.init(1); // is virtual feed
-
   $("#table").on('click', '.icon-wrench', function() {
     var i = table.data[$(this).attr('row')];
     console.log(i);
@@ -605,6 +614,7 @@ input[type="range"]{
     var result = feed.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('<?php echo _('ERROR: Could not save processlist.'); ?> '+result.message); }
   });
+  <?php } ?>
 
 /**
  * triggered on input change

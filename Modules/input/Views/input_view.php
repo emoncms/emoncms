@@ -57,9 +57,6 @@
 	'processList':{'title':'<?php echo _("Process list"); ?>','type':"group-processlist"},
 	'time':{'title':"<?php echo _('Updated'); ?>", 'type':"group-updated"},
 	'dummy-6':{'title':'', 'type':"blank"},
-	'dummy-7':{'title':'', 'type':"blank"},
-	'dummy-8':{'title':'', 'type':"blank"},
-	'dummy-9':{'title':'', 'type':"blank"}
   }
 
   table.deletedata = false;
@@ -70,12 +67,17 @@
 	'description':{'title':'<?php echo _("Description"); ?>','type':"text"},
 	'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
 	'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
-	'value':{'title':'<?php echo _("Value"); ?>','type':"value"},
-	// Actions
-	'edit-action':{'title':'', 'type':"edit"},
-	'delete-action':{'title':'', 'type':"delete"},
-	'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'}
+	'value':{'title':'<?php echo _("Value"); ?>','type':"value"}
   }
+  <?php if (user_has_capability('input_write')) { ?>
+  // Actions
+  table.fields['edit-action'] = {'title':'', 'type':"edit"};
+  table.fields['delete-action'] = {'title':'', 'type':"delete"};
+  table.fields['view-action'] = {'title':'', 'type':"iconbasic", 'icon':'icon-wrench'};
+  table.groupfields['dummy-7'] = {'title':'', 'type':"blank"};
+  table.groupfields['dummy-8'] = {'title':'', 'type':"blank"};
+  table.groupfields['dummy-9'] = {'title':'', 'type':"blank"};
+  <?php } ?>
 
   setTimeout(update,50);
 
@@ -106,6 +108,10 @@
   }
   updaterStart(update, 10000);
 
+  // Process list UI js
+  processlist_ui.init(0); // Set input context
+
+  <?php if (user_has_capability('input_write')) { ?>
   $("#table").bind("onEdit", function(e){
 	updaterStart(update, 0);
   });
@@ -132,10 +138,6 @@
 	}
   });
 
- 
-  // Process list UI js
-  processlist_ui.init(0); // Set input context
-
   $("#table").on('click', '.icon-wrench', function() {
 	var i = table.data[$(this).attr('row')];
 	// console.log(i);
@@ -160,4 +162,5 @@
 	var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
 	if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
   });
+  <?php } ?>
 </script>

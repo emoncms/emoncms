@@ -114,9 +114,11 @@ input[type="checkbox"] { margin:0px; }
     
     <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
         <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+        <?php if (user_has_capability('input_write')) { ?>
         <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
         <button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
         <a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
+        <?php } ?>
     </div>
     
     <div id="auth-check" class="hide">
@@ -254,6 +256,8 @@ function draw_devices()
 
     var latest_update = [];
 
+    <?php $emptyDiv = user_has_capability('device_write') || user_has_capability('input_write'); ?>
+
     for (var node in devices) {
         var device = devices[node]
         counter++
@@ -276,7 +280,11 @@ function draw_devices()
         if (device.devicekey=="") devicekey = "No device key created"; 
         
         out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
+        <?php if (user_has_capability('device_write')) { ?>
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
+        <?php } else if ($emptyDiv){ ?>
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'></div>";
+        <?php } ?>
         out += "     </div>";
         out += "  </div>";
 
@@ -289,7 +297,9 @@ function draw_devices()
 
             out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+">";
             out += "  <div class='select text-center' data-col='B'>";
+            <?php if (user_has_capability('input_write')) { ?>
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
+            <?php } ?>
             out += "  </div>";
             out += "  <div class='name' data-col='A'>"+input.name+"</div>";
             out += "  <div class='description' data-col='G'>"+input.description+"</div>";
@@ -298,7 +308,11 @@ function draw_devices()
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
             out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
             out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
+            <?php if (user_has_capability('input_write')) { ?>
             out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
+            <?php } else if ($emptyDiv) { ?>
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'></div>";
+            <?php } ?>
             out += "  </div>";
             out += "</div>";
         }
@@ -354,28 +368,6 @@ $('#wrap').on("device-delete",function() { update(); });
 $('#wrap').on("device-init",function() { update(); });
 $('#device-new').on("click",function() { device_dialog.loadConfig(device_templates); });
 
-$("#table").on("click select",".input-select",function(e) {
-    input_selection();
-});
-  
-function input_selection() 
-{
-    selected_inputs = {};
-    var num_selected = 0;
-    $(".input-select").each(function(){
-        var id = $(this).attr("id");
-        selected_inputs[id] = $(this)[0].checked;
-        if (selected_inputs[id]==true) num_selected += 1;
-    });
-
-    if (num_selected>0) {
-        $(".input-delete,.input-edit").removeClass('hide');
-    } else {
-        $(".input-delete,.input-edit").addClass('hide');
-    }
-
-}
-
 // column title buttons ---
 
 $("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
@@ -423,6 +415,28 @@ $("#table").on("click",".device-configure",function(e) {
 
 
 // selection buttons ---
+<?php if (user_has_capability('input_write')) { ?>
+$("#table").on("click select",".input-select",function(e) {
+    input_selection();
+});
+
+function input_selection()
+{
+    selected_inputs = {};
+    var num_selected = 0;
+    $(".input-select").each(function(){
+        var id = $(this).attr("id");
+        selected_inputs[id] = $(this)[0].checked;
+        if (selected_inputs[id]==true) num_selected += 1;
+    });
+
+    if (num_selected>0) {
+        $(".input-delete,.input-edit").removeClass('hide');
+    } else {
+        $(".input-delete,.input-edit").addClass('hide');
+    }
+
+}
 
 $(".input-delete").click(function(){
       $('#inputDeleteModal').modal('show');
@@ -479,6 +493,7 @@ $("#inputEditModal").on('show',function(e){
     showStatus.clear();
     update();
 })
+<?php } ?>
 // return fields object that matches the api requirements
 function serializeInputData(form){
     let formData = $(form).serializeArray();
@@ -632,10 +647,11 @@ $("#inputDelete-confirm").off('click').on('click', function(){
     update();
     $('#inputDeleteModal').modal('hide');
 });
- 
+
 // Process list UI js
 processlist_ui.init(0); // Set input context
 
+<?php if (user_has_capability('input_write')) { ?>
 $("#table").on('click', '.configure', function() {
     var i = inputs[$(this).attr('id')];
     var contextid = i.id; // Current Input ID
@@ -659,7 +675,7 @@ $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
 });
-
+<?php } ?>
 // -------------------------------------------------------------------------------------------------------
 // Device authentication transfer
 // -------------------------------------------------------------------------------------------------------

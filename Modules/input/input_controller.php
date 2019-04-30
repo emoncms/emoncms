@@ -15,10 +15,19 @@
 function input_controller()
 {
     global $mysqli, $redis, $user, $session, $route, $feed_settings,$param,$device;
-    
+
     // requires at least read access
     if (!isset($session['read'])) return false;
     if (!$session['read']) return false;
+
+    if (!user_has_capability('input_enabled')) {
+        http_response_code(403);
+        $route->format = "json";
+        return array('content' => 'Permission denied');
+    }
+
+    $access_write = user_has_capability('input_write') && $session['write'];
+    $access_read = user_has_capability('input_read') && $session['read'];
 
     $result = false;
 
@@ -31,7 +40,7 @@ function input_controller()
     require_once "Modules/process/process_model.php";
     $process = new Process($mysqli,$input,$feed,$user->get_timezone($session['userid']));
 
-    if (!$device) {
+    if (!$device && user_has_capability('device_enabled')) {
         if (file_exists("Modules/device/device_model.php")) {
             require_once "Modules/device/device_model.php";
             $device = new Device($mysqli,$redis);
@@ -45,7 +54,7 @@ function input_controller()
     $route->format = "json"; 
 
     // Write access level
-    if ($session["write"])
+    if ($access_write)
     {
         // ------------------------------------------------------------------------
         // input/post
@@ -62,7 +71,7 @@ function input_controller()
             }
             return $result;
         }
-        
+
         // ------------------------------------------------------------------------
         // input/bulk
         // ------------------------------------------------------------------------
@@ -78,7 +87,7 @@ function input_controller()
             }
             return $result;
         }
-        // ------------------------------------------------------------------------  
+        // ------------------------------------------------------------------------
         else if ($route->action == "clean") {
             $route->format = 'text';
             return $input->clean($session['userid']);
@@ -90,13 +99,13 @@ function input_controller()
         {
             if ($route->action == 'set') return $input->set_fields(get('inputid'),get('fields'));
             else if ($route->action == "delete") return $input->delete($session['userid'],get("inputid"));
-            else if ($route->action == "process") 
+            else if ($route->action == "process")
             {
                 if ($route->subaction == "get") return $input->get_processlist(get("inputid"));
                 else if ($route->subaction == "set") return $input->set_processlist($session['userid'], get('inputid'), post('processlist'),$process->get_process_list());
                 else if ($route->subaction == "reset") return $input->reset_processlist(get("inputid"));
             }
-        }    
+        }
         // Multiple input actions - permissions are checked within model
         else if (isset($_GET['inputids'])) {
             if ($route->action == "delete") {
@@ -104,15 +113,22 @@ function input_controller()
                 if ($inputids!=null) return $input->delete_multiple($session['userid'],$inputids);
             }
         }
-        
+        else if ($device && $route->action == 'schedule') {
+            $route->format = "html";
+            textdomain("messages");
+            return view("Modules/input/Views/schedule.php", array());
+        }
+    }
+
+    if ($access_read) {
         // -------------------------------------------------------------------------
         // HTML Web pages
         // -------------------------------------------------------------------------
-        else if ($route->action == 'api') {
+        if ($route->action == 'api') {
             $route->format = "html";
             textdomain("messages");
             return view("Modules/input/Views/input_api.php", array());
-        }    
+        }
         else if ($route->action == 'view') {
             $route->format = "html";
             textdomain("messages");
@@ -122,16 +138,11 @@ function input_controller()
             } else {
                 return view("Modules/input/Views/input_view.php", array());
             }
-        }    
-        else if ($device && $route->action == 'schedule') {
-            $route->format = "html";
-            textdomain("messages");
-            return view("Modules/input/Views/schedule.php", array());
         }
     }
-    
+
     // Read access
-    
+
     // --------------------------------------------
     // Fetch inputs by node and node variable names
     // --------------------------------------------
@@ -141,7 +152,7 @@ function input_controller()
     // input/get?node=emontx&name=power1      {"time":0,"value":0}
     // input/get/emontx/power1                {"time":0,"value":0}
         
-    if ($route->action == "get") {
+    if (($route->action == "get") && $access_read) {
         $dbinputs = $input->get_inputs_v2($session['userid']);
         
         if (!$route->subaction && !isset($_GET['node'])) {
