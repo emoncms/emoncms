@@ -68,7 +68,7 @@ function controller($controller_name)
     return $output;
 }
 
-function view($filepath, array $args)
+function view($filepath, array $args = array())
 {
     extract($args);
     ob_start();
