@@ -37,10 +37,10 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <link href="<?php echo $path; ?>Theme/basic/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
     
     <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/misc/sidebar.css" rel="stylesheet">
+    <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js"></script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
 
     <script>
         window.onerror = function(msg, source, lineno, colno, error) {
