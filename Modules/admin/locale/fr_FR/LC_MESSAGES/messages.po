@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-19 22:06+0100\n"
-"PO-Revision-Date: 2019-02-19 22:06+0100\n"
+"POT-Creation-Date: 2019-05-01 12:41+0200\n"
+"PO-Revision-Date: 2019-05-01 12:41+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -75,97 +75,129 @@ msgstr "Utilisateurs"
 msgid "Administer user accounts"
 msgstr "Administration des comptes utilisateurs"
 
-#: ../../../admin_main_view.php:216 ../../../update_view.php:22
-msgid "Update database"
-msgstr "Mise à jour de la base de données"
+#: ../../../admin_main_view.php:218 ../../../admin_main_view.php:222
+msgid "Update All"
+msgstr "Tout mettre à jour"
 
-#: ../../../admin_main_view.php:217
+#: ../../../admin_main_view.php:219
+msgid "OS, Packages, EmonHub, Emoncms & Firmware (If new version)"
+msgstr "OS, Paquets, EmonHub, Emoncms & Firmware (Si nouvelle version)"
+
+#: ../../../admin_main_view.php:228
+msgid "Emoncms Only"
+msgstr "Emoncms Seulement"
+
+#: ../../../admin_main_view.php:229
+msgid "Emoncms, Emoncms Modules and Services"
+msgstr "Emoncms, Modules Emoncms et Services"
+
+#: ../../../admin_main_view.php:233
+msgid "Update Emoncms"
+msgstr "Mettre à jour Emoncms"
+
+#: ../../../admin_main_view.php:239
+msgid "EmonHub Only"
+msgstr "EmonHub Seulement"
+
+#: ../../../admin_main_view.php:243
+msgid "Update EmonHub"
+msgstr "Mettre à jour EmonHub"
+
+#: ../../../admin_main_view.php:249
+msgid "Update Firmware Only"
+msgstr "Mettre à jour Firmware Seulement"
+
+#: ../../../admin_main_view.php:250
+msgid "Select your hardware type and firmware version"
+msgstr "Sélectionner votre type de matériel et la version du firmware"
+
+#: ../../../admin_main_view.php:255
+msgid "Update Firmware"
+msgstr "Mettre à jour Firmware"
+
+#: ../../../admin_main_view.php:261
+msgid "MySQL Database Only"
+msgstr "Base de données MySQL Seulement"
+
+#: ../../../admin_main_view.php:262
 msgid ""
-"Run this after updating emoncms, after installing a new module or to check "
-"emoncms database status."
+"Run this after a manual emoncms update, after installing a new module or to "
+"check emoncms database status."
 msgstr ""
 "Lancez cette commande après une mise à jour de Emoncms, après l'installation "
-"d'un nouveau module ou pour tester l'intégrité de la base de données."
+"d'un nouveau module ou pour vérifier le statut de la base de données."
 
-#: ../../../admin_main_view.php:220
-msgid "Update & check"
-msgstr "Mise à jour & Analyse"
+#: ../../../admin_main_view.php:265
+msgid "Update Database"
+msgstr "Mettre à jour de la base de données"
 
-#: ../../../admin_main_view.php:231
+#: ../../../admin_main_view.php:279
 msgid "Logger"
 msgstr "Enregistreur"
 
-#: ../../../admin_main_view.php:235
+#: ../../../admin_main_view.php:283
 msgid "View last entries on the logfile:"
 msgstr "Vue des dernières entrées dans le fichier journal :"
 
-#: ../../../admin_main_view.php:246
+#: ../../../admin_main_view.php:294
 msgid "Auto refresh"
 msgstr "Rafraîchissement automatique"
 
-#: ../../../admin_main_view.php:247 ../../../admin_main_view.php:277
+#: ../../../admin_main_view.php:295
 msgid "Download Log"
 msgstr "Télécharger le journal"
 
-#: ../../../admin_main_view.php:248
+#: ../../../admin_main_view.php:296
 msgid "Copy Log to clipboard"
 msgstr "Copier journal dans presse-papier"
 
-#: ../../../admin_main_view.php:268
-msgid "Update"
-msgstr "Mise à jour"
-
-#: ../../../admin_main_view.php:275
-msgid "emonPi Update"
-msgstr "Mise à jour emonPi"
-
-#: ../../../admin_main_view.php:276
-msgid "emonBase Update"
-msgstr "Mise à jour emonBase"
-
-#: ../../../admin_main_view.php:293
+#: ../../../admin_main_view.php:311
 msgid "Server Information"
 msgstr "Informations Serveur"
 
-#: ../../../admin_main_view.php:294
+#: ../../../admin_main_view.php:312
 msgid "Copy Server Information to clipboard"
 msgstr "Copier Informations Serveur dans presse-papier"
 
-#: ../../../admin_main_view.php:301
+#: ../../../admin_main_view.php:319
 msgid "Kill"
 msgstr ""
 
-#: ../../../admin_main_view.php:302
+#: ../../../admin_main_view.php:320
 msgid "Restart"
 msgstr "Redémarrer"
 
-#: ../../../admin_main_view.php:303
+#: ../../../admin_main_view.php:321
 msgid "Stop"
 msgstr "Arrêter"
 
-#: ../../../admin_main_view.php:304
+#: ../../../admin_main_view.php:322
 msgid "Start"
 msgstr "Démarrer"
 
-#: ../../../admin_main_view.php:358
+#: ../../../admin_main_view.php:376
 msgid "Flush"
 msgstr ""
 
-#: ../../../admin_main_view.php:426
+#: ../../../admin_main_view.php:444
 msgid "Read-Write"
 msgstr "Lecture-Écriture"
 
-#: ../../../admin_main_view.php:432
+#: ../../../admin_main_view.php:450
 msgid "Read-Only"
 msgstr "Lecture-seulement"
 
-#: ../../../admin_main_view.php:493
+#: ../../../admin_main_view.php:516
 msgid "Client Information"
 msgstr "Informations Client"
 
-#: ../../../admin_main_view.php:524
+#: ../../../admin_main_view.php:547
 msgid "Copy to clipboard: Ctrl+C, Enter"
 msgstr "Copier dans le presse-papier : Ctrl+C, Entrée"
+
+#: ../../../update_view.php:22
+msgid "Update database"
+msgstr "Mise à jour de la base de données"
 
 #: ../../../update_view.php:27
 msgid "Apply changes"
@@ -230,6 +262,15 @@ msgstr "Rechercher"
 #: ../../../userlist_view.php:52
 msgid "Feeds"
 msgstr "Flux"
+
+#~ msgid "Update & check"
+#~ msgstr "Mise à jour & Analyse"
+
+#~ msgid "emonPi Update"
+#~ msgstr "Mise à jour emonPi"
+
+#~ msgid "emonBase Update"
+#~ msgstr "Mise à jour emonBase"
 
 #~ msgid "Shutdown Unsupported"
 #~ msgstr "Redémarrage non supporté"
