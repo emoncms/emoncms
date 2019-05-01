@@ -92,8 +92,10 @@ function set_lang($language)
 
 function set_lang_by_user($lang)
 {
-    putenv("LC_ALL=$lang".'.UTF8');
-    setlocale(LC_ALL,$lang.'.UTF8');
+    $locale = $lang.'.UTF8';
+    define(LC_MESSAGES, $locale);
+    putenv("LC_ALL=$locale");
+    setlocale(LC_ALL, $locale);
 }
 
 function set_emoncms_lang($lang)

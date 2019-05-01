@@ -8,17 +8,6 @@ Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 
 */
-html, body {
-    height: 100%;
-}
-
-#wrap {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    /* Negative indent footer by it's height */
-    margin: 0 auto -40px;
-}
 
 .body-login {
     background-color: #1d8dbc;

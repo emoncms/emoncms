@@ -10,7 +10,7 @@
     http://openenergymonitor.org
 
     */
-
+    
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 
@@ -24,6 +24,8 @@
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
+    $sidebarFixed = true;
+
     require "Lib/EmonLogger.php";
     $log = new EmonLogger(__FILE__);
     if (isset($_GET['q'])) $log->info($_GET['q']);
@@ -298,8 +300,42 @@
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {
-            $menu = function_exists('load_menu') ? load_menu(): array(); 
-            $output['mainmenu'] = view($themeDir . "menu_view.php", array());
+            $menu = load_menu();
+            
+            // EMONCMS MENU
+            $menu['tabs'][] = array(
+                'icon'=>'menu',
+                'title'=> _("Emoncms"),
+                'path' => 'feed/list',
+                'order' => 0,
+                'data'=> array(
+                    'sidebar' => '#sidebar_emoncms'
+                )
+            );
+
+            include ("Lib/misc/nav_functions.php");
+            sortMenu($menu);
+            // debugMenu('sidebar');
+            
+            $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
+            
+            // add css class names to <body> tag based on controller's options
+            $output['page_classes'][] = $route->controller;
+            
+            if($fullwidth) $output['page_classes'][] = 'fullwidth';
+
+            if($session['read']){
+                $output['sidebar'] = view($themeDir . "sidebar_view.php", 
+                array(
+                    'menu' => $menu,
+                    'path' => $path,
+                    'session' => $session,
+                    'route' => $route
+                ));
+                $output['page_classes'][] = 'has-sidebar';
+            }
+            
+
             print view($themeDir . "theme.php", $output);
         }
     }
