@@ -208,8 +208,12 @@ $(function(){
                     if(!remove) {
                         // add new item to menu
                         $($template.html()).appendTo($menu)
-                        .find('a').attr('href', path+currentPage)
+                        .find('a').attr({
+                            href: path+currentPage,
+                            title: currentTitle
+                        })
                         .text(currentTitle).hide().fadeIn();
+                        $('#sidebar_user_dropdown').trigger('bookmarks:updated');
                         $nav.fadeIn();
 
                     } else {
@@ -220,6 +224,7 @@ $(function(){
                             if(relative === currentPage) {
                                 $li.animate({height:0},function(){
                                     $(this).remove();
+                                    $('#sidebar_user_dropdown').trigger('bookmarks:updated');
                                     setTimeout(function(){
                                         if($menu.find('li').length == 0) {
                                             $nav.fadeOut();
