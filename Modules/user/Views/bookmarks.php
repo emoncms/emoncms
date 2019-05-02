@@ -1,13 +1,12 @@
 <h2><?php echo _("Bookmarks") ?></h2>
-<p class="lead"><?php echo _("You can bookmark any page by clicking the star while on the page") ?></p>
-<p><?php echo _("Bookmarked dashboards can be managed here") ?> 
-<a href="<?php echo $path ?>dashboard/list" class="btn btn-default"><?php echo _('Dashboards') ?></a>
+<p class="lead">
+    <?php echo _("You can bookmark any page you're on by clicking the star icon (top right)") ?>
 </p>
 <?php if (!empty($bookmarks)) : ?>
 <h4><?php echo _('Rename or remove your bookmarks') ?></h4>
 <ul id="bookmarks" class="list-group" style="display: inline-block">
 <?php foreach($bookmarks as $b): ?>
-    <li href="#" class="list-group-item bookmark">
+    <li class="list-group-item bookmark">
     <form class="form-inline mb-0" data-read>
         <div class="controls controls-row d-flex align-items-center">
             <input class="span3" data-mode-edit type="text" data-path="<?php echo $b['path'] ?>" value="<?php echo $b['text'] ?>">
@@ -22,6 +21,23 @@
 <?php endforeach; ?>
 </ul>
 <?php endif; ?>
+
+<template id="list-group-item">
+    <li class="list-group-item bookmark">
+        <form class="form-inline mb-0" data-read>
+            <div class="controls controls-row d-flex align-items-center">
+                <input class="span3" data-mode-edit type="text" data-path="" value="">
+                <button type="submit" data-mode-edit class="btn btn-primary ml-2"><?php echo _("Save") ?></button>
+                <button type="button" data-cancel data-mode-edit class="btn btn-default ml-2"><?php echo _("Cancel") ?></button>
+
+                <a class="span6 mb-0 ml-0" data-title title="" href="" data-mode-read></a>
+                <button type="button" data-delete data-mode-read class="btn btn-danger ml-2 pull-right" title="<?php echo _("Delete") ?>">
+                    <svg class="icon icon-bin"><use xlink:href="#icon-bin"></use></svg>
+                </button>
+            </div>
+        </form>
+    </li>
+</template>
 
 <style>
 .list-group{
@@ -173,7 +189,8 @@ $(function(){
                 if(response.success && response.success !== false) {
                     $form.find('[data-title]').text(bookmarkText);
                     $('#sidebar_user_dropdown li a').each(function(n,elem){
-                        if(elem.href===path+bookmarkPath) {
+                        // rename changed items
+                        if(elem.href===path+bookmarkPath && elem.innerText !== bookmarkText) {
                             $(elem).fadeOut(function(){
                                 $(this).text(bookmarkText).fadeIn();
                             })
@@ -186,6 +203,37 @@ $(function(){
             });
         });
         event.preventDefault();
+    })
+    // update view's bookmarks list on change of sidebar items
+    $('#sidebar_user_dropdown').on('bookmarks:updated', function(event){
+        console.log(event.type);
+        $sidebar = $(event.target);
+        $bookmarks = $('#bookmarks');
+        $template = $('#list-group-item');
+
+        $bookmarks.fadeOut('fast',function(){
+            $(this).empty().fadeIn();
+            delay = 0;
+            $items = [];
+            $.each($sidebar.children(), function(i, elem){
+                $item = $(elem).find('a');
+                href = $item.attr('href');
+                title = $item.attr('title');
+                text = $item.text();
+                $tmp = $($template.html());
+                $items[i] = $tmp.appendTo($bookmarks).hide();
+                $items[i].find('[data-title]')
+                    .text(text)
+                    .attr('href', href)
+                    .attr('title', title);
+                $items[i].find('input').val(text).data('path',href.replace(path,''));
+                setTimeout( function(){ 
+                    $items[i].fadeIn('fast')
+                 }, delay)
+                 delay += 200;
+            });
+        });
+
     })
 })
 function editMode($form, editMode) {
