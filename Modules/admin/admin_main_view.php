@@ -40,16 +40,17 @@
      */
     function bar($width,$label,$summary) {
         $pattern = <<<eot
+        <h5 class="m-0">%s</h5>
         <div class="progress progress-info mb-0">
-            <div class="bar" style="width: %s%%">
-                %s
-            </div>
+            <div class="bar" style="width: %s%%"></div>
         </div>
 eot;
-        $markup = sprintf($pattern, $width, $label);
+        $markup = sprintf($pattern, $label, $width);
+        $markup .= '<p class="m-0">';
         foreach($summary as $key=>$value) {
             $markup .= "\n<strong>$key</strong> $value";
         }
+        $markup .= '</p>';
         return $markup;
     }
     /**
