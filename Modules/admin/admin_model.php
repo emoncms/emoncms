@@ -255,6 +255,7 @@ class Admin {
             $rpi_info['gputemp'] = @exec('/opt/vc/bin/vcgencmd measure_temp');
             if(strpos($rpi_info['gputemp'], 'temp=' ) !== false ){
                 $rpi_info['gputemp'] = str_replace("temp=","", $rpi_info['gputemp']);
+                $rpi_info['gputemp'] = str_replace("'C","°C", $rpi_info['gputemp']);
             }else{
                 $rpi_info['gputemp'] = "N/A";
                 $rpi_info['gputemp'] .= _(" (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )");
