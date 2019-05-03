@@ -178,11 +178,7 @@
  ?>
 <style>
 pre {
-    width:100%;
-    height:300px;
-
-    margin:0px;
-    padding:0px;
+    height:20rem;
     color:#fff;
     background-color:#300a24;
     overflow: scroll;
@@ -196,122 +192,275 @@ pre {
     padding-left:20px;
     padding-top:20px;
 }
-
+.border-top{
+    border-color: #dee2e6
+}
+select{
+    width: auto;
+}
 table tr td.buttons { text-align: right;}
 table tr td.subinfo { border-color:transparent;}
+
+.bg-success{
+    background-color: #D0E9C6;
+}
+.bg-danger{
+    background-color: #EBCCCC;
+}
+.badge-danger{
+    background-color: #DC3545;
+}
+.col-4 {
+    -ms-flex: 0 0 33.333333%;
+    flex: 0 0 33.333333%;
+    flex-grow: 0;
+    flex-basis: 33.3333%;
+    max-width: 33.333333%;
+}
+.col-8 {
+    -ms-flex: 0 0 66.666667%;
+    flex: 0 0 66.666667%;
+    flex-grow: 0;
+    flex-basis: 66.6667%;
+    max-width: 66.666667%;
+}
+dl {
+    margin: 0
+}
+dl dt,dl dd{
+    border-top: 1px solid #ddd;
+    padding: .2em 0;
+}
+dl dt:first-child, dl dt:first-child + dd,
+dl > dl dt:first-child, dl > dl dt:first-child + dd{
+    border-top: 0px solid #ddd;
+}
+dl dd:last-child{
+    margin-bottom: 1em;
+}
+.admin .row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin: 0;
+}
+[class*="col-"]{
+    position: relative;
+    width: 100%;
+    margin: 0;
+}
+.label:empty, .badge:empty {
+    display: inline-block;
+    padding: 1.2em 0 0 1.2em;
+    vertical-align: middle;
+}
+.caret {
+    border-top-color: currentColor!important;
+}
+
+@media (min-width: 768px) {
+    .d-md-flex {
+        display: flex !important;
+    }
+    .pb-md-0{
+        padding-bottom: 0!important
+    }
+    .mb-md-2{
+        margin-bottom: var(--s2) !important;
+    }
+}
 </style>
 <h2><?php echo _('Administration'); ?></h2>
-<table class="table table-hover">
-    <tr>
-        <td>
-            <h3><?php echo _('Users'); ?></h3>
-            <p><?php echo _('Administer user accounts'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
-        </td>
-    </tr>
 
-    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>    
-    <tr>
-        <td>
-            <h3><?php echo _('Update All'); ?></h3>
-            <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <a class="update btn btn-info" type="all"><?php echo _('Update All'); ?></a>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('Emoncms Only'); ?></h4>
-            <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
-            <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
-        </td>
-        <td class="buttons"><br>
-            <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('EmonHub Only'); ?></h4>
-            <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
-        </td>
-        <td class="buttons"><br>
-            <a class="update btn btn-info" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('Update Firmware Only'); ?></h4>
-            <p><?php echo _('Select your hardware type and firmware version'); ?></p>
-            <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
-        </td>
-        <td class="buttons"><br>
-            <div class="input-append"><select id="selected_firmware"><option value="emonpi">EmonPi</option><option value="rfm69pi">RFM69Pi</option><option value="rfm12pi">RFM12Pi</option><option value="custom">Custom</option></select>
-            <button class="update btn btn-info" type="firmware"><?php echo _('Update Firmware'); ?></button></div>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('MySQL Database Only'); ?></h4>
-            <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
-    </tr>
-    <?php } ?>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 text-right">
+    <div class="text-left">
+        <h3><?php echo _('Users'); ?></h3>
+    </div>
+    <a href="<?php echo $path; ?>admin/users" class="btn btn-info btn-large"><?php echo _('Users'); ?></a>
+</div>
+<?php if ($admin_show_update || $allow_emonpi_admin) { ?>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right">
+    <div class="text-left">
+        <h3><?php echo _('Update All'); ?></h3>
+        <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
+    </div>
+    <div class="btn-group">
+      <button class="update btn btn-info btn-large"><?php echo _('Update All'); ?></button>
+      <button class="btn dropdown-toggle btn-info btn-large" data-toggle="dropdown">
+        <span class="caret text-black"></span>
+      </button>
+      <ul class="dropdown-menu">
+            <li><a href="#" title="<?php echo _('Emoncms, Emoncms Modules and Services'); ?>"><?php echo _('Emoncms Only'); ?></a></li>
+            <li><a href="#" title=""><?php echo _('EmonHub Only'); ?></a></li>
+            <li><a href="#" title="<?php echo _('Select your hardware type and firmware version'); ?>"><?php echo _('Update Firmware Only'); ?></a></li>
+            <li><a href="#" title="<?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?>"><?php echo _('MySQL Database Only'); ?></a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="update" title="<?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>"><?php echo _('Update All'); ?></a></li>
+      </ul>
+    </div>
+</div>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <div class="text-left">
+        <h4 class="text-info text-uppercase pt-2"><?php echo _('Emoncms Only'); ?></h4>
+        <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
+        <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
+    </div>
+    <a class="update btn btn-default" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
+</div>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <div class="text-left">
+        <h4 class="text-info text-uppercase pt-2"><?php echo _('EmonHub Only'); ?></h4>
+        <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
+    </div>
+    <a class="update btn btn-default" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
+</div>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <div class="text-left">
+        <h4 class="text-info text-uppercase pt-2"><?php echo _('Update Firmware Only'); ?></h4>
+        <p><?php echo _('Select your hardware type and firmware version'); ?></p>
+        <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
+    </div>
+    <div class="input-append">
+        <select id="selected_firmware">
+            <option value="emonpi">EmonPi</option>
+            <option value="rfm69pi">RFM69Pi</option>
+            <option value="rfm12pi">RFM12Pi</option>
+            <option value="custom">Custom</option>
+        </select>
+        <button class="update btn btn-default" type="firmware"><?php echo _('Update Firmware'); ?></button>
+    </div>
+</div>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <div class="text-left span6 ml-0">
+        <h4 class="text-info text-uppercase pt-2"><?php echo _('MySQL Database Only'); ?></h4>
+        <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
+    </div>
+    <a href="<?php echo $path; ?>admin/db" class="btn btn-default"><?php echo _('Update Database'); ?></a>
+</div>
 
-<?php if ($log_enabled) { ?>
-    <tr colspan="2" >
-        <td colspan="2" >
-            <table class="table table-condensed" style="background-color: transparent">
-            <tr>
-                <td style="border-top: 0px">
-                    <h3><?php echo _('Logger'); ?></h3>
-                    <p>
-<?php
-if(is_writable($log_filename)) {
-                    echo _('View last entries on the logfile:').$log_filename;
-} else {
-                    echo '<div class="alert alert-warn">';
-                    echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
-                    echo '<small></div>';
-} ?>
-                    </p>
-                </td>
-                <td class="buttons" style="border-top: 0px">
-<?php if(is_writable($log_filename)) { ?>
-                    <br>
-                    <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
-                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
-                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+<pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre>
+
 <?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" ><pre id="logreply-bound"><div id="logreply"></div></pre></td>
-            </tr>
-            </table>
-        </td>
-    </tr>
+
+<?php 
+// LOG FILE VIEWER
+// -------------------
+if ($log_enabled) { ?>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right">
+    <div class="text-left">
+        <h3><?php echo _('Logger'); ?></h3>
+        <p><?php
+        if(is_writable($log_filename)) {
+            echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$log_filename);
+        } else {
+            echo '<div class="alert alert-warn">';
+            echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
+            echo '<small></div>';
+        } ?></p>
+    </div>
+    <div>
+        <?php if(is_writable($log_filename)) { ?>
+            <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
+            <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
+            <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+        <?php } ?>
+    </div>
+</div>
+<pre id="logreply-bound"><div id="logreply"></div></pre>
 <?php } ?>
+
+<?php 
+// SERVER INFO
+// -------------------
+?>
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 text-right">
+    <div class="text-left">
+        <h3><?php echo _('Server Information'); ?></h3>
+    </div>
+    <button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button>
+</div>
+
+<div id="serverinformationtabular"></div>
+
+<h4 class="text-info text-uppercase border-top pt-2" class="border-top"><?php echo _('Services'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate"><span class="badge-success badge" title="Active"></span> emonhub</dt>
+    <dd class="col-8"><strong>Active</strong> Running</dd>
+    <dt class="col-4 text-truncate"><span class="badge-danger badge" title="Inactive"></span> mqtt_input</dt>
+    <dd class="col-8"><strong>Inactive</strong> Dead</dd>
+    <dt class="col-4 text-truncate"><span class="badge-success badge" title="Active"></span> redis-server</dt>
+    <dd class="col-8"><strong>Active</strong> Running</dd>
+    <dt class="col-4 text-truncate"><span class="badge-success badge" title="Active"></span>  mosquitto</dt>
+    <dd class="col-8"><strong>Active</strong> Running</dd>
+</dl>
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Emoncms'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">Version</dt>
+    <dd class="col-8">10.0.0-beta</dd>
+    <dt class="col-4 text-truncate">Modules</dt>
+    <dd class="col-8">Administration | App v2.0.0 | Backup v1.1.6 | EmonHub Config v1.1.0 | Dashboard v1.3.3 | demandshaper | Device v1.2.1 | EventProcesses | Feed | find | Graph v2.0.0 | Group v1.0.0 | Input | Postprocess v1.0.0 | CoreProcess | remoteaccess | Schedule | sync | Time | User | Visualisation | WiFi v1.3.1</dd>
+    <dt class="col-4 text-truncate">Git</dt>
+    <dd class="col-8">
+        <dl class="row">
+            <dt class="col-4 text-truncate">URL</dt>
+            <dd class="col-8">git@github.com:emrysr/emoncms.git</dd>
+            <dt class="col-4 text-truncate">Branch</dt>
+            <dd class="col-8"> * master</dd>
+            <dt class="col-4 text-truncate">Describe</dt>
+            <dd class="col-8">9.9.9-86-g0fc0a4c4</dd>
+        </dl>
+    </dd>
+</dl>
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Server'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">OS</dt>
+    <dd class="col-8">Host</dd>
+    <dt class="col-4 text-truncate">Date</dt>
+    <dd class="col-8">2019-05-03 11:12:15 BST</dd>
+    <dt class="col-4 text-truncate">Uptime</dt>
+    <dd class="col-8">11:12:15 up 20:51, 1 user, load average: 1.46, 1.60, 1.59</dd>
+</dl>
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">Server</dt>
+    <dd class="col-8">Apache/2.4.29 (Ubuntu) HTTP/1.1 CGI/1.1 80</dd>
+</dl>
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MySQL'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">Version</dt>
+    <dd class="col-8">5.7.25-0ubuntu0.18.04.2</dd>
+    <dt class="col-4 text-truncate">Host</dt>
+    <dd class="col-8">localhost (127.0.0.1)</dd>
+</dl>
+
+
+<h3><?php echo _('Client Information'); ?></h3>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">Browser</dt>
+    <dd class="col-8">Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0</dd>
+</dl>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Screen'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">Resolution</dt>
+    <dd class="col-8">1600 x 900</dd>
+</dl>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Window'); ?></h4>
+<dl class="row">
+    <dt class="col-4 text-truncate">Size</dt>
+    <dd class="col-8">986 x 765</dd>
+</dl>
+
+<table id="content" class="table table-hover d-none">
 
     <tr colspan=2>
-        <td colspan=2>
-            <div>
-             <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
-             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button></div>
             </div>
-            <table class="table table-hover table-condensed" id="serverinformationtabular">
+            <table class="table table-hover table-condensed" id="serverinformationtabular2">
               <tr><td><b>Services</b></td><td></td><td></td></tr>
             <!--
               <tr>
@@ -552,6 +701,7 @@ var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':')
 var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
 
 $("#copyserverinfo").on('click', function(event) {
+    // @todo: notify user that data is copied to clipboard
     if ( event.ctrlKey ) {
         copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
     } else {

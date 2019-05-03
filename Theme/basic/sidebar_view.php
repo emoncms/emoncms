@@ -216,7 +216,7 @@ SIDEBARSTART;
 ?>
 
 <?php
-// sidebar user shortcut footer menu
+// sidebar bookmarks menu footer menu
 $user_bookmarks = $user->getUserBookmarks($session['userid']);
 if(!empty($user_bookmarks)) {
     $bookmarks = array_merge($bookmarks, $user_bookmarks);

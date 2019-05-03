@@ -28,12 +28,24 @@ Top nav
   margin: 0;
 }
 #emoncms-navbar .navbar-inner {
-  height: 2.75rem;
+  /* height: 2.75rem; */
   padding: 0 !important;
 }
 #emoncms-navbar .navbar-inner .nav {
-  font-size: 1.5rem;
+  font-size: 1.25rem;
 }
+.navbar .nav > li > a {
+  padding: .6em;
+}
+@media screen and (min-width: 380px) {
+  #emoncms-navbar .navbar-inner .nav {
+    font-size: 1.5rem;
+  }
+  .navbar .nav > li > a {
+    padding: .415em .626em;
+  }
+}
+
 #emoncms-navbar .navbar-inner .nav ul li{
     font-size: 1.1rem;
 }
@@ -92,15 +104,15 @@ Sidebar sub menus----------------------------------------------------*/
 gravitar icon in toolbar
 --------------------------------------------------------------------*/
 ul#right-nav li:last-child{
-    padding-right: .175rem;
-    padding-left: .175rem;
+  padding-right: .125em;
+  padding-left: .125em;
 }
 a.grav-container {
-  padding: .25rem!important;
+  padding: .25em!important;
   display: block!important;
 }
 a.grav-container img.grav {
-  max-height: 1.9rem;
+  max-height: 1.2em;
 }
 a.grav-container img.grav {
   border: 2px solid #ccc;
@@ -121,7 +133,7 @@ a.is_admin.grav-container:hover img.grav {
   line-height: 1.37em;
   border: 2px solid #ccc;
   overflow: hidden;
-  margin: 0.2rem;
+  margin: 0.2em;
 }
 .no-gravitar a.grav-container .icon.user {
   font-size: 1.66em;

@@ -64,6 +64,12 @@ body.app #wrap {
 }
 /*-------------------------------------*/
 /* @see: bootstrap 4 documentation for examples */
+.m-1{padding: var(--s1)}
+.m-2{padding: var(--s2)}
+.m-3{padding: var(--s3)}
+.m-4{padding: var(--s4)}
+.m-5{padding: var(--s5)}
+.m-6{padding: var(--s6)}
 /* remove margins */
 .my-0,.mb-0,.m-0{margin-bottom:0!important}
 .my-0,.mt-0,.m-0{margin-top:0!important}
@@ -104,6 +110,13 @@ body.app #wrap {
 .mx-6,.ml-6{margin-left: var(--s6)!important}
 
 /*-------------------------------------*/
+.p-1{padding: var(--s1)}
+.p-2{padding: var(--s2)}
+.p-3{padding: var(--s3)}
+.p-4{padding: var(--s4)}
+.p-5{padding: var(--s5)}
+.p-6{padding: var(--s6)}
+
 /* remove padding */
 .py-0,.pb-0,.p-0{margin-bottom:0!important}
 .py-0,.pt-0,.p-0{margin-top:0!important}
@@ -147,15 +160,12 @@ body.app #wrap {
 .d-inline{display:inline!important}
 .d-inline-block{display:inline-block!important}
 
-/* flexbox classes */
-.d-flex{
-    display:flex!important
-}
 .text-uppercase {
     text-transform: uppercase;
 }
 
 /* "bs4 style" utility styles */
+/* flexbox */
 .d-flex {
     display: flex !important;
 }
@@ -166,15 +176,34 @@ body.app #wrap {
 .justify-content-center {
     justify-content: center !important;
 }
+.justify-content-end {
+    -ms-flex-pack: end !important;
+    justify-content: flex-end !important;
+}
 .align-items-center {
     align-items: center !important;
 }
 .align-items-end {
     align-items: flex-end !important;
 }
-
+.align-items-stretch {
+    -ms-flex-align: stretch !important;
+    align-items: stretch !important;
+}
+.flex-row {
+    -ms-flex-direction: row !important;
+    flex-direction: row !important;
+}
 .flex-column {
     flex-direction: column !important;
+}
+.flex-fill {
+    flex: 1 1 auto !important;
+}
+/* sizing */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
 }
 .h-100 {
     height: 100% !important;
@@ -182,6 +211,7 @@ body.app #wrap {
 .w-100 {
     width: 100% !important;
 }
+/* colours */
 .bg-dark {
     background: #333 !important;
 }
@@ -191,9 +221,7 @@ body.app #wrap {
 .text-light {
     color: #f8f9fa !important;
 }
-.flex-fill {
-    flex: 1 1 auto !important;
-}
+/* borders */
 .border-top{
     border: 0;
     border-top: 1px solid currentColor;
@@ -201,6 +229,7 @@ body.app #wrap {
 .border-bottom{
     border-bottom: 1px solid rgba(222, 226, 230, .5) !important
 }
+/* text cut offs */
 .text-truncate {
     overflow: hidden;
     text-overflow: ellipsis;
