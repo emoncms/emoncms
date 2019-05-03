@@ -373,18 +373,16 @@ if ($log_enabled) { ?>
 <h3><?php echo _('Client Information'); ?></h3>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
 <dl class="row">
-    <dt class="col-sm-2 col-4 text-truncate" title="full name">Browser</dt>
-    <dd class="col-sm-10 col-8"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></dd>
-</dl>
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Screen'); ?></h4>
-<dl class="row">
-    <dt class="col-sm-2 col-4 text-truncate" title="full name">Resolution</dt>
-    <dd class="col-sm-10 col-8"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></dd>
+    <?php echo row(_('Browser'), $_SERVER['HTTP_USER_AGENT']); ?>
+    <?php echo row(_('Language'), $_SERVER['HTTP_ACCEPT_LANGUAGE']); ?>
 </dl>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Window'); ?></h4>
 <dl class="row">
-    <dt class="col-sm-2 col-4 text-truncate" title="full name">Size</dt>
-    <dd class="col-sm-10 col-8"><span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span></dd>
+    <?php echo row(_('Size'), '<span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span>'); ?>
+</dl>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Screen'); ?></h4>
+<dl class="row">
+    <?php echo row(_('Resolution'), "<script>document.write(window.screen.width + ' x ' + window.screen.height);</script>"); ?>
 </dl>
 
 
