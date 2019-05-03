@@ -374,17 +374,17 @@ if ($log_enabled) { ?>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
 <dl class="row">
     <dt class="col-sm-2 col-4 text-truncate" title="full name">Browser</dt>
-    <dd class="col-sm-10 col-8">Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0</dd>
+    <dd class="col-sm-10 col-8"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></dd>
 </dl>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Screen'); ?></h4>
 <dl class="row">
     <dt class="col-sm-2 col-4 text-truncate" title="full name">Resolution</dt>
-    <dd class="col-sm-10 col-8">1600 x 900</dd>
+    <dd class="col-sm-10 col-8"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></dd>
 </dl>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Window'); ?></h4>
 <dl class="row">
     <dt class="col-sm-2 col-4 text-truncate" title="full name">Size</dt>
-    <dd class="col-sm-10 col-8">986 x 765</dd>
+    <dd class="col-sm-10 col-8"><span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span></dd>
 </dl>
 
 
