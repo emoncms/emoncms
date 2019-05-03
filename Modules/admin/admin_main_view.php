@@ -20,8 +20,14 @@
     /**
      * Shutdown button
      */
+    function ShutdownBtn(){
+        return '<button id="haltPi" class="btn btn-danger btn-small">'._('Shutdown').'</button>';
+    }
+    /**
+     * Reboot button
+     */
     function RebootBtn(){
-        return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
+        return '<button id="rebootPi" class="btn btn-warning btn-small mr-1">'._('Reboot').'</button>';
     }
 
     /**
@@ -321,7 +327,7 @@ if ($log_enabled) { ?>
 <?php if (!empty(implode('',$rpi_info))) : ?>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Pi'); ?></h4>
 <dl class="row">
-    <?php echo row(_('Model'),  $rpi_info['model']) ?>
+    <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
     <?php echo row(_('SoC'), $rpi_info['hw']) ?>
     <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
     <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
