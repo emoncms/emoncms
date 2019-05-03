@@ -1,181 +1,65 @@
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
+<?php
+    /**
+     * View specific functions
+     *
+     */
 
-  // Retrieve server information
-  $system = system_information();
 
-  /**
-   * get running status of service
-   *
-   * @param string $name
-   * @return mixed true == running | false == stopped | null == not installed
-   */
-  function getServiceStatus($name) {
-    @exec('systemctl show '.$name.' | grep State', $exec);
-    $status = array();
-    
-    foreach ($exec as $line) {
-        $parts = explode('=',$line);
-        $status[$parts[0]] = $parts[1];
+    /**
+     * return bytes as suitable unit
+     * 
+     * @param number $bytes
+     * @return string
+     */
+    function formatSize( $bytes ){
+        $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
+        for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+        return( round( $bytes, 2 ) . " " . $types[$i] );
     }
-    if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
-        $return = null;
-    } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
-        return array(
-            'ActiveState' => $status["ActiveState"],
-            'SubState' => $status["SubState"]
-        );
-    } else {
-       $return = null;
+  
+    /**
+     * Shutdown button
+     */
+    function RebootBtn(){
+        return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
     }
-    return $return;
-  }
 
-  function system_information() {
-    global $mysqli, $server, $redis_server, $mqtt_server;
-    $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
-    $db = $result->fetch_array();
-
-    @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-
-    $services = array();
-    $services['emonhub'] = getServiceStatus('emonhub.service');
-    $services['mqtt_input'] = getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
-    $services['emoncms_mqtt'] = getServiceStatus('emoncms_mqtt.service');
-    $services['feedwriter'] = getServiceStatus('feedwriter.service');
-    $services['service-runner'] = getServiceStatus('service-runner.service');
-    $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
-    $services['redis-server'] = getServiceStatus('redis-server.service');
-    $services['mosquitto'] = getServiceStatus('mosquitto.service');
-
-    //@exec("hostname -I", $ip); $ip = $ip[0];
-    $meminfo = false;
-    if (@is_readable('/proc/meminfo')) {
-      $data = explode("\n", file_get_contents("/proc/meminfo"));
-      $meminfo = array();
-      foreach ($data as $line) {
-          if (strpos($line, ':') !== false) {
-              list($key, $val) = explode(":", $line);
-              $meminfo[$key] = 1024 * floatval( trim( str_replace( ' kB', '', $val ) ) );
-          }
-      }
-    }
-    $emoncms_modules = "";
-    $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
-    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
-        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;|&nbsp;";
-        if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
-          $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
-          $jsonAppName = $json->{'name'};
-          $jsonVersion = $json->{'version'};
-          if ($jsonAppName) {
-            $emoncmsModuleFolder = $jsonAppName;
-          }
-          if ($jsonVersion) {
-            $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
-          }
+    /**
+     * output a progress bar with the labels and summery below
+     *
+     * @param number $width
+     * @param string $label
+     * @param array $summary key/value pairs to show below the progress bar
+     * @return string
+     */
+    function bar($width,$label,$summary) {
+        $pattern = <<<eot
+        <div class="progress progress-info mb-0">
+            <div class="bar" style="width: %s%%">
+                %s
+            </div>
+        </div>
+eot;
+        $markup = sprintf($pattern, $width, $label);
+        foreach($summary as $key=>$value) {
+            $markup .= "\n<strong>$key</strong> $value";
         }
-        $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
+        return $markup;
     }
-    return array('date' => date('Y-m-d H:i:s T'),
-                 'system' => $system,
-                 'kernel' => $kernel,
-                 'host' => $host,
-                 'ip' => server('SERVER_ADDR'),
-                 'uptime' => @exec('uptime'),
-                 'http_server' => $_SERVER['SERVER_SOFTWARE'],
-                 'php' => PHP_VERSION,
-                 'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                 'db_server' => $server,
-                 'db_ip' => gethostbyname($server),
-                 'db_version' => $mysqli->server_info,
-                 'db_stat' => $mysqli->stat(),
-                 'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
-
-                 'redis_server' => $redis_server['host'].":".$redis_server['port'],
-                 'redis_ip' => gethostbyname($redis_server['host']),
-                 
-                 'services' => $services,
-                 
-                 'mqtt_server' => $mqtt_server['host'],
-                 'mqtt_ip' => gethostbyname($mqtt_server['host']),
-                 'mqtt_port' => $mqtt_server['port'],
-
-                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
-                 'http_proto' => $_SERVER['SERVER_PROTOCOL'],
-                 'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
-                 'http_port' => $_SERVER['SERVER_PORT'],
-                 'php_modules' => get_loaded_extensions(),
-                 'mem_info' => $meminfo,
-                 'partitions' => disk_list(),
-                 'emoncms_modules' => $emoncms_modules,
-                 'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
-                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
-                 'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
-                 );
-  }
-
-  function formatSize( $bytes ){
-    $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
-    for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
-    return( round( $bytes, 2 ) . " " . $types[$i] );
-  }
-
-  // Shutdown / Reboot Code Handler
-  if (isset($_POST['shutdownPi'])) {
-      $shutdownPi = htmlspecialchars(stripslashes(trim($_POST['shutdownPi'])));
-  }
-  if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
-
-  //Shutdown button
-  function RebootBtn(){
-      return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
-  }
-
-  function disk_list()
-  {
-      $partitions = array();
-      // Fetch partition information from df command
-      // I would have used disk_free_space() and disk_total_space() here but
-      // there appears to be no way to get a list of partitions in PHP?
-      $output = array();
-      @exec('df --block-size=1', $output);
-      foreach($output as $line)
-      {
-        $columns = array();
-        foreach(explode(' ', $line) as $column)
-        {
-          $column = trim($column);
-          if($column != '') $columns[] = $column;
-        }
-
-        // Only process 6 column rows
-        // (This has the bonus of ignoring the first row which is 7)
-        if(count($columns) == 6)
-        {
-          $partition = $columns[5];
-          $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
-          $partitions[$partition]['Partition']['text'] = $partition;
-          $partitions[$partition]['FileSystem']['text'] = $columns[0];
-          if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
-          {
-            $partitions[$partition]['Size']['value'] = $columns[1];
-            $partitions[$partition]['Free']['value'] = $columns[3];
-            $partitions[$partition]['Used']['value'] = $columns[2];
-          }
-          else
-          {
-            // Fallback if we don't get numerical values
-            $partitions[$partition]['Size']['text'] = $columns[1];
-            $partitions[$partition]['Used']['text'] = $columns[2];
-            $partitions[$partition]['Free']['text'] = $columns[3];
-          }
-        }
-      }
-      return $partitions;
-  }
-
- ?>
+    /**
+     * return html for single admin page title/value row
+     * @param string $title shown as the row title
+     * @param string $value shown as the row value
+     * @param string $title_css list of css classes to add to the title container
+     * @param string $value_css list of css classes to add to the value container
+     */
+    function row($title, $value, $title_css = '', $value_css='') {
+        return <<<listItem
+        <dt class="col-sm-2 col-4 text-truncate {$title_css}">{$title}</dt>
+        <dd class="col-sm-10 col-8 {$value_css}">{$value}</dd>
+listItem;
+    }
+?>
 <style>
 pre {
     height:20rem;
@@ -210,20 +94,7 @@ table tr td.subinfo { border-color:transparent;}
 .badge-danger{
     background-color: #DC3545;
 }
-.col-4 {
-    -ms-flex: 0 0 33.333333%;
-    flex: 0 0 33.333333%;
-    flex-grow: 0;
-    flex-basis: 33.3333%;
-    max-width: 33.333333%;
-}
-.col-8 {
-    -ms-flex: 0 0 66.666667%;
-    flex: 0 0 66.666667%;
-    flex-grow: 0;
-    flex-basis: 66.6667%;
-    max-width: 66.666667%;
-}
+
 dl {
     margin: 0
 }
@@ -245,11 +116,7 @@ dl dd:last-child{
     flex-wrap: wrap;
     margin: 0;
 }
-[class*="col-"]{
-    position: relative;
-    width: 100%;
-    margin: 0;
-}
+
 .label:empty, .badge:empty {
     display: inline-block;
     padding: 1.2em 0 0 1.2em;
@@ -258,16 +125,13 @@ dl dd:last-child{
 .caret {
     border-top-color: currentColor!important;
 }
-
-@media (min-width: 768px) {
-    .d-md-flex {
-        display: flex !important;
-    }
-    .pb-md-0{
-        padding-bottom: 0!important
-    }
-    .mb-md-2{
-        margin-bottom: var(--s2) !important;
+.dropdown-menu-right{
+    right: 0!important;
+    left: initial;
+}
+@media (min-width: 480px) {
+    .dropdown-backdrop {
+        display:none!important;
     }
 }
 </style>
@@ -276,21 +140,22 @@ dl dd:last-child{
 <div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 text-right">
     <div class="text-left">
         <h3><?php echo _('Users'); ?></h3>
+        <p><?php echo _('See a list of registered users') ?></p>
     </div>
-    <a href="<?php echo $path; ?>admin/users" class="btn btn-info btn-large"><?php echo _('Users'); ?></a>
+    <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
 </div>
 <?php if ($admin_show_update || $allow_emonpi_admin) { ?>
 <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right">
     <div class="text-left">
-        <h3><?php echo _('Update All'); ?></h3>
+        <h3><?php echo _('Updates'); ?></h3>
         <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
     </div>
     <div class="btn-group">
-      <button class="update btn btn-info btn-large"><?php echo _('Update All'); ?></button>
-      <button class="btn dropdown-toggle btn-info btn-large" data-toggle="dropdown">
+      <button class="update btn btn-info"><?php echo _('Update All'); ?></button>
+      <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
         <span class="caret text-black"></span>
       </button>
-      <ul class="dropdown-menu">
+      <ul class="dropdown-menu dropdown-menu-right">
             <li><a href="#" title="<?php echo _('Emoncms, Emoncms Modules and Services'); ?>"><?php echo _('Emoncms Only'); ?></a></li>
             <li><a href="#" title=""><?php echo _('EmonHub Only'); ?></a></li>
             <li><a href="#" title="<?php echo _('Select your hardware type and firmware version'); ?>"><?php echo _('Update Firmware Only'); ?></a></li>
@@ -349,7 +214,7 @@ dl dd:last-child{
 if ($log_enabled) { ?>
 <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right">
     <div class="text-left">
-        <h3><?php echo _('Logger'); ?></h3>
+        <h3><?php echo _('Emoncms Log'); ?></h3>
         <p><?php
         if(is_writable($log_filename)) {
             echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$log_filename);
@@ -374,7 +239,7 @@ if ($log_enabled) { ?>
 // SERVER INFO
 // -------------------
 ?>
-<div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 text-right">
+<div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 border-top text-right">
     <div class="text-left">
         <h3><?php echo _('Server Information'); ?></h3>
     </div>
@@ -382,295 +247,142 @@ if ($log_enabled) { ?>
 </div>
 
 <div id="serverinformationtabular"></div>
-
-<h4 class="text-info text-uppercase border-top pt-2" class="border-top"><?php echo _('Services'); ?></h4>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Services'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate"><span class="badge-success badge" title="Active"></span> emonhub</dt>
-    <dd class="col-8"><strong>Active</strong> Running</dd>
-    <dt class="col-4 text-truncate"><span class="badge-danger badge" title="Inactive"></span> mqtt_input</dt>
-    <dd class="col-8"><strong>Inactive</strong> Dead</dd>
-    <dt class="col-4 text-truncate"><span class="badge-success badge" title="Active"></span> redis-server</dt>
-    <dd class="col-8"><strong>Active</strong> Running</dd>
-    <dt class="col-4 text-truncate"><span class="badge-success badge" title="Active"></span>  mosquitto</dt>
-    <dd class="col-8"><strong>Active</strong> Running</dd>
+    <?php
+    foreach ($services as $key=>$value):
+        echo row(
+            sprintf('<span class="badge-%2$s badge"></span> %1$s', $key, $value['cssClass']),
+            sprintf('<strong>%s</strong> %s', $value['state'], $value['text'])
+        );
+    endforeach;
+?>
 </dl>
 
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Emoncms'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">Version</dt>
-    <dd class="col-8">10.0.0-beta</dd>
-    <dt class="col-4 text-truncate">Modules</dt>
-    <dd class="col-8">Administration | App v2.0.0 | Backup v1.1.6 | EmonHub Config v1.1.0 | Dashboard v1.3.3 | demandshaper | Device v1.2.1 | EventProcesses | Feed | find | Graph v2.0.0 | Group v1.0.0 | Input | Postprocess v1.0.0 | CoreProcess | remoteaccess | Schedule | sync | Time | User | Visualisation | WiFi v1.3.1</dd>
-    <dt class="col-4 text-truncate">Git</dt>
-    <dd class="col-8">
-        <dl class="row">
-            <dt class="col-4 text-truncate">URL</dt>
-            <dd class="col-8">git@github.com:emrysr/emoncms.git</dd>
-            <dt class="col-4 text-truncate">Branch</dt>
-            <dd class="col-8"> * master</dd>
-            <dt class="col-4 text-truncate">Describe</dt>
-            <dd class="col-8">9.9.9-86-g0fc0a4c4</dd>
-        </dl>
-    </dd>
+    <?php echo row(_('Version'),$emoncms_version); ?>
+    <?php echo row(_('Modules'), $emoncms_modules); ?>
+    <?php
+    $git_parts = array(
+        row(_('URL'), $system['git_URL']),
+        row(_('Branch'), $system['git_branch']),
+        row(_('Describe'), $system['git_describe'])
+    );
+    $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
+?>
+    <?php echo row(_('Git'), $git_details); ?>
 </dl>
+
 
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Server'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">OS</dt>
-    <dd class="col-8">Host</dd>
-    <dt class="col-4 text-truncate">Date</dt>
-    <dd class="col-8">2019-05-03 11:12:15 BST</dd>
-    <dt class="col-4 text-truncate">Uptime</dt>
-    <dd class="col-8">11:12:15 up 20:51, 1 user, load average: 1.46, 1.60, 1.59</dd>
+    <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
+    <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
+    <?php echo row(_('Date'), $system['date']); ?>
+    <?php echo row(_('Uptime'), $system['uptime']); ?>
 </dl>
 
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">Server</dt>
-    <dd class="col-8">Apache/2.4.29 (Ubuntu) HTTP/1.1 CGI/1.1 80</dd>
+    <?php echo row(_('Server'), $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']); ?>
 </dl>
 
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MySQL'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">Version</dt>
-    <dd class="col-8">5.7.25-0ubuntu0.18.04.2</dd>
-    <dt class="col-4 text-truncate">Host</dt>
-    <dd class="col-8">localhost (127.0.0.1)</dd>
+    <?php echo row(_('Version'), $system['db_version']); ?>
+    <?php echo row(_('Host'), $system['redis_server'] . ' (' . $system['redis_ip'] . ')'); ?>
+    <?php echo row(_('Date'), $system['db_date']); ?>
+    <?php echo row(_('Stats'), $system['db_stat']); ?>
 </dl>
 
+<?php if ($redis_enabled) : ?>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Redis'); ?></h4>
+<dl class="row">
+    <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
+    <?php echo row(_('Host'), $system['redis_server']); ?>
+    <?php 
+    $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
+    $redis_keys = sprintf('%s keys',$redis->dbSize());
+    $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
+    echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
+    <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
+</dl>
+<?php endif; ?>
+
+<?php if ($mqtt_enabled) : ?>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MQTT Server'); ?></h4>
+<dl class="row">
+    <?php echo row(_('Version'), sprintf(_('Mosquitto %s'), $mqtt_version)) ?>
+    <?php echo row(_('Host'), sprintf('%s:%s (%s)', $system['mqtt_server'], $system['mqtt_port'], $system['mqtt_ip'])); ?>
+</dl>
+<?php endif; ?>
+
+<?php if (!empty(implode('',$rpi_info))) : ?>
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Pi'); ?></h4>
+<dl class="row">
+    <?php echo row(_('Model'),  $rpi_info['model']) ?>
+    <?php echo row(_('SoC'), $rpi_info['hw']) ?>
+    <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
+    <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
+    <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
+    <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
+</dl>
+<?php endif; ?>
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Memory'); ?></h4>
+<dl class="row">
+    <?php 
+    $summary = array(
+        'Total'=>formatSize($system['mem_info']['MemTotal']),
+        'Used'=>formatSize($ram_info['used']),
+        'Free'=>formatSize($system['mem_info']['MemTotal'] - $ram_info['used'])
+    );
+    echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), $summary));
+    ?>
+</dl>
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Disk'); ?></h4>
+<dl class="row">
+    <?php 
+    foreach($mount_info as $mount_info) {
+        echo row($mount_info['mountpoint'], 
+            bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
+                'Total'=>formatSize($mount_info['total']),
+                'Used'=>formatSize($mount_info['used']),
+                'Free'=>formatSize($mount_info['free'])
+            ))
+        );
+    }
+    ?>
+</dl>
+
+
+<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('PHP'); ?></h4>
+<dl class="row">
+<?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
+<?php echo row(_('Modules'), implode(' | ', $php_modules)); ?>
+</dl>
 
 <h3><?php echo _('Client Information'); ?></h3>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">Browser</dt>
-    <dd class="col-8">Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0</dd>
+    <dt class="col-sm-2 col-4 text-truncate" title="full name">Browser</dt>
+    <dd class="col-sm-10 col-8">Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:66.0) Gecko/20100101 Firefox/66.0</dd>
 </dl>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Screen'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">Resolution</dt>
-    <dd class="col-8">1600 x 900</dd>
+    <dt class="col-sm-2 col-4 text-truncate" title="full name">Resolution</dt>
+    <dd class="col-sm-10 col-8">1600 x 900</dd>
 </dl>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Window'); ?></h4>
 <dl class="row">
-    <dt class="col-4 text-truncate">Size</dt>
-    <dd class="col-8">986 x 765</dd>
+    <dt class="col-sm-2 col-4 text-truncate" title="full name">Size</dt>
+    <dd class="col-sm-10 col-8">986 x 765</dd>
 </dl>
 
-<table id="content" class="table table-hover d-none">
 
-    <tr colspan=2>
-            </div>
-            <table class="table table-hover table-condensed" id="serverinformationtabular2">
-              <tr><td><b>Services</b></td><td></td><td></td></tr>
-            <!--
-              <tr>
-                <td>
-                <button id="emonhub-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
-                <button id="emonhub-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
-                <button id="emonhub-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
-                </td>
-              </tr>
-            -->
-              <?php
-              // create array of installed services
-              $services = array();
-              foreach($system['services'] as $key=>$value) {
-                  if (!is_null($system['services'][$key])) {
-                      $services[$key] = array(
-                          'state' => ucfirst($value['ActiveState']),
-                          'text' => ucfirst($value['SubState']),
-                          'cssClass' => $value['SubState']==='running' ? 'success': 'error',
-                          'running' => $value['SubState']==='running'
-                      );
-                  }
-              }
-              
-              // add custom messages for feedwriter service
-              if(isset($services['feedwriter'])) {
-                  $message = '<font color="red">Service is not running</font>';
-                  if ($services['feedwriter']['running']) {
-                    $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
-                  }
-                  $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
-              }
-              // render list as html rows <tr>
-              foreach ($services as $key=>$value):
-              echo <<<services
-              <tr class="{$value['cssClass']}"><td class="subinfo"></td><td>{$key}</td><td><strong>{$value['state']}</strong> {$value['text']}</td><td></td>
-              </tr>
-services;
-              endforeach;
-?>
-              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
 
-              <tr><td><b>Server</b></td><td>OS</td><td><?php echo $system['system'] . ' ' . $system['kernel']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['date']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $system['uptime']; ?></td></tr>
-
-              <tr><td><b>HTTP</b></td><td>Server</td><td colspan="2"><?php echo $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']; ?></td></tr>
-
-              <tr><td><b>MySQL</b></td><td>Version</td><td><?php echo $system['db_version']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['db_date']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Stats</td><td><?php echo $system['db_stat']; ?></td></tr>
-<?php
-if ($redis_enabled) {
-?>
-              <tr><td><b>Redis</b></td><td>Version</td><td><?php echo $redis->info()['redis_version']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['redis_server'] . ' (' . $system['redis_ip'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Size</td><td><span id="redisused"><?php echo $redis->dbSize() . " keys  (" . $redis->info()['used_memory_human'].")";?></span><button id="redisflush" class="btn btn-info btn-small pull-right"><?php echo _('Flush'); ?></button></td></tr>
-              <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $redis->info()['uptime_in_days'] . " days"; ?></td></tr>
-<?php
-}
-if ($mqtt_enabled) {
-?>
-              <tr><td><b>MQTT Server</b></td><td>Version</td><td>Mosquitto <?php if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\''); } } ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
-<?php
-}
-
-// Raspberry Pi
-if ( @exec('ifconfig | grep b8:27:eb:') ) {
-
-    $rpi_info = array();
-    $rpi_info['model'] = "Unknown";
-    if (@is_readable('/proc/cpuinfo')) {
-      //load model information
-      $rpi_revision = array();
-      if (@is_readable(__DIR__."/pi-model.json")) { 
-        $rpi_revision = json_decode(file_get_contents(__DIR__."/pi-model.json"), true);  
-        foreach ($rpi_revision as $k => $rev) {
-          if(empty($rev['Code'])) continue;
-          $rpi_revision[$rev['Code']] = $rev;
-          unset($rpi_revision[$k]);
-        }
-      }
-      //get cpu info
-      preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
-      $rpi_info['hw'] = "Broadcom ".$matches[2][0];
-      $rpi_info['rev'] = $matches[2][1];
-      $rpi_info['sn'] = $matches[2][2];
-      //build model string
-      if(!empty($rpi_revision[$rpi_info['rev']]))  {
-        $model_info = $rpi_revision[$rpi_info['rev']];
-        $rpi_info['model'] = "Raspberry Pi ";
-        $model = $model_info['Model'];
-        if (ctype_digit($model[0])) { //Raspberry Pi >= 2
-           $ver = $model[0];
-           $model = substr($model, 1);
-           $rpi_info['model'] .= $ver." Model ".$model;
-        }
-        else if (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
-           $rpi_info['model'] .= " Compute Module";
-           if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2]; 
-        }
-        else { //Raspberry Pi
-           $rpi_info['model'] .= " Model ".$model;
-        }
-        $rpi_info['model'] .= " Rev ".$model_info['Revision']." - ".$model_info['RAM']." (".$model_info['Manufacturer'].")";
-      }
-    }
-              echo "<tr><td><b>Pi</b></td><td>Model</td><td>".$rpi_info['model']."</td></tr>\n";
-              if(!empty($rpi_info['hw'])) echo "<tr><td class=\"subinfo\"></td><td>SoC</td><td>".$rpi_info['hw']."</td></tr>\n";
-              if(!empty($rpi_info['sn'])) echo "<tr><td class=\"subinfo\"></td><td>Serial num.</td><td>".strtoupper(ltrim($rpi_info['sn'], '0'))."</td></tr>\n";
-              $cputmp = number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
-              $gputmp = @exec('/opt/vc/bin/vcgencmd measure_temp');
-              if(strpos($gputmp, 'temp=' ) !== false ){
-                $gputmp = " - GPU: ".str_replace("temp=","", $gputmp);
-              }
-              else $gputmp = " - GPU: N/A"." (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )";
-               echo "<tr><td class=\"subinfo\"></td><td>Temperature</td><td>CPU: ".$cputmp.$gputmp.RebootBtn()."</td></tr>\n";
-    if (glob('/boot/emonSD-*')) {
-              foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
-                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
-              }
-              if (isset($emonpiRelease)) {
-                 $currentfs = "<b>read-only</b>"; 
-                 $btnactionfs = "<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button>";
-                 exec('mount', $resexec);
-                 $matches = null;
-                 preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
-                 if (!empty($matches)) {
-                     $currentfs = "<b>read-write</b>"; 
-                     $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
-                 } 
-                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                 
-                 if (file_exists('/usr/bin/rpi-rw')) {
-                    echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
-                 }
-               }
-      
-      }
-}
-
-// Ram information
-if ($system['mem_info']) {
-              $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
-              $sysRamPercentRaw = ($sysRamUsed / $system['mem_info']['MemTotal']) * 100;
-              $sysRamPercent = sprintf('%.2f',$sysRamPercentRaw);
-              $sysRamPercentTable = number_format(round($sysRamPercentRaw, 2), 2, '.', '');
-              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercentTable."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
-              echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."</td></tr>\n";
-
-              if ($system['mem_info']['SwapTotal'] > 0) {
-                $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree'];
-                $sysSwapPercentRaw = ($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100;
-                $sysSwapPercent = sprintf('%.2f',$sysSwapPercentRaw);
-                $sysSwapPercentTable = number_format(round($sysSwapPercentRaw, 2), 2, '.', '');
-                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercentTable."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
-                echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
-              }
-}
-// Filesystem Information
-                if (count($system['partitions']) > 0) {
-                    echo "<tr><td><b>Disk</b></td><td><b>Mount</b></td><td><b>Stats</b></td></tr>\n";
-                    foreach($system['partitions'] as $fs) {
-                      if (!$fs['Temporary']['bool'] && $fs['FileSystem']['text']!= "none" && $fs['FileSystem']['text']!= "udev") {
-                        $diskFree = $fs['Free']['value'];
-                        $diskTotal = $fs['Size']['value'];
-                        $diskUsed = $fs['Used']['value'];
-                        $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
-                        $diskPercent = sprintf('%.2f',$diskPercentRaw);
-                        $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
-                        if (strlen($fs['Partition']['text'])>30) {
-                          $mountpoint = substr($fs['Partition']['text'],0,30)."...";
-                        } else {
-                          $mountpoint = $fs['Partition']['text'];
-                        }
-                        
-                        echo "<tr><td class='subinfo'></td><td>".$mountpoint."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercentTable."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
-                        echo "<b>Total:</b> ".formatSize($diskTotal)."<b> Used:</b> ".formatSize($diskUsed)."<b> Free:</b> ".formatSize($diskFree)."</td></tr>\n";
-
-                      }
-                    }
-                }
-
-?>
-              <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php 
-              natcasesort($system['php_modules']);// sort case insensitive
-              $modules = [];// empty list
-              foreach($system['php_modules'] as $ver=>$extension){
-                $module_version = phpversion($extension);// returns false if no version information
-                $modules[] = $module_version ? "$extension v$module_version" : $extension; // show version if available
-              }
-              echo implode(' | ', $modules);//isplay list with | separator
-              ?></td></tr>
-            </table>
-            <h3><?php echo _('Client Information'); ?></h3>
-            <table class="table table-hover table-condensed">
-              <tr><td><b>HTTP</b></td><td>Browser</td><td colspan="2"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></td></tr>
-              <tr><td><b>Screen</b></td><td>Resolution</td><td colspan="2"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></td></tr>
-              <tr><td><b>Window</b></td><td>Size</td><td colspan="2"><span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span></td></tr>
-            </table>
-        </td>
-    </tr>
-</table>
 <script>
 function copyTextToClipboard(text) {
   var textArea = document.createElement("textarea");
@@ -691,6 +403,7 @@ function copyTextToClipboard(text) {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
     console.log('Copying text command was ' + msg);
+    // todo@: notify user of success
   } 
   catch(err) {
     window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
@@ -721,7 +434,6 @@ $("#copylogfile").on('click', function(event) {
 $(window).resize(function() {
   $("#windowsize").html( $(window).width() + " x " + $(window).height() );
 });
-var path = "<?php echo $path; ?>";
 var logrunning = false;
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();

@@ -24,7 +24,61 @@ function admin_controller()
     if ($session['admin']) {
         
         if ($route->format == 'html') {
-            if ($route->action == 'view') $result = view("Modules/admin/admin_main_view.php", array());
+            if ($route->action == 'view') {
+                require "Modules/admin/admin_model.php";
+                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
+
+                // Shutdown / Reboot Code Handler
+                if (isset($_POST['shutdownPi'])) {
+                    $shutdownPi = htmlspecialchars(stripslashes(trim($_POST['shutdownPi'])));
+                }
+                if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
+                // create array of installed services
+                $services = array();
+                $system = Admin::system_information();
+                foreach($system['services'] as $key=>$value) {
+                    if (!is_null($system['services'][$key])) {
+                        $services[$key] = array(
+                            'state' => ucfirst($value['ActiveState']),
+                            'text' => ucfirst($value['SubState']),
+                            'cssClass' => $value['SubState']==='running' ? 'success': 'danger',
+                            'running' => $value['SubState']==='running'
+                        );
+                    }
+                }
+                // add custom messages for feedwriter service
+                if(isset($services['feedwriter'])) {
+                    $message = '<font color="red">Service is not running</font>';
+                    if ($services['feedwriter']['running']) {
+                        $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                    }
+                    $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
+                }
+
+                $view_data = array(
+                    'system'=>$system,
+                    'services'=>$services,
+                    'admin_show_update'=>$admin_show_update,
+                    'shutdownPi'=>$shutdownPi,
+                    'log_enabled'=>$log_enabled,
+                    'redis_enabled'=>$redis_enabled,
+                    'mqtt_enabled'=>$mqtt_enabled,
+                    'emoncms_version'=>$emoncms_version,
+                    'path'=>$path,
+                    'allow_emonpi_admin'=>$allow_emonpi_admin,
+                    'log_filename'=>$log_filename,
+                    'redis'=>$redis,
+                    'feed_settings'=>$feed_settings,
+                    'emoncms_modules'=>$system['emoncms_modules'],
+                    'php_modules'=>Admin::php_modules($system['php_modules']),
+                    'mqtt_version'=>Admin::mqtt_version(),
+                    'rpi_info'=> Admin::get_rpi_info(),
+                    'ram_info'=> Admin::get_ram($system['mem_info']),
+                    'mount_info'=> Admin::get_mountpoints($system['partitions'])
+                );
+                
+                $result = view("Modules/admin/admin_main_view.php", $view_data);
+            }
 
             else if ($route->action == 'db')
             {
