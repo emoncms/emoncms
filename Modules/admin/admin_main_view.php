@@ -368,11 +368,13 @@ if ($log_enabled) { ?>
             'Used'=>$ram_info['used'],
             'Free'=>$ram_info['free']
         )));
-        echo row(_('Swap'), bar($ram_info['swap']['table'], sprintf(_('Used: %s%%'), $ram_info['swap']['percent']), array(
-            'Total'=>$ram_info['swap']['total'],
-            'Used'=>$ram_info['swap']['used'],
-            'Free'=>$ram_info['swap']['free']
-        )));
+        if (!empty($ram_info['swap'])) {
+            echo row(_('Swap'), bar($ram_info['swap']['table'], sprintf(_('Used: %s%%'), $ram_info['swap']['percent']), array(
+                'Total'=>$ram_info['swap']['total'],
+                'Used'=>$ram_info['swap']['used'],
+                'Free'=>$ram_info['swap']['free']
+            )));
+        }
         ?>
         
     </dl>
