@@ -4,19 +4,6 @@
      *
      */
 
-
-    /**
-     * return bytes as suitable unit
-     * 
-     * @param number $bytes
-     * @return string
-     */
-    function formatSize( $bytes ){
-        $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
-        for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
-        return( round( $bytes, 2 ) . " " . $types[$i] );
-    }
-  
     /**
      * Shutdown button
      */
@@ -46,11 +33,11 @@
         </div>
 eot;
         $markup = sprintf($pattern, $label, $width);
-        $markup .= '<p class="m-0">';
+        $markup .= '<ul class="inline">';
         foreach($summary as $key=>$value) {
-            $markup .= "\n<strong>$key</strong> $value";
+            $markup .= "<li class=\"pl-0\"><strong>$key</strong> $value</li>";
         }
-        $markup .= '</p>';
+        $markup .= '</ul>';
         return $markup;
     }
     /**
@@ -114,7 +101,7 @@ dl > dl dt:first-child, dl > dl dt:first-child + dd{
     border-top: 0px solid #ddd;
 }
 dl dd:last-child{
-    margin-bottom: 1em;
+    padding-bottom: 1em;
 }
 .admin .row {
     display: -ms-flexbox;
@@ -135,6 +122,42 @@ dl dd:last-child{
 .dropdown-menu-right{
     right: 0!important;
     left: initial;
+}
+dl dt{
+  padding-left: .25em;
+  box-sizing: border-box;
+}
+dt:hover, dt:hover + dd{
+    background: #F9F9F9;
+}
+#snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%;
+    bottom: 30px;
+    font-size: 17px;
+}
+#snackbar.show {
+    visibility: visible;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@keyframes fadein {
+    from {bottom: 0; opacity: 0;}
+    to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadeout {
+    from {bottom: 30px; opacity: 1;}
+    to {bottom: 0; opacity: 0;}
 }
 @media (min-width: 480px) {
     .dropdown-backdrop {
@@ -253,123 +276,132 @@ if ($log_enabled) { ?>
     <button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button>
 </div>
 
-<div id="serverinformationtabular"></div>
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Services'); ?></h4>
-<dl class="row">
-    <?php
-    foreach ($services as $key=>$value):
-        echo row(
-            sprintf('<span class="badge-%2$s badge"></span> %1$s', $key, $value['cssClass']),
-            sprintf('<strong>%s</strong> %s', $value['state'], $value['text'])
-        );
-    endforeach;
-?>
-</dl>
-
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Emoncms'); ?></h4>
-<dl class="row">
-    <?php echo row(_('Version'),$emoncms_version); ?>
-    <?php echo row(_('Modules'), $emoncms_modules); ?>
-    <?php
-    $git_parts = array(
-        row(_('URL'), $system['git_URL']),
-        row(_('Branch'), $system['git_branch']),
-        row(_('Describe'), $system['git_describe'])
-    );
-    $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
-?>
-    <?php echo row(_('Git'), $git_details); ?>
-</dl>
-
-
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Server'); ?></h4>
-<dl class="row">
-    <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
-    <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
-    <?php echo row(_('Date'), $system['date']); ?>
-    <?php echo row(_('Uptime'), $system['uptime']); ?>
-</dl>
-
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
-<dl class="row">
-    <?php echo row(_('Server'), $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']); ?>
-</dl>
-
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MySQL'); ?></h4>
-<dl class="row">
-    <?php echo row(_('Version'), $system['db_version']); ?>
-    <?php echo row(_('Host'), $system['redis_server'] . ' (' . $system['redis_ip'] . ')'); ?>
-    <?php echo row(_('Date'), $system['db_date']); ?>
-    <?php echo row(_('Stats'), $system['db_stat']); ?>
-</dl>
-
-<?php if ($redis_enabled) : ?>
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Redis'); ?></h4>
-<dl class="row">
-    <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
-    <?php echo row(_('Host'), $system['redis_server']); ?>
-    <?php 
-    $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
-    $redis_keys = sprintf('%s keys',$redis->dbSize());
-    $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
-    echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
-    <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
-</dl>
-<?php endif; ?>
-
-<?php if ($mqtt_enabled) : ?>
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MQTT Server'); ?></h4>
-<dl class="row">
-    <?php echo row(_('Version'), sprintf(_('Mosquitto %s'), $mqtt_version)) ?>
-    <?php echo row(_('Host'), sprintf('%s:%s (%s)', $system['mqtt_server'], $system['mqtt_port'], $system['mqtt_ip'])); ?>
-</dl>
-<?php endif; ?>
-
-<?php if (!empty(implode('',$rpi_info))) : ?>
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Pi'); ?></h4>
-<dl class="row">
-    <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
-    <?php echo row(_('SoC'), $rpi_info['hw']) ?>
-    <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
-    <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
-    <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
-    <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
-</dl>
-<?php endif; ?>
-
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Memory'); ?></h4>
-<dl class="row">
-    <?php 
-    $summary = array(
-        'Total'=>formatSize($system['mem_info']['MemTotal']),
-        'Used'=>formatSize($ram_info['used']),
-        'Free'=>formatSize($system['mem_info']['MemTotal'] - $ram_info['used'])
-    );
-    echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), $summary));
+<div id="serverinfo-container">
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Services'); ?></h4>
+    <dl class="row">
+        <?php
+        foreach ($services as $key=>$value):
+            echo row(
+                sprintf('<span class="badge-%2$s badge"></span> %1$s', $key, $value['cssClass']),
+                sprintf('<strong>%s</strong> %s', $value['state'], $value['text'])
+            );
+        endforeach;
     ?>
-</dl>
+    </dl>
 
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Disk'); ?></h4>
-<dl class="row">
-    <?php 
-    foreach($mount_info as $mount_info) {
-        echo row($mount_info['mountpoint'], 
-            bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
-                'Total'=>formatSize($mount_info['total']),
-                'Used'=>formatSize($mount_info['used']),
-                'Free'=>formatSize($mount_info['free'])
-            ))
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Emoncms'); ?></h4>
+    <dl class="row">
+        <?php echo row(_('Version'),$emoncms_version); ?>
+        <?php echo row(_('Modules'), $emoncms_modules); ?>
+        <?php
+        $git_parts = array(
+            row(_('URL'), $system['git_URL']),
+            row(_('Branch'), $system['git_branch']),
+            row(_('Describe'), $system['git_describe'])
         );
-    }
+        $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
     ?>
-</dl>
+        <?php echo row(_('Git'), $git_details); ?>
+    </dl>
 
 
-<h4 class="text-info text-uppercase border-top pt-2"><?php echo _('PHP'); ?></h4>
-<dl class="row">
-<?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
-<?php echo row(_('Modules'), implode(' | ', $php_modules)); ?>
-</dl>
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Server'); ?></h4>
+    <dl class="row">
+        <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
+        <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
+        <?php echo row(_('Date'), $system['date']); ?>
+        <?php echo row(_('Uptime'), $system['uptime']); ?>
+    </dl>
+
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
+    <dl class="row">
+        <?php echo row(_('Server'), $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']); ?>
+    </dl>
+
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MySQL'); ?></h4>
+    <dl class="row">
+        <?php echo row(_('Version'), $system['db_version']); ?>
+        <?php echo row(_('Host'), $system['redis_server'] . ' (' . $system['redis_ip'] . ')'); ?>
+        <?php echo row(_('Date'), $system['db_date']); ?>
+        <?php echo row(_('Stats'), $system['db_stat']); ?>
+    </dl>
+
+    <?php if ($redis_enabled) : ?>
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Redis'); ?></h4>
+    <dl class="row">
+        <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
+        <?php echo row(_('Host'), $system['redis_server']); ?>
+        <?php 
+        $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
+        $redis_keys = sprintf('%s keys',$redis->dbSize());
+        $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
+        echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
+        <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
+    </dl>
+    <?php endif; ?>
+
+    <?php if ($mqtt_enabled) : ?>
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('MQTT Server'); ?></h4>
+    <dl class="row">
+        <?php echo row(_('Version'), sprintf(_('Mosquitto %s'), $mqtt_version)) ?>
+        <?php echo row(_('Host'), sprintf('%s:%s (%s)', $system['mqtt_server'], $system['mqtt_port'], $system['mqtt_ip'])); ?>
+    </dl>
+    <?php endif; ?>
+
+    <?php if (!empty(implode('',$rpi_info))) : ?>
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Pi'); ?></h4>
+    <dl class="row">
+        <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
+        <?php echo row(_('SoC'), $rpi_info['hw']) ?>
+        <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
+        <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
+        <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
+        <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
+    </dl>
+    <?php endif; ?>
+
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Memory'); ?></h4>
+    <dl class="row">
+        <?php 
+        echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), array(
+            'Total'=>$ram_info['total'],
+            'Used'=>$ram_info['used'],
+            'Free'=>$ram_info['free']
+        )));
+        echo row(_('Swap'), bar($ram_info['swap']['table'], sprintf(_('Used: %s%%'), $ram_info['swap']['percent']), array(
+            'Total'=>$ram_info['swap']['total'],
+            'Used'=>$ram_info['swap']['used'],
+            'Free'=>$ram_info['swap']['free']
+        )));
+        ?>
+        
+    </dl>
+
+    <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Disk'); ?></h4>
+    <dl class="row">
+        <?php 
+        foreach($mount_info as $mount_info) {
+            echo row($mount_info['mountpoint'], 
+                bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
+                    'Total'=>$mount_info['total'],
+                    'Used'=>$mount_info['used'],
+                    'Free'=>$mount_info['free']
+                ))
+            );
+        }
+        ?>
+    </dl>
+
+    <div id="clientinfo-container">
+        <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('PHP'); ?></h4>
+        <dl class="row">
+        <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
+        <?php echo row(_('Modules'), implode(' | ', $php_modules)); ?>
+        </dl>
+    </div>
+</div>
+
+
 
 <h3><?php echo _('Client Information'); ?></h3>
 <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('HTTP'); ?></h4>
@@ -386,7 +418,7 @@ if ($log_enabled) { ?>
     <?php echo row(_('Resolution'), "<script>document.write(window.screen.width + ' x ' + window.screen.height);</script>"); ?>
 </dl>
 
-
+<div id="snackbar" class=""></div>
 
 <script>
 function copyTextToClipboard(text) {
@@ -408,22 +440,60 @@ function copyTextToClipboard(text) {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
     console.log('Copying text command was ' + msg);
-    // todo@: notify user of success
+    snackbar('Copied to clipboard');
   } 
   catch(err) {
     window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }
   document.body.removeChild(textArea);
 }
-var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<tr class=\"[a-z]*\">/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|').replace(/<span.*<\/span>/g, '').replace(/<!--[\S\s]*-->/g,'');
+var serverInfoDetails = $('#serverinfo-container').html()
+// remove buttons
+.replace(/<\/?button.[\s\S]*?button./g,'')
+// remove html space
+.replace(/&nbsp;/g,'')
+// remove comments
+.replace(/<!--[\S\s]*-->/g,'')
+// replace <h4> with ##
+.replace(/<h4 *[^/]*?>/g,"## ")
+.replace(/<\/h4>[ \n]/g,"~~\n")
+// remove <dl>
+.replace(/<dl *[^/]*?>/g,"")
+.replace(/<\/dl>[ \n]/g,"\n~~")
+// remove <dt>
+.replace(/<dt *[^/]*?>/g,' - **')
+.replace(/<\/dt>[ \n]*/g,'**')
+// remove <dd>
+.replace(/<dd *[^/]*?>/g,' | ')
+.replace(/<\/dd>/g,"\n")
+// remove all other <tags>
+.replace(/(<([^>]+)>)/ig,'')
+// remove multiple spaces or new lines
+.replace(/[\n ]{3,}/g,"\n")
+// remove mulitple proceeding spaces
+.replace(/[ ]{2,}/g,' ')
+// swap placeholder for newline char
+.replace(/~{2}/g,"\n \n")
+// fix incorrect <li> wrapping
+.replace(/- \*\*[ \n]/g,'- **')
+
+
 var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
 
 $("#copyserverinfo").on('click', function(event) {
-    // @todo: notify user that data is copied to clipboard
     if ( event.ctrlKey ) {
-        copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
+        copyTextToClipboard('Server Information\n\n' + 
+        serverInfoDetails
+        .replace(/\|/g,'\t')
+        .replace(/- \*\*/g,'**')
+        .replace(/\*\*/g,'')
+        .replace(/##/g,'')
+        .replace(/\n /g,'')
+        .replace(/( \n)/g,'\n') +
+        '\nClient Information\n' + 
+        clientInfoDetails.replace(/\|/g,'\t'));
     } else {
-        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails.replace(/\n+/g, '\n') + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
+        copyTextToClipboard('# Server Information\n'+serverInfoDetails.replace(/\n+/g, '\n') + '\n# Client Information\n' + clientInfoDetails);
     }
 } );
 
@@ -563,5 +633,14 @@ $("#fs-ro").click(function() {
     });
   }
 });
+
+function snackbar(text) {
+    var snackbar = document.getElementById("snackbar");
+    snackbar.innerHTML = text;
+    snackbar.className = "show";
+    setTimeout(function () {
+        snackbar.className = snackbar.className.replace("show", "");
+    }, 3000);
+}
 
 </script>

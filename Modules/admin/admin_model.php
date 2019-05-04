@@ -292,25 +292,27 @@ class Admin {
         $sysRam = array_map(function($n) {return '';},array_flip(explode(',','used,raw,percent,table,swap')));
 
         if ($mem_info) {
+            $sysTotal = $mem_info['MemTotal'];
             $sysRamUsed = $mem_info['MemTotal'] - $mem_info['MemFree'] - $mem_info['Buffers'] - $mem_info['Cached'];
+            $sysFree = $mem_info['MemTotal']-$sysRamUsed;
             $sysRamPercentRaw = ($sysRamUsed / $mem_info['MemTotal']) * 100;
             $sysRamPercent = sprintf('%.2f',$sysRamPercentRaw);
             $sysRamPercentTable = number_format(round($sysRamPercentRaw, 2), 2, '.', '');
 
-            // echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercentTable."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
-            // echo "<b>Total:</b> ".formatSize($mem_info['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($mem_info['MemTotal'] - $sysRamUsed)."</td></tr>\n";
             $sysSwap = array();
             if ($mem_info['SwapTotal'] > 0) {
-                $sysSwap['used'] = $mem_info['SwapTotal'] - $mem_info['SwapFree'];
-                $sysSwap['raw'] = ($sysSwap['used'] / $mem_info['SwapTotal']) * 100;
+                $sysSwap['total'] = Admin::formatSize($mem_info['SwapTotal']);
+                $sysSwap['used'] = Admin::formatSize($mem_info['SwapTotal'] - $mem_info['SwapFree']);
+                $sysSwap['free'] = Admin::formatSize($mem_info['SwapFree']);
+                $sysSwap['raw'] = (($mem_info['SwapTotal'] - $mem_info['SwapFree']) / $mem_info['SwapTotal']) * 100;
                 $sysSwap['percent'] = sprintf('%.2f',$sysSwap['raw']);
                 $sysSwap['table'] = number_format(round($sysSwap['raw'], 2), 2, '.', '');
 
-                // echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercentTable."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
-                // echo "<b>Total:</b> ".formatSize($mem_info['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($mem_info['SwapFree'])."</td></tr>\n";
             }
             $sysRam = array(
-                'used'=>$sysRamUsed,
+                'total'=>Admin::formatSize($sysTotal),
+                'used'=>Admin::formatSize($sysRamUsed),
+                'free'=>Admin::formatSize($sysFree),
                 'raw'=>$sysRamPercentRaw,
                 'percent'=>$sysRamPercent,
                 'table'=>$sysRamPercentTable,
@@ -345,9 +347,9 @@ class Admin {
                         $mountpoint = $fs['Partition']['text'];
                     }
                     $mounts[] = array(
-                        'free'=>$diskFree,
-                        'total'=>$diskTotal,
-                        'used'=>$diskUsed,
+                        'free'=>Admin::formatSize($diskFree),
+                        'total'=>Admin::formatSize($diskTotal),
+                        'used'=>Admin::formatSize($diskUsed),
                         'raw'=>$diskPercentRaw,
                         'percent'=>$diskPercent,
                         'table'=>$diskPercentTable,
@@ -375,6 +377,19 @@ class Admin {
         }
         if (!Admin::is_Pi()) $currentfs = '?';
         return $currentfs;
+    }
+
+
+    /**
+     * return bytes as suitable unit
+     * 
+     * @param number $bytes
+     * @return string
+     */
+    private static function formatSize( $bytes ){
+        $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
+        for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
+        return( round( $bytes, 2 ) . " " . $types[$i] );
     }
 
 }
