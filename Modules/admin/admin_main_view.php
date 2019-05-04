@@ -212,7 +212,7 @@ table tr td.subinfo { border-color:transparent;}
         </td>
     </tr>
 
-    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>    
+    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>
     <tr>
         <td>
             <h3><?php echo _('Update All'); ?></h3>
@@ -225,7 +225,7 @@ table tr td.subinfo { border-color:transparent;}
     
     <tr>
         <td>
-            <h4><?php echo _('Emoncms Only'); ?></h4>
+            <h4><?php echo _('Update Emoncms Only'); ?></h4>
             <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
         </td>
@@ -236,7 +236,7 @@ table tr td.subinfo { border-color:transparent;}
     
     <tr>
         <td>
-            <h4><?php echo _('EmonHub Only'); ?></h4>
+            <h4><?php echo _('Update EmonHub Only'); ?></h4>
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
         </td>
         <td class="buttons"><br>
@@ -258,16 +258,22 @@ table tr td.subinfo { border-color:transparent;}
     
     <tr>
         <td>
-            <h4><?php echo _('MySQL Database Only'); ?></h4>
+            <h4><?php echo _('Update Database Only'); ?></h4>
             <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
         </td>
         <td class="buttons"><br>
             <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
         </td>
     </tr>
-    <tr>
-        <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
+    <td colspan="2" style="border-top: 0px" class="buttons"><br>
+          <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info"><?php echo _('Download Update Log'); ?></a>
+    </td></tr><br>
+    
+    <td>
+        <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" ><div id="update-log"></div></pre></td>
     </tr>
+    
+    
     <?php } ?>
 
 <?php if ($log_enabled) { ?>
@@ -392,8 +398,8 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
     if (@is_readable('/proc/cpuinfo')) {
       //load model information
       $rpi_revision = array();
-      if (@is_readable(__DIR__."/pi-model.json")) { 
-        $rpi_revision = json_decode(file_get_contents(__DIR__."/pi-model.json"), true);  
+      if (@is_readable(__DIR__."/pi-model.json")) {
+        $rpi_revision = json_decode(file_get_contents(__DIR__."/pi-model.json"), true);
         foreach ($rpi_revision as $k => $rev) {
           if(empty($rev['Code'])) continue;
           $rpi_revision[$rev['Code']] = $rev;
@@ -417,7 +423,7 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
         }
         else if (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
            $rpi_info['model'] .= " Compute Module";
-           if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2]; 
+           if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2];
         }
         else { //Raspberry Pi
            $rpi_info['model'] .= " Model ".$model;
@@ -440,15 +446,15 @@ if ( @exec('ifconfig | grep b8:27:eb:') ) {
                 $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
               }
               if (isset($emonpiRelease)) {
-                 $currentfs = "<b>read-only</b>"; 
+                 $currentfs = "<b>read-only</b>";
                  $btnactionfs = "<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button>";
                  exec('mount', $resexec);
                  $matches = null;
                  preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
                  if (!empty($matches)) {
-                     $currentfs = "<b>read-write</b>"; 
+                     $currentfs = "<b>read-write</b>";
                      $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
-                 } 
+                 }
                  echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
                  
                  if (file_exists('/usr/bin/rpi-rw')) {
@@ -503,7 +509,7 @@ if ($system['mem_info']) {
 
 ?>
               <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php 
+              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php
               natcasesort($system['php_modules']);// sort case insensitive
               $modules = [];// empty list
               foreach($system['php_modules'] as $ver=>$extension){
@@ -542,7 +548,7 @@ function copyTextToClipboard(text) {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
     console.log('Copying text command was ' + msg);
-  } 
+  }
   catch(err) {
     window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }
