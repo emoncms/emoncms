@@ -130,6 +130,9 @@ dl dt{
 dt:hover, dt:hover + dd{
     background: #F9F9F9;
 }
+.overflow-hidden {
+    overflow: hidden;
+}
 #snackbar {
     visibility: hidden;
     min-width: 250px;
@@ -295,7 +298,7 @@ if ($log_enabled) { ?>
         <?php echo row(_('Modules'), $emoncms_modules); ?>
         <?php
         $git_parts = array(
-            row(_('URL'), $system['git_URL']),
+            row(_('URL'), $system['git_URL'],'','overflow-hidden'),
             row(_('Branch'), $system['git_branch']),
             row(_('Describe'), $system['git_describe'])
         );
@@ -398,7 +401,7 @@ if ($log_enabled) { ?>
         <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('PHP'); ?></h4>
         <dl class="row">
         <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
-        <?php echo row(_('Modules'), implode(' | ', $php_modules)); ?>
+        <?php echo row(_('Modules'), implode(' | ', $php_modules), '', 'overflow-hidden'); ?>
         </dl>
     </div>
 </div>
