@@ -107,9 +107,9 @@ ul#right-nav li:last-child{
   padding-right: .125em;
   padding-left: .125em;
 }
-a.grav-container {
-  padding: .25em!important;
-  display: block!important;
+.navbar .nav > li > a.grav-container {
+  padding: .25em;
+  display: block;
 }
 a.grav-container img.grav {
   max-height: 1.2em;
