@@ -307,7 +307,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2"><?php echo _('Disk'); ?></h4>
         <dl class="row">
             <?php 
-            foreach($mount_info as $mount_info) {
+            foreach($disk_info as $mount_info) {
                 echo row($mount_info['mountpoint'], 
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
