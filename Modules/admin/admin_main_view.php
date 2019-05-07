@@ -66,20 +66,20 @@ listItem;
     // USERS 
     // -------------------
     ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 text-right">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 pb-2 text-right px-1">
         <div class="text-left">
             <h3><?php echo _('Users'); ?></h3>
             <p><?php echo _('See a list of registered users') ?></p>
         </div>
         <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
-    </div>
+    </section>
 
     <?php 
     // UPDATES 
     // -------------------
     ?>
     <?php if ($admin_show_update || $allow_emonpi_admin) { ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 pb-2 text-right px-1">
         <div class="text-left">
             <h3><?php echo _('Updates'); ?></h3>
             <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
@@ -98,38 +98,38 @@ listItem;
                 <li><a href="#" class="update" title="<?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>"><?php echo _('Update All'); ?></a></li>
         </ul>
         </div>
-    </div>
+    </section>
 
     <?php 
     // EMONCMS UPDATE
     // -------------------
     ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3 pr-1">
         <div class="text-left">
             <h4 class="text-info text-uppercase pt-2"><?php echo _('Emoncms Only'); ?></h4>
             <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
         </div>
         <a class="update btn btn-default" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
-    </div>
+    </section>
 
     <?php 
     // EMONHUB UPDATE
     // -------------------
     ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3 pr-1">
         <div class="text-left">
             <h4 class="text-info text-uppercase pt-2"><?php echo _('EmonHub Only'); ?></h4>
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
         </div>
         <a class="update btn btn-default" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
-    </div>
+    </section>
 
     <?php 
     // EMONPI UPDATE
     // -------------------
     ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3 pr-1">
         <div class="text-left">
             <h4 class="text-info text-uppercase pt-2"><?php echo _('Update Firmware Only'); ?></h4>
             <p><?php echo _('Select your hardware type and firmware version'); ?></p>
@@ -144,19 +144,19 @@ listItem;
             </select>
             <button class="update btn btn-default" type="firmware"><?php echo _('Update Firmware'); ?></button>
         </div>
-    </div>
+    </section>
 
     <?php 
     // DATABASE UPDATE
     // -------------------
     ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 pb-2 text-right border-top pl-3 pr-1">
         <div class="text-left span6 ml-0">
             <h4 class="text-info text-uppercase pt-2"><?php echo _('MySQL Database Only'); ?></h4>
             <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
         </div>
         <a href="<?php echo $path; ?>admin/db" class="btn btn-default"><?php echo _('Update Database'); ?></a>
-    </div>
+    </section>
 
     <pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre>
 
@@ -166,7 +166,7 @@ listItem;
     // LOG FILE VIEWER
     // -------------------
     if ($log_enabled) { ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 border-top pb-md-0 pb-2 text-right">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-2 text-right px-1">
         <div class="text-left">
             <h3><?php echo _('Emoncms Log'); ?></h3>
             <p><?php
@@ -185,7 +185,7 @@ listItem;
                 <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
             <?php } ?>
         </div>
-    </div>
+    </section>
     <pre id="logreply-bound"><div id="logreply"></div></pre>
     <?php } ?>
 
@@ -194,7 +194,7 @@ listItem;
     // SERVER INFO
     // -------------------
     ?>
-    <div class="d-md-flex justify-content-between align-items-center mb-md-2 pb-md-0 pb-2 border-top text-right">
+    <div class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 pb-2 border-top text-right px-1">
         <div class="text-left">
             <h3><?php echo _('Server Information'); ?></h3>
         </div>

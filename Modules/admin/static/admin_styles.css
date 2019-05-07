@@ -73,8 +73,13 @@ dl dt{
   padding-left: .25em;
   box-sizing: border-box;
 }
+section,
+dt, dt + dd{
+    transition: background-color .2s ease-in-out;
+}
+section:hover,
 dt:hover, dt:hover + dd{
-    background: #F9F9F9;
+    background-color: #F9F9F9;
 }
 .overflow-hidden {
     overflow: hidden;
