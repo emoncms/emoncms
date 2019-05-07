@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update;
     $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4><a class='text-danger' href='" . get_application_path() ."user/logout'>"._('Admin re-authentication required').'<svg class="icon arrow_forward"><use xlink:href="#icon-arrow_forward"></use></svg></a></h4></div>';
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
@@ -26,7 +26,7 @@ function admin_controller()
         if ($route->format == 'html') {
             if ($route->action == 'view') {
                 require "Modules/admin/admin_model.php";
-                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
+                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi;
 
                 // Shutdown / Reboot Code Handler
                 if (isset($_POST['shutdownPi'])) {
