@@ -81,6 +81,17 @@ section:hover,
 dt:hover, dt:hover + dd{
     background-color: #F9F9F9;
 }
+pre.small {
+    height: 2em;
+    overflow: auto;
+}
+pre.small {
+    height: 2em;
+    overflow: auto;
+}
+pre.small [data-dismiss="log"]{
+    display: none;
+}
 .overflow-hidden {
     overflow: hidden;
 }

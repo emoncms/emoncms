@@ -158,9 +158,22 @@ listItem;
         <a href="<?php echo $path; ?>admin/db" class="btn btn-default"><?php echo _('Update Database'); ?></a>
     </section>
 
-    <pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre>
-
     <?php } ?>
+
+    <?php 
+    // UPDATE LOG
+    // -------------------
+    ?>
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-2 px-1">
+        <div>
+            <h3><?php echo _('Update Log'); ?></h3>
+            <p><?php echo _('View log of update process'); ?></p>
+        </div>
+    </section>
+    <pre id="update-log-bound" class="small">
+        <button type="button" class="close" data-dismiss="log">&times;</button>
+        <div id="update-log"></div>
+    </pre>
 
     <?php
     // LOG FILE VIEWER
@@ -186,6 +199,7 @@ listItem;
             <?php } ?>
         </div>
     </section>
+    
     <pre id="logreply-bound"><div id="logreply"></div></pre>
     <?php } ?>
 
@@ -484,7 +498,7 @@ $(".update").click(function() {
     {
       $("#update-log").html(result);
       $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      $("#update-log-bound").show()
+      $("#update-log-bound").toggleClass('small',false);
       clearInterval(refresher_update);
       refresher_update = null;
       refresher_update = setInterval(getUpdateLog,1000);
@@ -497,13 +511,17 @@ $("#rfm69piupdate").click(function() {
     {
       $("#update-log").html(result);
       $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      $("#update-log-bound").show()
+      $("#update-log-bound").toggleClass('small',false);
       clearInterval(refresher_update);
       refresher_update = null;
       refresher_update = setInterval(getUpdateLog,1000);
     }
   });
 });
+$('[data-dismiss="log"]').click(function(event){
+    event.preventDefault();
+    $(this).parents('pre').first().addClass('small');
+})
 
 function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)

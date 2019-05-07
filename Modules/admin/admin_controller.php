@@ -379,7 +379,7 @@ function admin_controller()
             else if ($route->action == 'system' && $session['write'])
             {
                 require "Modules/admin/admin_model.php";
-                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
+                global $path, $emoncms_version, $redis_enabled, $mqtt_enabled, $feed_settings, $shutdownPi;
 
                 // create array of installed services
                 $services = array();
