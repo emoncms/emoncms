@@ -757,7 +757,7 @@ function getUpdateLog() {
     {
       refresh_updateLog(result);
       if (result.indexOf("emonPi update done")!=-1) {
-          clearInterval(refresher_update);
+          clearInterval(updates_log_interval);
       }
     }
   });

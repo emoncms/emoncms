@@ -107,7 +107,7 @@ function admin_controller()
                     'rpi_info'=> Admin::get_rpi_info(),
                     'ram_info'=> Admin::get_ram($system['mem_info']),
                     'disk_info'=> Admin::get_mountpoints($system['partitions']),
-                    'v' => 1,
+                    'v' => 2,
                     'log_levels' => $log_levels,
                     'log_levels_css' => $log_level_css,
                     'log_level'=>$log_level,
