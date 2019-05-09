@@ -83,7 +83,7 @@ listItem;
             <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
         </div>
         <div class="btn-group">
-        <button class="update btn btn-info" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>">
+        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>">
             <?php echo _('Full Update'); ?>
         </button>
         <button class="btn dropdown-toggle btn-info" data-toggle="collapse" data-target="aside" title="<?php echo _(''); ?>">
