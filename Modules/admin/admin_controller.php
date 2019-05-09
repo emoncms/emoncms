@@ -461,7 +461,7 @@ function admin_controller()
 
                 if ($route->method === 'POST') {
                     if(!empty(post('level'))) {
-                        if (is_file($path_to_config)) {
+                        if (is_file($path_to_config) && is_writable($path_to_config)) {
                             $level = intval(post('level'));
                             if(array_key_exists($level, $log_levels)) {
                                 // load the settings.php as text file
@@ -485,11 +485,10 @@ function admin_controller()
                                 $message = sprintf(_('New log level out of range. must be one of %s'), implode(', ', array_keys($log_levels)));
                             }
                         } else {
-                            // no posted value
-                            $message = _('No new log level supplied');
+                            $message = sprintf(_('Not able to write to: %s'), $path_to_config);
                         }
                     } else {
-                        $message = sprintf(_('Settings file not found at: %s'), $path_to_config);
+                        $message = _('No new log level supplied');
                     }
                 } elseif ($route->method === 'GET') {
                     $success = true;
