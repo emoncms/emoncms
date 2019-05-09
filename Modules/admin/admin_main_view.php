@@ -496,7 +496,6 @@ function markdownify(markup) {
     // add correct indentation to nested lists
     $temp.find('dl').each(function(i, parent){
         let $parent = $(parent);
-        console.log($parent.find('dl').length,$parent.find('dt').first().get())
         if(!$parent.is('.inline')) {
             $(parent).find('dl').each(function(i, child){
                 let $list = $(child);
@@ -525,7 +524,7 @@ function markdownify(markup) {
     // remove comments
     .replace(/<!--[\S\s]*-->/g,'')
     // replace <h4> with markdown level two heading (##)
-    .replace(/\s+<h4 *[^/]*?>/g, newline+"## ")
+    .replace(/\s+<h4 *[^/]*?>/g, newline+newline+"## ")
     .replace(/<\/h4>\s+/g,"\n")
     .replace(/<dd class="__inline__">/g,'    ')
     // remove <dl>
@@ -537,13 +536,14 @@ function markdownify(markup) {
     // remove <dd>
     .replace(/<dd *[^/]*?>/g,' :- ')
     .replace(/<\/dd>/g,"\n")
+    // mark bold content
+    .replace(/<strong *[^/]*?>/g,'**')
+    .replace(/<\/strong>[ \n]*/g,'** ')
     // remove all other <tags>
     .replace(/(<([^>]+)> *)/ig,'')
     // remove all indenting
     .replace(/^ {2,}/gm," ")
-    // remove orphan new lines
-    .replace(/\n{3,}/g,"\n\n")
-    // remove all orphan lines with single space
+    // remove all single space indents
     .replace(/^ (\S)/gm,"$1")
     // replace indent placeholder
     .replace(indentRegex,'    ')
@@ -551,9 +551,13 @@ function markdownify(markup) {
     .replace(/\n \n ?\n/g, '\n')
     // remove leading spaces from values
     .replace(/:-\s+/g,':- ')
-    // rplace newline placeholder
+    // replace newline placeholder
     .replace(newlineRegex,"\n")
-
+    // remove orphan new lines
+    .replace(/\n{2,} /g,"\n\n")
+    .replace(/\n{3,}/g,"\n\n")
+    // add newline before level 2 title
+    .replace(/\n?##/g,'\n##')
     .trim()
 }
 /**
