@@ -1,5 +1,5 @@
 pre {
-    height:20rem;
+    height:12rem;
     color:#fff;
     background-color:#300a24;
     overflow: scroll;
@@ -34,7 +34,15 @@ table tr td.subinfo { border-color:transparent;}
 .badge-danger{
     background-color: #DC3545;
 }
-
+section {
+    position: relative;
+}
+aside.collapse {
+    border-top-width: 0;
+}
+aside.collapse.in {
+    border-top-width: 1px;
+}
 dl {
     margin: 0
 }
@@ -48,6 +56,13 @@ dl > dl dt:first-child, dl > dl dt:first-child + dd{
 }
 dl dd:last-child{
     padding-bottom: 1em;
+}
+dl.inline > * {
+    display: inline-block;
+    border: 0px solid transparent;
+}
+dl.inline > dd {
+    margin: 0 1em 0 0.3em;
 }
 .admin .row {
     display: -ms-flexbox;
@@ -69,24 +84,71 @@ dl dd:last-child{
     right: 0!important;
     left: initial;
 }
+#log-level{
+    position: absolute;
+    right: .2rem;
+    bottom: 0;
+}
+#log-level .dropdown-menu > li > a {
+    color: #FFF;
+}
+#log-level .dropdown-menu {
+    background: 0;
+    background: transparent;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+    margin: 0;
+}
+#log-level .dropdown-menu > li > a,
+#log-level .dropdown-menu > li > a{
+    border-radius: 0;
+}
+#log-level .dropdown-menu > li:first-child > a{
+    border-radius: .2em .2em 0 0;
+}
+#log-level .dropdown-menu > li:last-child > a{
+    border-radius: 0 0 .2em .2em;
+}
+#log-level .dropdown-menu > li > a:hover,
+#log-level .dropdown-menu > li > a:focus{
+    background-image: none;
+}
+#log-level .dropdown-menu > li > a.btn-danger:hover,
+#log-level .dropdown-menu > li > a.btn-danger:focus{
+    background-color: #bd362f;
+}
+#log-level .dropdown-menu > li > a.btn-inverse:hover,
+#log-level .dropdown-menu > li > a.btn-inverse:focus{
+    background-color: #2E2E2E;
+}
+#log-level .dropdown-menu > li > a.btn-warning:hover,
+#log-level .dropdown-menu > li > a.btn-warning:focus{
+    background-color: #f89406;
+}
 dl dt{
   padding-left: .25em;
   box-sizing: border-box;
 }
+aside,
 section,
-dt, dt + dd{
-    transition: background-color .2s ease-in-out;
+dt,
+dd{
+    transition: background-color .2s ease-out;
 }
+aside:hover,
 section:hover,
-dt:hover, dt:hover + dd{
+dt:hover,
+dd:hover,
+dt:hover + dd{
     background-color: #F9F9F9;
 }
-pre.small {
-    height: 2em;
-    overflow: auto;
+dt:hover,
+dd:hover{
+    cursor: pointer;
 }
 pre.small {
-    height: 2em;
+    height: 3.33em;
     overflow: auto;
 }
 pre.small [data-dismiss="log"]{
@@ -95,6 +157,10 @@ pre.small [data-dismiss="log"]{
 .overflow-hidden {
     overflow: hidden;
 }
+.border-box{
+    box-sizing: border-box;
+}
+
 #snackbar {
     visibility: hidden;
     min-width: 250px;

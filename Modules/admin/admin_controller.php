@@ -14,12 +14,36 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update;
-    $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4><a class='text-danger' href='" . get_application_path() ."user/logout'>"._('Admin re-authentication required').'<svg class="icon arrow_forward"><use xlink:href="#icon-arrow_forward"></use></svg></a></h4></div>';
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log;
+    $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4><a class='text-danger' href='" . get_application_path() ."user/logout?action=admin/view'>"._('Admin re-authentication required').'<svg class="icon arrow_forward"><use xlink:href="#icon-arrow_forward"></use></svg></a></h4></div>';
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
     // after the update is complete.
+
+    //put $update_logfile here so it can be referenced in other if statements
+    //before it was only accesable in the update subaction
+    //placed some other variables here as well so they are grouped
+    //together for the emonpi action even though they might not be used
+    //in the subaction
+    $update_logfile = "$homedir/data/emonpiupdate.log";
+    $backup_logfile = "$homedir/data/emonpibackup.log";
+    $update_flag = "/tmp/emoncms-flag-update";
+    $backup_flag = "/tmp/emonpibackup";
+    $update_script = "$homedir/emonpi/service-runner-update.sh";
+    $backup_file = "$homedir/data/backup.tar.gz";
+    
+    $log_levels = array(
+        1 =>'INFO',
+        2 =>'WARN', // default
+        3 =>'ERROR'
+    );
+    $log_level_css = array(
+        1 =>'danger',
+        2 =>'inverse', // default
+        3 =>'warning'
+    );
+    $path_to_config = 'settings.php';
     
     if ($session['admin']) {
         
@@ -61,6 +85,7 @@ function admin_controller()
                     'admin_show_update'=>$admin_show_update,
                     'shutdownPi'=>$shutdownPi,
                     'log_enabled'=>$log_enabled,
+                    'update_log_filename'=>$update_logfile,
                     'redis_enabled'=>$redis_enabled,
                     'mqtt_enabled'=>$mqtt_enabled,
                     'emoncms_version'=>$emoncms_version,
@@ -74,7 +99,14 @@ function admin_controller()
                     'mqtt_version'=>Admin::mqtt_version(),
                     'rpi_info'=> Admin::get_rpi_info(),
                     'ram_info'=> Admin::get_ram($system['mem_info']),
-                    'disk_info'=> Admin::get_mountpoints($system['partitions'])
+                    'disk_info'=> Admin::get_mountpoints($system['partitions']),
+                    'v' => 1,
+                    'log_levels' => $log_levels,
+                    'log_levels_css' => $log_level_css,
+                    'log_level'=>$log_level,
+                    'log_level_label' => $log_levels[$log_level],
+                    'log_level_css' => $log_level_css[$log_level],
+                    'path_to_config'=> $path_to_config
                 );
                 
                 $result = view("Modules/admin/admin_main_view.php", $view_data);
@@ -128,7 +160,7 @@ function admin_controller()
                 exit;
               }
             }
-            
+
             else if ($route->action == 'getlog')
             {
                 $route->format = "text";
@@ -180,17 +212,6 @@ function admin_controller()
             }
 
             else if (($admin_show_update || $allow_emonpi_admin) && $route->action == 'emonpi') {
-                //put $update_logfile here so it can be referenced in other if statements
-                //before it was only accesable in the update subaction
-                //placed some other variables here as well so they are grouped
-                //together for the emonpi action even though they might not be used
-                //in the subaction
-                $update_logfile = "$homedir/data/emonpiupdate.log";
-                $backup_logfile = "$homedir/data/emonpibackup.log";
-                $update_flag = "/tmp/emoncms-flag-update";
-                $backup_flag = "/tmp/emonpibackup";
-                $update_script = "$homedir/emonpi/service-runner-update.sh";
-                $backup_file = "$homedir/data/backup.tar.gz";
                                 
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
@@ -293,7 +314,6 @@ function admin_controller()
                     $result = passthru('rpi-rw');
                   }
                 }
-                
             }
         }
         else if ($route->format == 'json')
@@ -412,6 +432,7 @@ function admin_controller()
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
                     'log_filename'=>$log_filename,
+                    'update_log_filename'=> $update_logfile,
                     'redis'=>$redis,
                     'feed_settings'=>$feed_settings,
                     'emoncms_modules'=>$system['emoncms_modules'],
@@ -423,6 +444,57 @@ function admin_controller()
                 );
                 
                 $result = $view_data;
+            }
+            else if ($route->action === 'loglevel' && $session['write']) {
+                // current values
+                $success = false;
+                $css_class = $log_level_css[$log_level];
+                $log_level_name = $log_levels[$log_level];
+                $message = '';
+
+                if ($route->method === 'POST') {
+                    if(!empty(post('level'))) {
+                        if (is_file($path_to_config)) {
+                            $level = intval(post('level'));
+                            if(array_key_exists($level, $log_levels)) {
+                                // load the settings.php as text file
+                                $file = file_get_contents($path_to_config);
+                                $matches = array();
+                                // replace the value of the $log_level variable
+                                preg_match('/^\s+\$log_level = (.*)$/m', $file, $matches);
+                                if(!empty($matches)) {
+                                    $file = str_replace($matches[1], $level.';', $file);
+                                    file_put_contents($path_to_config, $file);
+                                    $success = true;
+                                    $log_level = $level;
+                                    $css_class = $log_level_css[$level];
+                                    $log_level_name = $log_levels[$level];
+                                    $log->error("Log level changed: $level");
+                                    $message = _('Changes Saved');
+                                } else {
+                                    $message = sprintf(_('"$log_level" not found in: %s'), $path_to_config);
+                                }
+                            } else {
+                                $message = sprintf(_('New log level out of range. must be one of %s'), implode(', ', array_keys($log_levels)));
+                            }
+                        } else {
+                            // no posted value
+                            $message = _('No new log level supplied');
+                        }
+                    } else {
+                        $message = sprintf(_('Settings file not found at: %s'), $path_to_config);
+                    }
+                } elseif ($route->method === 'GET') {
+                    $success = true;
+                }
+
+                $result = array(
+                    'success' => $success,
+                    'css-class' => $css_class,
+                    'log-level' => $log_level,
+                    'log-level-name' => $log_level_name,
+                    'message' => $message
+                );
             }
         }
     }
