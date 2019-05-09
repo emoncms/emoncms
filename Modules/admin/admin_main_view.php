@@ -477,34 +477,45 @@ function markdownStringify(md) {
 }
 /**
  * attempt to convert <html> to markdown (text/markdown)
+ *
+ * uses `====` as temp tab placeholder
+ * uses `~~~~` as temp newline placeholder
  * @todo: look at a better library to do this
  */
 function markdownify(markup) {
+    var newline = '~~~~';
+    var indent = '====';
+
+    var newlineRegex = new RegExp(newline,'g');
+    var indentRegex = new RegExp(indent,'g');
+
     // add placeholder for nested <dl> <dd> <dl>
-    // -----
     let $temp = $('<div>');
     $temp.html(markup);
-    let $nestedLists = $temp.find('dl.inline');
-    $nestedLists.each(function(i, elem){
-        let $list = $(elem);
-        let $value = $list.find('dd:last');
-        // include placeholder to insert new line below sub list
-        $value.html($value.html() + '\n~~');
 
-        // include placeholder to indent sub items
-        $list.find('dd').each(function(j, elem2){
-            let $value = $(elem2);
-            let $title = $value.prev('dt');
-            $title.html('====' + $title.html());
-        })
-
+    // add correct indentation to nested lists
+    $temp.find('dl').each(function(i, parent){
+        let $parent = $(parent);
+        console.log($parent.find('dl').length,$parent.find('dt').first().get())
+        if(!$parent.is('.inline')) {
+            $(parent).find('dl').each(function(i, child){
+                let $list = $(child);
+                let $firstTitle = $list.find('dt').first();
+                $firstTitle.before(newline)
+                $list.find('dt').each(function(j, title){
+                    let $title = $(title)
+                    $title.before(indent)
+                })
+            })
+        }
     })
+
     // -----
 
     // use modified <html> source to replace patterns
     markup = $temp.html()
-    return markup
 
+    return markup
     // remove indenting
     .replace(/^\s{2,}/gm," ")
     // remove buttons
@@ -514,12 +525,12 @@ function markdownify(markup) {
     // remove comments
     .replace(/<!--[\S\s]*-->/g,'')
     // replace <h4> with markdown level two heading (##)
-    .replace(/\s+<h4 *[^/]*?>/g,"~~## ")
+    .replace(/\s+<h4 *[^/]*?>/g, newline+"## ")
     .replace(/<\/h4>\s+/g,"\n")
     .replace(/<dd class="__inline__">/g,'    ')
     // remove <dl>
     .replace(/<dl *[^/]*?>/g," ")   
-    .replace(/<\/dl>[ \n]/g,"\n~~")
+    .replace(/<\/dl>[ \n]/g,"\n" + newline)
     // remove <dt>
     .replace(/<dt *[^/]*?>/g,' - **')
     .replace(/<\/dt>[ \n]*/g,'**')
@@ -528,20 +539,21 @@ function markdownify(markup) {
     .replace(/<\/dd>/g,"\n")
     // remove all other <tags>
     .replace(/(<([^>]+)> *)/ig,'')
-    // remove indenting
+    // remove all indenting
     .replace(/^ {2,}/gm," ")
     // remove orphan new lines
     .replace(/\n{3,}/g,"\n\n")
+    // remove all orphan lines with single space
+    .replace(/^ (\S)/gm,"$1")
     // replace indent placeholder
-    .replace(/ - \*\*====/g,'    - **')
-    // remove empty title/value seperator
-    // .replace(/\|\s{2,}-/g, '\n')
+    .replace(indentRegex,'    ')
     // remove orphan new lines
     .replace(/\n \n ?\n/g, '\n')
     // remove leading spaces from values
     .replace(/:-\s+/g,':- ')
-    // remove placeholder
-    .replace(/\~~/g,"\n")
+    // rplace newline placeholder
+    .replace(newlineRegex,"\n")
+
     .trim()
 }
 /**
@@ -692,8 +704,8 @@ function refresh_log(result){
 // display content in container and scroll to the bottom
 function output_logfile(result, $container){
     $container.html(result);
-    scrollable = $container.parent()[0];
-    scrollable.scrollTop = scrollable.scrollHeight;
+    scrollable = $container.parent('pre')[0];
+    if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
 }
 
 getLog();
