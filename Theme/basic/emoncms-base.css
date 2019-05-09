@@ -64,6 +64,12 @@ body.app #wrap {
 }
 /*-------------------------------------*/
 /* @see: bootstrap 4 documentation for examples */
+.m-1{padding: var(--s1)}
+.m-2{padding: var(--s2)}
+.m-3{padding: var(--s3)}
+.m-4{padding: var(--s4)}
+.m-5{padding: var(--s5)}
+.m-6{padding: var(--s6)}
 /* remove margins */
 .my-0,.mb-0,.m-0{margin-bottom:0!important}
 .my-0,.mt-0,.m-0{margin-top:0!important}
@@ -104,11 +110,18 @@ body.app #wrap {
 .mx-6,.ml-6{margin-left: var(--s6)!important}
 
 /*-------------------------------------*/
+.p-1{padding: var(--s1)}
+.p-2{padding: var(--s2)}
+.p-3{padding: var(--s3)}
+.p-4{padding: var(--s4)}
+.p-5{padding: var(--s5)}
+.p-6{padding: var(--s6)}
+
 /* remove padding */
-.py-0,.pb-0,.p-0{margin-bottom:0!important}
-.py-0,.pt-0,.p-0{margin-top:0!important}
-.px-0,.pl-0,.p-0{margin-left:0!important}
-.px-0,.pr-0,.p-0{margin-right:0!important}
+.py-0,.pb-0,.p-0{padding-bottom:0!important}
+.py-0,.pt-0,.p-0{padding-top:0!important}
+.px-0,.pl-0,.p-0{padding-left:0!important}
+.px-0,.pr-0,.p-0{padding-right:0!important}
 
 /* padding top */
 .py-1,.pt-1{padding-top: var(--s1)!important}
@@ -147,15 +160,12 @@ body.app #wrap {
 .d-inline{display:inline!important}
 .d-inline-block{display:inline-block!important}
 
-/* flexbox classes */
-.d-flex{
-    display:flex!important
-}
 .text-uppercase {
     text-transform: uppercase;
 }
 
 /* "bs4 style" utility styles */
+/* flexbox */
 .d-flex {
     display: flex !important;
 }
@@ -166,15 +176,39 @@ body.app #wrap {
 .justify-content-center {
     justify-content: center !important;
 }
+.justify-content-end {
+    -ms-flex-pack: end !important;
+    justify-content: flex-end !important;
+}
 .align-items-center {
     align-items: center !important;
 }
 .align-items-end {
     align-items: flex-end !important;
 }
+.align-items-stretch {
+    -ms-flex-align: stretch !important;
+    align-items: stretch !important;
+}
+.align-self-center {
+    -ms-flex-item-align: center !important;
+    align-self: center !important;
+}
 
+.flex-row {
+    -ms-flex-direction: row !important;
+    flex-direction: row !important;
+}
 .flex-column {
     flex-direction: column !important;
+}
+.flex-fill {
+    flex: 1 1 auto !important;
+}
+/* sizing */
+.img-fluid {
+    max-width: 100%;
+    height: auto;
 }
 .h-100 {
     height: 100% !important;
@@ -182,6 +216,7 @@ body.app #wrap {
 .w-100 {
     width: 100% !important;
 }
+/* colours */
 .bg-dark {
     background: #333 !important;
 }
@@ -191,9 +226,7 @@ body.app #wrap {
 .text-light {
     color: #f8f9fa !important;
 }
-.flex-fill {
-    flex: 1 1 auto !important;
-}
+/* borders */
 .border-top{
     border: 0;
     border-top: 1px solid currentColor;
@@ -201,6 +234,7 @@ body.app #wrap {
 .border-bottom{
     border-bottom: 1px solid rgba(222, 226, 230, .5) !important
 }
+/* text cut offs */
 .text-truncate {
     overflow: hidden;
     text-overflow: ellipsis;
@@ -259,7 +293,44 @@ ul.nav > li > [disabled] {
     color: inherit;
 }
 
-
+/* bs4 style grid 
+@todo: upgrade to bs4 if possible
+*/
+[class*="col-"]{
+    position: relative;
+    width: 100%;
+    margin: 0;
+}
+.col-2 {
+    -ms-flex: 0 0 16.666667%;
+    flex: 0 0 16.666667%;
+    max-width: 16.666667%;
+}
+.col-4 {
+    -ms-flex: 0 0 33.333333%;
+    flex: 0 0 33.333333%;
+    flex-grow: 0;
+    flex-basis: 33.3333%;
+    max-width: 33.333333%;
+}
+.col-6 {
+    -ms-flex: 0 0 50%;
+    flex: 0 0 50%;
+    max-width: 50%;
+}
+.col-8 {
+    -ms-flex: 0 0 66.666667%;
+    flex: 0 0 66.666667%;
+    flex-grow: 0;
+    flex-basis: 66.6667%;
+    max-width: 66.666667%;
+}
+.col-10 {
+    -ms-flex: 0 0 83.333333%;
+    flex: 0 0 83.333333%;
+    max-width: 83.333333%;
+}
+/* end of grid css */
 
 
 /** MOBILE FIRST **/
@@ -294,8 +365,32 @@ ul.nav > li > [disabled] {
     .d-sm-inline-block {
         display: inline-block!important;
     }
-    .d-xs-inline-block {
+    .d-sm-inline-block {
         display: inline-block!important;
+    }
+    .col-sm-2 {
+        -ms-flex: 0 0 16.666667%;
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+    .col-sm-4 {
+        -ms-flex: 0 0 33.333333%;
+        flex: 0 0 33.333333%;
+        flex-grow: 0;
+        flex-basis: 33.3333%;
+        max-width: 33.333333%;
+    }
+    .col-sm-8 {
+        -ms-flex: 0 0 66.666667%;
+        flex: 0 0 66.666667%;
+        flex-grow: 0;
+        flex-basis: 66.6667%;
+        max-width: 66.666667%;
+    }
+    .col-sm-10 {
+        -ms-flex: 0 0 83.333333%;
+        flex: 0 0 83.333333%;
+        max-width: 83.333333%;
     }
 }
 /* 
@@ -307,6 +402,40 @@ ul.nav > li > [disabled] {
     }
     .d-md-inline-block {
         display: inline-block!important;
+    }
+    .d-md-flex {
+        display: flex !important;
+    }
+    .pb-md-0{
+        padding-bottom: 0!important
+    }
+    .mb-md-2{
+        margin-bottom: var(--s2) !important;
+    }
+
+    .col-md-2 {
+        -ms-flex: 0 0 16.666667%;
+        flex: 0 0 16.666667%;
+        max-width: 16.666667%;
+    }
+    .col-md-4 {
+        -ms-flex: 0 0 33.333333%;
+        flex: 0 0 33.333333%;
+        flex-grow: 0;
+        flex-basis: 33.3333%;
+        max-width: 33.333333%;
+    }
+    .col-md-8 {
+        -ms-flex: 0 0 66.666667%;
+        flex: 0 0 66.666667%;
+        flex-grow: 0;
+        flex-basis: 66.6667%;
+        max-width: 66.666667%;
+    }
+    .col-md-10 {
+        -ms-flex: 0 0 83.333333%;
+        flex: 0 0 83.333333%;
+        max-width: 83.333333%;
     }
 }
 /* 
