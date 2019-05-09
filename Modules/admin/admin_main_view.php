@@ -527,7 +527,7 @@ function markdownify(markup) {
     .replace(/<dd *[^/]*?>/g,' :- ')
     .replace(/<\/dd>/g,"\n")
     // remove all other <tags>
-    .replace(/(<([^>]+)>\s*)/ig,'')
+    .replace(/(<([^>]+)> *)/ig,'')
     // remove indenting
     .replace(/^ {2,}/gm," ")
     // remove orphan new lines
