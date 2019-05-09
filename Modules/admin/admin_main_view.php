@@ -463,7 +463,7 @@ function markdownStringify(md) {
     // indent values
     .replace(/\:-/g,':\t')
     // start titles on new lines
-    .replace(/- \*\*/g,'\n\t')
+    .replace(/- \*\*/g,'\t')
     // remove bold
     .replace(/\*\*/g,'')
     // remove heading
