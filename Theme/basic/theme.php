@@ -280,6 +280,10 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <!-- <title>arrow_forward</title> -->
             <path d="M16 5.313l10.688 10.688-10.688 10.688-1.875-1.875 7.438-7.5h-16.25v-2.625h16.25l-7.438-7.5z"></path>
         </symbol>
+        <symbol id="icon-enter" viewBox="0 0 32 32">
+            <!-- <title>enter</title> -->
+            <path d="M12 16h-10v-4h10v-4l6 6-6 6zM32 0v26l-12 6v-6h-12v-8h2v6h10v-18l8-4h-18v8h-2v-10z"></path>
+        </symbol>
     </defs>
 </svg>
 

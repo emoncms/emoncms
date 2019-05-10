@@ -239,8 +239,16 @@
 
     // If no controller found or nothing is returned, give friendly error
     if ($output['content'] === "#UNDEFINED#") {
+        // alter output is $route has $action
+        $actions = implode("/",array_filter(array($route->action, $route->subaction)));
+        $message = sprintf(_('%s cannot respond to %s'), sprintf("<strong>%s</strong>",ucfirst($route->controller)), sprintf('<strong>"%s"</strong>',$actions));
+        // alter the http header code
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
-        $output['content'] = "URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
+        $title = _('406 Not Acceptable');
+        $intro = sprintf('%s %s',_('URI not acceptable.'), $message);
+        $text = _('Try another link from the menu.');
+        // return the formatted string
+        $output['content'] = sprintf('<h2>%s</h2><p class="lead">%s.</p><p>%s</p>', $title, $intro, $text);
     }
 
     // If not authenticated and no ouput, asks for login
@@ -248,6 +256,9 @@
         $route->controller = "user";
         $route->action = "login";
         $route->subaction = "";
+        $message = urlencode(_('Authentication Required'));
+        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+        $route->query = sprintf("msg=%s&ref=%s",$message,$referrer);
         $output = controller($route->controller);
     }
 

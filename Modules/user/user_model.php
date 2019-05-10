@@ -347,7 +347,7 @@ class User
         return array('success'=>false, 'message'=>"Invalid email or verification key");
     }
 
-    public function login($username, $password, $remembermecheck)
+    public function login($username, $password, $remembermecheck, $referrer='')
     {
         $remembermecheck = (int) $remembermecheck;
 
@@ -409,6 +409,7 @@ class User
             
             if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
 
+            if(!empty($referrer)) $userData_startingpage = urldecode($referrer);
             return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
         }
     }
