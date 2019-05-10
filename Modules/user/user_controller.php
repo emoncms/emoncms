@@ -41,7 +41,8 @@ function user_controller()
                 'allowusersregister'=>$allowusersregister,
                 'verify'=>array(),
                 'message'=>$message,
-                'referrer'=>$referrer
+                'referrer'=>$referrer,
+                'v' => 3
             ));
         }
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());

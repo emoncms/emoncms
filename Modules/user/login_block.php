@@ -23,7 +23,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
   }
   
 </style>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=2"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
 <br>
 
 
