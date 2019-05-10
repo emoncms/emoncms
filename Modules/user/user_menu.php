@@ -37,8 +37,8 @@ if($session['userid']>0){
     );
 } else {
     $menu['user'][] = array(
-        'text' => _("Login"),
-        'icon' => 'user',
+        'title' => _("Login"),
+        'icon' => 'enter',
         'path' => '/',
     );
 }

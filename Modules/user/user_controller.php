@@ -29,7 +29,21 @@ function user_controller()
     // Load html,css,js pages to the client
     if ($route->format == 'html')
     {
-        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>array()));
+        if ($route->action == 'login' && !$session['read']) {
+            $route_query = array();
+            parse_str($route->query, $route_query );
+            $msg = empty($route_query['msg']) ? get('msg') : $route_query['msg'];
+            $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
+            $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
+            $referrer = filter_var(base64_decode(urldecode($ref)), FILTER_SANITIZE_URL);
+
+            $result = view("Modules/user/login_block.php", array(
+                'allowusersregister'=>$allowusersregister,
+                'verify'=>array(),
+                'message'=>$message,
+                'referrer'=>$referrer
+            ));
+        }
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         
         if ($route->action == 'logout' && $session['read']) {
@@ -54,7 +68,7 @@ function user_controller()
     if ($route->format == 'json')
     {
         // Core session
-        if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
+        if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
         if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         

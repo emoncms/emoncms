@@ -1,13 +1,19 @@
 
 var user = {
 
-  'login':function(username,password,rememberme)
+  'login':function(username,password,rememberme,referrer)
   {
     var result = {};
+    var data = {
+        username: encodeURIComponent(username),
+        password: encodeURIComponent(password),
+        rememberme: encodeURIComponent(rememberme),
+        referrer: encodeURIComponent(referrer)
+    }
     $.ajax({
       type: "POST",
       url: path+"user/login.json",
-      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&rememberme="+encodeURIComponent(rememberme),
+      data: data,
       dataType: "text",
       async: false,
       success: function(data_in)

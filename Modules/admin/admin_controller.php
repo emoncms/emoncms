@@ -15,14 +15,13 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 function admin_controller()
 {
     global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log;
-    if($route->format==='html') {
-        $result = "<br><div class='alert-error' style='top:0px; left:0px; width:100%; height:100%; text-align:center; padding-top:100px; padding-bottom:100px; border-radius:4px;'><h4><a class='text-danger' href='" . get_application_path() ."user/logout?action=admin/view'>"._('Admin re-authentication required').'<svg class="icon arrow_forward"><use xlink:href="#icon-arrow_forward"></use></svg></a></h4></div>';
-    } elseif($route->format==='json'){
-        $result = array(
-            'success'=>false,
-            'message'=>_('Admin re-authentication required')
-        );
-    }
+    $result = "#UNDEFINED#";// display missing route message by default
+    $message = '';
+    
+    if(!$session['write']) {
+        $result = ''; // empty result shows login page (now redirects once logged in)
+        $message = _('Admin re-authentication required');
+    }   
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -521,5 +520,5 @@ function admin_controller()
         }
     }
 
-    return array('content'=>$result);
+    return array('content'=>$result,'message'=>$message);
 }
