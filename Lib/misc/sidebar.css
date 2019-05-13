@@ -171,6 +171,16 @@ top navbar override
   height: 2px;
 } */
 
+.nav a:focus-within,
+.nav .btn:focus-within{
+    border-color: rgba(255,255,255,0.8);
+    outline: 0;
+    outline: thin dotted \9;
+    -webkit-box-shadow: inset 0 1px 1px rgba(255,255,255,.075),0 0 8px rgba(255,255,255,0.6);
+    -moz-box-shadow: inset 0 1px 1px rgba(255,255,255,.075),0 0 8px rgba(255,255,255,0.6);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.075),0 0 8px rgba(255,255,255,0.6);
+}
+
 /* sidebar status indicator */
 #left-nav > li > a:active,
 #left-nav > li > a:focus {
@@ -262,15 +272,15 @@ body.dashboard.has-sidebar.fullwidth #footer {
 #sidebar_user_toggle:hover {
   background: #212121;
 }
-#footer_nav #sidebar_user_dropdown li {
+#footer_nav #sidebar_bookmarks li {
     border-bottom: 1px solid #444;
 }
-#footer_nav #sidebar_user_dropdown li a {
+#footer_nav #sidebar_bookmarks li a {
   /* background: #212121; */
   padding: 0.67em 0.94em;
 }
 
-#footer_nav #sidebar_user_dropdown li a:hover {
+#footer_nav #sidebar_bookmarks li a:hover {
   /* background: #1b1b1b !important; */
 }
 

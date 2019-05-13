@@ -11,7 +11,7 @@
 */
 global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
 
-$v = 3;
+$v = 4;
 
 if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
@@ -84,7 +84,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <br>
         <?php } ?>
 
-        <div id="sidebar" class="bg-dark text-light">
+        <div id="sidebar" class="bg-dark text-light" tabIndex="-1">
             <div class="sidebar-content d-flex flex-column">
                 <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
             </div>

@@ -184,7 +184,7 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
 
 
     echo <<<SIDEBARSTART
-    <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
+    <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}" tabIndex="-1">
         <a href="#" style="padding: .8em" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
         <h4 class="sidebar-title">{$menu_key}</h4>
 
@@ -237,14 +237,14 @@ if($session['write']){ ?>
                         'id' => 'sidebar_user_toggle',
                         'data' => array(
                             'toggle' => 'collapse',
-                            'target' => '#sidebar_user_dropdown'
+                            'target' => '#sidebar_bookmarks'
                         )
                     ));
                 ?>
                     <h4 class="sidebar-title d-flex justify-content-between align-items-center">Bookmarks 
                     <a id="edit_bookmarks" class="btn btn-inverse btn-sm btn-link pull-right" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
                     </h4>
-                    <ul id="sidebar_user_dropdown" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
+                    <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
                     <?php 
                         // bookmarks
                         // make menu item link to the original and not the bookmark 
@@ -277,7 +277,7 @@ if($session['write']){ ?>
 ?>
                 <script>
                     // manage the open/close of the user menu in the sidebar
-                    var list = document.getElementById('sidebar_user_dropdown');
+                    var list = document.getElementById('sidebar_bookmarks');
                     var user_toggle = document.getElementById('sidebar_user_toggle');
                     if(user_toggle) {
                         user_toggle.addEventListener('click', function(event){
