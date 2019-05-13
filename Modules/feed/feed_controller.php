@@ -45,7 +45,7 @@ function feed_controller()
         }
         else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());
         else if (!$session['read']) return ''; // empty strings force user back to login
-        else return "#UNDEFINED#"; // this string displays error
+        else return EMPTY_ROUTE; // this string displays error
     }
 
     else if ($route->format == 'json')
@@ -276,5 +276,5 @@ function feed_controller()
         }
     }
 
-    return array('content'=>'#UNDEFINED#');
+    return array('content'=>EMPTY_ROUTE);
 }

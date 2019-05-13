@@ -132,6 +132,10 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
+    
+    // output string if controller or action not found. used to return error.
+    define('EMPTY_ROUTE', "#UNDEFINED#");
+
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
     
     // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
@@ -210,11 +214,10 @@
 
     // 6) Load the main page controller
     $output = controller($route->controller);
-
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if ($output['content'] == "#UNDEFINED#" && $public_profile_enabled && $route->controller!='admin')
+    if ($output['content'] == EMPTY_ROUTE && $public_profile_enabled && $route->controller!='admin')
     {
         $userid = $user->get_id($route->controller);
         if ($userid) {
@@ -238,21 +241,31 @@
     }
 
     // If no controller found or nothing is returned, give friendly error
-    if ($output['content'] === "#UNDEFINED#") {
+    if ($output['content'] === EMPTY_ROUTE) {
         // alter output is $route has $action
         $actions = implode("/",array_filter(array($route->action, $route->subaction)));
         $message = sprintf(_('%s cannot respond to %s'), sprintf("<strong>%s</strong>",ucfirst($route->controller)), sprintf('<strong>"%s"</strong>',$actions));
         // alter the http header code
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         $title = _('406 Not Acceptable');
+        $plain_text = _('Route not found');
         $intro = sprintf('%s %s',_('URI not acceptable.'), $message);
         $text = _('Try another link from the menu.');
         // return the formatted string
-        $output['content'] = sprintf('<h2>%s</h2><p class="lead">%s.</p><p>%s</p>', $title, $intro, $text);
+        if($route->format==='html') {
+            $output['content'] = sprintf('<h2>%s</h2><p class="lead">%s.</p><p>%s</p>', $title, $intro, $text);
+        } else {
+            $output['content'] = array(
+                'success'=> false,
+                'message'=> sprintf('%s. %s', $title, $plain_text)
+            );
+        }
+        $log->warn(sprintf('%s|%s', $title, implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
     }
 
     // If not authenticated and no ouput, asks for login
     if ($output['content'] == "" && (!isset($session['read']) || (isset($session['read']) && !$session['read']))) {
+        $log->error(sprintf('%s|%s',_('Not Authenticated'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
         $route->controller = "user";
         $route->action = "login";
         $route->subaction = "";
@@ -279,6 +292,9 @@
             print $output['content'];
         } else {
             header('Content-Type: application/json');
+            if(!empty($output['message'])){
+                header(sprintf('X-emoncms-message: %s', $output['message']));
+            }
             print json_encode($output['content']);
             if (json_last_error()!=JSON_ERROR_NONE) {
                 switch (json_last_error()) {
