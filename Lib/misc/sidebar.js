@@ -43,8 +43,9 @@ $(function(){
                     if(!thirdLevelOpen) {
                         hide_sidebar();
                     } else {
-                        $('.third-level-indicator').toggleClass('hidden', true);
                         hideMenuItems(event);
+                        // @todo: make the sidebar show 2nd level and not hide_sidebar()
+                        hide_sidebar();
                     }
                 } else {
                     // enable correct sidebar inner based on clicked tab
