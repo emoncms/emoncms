@@ -69,8 +69,9 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 </head>
 <body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
+
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner">
+            <div class="navbar-inner bg-primary text-dark d-flex justify-content-between flex-nowrap">
                 <?php echo $mainmenu; ?>
             </div>
         </div>
@@ -83,8 +84,8 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             </div>
             <br>
         <?php } ?>
-
-        <div id="sidebar" class="bg-dark text-light" tabIndex="-1">
+        
+        <div id="sidebar" class="bg-dark text-light">
             <div class="sidebar-content d-flex flex-column">
                 <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
             </div>

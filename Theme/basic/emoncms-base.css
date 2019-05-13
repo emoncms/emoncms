@@ -38,7 +38,7 @@ body.app #wrap {
 
 /* text colours */
 .text-white{color:white!important}
-.text-light{color:#aaa!important}
+.text-light {color: #aaa !important;}
 .text-primary{color:#0699fa!important}
 .text-warning{color:#dccc1f!important}
 .text-success{color:#89ae65!important}
@@ -46,7 +46,19 @@ body.app #wrap {
 .text-quaternary {color: #fb7b50!important}
 .text-danger{color:#d52e2e!important}
 .text-exporting{color:#2ed52e!important}
+.text-dark {color: #333 !important;}
 
+/* colours */
+.bg-dark {background: #333 !important;}
+.bg-primary {background: #44b3e2 !important;}
+.bg-secondary {background: #6c757d !important;}
+.bg-success {background: #28a745 !important;}
+.bg-danger {background: #dc3545 !important;}
+.bg-warning {background: #ffc107 !important;}
+.bg-info {background: #17a2b8 !important;}
+.bg-light {background: #f8f9fa !important;}
+.bg-white {background: #fff !important;}
+.bg-transparent {background: transparent !important;}
 
 /* spaces: 
     1 = .25rem
@@ -180,6 +192,10 @@ body.app #wrap {
     -ms-flex-pack: end !important;
     justify-content: flex-end !important;
 }
+.justify-content-start {
+    -ms-flex-pack: start !important;
+    justify-content: flex-start !important;
+}
 .align-items-center {
     align-items: center !important;
 }
@@ -205,6 +221,15 @@ body.app #wrap {
 .flex-fill {
     flex: 1 1 auto !important;
 }
+.flex-row-reverse {
+    -ms-flex-direction: row-reverse !important;
+    flex-direction: row-reverse !important;
+}
+.flex-nowrap {
+    -ms-flex-wrap: nowrap !important;
+    flex-wrap: nowrap !important;
+}
+
 /* sizing */
 .img-fluid {
     max-width: 100%;
@@ -216,16 +241,7 @@ body.app #wrap {
 .w-100 {
     width: 100% !important;
 }
-/* colours */
-.bg-dark {
-    background: #333 !important;
-}
-.text-dark {
-    color: #333 !important;
-}
-.text-light {
-    color: #f8f9fa !important;
-}
+
 /* borders */
 .border-top{
     border: 0;
@@ -354,6 +370,10 @@ ul.nav > li > [disabled] {
     .d-xs-inline {
         display: inline!important;
     }
+    .justify-content-xs-between {
+        justify-content: space-between !important;
+        flex-wrap: wrap;
+    }
 }
 /* 
 // Small devices (landscape phones, 576px and up)
@@ -391,6 +411,10 @@ ul.nav > li > [disabled] {
         -ms-flex: 0 0 83.333333%;
         flex: 0 0 83.333333%;
         max-width: 83.333333%;
+    }
+    .justify-content-sm-between {
+        justify-content: space-between !important;
+        flex-wrap: wrap;
     }
 }
 /* 

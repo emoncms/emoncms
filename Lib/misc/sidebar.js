@@ -50,10 +50,8 @@ $(function(){
                     // enable correct sidebar inner based on clicked tab
                     $sidebar_inner.addClass(activeClass).find('li a').each(function(){
                         $(this)[0].tabIndex = "0";
-                        // @todo: remove tabIndex from non active menu items
-                        // @todo: add tabIndex for active menu items
                     })
-                    $sidebar_inner.siblings().each(function(i,n) {
+                    $sidebar_inner.siblings('.sidebar-inner').each(function(i,n) {
                         $(this).removeClass(activeClass);
                         $(this).find('li a').each(function(j,m){
                             $(this)[0].tabIndex = "-1";
