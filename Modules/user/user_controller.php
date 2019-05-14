@@ -95,7 +95,7 @@ function user_controller()
 
         if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
         if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
-        if ($route->action == 'gettimezones' && $session['read']) $result = $user->get_timezones();
+        if ($route->action == 'gettimezones') $result = $user->get_timezones();
         
         if ($route->action == "deleteall" && $session['write']) {
             $route->format = "text";
