@@ -56,9 +56,8 @@ endforeach; endif;
 
 <?php } ?>
 
-
-
 <ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
+
 <?php
 $isBookmarked = currentPageIsBookmarked();
 $addBookmark = array(
