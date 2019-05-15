@@ -15,8 +15,8 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 function admin_controller()
 {
     global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log;
-    $result = "#UNDEFINED#";// display missing route message by default
-    $message = '';
+    $result = EMPTY_ROUTE;// display missing route message by default
+    $message = _('406: Route not found');
     
     if(!$session['write']) {
         $result = ''; // empty result shows login page (now redirects once logged in)

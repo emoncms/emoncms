@@ -29,8 +29,8 @@ function get_application_path()
         $proto = "https";
     }
 
-    if( isset( $_SERVER['HTTP_X_FORWARDED_SERVER'] ))
-        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_SERVER') . server('SCRIPT_NAME')) . "/";
+    if( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ))
+        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_HOST') . server('SCRIPT_NAME')) . "/";
     else
         $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
 
@@ -46,7 +46,7 @@ function db_check($mysqli,$database)
 
 function controller($controller_name)
 {
-    $output = array('content'=>"#UNDEFINED#");
+    $output = array('content'=>EMPTY_ROUTE);
 
     if ($controller_name)
     {
@@ -76,7 +76,7 @@ function view($filepath, array $args = array())
 function get($index)
 {
     $val = null;
-    if (isset($_GET[$index])) $val = $_GET[$index];
+    if (isset($_GET[$index])) $val = rawurldecode($_GET[$index]);
     
     if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
@@ -85,7 +85,7 @@ function get($index)
 function post($index)
 {
     $val = null;
-    if (isset($_POST[$index])) $val = $_POST[$index];
+    if (isset($_POST[$index])) $val = rawurldecode($_POST[$index]);
     
     if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
