@@ -76,7 +76,7 @@ function view($filepath, array $args = array())
 function get($index)
 {
     $val = null;
-    if (isset($_GET[$index])) $val = $_GET[$index];
+    if (isset($_GET[$index])) $val = rawurldecode($_GET[$index]);
     
     if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
@@ -85,7 +85,7 @@ function get($index)
 function post($index)
 {
     $val = null;
-    if (isset($_POST[$index])) $val = $_POST[$index];
+    if (isset($_POST[$index])) $val = rawurldecode($_POST[$index]);
     
     if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
