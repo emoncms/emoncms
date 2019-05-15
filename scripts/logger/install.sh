@@ -31,11 +31,11 @@ sudo ln -sf /var/www/html/emoncms/scripts/logger/logrotate /etc/cron.hourly/logr
 
 if [ ! -d /var/log/logrotate ]; then
     echo "setup /var/log/logrotate folder for logrotate.state & logrotate.log"
-    sudo mkdir /var/log/logrotate
+    sudo mkdir -p /var/log/logrotate
 fi
 
 # correct the ownership (regardless of whether it previously existed)
-sudo chown -R root:adm /var/log/logrotate
+sudo chown -R root:root /var/log/logrotate
 
 echo ""
 echo "Completed"
