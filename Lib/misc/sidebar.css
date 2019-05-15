@@ -37,6 +37,13 @@ Top nav
 .navbar .nav > li > a {
   padding: .6em;
 }
+.navbar .nav {
+    float: none;
+}
+.navbar .navbar-inner:before,
+.navbar .navbar-inner:after {
+    content: none;
+}
 @media screen and (min-width: 380px) {
   #emoncms-navbar .navbar-inner .nav {
     font-size: 1.5rem;
@@ -70,7 +77,6 @@ Sidebar sub menus----------------------------------------------------*/
   display: none;
   margin-top: 0px;
   top: 2.7rem;
-  background: #333;
   z-index: 1000;
   height: calc(100vh - 2.7rem);
   margin-bottom: 2rem;
@@ -90,7 +96,6 @@ Sidebar sub menus----------------------------------------------------*/
 }
 .sidebar-title {
   text-indent: 1rem;
-  background: #333;
   padding: 1em 0 0.75em 0;
   margin: 0;
   text-transform: capitalize;
@@ -166,16 +171,19 @@ top navbar override
   background: #333;
   opacity: 0.3;
 }
-/* #left-nav li.active a:before {
-  background: #333;
-  height: 2px;
-} */
 
-/* sidebar status indicator */
-#left-nav > li > a:active,
-#left-nav > li > a:focus {
-  outline: none;
-}
+/* tabindex styling */
+/* don't render menu items when not active */
+.sidebar-inner,
+.include-container,
+.collapse{display:none}
+.sidebar-inner.active,
+.include-container.in,
+.collapse.in{display:block}
+
+
+
+
 #sidebar-toggle {
   display: none !important;
 }
@@ -245,33 +253,22 @@ body.dashboard.has-sidebar.fullwidth #footer {
   margin-bottom: 0;
   width: 15rem;
 }
-#sidebar-toggle-bar:active,
-#sidebar-toggle-bar:focus {
-  outline: none;
-}
+
 #sidebar_user_toggle {
   background: #333;
   padding-top: 0.6em !important;
   padding-bottom: 0.75em !important;
 }
-#sidebar_user_toggle:active,
-#sidebar_user_toggle:focus {
-  outline: none;
-}
+
 .expanded #sidebar_user_toggle,
 #sidebar_user_toggle:hover {
   background: #212121;
 }
-#footer_nav #sidebar_user_dropdown li {
+#footer_nav #sidebar_bookmarks li {
     border-bottom: 1px solid #444;
 }
-#footer_nav #sidebar_user_dropdown li a {
-  /* background: #212121; */
+#footer_nav #sidebar_bookmarks li a {
   padding: 0.67em 0.94em;
-}
-
-#footer_nav #sidebar_user_dropdown li a:hover {
-  /* background: #1b1b1b !important; */
 }
 
 #edit_bookmarks {
@@ -279,7 +276,8 @@ body.dashboard.has-sidebar.fullwidth #footer {
     color: #545454!important;
     transition: color .3s ease-out;
 }
-#edit_bookmarks:hover {
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
     color: #FFF!important;
 }
 
@@ -316,10 +314,6 @@ body.collapsed #sidebar-toggle-bar {
   margin-left: -0.2rem;
 }
 
-#sidebar-toggle-bar:active,
-#sidebar-toggle-bar:focus {
-  outline: none;
-}
 #sidebar-toggle-bar:hover:after {
   opacity: 0.8;
 }
@@ -391,10 +385,6 @@ Side nav: app list
 .include-container.collapse.in > li,
 .sidebar-menu li.collapse.in {
   border-bottom: 1px solid #444;
-}
-.sidebar-menu li a:focus,
-.sidebar-menu li a:active {
-  outline: none;
 }
 #sidebar svg.icon {
   margin-top: .1em;

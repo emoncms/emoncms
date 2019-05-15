@@ -25,8 +25,9 @@ function makeListLink($params) {
     $activeClassName = 'active';
 
     $li_id = getKeyValue('li_id', $params);
-    $li_class = (array) getKeyValue('li_class', $params);
-    $li_style = (array) getKeyValue('li_style', $params);
+    $li_class = array_filter( (array) getKeyValue('li_class', $params));
+    $li_style = array_filter( (array) getKeyValue('li_style', $params));
+    $li_attr = array_filter( (array) getKeyValue('li_attr', $params));
 
     $id = getKeyValue('id', $params);
     $text = getKeyValue('text', $params);
@@ -35,14 +36,13 @@ function makeListLink($params) {
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
     $active = getAbsoluteUrl(getKeyValue('active', $params));
-    $sub_items = (array) getKeyValue('sub_items', $params);
-    $style = (array) getKeyValue('style', $params);
-    $class = (array) getKeyValue('class', $params);
-    $data = (array) getKeyValue('data', $params);
+    $sub_items = array_filter( (array) getKeyValue('sub_items', $params));
+    $style = array_filter( (array) getKeyValue('style', $params));
+    $class = array_filter( (array) getKeyValue('class', $params));
+    $data = array_filter( (array) getKeyValue('data', $params));
+    $attr = array_filter( (array) getKeyValue('attr', $params));
     $data['active'] = $active;
     
-    $data = array_filter($data);// clean out empty entries
-
     if(is_current($path) || is_current($active) || is_active($params)){
         $li_class[] = $activeClassName;
     }
@@ -59,17 +59,16 @@ function makeListLink($params) {
         'path'=> $path,
         'active'=> $active,
         'data'=> $data,
-        'style'=> $style
+        'style'=> $style,
+        'attr'=> $attr
     ));
-
-    $attr = buildAttributes(array(
+    $attr = buildAttributes(array_merge($li_attr, array(
         'id' => $li_id,
         'class' => implode(' ', array_unique($li_class)),
         'style' => implode(';', $li_style)
-    ));
+    )));
     if(!empty($attr)) $attr = ' '.$attr;
 
-    $sub_items = array_filter($sub_items);
     if(!empty($sub_items)) {
         foreach($sub_items as $key=>$item) {
             if(is_array($item)) {
@@ -141,7 +140,8 @@ function getKeyValue($key, $array) {
  * @return string
  */
 function tab($num){
-    return "\n".str_pad('',$num,"\t");
+    $tabspaces = 4;
+    return PHP_EOL.str_pad('',$num*$tabspaces," ");
 }
 /**
  * build <a> link with 'active' class added if is current page
@@ -161,9 +161,11 @@ function makeLink($params) {
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
     
-    $style = (array) getKeyValue('style', $params);
-    $class = (array) getKeyValue('class', $params);
-    $data = (array) getKeyValue('data', $params);
+    $style = array_filter((array) getKeyValue('style', $params));
+    $class = array_filter((array) getKeyValue('class', $params));
+    $data = array_filter((array) getKeyValue('data', $params));
+    $attr = array_filter((array) getKeyValue('attr', $params));
+
     // create url if pre-built url not passed
     if(empty($href)) $href = getAbsoluteUrl($path);
     
@@ -187,14 +189,14 @@ function makeLink($params) {
     }
     
     // create the <a> tag attribute list
-    $attr = buildAttributes(array(
+    $attr = buildAttributes(array_merge($attr, array(
         'id'=>$id,
         'href'=>$href,
         'style'=>implode(';', $style),
         'title'=>$title,
         'class'=>implode(' ', $class),
         'data'=>$data
-    ));
+    )));
     // exit function if no href value available
     if(empty($href)) return $text;
 

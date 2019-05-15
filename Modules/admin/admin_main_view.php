@@ -463,17 +463,16 @@ function markdownStringify(md) {
     // indent values
     .replace(/\:-/g,':\t')
     // start titles on new lines
-    .replace(/- \*\*/g,'\t')
+    .replace(/ {4}- \*\*/g,'\n\t\t')
+    .replace(/^- \*\*/mg,'\n\t')
     // remove bold
     .replace(/\*\*/g,'')
     // remove heading
-    .replace(/##(.)/gm,'\n')
+    .replace(/##(.)/gm,'\n\n')
     // remove orphan new lines
     .replace(/\n /g,'')
     // replace unrequired whitespace
-    .replace(/\n{2,}/g,'\n\n')
-    .replace(/\s{4}/g,'\n\t')
-    .replace(/\s{2,}\n/gm,'\n')
+    .replace(/\n{2,}/g,'\n')
 }
 /**
  * attempt to convert <html> to markdown (text/markdown)
@@ -557,7 +556,8 @@ function markdownify(markup) {
     .replace(/\n{2,} /g,"\n\n")
     .replace(/\n{3,}/g,"\n\n")
     // add newline before level 2 title
-    .replace(/\n?##/g,'\n##')
+    .replace(/\n?#{2}/g,'\n##')
+    .replace(/([\w\(\)])\n*#{2}/g,"$1\n\n\r##")
     .trim()
 }
 /**
