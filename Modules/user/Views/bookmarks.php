@@ -137,7 +137,7 @@ $(function(){
                     $form.parents('li').first().fadeOut(function(){
                         $(this).remove();
                     });
-                    $('#sidebar_user_dropdown li a').each(function(n,elem){
+                    $('#sidebar_bookmarks li a').each(function(n,elem){
                         if(elem.href===path+bookmarkPath) {
                             var $li = $(elem).parents('li').first();
                             $li.fadeOut(function(){
@@ -188,7 +188,7 @@ $(function(){
             $.post(path + 'user/preferences.json', data, function(response){
                 if(response.success && response.success !== false) {
                     $form.find('[data-title]').text(bookmarkText);
-                    $('#sidebar_user_dropdown li a').each(function(n,elem){
+                    $('#sidebar_bookmarks li a').each(function(n,elem){
                         // rename changed items
                         if(elem.href===path+bookmarkPath && elem.innerText !== bookmarkText) {
                             $(elem).fadeOut(function(){
@@ -205,7 +205,7 @@ $(function(){
         event.preventDefault();
     })
     // update view's bookmarks list on change of sidebar items
-    $('#sidebar_user_dropdown').on('bookmarks:updated', function(event){
+    $('#sidebar_bookmarks').on('bookmarks:updated', function(event){
         console.log(event.type);
         $sidebar = $(event.target);
         $bookmarks = $('#bookmarks');

@@ -12,7 +12,53 @@ if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 ?>
-<ul id="right-nav" class='nav pull-right d-flex align-items-stretch'>
+
+
+<?php
+if ($session['read']) {
+?>
+
+<ul id="left-nav" class="nav mr-0 d-flex">
+
+<?php
+// $menu['tabs'][] = array(
+//     'title'=> _("Open/Close Sidebar"),
+//     'id' => 'sidebar-toggle',
+//     'href' => '#',
+//     'icon' => 'icon-menu',
+//     'order' => -1,
+//     'li_style' => 'width:0; overflow:hidden; visibility:hidden',
+//     'data'=> array(
+//         'toggle' => 'slide-collapse',
+//         'target' => '#sidebar'
+//     )
+// );
+
+// top level menu icons (MAIN MENU)
+if(!empty($menu['tabs'])) {
+    foreach($menu['tabs'] as &$item) {
+        // find matching sidebar
+        $matching_menu = getChildMenuItems($item);
+        // add active class to <li>  if item in matching sidebar is current page/route
+        if(is_current_menu($matching_menu)) $item['li_class'][] = 'active';
+        // render menu item
+        echo makeListLink($item);
+    }
+}
+
+// left aligned menu items
+if(!empty($menu['left'])): foreach ($menu['left'] as $item):
+    $item['class'] = 'menu-left';
+    echo makeListLink($item);
+endforeach; endif;
+?>
+</ul>
+
+<?php } ?>
+
+
+
+<ul id="right-nav" class='nav d-flex align-items-stretch mr-0'>
 <?php
 $isBookmarked = currentPageIsBookmarked();
 $addBookmark = array(
@@ -58,7 +104,7 @@ if ($session['read']) {
 
 
 <?php
-// sidebar footer user menu
+// top navbar user menu
 $menu_index = 'user';
 if($session['read']){
     $item = array(
@@ -108,48 +154,6 @@ if($session['read']){
 </ul>
 
 
-
-<?php
-if ($session['read']) {
-?>
-
-<ul id="left-nav" class='nav'>
-
-<?php
-// $menu['tabs'][] = array(
-//     'title'=> _("Open/Close Sidebar"),
-//     'id' => 'sidebar-toggle',
-//     'href' => '#',
-//     'icon' => 'icon-menu',
-//     'order' => -1,
-//     'li_style' => 'width:0; overflow:hidden; visibility:hidden',
-//     'data'=> array(
-//         'toggle' => 'slide-collapse',
-//         'target' => '#sidebar'
-//     )
-// );
-
-// top level menu icons (MAIN MENU)
-if(!empty($menu['tabs'])) {
-    foreach($menu['tabs'] as &$item) {
-        // find matching sidebar
-        $matching_menu = getChildMenuItems($item);
-        // add active class to <li>  if item in matching sidebar is current page/route
-        if(is_current_menu($matching_menu)) $item['li_class'][] = 'active';
-        // render menu item
-        echo makeListLink($item);
-    }
-}
-
-// left aligned menu items
-if(!empty($menu['left'])): foreach ($menu['left'] as $item):
-    $item['class'] = 'menu-left';
-    echo makeListLink($item);
-endforeach; endif;
-?>
-</ul>
-
-<?php } ?>
 
 
 <?php

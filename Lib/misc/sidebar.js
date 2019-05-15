@@ -43,12 +43,21 @@ $(function(){
                     if(!thirdLevelOpen) {
                         hide_sidebar();
                     } else {
-                        $('.third-level-indicator').toggleClass('hidden', true);
                         hideMenuItems(event);
+                        // @todo: make the sidebar show 2nd level and not hide_sidebar()
+                        hide_sidebar();
                     }
                 } else {
                     // enable correct sidebar inner based on clicked tab
-                    $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass);
+                    $sidebar_inner.addClass(activeClass).find('li a').each(function(){
+                        $(this)[0].tabIndex = "0";
+                    })
+                    $sidebar_inner.siblings('.sidebar-inner').each(function(i,n) {
+                        $(this).removeClass(activeClass);
+                        $(this).find('li a').each(function(j,m){
+                            $(this)[0].tabIndex = "-1";
+                        })
+                    })
                 }
             }
         }
@@ -200,7 +209,7 @@ $(function(){
                     bookmarks: JSON.stringify(bookmarks)
                 }
             }, function(data) {
-                var $menu = $('#sidebar_user_dropdown');
+                var $menu = $('#sidebar_bookmarks');
                 var $template = $('#bookmark_link');
                 if(data.success) {
                     // saved successfully change icon
@@ -213,7 +222,7 @@ $(function(){
                             title: currentTitle
                         })
                         .text(currentTitle).hide().fadeIn();
-                        $('#sidebar_user_dropdown').trigger('bookmarks:updated');
+                        $menu.trigger('bookmarks:updated');
                         $nav.fadeIn();
 
                     } else {
@@ -224,7 +233,7 @@ $(function(){
                             if(relative === currentPage) {
                                 $li.animate({height:0},function(){
                                     $(this).remove();
-                                    $('#sidebar_user_dropdown').trigger('bookmarks:updated');
+                                    $menu.trigger('bookmarks:updated');
                                     setTimeout(function(){
                                         if($menu.find('li').length == 0) {
                                             $nav.fadeOut();
@@ -245,6 +254,19 @@ $(function(){
     // show hide 2nd / 3rd menu items
     // setTimeout(hideMenuItems, 100);
     
+
+    // save a cookie to remember user's choice to hide or show the bookmarks
+    $('#sidebar_bookmarks').on('show hide', function(event) {
+        var bookmarks_collapsed = event.type !== 'show';
+        docCookies.setItem('bookmarks_collapsed', bookmarks_collapsed)
+    })
+
+    $(document).keyup(function(e) {
+        if (e.keyCode == 27) { // escape key maps to keycode `27`
+            $('.navbar .dropdown').removeClass('open')
+        }
+    });
+
 }); // end of jquery ready()
 
 
@@ -316,8 +338,3 @@ var docCookies = {
   };
 
 
-// save a cookie to remember user's choice to hide or show the bookmarks
-$('#sidebar_user_dropdown').on('show hide', function(event) {
-    var bookmarks_collapsed = event.type !== 'show';
-    docCookies.setItem('bookmarks_collapsed', bookmarks_collapsed)
-})
