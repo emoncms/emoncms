@@ -391,7 +391,6 @@ function admin_controller()
             {
                 $_SESSION['userid'] = intval(get('id'));
                 header("Location: ../user/view");
-                exit();
             }
             
             else if ($route->action == 'setuserfeed' && $session['write'])
