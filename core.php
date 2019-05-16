@@ -29,8 +29,8 @@ function get_application_path()
         $proto = "https";
     }
 
-    if( isset( $_SERVER['HTTP_X_FORWARDED_SERVER'] ))
-        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_SERVER') . server('SCRIPT_NAME')) . "/";
+    if( isset( $_SERVER['HTTP_X_FORWARDED_HOST'] ))
+        $path = dirname("$proto://" . server('HTTP_X_FORWARDED_HOST') . server('SCRIPT_NAME')) . "/";
     else
         $path = dirname("$proto://" . server('HTTP_HOST') . server('SCRIPT_NAME')) . "/";
 
@@ -46,7 +46,7 @@ function db_check($mysqli,$database)
 
 function controller($controller_name)
 {
-    $output = array('content'=>"#UNDEFINED#");
+    $output = array('content'=>EMPTY_ROUTE);
 
     if ($controller_name)
     {
@@ -54,11 +54,7 @@ function controller($controller_name)
         $controllerScript = "Modules/".$controller_name."/".$controller.".php";
         if (is_file($controllerScript))
         {
-            // Load language files for module
-            $domain = "messages";
-            bindtextdomain($domain, "Modules/".$controller_name."/locale");
-            bind_textdomain_codeset($domain, 'UTF-8');
-            textdomain($domain);
+            load_language_files("Modules/".$controller_name."/locale");
 
             require_once $controllerScript;
             $output = $controller();
@@ -68,7 +64,7 @@ function controller($controller_name)
     return $output;
 }
 
-function view($filepath, array $args)
+function view($filepath, array $args = array())
 {
     extract($args);
     ob_start();
@@ -80,7 +76,7 @@ function view($filepath, array $args)
 function get($index)
 {
     $val = null;
-    if (isset($_GET[$index])) $val = $_GET[$index];
+    if (isset($_GET[$index])) $val = rawurldecode($_GET[$index]);
     
     if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
@@ -89,7 +85,7 @@ function get($index)
 function post($index)
 {
     $val = null;
-    if (isset($_POST[$index])) $val = $_POST[$index];
+    if (isset($_POST[$index])) $val = rawurldecode($_POST[$index]);
     
     if (get_magic_quotes_gpc()) $val = stripslashes($val);
     return $val;
@@ -153,15 +149,22 @@ function load_db_schema()
     }
     return $schema;
 }
+/**
+ * binds the gettext translations to the correct file and domain/type
+ *
+ * @param string $path path to the directory containing the .mo files for each language
+ * @param [string] $domain
+ * @return void
+ */
+function load_language_files($path, $domain='messages'){
+    // Load language files for module    
+    bind_textdomain_codeset($domain, 'UTF-8');
+    bindtextdomain($domain, $path);
+    textdomain($domain);
+}
 
 function load_menu()
 {
-    $menu_dashboard = array(); // Published Dashboards
-    $menu_left = array();  // Left
-    $menu_dropdown = array(); // Extra
-    $menu_dropdown_config = array(); //Setup
-    $menu_right = array(); // Right
-
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
     {
@@ -169,12 +172,48 @@ function load_menu()
         {
             if (is_file("Modules/".$dir[$i]."/".$dir[$i]."_menu.php"))
             {
+                load_language_files("Modules/".$dir[$i]."/locale");
                 require "Modules/".$dir[$i]."/".$dir[$i]."_menu.php";
             }
         }
     }
+    // add old menu structure if module not updated
+    // @todo: remove this once all users updated (2019-02-15)
+    if(isset($menu_dropdown_config)) {
+        foreach($menu_dropdown_config as $item){
+            if(!empty($item['name'])) $item['text'] = $item['name'];
+            $item['icon'] .= ' icon-white';
+            $menu['sidebar']['setup'][] = $item;
+        }
+    }
 
-    return array('dashboard'=>$menu_dashboard, 'left'=>$menu_left, 'dropdown'=>$menu_dropdown, 'dropdownconfig'=>$menu_dropdown_config, 'right'=>$menu_right);
+    return $menu;
+}
+
+function load_sidebar()
+{
+    global $route;
+    $sidebar = array(); // Sidebar 1st level nav
+    $sidebar_footer = array(); // Sidebar footer
+    $sidebar_sub = array(); // Sidebar 2nd level nav
+
+    $dir = $route->controller;
+    $path = implode(DIRECTORY_SEPARATOR, array('Modules', $dir, $dir . "_menu.php"));
+    
+    if (is_file($path)) require $path;
+
+    if (!empty($sidebar)) $sidebar['sidebar'] = $sidebar;
+    if (!empty($subnav)) $sidebar['subnav'] = $subnav;
+    if (!empty($sidebar_footer)) $sidebar['footer'] = $sidebar_footer;
+
+    if (!empty($sidebar_includes)) {
+        foreach($sidebar_includes as $file) {
+            if (file_exists($file)) {
+                $sidebar['includes'][] = view($file);
+            }
+        }
+    }
+    return $sidebar;
 }
 
 function http_request($method,$url,$data) {

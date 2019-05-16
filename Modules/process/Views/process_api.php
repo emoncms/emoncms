@@ -1,8 +1,6 @@
 <?php global $path, $session, $user; ?>
 <?php
-    $domain2 = "process_messages";
-    bindtextdomain($domain2, "Modules/process/locale");
-    bind_textdomain_codeset($domain2, 'UTF-8');
+    load_language_files(dirname(__DIR__)."/locale", "process_messages");
 ?>
 <h2><?php echo dgettext('process_messages','Process API'); ?></h2>
 <h3><?php echo dgettext('process_messages','Apikey authentication'); ?></h3>

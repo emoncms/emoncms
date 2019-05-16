@@ -29,7 +29,22 @@ function user_controller()
     // Load html,css,js pages to the client
     if ($route->format == 'html')
     {
-        if ($route->action == 'login' && !$session['read']) $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>array()));
+        if ($route->action == 'login' && !$session['read']) {
+            $route_query = array();
+            parse_str($route->query, $route_query );
+            $msg = empty($route_query['msg']) ? get('msg') : $route_query['msg'];
+            $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
+            $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
+            $referrer = filter_var(base64_decode(urldecode($ref)), FILTER_SANITIZE_URL);
+
+            $result = view("Modules/user/login_block.php", array(
+                'allowusersregister'=>$allowusersregister,
+                'verify'=>array(),
+                'message'=>$message,
+                'referrer'=>$referrer,
+                'v' => 3
+            ));
+        }
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         
         if ($route->action == 'logout' && $session['read']) {
@@ -42,13 +57,19 @@ function user_controller()
             $verify = $user->verify_email($_GET['email'], $_GET['key']);
             $result = view("Modules/user/login_block.php", array('allowusersregister'=>$allowusersregister,'verify'=>$verify));
         }
+
+        if ($route->action == 'bookmarks' && $session['write']) {
+            $bookmarks = $user->getUserBookmarks($session['userid']);
+            $result = view("Modules/user/Views/bookmarks.php", array('path'=>$path, 'bookmarks'=>$bookmarks));
+        }
+
     }
 
     // JSON API
     if ($route->format == 'json')
     {
         // Core session
-        if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'));
+        if ($route->action == 'login' && !$session['read']) $result = $user->login(post('username'),post('password'),post('rememberme'),post('referrer'));
         if ($route->action == 'register' && $allowusersregister) $result = $user->register(post('username'),post('password'),post('email'));
         if ($route->action == 'logout' && $session['read']) {$user->logout();call_hook('on_logout',[]);}
         
@@ -74,7 +95,7 @@ function user_controller()
 
         if ($route->action == 'timezone' && $session['read']) $result = $user->get_timezone_offset($session['userid']); // to maintain compatibility but in seconds
         if ($route->action == 'gettimezone' && $session['read']) $result = $user->get_timezone($session['userid']);
-        if ($route->action == 'gettimezones' && $session['read']) $result = $user->get_timezones();
+        if ($route->action == 'gettimezones') $result = $user->get_timezones();
         
         if ($route->action == "deleteall" && $session['write']) {
             $route->format = "text";
@@ -123,7 +144,7 @@ function user_controller()
                 case 'POST':
                     if(!empty(post('preferences'))){
                         $preferences = post('preferences');
-                        if($user->set_preferences($userid, $preferences)) {
+                        if($resp = $user->set_preferences($userid, $preferences)) {
                             $result = array('success'=>true, 'message'=>_('Preference Saved'));
                         } else {
                             $result = array('success'=>false, 'message'=>_('Problem saving Preferences'));
@@ -139,17 +160,30 @@ function user_controller()
                     } else {
                         $preferences = $user->get_preferences($userid, $property);
                     }
-
                     if(!empty($preferences)){
                         if(isset($preferences['success']) && $preferences['success']===false){
                             $error_msg = !empty($preferences['message']) ? $preferences['message'] : _('Error getting data');
+                            // return message if get_preferences() returns error message
                             $result = array('success'=>false, 'message'=>$error_msg);
                         }else{
-                            $result = array('success'=>true, 'preferences'=>$preferences);
+                            if (!$property) {
+                                // return all the keys if none passed
+                                $result = array('success'=>true, 'preferences'=>$preferences);
+                            } else {
+                                // just return the value if preference key supplied
+                                $result = $preferences;
+                            }
                         }
                     } else {
-                        $result = array('success'=>true, 'message'=>_('Empty'));
+                        if (!$property) {
+                            // "none found" if get_preferences() returns empty result
+                            $result = array('success'=>true, 'message'=>_('Empty'));
+                        } else {
+                            // return null value if specific key 
+                            $result = null;
+                        }
                     }
+                    return $result;
             }
         }
     }

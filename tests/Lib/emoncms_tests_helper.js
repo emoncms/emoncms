@@ -31,7 +31,8 @@ module.exports = {
     },
     logout: function () {
         this.logIfDebug('Logging out');
-        browser.click('a*=Logout');
+        browser.click('#user-dropdown')
+        browser.click('#logout-link');
     }
     ,
     logIfDebug(message) {

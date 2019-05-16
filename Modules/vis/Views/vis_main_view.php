@@ -10,9 +10,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
     global $path;
 ?>
 <?php
-    $domain3 = "vis_messages";
-    bindtextdomain($domain3, "Modules/vis/locale");
-    bind_textdomain_codeset($domain3, 'UTF-8');
+    load_language_files(dirname(__DIR__).'/locale',"vis_messages");
 ?>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.min.js"></script>
 <script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.selection.min.js"></script>

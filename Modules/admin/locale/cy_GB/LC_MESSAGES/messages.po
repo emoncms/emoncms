@@ -1,0 +1,738 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: emoncms3\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-05-08 10:49+0100\n"
+"PO-Revision-Date: 2019-05-08 11:06+0100\n"
+"Last-Translator: Emrys Roberts <emrys@openenergymonitor.org>\n"
+"Language-Team: \n"
+"Language: cy_GB\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
+"X-Poedit-Basepath: .\n"
+"X-Generator: Poedit 2.0.6\n"
+"X-Poedit-SearchPath-0: ../../..\n"
+
+#: ../../../admin_controller.php:18
+msgid "Admin re-authentication required"
+msgstr ""
+
+#: ../../../admin_db_view.php:1
+msgid "Database setup, update and status check"
+msgstr ""
+
+#: ../../../admin_db_view.php:2
+msgid ""
+"This page displays the output of the database setup and update process which "
+"checks the database requirements of each module installed and enter any new "
+"table or fields if required."
+msgstr ""
+
+#: ../../../admin_db_view.php:3
+msgid ""
+"If all the item statuses below show ok that means your database is setup "
+"correctly."
+msgstr ""
+
+#: ../../../admin_db_view.php:7
+msgid "Schema item"
+msgstr ""
+
+#: ../../../admin_db_view.php:7
+msgid "Name"
+msgstr ""
+
+#: ../../../admin_db_view.php:7
+msgid "Status"
+msgstr ""
+
+#: ../../../admin_main_view.php:13
+msgid "Shutdown"
+msgstr ""
+
+#: ../../../admin_main_view.php:19
+msgid "Reboot"
+msgstr ""
+
+#: ../../../admin_main_view.php:62
+msgid "Administration"
+msgstr "Rheoli"
+
+#: ../../../admin_main_view.php:71 ../../../admin_main_view.php:74
+#: ../../../userlist_view.php:8
+msgid "Users"
+msgstr "Defnyddwyr"
+
+#: ../../../admin_main_view.php:72
+msgid "See a list of registered users"
+msgstr ""
+
+#: ../../../admin_main_view.php:84
+msgid "Updates"
+msgstr "Diweddariadau"
+
+#: ../../../admin_main_view.php:85 ../../../admin_main_view.php:101
+msgid "OS, Packages, EmonHub, Emoncms & Firmware (If new version)"
+msgstr ""
+
+#: ../../../admin_main_view.php:88 ../../../admin_main_view.php:101
+msgid "Update All"
+msgstr ""
+
+#: ../../../admin_main_view.php:96 ../../../admin_main_view.php:114
+msgid "Emoncms, Emoncms Modules and Services"
+msgstr ""
+
+#: ../../../admin_main_view.php:96 ../../../admin_main_view.php:113
+msgid "Update Emoncms Only"
+msgstr ""
+
+#: ../../../admin_main_view.php:97 ../../../admin_main_view.php:126
+msgid "Update EmonHub Only"
+msgstr ""
+
+#: ../../../admin_main_view.php:98 ../../../admin_main_view.php:139
+msgid "Select your hardware type and firmware version"
+msgstr ""
+
+#: ../../../admin_main_view.php:98 ../../../admin_main_view.php:138
+msgid "Update Firmware Only"
+msgstr ""
+
+#: ../../../admin_main_view.php:99 ../../../admin_main_view.php:160
+msgid ""
+"Run this after a manual emoncms update, after installing a new module or to "
+"check emoncms database status."
+msgstr ""
+
+#: ../../../admin_main_view.php:99 ../../../admin_main_view.php:159
+msgid "Update Database Only"
+msgstr ""
+
+#: ../../../admin_main_view.php:117
+msgid "Update Emoncms"
+msgstr ""
+
+#: ../../../admin_main_view.php:129
+msgid "Update EmonHub"
+msgstr ""
+
+#: ../../../admin_main_view.php:149
+msgid "Update Firmware"
+msgstr ""
+
+#: ../../../admin_main_view.php:162
+msgid "Update Database"
+msgstr ""
+
+#: ../../../admin_main_view.php:174
+msgid "Update Log"
+msgstr "Cofnod Diweddariadau"
+
+#: ../../../admin_main_view.php:177 ../../../admin_main_view.php:205
+msgid "View last entries on the logfile:"
+msgstr ""
+
+#: ../../../admin_main_view.php:186 ../../../admin_main_view.php:214
+msgid "Auto refresh"
+msgstr ""
+
+#: ../../../admin_main_view.php:187 ../../../admin_main_view.php:215
+msgid "Download Log"
+msgstr ""
+
+#: ../../../admin_main_view.php:188 ../../../admin_main_view.php:216
+msgid "Copy Log to clipboard"
+msgstr ""
+
+#: ../../../admin_main_view.php:202
+msgid "Emoncms Log"
+msgstr "Ffeil Cofnod Emoncms"
+
+#: ../../../admin_main_view.php:231 ../../../admin_main_view.php:399
+msgid "Server Information"
+msgstr "Gwybodaeth y Gweinydd"
+
+#: ../../../admin_main_view.php:234
+msgid "**Recommended** when pasting into forum"
+msgstr ""
+
+#: ../../../admin_main_view.php:234
+msgid "Server info copied to clipboard as Markdown [text/markdown]"
+msgstr ""
+
+#: ../../../admin_main_view.php:234
+msgid "Copy as Markdown"
+msgstr "Copïwch fel Markdown"
+
+#: ../../../admin_main_view.php:235
+msgid "Formatted as plain text"
+msgstr ""
+
+#: ../../../admin_main_view.php:235
+msgid "Server info copied to clipboard as Text [text/plain]"
+msgstr ""
+
+#: ../../../admin_main_view.php:235
+msgid "Copy as Text"
+msgstr "Copïwch y testyn"
+
+#: ../../../admin_main_view.php:240
+msgid "Services"
+msgstr ""
+
+#: ../../../admin_main_view.php:252
+msgid "Emoncms"
+msgstr ""
+
+#: ../../../admin_main_view.php:254 ../../../admin_main_view.php:317
+#: ../../../admin_main_view.php:326 ../../../admin_main_view.php:340
+#: ../../../admin_main_view.php:347
+msgid "Version"
+msgstr ""
+
+#: ../../../admin_main_view.php:255 ../../../admin_main_view.php:348
+msgid "Modules"
+msgstr ""
+
+#: ../../../admin_main_view.php:258
+msgid "URL"
+msgstr ""
+
+#: ../../../admin_main_view.php:259
+msgid "Branch"
+msgstr ""
+
+#: ../../../admin_main_view.php:260
+msgid "Describe"
+msgstr ""
+
+#: ../../../admin_main_view.php:264
+msgid "Git"
+msgstr ""
+
+#: ../../../admin_main_view.php:267 ../../../admin_main_view.php:312
+msgid "Server"
+msgstr ""
+
+#: ../../../admin_main_view.php:269
+msgid "OS"
+msgstr ""
+
+#: ../../../admin_main_view.php:270 ../../../admin_main_view.php:318
+#: ../../../admin_main_view.php:327 ../../../admin_main_view.php:341
+msgid "Host"
+msgstr ""
+
+#: ../../../admin_main_view.php:271 ../../../admin_main_view.php:319
+msgid "Date"
+msgstr ""
+
+#: ../../../admin_main_view.php:272 ../../../admin_main_view.php:333
+msgid "Uptime"
+msgstr ""
+
+#: ../../../admin_main_view.php:275
+msgid "Memory"
+msgstr ""
+
+#: ../../../admin_main_view.php:278
+msgid "RAM"
+msgstr ""
+
+#: ../../../admin_main_view.php:278 ../../../admin_main_view.php:284
+#: ../../../admin_main_view.php:299
+#, php-format
+msgid "Used: %s%%"
+msgstr ""
+
+#: ../../../admin_main_view.php:284
+msgid "Swap"
+msgstr ""
+
+#: ../../../admin_main_view.php:294
+msgid "Disk"
+msgstr ""
+
+#: ../../../admin_main_view.php:310 ../../../admin_main_view.php:367
+msgid "HTTP"
+msgstr ""
+
+#: ../../../admin_main_view.php:315
+msgid "MySQL"
+msgstr ""
+
+#: ../../../admin_main_view.php:320
+msgid "Stats"
+msgstr ""
+
+#: ../../../admin_main_view.php:324
+msgid "Redis"
+msgstr ""
+
+#: ../../../admin_main_view.php:329
+msgid "Flush"
+msgstr ""
+
+#: ../../../admin_main_view.php:332 ../../../admin_main_view.php:374
+msgid "Size"
+msgstr ""
+
+#: ../../../admin_main_view.php:333
+#, php-format
+msgid "%s days"
+msgstr ""
+
+#: ../../../admin_main_view.php:338
+msgid "MQTT Server"
+msgstr ""
+
+#: ../../../admin_main_view.php:340
+#, php-format
+msgid "Mosquitto %s"
+msgstr ""
+
+#: ../../../admin_main_view.php:345
+msgid "PHP"
+msgstr ""
+
+#: ../../../admin_main_view.php:352
+msgid "Pi"
+msgstr ""
+
+#: ../../../admin_main_view.php:354
+msgid "Model"
+msgstr ""
+
+#: ../../../admin_main_view.php:355
+msgid "SoC"
+msgstr ""
+
+#: ../../../admin_main_view.php:356
+msgid "Serial num."
+msgstr ""
+
+#: ../../../admin_main_view.php:357
+msgid "Temperature"
+msgstr ""
+
+#: ../../../admin_main_view.php:358
+msgid "emonpiRelease"
+msgstr ""
+
+#: ../../../admin_main_view.php:359
+msgid "File-system"
+msgstr ""
+
+#: ../../../admin_main_view.php:365 ../../../admin_main_view.php:400
+#: ../../../admin_main_view.php:401
+msgid "Client Information"
+msgstr "Gwybodaeth y Cleient"
+
+#: ../../../admin_main_view.php:369
+msgid "Browser"
+msgstr ""
+
+#: ../../../admin_main_view.php:370
+msgid "Language"
+msgstr ""
+
+#: ../../../admin_main_view.php:372
+msgid "Window"
+msgstr ""
+
+#: ../../../admin_main_view.php:376
+msgid "Screen"
+msgstr ""
+
+#: ../../../admin_main_view.php:378
+msgid "Resolution"
+msgstr ""
+
+#: ../../../admin_main_view.php:395
+msgid "Copied to clipboard"
+msgstr "Wedi ei gopïo"
+
+#: ../../../admin_main_view.php:396
+msgid "successful"
+msgstr ""
+
+#: ../../../admin_main_view.php:397
+msgid "unsuccessful"
+msgstr ""
+
+#: ../../../admin_main_view.php:398 ../../../admin_main_view.php:431
+msgid "Copy to clipboard: Ctrl+C, Enter"
+msgstr ""
+
+#: ../../../admin_menu.php:5
+msgid "Admin"
+msgstr ""
+
+#: ../../../admin_model.php:261
+msgid ""
+" (to show GPU temp execute this command from the console \"sudo usermod -G "
+"video www-data\" )"
+msgstr ""
+
+#: ../../../update_view.php:22
+msgid "Update database"
+msgstr ""
+
+#: ../../../update_view.php:27
+msgid "Apply changes"
+msgstr ""
+
+#: ../../../update_view.php:32
+msgid "Back"
+msgstr ""
+
+#: ../../../update_view.php:38
+msgid "Check for further updates"
+msgstr ""
+
+#: ../../../update_view.php:43
+msgid "Database is up to date "
+msgstr ""
+
+#: ../../../update_view.php:43
+msgid "Nothing to do"
+msgstr ""
+
+#: ../../../userlist_view.php:10
+msgid "Number of users:"
+msgstr ""
+
+#: ../../../userlist_view.php:27
+msgid "Order by"
+msgstr ""
+
+#: ../../../userlist_view.php:29 ../../../userlist_view.php:49
+msgid "Id"
+msgstr ""
+
+#: ../../../userlist_view.php:30 ../../../userlist_view.php:50
+msgid "Username"
+msgstr ""
+
+#: ../../../userlist_view.php:31 ../../../userlist_view.php:51
+msgid "Email"
+msgstr ""
+
+#: ../../../userlist_view.php:32
+msgid "Email Verified"
+msgstr ""
+
+#: ../../../userlist_view.php:36
+msgid "Ascending"
+msgstr ""
+
+#: ../../../userlist_view.php:37
+msgid "Descending"
+msgstr ""
+
+#: ../../../userlist_view.php:42
+msgid "User search"
+msgstr ""
+
+#: ../../../userlist_view.php:44
+msgid "Search"
+msgstr ""
+
+#: ../../../userlist_view.php:52
+msgid "Feeds"
+msgstr ""
+
+#~ msgid "Sorry, you need a valid apikey or be logged in to see this page"
+#~ msgstr ""
+#~ "Sorry, je moet een geldige API sleutel invoeren of aangemeld zijn om deze "
+#~ "pagina te bezoeken"
+
+#~ msgid "Continue to emoncms"
+#~ msgstr "Ga naar emoncms"
+
+#~ msgid "to run script uncomment runnable"
+#~ msgstr "om dit script te draaien haal de comments weg"
+
+#~ msgid "dashboards new"
+#~ msgstr "Nieuw dashboard"
+
+#~ msgid "dashboard set"
+#~ msgstr "dashboard ingesteld"
+
+#~ msgid "dashboard set configuration"
+#~ msgstr "dashboard configuratie instelling"
+
+#~ msgid "Feed type changed"
+#~ msgstr "Berich type aangepast"
+
+#~ msgid "Feed does not exist"
+#~ msgstr "Bericht bestaat niet"
+
+#~ msgid "Feed tag changed"
+#~ msgstr "Bericht label gewijzigd"
+
+#~ msgid "Feed renamed"
+#~ msgstr "Bericht hernoemd"
+
+#~ msgid "Feed "
+#~ msgstr "Bericht"
+
+#~ msgid " deleted"
+#~ msgstr "verwijderd"
+
+#~ msgid "Input deleted"
+#~ msgstr "Invoer verwijderen"
+
+#~ msgid "Process list has been reset"
+#~ msgstr "Proceslijst is hersteld"
+
+#~ msgid "Invalid username or password"
+#~ msgstr "Ongeldige gebruikersnaam of wachtwoord"
+
+#~ msgid "Welcome, you are now logged in"
+#~ msgstr "Welkom, je bent nu aangemeld"
+
+#~ msgid "Sorry username already exists"
+#~ msgstr "Sorry maar deze gebruikersnaam bestaat al"
+
+#~ msgid "Please enter a username that is 4 to 30 characters long"
+#~ msgstr "Voer een gebruikersnaam tussen de 4 en 30 characters in"
+
+#~ msgid "Please enter a password that is 4 to 30 characters long"
+#~ msgstr "Voer een wachtwoord in tussen de 4 en 30 characters lang"
+
+#~ msgid "Your new account has been created"
+#~ msgstr "U nieuwe account is aangemaakt"
+
+#~ msgid "Your password has been changed"
+#~ msgstr "U wachtwoord is aangepast"
+
+#~ msgid "Invalid old password"
+#~ msgstr "Ongeldig oud wachtwoord"
+
+#~ msgid "New read apikey: "
+#~ msgstr "Nieuwe lees API sleutel"
+
+#~ msgid "New write apikey: "
+#~ msgstr "Nieuwe schrijf API sleutel:"
+
+#~ msgid "You are logged out"
+#~ msgstr "U bent afgemeld"
+
+#~ msgid "Invalid token"
+#~ msgstr "Ontbrekende token"
+
+#~ msgid "Restricted access"
+#~ msgstr "Beperkte toegang"
+
+#~ msgid "Message successfully sent!"
+#~ msgstr "Bericht succesvol verzonden!"
+
+#~ msgid " is"
+#~ msgstr "is"
+
+#~ msgid " is inactive"
+#~ msgstr "inactief"
+
+#~ msgid "Log to feed"
+#~ msgstr "Bewaar naar feed"
+
+#~ msgid "Power to kWh"
+#~ msgstr "Energie naar kWh"
+
+#~ msgid "Power to kWh/d"
+#~ msgstr "Energie naar Kwh/d"
+
+#~ msgid "x input"
+#~ msgstr "Invoer"
+
+#~ msgid "input on-time"
+#~ msgstr "invoer op tijdsbasis"
+
+# don't get the explination of this function. code says:
+#    // Get last value
+#     $last = get_feed_timevalue($feedid);
+#     $last_kwh = $last['value'];
+#     $kwh_inc = $value / 1000.0;
+#     $new_kwh = $last_kwh + $kwh_inc;
+# ----
+# So it's the last kwh reading divide by 1000?
+#~ msgid "kWhinc to kWh/d"
+#~ msgstr "kWhper. naar kWh/d"
+
+#~ msgid "kWh to kWh/d"
+#~ msgstr "Kwh naar Kwh/d"
+
+#~ msgid "update feed @time"
+#~ msgstr "update feed @tijd"
+
+#~ msgid "+ input"
+#~ msgstr "+ invoer"
+
+#~ msgid "/ input"
+#~ msgstr "/ invoer"
+
+#~ msgid "phaseshift"
+#~ msgstr "faseverschuiving"
+
+#~ msgid "accumulator"
+#~ msgstr "accumulator"
+
+#~ msgid "rate of change"
+#~ msgstr "wisselkoers"
+
+#~ msgid "histogram"
+#~ msgstr "histogram"
+
+#, fuzzy
+#~ msgid "average"
+#~ msgstr "| Gemiddelde:"
+
+#~ msgid "Edit"
+#~ msgstr "Wijzigen"
+
+#~ msgid "Edit dashboard"
+#~ msgstr "Wijzig dashboard"
+
+#~ msgid "Configuration"
+#~ msgstr "Configuratie"
+
+#~ msgid "Preview"
+#~ msgstr "Voorvertoning"
+
+#~ msgid "Dashboard name: "
+#~ msgstr "Dashboard naam:"
+
+#~ msgid "Description: "
+#~ msgstr "Omschrijving"
+
+#~ msgid "Main dashboard: "
+#~ msgstr "Hoofd dashboard:"
+
+#~ msgid "Inputs"
+#~ msgstr "Invoeren"
+
+#~ msgid "Vis"
+#~ msgstr "Grafisch"
+
+#~ msgid "Account"
+#~ msgstr "Account"
+
+#~ msgid "Dashboard"
+#~ msgstr "Dashboard"
+
+#~ msgid "Dashboards"
+#~ msgstr "Dashboards"
+
+#~ msgid "Notify settings"
+#~ msgstr "Waarschuwingsinstellingen"
+
+#~ msgid "Notification recipiants (To): "
+#~ msgstr "Notificatie ontvangers (Aan):"
+
+#~ msgid "Notify "
+#~ msgstr "Notificatie"
+
+#~ msgid "Setup feed notifications"
+#~ msgstr "instellen bericht waarschuwingen"
+
+#~ msgid "Notify when feed = value: "
+#~ msgstr "Waarschuw wanneer Bericht = waarde:"
+
+#~ msgid "Notify when feed is inactive "
+#~ msgstr "Waarschuw wanneer bericht inactief is"
+
+#~ msgid "Notify feed status periodically "
+#~ msgstr "Waarschuw berichten status periodiek"
+
+#~ msgid "Edit mail settings"
+#~ msgstr "Wijzig e-mail instellingen"
+
+#~ msgid "User: "
+#~ msgstr "Gebruiker"
+
+#~ msgid "Select preferred language:"
+#~ msgstr "Selecteer voorkeurstaal:"
+
+#~ msgid "API keys"
+#~ msgstr "API sleutels"
+
+#~ msgid "Read only access: "
+#~ msgstr "Alleen lezen rechten:"
+
+#~ msgid "new"
+#~ msgstr "nieuw"
+
+#~ msgid "Write only access: "
+#~ msgstr "Alleen schrijfrechten:"
+
+#~ msgid "Example: Copy this to your web browser or send from a nanode: "
+#~ msgstr ""
+#~ "Voorbeeld: Kopiëer dit naar u web browser of stuur het vanaf een nanode:"
+
+#~ msgid "try me"
+#~ msgstr "probeer mij"
+
+#~ msgid "Change password"
+#~ msgstr "Wijzig wachtwoord"
+
+#~ msgid "Old password:"
+#~ msgstr "Oude wachtwoord:"
+
+#~ msgid "New password:"
+#~ msgstr "Nieuw wachtwoord:"
+
+#~ msgid "Change"
+#~ msgstr "Wijzig"
+
+#~ msgid "Account Statistics"
+#~ msgstr "Account Statistieken"
+
+#~ msgid "Disk space use:"
+#~ msgstr "Schrijfruimte ingebruik:"
+
+#~ msgid "Up hits:"
+#~ msgstr "Hoog hits:"
+
+#~ msgid "Down hits:"
+#~ msgstr "Laag hits:"
+
+#~ msgid "Visualisation API"
+#~ msgstr "Weergave API"
+
+#~ msgid "View"
+#~ msgstr "Toon"
+
+#~ msgid "Real-time graph"
+#~ msgstr "Actuele weergave"
+
+#~ msgid "Raw data graph"
+#~ msgstr "Raw data grafiek"
+
+#~ msgid "Bar graph"
+#~ msgstr "Staaf diagram"
+
+#~ msgid "Smoothie"
+#~ msgstr "Overgang"
+
+#~ msgid "All time histogram"
+#~ msgstr "Historisch histogram"
+
+#~ msgid "Daily histogram"
+#~ msgstr "Dagelijks histogram"
+
+#, fuzzy
+#~ msgid "Stacked"
+#~ msgstr "KWh/d Gestapeld"
+
+#~ msgid "Multigraph"
+#~ msgstr "Multigrafiek"
+
+#~ msgid "Total feed data disk space use: "
+#~ msgstr "Totaal gebruik van hardeschijfruimte voor feeds:"
+
+#~ msgid "Up hits"
+#~ msgstr "Hoog hits"

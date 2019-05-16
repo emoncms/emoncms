@@ -347,7 +347,7 @@ class User
         return array('success'=>false, 'message'=>"Invalid email or verification key");
     }
 
-    public function login($username, $password, $remembermecheck)
+    public function login($username, $password, $remembermecheck, $referrer='')
     {
         $remembermecheck = (int) $remembermecheck;
 
@@ -409,6 +409,7 @@ class User
             
             if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
 
+            if(!empty($referrer)) $userData_startingpage = urldecode($referrer);
             return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
         }
     }
@@ -821,8 +822,7 @@ class User
         return $users;
     }
     /**
-     * saves user preference to local device
-     * currently uses cookies
+     * saves user preferences
      *
      * @param array $optIn
      * @return array
@@ -830,33 +830,42 @@ class User
     public function set_preferences ($userid, $preference) {
         $userid = (int) $userid;
         // add to this array to allow more properties
-        $allowed_properties = array('deviceView');
+        $allowed_properties = array('deviceView','bookmarks');
 
-        // overwrite the current settings with the new
-        $get_preferences = $this->get_preferences($userid);
-        $current_preferences = !empty($get_preferences['preferences']) ? $get_preferences['preferences'] : array();
-        // array_merge only works on top level assoc arrays (not nested)
-        $preferences = array_merge($current_preferences,$preference);
-        
         // set the sanitize features for each allowed property
         $filters = array(
-            'deviceView'=>FILTER_VALIDATE_BOOLEAN
+            'deviceView'=>FILTER_VALIDATE_BOOLEAN,
+            'bookmarks'=>FILTER_SANITIZE_STRING
         );
         $options = array(
             'deviceView'=>array(
+                'flags'=>FILTER_NULL_ON_FAILURE
+            ),
+            'bookmarks'=>array(
                 'flags'=>FILTER_NULL_ON_FAILURE
             )
         );
         // santize the passed preferences
         $filtered = array(); // clean preferences
-        foreach($preferences as $key=>$value) {
-            if (in_array($key, $allowed_properties)) {
-                $filtered[$key] = filter_var($value, $filters[$key], $options[$key]);
+        foreach($preference as $prop=>$value) {
+            if (in_array($prop, $allowed_properties)) {
+                $filtered[$prop] = filter_var($value, $filters[$prop], $options[$prop]);
+            }
+        }
+        // convert bookmark list into array
+        foreach($filtered as $key=>$value) {
+            if($key=='bookmarks') {
+                $value = html_entity_decode($value);
+                $filtered[$key] = json_decode($value,true);
             }
         }
 
+        // overwrite the current settings with the new
+        $current_preferences = (array) $this->get_preferences($userid);
+        // array_merge only works on top level assoc arrays (not nested)
+        $preferences = array_merge($current_preferences,$filtered);
         // encode the sanitized preferences as a JSON string
-        $json = json_encode($filtered, JSON_NUMERIC_CHECK);
+        $json = json_encode($preferences, JSON_NUMERIC_CHECK);
 
         $success = false;
         $error = '';
@@ -896,23 +905,43 @@ class User
             $success = $stmt->fetch();
             $stmt->close();
         }else{
+            $this->log->error('Please update database', $property);
             return array('success'=>false,'message'=>_('Please update database'));
         }
         $json = json_decode($preferences,1);
         // return data and/or success/error message
         if (!empty($json)) {
             // only return single property value if called with a $property param
-            if(!empty($property) && $json[$property]===false) {
-                return $json[$property];
-            }elseif(!empty($property) && !empty($json[$property])){
-                return $json[$property];
+            if(!empty($property)) {
+                if(isset($json[$property]) && $json[$property]===false) {
+                    return false;
+                }elseif(!empty($json[$property])){
+                    return $json[$property];
+                }
+                $this->log->info('All user preference returned');
+
             } else {
+                $this->log->info('Single user preference returned: '. $property);
                 return $json;
             }
         } else {
+            $this->log->info('Empty User preferences');
             return false;
             // return array('success'=>true, 'message'=>_('Empty'));
         }
     }
+    /**
+     * get array of user bookmarks
+     *
+     * @param int $userid
+     * @return array
+     */
+    public function getUserBookmarks($userid) {
+        $response = $this->get_preferences($userid, 'bookmarks');
+        $response = json_encode($response,true);
+        $bookmarks = html_entity_decode($response);
+        return json_decode($bookmarks,true);
+    }
+
 }
 

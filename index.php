@@ -10,7 +10,7 @@
     http://openenergymonitor.org
 
     */
-
+    
     $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 
@@ -24,6 +24,8 @@
     $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
+    $sidebarFixed = true;
+
     require "Lib/EmonLogger.php";
     $log = new EmonLogger(__FILE__);
     if (isset($_GET['q'])) $log->info($_GET['q']);
@@ -130,6 +132,10 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
+    
+    // output string if controller or action not found. used to return error.
+    define('EMPTY_ROUTE', "#UNDEFINED#");
+
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
     
     // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
@@ -208,11 +214,10 @@
 
     // 6) Load the main page controller
     $output = controller($route->controller);
-
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if ($output['content'] == "#UNDEFINED#" && $public_profile_enabled && $route->controller!='admin')
+    if ($output['content'] == EMPTY_ROUTE && $public_profile_enabled && $route->controller!='admin')
     {
         $userid = $user->get_id($route->controller);
         if ($userid) {
@@ -236,16 +241,37 @@
     }
 
     // If no controller found or nothing is returned, give friendly error
-    if ($output['content'] === "#UNDEFINED#") {
+    if ($output['content'] === EMPTY_ROUTE) {
+        // alter output is $route has $action
+        $actions = implode("/",array_filter(array($route->action, $route->subaction)));
+        $message = sprintf(_('%s cannot respond to %s'), sprintf("<strong>%s</strong>",ucfirst($route->controller)), sprintf('<strong>"%s"</strong>',$actions));
+        // alter the http header code
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
-        $output['content'] = "URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
+        $title = _('406 Not Acceptable');
+        $plain_text = _('Route not found');
+        $intro = sprintf('%s %s',_('URI not acceptable.'), $message);
+        $text = _('Try another link from the menu.');
+        // return the formatted string
+        if($route->format==='html') {
+            $output['content'] = sprintf('<h2>%s</h2><p class="lead">%s.</p><p>%s</p>', $title, $intro, $text);
+        } else {
+            $output['content'] = array(
+                'success'=> false,
+                'message'=> sprintf('%s. %s', $title, $plain_text)
+            );
+        }
+        $log->warn(sprintf('%s|%s', $title, implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
     }
 
     // If not authenticated and no ouput, asks for login
     if ($output['content'] == "" && (!isset($session['read']) || (isset($session['read']) && !$session['read']))) {
+        $log->error(sprintf('%s|%s',_('Not Authenticated'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
         $route->controller = "user";
         $route->action = "login";
         $route->subaction = "";
+        $message = urlencode(_('Authentication Required'));
+        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+        $route->query = sprintf("msg=%s&ref=%s",$message,$referrer);
         $output = controller($route->controller);
     }
 
@@ -266,6 +292,9 @@
             print $output['content'];
         } else {
             header('Content-Type: application/json');
+            if(!empty($output['message'])){
+                header(sprintf('X-emoncms-message: %s', $output['message']));
+            }
             print json_encode($output['content']);
             if (json_last_error()!=JSON_ERROR_NONE) {
                 switch (json_last_error()) {
@@ -298,8 +327,42 @@
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {
-            $menu = function_exists('load_menu') ? load_menu(): array(); 
-            $output['mainmenu'] = view($themeDir . "menu_view.php", array());
+            $menu = load_menu();
+            
+            // EMONCMS MENU
+            $menu['tabs'][] = array(
+                'icon'=>'menu',
+                'title'=> _("Emoncms"),
+                'path' => 'feed/list',
+                'order' => 0,
+                'data'=> array(
+                    'sidebar' => '#sidebar_emoncms'
+                )
+            );
+
+            include ("Lib/misc/nav_functions.php");
+            sortMenu($menu);
+            // debugMenu('sidebar');
+            
+            $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
+            
+            // add css class names to <body> tag based on controller's options
+            $output['page_classes'][] = $route->controller;
+            
+            if($fullwidth) $output['page_classes'][] = 'fullwidth';
+
+            if($session['read']){
+                $output['sidebar'] = view($themeDir . "sidebar_view.php", 
+                array(
+                    'menu' => $menu,
+                    'path' => $path,
+                    'session' => $session,
+                    'route' => $route
+                ));
+                $output['page_classes'][] = 'has-sidebar';
+            }
+            
+
             print view($themeDir . "theme.php", $output);
         }
     }

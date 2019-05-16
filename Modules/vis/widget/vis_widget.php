@@ -3,9 +3,7 @@
 
     global $mysqli, $session;
 
-    $domain3 = "vis_messages";
-    bindtextdomain($domain3, "Modules/vis/locale");
-    bind_textdomain_codeset($domain3, 'UTF-8');
+    load_language_files(dirname(__DIR__).'/locale', "vis_messages");
 
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);
