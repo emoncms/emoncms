@@ -137,7 +137,7 @@ $(function(){
                     $form.parents('li').first().fadeOut(function(){
                         $(this).remove();
                     });
-                    $('#sidebar_bookmarks li a').each(function(n,elem){
+                    $('#sidebar_bookmarks li a').not('.default-dashboard').each(function(n,elem){
                         if(elem.href===path+bookmarkPath) {
                             var $li = $(elem).parents('li').first();
                             $li.fadeOut(function(){
@@ -188,7 +188,7 @@ $(function(){
             $.post(path + 'user/preferences.json', data, function(response){
                 if(response.success && response.success !== false) {
                     $form.find('[data-title]').text(bookmarkText);
-                    $('#sidebar_bookmarks li a').each(function(n,elem){
+                    $('#sidebar_bookmarks li a').not('.default-dashboard').each(function(n,elem){
                         // rename changed items
                         if(elem.href===path+bookmarkPath && elem.innerText !== bookmarkText) {
                             $(elem).fadeOut(function(){
@@ -198,7 +198,9 @@ $(function(){
                     })
                     editMode($form, false);
                 } else {
-                    // @todo: show error
+                    editMode($form, false);
+                    alert('Error Saving Changes');
+                    // @todo add the notify() function used in groupo and admin modules.
                 }
             });
         });
@@ -206,16 +208,14 @@ $(function(){
     })
     // update view's bookmarks list on change of sidebar items
     $('#sidebar_bookmarks').on('bookmarks:updated', function(event){
-        console.log(event.type);
         $sidebar = $(event.target);
         $bookmarks = $('#bookmarks');
         $template = $('#list-group-item');
-
         $bookmarks.fadeOut('fast',function(){
             $(this).empty().fadeIn();
             delay = 0;
             $items = [];
-            $.each($sidebar.children(), function(i, elem){
+            $.each($sidebar.children().not('.default-dashboard'), function(i, elem){
                 $item = $(elem).find('a');
                 href = $item.attr('href');
                 title = $item.attr('title');

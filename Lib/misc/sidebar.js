@@ -205,9 +205,9 @@ $(function(){
             }
             // save new user preferences
             $.post(path+'user/preferences.json', {
-                preferences: {
-                    bookmarks: JSON.stringify(bookmarks)
-                }
+                preferences: JSON.stringify({
+                    bookmarks: bookmarks
+                })
             }, function(data) {
                 var $menu = $('#sidebar_bookmarks');
                 var $template = $('#bookmark_link');

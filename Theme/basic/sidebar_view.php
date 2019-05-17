@@ -60,7 +60,8 @@ if (!empty($default_dash)) {
         'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
         'icon' => 'star',
         'order'=> 999,
-        'path' => 'dashboard/view?id='.$default_dash['id']
+        'path' => 'dashboard/view?id='.$default_dash['id'],
+        'li_class' => 'default-dashboard'
     );
 }
 

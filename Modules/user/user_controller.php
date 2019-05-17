@@ -142,8 +142,8 @@ function user_controller()
 
             switch ($route->method) {
                 case 'POST':
-                    if(!empty(post('preferences'))){
-                        $preferences = post('preferences');
+                    $preferences = post('preferences');
+                    if(!empty($preferences)){
                         if($resp = $user->set_preferences($userid, $preferences)) {
                             $result = array('success'=>true, 'message'=>_('Preference Saved'));
                         } else {
