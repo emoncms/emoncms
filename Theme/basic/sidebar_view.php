@@ -61,7 +61,7 @@ if (!empty($default_dash)) {
         'icon' => 'star',
         'order'=> 999,
         'path' => 'dashboard/view?id='.$default_dash['id'],
-        'li_class' => 'default-dashboard'
+        'li_class' => array('default-dashboard')
     );
 }
 
