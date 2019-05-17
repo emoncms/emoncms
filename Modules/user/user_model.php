@@ -840,7 +840,7 @@ class User
      * @return string json with prefs 
      */
     public function set_preferences ($userid, $preference) {
-        // $this->log->info("\n\n--raw---------".var_export($preference,1));
+        // $this->log->info("\n\n--raw input---------".var_export($preference,1));
 
         $userid = (int) $userid;
         
@@ -875,10 +875,14 @@ class User
                 $value = json_decode($value, true);
             }
 
-            if(in_array($key, $args_keys)){
+            if(in_array($key, $args_keys)) {
                 if (is_array($value)) {
+                    // if empty write empty value
+                    if(empty($value)){
+                        $filtered[$key] = array();
+                    }
                     // sanitize array values
-                    foreach($value as $sub_key=>$sub_value){
+                    foreach($value as $sub_key=>$sub_value) {
                         if (is_array($sub_value)) {
                             foreach($sub_value as $array_key=>$array_item) {
                                 $filter = $args[$array_key]['filter'];
@@ -887,7 +891,6 @@ class User
                                 $filtered[$key][$sub_key][$array_key] = $array_item;
                             }
                         }
-
                     }
                 } else {
                     // santize text values
