@@ -822,51 +822,114 @@ class User
         return $users;
     }
     /**
+     * return true if input is not null
+     *
+     * @param mixed $var
+     * @return boolean
+     */
+    private function is_not_null ($var) {
+        return !is_null($var);
+    }
+    
+    /**
      * saves user preferences
      *
-     * @param array $optIn
-     * @return array
+     * only allows certain preferences. inputs santized
+     * 
+     * @param int $userid
+     * @return string json with prefs 
      */
     public function set_preferences ($userid, $preference) {
-        $userid = (int) $userid;
-        // add to this array to allow more properties
-        $allowed_properties = array('deviceView','bookmarks');
+        // $this->log->info("\n\n--raw input---------".var_export($preference,1));
 
-        // set the sanitize features for each allowed property
-        $filters = array(
-            'deviceView'=>FILTER_VALIDATE_BOOLEAN,
-            'bookmarks'=>FILTER_SANITIZE_STRING
-        );
-        $options = array(
-            'deviceView'=>array(
-                'flags'=>FILTER_NULL_ON_FAILURE
+        $userid = (int) $userid;
+        
+        // convert string (json) to array
+        if(is_string($preference)) {
+            $preference = json_decode($preference, true);
+        }
+
+        // Sanitize features for each allowed property
+        $args = array(
+            'deviceView' => array(
+                'filter' => FILTER_VALIDATE_BOOLEAN,
+                'flags'  => FILTER_NULL_ON_FAILURE
             ),
-            'bookmarks'=>array(
-                'flags'=>FILTER_NULL_ON_FAILURE
+            'bookmarks' => array(),
+            'path' => array(
+                'filter' => FILTER_SANITIZE_MAGIC_QUOTES,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            ),
+            'text' => array(
+                'filter' => FILTER_SANITIZE_ENCODED,
+                'flags'  => FILTER_NULL_ON_FAILURE
             )
         );
-        // santize the passed preferences
-        $filtered = array(); // clean preferences
-        foreach($preference as $prop=>$value) {
-            if (in_array($prop, $allowed_properties)) {
-                $filtered[$prop] = filter_var($value, $filters[$prop], $options[$prop]);
-            }
-        }
-        // convert bookmark list into array
-        foreach($filtered as $key=>$value) {
-            if($key=='bookmarks') {
-                $value = html_entity_decode($value);
-                $filtered[$key] = json_decode($value,true);
-            }
-        }
+        $args_keys = array_keys($args); // used to check for 'allowed' fields
 
-        // overwrite the current settings with the new
+        // @see: https://www.php.net/manual/en/function.filter-var-array.php
+        $filtered = array();
+        foreach($preference as $key=>$value){
+            if(!is_array($value)) {
+                $value = html_entity_decode($value);
+                $value = json_decode($value, true);
+            }
+
+            if(in_array($key, $args_keys)) {
+                if (is_array($value)) {
+                    // if empty write empty value
+                    if(empty($value)){
+                        $filtered[$key] = array();
+                    }
+                    // sanitize array values
+                    foreach($value as $sub_key=>$sub_value) {
+                        if (is_array($sub_value)) {
+                            foreach($sub_value as $array_key=>$array_item) {
+                                $filter = $args[$array_key]['filter'];
+                                $flags = $args[$array_key]['flags'];
+                                // $filtered[$key][$sub_key] = filter_var($sub_value, $filter, $flags);
+                                $filtered[$key][$sub_key][$array_key] = $array_item;
+                            }
+                        }
+                    }
+                } else {
+                    // santize text values
+                    if (isset($args[$key])){
+                        if($value === "[]") {
+                            // nothing to filter if empty array
+                            $filtered[$key] = array();
+                        } else {
+                            // filter with above settings
+                            if(isset($args[$key]['filter'])) {
+                                if(!isset($args[$key]['flags'])) {
+                                    $filtered[$key] = filter_var($value, $args[$key]['filter']);
+                                } else {
+                                    $filtered[$key] = filter_var($value, $args[$key]['filter'], $args[$key]['flags']);
+                                }
+                            } else {
+                                $this->log->info("Input Error");
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // if all filtered values are NULL return error message
+        if(count($filtered) > 0 && count(array_filter($filtered, 'is_null')) === count($filtered)){
+            $this->log->info(sprintf("%s() Input invalid. String(%s) = %s",__function__,strlen(json_encode($preference,true)),substr(json_encode($preference,true),0, 40).'…'));
+            return false;
+        }
+  
+        // overwrite the current settings with the filtered ones
         $current_preferences = (array) $this->get_preferences($userid);
         // array_merge only works on top level assoc arrays (not nested)
         $preferences = array_merge($current_preferences,$filtered);
         // encode the sanitized preferences as a JSON string
         $json = json_encode($preferences, JSON_NUMERIC_CHECK);
 
+        // return error if mysql update not successful
         $success = false;
         $error = '';
         if ($stmt = $this->mysqli->prepare("UPDATE users SET preferences = ? WHERE id = ?")) {
@@ -875,15 +938,15 @@ class User
             $error = $stmt->error;
             $stmt->close();
         } else {
-            $this->log->error("Error preparing SQL for user preferences");
+            $this->log->info("Error preparing SQL for user preferences");
             return false;
         }
         
         if(!$success){
-            $this->log->error("Error writing to user table");
+            $this->log->info("Error writing to user table");
             return false;
         } else {
-            $this->log->info("Succesfully updated user preferences");
+            $this->log->info(sprintf("%s() [OK]: %s", __function__, json_encode($preferences)));
             return true;
         }
     }
@@ -896,6 +959,8 @@ class User
      * @return array
      */
     public function get_preferences ($userid, $property = null) {
+        // $this->log->info('---get_preferences|$property|'.var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1),true));
+
         $stmt = $this->mysqli->prepare("SELECT preferences FROM users WHERE id = ?");
         $preferences = false;
         if ($stmt) {
@@ -916,18 +981,27 @@ class User
                 if(isset($json[$property]) && $json[$property]===false) {
                     return false;
                 }elseif(!empty($json[$property])){
+                    $this->log->info(sprintf("%s()|%s|String(%s) = %s",
+                        __function__,
+                        $property,
+                        strlen(json_encode($json[$property],true)),
+                        substr(json_encode($json[$property],true),0, 50).'…')
+                    );
+
                     return $json[$property];
                 }
-                $this->log->info('All user preference returned');
-
             } else {
-                $this->log->info('Single user preference returned: '. $property);
+                $this->log->info(sprintf("%s()|%s|String(%s) = %s",
+                __function__,
+                $property,
+                strlen(json_encode($json,true)),
+                substr(json_encode($json,true),0, 50).'…')
+            );
                 return $json;
             }
         } else {
-            $this->log->info('Empty User preferences');
+            $this->log->info(sprintf('%s()|%s', __FUNCTION__, 'Empty User preferences'));
             return false;
-            // return array('success'=>true, 'message'=>_('Empty'));
         }
     }
     /**
