@@ -2,25 +2,28 @@
 <p class="lead">
     <?php echo _("You can bookmark any page you're on by clicking the star icon (top right)") ?>
 </p>
-<?php if (!empty($bookmarks)) : ?>
-<h4><?php echo _('Rename or remove your bookmarks') ?></h4>
-<ul id="bookmarks" class="list-group" style="display: inline-block">
-<?php foreach($bookmarks as $b): ?>
-    <li class="list-group-item bookmark">
-    <form class="form-inline mb-0" data-read>
-        <div class="controls controls-row d-flex align-items-center">
-            <input class="span3" data-mode-edit type="text" data-path="<?php echo $b['path'] ?>" value="<?php echo $b['text'] ?>">
-            <button type="submit" data-mode-edit class="btn btn-primary ml-2"><?php echo _("Save") ?></button>
-            <button type="button" data-cancel data-mode-edit class="btn btn-default ml-2"><?php echo _("Cancel") ?></button>
 
-            <a class="span6 mb-0 ml-0" data-title title="<?php echo $path.$b['path'] ?>" href="<?php echo $path.$b['path'] ?>" data-mode-read><?php echo $b['text'] ?></a>
-            <button type="button" data-delete data-mode-read class="btn btn-danger ml-2 pull-right" title="<?php echo _("Delete") ?>"><svg class="icon icon-bin"><use xlink:href="#icon-bin"></use></svg></button>
-        </div>
-    </form>
-    </li>
-<?php endforeach; ?>
-</ul>
-<?php endif; ?>
+<section id="bookmarks-container" <?php if (empty($bookmarks)) echo ' class="d-none"' ?>>
+    <h4><?php echo _('Rename or remove your bookmarks') ?></h4>
+    <ul id="bookmarks" class="list-group" style="display: inline-block">
+    <?php if (!empty($bookmarks)) : ?>
+    <?php foreach($bookmarks as $b): ?>
+        <li class="list-group-item bookmark">
+        <form class="form-inline mb-0" data-read>
+            <div class="controls controls-row d-flex align-items-center">
+                <input class="span3" data-mode-edit type="text" data-path="<?php echo $b['path'] ?>" value="<?php echo $b['text'] ?>">
+                <button type="submit" data-mode-edit class="btn btn-primary ml-2"><?php echo _("Save") ?></button>
+                <button type="button" data-cancel data-mode-edit class="btn btn-default ml-2"><?php echo _("Cancel") ?></button>
+
+                <a class="span6 mb-0 ml-0" data-title title="<?php echo $path.$b['path'] ?>" href="<?php echo $path.$b['path'] ?>" data-mode-read><?php echo $b['text'] ?></a>
+                <button type="button" data-delete data-mode-read class="btn btn-danger ml-2 pull-right" title="<?php echo _("Delete") ?>"><svg class="icon icon-bin"><use xlink:href="#icon-bin"></use></svg></button>
+            </div>
+        </form>
+        </li>
+    <?php endforeach; ?>
+    <?php endif; ?>
+    </ul>
+</section>
 
 <template id="list-group-item">
     <li class="list-group-item bookmark">
@@ -232,6 +235,11 @@ $(function(){
                  }, delay)
                  delay += 200;
             });
+            if($sidebar.children().not('.default-dashboard').length>0){
+                $('#bookmarks-container').toggleClass('d-none',false);
+            } else {
+                $('#bookmarks-container').toggleClass('d-none',true);
+            }
         });
 
     })

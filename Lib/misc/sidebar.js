@@ -171,6 +171,7 @@ $(function(){
         var remove = $icon.is('.star');
         var currentTitle = $('h2').first().text();
         if(currentTitle.length==0) currentTitle = $('h3').first().text();
+        if(currentTitle.length==0) currentTitle = document.title;
         if(getQueryStringValue("name")) {
             currentTitle = decodeURI(getQueryStringValue("name").replace('+',' '));
         }
@@ -205,9 +206,9 @@ $(function(){
             }
             // save new user preferences
             $.post(path+'user/preferences.json', {
-                preferences: JSON.stringify({
-                    bookmarks: bookmarks
-                })
+                preferences: {
+                    bookmarks: JSON.stringify(bookmarks)
+                }
             }, function(data) {
                 var $menu = $('#sidebar_bookmarks');
                 var $template = $('#bookmark_link');
@@ -224,7 +225,7 @@ $(function(){
                         .text(currentTitle).hide().fadeIn();
                         $menu.trigger('bookmarks:updated');
                         $nav.fadeIn();
-
+                        
                     } else {
                         // remove entry from menu
                         $.each($menu.find('li'), function(n, elem){
