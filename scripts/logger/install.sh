@@ -8,7 +8,7 @@
 echo "Now setting up Logrotate..."
 
 # Only backup real conf files not symlinks
-if [ -f /etc/logrotate.conf ]; then
+if [ -f /etc/logrotate.conf ] && [ ! -h /etc/logrotate.conf ]; then
     echo "Backing up old logrotate configuration..."
     sudo mv /etc/logrotate.conf /home/pi/logrotate.conf.old
 fi
@@ -17,11 +17,11 @@ sudo ln -sf /var/www/html/emoncms/scripts/logger/logrotate.conf /etc/logrotate.c
 sudo chown root:root /var/www/html/emoncms/scripts/logger/logrotate.conf
 
 # Only backup real cron files not symlinks
-if [ ! -f /etc/cron.daily/logrotate ]; then
+if [ -f /etc/cron.daily/logrotate ] && [ ! -h /etc/cron.daily/logrotate ]; then
     echo "Backing up old daily logrotate cron job..."
     sudo mv /etc/cron.daily/logrotate /home/pi/logrotate.daily.old
 fi
-if [ ! -f /etc/cron.hourly/logrotate ]; then
+if [ -f /etc/cron.hourly/logrotate ] && [ ! -h /etc/cron.hourly/logrotate ]; then
     echo "Backing up old hourly logrotate cron job..."
     sudo mv /etc/cron.hourly/logrotate /home/pi/logrotate.hourly.old
 fi
