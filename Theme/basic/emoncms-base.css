@@ -259,13 +259,13 @@ body.app #wrap {
 /*-------------------------------------*/
 
 /* override topnav styling in tabs */
-.nav.nav-tabs > li > a {
+#emoncms-navbar .nav.nav-tabs > li > a {
     color: #999!important;
 }
-.nav.nav-tabs > li.active > a {
+#emoncms-navbar .nav.nav-tabs > li.active > a {
     color: #EFEFEF!important;
 }
-.nav.nav-tabs > li > a:hover {
+#emoncms-navbar .nav.nav-tabs > li > a:hover {
     color: #FFF!important;
 }
 
