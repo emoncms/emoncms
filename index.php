@@ -340,7 +340,7 @@
                 )
             );
 
-            include ("Lib/misc/nav_functions.php");
+            include_once ("Lib/misc/nav_functions.php");
             sortMenu($menu);
             // debugMenu('sidebar');
             
