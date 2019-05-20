@@ -139,7 +139,7 @@ body{padding:0!important}
 
 <div id="table" class="feed-list"></div>
 
-<div id="feed-none" class="alert alert-block hide">
+<div id="feed-none" class="alert alert-block hide mt-3">
     <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
@@ -374,11 +374,15 @@ function update() {
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
-            $("#feed-header").hide();
+            // $("#feed-header").hide();
+            $(".controls").hide();
+            $("#table").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
         } else {
-            $("#feed-header").show();
+            // $("#feed-header").show();
+            $(".controls").show();
+            $('#table').show();
             $("#feed-footer").show();
             $("#feed-none").hide();
         }
@@ -512,7 +516,7 @@ $("#table").on("click",".feed-graph-link",function(e) {
     // ignore click on feed-info row
     if ($(this).parent().is('.node-info')) return false;
     var feedid = $(this).attr("feedid");
-    window.location = path+"graph/"+feedid;
+    window.location = path+feedviewpath+feedid;
 });
 
 $(".feed-graph").click(function(){

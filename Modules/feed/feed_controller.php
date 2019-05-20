@@ -36,11 +36,19 @@ function feed_controller()
         textdomain("messages");
         if ($route->action == "list" && $session['write']) {
             $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
-
-            if (isset($ui_version_2) && $ui_version_2) {
-                return view("Modules/feed/Views/feedlist_view_v2.php",array());
+            
+            if(!empty($feed->get_user_feeds($session['userid']))) {
+                if (isset($ui_version_2) && $ui_version_2) {
+                    return view("Modules/feed/Views/feedlist_view_v2.php",array());
+                } else {
+                    return view("Modules/feed/Views/feedlist_view.php",array());
+                }
             } else {
-                return view("Modules/feed/Views/feedlist_view.php",array());
+                // EMPTY USER FEEDS
+                // show inputs if empty
+                $route->controller="input";
+                $route->action="view";
+                return view("Modules/input/Views/device_view.php");
             }
         }
         else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());

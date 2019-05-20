@@ -86,7 +86,17 @@ function makeListLink($params) {
  * @return boolean
  */
 function is_current($_url = array()) {
-    $current_url = getAbsoluteUrl($_SERVER['REQUEST_URI']);
+    global $route, $path;
+    // create url from controller / actions
+    $current_url = $path.implode('/', array_filter(
+        array(
+            $route->controller,
+            $route->action,
+            $route->subaction,
+            $route->subaction2
+        )
+    ));
+    $current_url = getAbsoluteUrl($current_url);
     foreach((array) $_url as $search) {
         $search_url = getAbsoluteUrl($search);
         if($search_url === $current_url) {
