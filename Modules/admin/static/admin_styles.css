@@ -84,13 +84,10 @@ dl.inline > dd {
     right: 0!important;
     left: initial;
 }
-#log-level{
+#log-level {
     position: absolute;
     right: .2rem;
     bottom: 0;
-}
-#log-level .dropdown-menu > li > a {
-    color: #FFF;
 }
 #log-level .dropdown-menu {
     background: 0;
@@ -100,32 +97,21 @@ dl.inline > dd {
     box-shadow: none;
     margin: 0;
 }
-#log-level .dropdown-menu > li > a,
-#log-level .dropdown-menu > li > a{
+#log-level .dropdown-menu .active {
+    font-weight: bold;
+}
+#log-level .dropdown-menu .btn {
+    border: 0;
     border-radius: 0;
-}
-#log-level .dropdown-menu > li:first-child > a{
-    border-radius: .2em .2em 0 0;
-}
-#log-level .dropdown-menu > li:last-child > a{
-    border-radius: 0 0 .2em .2em;
-}
-#log-level .dropdown-menu > li > a:hover,
-#log-level .dropdown-menu > li > a:focus{
     background-image: none;
 }
-#log-level .dropdown-menu > li > a.btn-danger:hover,
-#log-level .dropdown-menu > li > a.btn-danger:focus{
-    background-color: #bd362f;
+#log-level li:first-child .btn {
+    border-radius: .3em .3em 0 0;
 }
-#log-level .dropdown-menu > li > a.btn-inverse:hover,
-#log-level .dropdown-menu > li > a.btn-inverse:focus{
-    background-color: #2E2E2E;
+#log-level li:last-child .btn {
+    border-radius: 0 0 .3em .3em;
 }
-#log-level .dropdown-menu > li > a.btn-warning:hover,
-#log-level .dropdown-menu > li > a.btn-warning:focus{
-    background-color: #f89406;
-}
+
 dl dt{
   padding-left: .25em;
   box-sizing: border-box;
