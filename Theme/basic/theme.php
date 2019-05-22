@@ -71,9 +71,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <div id="wrap">
 
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-            <div class="navbar-inner bg-primary text-dark d-flex justify-content-between flex-nowrap">
-                <?php echo $mainmenu; ?>
-            </div>
+            <?php echo $mainmenu; ?>
         </div>
 
         <?php if (isset($submenu) && ($submenu)) { ?>

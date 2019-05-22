@@ -116,19 +116,19 @@ input[type=text][class=variable-name-edit] {
     padding: 0px !important;
 }
 
-.nav > .active > a {
+#emoncms-navbar .nav > .active > a {
     background-color: #209ed3 !important;
     box-shadow: none !important;
 }
 
-.nav > li > a:hover,
-.nav > li > a:focus,
-.nav > .open > a {
+#emoncms-navbar .nav > li > a:hover,
+#emoncms-navbar .nav > li > a:focus,
+#emoncms-navbar .nav > .open > a {
     background-color: #2eaadf !important;
     outline: none;
 }
 
-.nav > li > a {
+#emoncms-navbar .nav > li > a {
     color: #fff !important;
     text-shadow: none !important;
 }

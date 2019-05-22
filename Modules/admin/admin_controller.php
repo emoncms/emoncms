@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log, $path;
     $result = EMPTY_ROUTE;// display missing route message by default
     $message = _('406: Route not found');
     
@@ -106,7 +106,7 @@ function admin_controller()
                     'rpi_info'=> Admin::get_rpi_info(),
                     'ram_info'=> Admin::get_ram($system['mem_info']),
                     'disk_info'=> Admin::get_mountpoints($system['partitions']),
-                    'v' => 2,
+                    'v' => 3,
                     'log_levels' => $log_levels,
                     'log_levels_css' => $log_level_css,
                     'log_level'=>$log_level,
@@ -502,21 +502,36 @@ function admin_controller()
                 );
             }
         }
-    }
-    else if ($updatelogin===true) {
-        $route->format = 'html';
-        if ($route->action == 'db')
-        {
-            $applychanges = false;
-            if (isset($_GET['apply']) && $_GET['apply']==true) $applychanges = true;
+    } else {
+        // not $session['admin']
 
-            require_once "Lib/dbschemasetup.php";
-            $updates = array(array(
-                'title'=>"Database schema", 'description'=>"",
-                'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
-            ));
+        if ($updatelogin===true) {
+            $route->format = 'html';
+            if ($route->action == 'db')
+            {
+                $applychanges = false;
+                if (isset($_GET['apply']) && $_GET['apply']==true) $applychanges = true;
 
-            return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
+                require_once "Lib/dbschemasetup.php";
+                $updates = array(array(
+                    'title'=>"Database schema", 'description'=>"",
+                    'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
+                ));
+
+                return array('content'=>view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates)));
+            }
+        } else {
+            // user not admin level display login
+            $log->error(sprintf('%s|%s',_('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
+            $message = urlencode(_('Admin Authentication Required'));
+            $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+            $result = sprintf(
+                '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>', 
+                _('Admin Authentication Required'),
+                _('Session timed out or user not Admin'),
+                $path.'user/login?'.sprintf("msg=%s&ref=%s",$message,$referrer),
+                _('Re-authenticate to see this page')
+            );
         }
     }
 
