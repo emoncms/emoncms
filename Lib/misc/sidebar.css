@@ -108,7 +108,7 @@ Sidebar sub menus----------------------------------------------------*/
 /* -------------------------------------------------------------------
 gravitar icon in toolbar
 --------------------------------------------------------------------*/
-ul#right-nav li:last-child{
+ul#right-nav li.menu-user{
   padding-right: .125em;
   padding-left: .125em;
 }
@@ -142,7 +142,7 @@ a.is_admin.grav-container:hover img.grav {
 }
 .no-gravitar a.grav-container .icon.user {
   font-size: 1.66em;
-  margin-left: -.1em;
+  margin: 0 -.1em;
 }
 /* eof gravitar */
 

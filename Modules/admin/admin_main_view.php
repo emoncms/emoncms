@@ -224,19 +224,20 @@ listItem;
         <pre id="logreply-bound"><div id="logreply"></div></pre>
         <?php if(is_writable($path_to_config)) { ?>
         <div id="log-level" class="dropup btn-group">
-            <a class="btn btn-small dropdown-toggle btn-<?php echo $log_level_css?> text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
+            <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
             <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
             <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <?php foreach ($log_levels as $key=>$value) {
                     $active = $key === $log_level ? ' active':'';
-                    echo sprintf('<li><a href="#" data-key="%s" class="btn btn-%s %s">%s</a></li>', $key, $log_levels_css[$key], $active, $value);
+                    printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
                 }?>
+
             </ul>
         </div>
         <?php } else { ?>
-            <span id="log-level" class="btn-small dropdown-toggle btn-<?php echo $log_level_css?> text-uppercase">
+            <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase">
                 <?php echo sprintf('Log Level: %s', $log_level_label) ?>
             </span>
         <?php } ?>
@@ -833,10 +834,11 @@ $('#log-level ul li a').click(function(event){
     .done(function(response) {
         // make the dropdown toggle show the new setting
         if(response.hasOwnProperty('success') && response.success!==false) {
-            $toggle.removeClass('btn-warning btn-danger btn-inverse').addClass('btn-'+response['css-class']);
             $toggle.find('.log-level-name').text(_('log level: %s').replace('%s',response['log-level-name']));
             // highlight the current dropdown element as active
-            $btn.addClass('active').siblings().removeClass('active');
+            $btn.addClass('active');
+            $btn.parents('li').siblings().find('a').removeClass('active');
+
             notify(_('Log level set to: %s').replace('%s',response['log-level-name']),'success');
         } else {
             notify(_('Log level not set'), 'error', response.hasOwnProperty('message') ? response.message: '');

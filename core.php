@@ -66,10 +66,13 @@ function controller($controller_name)
 
 function view($filepath, array $args = array())
 {
-    extract($args);
-    ob_start();
-    include "$filepath";
-    $content = ob_get_clean();
+    $content = '';
+    if(file_exists($filepath)) {
+        extract($args);
+        ob_start();
+        include "$filepath";
+        $content = ob_get_clean();
+    }
     return $content;
 }
 

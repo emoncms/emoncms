@@ -12,7 +12,11 @@ if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 ?>
-
+<?php
+// if not logged in show login button top right
+$nav_layout = $session['read'] ? 'justify-content-between': 'justify-content-end';
+?>
+<div class="navbar-inner bg-primary text-dark d-flex flex-nowrap <?php echo $nav_layout ?>">
 
 <?php
 if ($session['read']) {
@@ -151,7 +155,7 @@ if($session['read']){
 
 } ?>
 </ul>
-
+</div>
 
 
 
