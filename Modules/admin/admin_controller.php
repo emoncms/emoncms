@@ -44,11 +44,7 @@ function admin_controller()
         2 =>'WARN', // default
         3 =>'ERROR'
     );
-    $log_level_css = array(
-        1 =>'danger',
-        2 =>'inverse', // default
-        3 =>'warning'
-    );
+
     $path_to_config = 'settings.php';
     
     if ($session['admin']) {
@@ -108,10 +104,8 @@ function admin_controller()
                     'disk_info'=> Admin::get_mountpoints($system['partitions']),
                     'v' => 2,
                     'log_levels' => $log_levels,
-                    'log_levels_css' => $log_level_css,
                     'log_level'=>$log_level,
                     'log_level_label' => $log_levels[$log_level],
-                    'log_level_css' => $log_level_css[$log_level],
                     'path_to_config'=> $path_to_config
                 );
                 
@@ -454,7 +448,6 @@ function admin_controller()
             else if ($route->action === 'loglevel' && $session['write']) {
                 // current values
                 $success = false;
-                $css_class = $log_level_css[$log_level];
                 $log_level_name = $log_levels[$log_level];
                 $message = '';
 
@@ -473,7 +466,6 @@ function admin_controller()
                                     file_put_contents($path_to_config, $file);
                                     $success = true;
                                     $log_level = $level;
-                                    $css_class = $log_level_css[$level];
                                     $log_level_name = $log_levels[$level];
                                     $log->error("Log level changed: $level");
                                     $message = _('Changes Saved');
@@ -495,7 +487,6 @@ function admin_controller()
 
                 $result = array(
                     'success' => $success,
-                    'css-class' => $css_class,
                     'log-level' => $log_level,
                     'log-level-name' => $log_level_name,
                     'message' => $message
