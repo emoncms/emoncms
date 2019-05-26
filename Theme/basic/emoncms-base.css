@@ -23,15 +23,6 @@ body.app #wrap {
   box-sizing: border-box;
 }
 
-/* MODULE SPECIFIC STYLES ------------------*/
-/* @todo: move these to specific modules ?? */
-
-/* DASHBOARD - fill the dashboard area to full height (minus footer and header) */
-.dashboard #page-container{
-  height: calc(100vh - 4rem)!important;
-}
-
-
 /*-------------------------------------*/
 /* utilities */
 /*-------------------------------------*/

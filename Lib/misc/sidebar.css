@@ -234,9 +234,7 @@ top navbar override
 #emoncms-navbar .icon.folder-plus {
   margin-bottom: 1px;
 }
-body.dashboard.has-sidebar.fullwidth #footer {
-  margin-left: 0 !important;
-}
+
 /* eof navbar override */
 
 

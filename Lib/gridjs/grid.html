@@ -1,115 +1,446 @@
+
 <!doctype html>
-<?php
-/*
-  All Emoncms code is released under the GNU Affero General Public License.
-  See COPYRIGHT.txt and LICENSE.txt.
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  ---------------------------------------------------------------------
-  Emoncms - open source energy visualisation
-  Part of the OpenEnergyMonitor project:
-  http://openenergymonitor.org
-*/
-global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
-
-$v = 7;
-
-if (!is_dir("Theme/".$theme)) {
-    $theme = "basic";
-}
-if (!in_array($themecolor, ["blue", "sun", "standard"])) {
-    $themecolor = "standard";
-}
-?>
-
-<html>
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emoncms - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
-    <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/<?php echo $favicon; ?>" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/ios_load.png">
-    <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
-
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/basic/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <title>Vue.js dashboard list</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+    svg.icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        stroke-width: 0;
+        stroke: currentColor;
+        fill: currentColor;
+        vertical-align: -0.15em;
+    }
+    .arrow {
+        display: inline-block;
+        vertical-align: middle;
+        width: 0;
+        height: 0;
+        margin-left: 5px;
+        opacity: 0.66;
+    }
     
-    <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
+    .arrow.asc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 4px solid #000;
+    }
+    
+    .arrow.dsc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid #000;
+    }
+    [contenteditable]{
+        cursor: pointer;
+        /* transition: all .2s ease-out; */
+        outline: 1px solid rgba(0,0,0,0);
+        outline-offset: .4em;
+    }
+    [contenteditable]:hover{
+        outline: 1px solid rgba(0,0,0,.1);
+    }
+    [contenteditable]:focus{
+        outline: 2px inset rgba(0,0,0,.2);
+    }
+    [contenteditable]:empty:before {
+        content: "-";
+        color: transparent;
+    }
+    /*
+    [data-key="alias"] {
+        min-width: 10em;
+    }
+    */
+    table td{vertical-align: middle!important}
+    </style>
+  </head>
+  <body>
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
+    <div class="container">
 
-    <script>
-        window.onerror = function(msg, source, lineno, colno, error) {
-            // return false;
-            if (msg.toLowerCase().indexOf("script error") > -1) {
-                alert('Script Error: See Browser Console for Detail');
-            }
-            else {
-                var messages = [
-                    'EmonCMS Error',
-                    '-------------',
-                    'Message: ' + msg,
-                    'Route: ' + source.replace('<?php echo $path; ?>',''),
-                    'Line: ' + lineno,
-                    'Column: ' + colno
-                ];
-                if (Object.keys(error).length > 0) {
-                    messages.push('Error: ' + JSON.stringify(error));
+        <!-- demo root element -->
+        <div id="demo">
+            <div class="d-flex justify-content-between">
+                <h2>Dashboards</h2>
+                <form id="search" class="form-inline">
+                    <div class="form-group">
+                        <input name="query" v-model="searchQuery" type="search" class="form-control mb-0" id="search-box" aria-describedby="searchHelp" placeholder="Search">
+                        <small id="searchHelp" class="form-text text-muted sr-only">Search the data by any column.</small>
+                    </div>
+                </form>
+            </div>
+
+            <!-- custom component to display grid data-->
+            <demo-grid
+              :data="gridData"
+              :columns="gridColumns"
+              :filter-key="searchQuery"
+              :event_handler="_handler"
+            >
+            </demo-grid>
+        </div>
+
+    </div><!-- eof .container -->
+
+
+    <script src="/emoncms/Modules/config/vue.js"></script>
+    <script src="/emoncms/Lib/jquery-1.11.3.min.js"></script>
+    <script src="/emoncms/Modules/dashboard/dashboard.js"></script>
+    
+
+
+
+
+<!-- GENERIC GRID TEMPLATE -->
+<script type="text/x-template" id="grid-template">
+    <table class="table table-sm table-hover">
+        <thead>
+            <tr>
+                <th v-for="(item, key) in columns" @click="sortBy(key)"
+                    v-if="item.sort"
+                    :class="{ active: sortKey == key }">
+                    <!-- sortable headers required-->
+                    <a href="#" class="text-body d-flex align-items-center">
+                        <span v-if="item.label">{{ item.label | capitalize }}</span>
+                        <span v-else>{{ key | capitalize }}</span>
+                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>
+                    </a>
+                </th>
+                <th v-else-if="!item.noHeader">
+                    <!-- header required-->
+                    <span v-if="item.label">{{ item.label | capitalize }}</span>
+                    <span v-else>{{ key | capitalize }}</span>
+                </th>
+                <th v-else><!-- header not required--></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(entry,index) in filteredColumns" :data-id="entry.id">
+                <td v-for="(column, key) in columns">
+                    <div v-if="column.icon">
+                        <!-- show link -->
+                        <a v-if="column.link"
+                            @click="event_handler($event, key, index)"
+                            class="btn btn-small btn-light"
+                            :title="key | capitalize"
+                            :href="entry[key]"
+                        >
+                            <svg class="icon"><use :xlink:href="column.icon"></use></svg>
+                        </a>
+                        <!-- show toggle -->
+                        <button v-else-if="typeof entry[key] === 'boolean'"
+                            @click="event_handler($event, key, index)"
+                            class="btn btn-small" 
+                            :class="{'btn-primary active': entry[key], 'btn-light': !entry[key]}"
+                            :title="key | capitalize">
+                            <svg class="icon"><use :xlink:href="column.icon"></use></svg>
+                        </button>
+                        <!-- show button -->
+                        <button v-else
+                            @click="event_handler($event, key, index)"
+                            class="btn btn-small btn-light"
+                            :title="key | capitalize">
+                            <svg class="icon"><use :xlink:href="column.icon"></use></svg>
+                        </button>
+                    </div>
+                    <div v-else :data-key="key">
+                        <!-- show html -->
+                        <div v-if="column.raw" v-html="entry[key]"></div>
+                        <!-- show editable text -->
+                        <div v-else-if="column.contenteditable" 
+                            contenteditable
+                            @blur="event_handler($event, key, index)"
+                            @keydown.enter="event_handler($event, key, index)"
+                            @input="event_handler($event, key, index)"
+                        >{{ entry[key] }}</div>
+                        <!-- show text -->
+                        <div v-else>
+                            {{entry[key]}}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- GENERIC GRID COMPONENT -->
+<script>
+    // register the grid component
+    Vue.config.devtools = true;
+
+    Vue.component("demo-grid", {
+        template: "#grid-template",
+        props: {
+            data: Array,
+            columns: Object,
+            filterKey: String,
+            event_handler: Function,
+        },
+        data: function() {
+            var sortOrders = {};
+
+            Object.keys(this.columns).forEach(function(key) {
+                sortOrders[key] = 1;
+            });
+            return {
+                sortKey: "",
+                sortOrders: sortOrders
+            };
+        },
+        computed: {
+            filteredColumns: function() {
+                var sortKey = this.sortKey;
+                var filterKey = this.filterKey && this.filterKey.toLowerCase();
+                var order = this.sortOrders[sortKey] || 1;
+                var data = this.data;
+                if (filterKey) {
+                    data = data.filter(function(row) {
+                        return Object.keys(row).some(function(key) {
+                            return (
+                            String(row[key])
+                                .toLowerCase()
+                                .indexOf(filterKey) > -1
+                            );
+                        });
+                    });
                 }
-                alert(messages.join("\n"));
+                if (sortKey) {
+                    data = data.slice().sort(function(a, b) {
+                        a = a[sortKey];
+                        b = b[sortKey];
+                        return (a === b ? 0 : a > b ? 1 : -1) * order;
+                    });
+                }
+                return data;
             }
-            return true; // true == prevents the firing of the default event handler.
+        },
+        filters: {
+            capitalize: function(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+        },
+        methods: {
+            sortBy: function(key) {
+                this.sortKey = key;
+                this.sortOrders[key] = this.sortOrders[key] * -1;
+            }
+            // @todo: add _handler() and _set_field() function from #demo view instance to here... if possible
         }
-        var path = "<?php echo $path ?>";
-    </script>
-</head>
-<body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
-    <div id="wrap">
+    });  
 
-        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-            <?php echo $mainmenu; ?>
-        </div>
+</script>
 
-        <?php if (isset($submenu) && ($submenu)) { ?>
-            <div id="submenu">
-                <div class="container">
-                    <?php echo $submenu; ?>
-                </div>
-            </div>
-            <br>
-        <?php } ?>
-        
-        <div id="sidebar" class="bg-dark text-light">
-            <div class="sidebar-content d-flex flex-column">
-                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
-            </div>
-        </div>
 
-        <?php
-        $contentContainerClasses[] = 'content-container';
-        if ($fullwidth && $route->controller=="dashboard") { 
-            $contentContainerClasses[] = '';
-        } else if ($fullwidth) { 
-            $contentContainerClasses[] = 'container-fluid';
-        } else { 
-            $contentContainerClasses[] = 'container';
-        }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
-            <?php echo $content; ?>
-        </main>
-        
-    </div><!-- eof #wrap -->
 
-    <div id="footer">
-        <?php echo _('Powered by '); ?><a href="http://openenergymonitor.org">OpenEnergyMonitor.org</a>
-        <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
-    </div>
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+
+
+
+
+<!-- PAGE SPECIFIC SCRIPTS -->
+<script>
+
+    var path = "http://localhost/emoncms/";
+
+    // bootstrap the demo
+    var demo = new Vue({
+        el: "#demo",
+        data: {
+            searchQuery: "",
+            gridData: [],
+            gridColumns: {
+                id: { sort: true },
+                name: { sort: true, contenteditable: true},
+                alias: { sort: true, contenteditable: true, label: 'URL alias'},
+                main: { icon: '#icon-star_border', sort: true, label: 'default'},
+                public: { icon: '#icon-earth', sort: true},
+                clone: { icon: '#icon-content_copy', noHeader:true},
+                edit: { icon: '#icon-cog', noHeader:true, link:true},
+                delete: { icon: '#icon-bin', noHeader:true},
+                view: { icon: '#icon-arrow_forward', noHeader:true, link:true}
+            }
+        },
+        mounted: function () {
+            // on load request server data
+            let self = this;
+            dashboard_v2.list().then(function(data){
+                // handle success - populate gridData[] array
+
+                // add urls for edit and view
+                data.forEach(function(v,i){
+                    let id = data[i].id;
+                    data[i].view = path + 'dashboard/view?id=' + id;
+                    data[i].edit = path + 'dashboard/edit?id=' + id;
+                });
+
+                self.gridData = data;
+            }, function(){
+                // @todo: handle error
+            })
+            this._timeouts = {}
+        },
+
+        methods : {
+            // ---------------------------------------
+            // METHOD NAME MATCHES gridColumns{} KEYS:
+            // ---------------------------------------
+            name: function(event, item){
+                try {
+                    var id = item.id
+                    var field = 'name';
+                    var value = event.target.textContent || event.target.innerText || "";
+                    this._set_field(item, id, field, value, function(){
+                        event.target.blur()
+                    });
+                } catch (error) {
+                    console.error ('js error.', field, error, arguments);
+                }
+            },
+            alias: function(event, item){
+                try {
+                    var id = item.id
+                    var field = 'alias';
+                    var value = event.target.textContent || event.target.innerText || "";
+                    this._set_field(item, id, field, value, function(){
+                        event.target.blur()
+                    });
+                } catch (error) {
+                    console.error ('js error.', field, error, arguments);
+                }
+            },
+            main: function(event, item){
+                // "..there can be only one..!" -Highlander 1986
+                try {
+                    var self = this;
+                    var id = item.id
+                    var field = 'main';
+                    var value = !item[field];
+                    
+                    // only modify view on success
+                    this._set_field(item, id, field, value, function(){
+                        // remove all default entries
+                        self.gridData.forEach(function(row, i){
+                            row[field] = false;
+                        })
+                        // set this one to default
+                        item[field] = value;
+                    });
+
+                } catch (error) {
+                    console.error ('js error.', field, error, arguments);
+                }
+            },
+            public: function(event, item){
+                // toggle public status
+                try {
+                    var id = item.id
+                    var field = 'public';
+                    var value = !item[field];
+                    this._set_field(item, id, field, value, function(){
+                        item[field] = value;
+                    });
+                } catch (error) {
+                    console.error ('js error.', field, error, arguments);
+                }
+            },
+            clone: function(event, item){
+                // clone item
+                try {
+                    let clone = Vue.util.extend({}, item);
+                    let self = this;
+                    dashboard_v2.clone(item.id).then(
+                    function(insert_id){
+                        clone.id = insert_id;
+                        clone.name += ' clone';
+                        self.gridData.push(clone);
+                    }, function(){
+                        // @todo: handle error
+                    })
+                } catch (error) {
+                    console.error ('js error.', field, error, arguments);
+                }
+            },
+            delete: function(event, item, index){
+                // delete item
+                try {
+                    if(confirm('delete/?id='+ item.id)){
+                        var self = this;
+                        dashboard_v2.remove(item.id)
+                        .then(function(){
+                            self.gridData.splice(index, 1);
+                        })
+                    }
+                } catch (error) {
+                    console.error ('js error.', error, arguments);
+                }
+            },
+            // ----------
+            // UTILITIES
+            // ----------
+            _handler: function(event, functionName, index) {
+                // CALL CUSTOM FUNCTION FOR EACH FIELD - called by different event types
+                if(typeof this[functionName] === 'function') {
+                    // call the fields' function, passing the dataGrid[] item that matches the index
+                    this[functionName](event, this.gridData[index] || {}, index);
+                }
+                // console.log(event.type, functionName, index);
+                // console.info(functionName, typeof this[functionName]);
+                // event.preventDefault();
+            },
+            _set_field: function(item, id, field, value, success, error) {
+                // update database on key up, update vue data object on blur
+                var timeout_key = id+'_'+field;
+                success = success || function(){
+                    // console.info('Success',id,field,value,arguments[0])
+                }
+                error = error || function(){
+                    // console.warn('Error',id,field,value,arguments[2])
+                }
+                if (event.type === 'blur') {
+                    // set vuejs data object
+                    item[field] = value;
+                } else if(event.type === 'click') {
+                    dashboard_v2.set(field, id, value).then(success, error)
+                } else if(event.type === 'keydown') {
+                    // on keydown (enter)
+                    window.clearTimeout(this._timeouts[timeout_key]);
+                    dashboard_v2.set(field, id, value.trim()).then(success, error)
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    // send new data to server after delay
+                    window.clearTimeout(this._timeouts[timeout_key]);
+                    this._timeouts[timeout_key] = window.setTimeout(function(){
+                        dashboard_v2.set(field, id, value)
+                        .then(success, error)
+                    }, 1000);
+                }
+            },
+        }
+    });
+
+
+
+</script>
+
+    
 
 <!-- ICONS --------------------------------------------- -->
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -283,8 +614,11 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <!-- <title>enter</title> -->
             <path d="M12 16h-10v-4h10v-4l6 6-6 6zM32 0v26l-12 6v-6h-12v-8h2v6h10v-18l8-4h-18v8h-2v-10z"></path>
         </symbol>
+        <symbol id="icon-content_copy" viewBox="0 0 32 32">
+            <!-- <title>content_copy</title> -->
+            <path d="M25.313 28v-18.688h-14.625v18.688h14.625zM25.313 6.688c1.438 0 2.688 1.188 2.688 2.625v18.688c0 1.438-1.25 2.688-2.688 2.688h-14.625c-1.438 0-2.688-1.25-2.688-2.688v-18.688c0-1.438 1.25-2.625 2.688-2.625h14.625zM21.313 1.313v2.688h-16v18.688h-2.625v-18.688c0-1.438 1.188-2.688 2.625-2.688h16z"></path>
+        </symbol>
     </defs>
 </svg>
-
-</body>
+  </body>
 </html>
