@@ -235,7 +235,7 @@ top navbar override
   margin-bottom: 1px;
 }
 body.dashboard.has-sidebar.fullwidth #footer {
-  margin-left: 0 !important;
+  /* margin-left: 0 !important; */
 }
 /* eof navbar override */
 

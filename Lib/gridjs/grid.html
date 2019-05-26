@@ -97,7 +97,7 @@
 
 
 
-    
+
 <!-- GENERIC GRID TEMPLATE -->
 <script type="text/x-template" id="grid-template">
     <table class="table table-sm table-hover">
@@ -241,6 +241,7 @@
                 this.sortKey = key;
                 this.sortOrders[key] = this.sortOrders[key] * -1;
             }
+            // @todo: add _handler() and _set_field() function from #demo view instance to here... if possible
         }
     });  
 
@@ -297,9 +298,9 @@
         },
 
         methods : {
-            // ------------------------------
-            // METHOD FOR EACH COLUMN NAME:
-            // ------------------------------
+            // ---------------------------------------
+            // METHOD NAME MATCHES gridColumns{} KEYS:
+            // ---------------------------------------
             name: function(event, item){
                 try {
                     var id = item.id
