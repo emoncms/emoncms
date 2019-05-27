@@ -171,16 +171,16 @@ listItem;
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Update Log'); ?></h3>
             <p><?php
-            if(is_writable($update_log_filename)) {
+            if(is_readable($update_log_filename)) {
                 echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'), $update_log_filename);
             } else {
                 echo '<div class="alert alert-warn">';
-                echo sprintf('The log file has no write permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
+                echo sprintf('The log file has no read permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
                 echo "</div>";
             } ?></p>
         </div>
         <div>
-            <?php if(is_writable($update_log_filename)) { ?>
+            <?php if(is_readable($update_log_filename)) { ?>
                 <button id="getupdatelog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo _('Auto refresh'); ?>
                 </button>
@@ -201,16 +201,16 @@ listItem;
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Emoncms Log'); ?></h3>
             <p><?php
-            if(is_writable($log_filename)) {
-                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$log_filename);
+            if(is_writable($emoncms_logfile)) {
+                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$emoncms_logfile);
             } else {
                 echo '<div class="alert alert-warn">';
-                echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
+                echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $emoncms_logfile<br>chmod 666 $emoncms_logfile</pre>";
                 echo '<small></div>';
             } ?></p>
         </div>
         <div>
-            <?php if(is_writable($log_filename)) { ?>
+            <?php if(is_writable($emoncms_logfile)) { ?>
                 <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
                     <?php echo _('Auto refresh'); ?>
                 </button>

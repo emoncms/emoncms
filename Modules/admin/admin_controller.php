@@ -14,7 +14,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log, $path;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $redis, $homedir, $admin_show_update, $path;
+    global $log, $log_location, $log_enabled, $log_level;
+    
     $result = EMPTY_ROUTE;// display missing route message by default
     $message = _('406: Route not found');
     
@@ -32,8 +34,9 @@ function admin_controller()
     //placed some other variables here as well so they are grouped
     //together for the emonpi action even though they might not be used
     //in the subaction
-    $update_logfile = "$homedir/data/emonpiupdate.log";
-    $backup_logfile = "$homedir/data/emonpibackup.log";
+    $emoncms_logfile = "$log_location/emoncms.log";
+    $update_logfile = "$log_location/emonpiupdate.log";
+    $backup_logfile = "$log_location/emonpibackup.log";
     $update_flag = "/tmp/emoncms-flag-update";
     $backup_flag = "/tmp/emonpibackup";
     $update_script = "$homedir/emonpi/service-runner-update.sh";
@@ -93,7 +96,7 @@ function admin_controller()
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
                     'allow_emonpi_admin'=>$allow_emonpi_admin,
-                    'log_filename'=>$log_filename,
+                    'emoncms_logfile'=>$emoncms_logfile,
                     'redis'=>$redis,
                     'feed_settings'=>$feed_settings,
                     'emoncms_modules'=>$system['emoncms_modules'],
@@ -146,16 +149,16 @@ function admin_controller()
               if ($log_enabled) {
                 header("Content-Type: application/octet-stream");
                 header("Content-Transfer-Encoding: Binary");
-                header("Content-disposition: attachment; filename=\"" . basename($log_filename) . "\"");
+                header("Content-disposition: attachment; filename=\"" . basename($emoncms_logfile) . "\"");
                 header("Pragma: no-cache");
                 header("Expires: 0");
                 flush();
-                if (file_exists($log_filename)) {
-                  readfile($log_filename);
+                if (file_exists($emoncms_logfile)) {
+                  readfile($emoncms_logfile);
                 }
                 else
                 {
-                  echo($log_filename . " does not exist!");
+                  echo($emoncms_logfile . " does not exist!");
                 }
                 exit;
               }
@@ -168,7 +171,7 @@ function admin_controller()
                     ob_start();
                       // PHP replacement for tail starts here
                       // full path to text file
-                      define("TEXT_FILE", $log_filename);
+                      define("TEXT_FILE", $emoncms_logfile);
                       // number of lines to read from the end of file
                       define("LINES_COUNT", 25);
 
@@ -431,7 +434,7 @@ function admin_controller()
                     'mqtt_enabled'=>$mqtt_enabled,
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
-                    'log_filename'=>$log_filename,
+                    'emoncms_logfile'=>$emoncms_logfile,
                     'update_log_filename'=> $update_logfile,
                     'redis'=>$redis,
                     'feed_settings'=>$feed_settings,
