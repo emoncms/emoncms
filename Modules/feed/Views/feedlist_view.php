@@ -7,9 +7,9 @@
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-    var user = {};
+    var _user = {};
     var path = "<?php echo $path; ?>";
-    user.lang = "<?php echo $_SESSION['lang']; ?>";
+    _user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
 <script src="<?php echo $path; ?>Lib/user_locale.js"></script>
 <script>
@@ -1295,6 +1295,7 @@ $(".feed-download").click(function(){
     calculate_download_size(ids.length);
 
     if ($("#export-timezone-offset").val()=="") {
+        console.log(user);
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
         $("#export-timezone-offset").val(parseInt(timezoneoffset));
