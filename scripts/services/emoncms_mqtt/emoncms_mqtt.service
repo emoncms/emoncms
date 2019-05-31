@@ -49,7 +49,7 @@ ExecStart=/usr/bin/php /var/www/emoncms/scripts/services/emoncms_mqtt/emoncms_mq
 
 # Setup log folder if it does not exist
 # To be loaded from EnvironmentFile in future
-Environment='LOG_PATH=/var/log/emon'
+Environment='LOG_PATH=/var/log/emoncms'
 PermissionsStartOnly=true
 ExecStartPre=/bin/mkdir -p ${LOG_PATH}
 ExecStartPre=/bin/chown pi ${LOG_PATH}
