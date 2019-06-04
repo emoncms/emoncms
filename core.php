@@ -262,6 +262,7 @@ function emoncms_error($message) {
 }
 
 function call_hook($function_name, $args){
+    // @todo: make args parameter optional
     $dir = scandir("Modules");
     for ($i=2; $i<count($dir); $i++)
     {
