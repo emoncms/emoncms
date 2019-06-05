@@ -144,6 +144,61 @@ input[type="checkbox"] { margin:0px; }
 <?php require "Modules/input/Views/input_dialog.php"; ?>
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
+<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
+<script>
+    var _user = {};
+    _user.lang = "<?php echo $_SESSION['lang']; ?>";
+</script>
+<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script>
+
+/**
+ * uses moment.js to format to local time 
+ * @param int time unix epoc time
+ * @param string format moment.js date formatting options
+ * @see date format options - https://momentjs.com/docs/#/displaying/
+ */
+function format_time(time,format){
+    if(!Number.isInteger(time)) return time;
+    format = format || 'YYYY-MM-DD';
+    formatted_date = moment.unix(time).utc().format(format);
+    return formatted_date;
+}
+</script>
+
+<script>
+// @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
+/**
+ * return object of gettext translated strings
+ *
+ * @return object
+ */
+function getTranslations(){
+    return {
+        'ID': "<?php echo _('ID') ?>",
+        'Value': "<?php echo _('Value') ?>",
+        'Time': "<?php echo _('Time') ?>"
+    }
+}
+/**
+ * wrapper for gettext like string replace function
+ */
+function _(str) {
+    return translate(str);
+}
+/**
+ * emulate the php gettext function for replacing php strings in js
+ */
+function translate(property) {
+    _strings = typeof translations === 'undefined' ? getTranslations() : translations;
+    if (_strings.hasOwnProperty(property)) {
+        return _strings[property];
+    } else {
+        return property;
+    }
+}
+</script>
+
 <script>
 
 var path = "<?php echo $path; ?>";
@@ -269,12 +324,12 @@ function draw_devices()
         if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
         
         out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
-        out += "        <div class='device-last-updated text-center' data-col='D'></div>"; 
+        out += "        <div class='device-last-updated text-center' data-col='E'></div>"; 
         
         var devicekey = device.devicekey;
         if (device.devicekey=="") devicekey = "No device key created"; 
         
-        out += "        <a href='#' class='device-key text-center' data-col='E' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
+        out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
         out += "     </div>";
         out += "  </div>";
@@ -286,7 +341,17 @@ function draw_devices()
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
             latest_update[node] = latest_update > input.time ? latest_update : input.time;
 
-            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+">";
+            var title_lines = [ 
+                node.toUpperCase() + ': ' + input.name,
+                '-----------------------',
+                _('ID')+': '+ input.id,
+                _('Value')+': '+ (input.value ? input.value : ''),
+                _('Time')+': '+ (input.time ? input.time : ''),
+                input.time ? format_time(input.time,'LL LTS')+" UTC": ''
+            ]
+            row_title = title_lines.join("\n");
+
+            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
             out += "  <div class='select text-center' data-col='B'>";
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
             out += "  </div>";
@@ -295,8 +360,8 @@ function draw_devices()
             out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='buttons pull-right'>";
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
-            out += "    <div class='time text-center' data-col='D'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='E'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='time text-center' data-col='E'>"+list_format_updated(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
             out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
             out += "  </div>";
             out += "</div>";
