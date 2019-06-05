@@ -35,7 +35,7 @@ function makeListLink($params) {
     $href = getKeyValue('href', $params);
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
-    $active = getAbsoluteUrl(getKeyValue('active', $params));
+    $active = array_filter( (array) getKeyValue('active', $params));
     $sub_items = array_filter( (array) getKeyValue('sub_items', $params));
     $style = array_filter( (array) getKeyValue('style', $params));
     $class = array_filter( (array) getKeyValue('class', $params));
