@@ -446,7 +446,7 @@ function copyTextToClipboard(text, message) {
   try {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
+    // console.log('Copying text command was ' + msg);
     snackbar(message || 'Copied to clipboard');
   } 
   catch(err) {
@@ -608,7 +608,8 @@ $("#copyserverinfo_md").on('click', function(event) {
 });
 
 // copy value (and title) to clipboard when clicked
-$("dd").on('click', function(event) {
+$(".row dd").on('click', function(event) {
+    if(event.target.tagName==='BUTTON') return
     let $this = $(this),
         title = $this.prev('dt').text().trim(),
         markup = $this.clone().find('script').remove().end().html()
@@ -620,7 +621,7 @@ $("dd").on('click', function(event) {
     );
 });
 // copy title (and value) to clipboard when clicked
-$("dt").on('click', function(event) {
+$(".row dt").on('click', function(event) {
     let $this = $(this),
         title = $this.text().trim(),
         markup = $this.next('dd').clone().find('script').remove().end().html()
