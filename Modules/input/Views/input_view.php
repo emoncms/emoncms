@@ -164,6 +164,16 @@ function format_time(time,format){
     formatted_date = moment.unix(time).utc().format(format);
     return formatted_date;
 }
+/**
+ * uses moment.js to display relative time from input time 
+ * @param int time unix epoc time
+ * @see docs - https://momentjs.com/docs/#/displaying/fromnow
+ */
+function time_since(time){
+    if(!Number.isInteger(time)) return time;
+    formatted_date = moment.unix(time).utc().fromNow();
+    return formatted_date;
+}
 </script>
 
 <script>
@@ -177,7 +187,8 @@ function getTranslations(){
     return {
         'ID': "<?php echo _('ID') ?>",
         'Value': "<?php echo _('Value') ?>",
-        'Time': "<?php echo _('Time') ?>"
+        'Time': "<?php echo _('Time') ?>",
+        'Updated': "<?php echo _('Updated') ?>"
     }
 }
 /**
@@ -344,11 +355,18 @@ function draw_devices()
             var title_lines = [ 
                 node.toUpperCase() + ': ' + input.name,
                 '-----------------------',
-                _('ID')+': '+ input.id,
-                _('Value')+': '+ (input.value ? input.value : ''),
-                _('Time')+': '+ (input.time ? input.time : ''),
-                input.time ? format_time(input.time,'LL LTS')+" UTC": ''
-            ]
+                _('ID')+': '+ input.id
+            ];
+            if(input.value) {
+                title_lines.push(_('Value')+': ' + input.value);
+            }
+            if(input.time) {
+                title_lines.push(_('Updated')+": "+ time_since(input.time));
+                title_lines.push(_('Time')+': '+ input.time);
+                title_lines.push(format_time(input.time,'LL LTS')+" UTC");
+            }
+
+
             row_title = title_lines.join("\n");
 
             out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
