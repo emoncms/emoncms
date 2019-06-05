@@ -1328,7 +1328,7 @@ $(".feed-download").click(function(){
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
 
-    if ($("#export-timezone-offset").val()=="") {
+    if ($("#export-timezone-offset").val()=="") {   
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
         $("#export-timezone-offset").val(parseInt(timezoneoffset));
