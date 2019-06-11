@@ -14,7 +14,9 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $log_filename, $log_enabled, $redis, $homedir, $admin_show_update, $log_level, $log, $path;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $redis, $homedir, $admin_show_update, $path;
+    global $log, $log_location, $log_enabled, $log_level;
+    
     $result = EMPTY_ROUTE;// display missing route message by default
     $message = _('406: Route not found');
     
@@ -32,8 +34,9 @@ function admin_controller()
     //placed some other variables here as well so they are grouped
     //together for the emonpi action even though they might not be used
     //in the subaction
-    $update_logfile = "$homedir/data/emonpiupdate.log";
-    $backup_logfile = "$homedir/data/emonpibackup.log";
+    $emoncms_logfile = "$log_location/emoncms.log";
+    $update_logfile = "$log_location/emonpiupdate.log";
+    $backup_logfile = "$log_location/emonpibackup.log";
     $update_flag = "/tmp/emoncms-flag-update";
     $backup_flag = "/tmp/emonpibackup";
     $update_script = "$homedir/emonpi/service-runner-update.sh";
@@ -93,7 +96,7 @@ function admin_controller()
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
                     'allow_emonpi_admin'=>$allow_emonpi_admin,
-                    'log_filename'=>$log_filename,
+                    'emoncms_logfile'=>$emoncms_logfile,
                     'redis'=>$redis,
                     'feed_settings'=>$feed_settings,
                     'emoncms_modules'=>$system['emoncms_modules'],
@@ -109,7 +112,7 @@ function admin_controller()
                     'path_to_config'=> $path_to_config
                 );
                 
-                $result = view("Modules/admin/admin_main_view.php", $view_data);
+                return view("Modules/admin/admin_main_view.php", $view_data);
             }
 
             else if ($route->action == 'db')
@@ -127,12 +130,12 @@ function admin_controller()
                     'operations'=>db_schema_setup($mysqli,load_db_schema(),$applychanges)
                 );
                 $error = !empty($updates[0]['operations']['error']) ? $updates[0]['operations']['error']: '';
-                $result = view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
+                return view("Modules/admin/update_view.php", array('applychanges'=>$applychanges, 'updates'=>$updates, 'error'=>$error));
             }
 
             else if ($route->action == 'users' && $session['write'])
             {
-                $result = view("Modules/admin/userlist_view.php");
+                return view("Modules/admin/userlist_view.php", array());
             }
 
             else if ($route->action == 'setuser' && $session['write'])
@@ -148,16 +151,16 @@ function admin_controller()
               if ($log_enabled) {
                 header("Content-Type: application/octet-stream");
                 header("Content-Transfer-Encoding: Binary");
-                header("Content-disposition: attachment; filename=\"" . basename($log_filename) . "\"");
+                header("Content-disposition: attachment; filename=\"" . basename($emoncms_logfile) . "\"");
                 header("Pragma: no-cache");
                 header("Expires: 0");
                 flush();
-                if (file_exists($log_filename)) {
-                  readfile($log_filename);
+                if (file_exists($emoncms_logfile)) {
+                  readfile($emoncms_logfile);
                 }
                 else
                 {
-                  echo($log_filename . " does not exist!");
+                  echo($emoncms_logfile . " does not exist!");
                 }
                 exit;
               }
@@ -166,51 +169,47 @@ function admin_controller()
             else if ($route->action == 'getlog')
             {
                 $route->format = "text";
-                if ($log_enabled) {
-                    ob_start();
-                      // PHP replacement for tail starts here
-                      // full path to text file
-                      define("TEXT_FILE", $log_filename);
-                      // number of lines to read from the end of file
-                      define("LINES_COUNT", 25);
-
-                      function read_file($file, $lines) {
-                        //global $fsize;
-                        $handle = fopen($file, "r");
-                        $linecounter = $lines;
-                        $pos = -2;
-                        $beginning = false;
-                        $text = array();
-                        while ($linecounter > 0) {
-                          $t = " ";
-                          while ($t != "\n") {
-                            if(!empty($handle) && fseek($handle, $pos, SEEK_END) == -1) {
-                            $beginning = true;
-                            break;
+                if (!$log_enabled) return "Log is disabled";
+                if (!file_exists($emoncms_logfile)) return "$emoncms_logfile does not exist";
+                
+                ob_start();
+                // PHP replacement for tail starts here
+                function read_file($file, $lines) 
+                {
+                    //global $fsize;
+                    $handle = fopen($file, "r");
+                    $linecounter = $lines;
+                    $pos = -2;
+                    $beginning = false;
+                    $text = array();
+                    while ($linecounter > 0) {
+                        $t = " ";
+                        while ($t != "\n") {
+                            if (!empty($handle) && fseek($handle, $pos, SEEK_END) == -1) {
+                                $beginning = true;
+                                break;
                             }
-                          if(!empty($handle)) $t = fgetc($handle);
-                          $pos --;
-                          }
+                            if(!empty($handle)) $t = fgetc($handle);
+                            $pos --;
+                        }
                         $linecounter --;
                         if ($beginning) {
-                          rewind($handle);
-                          }
+                             rewind($handle);
+                        }
                         $text[$lines-$linecounter-1] = fgets($handle);
                         if ($beginning) break;
-                        }
-                      fclose ($handle);
-                      return array_reverse($text);
-                      }
-
-                      $fsize = round(filesize(TEXT_FILE)/1024/1024,2);
-                      $lines = read_file(TEXT_FILE, LINES_COUNT);
-                      foreach ($lines as $line) {
-                        echo $line;
-                      } //End PHP replacement for Tail
-                    $result = trim(ob_get_clean());
-                } else {
-                    $result = "Log is disabled.";
+                    }
+                    fclose ($handle);
+                    return array_reverse($text);
                 }
+
+                $fsize = round(filesize($emoncms_logfile)/1024/1024,2);
+                $lines = read_file($emoncms_logfile, 25);
+                
+                foreach ($lines as $line) {
+                  echo $line;
+                } //End PHP replacement for Tail
+                return trim(ob_get_clean());
             }
 
             else if (($admin_show_update || $allow_emonpi_admin) && $route->action == 'emonpi') {
@@ -232,9 +231,10 @@ function admin_controller()
                 
                 if ($route->subaction == 'getupdatelog' && $session['admin']) {
                     $route->format = "text";
+                    if (!file_exists($update_logfile)) return "$update_logfile does not exist";
                     ob_start();
                     passthru("cat " . $update_logfile);
-                    $result = trim(ob_get_clean());
+                    return trim(ob_get_clean());
                 }
                 
                 if ($route->subaction == 'downloadupdatelog' && $session['admin'])
@@ -262,7 +262,7 @@ function admin_controller()
                     $route->format = "text";
                     
                     $fh = @fopen($backup_flag,"w");
-                    if (!$fh) $result = "ERROR: Can't write the flag $backup_flag.";
+                    if (!$fh) return "ERROR: Can't write the flag $backup_flag.";
                     else $result = "Update flag file $backup_flag created. Update will start on next cron call in " . (60 - (time() % 60)) . "s...";
                     @fclose($fh);
                 }
@@ -271,7 +271,7 @@ function admin_controller()
                     $route->format = "text";
                     ob_start();
                     passthru("cat " . $backup_logfile);
-                    $result = trim(ob_get_clean());
+                    return trim(ob_get_clean());
                 }
                 
                 if ($route->subaction == 'downloadbackuplog' && $session['admin'])
@@ -309,11 +309,11 @@ function admin_controller()
                     $argument = $_POST['argument'];
                     }
                   if ($argument == 'ro'){
-                    $result = passthru('rpi-ro');
+                    return passthru('rpi-ro');
 
                   }
                   if ($argument == 'rw'){
-                    $result = passthru('rpi-rw');
+                    return passthru('rpi-rw');
                   }
                 }
             }
@@ -323,7 +323,7 @@ function admin_controller()
             if ($route->action == 'redisflush' && $session['write'])
             {
                 $redis->flushDB();
-                $result = array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
+                return array('used'=>$redis->info()['used_memory_human'], 'dbsize'=>$redis->dbSize());
             }
             
             else if ($route->action == 'numberofusers')
@@ -331,7 +331,7 @@ function admin_controller()
                 $route->format = "text";
                 $result = $mysqli->query("SELECT COUNT(*) FROM users");
                 $row = $result->fetch_array();
-                $result = (int) $row[0];
+                return (int) $row[0];
             }
 
             else if ($route->action == 'userlist')
@@ -380,7 +380,7 @@ function admin_controller()
                     $row->feeds = $result1->num_rows;
                     
                 }
-                $result = $data;
+                return $data;
             }
             
             else if ($route->action == 'setuserfeed' && $session['write'])
@@ -427,7 +427,7 @@ function admin_controller()
                     'mqtt_enabled'=>$mqtt_enabled,
                     'emoncms_version'=>$emoncms_version,
                     'path'=>$path,
-                    'log_filename'=>$log_filename,
+                    'emoncms_logfile'=>$emoncms_logfile,
                     'update_log_filename'=> $update_logfile,
                     'redis'=>$redis,
                     'feed_settings'=>$feed_settings,
@@ -439,7 +439,7 @@ function admin_controller()
                     'disk_info'=> Admin::get_mountpoints($system['partitions'])
                 );
                 
-                $result = $view_data;
+                return $view_data;
             }
             else if ($route->action === 'loglevel' && $session['write']) {
                 // current values
@@ -481,7 +481,7 @@ function admin_controller()
                     $success = true;
                 }
 
-                $result = array(
+                return array(
                     'success' => $success,
                     'log-level' => $log_level,
                     'log-level-name' => $log_level_name,
@@ -511,8 +511,9 @@ function admin_controller()
             // user not admin level display login
             $log->error(sprintf('%s|%s',_('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
             $message = urlencode(_('Admin Authentication Required'));
-            $referrer = base64_encode(urlencode('admin/view'));
-            $result = sprintf(
+            
+            $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+            return sprintf(
                 '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>', 
                 _('Admin Authentication Required'),
                 _('Session timed out or user not Admin'),
