@@ -114,7 +114,7 @@ class Schedule
         $success = false;
         
         if (isset($fields->name)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in schedule name');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in schedule name');
             $stmt = $this->mysqli->prepare("UPDATE schedule SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) $success = true;
@@ -131,7 +131,7 @@ class Schedule
         }
         
         if (isset($fields->expression)) {
-            if (preg_replace('/[^\/\|\,\w\s-:]/','',$fields->expression)!=$fields->expression) return array('success'=>false, 'message'=>'invalid characters in schedule expression');
+            if (preg_replace('/[^\/\|\,\w\s\-:]/','',$fields->expression)!=$fields->expression) return array('success'=>false, 'message'=>'invalid characters in schedule expression');
             if (isset($schedule_exp_cache[$id])) { unset($schedule_exp_cache[$id]); } // Clear static cache
             $stmt = $this->mysqli->prepare("UPDATE schedule SET expression = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->expression,$id);

@@ -1,7 +1,6 @@
-# Systemd unit file for mqtt input script
+# Systemd unit file for feedwriter script
 
 # INSTALL:
-
 # sudo ln -s /var/www/emoncms/scripts/services/feedwriter/feedwriter.service /lib/systemd/system
 
 # RUN AT STARTUP
@@ -34,10 +33,10 @@
 ###
 
 [Unit]
-Description=Emoncms MQTT Input Script
-Wants=mysql.service redis.service
-After=mysql.service redis.service
-Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
+Description=Emoncms feedwriter script
+Wants=mysql.service redis-server.service
+After=mysql.service redis-server.service
+Documentation=https://github.com/emoncms/emoncms/blob/master/scripts/services/install-service-feedwriter.md
 
 # Uncomment this line to use a dedicated log file for StdOut and StdErr.
 # NOTE: only works in systemd v236+
@@ -48,8 +47,17 @@ Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQ
 Type=idle
 ExecStart=/usr/bin/php /var/www/emoncms/scripts/feedwriter.php
 
-# Restart script if stopped
-Restart=always
+# Setup log folder if it does not exist
+# To be loaded from EnvironmentFile in future
+Environment='LOG_PATH=/var/log/emoncms'
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p ${LOG_PATH}
+ExecStartPre=/bin/chown pi ${LOG_PATH}
+ExecStartPre=/bin/touch ${LOG_PATH}/emoncms.log
+ExecStartPre=/bin/chmod 666 ${LOG_PATH}/emoncms.log
+
+# Restart script if stopped on a failure. Will not restart if not configured correctly
+Restart=on-failure
 # Wait 60s before restart
 RestartSec=60
 

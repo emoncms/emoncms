@@ -7,141 +7,181 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-    global $path, $session, $menu;
-    if (!isset($session['profile'])) $session['profile'] = 0;
+global $path, $session, $menu, $user;
+if (!isset($session['profile'])) {
+    $session['profile'] = 0;
+}
+?>
+<?php
+// if not logged in show login button top right
+$nav_layout = $session['read'] ? 'justify-content-between': 'justify-content-end';
+?>
+<div class="navbar-inner bg-primary text-dark d-flex flex-nowrap <?php echo $nav_layout ?>">
 
-    // Example how to add a fixed menu item:
-    //$menu['dropdownconfig'][] = array('name'=>'Documentation', 'icon'=>'icon-book', 'path'=>"docs", 'session'=>"write", 'order' => 60,'divider' => true);
-
-    usort($menu['left'], "menu_sort");
-    usort($menu['dropdown'], "menu_sort");
-    usort($menu['dropdownconfig'], "menu_sort");
-    usort($menu['right'], "menu_sort");
-
-    function drawItem($item)
-    {
-        global $path,$session;
-        $out="";
-        if (isset($item['session'])) {
-            if ((isset($session[$item['session']]) && ($session[$item['session']]==1)) || $item['session'] == 'all') {
-                $i = 0;
-                $subactive = false;
-                if (isset($item['dropdown']) && count($item['dropdown']) > 0) {
-                    usort($item['dropdown'], "menu_sort");
-                    $outdrop="";
-                    foreach ($item['dropdown'] as $dropdownitem) {
-                        if (!isset($dropdownitem['session']) || (isset($dropdownitem['session']) && $session[$dropdownitem['session']]==1)) {
-                            $i++;
-                            if (is_active($dropdownitem)) { $subactive = true; }
-                            if (isset($dropdownitem['divider']) && $dropdownitem['divider']) { $outdrop .= '<li class="divider"></li>'; }
-                            // TODO: Remove dependency of index position on APPs module
-                            $outdrop .= '<li class="'. (is_active($dropdownitem) ? ' active' : '') . '"><a href="' . $path . (isset($dropdownitem['path']) ? $dropdownitem['path']:$dropdownitem['1']) . '">' . (isset($dropdownitem['name']) ? drawNameIcon($dropdownitem,true) : $dropdownitem['0']) . '</a></li>';
-                        }
-                    }
-                }
-                
-                $show = true; if (isset($item['hideinactive']) && $item['hideinactive']) $show = false;
-                if (is_active($item)) $show = true;
-                
-                if ($i > 0) {
-                    $out .= '<li class="dropdown' . ($subactive ? " active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . '">';
-                    $out .= '<a href="#" class="dropdown-toggle" data-toggle="dropdown">' . drawNameIcon($item,false) . '<b class="caret"></b></a>';
-                    $out .= '<ul class="dropdown-menu scrollable-menu">';
-                    $out .= $outdrop;
-                    $out .= '</ul></li>';
-                }
-                else if (isset($item['path']) && isset($item['name'])) {
-                    if ($show) $out .= "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") ."'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
-                }
-            }
-        } else {
-            $out .=  "<li class='" . (is_active($item) ? "active" : "") . (isset($item['class']) ? " ".$item['class'] : "") . "'><a href=\"".$path.$item['path']."\">" . drawNameIcon($item,false) . "</a></li>";
-        }
-        return $out;
-    }
-
-    function drawNameIcon($item, $alwaysshowname=false) {
-        $out = "";
-        $name = false;
-        $desc = false;
-        $icon = false;
-        $published = false;
-        $divid = "";
-        if (isset($item['name'])) $name = $item['name'];
-        if (isset($item['desc'])) $desc = $item['desc'];
-        if (isset($item['icon'])) $icon = $item['icon'];
-        if (isset($item['published'])) $published = $item['published'];
-        if (isset($item['id'])) $divid = "id='".$item['id']."'";
-
-        $title = ($desc ? $desc : $name);
-        if($name && $published) $name = "<b>".$name."</b>";
-
-        $out = "<div $divid style='display: inline'>";
-        if ($icon) $out .= "<i class='".$icon."'" . ($title ? " title='".$title."'" : "") . "></i>";
-        if ($name) {
-            if ($alwaysshowname || !$icon) {
-                $out .= " " . $name;
-            } else {
-                $out .= " <span class='menu-text'>" . $name . "</span>";
-            }
-        } else {
-            $out .= 'unknown';
-        }
-        if ($desc) $out .= "<span class='menu-description'><small>".$desc."</small></span>";
-        $out .= "</div>";
-        return $out;
-    }
-
-    function is_active($item) {
-        global $route;
-        if (isset($item['path']) && ($item['path'] == $route->controller."/".$route->action || $item['path'] == $route->controller."/".$route->action."/".$route->subaction || $item['path'] == $route->controller."/".$route->action."&id=".get('id')))
-            return true;
-        return false;
-    }
-
-    // Menu sort by order
-    function menu_sort($a,$b) {
-        return $a['order']>$b['order'];
-    }
+<?php
+if ($session['read']) {
 ?>
 
-<ul class="nav">
+<ul id="left-nav" class="nav mr-0 d-flex">
+
 <?php
-    foreach ($menu['dashboard'] as $item) {
-        $item['class'] = 'menu-dashboard';
-        echo drawItem($item);
+// $menu['tabs'][] = array(
+//     'title'=> _("Open/Close Sidebar"),
+//     'id' => 'sidebar-toggle',
+//     'href' => '#',
+//     'icon' => 'icon-menu',
+//     'order' => -1,
+//     'li_style' => 'width:0; overflow:hidden; visibility:hidden',
+//     'data'=> array(
+//         'toggle' => 'slide-collapse',
+//         'target' => '#sidebar'
+//     )
+// );
+
+// top level menu icons (MAIN MENU)
+if(!empty($menu['tabs'])) {
+    foreach($menu['tabs'] as &$item) {
+        // find matching sidebar
+        $matching_menu = getChildMenuItems($item);
+        // add active class to <li>  if item in matching sidebar is current page/route
+        if(is_current_menu($matching_menu)) $item['li_class'][] = 'active';
+        // render menu item
+        echo makeListLink($item);
     }
-    foreach ($menu['left'] as $item) {
-        $item['class'] = 'menu-left';
-        echo drawItem($item);
-    }
+}
+
+// left aligned menu items
+if(!empty($menu['left'])): foreach ($menu['left'] as $item):
+    $item['class'] = 'menu-left';
+    echo makeListLink($item);
+endforeach; endif;
 ?>
 </ul>
-<ul class="nav pull-right">
+
+<?php } ?>
+
+<ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
+
 <?php
-    if (count($menu['dropdown']) && $session['read']) {
-        $extra = array();
-        $extra['name'] = 'Extra';
-        $extra['icon'] = 'icon-plus icon-white';
-        $extra['class'] = 'menu-extra';
-        $extra['session'] = 'read';
-        $extra['dropdown'] = $menu['dropdown'];
-        echo drawItem($extra);
-    }
+$isBookmarked = currentPageIsBookmarked();
+$addBookmark = array(
+    'icon'=>'star_border',
+    'href'=>'#',
+    'id'=>'set-bookmark',
+    'title'=>_('Add Bookmark')
+);
+$removeBookmark = array(
+    'icon'=>'star',
+    'href'=>'#',
+    'id'=>'remove-bookmark',
+    'title'=>_('Remove Bookmark')
+);
+if($isBookmarked){
+    $addBookmark['li_class'] = 'd-none';
+} else {
+    $removeBookmark['li_class'] = 'd-none';
+}
+if ($session['write']) {
+    echo makeListLink($removeBookmark);
+    echo makeListLink($addBookmark);
+}
 
-    if (count($menu['dropdownconfig'])) {
-        $setup = array();
-        $setup['name'] = 'Setup';
-        $setup['icon'] = 'icon-wrench icon-white';
-        $setup['class'] = 'menu-setup';
-        $setup['session'] = 'read';
-        $setup['dropdown'] = $menu['dropdownconfig'];
-        echo drawItem($setup);
-    }
+if ($session['read']) {
+    // add user_menu.php items
+    if (!empty($menu['setup'])) {
+        $sub_items = array();
 
-    foreach ($menu['right'] as $item) {
-        $item['class'] = 'menu-right';
-        echo drawItem($item);
+        foreach($menu['setup'] as $sub_item) {
+            $sub_items[] = $sub_item;
+        }
+        // build dropdown with above items
+        echo makeDropdown(array(
+            'title' => _("Setup"),
+            'href' => '#',
+            'icon' => 'cog',
+            'sub_items' => $sub_items
+        ));
     }
+}
 ?>
+
+
+<?php
+// top navbar user menu
+$menu_index = 'user';
+if($session['read']){
+    $item = array(
+        'title' => $session['username'],
+        'href' => '#',
+        'icon' => 'user',
+        'class'=> 'grav-container img-circle',
+        'id'=>'user-dropdown',
+    );
+    $item['li_class'][] = 'menu-user';
+    $item['li_class'][] = 'd-flex';
+    $item['li_class'][] = 'align-items-center';
+
+    // use the text as the title if not available
+    if(empty($item['title'])) $item['title'] = $item['text'];
+
+    // indicate if user is admin
+    if ($session['admin'] == 1) {
+        settype($item['class'],'array');
+        $item['class'][] = 'is_admin';
+        $item['title'] .= sprintf(' (%s)',_('Admin'));
+    }
+    // add gravitar
+    $grav_email = $user->get($session['userid'])->gravatar;
+    if(!empty($grav_email)) {
+        $item['icon'] = '';
+        $atts['class'] = 'grav img-circle';
+        $item['text'] = get_gravatar( $grav_email, 52, 'mp', 'g', true, $atts );
+    } else {
+        $item['li_class'][] = 'no-gravitar';
+    }
+    // add user_menu.php items
+    if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $sub_item): 
+        $item['sub_items'][] = $sub_item;
+    endforeach; endif;
+
+    // build dropdown with above items
+    echo makeDropdown($item);
+
+} else {
+    // show login link to non-logged in users
+    if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $item): 
+        echo makeListLink($item);
+    endforeach; endif;
+
+} ?>
 </ul>
+</div>
+
+
+
+<?php
+/**
+ * Get either a Gravatar URL or complete image tag for a specified email address.
+ *
+ * @param string $email The email address
+ * @param string $s Size in pixels, defaults to 80px [ 1 - 2048 ]
+ * @param string $d Default imageset to use [ 404 | mp | identicon | monsterid | wavatar ]
+ * @param string $r Maximum rating (inclusive) [ g | pg | r | x ]
+ * @param boole $img True to return a complete IMG tag False for just the URL
+ * @param array $atts Optional, additional key/value attributes to include in the IMG tag
+ * @return String containing either just a URL or a complete image tag
+ * @source https://gravatar.com/site/implement/images/php/
+ */
+function get_gravatar( $email, $s = 80, $d = 'mp', $r = 'g', $img = false, $atts = array() ) {
+    $url = 'https://www.gravatar.com/avatar/';
+    $url .= md5( strtolower( trim( $email ) ) );
+    $url .= "?s=$s&d=$d&r=$r";
+    if ( $img ) {
+        $url = '<img src="' . $url . '"';
+        foreach ( $atts as $key => $val )
+            $url .= ' ' . $key . '="' . $val . '"';
+        $url .= ' />';
+    }
+    return $url;
+}
+?>

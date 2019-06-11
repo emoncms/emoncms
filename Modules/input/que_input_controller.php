@@ -214,7 +214,7 @@ function input_controller()
 
             if ($datain!="")
             {
-                $json = preg_replace('/[^\p{L}_\p{N}\s-.:,]/u','',$datain);
+                $json = preg_replace('/[^\p{L}_\p{N}\s\-.:,]/u','',$datain);
                 $datapairs = explode(',', $json);
 
                 $csvi = 0;

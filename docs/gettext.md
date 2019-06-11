@@ -18,6 +18,10 @@ Create a folder on your server and copy and paste the following code into a php 
     textdomain($domain);
     
     echo _("HELLO_WORLD");
+
+    // replace above with helper function in core.php
+    load_language_files('path/to/locale/dir', $domain);
+    echo _("HELLO WORLD");
     ?>
     
 

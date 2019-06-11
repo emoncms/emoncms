@@ -134,8 +134,8 @@ Create a symlink to reference emoncms within the web root folder:
 
 Set write permissions for the emoncms logfile:
 
-`sudo touch /var/log/emoncms.log` followed by  
-`sudo chmod 666 /var/log/emoncms.log`
+`sudo touch /var/log/emoncms/emoncms.log` followed by  
+`sudo chmod 666 /var/log/emoncms/emoncms.log`
 
 ### In an internet browser, load emoncms:
 

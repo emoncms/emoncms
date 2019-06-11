@@ -1,8 +1,6 @@
 <?php global $path, $session, $user; ?>
 <?php
-    $domain4 = "schedule_messages";
-    bindtextdomain($domain4, "Modules/schedule/locale");
-    bind_textdomain_codeset($domain4, 'UTF-8');
+    load_language_files("Modules/process/locale", "schedule_messages");
 ?>
 <style>
   a.anchor{display: block; position: relative; top: -50px; visibility: hidden;}

@@ -798,7 +798,18 @@ class Process_ProcessList
               "description"=>_("<p>If value is lower than <i>min value allowed</i> then the value passed to following process will be the <i>min value allowed</i></p>"),
               "requireredis"=>false,
               "nochange"=>false
-           )
+           ),
+            array(
+                "name"=>_("Absolute value"),
+                "short"=>"abs",
+                "argtype"=>ProcessArg::VALUE,
+                "function"=>"abs_value",
+                "datafields"=>0,
+                "datatype"=>DataType::UNDEFINED,
+                "unit"=>"",
+                "group"=>_("Calibration"),
+                "description"=>_("<p>Return the absolute value of the current value. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
+            )
         );
         return $list;
     }
@@ -874,6 +885,11 @@ class Process_ProcessList
         $this->feed->insert_data($id, $time, $time, $value);
 
         return $value;
+    }
+
+    public function abs_value($arg, $time, $value)
+    {
+        return abs($value);
     }
 
     //---------------------------------------------------------------------------------------

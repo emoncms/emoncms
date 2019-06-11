@@ -281,7 +281,7 @@ class User
     public function send_verification_email($username)
     {
         // check for valid username format
-        if (preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username)!=$username) return array('success'=>false, 'message'=>_("Invalid username"));
+        if (preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username)!=$username) return array('success'=>false, 'message'=>_("Invalid username"));
 
         // check that username exists and load email and verification status
         if (!$stmt = $this->mysqli->prepare("SELECT id,email,email_verified FROM users WHERE username=?")) {
@@ -360,7 +360,7 @@ class User
         return array('success'=>false, 'message'=>"Invalid email or verification key");
     }
 
-    public function login($username, $password, $remembermecheck)
+    public function login($username, $password, $remembermecheck, $referrer='')
     {
         $remembermecheck = (int) $remembermecheck;
 
@@ -368,7 +368,7 @@ class User
 
         // filter out all except for alphanumeric white space and dash
         // if (!ctype_alnum($username))
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
 
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore, if you created an account before this rule was in place enter your username without the non a-z 0-9 dash underscore characters to login and feel free to change your username on the profile page."));
 
@@ -422,6 +422,7 @@ class User
             
             if ($this->redis) $this->redis->hmset("user:".$userData_id,array('apikey_write'=>$userData_apikey_write));
 
+            if(!empty($referrer)) $userData_startingpage = urldecode($referrer);
             return array('success'=>true, 'message'=>_("Login successful"), 'startingpage'=>$userData_startingpage);
         }
     }
@@ -432,7 +433,7 @@ class User
     public function get_apikeys_from_login($username, $password)
     {
         if (!$username || !$password) return array('success'=>false, 'message'=>_("Username or password empty"));
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
         if ($username_out!=$username) return array('success'=>false, 'message'=>_("Username must only contain a-z 0-9 dash and underscore"));
 
         $stmt = $this->mysqli->prepare("SELECT id,password,salt,apikey_write,apikey_read FROM users WHERE username=?");
@@ -504,7 +505,7 @@ class User
 
     public function passwordreset($username,$emailto)
     {
-        $username_out = preg_replace('/[^\p{N}\p{L}_\s-]/u','',$username);
+        $username_out = preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$username);
         if (!filter_var($emailto, FILTER_VALIDATE_EMAIL)) return array('success'=>false, 'message'=>_("Email address format error"));
 
         $stmt = $this->mysqli->prepare("SELECT id FROM users WHERE username=? AND email=?");
@@ -736,7 +737,7 @@ class User
     public function set_timezone($userid,$timezone)
     {
         $userid = (int) $userid;
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$timezone);
+        $timezone = preg_replace('/[^\w\-.\\/_]/','',$timezone);
         
         $stmt = $this->mysqli->prepare("UPDATE users SET timezone = ? WHERE id = ?");
         $stmt->bind_param("si", $timezone, $userid);
@@ -766,14 +767,14 @@ class User
         $userid = (int) $userid;
         if(!$data || $userid < 1) return array('success'=>false, 'message'=>_("Error updating user info"));
 
-        $gravatar = preg_replace('/[^\w\s-.@]/','',$data->gravatar);
-        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->name);
-        $location = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->location);
-        $timezone = preg_replace('/[^\w-.\\/_]/','',$data->timezone);
-        $bio = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$data->bio);
-        $language = preg_replace('/[^\w\s-.]/','',$data->language);
-        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s-.]/','', $data->tags);
-        $startingpage = preg_replace('/[^\p{N}\p{L}_\s-?#=\/]/u','',$data->startingpage);
+        $gravatar = preg_replace('/[^\w\s\-.@]/','',$data->gravatar);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->name);
+        $location = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->location);
+        $timezone = preg_replace('/[^\w\-.\\/_]/','',$data->timezone);
+        $bio = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$data->bio);
+        $language = preg_replace('/[^\w\s\-.]/','',$data->language);
+        $tags = isset($data->tags) == false ? '' : preg_replace('/[^{}",:\w\s\-.]/','', $data->tags);
+        $startingpage = preg_replace('/[^\p{N}\p{L}_\s\-?#=\/]/u','',$data->startingpage);
         
         $_SESSION['lang'] = !empty($language) ? $language : $default_locale;
         $_SESSION['timezone'] = !empty($timezone) ? $timezone : $default_timezone;
@@ -838,43 +839,114 @@ class User
         return $users;
     }
     /**
-     * saves user preference to local device
-     * currently uses cookies
+     * return true if input is not null
      *
-     * @param array $optIn
-     * @return array
+     * @param mixed $var
+     * @return boolean
+     */
+    private function is_not_null ($var) {
+        return !is_null($var);
+    }
+    
+    /**
+     * saves user preferences
+     *
+     * only allows certain preferences. inputs santized
+     * 
+     * @param int $userid
+     * @return string json with prefs 
      */
     public function set_preferences ($userid, $preference) {
-        $userid = (int) $userid;
-        // add to this array to allow more properties
-        $allowed_properties = array('deviceView');
+        // $this->log->info("\n\n--raw input---------".var_export($preference,1));
 
-        // overwrite the current settings with the new
-        $get_preferences = $this->get_preferences($userid);
-        $current_preferences = !empty($get_preferences['preferences']) ? $get_preferences['preferences'] : array();
-        // array_merge only works on top level assoc arrays (not nested)
-        $preferences = array_merge($current_preferences,$preference);
+        $userid = (int) $userid;
         
-        // set the sanitize features for each allowed property
-        $filters = array(
-            'deviceView'=>FILTER_VALIDATE_BOOLEAN
-        );
-        $options = array(
-            'deviceView'=>array(
-                'flags'=>FILTER_NULL_ON_FAILURE
-            )
-        );
-        // santize the passed preferences
-        $filtered = array(); // clean preferences
-        foreach($preferences as $key=>$value) {
-            if (in_array($key, $allowed_properties)) {
-                $filtered[$key] = filter_var($value, $filters[$key], $options[$key]);
-            }
+        // convert string (json) to array
+        if(is_string($preference)) {
+            $preference = json_decode($preference, true);
         }
 
-        // encode the sanitized preferences as a JSON string
-        $json = json_encode($filtered, JSON_NUMERIC_CHECK);
+        // Sanitize features for each allowed property
+        $args = array(
+            'deviceView' => array(
+                'filter' => FILTER_VALIDATE_BOOLEAN,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            ),
+            'bookmarks' => array(),
+            'path' => array(
+                'filter' => FILTER_SANITIZE_MAGIC_QUOTES,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            ),
+            'text' => array(
+                'filter' => FILTER_SANITIZE_ENCODED,
+                'flags'  => FILTER_NULL_ON_FAILURE
+            )
+        );
+        $args_keys = array_keys($args); // used to check for 'allowed' fields
 
+        // @see: https://www.php.net/manual/en/function.filter-var-array.php
+        $filtered = array();
+        foreach($preference as $key=>$value){
+            if(!is_array($value)) {
+                $value = html_entity_decode($value);
+                $value = json_decode($value, true);
+            }
+
+            if(in_array($key, $args_keys)) {
+                if (is_array($value)) {
+                    // if empty write empty value
+                    if(empty($value)){
+                        $filtered[$key] = array();
+                    }
+                    // sanitize array values
+                    foreach($value as $sub_key=>$sub_value) {
+                        if (is_array($sub_value)) {
+                            foreach($sub_value as $array_key=>$array_item) {
+                                $filter = $args[$array_key]['filter'];
+                                $flags = $args[$array_key]['flags'];
+                                // $filtered[$key][$sub_key] = filter_var($sub_value, $filter, $flags);
+                                $filtered[$key][$sub_key][$array_key] = $array_item;
+                            }
+                        }
+                    }
+                } else {
+                    // santize text values
+                    if (isset($args[$key])){
+                        if($value === "[]") {
+                            // nothing to filter if empty array
+                            $filtered[$key] = array();
+                        } else {
+                            // filter with above settings
+                            if(isset($args[$key]['filter'])) {
+                                if(!isset($args[$key]['flags'])) {
+                                    $filtered[$key] = filter_var($value, $args[$key]['filter']);
+                                } else {
+                                    $filtered[$key] = filter_var($value, $args[$key]['filter'], $args[$key]['flags']);
+                                }
+                            } else {
+                                $this->log->info("Input Error");
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // if all filtered values are NULL return error message
+        if(count($filtered) > 0 && count(array_filter($filtered, 'is_null')) === count($filtered)){
+            $this->log->info(sprintf("%s() Input invalid. String(%s) = %s",__function__,strlen(json_encode($preference,true)),substr(json_encode($preference,true),0, 40).'…'));
+            return false;
+        }
+  
+        // overwrite the current settings with the filtered ones
+        $current_preferences = (array) $this->get_preferences($userid);
+        // array_merge only works on top level assoc arrays (not nested)
+        $preferences = array_merge($current_preferences,$filtered);
+        // encode the sanitized preferences as a JSON string
+        $json = json_encode($preferences, JSON_NUMERIC_CHECK);
+
+        // return error if mysql update not successful
         $success = false;
         $error = '';
         if ($stmt = $this->mysqli->prepare("UPDATE users SET preferences = ? WHERE id = ?")) {
@@ -883,15 +955,15 @@ class User
             $error = $stmt->error;
             $stmt->close();
         } else {
-            $this->log->error("Error preparing SQL for user preferences");
+            $this->log->info("Error preparing SQL for user preferences");
             return false;
         }
         
         if(!$success){
-            $this->log->error("Error writing to user table");
+            $this->log->info("Error writing to user table");
             return false;
         } else {
-            $this->log->info("Succesfully updated user preferences");
+            $this->log->info(sprintf("%s() [OK]: %s", __function__, json_encode($preferences)));
             return true;
         }
     }
@@ -904,6 +976,8 @@ class User
      * @return array
      */
     public function get_preferences ($userid, $property = null) {
+        // $this->log->info('---get_preferences|$property|'.var_export(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS,1),true));
+
         $stmt = $this->mysqli->prepare("SELECT preferences FROM users WHERE id = ?");
         $preferences = false;
         if ($stmt) {
@@ -913,23 +987,52 @@ class User
             $success = $stmt->fetch();
             $stmt->close();
         }else{
+            $this->log->error('Please update database', $property);
             return array('success'=>false,'message'=>_('Please update database'));
         }
         $json = json_decode($preferences,1);
         // return data and/or success/error message
         if (!empty($json)) {
             // only return single property value if called with a $property param
-            if(!empty($property) && $json[$property]===false) {
-                return $json[$property];
-            }elseif(!empty($property) && !empty($json[$property])){
-                return $json[$property];
+            if(!empty($property)) {
+                if(isset($json[$property]) && $json[$property]===false) {
+                    return false;
+                }elseif(!empty($json[$property])){
+                    $this->log->info(sprintf("%s()|%s|String(%s) = %s",
+                        __function__,
+                        $property,
+                        strlen(json_encode($json[$property],true)),
+                        substr(json_encode($json[$property],true),0, 50).'…')
+                    );
+
+                    return $json[$property];
+                }
             } else {
+                $this->log->info(sprintf("%s()|%s|String(%s) = %s",
+                __function__,
+                $property,
+                strlen(json_encode($json,true)),
+                substr(json_encode($json,true),0, 50).'…')
+            );
                 return $json;
             }
         } else {
+            $this->log->info(sprintf('%s()|%s', __FUNCTION__, 'Empty User preferences'));
             return false;
-            // return array('success'=>true, 'message'=>_('Empty'));
         }
     }
+    /**
+     * get array of user bookmarks
+     *
+     * @param int $userid
+     * @return array
+     */
+    public function getUserBookmarks($userid) {
+        $response = $this->get_preferences($userid, 'bookmarks');
+        $response = json_encode($response,true);
+        $bookmarks = html_entity_decode($response);
+        return json_decode($bookmarks,true);
+    }
+
 }
 

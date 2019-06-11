@@ -10,6 +10,7 @@ class PHPFina implements engine_methods
     private $dir = "/var/lib/phpfina/";
     private $log;
     private $writebuffer = array();
+    private $lastvalue_cache = array();
     private $maxpadding = 3153600; // 1 year @ 10s
 
     /**
@@ -247,6 +248,104 @@ class PHPFina implements engine_methods
     }
 
     /**
+     * scale a portion of a feed
+     * added by Alexandre CUER - january 2019 
+     *
+     * @param integer $feedid The id of the feed
+     * @param integer $start unix time stamp in ms of the start of the data range
+     * @param integer $end unix time stamp in ms of the end of the data rage
+     * @param float $scale : numeric value for the scaling 
+    */
+    public function scalerange($id,$start,$end,$scale){
+        //echo("test on $scale not started");
+        //case1: NAN
+        if(preg_match("/^NAN$/i",$scale)){
+            $this->log->warn("scale_range() : going to erase data range with NAN");
+            $scale = NAN;
+        //case2: scaling value - possible to use a fraction
+        } else if(preg_match("/^(1\/|-1\/|-)?([0-9]+((\.|,)[0-9]+)?)$/",$scale,$a)){
+            $this->log->warn("scale_range() : being given a float scale parameter");
+            $scale = (float) $a[2];
+            if ($a[1]=="1/")$scale = 1/$scale;
+            else if ($a[1]=="-1/") $scale = -1/$scale;
+            else if ($a[1]=="-") $scale = -$scale;
+            //print_r($a);
+        //case3: absolute value
+        } else if(preg_match("/^abs\(x\)$/i",$scale)){
+            $this->log->warn("scale_range() : conversion to absolute values on the data range");
+            $scale="abs(x)"; 
+        } else return false;
+        
+        //echo("test finished>");
+        
+        //echo("<br>$scale");
+        //echo("<br>$start and $end");
+        $id = (int) $id;
+        $start = intval($start/1000);
+        $end = intval($end/1000);
+        //echo("<br>$start and $end");
+        
+        if(!$meta=$this->get_meta($id)){
+            $this->log->warn("scale_range() failed to fetch meta id = $id");
+            return false;
+        }
+        
+        $this->log->warn("scale_range() successfully fetched meta id = $id");
+        
+        //integrity checks
+        $start=floor($start/$meta->interval)*$meta->interval;
+        $end=floor($end/$meta->interval)*$meta->interval;
+        //debug
+        //echo("<br>$start and $end");
+        if($start>$end) {
+            $this->log->warn("scale_range() : start should not be greater than end");
+            return false;
+        }
+        if($start<$meta->start_time) $start=$meta->start_time;
+        $end_time=$this->lastvalue($id)['time'];
+        if($end>$end_time) $end=$end_time;
+        
+        //calculates address in dat file and number of values to write
+        $pos_start=4*floor(($start-$meta->start_time)/$meta->interval);
+        $pos_end=4*floor(($end-$meta->start_time)/$meta->interval);
+        $nbwrites=($pos_end-$pos_start)/4;
+        //echo("<br>$nbwrites");
+        
+        //open the dat file
+        $fh = fopen ($this->dir.$id.".dat","c+");
+        if (!$fh){
+            $this->log->warn("scale_range() : unable to open data file with id=$id");
+            return false;
+        }
+        $this->log->warn("scale_range() : going to write $nbwrites values from address $pos_start to $pos_end");
+        
+        //fetch the values to process
+        fseek($fh,$pos_start);
+        $values=unpack("f$nbwrites",fread($fh,4*$nbwrites));
+        //print_r($values);
+        
+        //create a buffer with the processed values
+        $buffer="";
+        for($i=1;$i<=$nbwrites;$i++) {
+            if($scale==NAN) $val=NAN;
+            else if($scale=="abs(x)") $val=abs($values[$i]);
+            else $val=$values[$i]*$scale;
+            $buffer.=pack("f",$val);
+        }
+        
+        //write the processed buffer to the dat file
+        fseek($fh,$pos_start);
+        if(!$written_bytes = fwrite($fh,$buffer)){
+            $this->log->warn("scale_range() : unable to write to the file with id=$id");
+            fclose($fh);
+            return false;
+        }
+        $this->log->warn("scale_range() : wrote $written_bytes bytes");
+        fclose($fh);
+        return $written_bytes;
+    }
+    
+    /**
      * Get array with last time and value from a feed
      *
      * @param integer $feedid The id of the feed
@@ -279,14 +378,8 @@ class PHPFina implements engine_methods
     }
 
     /**
-     * Return the data for the given timerange
+     * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-     * @param integer $skipmissing Skip null values from returned data (used by some engines)
-     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
     */
     public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
@@ -697,14 +790,12 @@ class PHPFina implements engine_methods
             if ($npadding>0) {
                 $padding_value = NAN;
                 if ($padding_mode!=null) {
-                    static $lastvalue_static_cache = array(); // Array to hold the cache
-                    if (!isset($lastvalue_static_cache[$feedid])) { // Not set, cache it from file data
+                    if (!isset($this->lastvalue_cache[$feedid])) { // Not set, cache it from file data
                         $lastvalue = $this->lastvalue($feedid);
-                        $lastvalue_static_cache[$feedid] = $lastvalue['value'];
+                        $this->lastvalue_cache[$feedid] = $lastvalue['value'];
                     }
-                    $div = ($value - $lastvalue_static_cache[$feedid]) / ($npadding+1);
-                    $padding_value = $lastvalue_static_cache[$feedid];
-                    $lastvalue_static_cache[$feedid] = $value; // Set static cache last value
+                    $div = ($value - $this->lastvalue_cache[$feedid]) / ($npadding+1);
+                    $padding_value = $this->lastvalue_cache[$feedid];
                 }
                 
                 for ($n=0; $n<$npadding; $n++)
@@ -716,6 +807,8 @@ class PHPFina implements engine_methods
             }
             
             $this->writebuffer[$feedid] .= pack("f",$value);
+            $this->lastvalue_cache[$feedid] = $value; // cache last value
+            
             //$this->log->info("post_bulk_prepare() ##### value saved $value");
         } else {
             // if data is in past, its not supported, could call update here to fix on file before continuing
@@ -884,9 +977,9 @@ class PHPFina implements engine_methods
         fclose($metafile);
         $meta->npoints = floor(filesize($dir.$id.".dat") / 4.0);
         
-        if ((($end-$start) / $meta->interval)>69120) {
-            return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
-        }
+        //if ((($end-$start) / $meta->interval)>69120) {
+        //    return $this->get_data($id,$start*1000,$end*1000,$interval,0,0);
+        //}
         
         if ($interval % $meta->interval !=0) return array('success'=>false, 'message'=>"Request interval is not an integer multiple of the layer interval");
         
@@ -941,7 +1034,7 @@ class PHPFina implements engine_methods
                 if ($n>0) $average = $sum / $n;
             }
             
-            if ($time>=$start && $time<$end) {
+            if ($time>=$start) {
                 $data[] = array($time*1000,$average);
             }
 
