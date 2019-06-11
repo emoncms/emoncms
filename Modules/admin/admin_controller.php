@@ -142,6 +142,8 @@ function admin_controller()
             {
                 $_SESSION['userid'] = intval(get('id'));
                 header("Location: ../user/view");
+                // stop any other code from running once http header sent
+                exit();
             }
             
             else if ($route->action == 'downloadlog')
@@ -380,12 +382,6 @@ function admin_controller()
                 }
                 return $data;
             }
-
-            else if ($route->action == 'setuser' && $session['write'])
-            {
-                $_SESSION['userid'] = intval(get('id'));
-                header("Location: ../user/view");
-            }
             
             else if ($route->action == 'setuserfeed' && $session['write'])
             {
@@ -515,12 +511,13 @@ function admin_controller()
             // user not admin level display login
             $log->error(sprintf('%s|%s',_('Not Admin'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
             $message = urlencode(_('Admin Authentication Required'));
+            
             $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
             return sprintf(
                 '<div class="alert alert-warn mt-3"><h4 class="mb-1">%s</h4>%s. <a href="%s" class="alert-link">%s</a></div>', 
                 _('Admin Authentication Required'),
                 _('Session timed out or user not Admin'),
-                $path.'user/login?'.sprintf("msg=%s&ref=%s",$message,$referrer),
+                sprintf("%suser/logout?msg=%s&ref=%s",$path, $message, $referrer),
                 _('Re-authenticate to see this page')
             );
         }

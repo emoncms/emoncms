@@ -31,12 +31,14 @@ function user_controller()
     {
         if ($route->action == 'login' && !$session['read']) {
             $route_query = array();
+            // pass through the referring path
             parse_str($route->query, $route_query );
             $msg = empty($route_query['msg']) ? get('msg') : $route_query['msg'];
             $ref = empty($route_query['ref']) ? get('ref') : $route_query['ref'];
             $message = filter_var(urldecode($msg), FILTER_SANITIZE_STRING);
-            $referrer = filter_var(base64_decode(urldecode($ref)), FILTER_SANITIZE_URL);
-
+            $referrer = filter_var(urldecode(base64_decode($ref)), FILTER_SANITIZE_URL);
+            
+            // load login template with the above parameters
             $result = view("Modules/user/login_block.php", array(
                 'allowusersregister'=>$allowusersregister,
                 'verify'=>array(),
@@ -47,10 +49,23 @@ function user_controller()
         }
         if ($route->action == 'view' && $session['write']) $result = view("Modules/user/profile/profile.php", array());
         
-        if ($route->action == 'logout' && $session['read']) {
+        if ($route->action == 'logout') {
+            // decode url parameters
+            $next = $path;
+            $message = filter_var(urldecode(get('msg')), FILTER_SANITIZE_STRING);
+            $referrer = filter_var(urldecode(base64_decode(get('ref'))), FILTER_SANITIZE_URL);
+            
+            // encode url parameters to pass through to login page
+            $msg = urlencode($message);
+            $ref = base64_encode(urlencode($referrer));
+            if(!empty($ref)) {
+                $next = sprintf('%s?msg=%s&ref=%s',$path, $msg, $ref);
+            }
+
             $user->logout(); 
             call_hook('on_logout',[]);
-            header('Location: '.$path);
+            header('Location: '.$next);
+            exit();
         }
         
         if ($route->action == 'verify' && $email_verification && !$session['read'] && isset($_GET['key'])) { 

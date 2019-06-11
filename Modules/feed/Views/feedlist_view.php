@@ -7,9 +7,8 @@
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-    var user = {};
-    var path = "<?php echo $path; ?>";
-    user.lang = "<?php echo $_SESSION['lang']; ?>";
+    var _user = {};
+    _user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
 <script src="<?php echo $path; ?>Lib/user_locale.js"></script>
 <script>
@@ -27,6 +26,41 @@ function format_time(time,format){
     return formatted_date;
 }
 </script>
+
+<script>
+// @todo: standardise these translations functions, also used in admin_main_view.php and input_view.php
+/**
+ * return object of gettext translated strings
+ *
+ * @return object
+ */
+function getTranslations(){
+    return {
+        'Tag': "<?php echo _('Tag') ?>",
+        'Feed ID': "<?php echo _('Feed ID') ?>",
+        'Feed Interval': "<?php echo _('Feed Interval') ?>",
+        'Feed Start Time': "<?php echo _('Feed Start Time') ?>"
+    }
+}
+/**
+ * wrapper for gettext like string replace function
+ */
+function _(str) {
+    return translate(str);
+}
+/**
+ * emulate the php gettext function for replacing php strings in js
+ */
+function translate(property) {
+    _strings = typeof translations === 'undefined' ? getTranslations() : translations;
+    if (_strings.hasOwnProperty(property)) {
+        return _strings[property];
+    } else {
+        return property;
+    }
+}
+</script>
+
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
@@ -443,16 +477,16 @@ function update() {
 
                 var title_lines = [feed.name,
                                   '-----------------------',
-                                  'Tag: '+ feed.tag,
-                                  'Feed ID: '+ feedid]
+                                  _('Tag')+': '+ feed.tag,
+                                  _('Feed ID')+': '+ feedid]
                 
                 if(feed.engine == 5) {
-                    title_lines.push("Feed Interval: "+(feed.interval||'')+'s')
+                    title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
                 }
                 
                 // show the start time if available
                 if(feed.start_time > 0) {
-                    title_lines.push("Feed Start Time: "+feed.start_time);
+                    title_lines.push(_('Feed Start Time')+": "+feed.start_time);
                     title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
                 }
 
@@ -1294,7 +1328,7 @@ $(".feed-download").click(function(){
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
 
-    if ($("#export-timezone-offset").val()=="") {
+    if ($("#export-timezone-offset").val()=="") {   
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
         $("#export-timezone-offset").val(parseInt(timezoneoffset));
