@@ -79,9 +79,9 @@ In the feedsettings section uncomment the datadir defenitions and set them to th
 
 On Windows '\' must be escaped with another '\' hence the '\\'
 
-In the 'Other settings' section, change the $log_filename location to:
+In the 'Other settings' section, change the $log_location location to:
 
-    $log_filename = dirname(FILE).'\\' . 'emoncms.log';
+    $log_location = dirname(FILE);
 
 #### 9) Thats it! Open emoncms in your browser
 
