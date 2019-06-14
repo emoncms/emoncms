@@ -1,7 +1,12 @@
 <!-- ---------------------------------------------------------------- -->
 <!-- GRID -> ROW -> COLUMN -> INPUT TEPLATE -->
 <script type="text/x-template" id="grid-input">
-    <input @input="input" :value="value" type="text" class="form-control border-0 m-0" @keyup.enter="enterPressed" :title="title">
+    <div class="control-group">
+        <div class="controls">
+            <input @input="input" :value="value" type="text" class="form-control border-0 m-0" @keyup.enter="enterPressed" :title="title">
+            <span class="help-inline d-none d-sm-block text-right"></span>
+        </div>
+    </div>
 </script>
 <script>
 /**
@@ -47,7 +52,7 @@ Vue.component("grid-input", {
             <button v-else-if="typeof entry[property] === 'boolean'"
                 @click="input"
                 class="btn btn-sm-md btn-small"
-                :class="{'btn-primary active': entry[property], 'btn-light': !entry[property]}"
+                :class="entry[property] ? buttonActive + ' active' : button"
                 :title = "title">
                 <svg class="icon"><use :xlink:href="column.icon"></use></svg>
             </button>
@@ -84,19 +89,60 @@ Vue.component("grid-input", {
 Vue.component("grid-column", {
     template: "#grid-column",
     props: ['property','entry','column'],
+    data: function() {
+        return {
+            button: this.$root.classes.button,
+            buttonActive: this.$root.classes.buttonActive
+        }
+    },
     computed: {
         title: function(){
             return '#' +
-            this.entry.id +
-            ' ' +
-            (this.column.label || this.property).toUpperCase() +
-            '\n' +
+            this.entry.id + ' ' +
+            (this.column.label || this.property).toUpperCase() + '\n' +
             (this.column.title || '')
         }
     },
     methods: {
-        input: function(event){
-            this.$root.$emit('event:handler',event,this.entry,this.property,event.target.value);
+        input: function(event) {
+            let vm = this
+            let container = event.target.parentNode.parentNode;
+            let feedback = event.target.parentNode.querySelector('.help-inline');
+            let success, error, always
+            // if input has a .help-inline sibling show user feedback
+            if (feedback) {
+                // reset feedback
+                container.classList.remove(vm.$root.classes.error, vm.$root.classes.warning, vm.$root.classes.success)
+                feedback.innerText = '';
+                let value = event.target.value;
+                let changed = this.entry[this.property] !== value;
+                let timeout_key = this.entry.id+'_'+this.property;
+                let timeout = vm.$root.timeouts[timeout_key];
+                let timeout_reset = vm.$root.timeouts[timeout_key+'_reset'];
+
+                window.clearTimeout(timeout);
+                success = function() {
+                    feedback.classList.add(vm.$root.classes.fade)
+                    container.classList.add(vm.$root.classes.success);
+                    feedback.innerText = (vm.column.messages && vm.column.messages.success) ? vm.column.messages.success: ''
+                }
+                error = function(xhr, message) {
+                    if(!changed) {
+                        window.clearTimeout(timeout);
+                    }
+                }
+                always = function() {
+                    vm.$root.timeouts[timeout_key] = window.setTimeout(function() {
+                        window.clearTimeout(timeout_reset);
+                        container.classList.remove(vm.$root.classes.error, vm.$root.classes.warning, vm.$root.$root.classes.success)
+                        feedback.innerText = '';
+                        feedback.classList.remove(vm.$root.classes.fade)
+                    }, vm.$root.wait * 2.3)
+                }
+            }
+            
+            // pass on success,error and always callbacks to gridColumn item handler() function
+            vm.$root.$emit('event:handler',event,this.entry,this.property,event.target.value,success,error,always);
         }
     }
 })
@@ -141,7 +187,7 @@ Vue.component("grid-row", {
 <!-- DATA GRID TEMPLATE -->
 <script type="text/x-template" id="grid-data">
     <table class="table table-sm table-hover table-condensed">
-        <caption class="text-muted muted text-left mt-3">{{ caption }}</caption>
+        <caption class="text-muted muted text-left mt-3">{{ status.title }}</caption>
         <thead>
             <tr>
                 <th v-for="(column, key) in columns" v-if="column.sort"
@@ -180,7 +226,7 @@ Vue.component("grid-row", {
 */
     Vue.component("grid-data", {
         template: "#grid-data",
-        props: ['gridData','columns','filterKey','caption'],
+        props: ['gridData','columns','filterKey','status'],
         data: function() {
             var sortOrders = {};
             Object.keys(this.columns).forEach(function(key) {
