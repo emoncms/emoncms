@@ -1,115 +1,543 @@
+
 <!doctype html>
-<?php
-/*
-  All Emoncms code is released under the GNU Affero General Public License.
-  See COPYRIGHT.txt and LICENSE.txt.
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  ---------------------------------------------------------------------
-  Emoncms - open source energy visualisation
-  Part of the OpenEnergyMonitor project:
-  http://openenergymonitor.org
-*/
-global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
+    <title>Vue.js dashboard list</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <style>
+    svg.icon {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        stroke-width: 0;
+        stroke: currentColor;
+        fill: currentColor;
+        vertical-align: -0.15em;
+    }
+    .arrow {
+        display: inline-block;
+        vertical-align: middle;
+        width: 0;
+        height: 0;
+        margin-left: 5px;
+        opacity: 0.66;
+    }
 
-$v = 7;
+    .arrow.asc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-bottom: 4px solid #000;
+    }
 
-if (!is_dir("Theme/".$theme)) {
-    $theme = "basic";
-}
-if (!in_array($themecolor, ["blue", "sun", "standard"])) {
-    $themecolor = "standard";
-}
-?>
+    .arrow.dsc {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid #000;
+    }
+    div:empty{
+        width: 5em;
+        height: 1em;
+    }
+    .table .form-control{
+        cursor: pointer;
+        border: 1px solid transparent;
+    }
+    .table .form-control:focus{
+        border-color: blue;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.03);
+    }
+    table td{vertical-align: middle!important;}
+    td:nth-child(n+4):nth-child(-n+9){
+        text-align: center;
+        width: 3rem;
+    }
+    th:nth-child(n+4):nth-child(-n+9) .d-flex{
+        justify-content: center !important;
+    }
+    [v-cloak] { display: none; }
+    </style>
+  </head>
+  <body>
 
-<html>
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emoncms - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
-    <link rel="shortcut icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/<?php echo $favicon; ?>" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/ios_load.png">
-    <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
 
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="<?php echo $path; ?>Theme/basic/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-    
-    <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
-    <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
+    <!-- MAIN TEMPLATE CONTAINER -->
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
+    <div class="container">
+        <div id="app">
+            <div class="alert" :class="{'alert-warning':true}" v-if="status.message" v-cloak>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="alert-heading" if="status.title">{{ status.title }}</h4>
+                {{ status.message }}
+            </div>
+            <div class="d-flex justify-content-between">
+                <h2><?php echo _('Dashboards') ?> <svg class="icon text-info"><use xlink:href="#icon-dashboard"></use></svg> <small v-if="gridData.length === 0">
+                    <a href="<?php echo $path ?>" class="btn btn-success" :title="_('Reload') + '&hellip;'">
+                    <svg class="icon"><use xlink:href="#icon-spinner11"></use></svg>
+                    </a>
+                </small></h2>
+                <form id="search" class="form-inline position-relative">
+                    <div class="form-group">
+                        <input id="search-box" name="query" v-model="searchQuery" type="search" class="form-control mb-0" aria-describedby="searchHelp" placeholder="<?php echo _('Search') ?>" title="<?php echo _('Search the data by any column') ?>">
+                        <button id="searchclear" @click.prevent="searchQuery = ''"style="right:0" class="btn btn-link position-absolute" :class="{'d-none':searchQuery.length===0}"><svg class="icon"><use xlink:href="#icon-close"></use></svg></button>
+                        <small id="searchHelp" class="form-text text-muted sr-only"><?php echo _('Search the data by any column') ?>.</small>
+                    </div>
+                </form>
+            </div>
 
+            <!-- custom component to display grid data-->
+            <grid-data :grid-data="gridData"
+              :columns="gridColumns"
+              :filter-key="searchQuery"
+              :caption="status.title"
+              @update:total="status=arguments[0]"
+            >
+            </grid-data>
+        </div>
+
+    </div><!-- eof .container -->
+
+    <!-- END MAIN TEMPLATE CONTAINER ----------------------------------------------------------------  -->
+
+
+
+
+    <script src="/emoncms/Modules/config/vue.js"></script>
+    <script src="/emoncms/Lib/jquery-1.11.3.min.js"></script>
+    <script src="/emoncms/Lib/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/emoncms/Modules/dashboard/dashboard.js"></script>
+    <script src="/emoncms/Lib/misc/gettext.js"></script>
     <script>
-        window.onerror = function(msg, source, lineno, colno, error) {
-            // return false;
-            if (msg.toLowerCase().indexOf("script error") > -1) {
-                alert('Script Error: See Browser Console for Detail');
+        /**
+         * return plain js object with gettext translated strings
+         * @return object
+         */
+        function getTranslations(){
+            return {
+                'Error': "<?php echo _('Error') ?>",
+                'Error loading': "<?php echo _('Error loading') ?>",
+                'Found %s entries': "<?php echo _('Found %s entries') ?>",
+                'JS Error': "<?php echo _('JS Error') ?>",
+                'Reload': "<?php echo _('Reload') ?>",
+                'Loading': "<?php echo _('Loading') ?>…",
+                'Saving': "<?php echo _('Saving') ?>…",
+                'Label this dashboard with a name': "<?php echo _('Label this dashboard with a name') ?>",
+                'Short title to use in URL.\neg \"roof-solar\"': "<?php echo _('Short title to use in URL.\neg \"roof-solar\"') ?>",
+                'Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"': "<?php echo _('Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"') ?>",
+                'Allow this Dashboard to be viewed by anyone': "<?php echo _('Allow this Dashboard to be viewed by anyone') ?>",
+                'Clone the layout of this dashboard to a new Dashboard': "<?php echo _('Clone the layout of this dashboard to a new Dashboard') ?>",
+                'Edit this dashboard layout': "<?php echo _('Edit this dashboard layout') ?>",
+                'Delete this dashboard': "<?php echo _('Delete this dashboard') ?>…",
+                'View this dashboard': "<?php echo _('View this dashboard') ?>…",
+                'Edit Layout': "<?php echo _('Edit Layout') ?>"
             }
-            else {
-                var messages = [
-                    'EmonCMS Error',
-                    '-------------',
-                    'Message: ' + msg,
-                    'Route: ' + source.replace('<?php echo $path; ?>',''),
-                    'Line: ' + lineno,
-                    'Column: ' + colno
-                ];
-                if (Object.keys(error).length > 0) {
-                    messages.push('Error: ' + JSON.stringify(error));
-                }
-                alert(messages.join("\n"));
-            }
-            return true; // true == prevents the firing of the default event handler.
         }
-        var path = "<?php echo $path ?>";
     </script>
-</head>
-<body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
-    <div id="wrap">
 
-        <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
-            <?php echo $mainmenu; ?>
-        </div>
+    <!-- START GRIDJS INCLUDE ---------------------------------------------------------------- -->
+    <?php
+        // @todo: include these with a webpack build script
+        $path = '/var/www/html/emoncms/';
+        include_once($path.'Lib/gridjs/grid.html');
+    ?>
+    <!-- END GRIDJS INCLUDE ---------------------------------------------------------------- -->
 
-        <?php if (isset($submenu) && ($submenu)) { ?>
-            <div id="submenu">
-                <div class="container">
-                    <?php echo $submenu; ?>
-                </div>
-            </div>
-            <br>
-        <?php } ?>
-        
-        <div id="sidebar" class="bg-dark text-light">
-            <div class="sidebar-content d-flex flex-column">
-                <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
-            </div>
-        </div>
+    
 
-        <?php
-        $contentContainerClasses[] = 'content-container';
-        if ($fullwidth && $route->controller=="dashboard") { 
-            $contentContainerClasses[] = '';
-        } else if ($fullwidth) { 
-            $contentContainerClasses[] = 'container-fluid';
-        } else { 
-            $contentContainerClasses[] = 'container';
-        }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
-            <?php echo $content; ?>
-        </main>
-        
-    </div><!-- eof #wrap -->
+<!-- PAGE SPECIFIC SCRIPTS -->
+<script>
+    // remove this when integrated into emoncms path already a global variable
+    var path = "http://localhost/emoncms/";
+    var _DEBUG_ = false;
+    Vue.config.productionTip = false;
+    // filter available to all compenonets
+    Vue.filter('capitalize', function(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+    });
+    var _debug = {
+        log: function(){
+            if(typeof _DEBUG_ !== 'undefined' && _DEBUG_) {
+                console.trace.apply(this,arguments);
+            }
+        },
+        error: function(){
+            if(typeof _DEBUG_ !== 'undefined' && _DEBUG_) {
+                console.error('Error')
+                console.trace.apply(this, arguments);
+            }
+        }
+    }
+    var app = new Vue({
+        el: "#app",
+        data: {
+            wait: 800, // time to wait before sending data
+            statusData: {}, // store app status information
+            searchQuery: "", // search string
+            gridData: [], // array of grid items
+            gridColumns: { // each gridData[] item property has a matching gridColumns property name
+                id: {
+                    sort: true
+                },
+                name: {
+                    sort: true,
+                    input: true,
+                    title: _('Label this dashboard with a name')
+                },
+                alias: {
+                    sort: true,
+                    input: true,
+                    title: _('Short title to use in URL.\neg \"roof-solar\"')
+                },
+                main: {
+                    sort: true,
+                    icon: '#icon-star_border',
+                    label: _('default'),
+                    title: _('Adds a \"Default Dashboard\" bookmark in the sidebar.\nAlso visible at \"dashboard/view\"')
+                },
+                public: {
+                    sort: true,
+                    icon: '#icon-earth',
+                    title: _('Allow this Dashboard to be viewed by anyone')
+                },
+                clone: {
+                    icon: '#icon-content_copy',
+                    noHeader: true,
+                    title: _('Clone the layout of this dashboard to a new Dashboard')
+                },
+                edit: {
+                    icon: '#icon-cog',
+                    noHeader: true,
+                    link: true,
+                    label: _('Edit Layout'),
+                    title: _('Edit this dashboard layout')
+                },
+                delete: {
+                    icon: '#icon-bin',
+                    noHeader: true,
+                    title: _('Delete this dashboard')
+                },
+                view: {
+                    icon: '#icon-arrow_forward',
+                    noHeader: true,
+                    link: true,
+                    title: _('View this dashboard')
+                }
+            }
 
-    <div id="footer">
-        <?php echo _('Powered by '); ?><a href="http://openenergymonitor.org">OpenEnergyMonitor.org</a>
-        <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
-    </div>
+        },
+        watch: {
+            gridData: {
+                handler: function(val){
+                    _debug.log('#app:gridData::changed')
+                    this.Notify(val.length);
+                },
+                deep: true
+            }
+        },
+        computed: {
+            status: {
+                get: function() {
+                    return this.statusData
+                },
+                set: function(value){
+                    let status = JSON.parse(JSON.stringify(this.statusData))
+                    status.title = ''
+                    status.message = ''
+                    this.statusData = status;
 
-    <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+                    switch (typeof value) {
+                        case 'object':
+                            this.statusData = value
+                            break;
+                        case 'number':
+                            this.statusData.total = value
+                            this.statusData.title =  _('Found %s entries').replace('%s', value)
+                            break;
+                        case 'string':
+                            this.statusData.title = value
+                            break;
+                    }
+                }
+            }
+        },
+        mounted: function () {
+            // on load request server data
+            let vm = this;
+            vm.Notify(_('Loading'), true)
+            dashboard_v2.list().then(function(data){
+                // handle success - populate gridData[] array
+                // add urls for edit and view
+                data.forEach(function(v,i){
+                    let id = data[i].id;
+                    data[i].view = path + 'dashboard/view?id=' + id;
+                    data[i].edit = path + 'dashboard/edit?id=' + id;
+                });
+                vm.gridData = data;
+
+            }, function(xhr,message){
+                vm.Notify = ({
+                    success: false,
+                    title: _('Error loading.'),
+                    message: message,
+                    total: 0,
+                    url: this.url
+                }, true)
+            })
+            this._timeouts = {}
+        },
+        created: function () {
+            // pass on root event handler to relevant function
+            this.$root.$on('event:handler', function(event, item, property, value, success, error) {
+                // set the global dataStore
+                if (typeof success === 'function') {
+                    success = function(){
+                        item[property] = value;
+                        success();
+                    }
+                } else {
+                    success = function() {
+                        item[property] = value;
+                    }
+                }
+                // pass on the
+                this.Handler(event, item, property, value, success, error);
+            })
+        },
+        methods : {
+            // ---------------------------------------
+            // METHOD NAME MATCHES gridColumns{} KEYS (aka field names):
+            // ---------------------------------------
+
+            /**
+             * update the name property of an individual entry
+             * pass success() or error() to ajax promise to execute on finish
+             *
+             * @event event:handler
+             *
+             * @param Event event
+             * @param Object item
+             * @param String property
+             * @param mixed value
+             * @param Function success
+             * @param Function error
+             * @return void
+             *
+             */
+            name: function(event, item, property, value, success, error){
+                try {
+                    this.Set_field_delayed(event, item, property, value, success, error)
+                } catch (error) {
+                    _debug.error (_('JS Error'), field, error, arguments);
+                }
+            },
+            alias: function(event, item, property, value, success, error){
+                try {
+                    this.Set_field_delayed(event, item, property, value, success, error)
+                } catch (error) {
+                    _debug.error (_('JS Error'), field, error, arguments);
+                }
+            },
+            main: function(event, item){
+                // "..there can be only one..!" -Highlander '86
+                try {
+                    var vm = this;
+                    var id = item.id
+                    var field = 'main';
+                    var value = !item[field];
+
+                    // only modify view on success
+                    this.Set_field(event, item, id, field, value, function() {
+                        // remove all default entries
+                        vm.gridData.forEach(function(row, i){
+                            row[field] = false;
+                        })
+                        // set this one to default
+                        item[field] = value;
+                    });
+
+                } catch (error) {
+                    _debug.error (_('JS Error'), field, error, arguments);
+                }
+            },
+            public: function(event, item){
+                // toggle public status
+                try {
+                    var id = item.id
+                    var field = 'public';
+                    var value = !item[field];
+                    this.Set_field(event, item, id, field, value, function() {
+                        item[field] = value;
+                    });
+                } catch (error) {
+                    _debug.error (_('JS Error'), field, error, arguments);
+                }
+            },
+            clone: function(event, item){
+                // clone item
+                try {
+                    let clone = Vue.util.extend({}, item);
+                    let self = this;
+                    dashboard_v2.clone(item.id).then(
+                    function(insert_id){
+                        clone.id = insert_id;
+                        clone.name += ' clone';
+                        clone.main = false;
+                        clone.public = false;
+                        clone.alias = '';
+                        self.gridData.push(clone);
+                    }, function(){
+                        // @todo: handle error
+                    })
+                } catch (error) {
+                    _debug.error (_('JS Error'), field, error, arguments);
+                }
+            },
+            delete: function(event, item){
+                // delete item
+                try {
+                    let title = _('Delete "%s"').replace('%s',item.name);
+                    let question = [
+                        title,
+                        _("Deleting a dashboard is permanent"),
+                        "\n",
+                        _("Are you sure you want to delete ?")
+                    ]
+                    let max = 0;
+                    question.forEach(function(item){
+                        if (item.length > max) max = item.length;
+                    })
+                    question.splice(1,0,'―'.repeat(max/1.9));
+                    let confirmation = question.join("\n");
+
+                    if(confirm(confirmation)){
+                        var self = this;
+                        dashboard_v2.remove(item.id)
+                        .then(function(){
+                            var index = self.gridData.indexOf(item)
+                            self.gridData.splice(index, 1);
+                        })
+                    }
+                } catch (error) {
+                    _debug.error (_('JS Error'), error, arguments);
+                }
+            },
+            // ----------
+            // UTILITIES
+            // ----------
+
+            /**
+             * CALL CUSTOM FUNCTION FOR EACH FIELD
+             * called by inputs and clicks
+             *
+             * @param Event event
+             * @param Object item
+             * @param String property
+             * @param mixed value
+             * @param Function success
+             * @param Function error
+             * @return void
+             */
+            Handler: function(event, item, property, value, success, error) {
+                if(typeof this[property] === 'function') {
+                    // call the fields' function, passing the dataGrid[] item that matches the index
+                    this[property](event, item, property, value, success, error);
+                }
+            },
+            /**
+             * send data to server. runs success() and error() as required
+             *
+             * @param Event event
+             * @param Object item
+             * @param String property
+             * @param mixed value
+             * @param Function success
+             * @param Function error
+             * @return void
+             */
+            Set_field: function(event, item, id, field, value, success, error) {
+                // sanitize input
+                // @todo: more work could be done to check all the possible inputs
+                switch(typeof value) {
+                    case 'string':
+                        _value = value.trim();
+                        break;
+                    default:
+                        _value = value;
+                }
+                _debug.log('#app:Set_field()', {item, id, field, _value})
+
+                // set the dashboard value calling success() or error() on completion
+                dashboard_v2.set(field, id, _value).then(success, error);
+            },
+            /**
+             * wait for pause in user input before sending data to server
+             */
+            Set_field_delayed: function(event, item, property, value, success, error){
+                var vm = this;
+                var timeout_key = item.id+'_'+property;
+                window.clearTimeout(this._timeouts[timeout_key]);
+                this._timeouts[timeout_key] = window.setTimeout( function() {
+                    // call set field with parameters and callback functions
+                    // for succesfull ajax transaction or error
+                    // for fast servers you dont need this, as the save happens before you see it
+                    saving = window.setTimeout(function(){
+                        vm.Notify({
+                            'title': _('Saving')
+                        }, true)
+                    }, vm.wait)
+
+                    vm.Set_field(event, item, item.id, property, value,
+                        // on success
+                        function(data, message, xhr){
+                            // on succesful save ...
+                            window.clearTimeout(saving)
+                            // display success message to user
+                            _debug.log (_('SUCCESS'), message, arguments);
+                            vm.Notify(_('Saved'))
+                            if (typeof success == 'function') {
+                                success(event)
+                            }
+                        },
+                        // on error ...
+                        function(xhr, message) {
+                            // display error message to user
+                            vm.Notify(message)
+                            if (typeof error == 'function') {
+                                error(event)
+                            }
+                            // pass error to catch statement
+                            throw ['500_'+property, message].join(' ');
+                        }
+                    )
+                }, this.wait);
+            },
+            /**
+             * display feedback to user
+             */
+            Notify: function(status, persist) {
+                // display message to user
+                this.status = status
+                vm = this
+                // stop previous delay
+                window.clearTimeout(this.statusTimeout);
+                if(!persist) {
+                    // wait until status is reset
+                    this.statusTimeout = window.setTimeout(function(){
+                        // reset to show the total
+                        vm.status = vm.status.total;
+                    }, this.wait * 3);
+                }
+            }
+        }
+    });
+
+</script>
 
 <!-- ICONS --------------------------------------------- -->
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -289,6 +717,5 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         </symbol>
     </defs>
 </svg>
-
-</body>
+  </body>
 </html>

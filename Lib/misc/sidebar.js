@@ -12,7 +12,7 @@ $(function(){
             show_sidebar();
         }
     });
-
+    
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event){
         event.preventDefault();
@@ -169,7 +169,9 @@ $(function(){
         var $button = $(this);
         var $icon = $button.find('.icon');
         var remove = $icon.is('.star');
-        var currentTitle = $('h2').first().text();
+        var currentTitle = $('#sidebar .sidebar-menu li.active a').first().text();
+        if(currentTitle.length==0) currentTitle = $('h1').first().text();
+        if(currentTitle.length==0) currentTitle = $('h2').first().text();
         if(currentTitle.length==0) currentTitle = $('h3').first().text();
         if(currentTitle.length==0) currentTitle = document.title;
         if(getQueryStringValue("name")) {
