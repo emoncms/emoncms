@@ -33,6 +33,7 @@ body.app #wrap {
 .text-primary{color:#0699fa!important}
 .text-warning{color:#dccc1f!important}
 .text-success{color:#89ae65!important}
+.text-secondary{color:#6c757d!important}
 .text-tertiary{color:#b7aa1f!important}
 .text-quaternary {color: #fb7b50!important}
 .text-danger{color:#d52e2e!important}
@@ -187,6 +188,11 @@ body.app #wrap {
     -ms-flex-pack: start !important;
     justify-content: flex-start !important;
 }
+.justify-content-around {
+    -ms-flex-pack: distribute !important;
+    justify-content: space-around !important;
+}
+
 .align-items-center {
     align-items: center !important;
 }
@@ -313,6 +319,11 @@ ul.nav > li > [disabled] {
     flex: 0 0 16.666667%;
     max-width: 16.666667%;
 }
+.col-3 {
+    -ms-flex: 0 0 25%;
+    flex: 0 0 25%;
+    max-width: 25%;
+}
 .col-4 {
     -ms-flex: 0 0 33.333333%;
     flex: 0 0 33.333333%;
@@ -376,8 +387,8 @@ ul.nav > li > [disabled] {
     .d-sm-inline-block {
         display: inline-block!important;
     }
-    .d-sm-inline-block {
-        display: inline-block!important;
+    .d-sm-block {
+        display: block!important;
     }
     .col-sm-2 {
         -ms-flex: 0 0 16.666667%;
