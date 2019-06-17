@@ -14,29 +14,13 @@ if (!isset($session['profile'])) {
 ?>
 <?php
 // if not logged in show login button top right
-$nav_layout = $session['read'] ? 'justify-content-between': 'justify-content-end';
+$nav_layout = 'justify-content-between';
 ?>
 <div class="navbar-inner bg-primary text-dark d-flex flex-nowrap <?php echo $nav_layout ?>">
-
-<?php
-if ($session['read']) {
-?>
 
 <ul id="left-nav" class="nav mr-0 d-flex">
 
 <?php
-// $menu['tabs'][] = array(
-//     'title'=> _("Open/Close Sidebar"),
-//     'id' => 'sidebar-toggle',
-//     'href' => '#',
-//     'icon' => 'icon-menu',
-//     'order' => -1,
-//     'li_style' => 'width:0; overflow:hidden; visibility:hidden',
-//     'data'=> array(
-//         'toggle' => 'slide-collapse',
-//         'target' => '#sidebar'
-//     )
-// );
 
 // top level menu icons (MAIN MENU)
 if(!empty($menu['tabs'])) {
@@ -57,8 +41,6 @@ if(!empty($menu['left'])): foreach ($menu['left'] as $item):
 endforeach; endif;
 ?>
 </ul>
-
-<?php } ?>
 
 <ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
 

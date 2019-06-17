@@ -1,7 +1,7 @@
 <?php
 
 global $session;
-if($session['userid']>0){
+if($session['read']){
 
     $menu['right'][] = array(
         'text' => _("Add Bookmark"),
