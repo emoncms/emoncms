@@ -35,15 +35,11 @@ function feed_controller()
 
         textdomain("messages");
         if ($route->action == "list" && $session['write']) {
-            $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
-
-            if (isset($ui_version_2) && $ui_version_2) {
-                return view("Modules/feed/Views/feedlist_view_v2.php",array());
-            } else {
-                return view("Modules/feed/Views/feedlist_view.php",array());
-            }
+            return view("Modules/feed/Views/feedlist_view.php");
         }
         else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());
+        else if (!$session['read']) return ''; // empty strings force user back to login
+        else return EMPTY_ROUTE; // this string displays error
     }
 
     else if ($route->format == 'json')
@@ -274,5 +270,5 @@ function feed_controller()
         }
     }
 
-    return array('content'=>'#UNDEFINED#');
+    return array('content'=>EMPTY_ROUTE);
 }

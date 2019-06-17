@@ -116,12 +116,7 @@ function input_controller()
         else if ($route->action == 'view') {
             $route->format = "html";
             textdomain("messages");
-            $ui_version_2 = $user->get_preferences($session['userid'], 'deviceView');
-            if ($device && isset($ui_version_2) && $ui_version_2) {
-                return view("Modules/input/Views/device_view.php", array());
-            } else {
-                return view("Modules/input/Views/input_view.php", array());
-            }
+            return view("Modules/input/Views/input_view.php");
         }    
         else if ($device && $route->action == 'schedule') {
             $route->format = "html";

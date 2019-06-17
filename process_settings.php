@@ -72,6 +72,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
     if (!isset($log_level)) $log_level=2;  //default to warning log level
+    if (!isset($log_location)) $log_location = "/var/log/emoncms";
 
     if (!isset($redis_enabled)) $redis_enabled = false;
     if ($redis_enabled) {

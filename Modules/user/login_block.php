@@ -23,7 +23,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
   }
   
 </style>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=2"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js?v=<?php echo $v ?>"></script>
 <br>
 
 
@@ -101,6 +101,8 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                 <a id="passwordreset-link-cancel" href="#"><?php echo _('login'); ?></a>
             </div>
             <div id="passwordresetmessage"></div>
+            <p class="pt-1 mb-0"><small id="message" class="muted"><?php echo $message ?></small></p>
+            <input name="referrer" type="hidden" value="<?php echo $referrer ?>">
         </div>
     </div>
   </div>
@@ -109,7 +111,6 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 <script>
 "use strict";
 
-var path = "<?php echo $path; ?>";
 var verify = <?php echo json_encode($verify); ?>;
 var register_open = false;
 $("body").addClass("body-login");
@@ -193,9 +194,10 @@ $("#loginmessage").on("click", ".resend-verify", function(){ resend_verify(); })
 function login(){
     var username = $("input[name='username']").val();
     var password = $("input[name='password']").val();
+    var referrer = $("input[name='referrer']").val();
     var rememberme = 0; if ($("#rememberme").is(":checked")) rememberme = 1;
 
-    var result = user.login(username,password,rememberme);
+    var result = user.login(username,password,rememberme,referrer);
 
     if (result.success==undefined) {
         $("#loginmessage").html("<div class='alert alert-error'>"+result+"</div>");
@@ -204,7 +206,8 @@ function login(){
     } else {
         if (result.success)
         {
-            window.location.href = path+result.startingpage;
+            var href = result.hasOwnProperty('startingpage') ? result.startingpage: path; 
+            window.location.href = href;
             return true;
         }
         else

@@ -144,7 +144,7 @@ function table_draw() {
       } else {
           out += "<tr>";
       }
-      out += "<td><a href='../admin/setuser.json?id="+users[z].id+"'>"+users[z].id+"</a></td>";
+      out += "<td><a href='../admin/setuser?id="+users[z].id+"'>"+users[z].id+"</a></td>";
       out += "<td>"+users[z].username+"</td>";
       out += "<td>"+users[z].email+"</td>";
       out += "<td>"+users[z].feeds+"</td>";

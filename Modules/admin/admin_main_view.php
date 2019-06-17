@@ -1,529 +1,436 @@
-<?php global $path, $emoncms_version, $allow_emonpi_admin, $log_enabled, $log_filename, $mysqli, $redis_enabled, $redis, $mqtt_enabled, $feed_settings, $shutdownPi, $admin_show_update;
+<?php
+    /**
+     * View specific functions
+     *
+     */
 
-  // Retrieve server information
-  $system = system_information();
-
-  /**
-   * get running status of service
-   *
-   * @param string $name
-   * @return mixed true == running | false == stopped | null == not installed
-   */
-  function getServiceStatus($name) {
-    @exec('systemctl show '.$name.' | grep State', $exec);
-    $status = array();
-    
-    foreach ($exec as $line) {
-        $parts = explode('=',$line);
-        $status[$parts[0]] = $parts[1];
+    /**
+     * Shutdown button
+     */
+    function ShutdownBtn(){
+        return '<button id="haltPi" class="btn btn-danger btn-small">'._('Shutdown').'</button>';
     }
-    if (isset($status['LoadState']) && $status['LoadState'] === 'not-found') {
-        $return = null;
-    } else if (isset($status["ActiveState"]) && isset($status["SubState"])) {
-        return array(
-            'ActiveState' => $status["ActiveState"],
-            'SubState' => $status["SubState"]
-        );
-    } else {
-       $return = null;
+    /**
+     * Reboot button
+     */
+    function RebootBtn(){
+        return '<button id="rebootPi" class="btn btn-warning btn-small mr-1">'._('Reboot').'</button>';
     }
-    return $return;
-  }
 
-  function system_information() {
-    global $mysqli, $server, $redis_server, $mqtt_server;
-    $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
-    $db = $result->fetch_array();
-
-    @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-
-    $services = array();
-    $services['emonhub'] = getServiceStatus('emonhub.service');
-    $services['mqtt_input'] = getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
-    $services['emoncms_mqtt'] = getServiceStatus('emoncms_mqtt.service');
-    $services['feedwriter'] = getServiceStatus('feedwriter.service');
-    $services['service-runner'] = getServiceStatus('service-runner.service');
-    $services['emonPiLCD'] = getServiceStatus('emonPiLCD.service');
-    $services['redis-server'] = getServiceStatus('redis-server.service');
-    $services['mosquitto'] = getServiceStatus('mosquitto.service');
-
-    //@exec("hostname -I", $ip); $ip = $ip[0];
-    $meminfo = false;
-    if (@is_readable('/proc/meminfo')) {
-      $data = explode("\n", file_get_contents("/proc/meminfo"));
-      $meminfo = array();
-      foreach ($data as $line) {
-          if (strpos($line, ':') !== false) {
-              list($key, $val) = explode(":", $line);
-              $meminfo[$key] = 1024 * floatval( trim( str_replace( ' kB', '', $val ) ) );
-          }
-      }
-    }
-    $emoncms_modules = "";
-    $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
-    $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
-    foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
-        if ($emoncms_modules != "")  $emoncms_modules .= "&nbsp;|&nbsp;";
-        if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
-          $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
-          $jsonAppName = $json->{'name'};
-          $jsonVersion = $json->{'version'};
-          if ($jsonAppName) {
-            $emoncmsModuleFolder = $jsonAppName;
-          }
-          if ($jsonVersion) {
-            $emoncmsModuleFolder = $emoncmsModuleFolder." v".$jsonVersion;
-          }
+    /**
+     * output a progress bar with the labels and summery below
+     *
+     * @param number $width
+     * @param string $label
+     * @param array $summary key/value pairs to show below the progress bar
+     * @return string
+     */
+    function bar($width,$label,$summary) {
+        $pattern = <<<eot
+        <h5 class="m-0">%s</h5>
+        <div class="progress progress-info mb-0">
+            <div class="bar" style="width: %s%%"></div>
+        </div>
+eot;
+        $markup = sprintf($pattern, $label, $width);
+        $markup .= '<dl class="inline">';
+        foreach($summary as $key=>$value) {
+            $markup .= "<dt class=\"pl-0\">$key</dt><dd>$value</dd>";
         }
-        $emoncms_modules .=  str_replace($emoncmsModulesPath."/", '', $emoncmsModuleFolder);
+        $markup .= '</dl>';
+        return $markup;
     }
-    return array('date' => date('Y-m-d H:i:s T'),
-                 'system' => $system,
-                 'kernel' => $kernel,
-                 'host' => $host,
-                 'ip' => server('SERVER_ADDR'),
-                 'uptime' => @exec('uptime'),
-                 'http_server' => $_SERVER['SERVER_SOFTWARE'],
-                 'php' => PHP_VERSION,
-                 'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                 'db_server' => $server,
-                 'db_ip' => gethostbyname($server),
-                 'db_version' => $mysqli->server_info,
-                 'db_stat' => $mysqli->stat(),
-                 'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
+    /**
+     * return html for single admin page title/value row
+     * @param string $title shown as the row title
+     * @param string $value shown as the row value
+     * @param string $title_css list of css classes to add to the title container
+     * @param string $value_css list of css classes to add to the value container
+     */
+    function row($title, $value, $title_css = '', $value_css='') {
+        return <<<listItem
+        <dt class="col-sm-2 col-4 text-truncate {$title_css}">{$title}</dt>
+        <dd class="col-sm-10 col-8 border-box px-1 {$value_css}">{$value}</dd>
+listItem;
+    }
+?>
+<link rel="stylesheet" href="<?php echo $path?>Modules/admin/static/admin_styles.css?v=<?php echo $v ?>">
 
-                 'redis_server' => $redis_server['host'].":".$redis_server['port'],
-                 'redis_ip' => gethostbyname($redis_server['host']),
-                 
-                 'services' => $services,
-                 
-                 'mqtt_server' => $mqtt_server['host'],
-                 'mqtt_ip' => gethostbyname($mqtt_server['host']),
-                 'mqtt_port' => $mqtt_server['port'],
 
-                 'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
-                 'http_proto' => $_SERVER['SERVER_PROTOCOL'],
-                 'http_mode' => $_SERVER['GATEWAY_INTERFACE'],
-                 'http_port' => $_SERVER['SERVER_PORT'],
-                 'php_modules' => get_loaded_extensions(),
-                 'mem_info' => $meminfo,
-                 'partitions' => disk_list(),
-                 'emoncms_modules' => $emoncms_modules,
-                 'git_branch' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " branch --contains HEAD"),
-                 'git_URL' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " ls-remote --get-url origin"),
-                 'git_describe' => @exec("git -C " . substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')) . " describe")
-                 );
-  }
-
-  function formatSize( $bytes ){
-    $types = array( 'B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB' );
-    for( $i = 0; $bytes >= 1024 && $i < ( count( $types ) -1 ); $bytes /= 1024, $i++ );
-    return( round( $bytes, 2 ) . " " . $types[$i] );
-  }
-
-  // Shutdown / Reboot Code Handler
-  if (isset($_POST['shutdownPi'])) {
-      $shutdownPi = htmlspecialchars(stripslashes(trim($_POST['shutdownPi'])));
-  }
-  if (isset($shutdownPi)) { if ($shutdownPi == 'reboot') { shell_exec('sudo shutdown -r now 2>&1'); } elseif ($shutdownPi == 'halt') { shell_exec('sudo shutdown -h now 2>&1'); } }
-
-  //Shutdown button
-  function RebootBtn(){
-      return "<button id=\"haltPi\" class=\"btn btn-danger btn-small pull-right\">"._('Shutdown')."</button><button id=\"rebootPi\" class=\"btn btn-warning btn-small pull-right\">"._('Reboot')."</button>";
-  }
-
-  function disk_list()
-  {
-      $partitions = array();
-      // Fetch partition information from df command
-      // I would have used disk_free_space() and disk_total_space() here but
-      // there appears to be no way to get a list of partitions in PHP?
-      $output = array();
-      @exec('df --block-size=1', $output);
-      foreach($output as $line)
-      {
-        $columns = array();
-        foreach(explode(' ', $line) as $column)
-        {
-          $column = trim($column);
-          if($column != '') $columns[] = $column;
-        }
-
-        // Only process 6 column rows
-        // (This has the bonus of ignoring the first row which is 7)
-        if(count($columns) == 6)
-        {
-          $partition = $columns[5];
-          $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
-          $partitions[$partition]['Partition']['text'] = $partition;
-          $partitions[$partition]['FileSystem']['text'] = $columns[0];
-          if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
-          {
-            $partitions[$partition]['Size']['value'] = $columns[1];
-            $partitions[$partition]['Free']['value'] = $columns[3];
-            $partitions[$partition]['Used']['value'] = $columns[2];
-          }
-          else
-          {
-            // Fallback if we don't get numerical values
-            $partitions[$partition]['Size']['text'] = $columns[1];
-            $partitions[$partition]['Used']['text'] = $columns[2];
-            $partitions[$partition]['Free']['text'] = $columns[3];
-          }
-        }
-      }
-      return $partitions;
-  }
-
- ?>
-<style>
-pre {
-    width:100%;
-    height:300px;
-
-    margin:0px;
-    padding:0px;
-    color:#fff;
-    background-color:#300a24;
-    overflow: scroll;
-    overflow-x: hidden;
-}
-#export-log {
-    padding-left:20px;
-    padding-top:20px;
-}
-#import-log {
-    padding-left:20px;
-    padding-top:20px;
-}
-
-table tr td.buttons { text-align: right;}
-table tr td.subinfo { border-color:transparent;}
-</style>
 <h2><?php echo _('Administration'); ?></h2>
-<table class="table table-hover">
-    <tr>
-        <td>
-            <h3><?php echo _('Users'); ?></h3>
-            <p><?php echo _('Administer user accounts'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
-        </td>
-    </tr>
 
-    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>    
-    <tr>
-        <td>
-            <h3><?php echo _('Update All'); ?></h3>
+<div class="admin-container">
+    <?php 
+    // USERS 
+    // -------------------
+    ?>
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 text-right pb-2 px-1">
+        <div class="text-left">
+            <h3 class="mt-1 mb-0"><?php echo _('Users'); ?></h3>
+            <p><?php echo _('See a list of registered users') ?></p>
+        </div>
+        <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
+    </section>
+
+    <?php 
+    // UPDATES 
+    // -------------------
+    ?>
+    <?php if ($admin_show_update || $allow_emonpi_admin) { ?>
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 px-1">
+        <div class="text-left">
+            <h3 class="mt-1 mb-0"><?php echo _('Updates'); ?></h3>
             <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <a class="update btn btn-info" type="all"><?php echo _('Update All'); ?></a>
-        </td>
-    </tr>
+        </div>
+        <div class="btn-group">
+        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>">
+            <?php echo _('Full Update'); ?>
+        </button>
+        <button class="btn dropdown-toggle btn-info" data-toggle="collapse" data-target="aside" title="<?php echo _(''); ?>">
+            <span class="caret text-black"></span>
+        </button>
+        <!-- <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
+            <span class="caret text-black"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li><a href="#" title="<?php echo _('Emoncms, Emoncms Modules and Services'); ?>"><?php echo _('Update Emoncms Only'); ?></a></li>
+            <li><a href="#" title=""><?php echo _('Update EmonHub Only'); ?></a></li>
+            <li><a href="#" title="<?php echo _('Select your hardware type and firmware version'); ?>"><?php echo _('Update Firmware Only'); ?></a></li>
+            <li><a href="#" title="<?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?>"><?php echo _('Update Database Only'); ?></a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="update" title="<?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>"><strong><?php echo _('Update All'); ?></strong></a></li>
+        </ul> -->
+        </div>
+    </section>
     
-    <tr>
-        <td>
-            <h4><?php echo _('Emoncms Only'); ?></h4>
+    <?php 
+    // EMONCMS UPDATE
+    // -------------------
+    ?>
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
+        <div class="text-left">
+            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Emoncms Only'); ?></h4>
             <p><?php echo _('Emoncms, Emoncms Modules and Services'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/emoncms/emoncms/releases"> Emoncms</a></p>
-        </td>
-        <td class="buttons"><br>
-            <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('EmonHub Only'); ?></h4>
+        </div>
+        <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
+    </aside>
+
+    <?php 
+    // EMONHUB UPDATE
+    // -------------------
+    ?>
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse"">
+        <div class="text-left">
+            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update EmonHub Only'); ?></h4>
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonhub/releases"> EmonHub</a></p>
-        </td>
-        <td class="buttons"><br>
-            <a class="update btn btn-info" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('Update Firmware Only'); ?></h4>
+        </div>
+        <a class="update btn btn-info" type="emonhub"><?php echo _('Update EmonHub'); ?></a>
+    </aside>
+
+    <?php 
+    // EMONPI UPDATE
+    // -------------------
+    ?>
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse"">
+        <div class="text-left">
+            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Firmware Only'); ?></h4>
             <p><?php echo _('Select your hardware type and firmware version'); ?></p>
             <p><b>Release info:</b> <a href="https://github.com/openenergymonitor/emonpi/releases">emonPi</a> | <a href="https://github.com/openenergymonitor/RFM2Pi/releases">RFM69Pi</a></p>
-        </td>
-        <td class="buttons"><br>
-            <div class="input-append"><select id="selected_firmware"><option value="emonpi">EmonPi</option><option value="rfm69pi">RFM69Pi</option><option value="rfm12pi">RFM12Pi</option><option value="custom">Custom</option></select>
-            <button class="update btn btn-info" type="firmware">Update Firmware</button></div>
-        </td>
-    </tr>
-    
-    <tr>
-        <td>
-            <h4><?php echo _('MySQL Database Only'); ?></h4>
+        </div>
+        <div class="input-append">
+            <select id="selected_firmware">
+                <option value="emonpi">EmonPi</option>
+                <option value="rfm69pi">RFM69Pi</option>
+                <option value="rfm12pi">RFM12Pi</option>
+                <option value="custom">Custom</option>
+            </select>
+            <button class="update btn btn-info" type="firmware"><?php echo _('Update Firmware'); ?></button>
+        </div>
+    </aside>
+
+    <?php 
+    // DATABASE UPDATE
+    // -------------------
+    ?>
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse"">
+        <div class="text-left span6 ml-0">
+            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update Database Only'); ?></h4>
             <p><?php echo _('Run this after a manual emoncms update, after installing a new module or to check emoncms database status.'); ?></p>
-        </td>
-        <td class="buttons"><br>
-            <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2" style="border-top: 0px"><pre id="update-log-bound" style="display: none;"><div id="update-log"></div></pre></td>
-    </tr>
+        </div>
+        <a href="<?php echo $path; ?>admin/db" class="btn btn-info"><?php echo _('Update Database'); ?></a>
+    </aside>
+
     <?php } ?>
 
-<?php if ($log_enabled) { ?>
-    <tr colspan="2" >
-        <td colspan="2" >
-            <table class="table table-condensed" style="background-color: transparent">
-            <tr>
-                <td style="border-top: 0px">
-                    <h3><?php echo _('Logger'); ?></h3>
-                    <p>
-<?php
-if(is_writable($log_filename)) {
-                    echo _('View last entries on the logfile:').$log_filename;
-} else {
-                    echo '<div class="alert alert-warn">';
-                    echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $log_filename<br>chmod 666 $log_filename</pre>";
-                    echo '<small></div>';
-} ?>
-                    </p>
-                </td>
-                <td class="buttons" style="border-top: 0px">
-<?php if(is_writable($log_filename)) { ?>
-                    <br>
-                    <button id="getlog" type="button" class="btn btn-info" data-toggle="button" aria-pressed="false" autocomplete="off"><?php echo _('Auto refresh'); ?></button>
-                    <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info"><?php echo _('Download Log'); ?></a>
-                    <button class="btn btn-info" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
-<?php } ?>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2" ><pre id="logreply-bound"><div id="logreply"></div></pre></td>
-            </tr>
-            </table>
-        </td>
-    </tr>
-<?php } ?>
+    <?php
+    // UPDATE LOG FILE VIEWER
+    // -------------------
+    //if (is_file($update_log_filename)) { ?>
+    <div id="update-logfile-view" class="hide">
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 text-right px-1 border-top">
+        <div class="text-left">
+            <h3 class="mt-1 mb-0"><?php echo _('Update Log'); ?></h3>
+            <p><?php
+            // if(is_readable($update_log_filename)) {
+                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'), $update_log_filename);
+            // } else {
+                //echo '<div class="alert alert-warn">';
+                //echo sprintf('The log file has no read permissions or does not exists. To fix, log-on on shell and do: <pre style="height:3em;overflow:auto">touch %1$s<br>chmod 666 %1$s</pre>',$update_log_filename);
+                //echo "</div>";
+            // } ?></p>
+        </div>
+        <div>
+            <?php // if(is_readable($update_log_filename)) { ?>
+                <button id="getupdatelog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
+                    <?php echo _('Auto refresh'); ?>
+                </button>
+                <a href="<?php echo $path; ?>admin/emonpi/downloadupdatelog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
+                <button class="btn btn-info mb-1" id="copyupdatelogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+            <?php // } ?>
+        </div>
+    </section>
+    <pre id="update-log-bound"><div id="update-log"></div></pre>
+    </div>
+    
+    <?php //} ?>
 
-    <tr colspan=2>
-        <td colspan=2>
-            <div>
-             <div style="float:left;"><h3><?php echo _('Server Information'); ?></h3></div>
-             <div style="float:right;"><h3></h3><button class="btn btn-info" id="copyserverinfo" type="button"><?php echo _('Copy Server Information to clipboard'); ?></button></div>
-            </div>
-            <table class="table table-hover table-condensed" id="serverinformationtabular">
-              <tr><td><b>Services</b></td><td></td><td></td></tr>
-            <!--
-              <tr>
-                <td>
-                <button id="emonhub-kill" class="btn btn-small pull-right"><?php echo _('Kill'); ?></button>
-                <button id="emonhub-restart" class="btn btn-small pull-right"><?php echo _('Restart'); ?></button>
-                <button id="emonhub-stop" class="btn btn-small pull-right"><?php echo _('Stop'); ?></button>
-                <button id="emonhub-start" class="btn btn-small pull-right"><?php echo _('Start'); ?></button>
-                </td>
-              </tr>
-            -->
-              <?php
-              // create array of installed services
-              $services = array();
-              foreach($system['services'] as $key=>$value) {
-                  if (!is_null($system['services'][$key])) {
-                      $services[$key] = array(
-                          'state' => ucfirst($value['ActiveState']),
-                          'text' => ucfirst($value['SubState']),
-                          'cssClass' => $value['SubState']==='running' ? 'success': 'error',
-                          'running' => $value['SubState']==='running'
-                      );
-                  }
-              }
-              
-              // add custom messages for feedwriter service
-              if(isset($services['feedwriter'])) {
-                  $message = '<font color="red">Service is not running</font>';
-                  if ($services['feedwriter']['running']) {
-                    $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
-                  }
-                  $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
-              }
-              // render list as html rows <tr>
-              foreach ($services as $key=>$value):
-              echo <<<services
-              <tr class="{$value['cssClass']}"><td class="subinfo"></td><td>{$key}</td><td><strong>{$value['state']}</strong> {$value['text']}</td><td></td>
-              </tr>
-services;
-              endforeach;
-?>
-              <tr><td><b>Emoncms</b></td><td>Version</td><td><?php echo $emoncms_version; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td><?php echo $system['emoncms_modules']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Git</td><td><?php echo "<B>URL:</B> " . $system['git_URL'] . "  |  <b>Branch:</B> " .$system['git_branch'] . "  |  <B>Describe:</B> " . $system['git_describe']; ?></td></tr>
+    <?php
+    // LOG FILE VIEWER
+    // -------------------
+    if ($log_enabled) { ?>
+    <section class="d-md-flex justify-content-between align-items-center pb-md-2 text-right px-1">
+        <div class="text-left">
+            <h3 class="mt-1 mb-0"><?php echo _('Emoncms Log'); ?></h3>
+            <p><?php
+            if(is_writable($emoncms_logfile)) {
+                echo sprintf("%s <code>%s</code>",_('View last entries on the logfile:'),$emoncms_logfile);
+            } else {
+                echo '<div class="alert alert-warn">';
+                echo "The log file has no write permissions or does not exists. To fix, log-on on shell and do:<br><pre>touch $emoncms_logfile<br>chmod 666 $emoncms_logfile</pre>";
+                echo '<small></div>';
+            } ?></p>
+        </div>
+        <div>
+            <?php if(is_writable($emoncms_logfile)) { ?>
+                <button id="getlog" type="button" class="btn btn-info mb-1" data-toggle="button" aria-pressed="false" autocomplete="off">
+                    <?php echo _('Auto refresh'); ?>
+                </button>
+                <a href="<?php echo $path; ?>admin/downloadlog" class="btn btn-info mb-1"><?php echo _('Download Log'); ?></a>
+                <button class="btn btn-info mb-1" id="copylogfile" type="button"><?php echo _('Copy Log to clipboard'); ?></button>
+            <?php } ?>
+        </div>
+    </section>
+    
+    <section>
+        <pre id="logreply-bound"><div id="logreply"></div></pre>
+        <?php if(is_writable($path_to_config)) { ?>
+        <div id="log-level" class="dropup btn-group">
+            <a class="btn btn-small dropdown-toggle btn-inverse text-uppercase" data-toggle="dropdown" href="#" title="<?php echo _('Change the logging level') ?>">
+            <span class="log-level-name"><?php echo sprintf('Log Level: %s', $log_level_label) ?></span>
+            <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <?php foreach ($log_levels as $key=>$value) {
+                    $active = $key === $log_level ? ' active':'';
+                    printf('<li><a href="#" data-key="%s" class="btn %s">%s</a></li>', $key, $active, $value);
+                }?>
 
-              <tr><td><b>Server</b></td><td>OS</td><td><?php echo $system['system'] . ' ' . $system['kernel']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['date']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $system['uptime']; ?></td></tr>
+            </ul>
+        </div>
+        <?php } else { ?>
+            <span id="log-level" class="btn-small dropdown-toggle btn-inverse text-uppercase">
+                <?php echo sprintf('Log Level: %s', $log_level_label) ?>
+            </span>
+        <?php } ?>
+    </section>
+    <?php } ?>
 
-              <tr><td><b>HTTP</b></td><td>Server</td><td colspan="2"><?php echo $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']; ?></td></tr>
+    <?php 
+    // SERVER INFO
+    // -------------------
+    ?>
+    <div class="d-md-flex justify-content-between align-items-center pb-md-2 pb-md-0 pb-2 text-right px-1">
+        <div class="text-left">
+            <h3 class="mt-1 mb-0"><?php echo _('Server Information'); ?></h3>
+        </div>
+        <div>
+            <button class="btn btn-info mr-1" id="copyserverinfo_md" type="button" title="<?php echo _('**Recommended** when pasting into forum')?>" data-success="<?php echo _('Server info copied to clipboard as Markdown [text/markdown]')?>"><?php echo _('Copy as Markdown'); ?></button>
+            <button class="btn btn-info" id="copyserverinfo_txt" type="button" title="<?php echo _('Formatted as plain text')?>" data-success="<?php echo _('Server info copied to clipboard as Text [text/plain]')?>"><?php echo _('Copy as Text'); ?></button>
+        </div>
+    </div>
 
-              <tr><td><b>MySQL</b></td><td>Version</td><td><?php echo $system['db_version']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['db_server'] . ' (' . $system['db_ip'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Date</td><td><?php echo $system['db_date']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Stats</td><td><?php echo $system['db_stat']; ?></td></tr>
-<?php
-if ($redis_enabled) {
-?>
-              <tr><td><b>Redis</b></td><td>Version</td><td><?php echo $redis->info()['redis_version']; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['redis_server'] . ' (' . $system['redis_ip'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Size</td><td><span id="redisused"><?php echo $redis->dbSize() . " keys  (" . $redis->info()['used_memory_human'].")";?></span><button id="redisflush" class="btn btn-info btn-small pull-right"><?php echo _('Flush'); ?></button></td></tr>
-              <tr><td class="subinfo"></td><td>Uptime</td><td><?php echo $redis->info()['uptime_in_days'] . " days"; ?></td></tr>
-<?php
-}
-if ($mqtt_enabled) {
-?>
-              <tr><td><b>MQTT Server</b></td><td>Version</td><td>Mosquitto <?php if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') { echo "n/a"; } else { if (file_exists('/usr/sbin/mosquitto')) { echo exec('/usr/sbin/mosquitto -h | grep -oP \'(?<=mosquitto\sversion\s)[0-9.]+(?=\s*)\''); } } ?></td></tr>
-              <tr><td class="subinfo"></td><td>Host</td><td><?php echo $system['mqtt_server']. ":" . $system['mqtt_port'] . ' (' . $system['mqtt_ip'] . ')'; ?></td></tr>
-<?php
-}
+    <div id="serverinfo-container">
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Services'); ?></h4>
+        <dl class="row">
+            <?php
+            foreach ($services as $key=>$value):
+                echo row(
+                    sprintf('<span class="badge-%2$s badge"></span> %1$s', $key, $value['cssClass']),
+                    sprintf('<strong>%s</strong> %s', $value['state'], $value['text'])
+                );
+            endforeach;
+        ?>
+        </dl>
 
-// Raspberry Pi
-if ( @exec('ifconfig | grep b8:27:eb:') ) {
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Version'),$emoncms_version); ?>
+            <?php echo row(_('Modules'), $emoncms_modules); ?>
+            <?php
+            $git_parts = array(
+                row(_('URL'), $system['git_URL'],'','overflow-hidden'),
+                row(_('Branch'), $system['git_branch']),
+                row(_('Describe'), $system['git_describe'])
+            );
+            $git_details = sprintf('<dl class="row">%s</dl>',implode('', $git_parts));
+        ?>
+            <?php echo row(_('Git'), $git_details); ?>
+        </dl>
 
-    $rpi_info = array();
-    $rpi_info['model'] = "Unknown";
-    if (@is_readable('/proc/cpuinfo')) {
-      //load model information
-      $rpi_revision = array();
-      if (@is_readable(__DIR__."/pi-model.json")) { 
-        $rpi_revision = json_decode(file_get_contents(__DIR__."/pi-model.json"), true);  
-        foreach ($rpi_revision as $k => $rev) {
-          if(empty($rev['Code'])) continue;
-          $rpi_revision[$rev['Code']] = $rev;
-          unset($rpi_revision[$k]);
-        }
-      }
-      //get cpu info
-      preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
-      $rpi_info['hw'] = "Broadcom ".$matches[2][0];
-      $rpi_info['rev'] = $matches[2][1];
-      $rpi_info['sn'] = $matches[2][2];
-      //build model string
-      if(!empty($rpi_revision[$rpi_info['rev']]))  {
-        $model_info = $rpi_revision[$rpi_info['rev']];
-        $rpi_info['model'] = "Raspberry Pi ";
-        $model = $model_info['Model'];
-        if (ctype_digit($model[0])) { //Raspberry Pi >= 2
-           $ver = $model[0];
-           $model = substr($model, 1);
-           $rpi_info['model'] .= $ver." Model ".$model;
-        }
-        else if (substr($model, 0, 2) == 'CM') { // Raspberry Pi Compute Module
-           $rpi_info['model'] .= " Compute Module";
-           if (ctype_digit($model[2]) && $model[2]>1) $rpi_info['model'] .= " ".$model[2]; 
-        }
-        else { //Raspberry Pi
-           $rpi_info['model'] .= " Model ".$model;
-        }
-        $rpi_info['model'] .= " Rev ".$model_info['Revision']." - ".$model_info['RAM']." (".$model_info['Manufacturer'].")";
-      }
-    }
-              echo "<tr><td><b>Pi</b></td><td>Model</td><td>".$rpi_info['model']."</td></tr>\n";
-              if(!empty($rpi_info['hw'])) echo "<tr><td class=\"subinfo\"></td><td>SoC</td><td>".$rpi_info['hw']."</td></tr>\n";
-              if(!empty($rpi_info['sn'])) echo "<tr><td class=\"subinfo\"></td><td>Serial num.</td><td>".strtoupper(ltrim($rpi_info['sn'], '0'))."</td></tr>\n";
-              $cputmp = number_format((int)@exec('cat /sys/class/thermal/thermal_zone0/temp')/1000, '2', '.', '')."&degC";
-              $gputmp = @exec('/opt/vc/bin/vcgencmd measure_temp');
-              if(strpos($gputmp, 'temp=' ) !== false ){
-                $gputmp = " - GPU: ".str_replace("temp=","", $gputmp);
-              }
-              else $gputmp = " - GPU: N/A"." (to show GPU temp execute this command from the console \"sudo usermod -G video www-data\" )";
-               echo "<tr><td class=\"subinfo\"></td><td>Temperature</td><td>CPU: ".$cputmp.$gputmp.RebootBtn()."</td></tr>\n";
-    if (glob('/boot/emonSD-*')) {
-              foreach (glob("/boot/emonSD-*") as $emonpiRelease) {
-                $emonpiRelease = str_replace("/boot/", '', $emonpiRelease);
-              }
-              if (isset($emonpiRelease)) {
-                 $currentfs = "<b>read-only</b>"; 
-                 $btnactionfs = "<button id=\"fs-rw\" class=\"btn btn-danger btn-small pull-right\">"._('Read-Write')."</button>";
-                 exec('mount', $resexec);
-                 $matches = null;
-                 preg_match('/^\/dev\/mmcblk0p2 on \/ .*(\(rw).*/mi', implode("\n",$resexec), $matches);
-                 if (!empty($matches)) {
-                     $currentfs = "<b>read-write</b>"; 
-                     $btnactionfs = "<button id=\"fs-ro\" class=\"btn btn-info btn-small pull-right\">"._('Read-Only')."</button>";
-                 } 
-                 echo "<tr><td class=\"subinfo\"></td><td>Release</td><td>".$emonpiRelease."</td></tr>\n";
-                 
-                 if (file_exists('/usr/bin/rpi-rw')) {
-                    echo "<tr><td class=\"subinfo\"></td><td>File-system</td><td>Current: ".$currentfs." - Set root file-system temporarily to read-write, (default read-only) ".$btnactionfs."</td></tr>\n";
-                 }
-               }
-      
-      }
-}
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Server'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('OS'), $system['system'] . ' ' . $system['kernel']); ?>
+            <?php echo row(_('Host'), $system['host'] . ' | ' . $system['hostbyaddress'] . ' | (' . $system['ip'] . ')'); ?>
+            <?php echo row(_('Date'), $system['date']); ?>
+            <?php echo row(_('Uptime'), $system['uptime']); ?>
+        </dl>
 
-// Ram information
-if ($system['mem_info']) {
-              $sysRamUsed = $system['mem_info']['MemTotal'] - $system['mem_info']['MemFree'] - $system['mem_info']['Buffers'] - $system['mem_info']['Cached'];
-              $sysRamPercentRaw = ($sysRamUsed / $system['mem_info']['MemTotal']) * 100;
-              $sysRamPercent = sprintf('%.2f',$sysRamPercentRaw);
-              $sysRamPercentTable = number_format(round($sysRamPercentRaw, 2), 2, '.', '');
-              echo "<tr><td><b>Memory</b></td><td>RAM</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysRamPercentTable."%;'>Used:&nbsp;".$sysRamPercent."%&nbsp;</div></div>";
-              echo "<b>Total:</b> ".formatSize($system['mem_info']['MemTotal'])."<b> Used:</b> ".formatSize($sysRamUsed)."<b> Free:</b> ".formatSize($system['mem_info']['MemTotal'] - $sysRamUsed)."</td></tr>\n";
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Memory'); ?></h4>
+        <dl class="row">
+            <?php 
+            echo row(_('RAM'), bar($ram_info['table'], sprintf(_('Used: %s%%'), $ram_info['percent']), array(
+                'Total'=>$ram_info['total'],
+                'Used'=>$ram_info['used'],
+                'Free'=>$ram_info['free']
+            )));
+            if (!empty($ram_info['swap'])) {
+                echo row(_('Swap'), bar($ram_info['swap']['table'], sprintf(_('Used: %s%%'), $ram_info['swap']['percent']), array(
+                    'Total'=>$ram_info['swap']['total'],
+                    'Used'=>$ram_info['swap']['used'],
+                    'Free'=>$ram_info['swap']['free']
+                )));
+            }
+            ?>
+            
+        </dl>
 
-              if ($system['mem_info']['SwapTotal'] > 0) {
-                $sysSwapUsed = $system['mem_info']['SwapTotal'] - $system['mem_info']['SwapFree'];
-                $sysSwapPercentRaw = ($sysSwapUsed / $system['mem_info']['SwapTotal']) * 100;
-                $sysSwapPercent = sprintf('%.2f',$sysSwapPercentRaw);
-                $sysSwapPercentTable = number_format(round($sysSwapPercentRaw, 2), 2, '.', '');
-                echo "<tr><td class='subinfo'></td><td>Swap</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$sysSwapPercentTable."%;'>Used:&nbsp;".$sysSwapPercent."%&nbsp;</div></div>";
-                echo "<b>Total:</b> ".formatSize($system['mem_info']['SwapTotal'])."<b> Used:</b> ".formatSize($sysSwapUsed)."<b> Free:</b> ".formatSize($system['mem_info']['SwapFree'])."</td></tr>\n";
-              }
-}
-// Filesystem Information
-                if (count($system['partitions']) > 0) {
-                    echo "<tr><td><b>Disk</b></td><td><b>Mount</b></td><td><b>Stats</b></td></tr>\n";
-                    foreach($system['partitions'] as $fs) {
-                      if (!$fs['Temporary']['bool'] && $fs['FileSystem']['text']!= "none" && $fs['FileSystem']['text']!= "udev") {
-                        $diskFree = $fs['Free']['value'];
-                        $diskTotal = $fs['Size']['value'];
-                        $diskUsed = $fs['Used']['value'];
-                        $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
-                        $diskPercent = sprintf('%.2f',$diskPercentRaw);
-                        $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
-                        if (strlen($fs['Partition']['text'])>30) {
-                          $mountpoint = substr($fs['Partition']['text'],0,30)."...";
-                        } else {
-                          $mountpoint = $fs['Partition']['text'];
-                        }
-                        
-                        echo "<tr><td class='subinfo'></td><td>".$mountpoint."</td><td><div class='progress progress-info' style='margin-bottom: 0;'><div class='bar' style='width: ".$diskPercentTable."%;'>Used:&nbsp;".$diskPercent."%&nbsp;</div></div>";
-                        echo "<b>Total:</b> ".formatSize($diskTotal)."<b> Used:</b> ".formatSize($diskUsed)."<b> Free:</b> ".formatSize($diskFree)."</td></tr>\n";
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
+        <dl class="row">
+            <?php 
+            foreach($disk_info as $mount_info) {
+                echo row($mount_info['mountpoint'], 
+                    bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
+                        'Total'=>$mount_info['total'],
+                        'Used'=>$mount_info['used'],
+                        'Free'=>$mount_info['free']
+                    ))
+                );
+            }
+            ?>
+        </dl>
 
-                      }
-                    }
-                }
 
-?>
-              <tr><td><b>PHP</b></td><td>Version</td><td colspan="2"><?php echo $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'; ?></td></tr>
-              <tr><td class="subinfo"></td><td>Modules</td><td colspan="2"><?php 
-              natcasesort($system['php_modules']);// sort case insensitive
-              $modules = [];// empty list
-              foreach($system['php_modules'] as $ver=>$extension){
-                $module_version = phpversion($extension);// returns false if no version information
-                $modules[] = $module_version ? "$extension v$module_version" : $extension; // show version if available
-              }
-              echo implode(' | ', $modules);//isplay list with | separator
-              ?></td></tr>
-            </table>
-            <h3><?php echo _('Client Information'); ?></h3>
-            <table class="table table-hover table-condensed">
-              <tr><td><b>HTTP</b></td><td>Browser</td><td colspan="2"><?php echo $_SERVER['HTTP_USER_AGENT']; ?></td></tr>
-              <tr><td><b>Screen</b></td><td>Resolution</td><td colspan="2"><script>document.write(window.screen.width + ' x ' + window.screen.height);</script></td></tr>
-              <tr><td><b>Window</b></td><td>Size</td><td colspan="2"><span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span></td></tr>
-            </table>
-        </td>
-    </tr>
-</table>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('HTTP'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Server'), $system['http_server'] . " " . $system['http_proto'] . " " . $system['http_mode'] . " " . $system['http_port']); ?>
+        </dl>
+
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('MySQL'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Version'), $system['db_version']); ?>
+            <?php echo row(_('Host'), $system['redis_server'] . ' (' . $system['redis_ip'] . ')'); ?>
+            <?php echo row(_('Date'), $system['db_date']); ?>
+            <?php echo row(_('Stats'), $system['db_stat']); ?>
+        </dl>
+
+        <?php if ($redis_enabled) : ?>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Redis'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
+            <?php echo row(_('Host'), $system['redis_server']); ?>
+            <?php 
+            $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
+            $redis_keys = sprintf('%s keys',$redis->dbSize());
+            $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
+            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
+            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
+        </dl>
+        <?php endif; ?>
+
+        <?php if ($mqtt_enabled) : ?>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('MQTT Server'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Version'), sprintf(_('Mosquitto %s'), $mqtt_version)) ?>
+            <?php echo row(_('Host'), sprintf('%s:%s (%s)', $system['mqtt_server'], $system['mqtt_port'], $system['mqtt_ip'])); ?>
+        </dl>
+        <?php endif; ?>
+
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('PHP'); ?></h4>
+        <dl class="row">
+        <?php echo row(_('Version'), $system['php'] . ' (' . "Zend Version" . ' ' . $system['zend'] . ')'); ?>
+        <?php echo row(_('Modules'), implode(' | ', $php_modules), '', 'overflow-hidden'); ?>
+        </dl>
+
+        <?php if (!empty(implode('',$rpi_info))) : ?>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Pi'); ?></h4>
+        <dl class="row">
+            <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
+            <?php echo row(_('SoC'), $rpi_info['hw']) ?>
+            <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
+            <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
+            <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>
+            <?php echo row(_('File-system'), $rpi_info['currentfs']) ?>
+        </dl>
+        <?php endif; ?>
+
+    </div>
+
+    <h3 class="mt-1 mb-0"><?php echo _('Client Information'); ?></h3>
+    <div id="clientinfo-container">
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('HTTP'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Browser'), $_SERVER['HTTP_USER_AGENT']); ?>
+            <?php echo row(_('Language'), $_SERVER['HTTP_ACCEPT_LANGUAGE']); ?>
+        </dl>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Window'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Size'), '<span id="windowsize"><script>document.write($( window ).width() + " x " + $( window ).height())</script></span>'); ?>
+        </dl>
+        <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Screen'); ?></h4>
+        <dl class="row">
+            <?php echo row(_('Resolution'), '<span id="screensize"><script>document.write(window.screen.width + " x " + window.screen.height);</script></span>'); ?>
+        </dl>
+    </div>
+
+</div><!-- eof .admin-container -->
+
+<div id="snackbar" class=""></div>
+
+
 <script>
-function copyTextToClipboard(text) {
+/**
+ * return object of gettext translated strings
+ *
+ * @return object
+ */
+function getTranslations(){
+    return {
+        'Copied to clipboard': "<?php echo _('Copied to clipboard') ?>",
+        'successful': "<?php echo _('successful') ?>",
+        'unsuccessful': "<?php echo _('unsuccessful') ?>",
+        'Copy to clipboard: Ctrl+C, Enter': "<?php echo _('Copy to clipboard: Ctrl+C, Enter') ?>",
+        'Server Information': "<?php echo _('Server Information') ?>",
+        'Client Information': "<?php echo _('Client Information') ?>",
+        'Log level: %s': "<?php echo _('Log level: %s') ?>"
+    }
+}
+</script>
+
+
+<script>
+
+function copyTextToClipboard(text, message) {
   var textArea = document.createElement("textarea");
   textArea.style.position = 'fixed';
   textArea.style.top = 0;
@@ -541,38 +448,238 @@ function copyTextToClipboard(text) {
   try {
     var successful = document.execCommand('copy');
     var msg = successful ? 'successful' : 'unsuccessful';
-    console.log('Copying text command was ' + msg);
+    // console.log('Copying text command was ' + msg);
+    snackbar(message || 'Copied to clipboard');
   } 
   catch(err) {
     window.prompt("<?php echo _('Copy to clipboard: Ctrl+C, Enter'); ?>", text);
   }
   document.body.removeChild(textArea);
 }
-var serverInfoDetails = $('#serverinformationtabular').html().replace(/\|/g,':').replace(/<\/?button.[\s\S]*?button./g,'').replace(/<\/?b>/g,'').replace(/<tr class=\"[a-z]*\">/g,'').replace(/<td>/g,'|').replace(/<\/td>/g,'').replace(/<\/?tbody>/g,'').replace(/<\/?tr>/g,'').replace(/&nbsp;/g,' ').replace(/<td class=\"subinfo\">/g,'|').replace(/\n +/g, '\n').replace(/\n+/g, '\n').replace(/<div [\s\S]*?>/g, '').replace(/<\/div>/g, '').replace(/<td colspan="2">/g, '|').replace(/<span.*<\/span>/g, '').replace(/<!--[\S\s]*-->/g,'');
-var clientInfoDetails = '\n|HTTP|Browser|'+'<?php echo $_SERVER['HTTP_USER_AGENT']; ?>'+'\n|Screen|Resolution|'+ window.screen.width + ' x ' + window.screen.height +'\n|Window|Size|' + $(window).width() + ' x ' + $(window).height();
 
-$("#copyserverinfo").on('click', function(event) {
-    if ( event.ctrlKey ) {
-        copyTextToClipboard('Server Information\n' + serverInfoDetails.replace(/\|/g,'\t') + '\nClient Information\n' + clientInfoDetails.replace(/\|/g,'\t'));
+/**
+ * attempt to convert markdown (text/markdown) to a text/plain
+ * @todo: look at a better library to do this
+ */
+function markdownStringify(md) {
+    return md
+    // indent values
+    .replace(/\:-/g,':\t')
+    // start titles on new lines
+    .replace(/ {4}- \*\*/g,'\n\t\t')
+    .replace(/^- \*\*/mg,'\n\t')
+    // remove bold
+    .replace(/\*\*/g,'')
+    // remove heading
+    .replace(/##(.)/gm,'\n\n')
+    // remove orphan new lines
+    .replace(/\n /g,'')
+    // replace unrequired whitespace
+    .replace(/\n{2,}/g,'\n')
+}
+/**
+ * attempt to convert <html> to markdown (text/markdown)
+ *
+ * uses `====` as temp tab placeholder
+ * uses `~~~~` as temp newline placeholder
+ * @todo: look at a better library to do this
+ */
+function markdownify(markup) {
+    var newline = '~~~~';
+    var indent = '====';
+
+    var newlineRegex = new RegExp(newline,'g');
+    var indentRegex = new RegExp(indent,'g');
+
+    // add placeholder for nested <dl> <dd> <dl>
+    let $temp = $('<div>');
+    $temp.html(markup);
+
+    // add correct indentation to nested lists
+    $temp.find('dl').each(function(i, parent){
+        let $parent = $(parent);
+        if(!$parent.is('.inline')) {
+            $(parent).find('dl').each(function(i, child){
+                let $list = $(child);
+                let $firstTitle = $list.find('dt').first();
+                $firstTitle.before(newline)
+                $list.find('dt').each(function(j, title){
+                    let $title = $(title)
+                    $title.before(indent)
+                })
+            })
+        }
+    })
+
+    // -----
+
+    // use modified <html> source to replace patterns
+    markup = $temp.html()
+
+    return markup
+    // remove indenting
+    .replace(/^\s{2,}/gm," ")
+    // remove buttons
+    .replace(/<\/?button.[\s\S]*?button./g,'')
+    // remove html space
+    .replace(/&nbsp;/g,'')
+    // remove comments
+    .replace(/<!--[\S\s]*-->/g,'')
+    // replace <h4> with markdown level two heading (##)
+    .replace(/\s+<h4 *[^/]*?>/g, newline+newline+"## ")
+    .replace(/<\/h4>\s+/g,"\n")
+    .replace(/<dd class="__inline__">/g,'    ')
+    // remove <dl>
+    .replace(/<dl *[^/]*?>/g," ")   
+    .replace(/<\/dl>[ \n]/g,"\n" + newline)
+    // remove <dt>
+    .replace(/<dt *[^/]*?>/g,' - **')
+    .replace(/<\/dt>[ \n]*/g,'**')
+    // remove <dd>
+    .replace(/<dd *[^/]*?>/g,' :- ')
+    .replace(/<\/dd>/g,"\n")
+    // mark bold content
+    .replace(/<strong *[^/]*?>/g,'**')
+    .replace(/<\/strong>[ \n]*/g,'** ')
+    // remove all other <tags>
+    .replace(/(<([^>]+)> *)/ig,'')
+    // remove all indenting
+    .replace(/^ {2,}/gm," ")
+    // remove all single space indents
+    .replace(/^ (\S)/gm,"$1")
+    // replace indent placeholder
+    .replace(indentRegex,'    ')
+    // remove orphan new lines
+    .replace(/\n \n ?\n/g, '\n')
+    // remove leading spaces from values
+    .replace(/:-\s+/g,':- ')
+    // replace newline placeholder
+    .replace(newlineRegex,"\n")
+    // remove orphan new lines
+    .replace(/\n{2,} /g,"\n\n")
+    .replace(/\n{3,}/g,"\n\n")
+    // add newline before level 2 title
+    .replace(/\n?#{2}/g,'\n##')
+    .replace(/([\w\(\)])\n*#{2}/g,"$1\n\n\r##")
+    .trim()
+}
+/**
+ * Return the Server information section as text/markdown
+ *
+ * @return string
+ */
+function getServerInfoDetails() {
+    var markup = $('#serverinfo-container').html()
+    return markdownify(markup);
+}
+/**
+ * Return the Client information section as text/markdown
+ *
+ * @return string
+ */
+function getClientInfoDetails() {
+    var temp = $('<div>')
+    temp.html($('#clientinfo-container').html())
+    temp.find('#windowsize').html($( window ).width() + " x " + $( window ).height())
+    temp.find('#screensize').html(window.screen.width + " x " + window.screen.height)
+    return markdownify(temp.html());
+}
+// format <html> as tabbed text (text/plain) and copy to system clipboard
+$("#copyserverinfo_txt").on('click', function(event) {
+    copyTextToClipboard(
+        'Server Information\n-----------------------\n' + 
+        markdownStringify(getServerInfoDetails()) +
+        '\n\nClient Information\n-----------------------\n' + 
+        markdownStringify(getClientInfoDetails()),
+        event.target.dataset.success
+    );
+});
+
+// format <html> as markdown (text/markdown) and copy to system clipboard
+$("#copyserverinfo_md").on('click', function(event) {
+    copyTextToClipboard(
+        '<details><summary>Server Information</summary>\n' + 
+        '\n# Server Information\n' + 
+        getServerInfoDetails().replace(/\n+/g, '\n') + 
+        '\n</details>' + 
+        '\n\n<details><summary>Client Information</summary>\n' + 
+        '\n# Client Information\n' + getClientInfoDetails() +
+        '\n</details>',
+        this.dataset.success
+    );
+});
+
+// copy value (and title) to clipboard when clicked
+$(".row dd").on('click', function(event) {
+    if(event.target.tagName==='BUTTON') return
+    let $this = $(this),
+        title = $this.prev('dt').text().trim(),
+        markup = $this.clone().find('script').remove().end().html()
+        value = markdownStringify(markdownify(markup));
+        
+    copyTextToClipboard(
+        [title, value].join(': '),
+        _('Copied to clipboard')
+    );
+});
+// copy title (and value) to clipboard when clicked
+$(".row dt").on('click', function(event) {
+    let $this = $(this),
+        title = $this.text().trim(),
+        markup = $this.next('dd').clone().find('script').remove().end().html()
+        value = markdownStringify(markdownify(markup));
+        
+    copyTextToClipboard(
+        [title, value].join(': '),
+        _('Copied to clipboard')
+    );
+});
+/**
+ * wrapper for gettext like string replace function
+ */
+function _(str) {
+    return translate(str);
+}
+/**
+ * emulate the php gettext function for replacing php strings in js
+ */
+function translate(property) {
+    _strings = typeof translations === 'undefined' ? getTranslations() : translations;
+    if (_strings.hasOwnProperty(property)) {
+        return _strings[property];
     } else {
-        copyTextToClipboard('<details><summary>Server Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' +serverInfoDetails.replace(/\n+/g, '\n') + '</details>\n<details><summary>Client Information</summary>\n\n'+ '| | | |\n' + '| --- | --- | --- |' + clientInfoDetails + '\n</details>');
+        return property;
     }
-} );
+}
 
 var logFileDetails;
 $("#copylogfile").on('click', function(event) {
     logFileDetails = $("#logreply").text();
     if ( event.ctrlKey ) {
-        copyTextToClipboard('LAST ENTRIES ON THE LOG FILE\n'+logFileDetails);
+        copyTextToClipboard('LAST ENTRIES ON THE LOG FILE\n'+logFileDetails,
+        event.target.dataset.success);
     } else {
-        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n').replace(/API key '[\s\S]*?'/g,'API key \'xxxxxxxxx\'') + '</details><br />\n');
+        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n').replace(/API key '[\s\S]*?'/g,'API key \'xxxxxxxxx\'') + '</details><br />\n',
+        event.target.dataset.success);
     }
 } );
+
+$("#copyupdatelogfile").on('click', function(event) {
+    logFileDetails = $("#update-log").text();
+    if ( event.ctrlKey ) {
+        copyTextToClipboard('LAST ENTRIES ON THE UPDATE LOG FILE\n'+logFileDetails,
+        event.target.dataset.success);
+    } else {
+        copyTextToClipboard('<details><summary>LAST ENTRIES ON THE LOG FILE</summary><br />\n'+ logFileDetails.replace(/\n/g,'<br />\n').replace(/API key '[\s\S]*?'/g,'API key \'xxxxxxxxx\'') + '</details><br />\n',
+        event.target.dataset.success);
+    }
+} );
+
 $(window).resize(function() {
   $("#windowsize").html( $(window).width() + " x " + $(window).height() );
 });
-var path = "<?php echo $path; ?>";
 var logrunning = false;
+var updatelogrunning = false;
 <?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
 <?php } ?>
@@ -585,44 +692,66 @@ function getBufferSize() {
   });
 }
 
-var refresher_log;
+// setInterval() markers
+var updates_log_interval;
+var emoncms_log_interval;
+
+// stop updates if interval == 0
 function refresherStart(func, interval){
-  clearInterval(refresher_log);
-  refresher_log = null;
-  if (interval > 0) refresher_log = setInterval(func, interval);
+    if (interval > 0) return setInterval(func, interval);
+}
+
+// push value to updates logfile viewer
+function refresh_updateLog(result){
+    output_logfile(result, $("#update-log"));
+    if (result!="<?php echo $update_log_filename; ?> does not exist") $("#update-logfile-view").show();
+}
+// push value to emoncms logfile viewer
+function refresh_log(result){
+    output_logfile(result, $("#logreply"));
+}
+// display content in container and scroll to the bottom
+function output_logfile(result, $container){
+    $container.html(result);
+    scrollable = $container.parent('pre')[0];
+    if(scrollable) scrollable.scrollTop = scrollable.scrollHeight;
 }
 
 getLog();
+// use the api to get the latest value from the logfile
 function getLog() {
-  $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: function(result)
-    {
-      $("#logreply").html(result);
-      $("#logreply-bound").scrollTop = $("#logreply-bound").scrollHeight;
-    }
-  });
+  $.ajax({ url: path+"admin/getlog", async: true, dataType: "text", success: refresh_log });
 }
 
+// auto refresh the updates logfile
+$("#getupdatelog").click(function() {
+    $this = $(this)
+    if ($this.is('.active')) {
+        clearInterval(updates_log_interval);
+    } else {
+        updates_log_interval = refresherStart(getUpdateLog, 500); 
+    }
+});
+// auto refresh the updates logfile
 $("#getlog").click(function() {
-  logrunning = !logrunning;
-  if (logrunning) { refresherStart(getLog, 500); }
-  else { refresherStart(getLog, 0);  }
+    $this = $(this)
+    if ($this.is('.active')) {
+        clearInterval(emoncms_log_interval);
+    } else {
+        emoncms_log_interval = refresherStart(getLog, 500); 
+    }
 });
 
-var refresher_update;
-
+// update all button clicked
 $(".update").click(function() {
-
   var type = $(this).attr("type");
   var firmware = $("#selected_firmware").val();
-  
   $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "type="+type+"&firmware="+firmware, async: true, success: function(result)
     {
-      $("#update-log").html(result);
-      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      $("#update-log-bound").show()
-      clearInterval(refresher_update);
-      refresher_update = null;
-      refresher_update = setInterval(getUpdateLog,1000);
+      // update with latest value
+      refresh_updateLog(result);
+      // autoupdate every 1s
+      updates_log_interval = refresherStart(getUpdateLog, 1000)
     }
   });
 });
@@ -630,23 +759,25 @@ $(".update").click(function() {
 $("#rfm69piupdate").click(function() {
   $.ajax({ type: "POST", url: path+"admin/emonpi/update", data: "argument=rfm69pi", async: true, success: function(result)
     {
-      $("#update-log").html(result);
-      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
-      $("#update-log-bound").show()
-      clearInterval(refresher_update);
-      refresher_update = null;
-      refresher_update = setInterval(getUpdateLog,1000);
+      // update with latest value
+      refresh_updateLog(result);
+      // autoupdate every 1s
+      updates_log_interval = refresherStart(getUpdateLog, 1000)
     }
   });
 });
-
+// shrink log file viewers
+$('[data-dismiss="log"]').click(function(event){
+    event.preventDefault();
+    $(this).parents('pre').first().addClass('small');
+})
+getUpdateLog();
 function getUpdateLog() {
   $.ajax({ url: path+"admin/emonpi/getupdatelog", async: true, dataType: "text", success: function(result)
     {
-      $("#update-log").html(result);
-      $("#update-log-bound").scrollTop = $("#update-log-bound").scrollHeight;
+      refresh_updateLog(result);
       if (result.indexOf("emonPi update done")!=-1) {
-          clearInterval(refresher_update);
+          clearInterval(updates_log_interval);
       }
     }
   });
@@ -677,24 +808,59 @@ $("#noshut").click(function() {
   alert('Please modify /etc/sudoers to allow your webserver to run the shutdown command.')
 });
 
-$("#fs-rw").click(function() {
-  if(confirm('Setting file-system to Read-Write, remember to restore Read-Only when your done..')) {
-    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=rw", async: true, success: function(result)
-      {
-        // console.log(data);
-      }
-    });
-  }
-});
+// $("#fs-rw").click(function() {
+//   if(confirm('Setting file-system to Read-Write, remember to restore Read-Only when your done..')) {
+//     $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=rw", async: true, success: function(result)
+//       {
+//         // console.log(data);
+//       }
+//     });
+//   }
+// });
 
-$("#fs-ro").click(function() {
-  if(confirm('Settings filesystem back to Read Only')) {
-    $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=ro", async: true, success: function(result)
-      {
-      // console.log(data);
-      }
-    });
-  }
-});
+// $("#fs-ro").click(function() {
+//   if(confirm('Settings filesystem back to Read Only')) {
+//     $.ajax({ type: "POST", url: path+"admin/emonpi/fs", data: "argument=ro", async: true, success: function(result)
+//       {
+//       // console.log(data);
+//       }
+//     });
+//   }
+// });
 
+$('#log-level ul li a').click(function(event){
+    event.preventDefault();
+    var $btn = $(this);
+    var $toggle = $btn.parents('ul').prev('.btn');
+    var key = $btn.data('key');
+    var data = {level:key};
+    $.post( path+"admin/loglevel.json",data)
+    .done(function(response) {
+        // make the dropdown toggle show the new setting
+        if(response.hasOwnProperty('success') && response.success!==false) {
+            $toggle.find('.log-level-name').text(_('log level: %s').replace('%s',response['log-level-name']));
+            // highlight the current dropdown element as active
+            $btn.addClass('active');
+            $btn.parents('li').siblings().find('a').removeClass('active');
+
+            notify(_('Log level set to: %s').replace('%s',response['log-level-name']),'success');
+        } else {
+            notify(_('Log level not set'), 'error', response.hasOwnProperty('message') ? response.message: '');
+        }
+    });
+})
+
+function snackbar(text) {
+    var snackbar = document.getElementById("snackbar");
+    snackbar.innerHTML = text;
+    snackbar.className = "show";
+    setTimeout(function () {
+        snackbar.className = snackbar.className.replace("show", "");
+    }, 3000);
+}
+
+function notify(message, css_class, more_info) {
+    // @todo: show more information in the user notifications
+    snackbar(message);
+}
 </script>
