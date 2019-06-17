@@ -226,14 +226,14 @@ Vue.component("grid-row", {
 */
     Vue.component("grid-data", {
         template: "#grid-data",
-        props: ['gridData','columns','filterKey','status'],
+        props: ['gridData','columns','filterKey','status','default-sort'],
         data: function() {
             var sortOrders = {};
             Object.keys(this.columns).forEach(function(key) {
                 sortOrders[key] = 1;
             });
             return {
-                sortKey: "",
+                sortKey: this.defaultSort || "",
                 sortOrders: sortOrders
             };
         },
