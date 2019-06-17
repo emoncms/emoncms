@@ -7,15 +7,12 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-
-
-
 // logic starts here
-// -------------------------------------------------------
+// ----------------------------------------------------------------------
 // creates all second and third level menus with their associated hierarch
 // built up from each Module's `*_menu.php` file
 // will mark the active menu and any parent menus
-/* EXAMPLE MARKUP OF A SINGLE MENU ---------
+/* EXAMPLE MARKUP OF A SINGLE MENU --------------------------------------
 http://localhost/emoncms/example/1
 
 <div id="sidebar_apps" class="sidebar-inner active">
@@ -26,9 +23,9 @@ http://localhost/emoncms/example/1
     </ul>
 </div>
 
+--- EXAMPLE END */
 
-
---------- EXAMPLE END */
+global $mysqli,$user,$session;
 
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
@@ -41,28 +38,26 @@ $third_level_menus = array(); // sub menu sidebars
 $third_level_includes = array(); // module specific sidebar include
 $bookmarks = array();
 
-global $mysqli,$user;
-require_once "Modules/dashboard/dashboard_model.php";
-$dashboard = new Dashboard($mysqli);
-$default_dashboard = array();
-foreach($dashboard->get_list($session['userid'],false,false) as $item){
-    if($item['main']===true){
-        $default_dash = $item;
+if (is_file("Modules/dashboard/dashboard_model.php")) {
+    require_once "Modules/dashboard/dashboard_model.php";
+    $dashboard = new Dashboard($mysqli);
+    $default_dash = array();
+    foreach($dashboard->get_list($session['userid'],false,false) as $item){
+        if($item['main']===true){
+            $default_dash = $item;
+        }
     }
-    if($item['published']===true){
-        $fav_dash[] = $item;
+    // ADD DEFAULT DASHBOARD
+    if (!empty($default_dash)) {
+        $bookmarks[] = array(
+            'text' => _('Default Dashboard'),
+            'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
+            'icon' => 'star',
+            'order'=> 999,
+            'path' => 'dashboard/view?id='.$default_dash['id'],
+            'li_class' => array('default-dashboard')
+        );
     }
-}
-// ADD DEFAULT DASHBOARD
-if (!empty($default_dash)) {
-    $bookmarks[] = array(
-        'text' => _('Default Dashboard'),
-        'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
-        'icon' => 'star',
-        'order'=> 999,
-        'path' => 'dashboard/view?id='.$default_dash['id'],
-        'li_class' => array('default-dashboard')
-    );
 }
 
 // build the individual menu parts

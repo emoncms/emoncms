@@ -958,8 +958,7 @@ function getParents($child) {
  */
 function currentPageIsBookmarked(){
     // @todo: change this to retreive current bookmarks when user logs in
-    global $mysqli, $user, $session, $route;
-    require_once "Modules/dashboard/dashboard_model.php";
+    global $user, $session, $route;
     $current_path = str_replace('/emoncms/','',current_route());
     if(!empty($route->query)) $current_path.='?'.$route->query;
 
@@ -985,10 +984,15 @@ function currentPageIsBookmarked(){
 function getUserBookmarkedDashboards($userid){
     // @todo: should this be in user model or dashboard model??
     global $mysqli, $user;
-    $bookmarks = array();
+    if (!file_exists("Modules/dashboard/dashboard_model.php")) {
+        return false;
+    }
     require_once "Modules/dashboard/dashboard_model.php";
+    
     $dashboard = new Dashboard($mysqli);
-    $default_dashboard = array();
+    $bookmarks = array();
+    
+    $default_dash = array();
     foreach($dashboard->get_list($userid,false,false) as $item){
         if($item['main']===true){
             $default_dash = $item;

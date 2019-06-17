@@ -43,7 +43,12 @@ input[type="checkbox"] { margin:0px; }
     margin-top:-2px;
 }
 
-#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
+#noprocesses .alert {
+    margin:0;
+    border-bottom-color:#fcf8e3;
+    border-radius: 4px 4px 0 0;
+    padding-right:14px
+}
 
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
@@ -75,44 +80,51 @@ input[type="checkbox"] { margin:0px; }
     right: 0;
     background: rgba(0,0,0,.1);
 }
-.buttons{ 
+.buttons{
     padding-right: .4em;
 }
-.status-success.node-info::after,
-.status-success.node-input::after{
-    background: #28A745!important;
+
+.node-info.status-info .last-update,
+.node-input.status-info .last-update {
+    color: #3c87aa;
 }
-.status-danger.node-info::after,
-.status-danger.node-input::after{
-    background: #DC3545!important;
+.node-info.status-success .last-update,
+.node-input.status-success .last-update {
+    color: #28a745;
 }
-.status-warning.node-info::after,
-.status-warning.node-input::after{
-    background: #FFC107!important;
+.node-info.status-warning .last-update,
+.node-input.status-warning .last-update {
+    color: #cc7700;
+}
+.node-info.status-danger .last-update,
+.node-input.status-danger .last-update {
+    color: #dc3545;
 }
 
-.status-success.node-info .last-update,
-.status-success.node-input .last-update{
-    color: #28A745!important;
+.node-info.status-info::after,
+.node-input.status-info::after {
+    background: #3a87ad;
 }
-.status-danger.node-info .last-update,
-.status-danger.node-input .last-update{
-    color: #DC3545!important;
+.node-info.status-success::after,
+.node-input.status-success::after {
+    background: #28a745;
 }
-.status-warning.node-info .last-update,
-.status-warning.node-input .last-update{
-    color: #C70!important;
+.node-info.status-warning::after,
+.node-input.status-warning::after {
+    background: #ffc107;
 }
-
+.node-info.status-danger::after,
+.node-input.status-danger::after {
+    background: #dc3545;
+}
 </style>
 
 <div>
     <div id="input-header">
         <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
-        <h3> <?php echo _('Inputs'); ?></h3>
+        <h3><?php echo _('Inputs'); ?></h3>
     </div>
-    
-    <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
+    <div id="input-controls" class="controls hide" data-spy="affix" data-offset-top="100">
         <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
         <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
         <button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
@@ -251,36 +263,37 @@ function update(){
         var requestTime = (new Date()).getTime();
         $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
             table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-              
+            
             // Associative array of inputs by id
             inputs = {};
-            for (var z in data) inputs[data[z].id] = data[z];
             
             // Assign inputs to devices
-            for (var z in inputs) {
+            for (var i in data) {
+            	inputs[data[i].id] = data[i];
+                
                 // Device does not exist which means this is likely a new system or that the device was deleted
                 // There needs to be a corresponding device for every node and so the system needs to recreate the device here
-                if (devices[inputs[z].nodeid]==undefined) {
-                    devices[inputs[z].nodeid] = {description:""};
+                if (devices[data[i].nodeid]==undefined) {
+                    devices[data[i].nodeid] = {description:""};
                     // Device creation
-                    $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: false, success: function(deviceid) {
+                    $.ajax({ url: path+"device/create.json?nodeid="+data[i].nodeid, dataType: 'json', async: false, success: function(deviceid) {
                         if (!deviceid) {
-                            alert("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid); 
+                            alert("There was an error creating device: nodeid="+data[i].nodeid+" deviceid="+deviceid); 
                         } else {
                             $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
-                                devices[inputs[z].nodeid] = result;
+                                devices[data[i].nodeid] = result;
                             }});
                         }
                     }});
                 }
-                if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                if (nodes_display[data[i].nodeid]==undefined) nodes_display[data[i].nodeid] = true;
                 // expand if only one feed available
-                if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
+                if (devices[data[i].nodeid].inputs==undefined) devices[data[i].nodeid].inputs = [];
                 // expand if only one feed available or state locally cached in cookie
                 if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
-                    nodes_display[inputs[z].nodeid] = false;
+                    nodes_display[data[i].nodeid] = false;
                 }
-                devices[inputs[z].nodeid].inputs.push(inputs[z]);
+                devices[data[i].nodeid].inputs.push(data[i]);
             }
             // cache state in cookie
             if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
@@ -324,7 +337,7 @@ function draw_devices()
         counter++
         isCollapsed = !nodes_display[node];
         out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(device) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeUpdateStatus(device.inputs) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
         out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
         out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
         out += "     <span class='description' data-col='G'>"+device.description+"</span>";
@@ -365,11 +378,9 @@ function draw_devices()
                 title_lines.push(_('Time')+': '+ input.time);
                 title_lines.push(format_time(input.time,'LL LTS')+" UTC");
             }
-
-
-            row_title = title_lines.join("\n");
-
-            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
+            var row_title = title_lines.join("\n");
+            
+            out += "<div class='node-input " + itemUpdateStatus(input) + "' id="+input.id+" title='"+row_title+"'>";
             out += "  <div class='select text-center' data-col='B'>";
             out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
             out += "  </div>";
@@ -378,8 +389,8 @@ function draw_devices()
             out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='buttons pull-right'>";
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
-            out += "    <div class='time text-center' data-col='E'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='time text-center' data-col='E'>"+itemUpdateFormat(input.time)+"</div>";
+            out += "    <div class='value text-center' data-col='D'>"+itemValueFormat(input.value)+"</div>";
             out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
             out += "  </div>";
             out += "</div>";
@@ -392,7 +403,7 @@ function draw_devices()
 
     // show the latest time in the node title bar
     for(let node in latest_update) {
-        $('#table [data-node="'+node+'"] .device-last-updated').html(list_format_updated(latest_update[node]));
+        $('#table [data-node="'+node+'"] .device-last-updated').html(itemUpdateFormat(latest_update[node]));
     }
 
     // show tooltip with device key on click 
@@ -414,14 +425,14 @@ function draw_devices()
     $('#input-loader').hide();
     if (out=="") {
         $("#input-header").hide();
+        $("#input-controls").hide();
         $("#input-footer").show();
         $("#input-none").show();
-        $("#feedlist-controls").hide();
     } else {
         $("#input-header").show();
+        $("#input-controls").show();
         $("#input-footer").show();
         $("#input-none").hide();
-        $("#feedlist-controls").show();
     }
 
     if(typeof $.fn.collapse == 'function'){
@@ -779,69 +790,5 @@ $(".auth-check-allow").click(function(){
 
 // debouncing causes odd rendering during resize - run this at all resize points...
 $(window).on("resize",onResize);
-
-
-
-/**
- * find out how many intervals an feed/input has missed
- * 
- * @param {object} nodeItem
- * @return mixed
- */
-function missedIntervals(nodeItem) {
-    // @todo: interval currently fixed to 5s
-    var interval = 5;
-    if (!nodeItem.time) return null;
-    var lastUpdated = new Date(nodeItem.time * 1000);
-    var now = new Date().getTime();
-    var elapsed = (now - lastUpdated) / 1000;
-    let missedIntervals = parseInt(elapsed / interval);
-    return missedIntervals;
-}
-/**
- * get css class name based on number of missed intervals
- * 
- * @param {mixed} missed - number of missed intervals, false if error
- * @return string
- */
-function missedIntervalClassName (missed) {
-    let result = 'status-success';
-    // @todo: interval currently fixed to 5s
-    if (missed > 4) result = 'status-warning'; 
-    if (missed > 11) result = 'status-danger';
-    if (missed === null) result = 'status-danger';
-    return result;
-}
-/**
- * get css class name for node item status
- * 
- * first gets number of missed intervals since last update
- * @param {object} nodeItem
- * @return {string} 
- */
-function nodeItemIntervalClass (nodeItem) {
-    let missed = missedIntervals(nodeItem);
-    return missedIntervalClassName(missed);
-}
-/**
- * get css class name for latest node status
- * 
- * only returns the status for the most recent update
- * @param {array} - array of nodeItems
- * @return {string} 
- */
-function nodeIntervalClass (node) {
-    let nodeMissed = 0;
-    let missed = null;
-    // find most recent interval status
-    for (f in node.inputs) {
-        let nodeItem = node.inputs[f];
-        missed = missedIntervals(nodeItem);
-        if (missed > nodeMissed) {
-            nodeMissed = missed;
-        }
-    }
-    return missedIntervalClassName(missed);
-}
 
 </script>

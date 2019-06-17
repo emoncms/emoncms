@@ -105,11 +105,9 @@ body{padding:0!important}
     position:absolute;
 }
 
-#mouse-position{position:absolute;z-index:999999;width:0em;height:0em;background:red}
 @media (min-width: 768px) {
     .container-fluid { padding: 0px 20px 0px 20px; }
 }
-
 
 .node .accordion-toggle{
     border-bottom: 1px solid white;
@@ -129,30 +127,38 @@ body{padding:0!important}
     right: 0;
 }
 
-.node-feeds .node-feed.status-warning:after,
-.node.status-warning .accordion-toggle:after {
-    background: #FFC107;
+.node-feeds .node-feed.status-info:after,
+.node.status-info .accordion-toggle:after {
+    background: #3a87ad;
 }
 .node-feeds .node-feed.status-success:after,
 .node.status-success .accordion-toggle:after {
-    background: #28A745;
+    background: #28a745;
+}
+.node-feeds .node-feed.status-warning:after,
+.node.status-warning .accordion-toggle:after {
+    background: #ffc107;
 }
 .node-feeds .node-feed.status-danger:after,
 .node.status-danger .accordion-toggle:after {
-    background: #DC3545;
+    background: #dc3545;
 }
 
-.node.status-warning .accordion-toggle .last-update,
-.node-feeds .node-feed.status-warning .last-update{
-    color: #C70!important;
+.node.status-info .accordion-toggle .last-update,
+.node-feeds .node-feed.status-info .last-update {
+    color: #3c87aa;
 }
 .node.status-success .accordion-toggle .last-update,
-.node-feeds .node-feed.status-success .last-update{
-    color: #28A745!important; 
+.node-feeds .node-feed.status-success .last-update {
+    color: #28a745;
+}
+.node.status-warning .accordion-toggle .last-update,
+.node-feeds .node-feed.status-warning .last-update {
+    color: #cc7700;
 }
 .node.status-danger .accordion-toggle .last-update,
-.node-feeds .node-feed.status-danger .last-update{
-    color: #DC3545!important;
+.node-feeds .node-feed.status-danger .last-update {
+    color: #dc3545;
 }
 
 </style>
@@ -160,8 +166,7 @@ body{padding:0!important}
     <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
     <h3><?php echo _('Feeds'); ?></h3>
 </div>
-
-<div class="controls" data-spy="affix" data-offset-top="100">
+<div id="feed-controls" class="controls hide" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
     <button class="btn feed-edit hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i></button>
@@ -409,22 +414,23 @@ function update() {
         $('#feed-loader').hide();
         if (data.length == 0){
             $("#feed-header").hide();
+            $("#feed-controls").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
         } else {
             $("#feed-header").show();
+            $("#feed-controls").show();
             $("#feed-footer").show();
             $("#feed-none").hide();
         }
         feeds = {};
-        for (var z in data) feeds[data[z].id] = data[z];
         nodes = {};
-        for (var z in feeds) {
-            var node = feeds[z].tag;
-            if (nodes[node]==undefined) nodes[node] = [];
-
-            if (nodes_display[node]==undefined) nodes_display[node] = true;
-            nodes[node].push(feeds[z]);
+        for (var z in data) {
+            var node = data[z].tag;
+            if (nodes[node] == undefined) nodes[node] = [];
+            if (nodes_display[node] == undefined) nodes_display[node] = true;
+            nodes[node].push(data[z]);
+        	feeds[data[z].id] = data[z];
         }
         if (firstLoad && Object.keys(nodes).length > 1 && Object.keys(nodes_display).length == 0) {
             for (var node in nodes) {
@@ -451,21 +457,23 @@ function update() {
                 node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
+        
+        
         // display nodes and feeds
         var counter = 0;
         for (var node in nodes) {
             counter ++;
             isCollapsed = !nodes_display[node];
-            out += '<div class="node accordion ' + nodeIntervalClass(nodes[node]) + '">';
+            out += '<div class="node accordion ' + nodeUpdateStatus(nodes[node]) + '">';
             out += '    <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '')+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
             out += '      <div class="engine" data-col="F"></div>';
-            out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="size text-center" data-col="G">'+itemSizeFormat(node_size[node])+'</div>';
             out += '      <div class="node-feed-right pull-right">';
             out += '        <div class="value" data-col="C"></div>';
-            out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
+            out += '        <div class="time" data-col="D">'+itemUpdateFormat(node_time[node])+'</div>';
             out += '      </div>';
             out += '    </div>';
             
@@ -490,9 +498,9 @@ function update() {
                     title_lines.push(format_time(feed.start_time,'LL LTS')+" UTC");
                 }
 
-                row_title = title_lines.join("\n");
+                var row_title = title_lines.join("\n");
 
-                out += "<div class='" + feedListItemIntervalClass(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
+                out += "<div class='" + itemUpdateStatus(feed) + " node-feed feed-graph-link' feedid="+feedid+" title='"+row_title+"' data-toggle='tooltip'>";
                 var checked = ""; if (selected_feeds[feedid]) checked = "checked";
                 out += "<div class='select text-center' data-col='B'><input class='feed-select' type='checkbox' feedid='"+feedid+"' "+checked+"></div>";
                 out += "<div class='name' data-col='A'>"+feed.name+"</div>";
@@ -502,11 +510,11 @@ function update() {
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
                 out += '  <div class="engine" data-col="F">'+feed_engines[feed.engine]+'</div>';
-                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="size text-center" data-col="G">'+itemSizeFormat(feed.size)+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
-                out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
-                out += '    <div class="time" data-col="D">'+list_format_updated(feed.time)+'</div>';
+                out += '    <div class="value" data-col="C">'+itemValueFormat(feed.value)+' '+feed.unit+'</div>';
+                out += '    <div class="time" data-col="D">'+itemUpdateFormat(feed.time)+'</div>';
                 out += '  </div>';
                 out += '</div>';
             }
@@ -1233,7 +1241,7 @@ $("#feedDelete-confirm").click(function(){
 });
 
 $("#refreshfeedsize").click(function(){
-    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + list_format_size(data)); } });
+    $.ajax({ url: path+"feed/updatesize.json", async: true, success: function(data){ update(); alert('<?php echo addslashes(_("Total size of used space for feeds:")); ?>' + itemSizeFormat(data)); } });
 });
 
 // ---------------------------------------------------------------------------------------------
@@ -1328,7 +1336,7 @@ $(".feed-download").click(function(){
     $("#export").attr('feedcount',ids.length);
     calculate_download_size(ids.length);
 
-    if ($("#export-timezone-offset").val()=="") {   
+    if ($("#export-timezone-offset").val()=="") {
         var timezoneoffset = user.timezoneoffset();
         if (timezoneoffset==null) timezoneoffset = 0;
         $("#export-timezone-offset").val(parseInt(timezoneoffset));
