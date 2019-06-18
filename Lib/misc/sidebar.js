@@ -14,8 +14,11 @@ $(function(){
     });
     
     // open sidebar if active page link clicked
-    $('#left-nav li a').on('click', function(event){
-        event.preventDefault();
+    $('#left-nav li a').on('click', function(event) {
+        // if the link has a [data-is-link] attribute navigate to the link
+        if(!event.currentTarget.dataset.isLink) {
+            event.preventDefault();
+        }
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
         const activeClass = 'active';
