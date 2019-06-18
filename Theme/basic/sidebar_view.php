@@ -42,6 +42,8 @@ $third_level_includes = array(); // module specific sidebar include
 $bookmarks = array();
 
 global $mysqli,$user;
+
+if (file_exists("Modules/dashboard/dashboard_model.php")) {
 require_once "Modules/dashboard/dashboard_model.php";
 $dashboard = new Dashboard($mysqli);
 $default_dashboard = array();
@@ -52,6 +54,7 @@ foreach($dashboard->get_list($session['userid'],false,false) as $item){
     if($item['published']===true){
         $fav_dash[] = $item;
     }
+}
 }
 // ADD DEFAULT DASHBOARD
 if (!empty($default_dash)) {

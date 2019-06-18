@@ -959,7 +959,7 @@ function getParents($child) {
 function currentPageIsBookmarked(){
     // @todo: change this to retreive current bookmarks when user logs in
     global $mysqli, $user, $session, $route;
-    require_once "Modules/dashboard/dashboard_model.php";
+
     $current_path = str_replace('/emoncms/','',current_route());
     if(!empty($route->query)) $current_path.='?'.$route->query;
 
@@ -970,11 +970,15 @@ function currentPageIsBookmarked(){
             }
         }
     }
-    
-    if($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
-        foreach($dashboard_bookmarks as $b) {
-            if (!empty($b['path']) && $b['path']===$current_path){
-                return true;
+
+    if (file_exists("Modules/dashboard/dashboard_model.php")) {
+        require_once "Modules/dashboard/dashboard_model.php";
+
+        if($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
+            foreach($dashboard_bookmarks as $b) {
+                if (!empty($b['path']) && $b['path']===$current_path){
+                    return true;
+                }
             }
         }
     }
