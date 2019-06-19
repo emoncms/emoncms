@@ -35,6 +35,8 @@ function makeListLink($params) {
     $href = getKeyValue('href', $params);
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
+    $order = getKeyValue('order', $params);
+    
     $active = array_filter( (array) getKeyValue('active', $params));
     $sub_items = array_filter( (array) getKeyValue('sub_items', $params));
     $style = array_filter( (array) getKeyValue('style', $params));
@@ -60,7 +62,8 @@ function makeListLink($params) {
         'active'=> $active,
         'data'=> $data,
         'style'=> $style,
-        'attr'=> $attr
+        'attr'=> $attr,
+        'order'=>$order
     ));
     $attr = buildAttributes(array_merge($li_attr, array(
         'id' => $li_id,
@@ -160,6 +163,7 @@ function makeLink($params) {
     $id = getKeyValue('id', $params);
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
+    $order = getKeyValue('order', $params);
     
     $style = array_filter((array) getKeyValue('style', $params));
     $class = array_filter((array) getKeyValue('class', $params));
@@ -201,6 +205,7 @@ function makeLink($params) {
     if(empty($href)) return $text;
 
     // return <a> tag with all the attributes and child elements
+    // return sprintf('<a %s>%s %s</a>', $attr, $text, $order);
     return sprintf('<a %s>%s</a>', $attr, $text);
 }
 /**
