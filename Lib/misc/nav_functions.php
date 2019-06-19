@@ -272,7 +272,7 @@ function buildAttributes($attributes){
  */
 function getAbsoluteUrl($_passedPath) {
     global $path;
-    if(empty($_passedPath)) return $path;
+    if(empty($_passedPath)) return '';
 
     // if passed path ($_passedPath) begins with /emoncms remove it
     $_passedPathParts = getPathParts($_passedPath);
