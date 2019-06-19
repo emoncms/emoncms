@@ -119,14 +119,25 @@ function path_is_current($path) {
 /**
  * return the current route path
  *
- * @return void
+ * @return string
  */
 function current_route() {
     global $path;
-    $parts['scheme'] = $_SERVER['REQUEST_SCHEME'];
-    $parts['host'] = $_SERVER['SERVER_NAME'];
-    $parts['path'] = $_SERVER['REQUEST_URI'];
-    
+    if ( (!empty($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') ||
+         (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ||
+         (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443') ) {
+        $parts['scheme'] = 'https';
+    } else {
+        $parts['scheme'] = 'http';
+    }
+    if(!empty($_SERVER['SERVER_NAME'])) {
+        $parts['host'] = $_SERVER['SERVER_NAME'];
+    } elseif (!empty($_SERVER['HTTP_HOST'])) {
+        $parts['host'] = $_SERVER['HTTP_HOST'];
+    }
+    if(!empty($_SERVER['REQUEST_URI'])) {
+        $parts['path'] = $_SERVER['REQUEST_URI'];
+    }
     $url = (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') . 
     ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') . 
     (isset($parts['host']) ? "{$parts['host']}" : '') . 
@@ -135,7 +146,8 @@ function current_route() {
     (isset($parts['query']) ? "?{$parts['query']}" : '');
 
     // return the app's route (not full url)
-    return str_replace($path,'',$url);
+    $current_route = str_replace($path,'',$url);
+    return filter_var($current_route, FILTER_VALIDATE_URL) ? $current_route: '';
 }
 /**
  * return $array[$key] value if not empty
