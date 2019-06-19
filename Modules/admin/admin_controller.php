@@ -14,7 +14,7 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 function admin_controller()
 {
-    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $redis, $homedir, $admin_show_update, $path;
+    global $mysqli,$session,$route,$updatelogin,$allow_emonpi_admin, $redis, $openenergymonitor_dir, $admin_show_update, $path;
     global $log, $log_location, $log_enabled, $log_level;
     
     $result = EMPTY_ROUTE;// display missing route message by default
@@ -39,8 +39,8 @@ function admin_controller()
     $backup_logfile = "$log_location/emonpibackup.log";
     $update_flag = "/tmp/emoncms-flag-update";
     $backup_flag = "/tmp/emonpibackup";
-    $update_script = "$homedir/emonpi/service-runner-update.sh";
-    $backup_file = "$homedir/data/backup.tar.gz";
+    $update_script = "$openenergymonitor_dir/emonpi/service-runner-update.sh";
+    $backup_file = "$openenergymonitor_dir/data/backup.tar.gz";
     
     $log_levels = array(
         1 =>'INFO',

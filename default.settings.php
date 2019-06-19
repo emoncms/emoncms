@@ -71,8 +71,10 @@
         )
     );
     
-    // For use with emoncms module that require installation in home directory
-    // $homedir = "/home/username";
+    // Suggested installation path for symlinked emoncms modules /opt/emoncms/modules
+    $emoncms_dir = "/opt/emoncms";
+    // Suggested installation path for emonpi and EmonScripts repository:
+    $openenergymonitor_dir = "/opt/openenergymonitor";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
