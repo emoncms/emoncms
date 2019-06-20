@@ -116,7 +116,9 @@ function input_controller()
         else if ($route->action == 'view') {
             $route->format = "html";
             textdomain("messages");
-            return view("Modules/input/Views/input_view.php");
+            $deviceModuleInstalled = file_exists('Modules/device');
+            $deviceModuleInstalled = false;
+            return view("Modules/input/Views/input_view.php",array('deviceModule'=>$deviceModuleInstalled));
         }    
         else if ($device && $route->action == 'schedule') {
             $route->format = "html";
