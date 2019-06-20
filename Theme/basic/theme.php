@@ -287,6 +287,11 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             <!-- <title>content_copy</title> -->
             <path d="M25.313 28v-18.688h-14.625v18.688h14.625zM25.313 6.688c1.438 0 2.688 1.188 2.688 2.625v18.688c0 1.438-1.25 2.688-2.688 2.688h-14.625c-1.438 0-2.688-1.25-2.688-2.688v-18.688c0-1.438 1.25-2.625 2.688-2.625h14.625zM21.313 1.313v2.688h-16v18.688h-2.625v-18.688c0-1.438 1.188-2.688 2.625-2.688h16z"></path>
         </symbol>
+        <?php
+        if(!empty($menu['includes']['icons'])):foreach($menu['includes']['icons'] as $icon):
+            echo $icon;
+        endforeach; endif;
+        ?>
     </defs>
 </svg>
 

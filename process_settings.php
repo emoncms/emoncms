@@ -125,12 +125,16 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
-
+    
+    // emoncms_dir and openenergymonitor_dir to replace homedir as installation path reference
+    if (!isset($emoncms_dir)) $emoncms_dir = $homedir;
+    if (!isset($openenergymonitor_dir)) $openenergymonitor_dir = $homedir;
+    
     if (!isset($linked_modules_dir)) {
-        if (is_dir("$homedir/modules")) {
-            $linked_modules_dir = "$homedir/modules";
+        if (is_dir("$emoncms_dir/modules")) {
+            $linked_modules_dir = "$emoncms_dir/modules";
         } else {
-            $linked_modules_dir = $homedir;
+            $linked_modules_dir = $emoncms_dir;
         }
     }
 
