@@ -4,5 +4,5 @@
         'text' => _("Visualization"),
         'path' => 'vis/list',
         'icon' => 'present_to_all',
-        'order' => 3
+        'order' => 30
     );
