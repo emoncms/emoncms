@@ -447,7 +447,7 @@ function draw_devices()
     
     // autowidth($('#table')); // set each column group to the same width
     
-    var charsize = 10;
+    var charsize = 8;
     var padding = 20;
     
     $('[data-col="B"]').width(40);                                        // select
@@ -457,6 +457,8 @@ function draw_devices()
     $('[data-col="E"]').width(max_time_length*charsize+padding);          // time
     $('[data-col="D"]').width(max_value_length*charsize+padding);         // value
     $('[data-col="C"]').width(50);                                        // config
+
+    onResize();
 }
 // ---------------------------------------------------------------------------------------------
 
