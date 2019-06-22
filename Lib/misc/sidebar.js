@@ -108,7 +108,7 @@ $(function(){
             document.body.classList.remove('narrow');
         }
     })
-    
+
     // hide sidebar on load on narrow devices
     if ($(window).width() < 870) {
         document.body.classList.add('narrow','collapsed');
@@ -119,6 +119,7 @@ $(function(){
             document.body.classList.add('has-animation');
         }, 500);
     }
+
     /** 
      * If menu 3rd level menu shown shrink 2nd level entries
      * 
@@ -162,9 +163,11 @@ $(function(){
             $menu.find('li').not('.active').toggleClass('in');
         }
     }
+
     function getQueryStringValue (key) {  
         return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
     }
+
     // add current page to user's bookmark list
     $('#set-bookmark, #remove-bookmark').click(function(event){
         event.preventDefault();
@@ -262,7 +265,6 @@ $(function(){
     $(document).on('click', '#menu-emoncms li.active a', hideMenuItems);
     // show hide 2nd / 3rd menu items
     // setTimeout(hideMenuItems, 100);
-    
 
     // save a cookie to remember user's choice to hide or show the bookmarks
     $('#sidebar_bookmarks').on('show hide', function(event) {
@@ -277,8 +279,6 @@ $(function(){
     });
 
 }); // end of jquery ready()
-
-
     
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
@@ -289,6 +289,7 @@ function show_sidebar(options) {
     }, 350);
     $('body').removeClass('collapsed').addClass('expanded');
 }
+
 function hide_sidebar(options) {
     // @note: assumes the css animation takes 300ms
     $('#sidebar').trigger('hide.sidebar.collapse');
@@ -298,11 +299,8 @@ function hide_sidebar(options) {
     $('body').addClass('collapsed').removeClass('expanded');
 }
 
-
 // backward compatible empty function
 if(typeof init_sidebar !== 'function') var init_sidebar = function(){}
-
-
 
 // get/set document cookies
 var docCookies = {

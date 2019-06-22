@@ -12,6 +12,7 @@
 // creates all second and third level menus with their associated hierarch
 // built up from each Module's `*_menu.php` file
 // will mark the active menu and any parent menus
+
 /* EXAMPLE MARKUP OF A SINGLE MENU --------------------------------------
 http://localhost/emoncms/example/1
 
@@ -22,7 +23,6 @@ http://localhost/emoncms/example/1
         <li class="collapse in"><a href="http://localhost/emoncms/example/2" title="Example 2">Example 2</a></li>
     </ul>
 </div>
-
 --- EXAMPLE END */
 
 global $mysqli,$user,$session;
@@ -153,23 +153,12 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
     $_close = _('Close');
 
-
-
-// logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
-// -------------------------------------------------------
-// view starts here
-
-
-
-
-
-    echo <<<SIDEBARSTART
-
-    <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
-        <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
-        <h4 class="sidebar-title">{$menu_key}</h4>
-
-SIDEBARSTART;
+    // logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
+    // ---------------------------------------------------------------------------------
+    // view starts here
+    echo "<div id='sidebar_{$menu_key}' class='sidebar-inner{$active_css}'>
+        <a href='#' class='btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2' data-toggle='slide-collapse' data-target='#sidebar' title='{$_close}'>&times;</a>
+        <h4 class='sidebar-title'>{$menu_key}</h4>";
 
     if(!empty($markup)) {
         printf(tab(2).'<ul id="menu-%s" class="nav sidebar-menu">%s'.tab(2).'</ul>', $menu_key, tab(3).implode(tab(3),$markup));

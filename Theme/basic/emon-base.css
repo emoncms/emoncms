@@ -38,30 +38,19 @@ body.app #wrap {
 --------------------------------------------------------------------*/
 
 /* text colours */
-.text-white{color:white!important}
+.text-black{color: black !important}
+.text-white{color: white !important}
 .text-light {color: #aaa !important;}
 .text-grey {color: #999 !important;}
 .text-dark {color: #333 !important;}
-.text-primary{color:#0699fa!important}
-.text-warning{color:#dccc1f!important}
-.text-success{color:#89ae65!important}
-.text-secondary{color:#6c757d!important}
-.text-tertiary{color:#b7aa1f!important}
-.text-quaternary {color: #fb7b50!important}
-.text-danger{color:#d52e2e!important}
-.text-exporting{color:#2ed52e!important}
-
-/* colours */
-.bg-dark {background: #333 !important;}
-.bg-primary {background: #44b3e2 !important;}
-.bg-secondary {background: #6c757d !important;}
-.bg-success {background: #28a745 !important;}
-.bg-danger {background: #dc3545 !important;}
-.bg-warning {background: #ffc107 !important;}
-.bg-info {background: #17a2b8 !important;}
-.bg-light {background: #f8f9fa !important;}
-.bg-white {background: #fff !important;}
-.bg-transparent {background: transparent !important;}
+.text-primary{color: #0699fa !important}
+.text-warning{color: #dccc1f !important}
+.text-success{color: #89ae65 !important}
+.text-secondary{color: #6c757d !important}
+.text-tertiary{color: #b7aa1 f!important}
+.text-quaternary {color: #fb7b50 !important}
+.text-danger{color: #d52e2e !important}
+.text-exporting{color: #2ed52e !important}
 
 /* spaces: 
     1 = .25rem

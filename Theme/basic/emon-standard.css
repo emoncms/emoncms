@@ -13,8 +13,10 @@ http://openenergymonitor.org
     background-color: #ffffff;
 }
 
-.caret {
-    border-top-color: #fff !important;
+.caret,
+.arrow-up,
+.arrow-down {
+    border-top-color: white !important;
 }
 
 .text-larger {
@@ -90,25 +92,63 @@ div#account {
 }
 
 .navbar-inner {
-    background-color: #44b3e2 !important;
-    background-image: none !important;
     border: none !important;
     padding: 0px !important;
-}
-
-.nav > .active > a {
-    background-color: #209ed3 !important;
-    box-shadow: none !important;
-}
-
-.nav > li > a:hover,
-.nav > .open > a {
-    background-color: #2eaadf !important;
 }
 
 .nav > li > a {
     color: #fff !important;
     text-shadow: none !important;
+}
+
+/* -------------------------------------------------------------------
+   Side nav
+--------------------------------------------------------------------*/
+.sidebar-menu {
+    border-top: 1px solid #444;
+}
+.sidebar-menu li.collapse.in,
+.include-container.collapse.in > li {
+    border-bottom: 1px solid #444;
+}
+
+.sidebar {
+    background: #333;
+    color: #aaa;
+}
+.sidebar .nav a {
+    color: #fff;
+}
+.sidebar .nav.sidebar-menu li.active a,
+.sidebar .nav.sidebar-menu li a:focus {
+    background: #212121b3;
+    color: #f1f1f1;
+}
+/* When you mouse over the navigation items, change their color */
+.sidebar .nav.sidebar-menu a:hover {
+    background: #212121;
+}
+.sidebar .nav a:hover {
+    color: #f1f1f1;
+}
+
+.include-container h4 a {
+    color: white;
+}
+
+#sidebar_user_toggle .expanded,
+#sidebar_user_toggle:hover {
+  background: #212121;
+}
+#edit_bookmarks {
+    padding: .7em;
+    color: #545454;
+    transition: color .3s ease-out;
+}
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
+	background: #333 !important;
+    color: #fff;
 }
 
 /* -------------------------------------------------------------------
@@ -123,7 +163,7 @@ div#account {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top: 10px;
+    padding-top: 12px;
 }
 
 #footer a {
@@ -288,12 +328,25 @@ div#account {
 }
 
 /* -------------------------------------------------------------------
-   Apps
+   Graph module
+--------------------------------------------------------------------*/
+table#feeds.table thead th {
+    color: #adadad;
+}
+table#feeds.table thead th:hover {
+    color: #f8f9fa;
+}
+table#feeds.table tbody tr > * {
+    border-color: #444;
+}
+
+/* -------------------------------------------------------------------
+   App module
 --------------------------------------------------------------------*/
 .app-header,
 .graph-header {
     color: #fff;
-    background-color: #ddd;
+    background-color: #333;
 }
 .app-header .action:hover,
 .graph-header .action:hover {

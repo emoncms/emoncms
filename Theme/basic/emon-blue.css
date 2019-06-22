@@ -13,8 +13,10 @@ http://openenergymonitor.org
     background-color: #1d8dbc;
 }
 
-.caret {
-    border-top-color: #fff !important;
+.caret,
+.arrow-up,
+.arrow-down {
+    border-top-color: #999 !important;
 }
 
 .text-larger {
@@ -114,6 +116,55 @@ div#account {
 }
 
 /* -------------------------------------------------------------------
+   Side nav
+--------------------------------------------------------------------*/
+.sidebar-menu {
+    border-top: 1px solid #f0f0f0;
+}
+.sidebar-menu li.collapse.in,
+.include-container.collapse.in > li {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sidebar {
+    background: #e3e3e3;
+    color: #666;
+}
+.sidebar .nav a {
+    color: #333;
+}
+.sidebar .nav.sidebar-menu li.active a,
+.sidebar .nav.sidebar-menu li a:focus {
+    background: #f5f5f5;
+    color: black;
+}
+/* When you mouse over the navigation items, change their color */
+.sidebar .nav.sidebar-menu a:hover {
+    background: #f0f0f0;
+}
+.sidebar .nav a:hover {
+    color: black;
+}
+
+.include-container h4 a {
+    color: #666;
+}
+
+#sidebar_user_toggle .expanded,
+#sidebar_user_toggle:hover {
+  background: #f0f0f0;
+}
+#edit_bookmarks {
+    padding: .7em;
+    color: #545454;
+    transition: color .3s ease-out;
+}
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
+    color: black;
+}
+
+/* -------------------------------------------------------------------
    Footer
 --------------------------------------------------------------------*/
 #push, #footer {
@@ -125,7 +176,7 @@ div#account {
     text-align: center;
     font-size: 13px;
     font-weight: bold;
-    padding-top: 10px;
+    padding-top: 12px;
 }
 
 #footer a {
@@ -290,7 +341,20 @@ div#account {
 }
 
 /* -------------------------------------------------------------------
-   Apps
+   Graph module
+--------------------------------------------------------------------*/
+table#feeds.table thead th {
+    color: #666;
+}
+table#feeds.table thead th:hover{
+    color: #999;
+}
+table#feeds.table tbody tr > * {
+    border-color: #ebebeb;
+}
+
+/* -------------------------------------------------------------------
+   App module
 --------------------------------------------------------------------*/
 .app-header,
 .graph-header {
