@@ -23,9 +23,19 @@ body.app #wrap {
   box-sizing: border-box;
 }
 
-/*-------------------------------------*/
-/* utilities */
-/*-------------------------------------*/
+.ajax-loader {
+    position: absolute;
+    top: 0; bottom:0; left: 0; right:0;
+    margin: auto;
+    background: rgba(255, 255, 255, .8)
+        url(ajax-loader.gif)
+        center
+        no-repeat;
+}
+
+/* -------------------------------------------------------------------
+   Utilities
+--------------------------------------------------------------------*/
 
 /* text colours */
 .text-white{color:white!important}
@@ -75,6 +85,7 @@ body.app #wrap {
 .m-4{padding: var(--s4)}
 .m-5{padding: var(--s5)}
 .m-6{padding: var(--s6)}
+
 /* remove margins */
 .my-0,.mb-0,.m-0{margin-bottom:0!important}
 .my-0,.mt-0,.m-0{margin-top:0!important}
@@ -258,15 +269,14 @@ body.app #wrap {
 
 /* override topnav styling in tabs */
 #emoncms-navbar .nav.nav-tabs > li > a {
-    color: #999!important;
+    color: #999 !important;
 }
 #emoncms-navbar .nav.nav-tabs > li.active > a {
-    color: #EFEFEF!important;
+    color: #efefef !important;
 }
 #emoncms-navbar .nav.nav-tabs > li > a:hover {
-    color: #FFF!important;
+    color: #fff !important;
 }
-
 
 /* 
  * #sidebar above #wrap on narrow screens
@@ -278,11 +288,11 @@ body.app #wrap {
  @media only screen and (min-width:870px) {
   .fullwidth.has-sidebar #wrap,
   .fullwidth.has-sidebar #footer {
-    margin-left: 15rem!important;
+    margin-left: 15rem !important;
   }
   .fullwidth.has-sidebar.collapsed #wrap,
   .fullwidth.has-sidebar.collapsed #footer {
-    margin-left: 0px!important;
+    margin-left: 0px !important;
   }
   #sidebar {
     position: fixed;

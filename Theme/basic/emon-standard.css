@@ -8,55 +8,25 @@ Part of the OpenEnergyMonitor project:
 http://openenergymonitor.org
 
 */
-html, body {
-    height: 100%;
-}
-
-#wrap {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    /* Negative indent footer by it's height */
-    margin: 0 auto -40px;
-}
 
 .body-login {
     background-color: #ffffff;
 }
 
+.caret {
+    border-top-color: #fff !important;
+}
+
+.text-larger {
+    font-size: larger
+}
+
+input[type=text][class=variable-name-edit] {
+    margin-bottom:0px;
+}
+
 #login-form input[type="text"], #login-form input[type="password"] {
     width: 94%;
-}
-
-#push, #footer {
-    height: 30px;
-}
-
-#footer {
-    background-color: #f5f5f5;
-    text-align: center;
-    font-size: 13px;
-    font-weight: bold;
-    padding-top: 10px;
-}
-
-#footer a {
-    color: #77b4d9;
-    text-decoration: none;
-}
-
-#footer span {
-    color: #999;
-}
-
-#submenu {
-    width:100%;
-    background-color:#ddd;
-    height:27px;
-}
-
-#topspacer {
-    padding-top: 40px;
 }
 
 div#account {
@@ -67,8 +37,17 @@ div#account {
     margin-bottom:10px;
 }
 
-input[type=text][class=variable-name-edit] {
-    margin-bottom:0px;
+/* -------------------------------------------------------------------
+   Top nav
+--------------------------------------------------------------------*/
+#submenu {
+    width:100%;
+    background-color:#ddd;
+    height:27px;
+}
+
+#topspacer {
+    padding-top: 40px;
 }
 
 @media (min-width: 768px) and (max-width: 979px) {
@@ -110,16 +89,6 @@ input[type=text][class=variable-name-edit] {
     overflow-y: auto;
 }
 
-.ajax-loader {
-    position: absolute;
-    top: 0; bottom:0; left: 0; right:0;
-    margin: auto;
-    background: rgba(255, 255, 255, .8)
-        url(ajax-loader.gif)
-        center
-        no-repeat;
-}
-
 .navbar-inner {
     background-color: #44b3e2 !important;
     background-image: none !important;
@@ -142,14 +111,33 @@ input[type=text][class=variable-name-edit] {
     text-shadow: none !important;
 }
 
-.caret {
-    border-top-color: #fff !important;
+/* -------------------------------------------------------------------
+   Footer
+--------------------------------------------------------------------*/
+#push, #footer {
+    height: 30px;
 }
 
-.text-larger {
-    font-size: larger
+#footer {
+    background-color: #f5f5f5;
+    text-align: center;
+    font-size: 13px;
+    font-weight: bold;
+    padding-top: 10px;
 }
 
+#footer a {
+    color: #77b4d9;
+    text-decoration: none;
+}
+
+#footer span {
+    color: #999;
+}
+
+/* -------------------------------------------------------------------
+   Nodes
+--------------------------------------------------------------------*/
 .expand-all .icon-resize-small {
     display: none
 }
@@ -299,6 +287,9 @@ input[type=text][class=variable-name-edit] {
     body{font-size:16px}
 }
 
+/* -------------------------------------------------------------------
+   Apps
+--------------------------------------------------------------------*/
 .app-header,
 .graph-header {
     color: #fff;
