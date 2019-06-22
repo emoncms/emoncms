@@ -318,6 +318,11 @@ function draw_devices()
     isCollapsed = !(Object.keys(devices).length > 1);
 
     var latest_update = [];
+    
+    var max_name_length = 0;
+    var max_description_length = 0;
+    var max_time_length = 0;
+    var max_value_length = 0;
 
     for (var node in devices) {
         var device = devices[node]
@@ -378,15 +383,26 @@ function draw_devices()
             out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='buttons pull-right'>";
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
-            out += "    <div class='time text-center' data-col='E'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
+            var fv = list_format_updated_obj(input.time);
+            out += "    <div class='time text-center' data-col='E'><span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span></div>";
+            var value_str = list_format_value(input.value);
+            out += "    <div class='value text-center' data-col='D'>"+value_str+"</div>";
             out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
             out += "  </div>";
             out += "</div>";
+            
+            if (input.name.length>max_name_length) max_name_length = input.name.length;
+            if (input.description.length>max_description_length) max_description_length = input.description.length;
+            if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
+            if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;            
         }
         
         out += "</div>";
         out += "</div>";
+        
+        // Node name and description length
+        if ((""+node).length>max_name_length) max_name_length = (""+node).length;
+        if (device.description.length>max_description_length) max_description_length = device.description.length;        
     }
     $("#table").html(out);
 
@@ -428,7 +444,19 @@ function draw_devices()
         $("#table .collapse").collapse({toggle: false});
         setExpandButtonState($('#table .collapsed').length == 0);
     }
-    autowidth($('#table')); // set each column group to the same width
+    
+    // autowidth($('#table')); // set each column group to the same width
+    
+    var charsize = 10;
+    var padding = 20;
+    
+    $('[data-col="B"]').width(40);                                        // select
+    $('[data-col="A"]').width(max_name_length*charsize+padding);          // name
+    $('[data-col="G"]').width(max_description_length*10+padding);         // description
+    $('[data-col="F"]').width(50);                                        // schedule
+    $('[data-col="E"]').width(max_time_length*charsize+padding);          // time
+    $('[data-col="D"]').width(max_value_length*charsize+padding);         // value
+    $('[data-col="C"]').width(50);                                        // config
 }
 // ---------------------------------------------------------------------------------------------
 
