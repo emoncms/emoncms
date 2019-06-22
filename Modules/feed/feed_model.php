@@ -585,9 +585,9 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled']) {
             // Add redisbuffer cache if available
-            $bufferstart=end($data)[0];
+            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) $bufferstart=$start; else $bufferstart=end($data)[0];
+            
             $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
-
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
 
