@@ -30,6 +30,8 @@ body.app #wrap {
 /* text colours */
 .text-white{color:white!important}
 .text-light {color: #aaa !important;}
+.text-grey {color: #999 !important;}
+.text-dark {color: #333 !important;}
 .text-primary{color:#0699fa!important}
 .text-warning{color:#dccc1f!important}
 .text-success{color:#89ae65!important}
@@ -38,7 +40,6 @@ body.app #wrap {
 .text-quaternary {color: #fb7b50!important}
 .text-danger{color:#d52e2e!important}
 .text-exporting{color:#2ed52e!important}
-.text-dark {color: #333 !important;}
 
 /* colours */
 .bg-dark {background: #333 !important;}
