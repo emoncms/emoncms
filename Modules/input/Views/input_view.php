@@ -125,15 +125,16 @@ input[type="checkbox"] { margin:0px; }
         <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
     </div>
 
+    <div id="input-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+    </div>
+
     <div id="noprocesses"></div>
     <div id="table" class="input-list"></div>
 
     <div id="output"></div>
 
-    <div id="input-none" class="alert alert-block hide">
-        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-    </div>
 
     <div id="input-footer" class="hide">
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
@@ -217,17 +218,22 @@ var path = "<?php echo $path; ?>";
 var devices = {};
 var inputs = {};
 var nodes = {};
+var requestTime = 0;
+var firstLoad = true;
 var local_cache_key = 'input_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
 var selected_inputs = {};
 var selected_device = false;
+var isCollapsed = true;
 
 var device_templates = {};
 var device_module_installed = <?php echo $deviceModule ? 'true': 'false';?>;
 
+
 if (device_module_installed) {
     // device module installed, load from /device/list
-    $.getJSON(path+'device/template/listshort.json').done(function(data){
+    $.getJSON(path+'device/template/listshort.json')
+    .done(function(data){
         device_templates = data;
         update();
     })
@@ -249,12 +255,12 @@ updaterStart(update, 50000);
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
 var firstLoad = true;
-var requestTime, inputs, devices;
 function update() {
     requestTime = (new Date()).getTime();
     if (!device_module_installed) {
         updateInputs();
     } else {
+        console.log('device module installed')
         updateDevices();
     }
 }
@@ -262,80 +268,180 @@ function update() {
 function updateInputs() {
     $.getJSON(path+"input/list.json").done(function(data,status,xhr){
         inputs = processInputs(data,status,xhr);
-        draw_devices(inputs);
+        draw_inputs(inputs);
     })
     .fail(function(xhr,error){
         console.error('issue with loading input/list.json')
     })
 }
-// loop through all inputs
+/**
+ * create an object of inputs grouped by nodeid
+ * @return object list of inputs using input.id as key
+ */ 
 function processInputs(data, textStatus, xhr) {
     table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
     let _inputs = {};
     // Associative array of inputs by id
-    for (var z in data) _inputs[data[z].id] = data[z];
+    for (var z in data) {
+        let index = data[z].nodeid;
+        if (typeof _inputs[index] === 'undefined') {
+            _inputs[index] = [];
+        }
+        _inputs[index].push(data[z]);
+    }
     return _inputs;
 }
-
-function assignInputsToDevices(inputs) {
+/**
+ * return the combined devices object on success
+ * @return Promise - done(Object devices), fail(Array messages)
+ */
+function assignInputsToDevices(inputs,devices) {
+    // use a deferred object resolve on success. 
+    // calling function can use the done()/error()/then() function to act on response
+    var def = $.Deferred();
+    var errors = [];
+    var totalInputs = Object.values(inputs).length;
+    var counter = 0;
     // Assign inputs to devices
     for (var z in inputs) {
+        counter++;
         // Device does not exist which means this is likely a new system or that the device was deleted
         // There needs to be a corresponding device for every node and so the system needs to recreate the device here
-        if (devices[inputs[z].nodeid]==undefined) {
+        if (devices[inputs[z].nodeid] == undefined) {
+            // DEVICE CREATION
             devices[inputs[z].nodeid] = {description:""};
-            // Device creation
-            $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: false, success: function(deviceid) {
+            // get new device id from api response
+            $.getJSON(path+"device/create.json?nodeid="+inputs[z].nodeid)
+            .done(function(deviceid){
                 if (!deviceid) {
-                    alert("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid);
+                    errors.push("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid);
+                    // on last iteration return errors to calling function 
+                    if(totalInputs === counter) {
+                        def.reject(errors);
+                    }
                 } else {
-                    $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
-                        devices[inputs[z].nodeid] = result;
-                    }});
+                    // get complete device object from api response
+                    $.getJSON(path+"device/get.json?id="+deviceid)
+                    .done(function(device) {
+                        devices[inputs[z].nodeid] = device;
+                        if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
+                        // add inputs to device
+                        if (devices[inputs[z].nodeid].inputs==undefined) {
+                            devices[inputs[z].nodeid].inputs = [];
+                        }
+                        devices[inputs[z].nodeid].inputs.push(inputs[z]);
+                        
+                        // expand if only one feed available or state locally cached in cookie
+                        if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
+                            nodes_display[inputs[z].nodeid] = false;
+                        }
+                    })
+                    .fail(function(xhr,error,message){
+                        errors.push([error, message].join(' '));
+                    })
+                    .always(function(){
+                        // on last iteration return devices or errors to calling function 
+                        if(totalInputs === counter) {
+                            // if all calls to device/create and device/get succesfull
+                            if(errors.length===0){
+                                def.resolve(devices);
+                            }else{
+                                def.reject(errors);
+                            }
+                        }
+                    })
                 }
-            }});
+            })
+            .fail(function(xhr,error,message){
+                errors.push(['Error calling device/create.json',error,message].join(':'));
+                // on last iteration return errors to calling function 
+                if(totalInputs === counter) {
+                    def.reject(errors);
+                }
+            })
+        } else {
+            // NO NEW DEVICE TO CREATE
+            // add inputs to device
+            if (devices[inputs[z].nodeid].inputs==undefined) {
+                devices[inputs[z].nodeid].inputs = [];
+            }
+            devices[inputs[z].nodeid].inputs.push(inputs[z]);
+
+            // on last iteration return devices or errors to calling function 
+            if(totalInputs === counter) {
+                // if all calls to device/create and device/get succesfull
+                if(errors.length===0){
+                    def.resolve(devices);
+                }else{
+                    def.reject(errors);
+                }
+            }
         }
-        if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
-        // expand if only one feed available
-        if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
-        // expand if only one feed available or state locally cached in cookie
-        if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
-            nodes_display[inputs[z].nodeid] = false;
-        }
-        devices[inputs[z].nodeid].inputs.push(inputs[z]);
     }
+    // return promise to calling function so that it can wait for the ajax responses
+    return def.promise();
 }
+/**
+ * Join and include device data
+ * then call draw_devices()
+ * @return void
+ */
 function updateDevices() {
     // Join and include device data
-    $.getJSON(path+'device/list.json').done(function(data,status,xhr) {
-        devices = processDevices(data,status,xhr);
-
-        // cache state in cookie
-        console.log('commented out stuff');
-        // if(firstLoad) docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
-        // firstLoad = false;
-
-        draw_devices(devices);
-        noProcessNotification();
+    var devices = {};
+    $.getJSON(path+'device/list.json')
+    .done(function(data,status,xhr) {
+        processDevices(data,status,xhr)
+        .done(draw_devices)
+        .fail(showAjaxErrors)
     })
-    $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: processDevices});
+    .fail(showAjaxErrors)
 }
-function processDevices(data) {
+function showAjaxErrors(xhr, error, message) {
+    if(xhr.hasOwnProperty['url']) {
+        path =  xhr.url;
+    } else {
+        message = xhr;
+    }
+    if (typeof message !== 'string'){
+        message = message.join("\n")
+    }
+    console.log(message, path, error)
+}
+/**
+ * map api response to correct properties
+ * return devices object for updateDevices() to display
+ * 
+ * @param data - ajax response body from device/list.json
+ * @return Promise - resolve({devices}), reject(message)
+ */
+function processDevices(data,status,xhr) {
     // Associative array of devices by nodeid
-    devices = {};
-    for (var z in data) devices[data[z].nodeid] = data[z];
-    $.getJSON(path+'input/list.json').done( function(data, status, xhr) {
-        inputs = processInputs(data,status,xhr);
+    var def = $.Deferred();
+    var devices = {};
+    for (var z in data) {
+        devices[data[z].nodeid] = data[z];
+    }
+    $.getJSON(path+'input/list.json')
+    .done( function(data, status, xhr) {
         // Assign inputs to devices
-        assignInputsToDevices();
+        inputs = processInputs(data,status,xhr);
+        assignInputsToDevices(inputs,devices)
+        .done(def.resolve)
+        .fail(def.reject)
     })
+    .fail(function(message) {
+        def.reject('Ajax error loading input/list.json')
+    })
+    return def.promise();
 }
 /** show a message to the user if no processes have been added */
-function noProcessNotification(){
+function noProcessNotification(devices){
     let processList = [],  message = '';
 
     for (d in devices) {
         for (i in devices[d].inputs) {
+            console.log('device inputs: ',d,i)
             if(devices[d].inputs[i].processList.length>0) {
                 processList.push(devices[d].inputs[i].processList);
             }
@@ -346,87 +452,48 @@ function noProcessNotification(){
     }
     $('#noprocesses').html(message);
 }
-
+function draw_inputs(inputs) {
+    $('#input-loader').hide();
+    var out = "";
+    var counter = 0;
+    for (var node in inputs) {
+        console.log(node);
+        var input = inputs[node];
+        isCollapsed = false; //@todo: fix this
+        out += buildRow(counter,node,input,isCollapsed)
+    }
+    $("#table").html(out);
+    toggleErrorNotification(out==="")
+    autowidth($('#table')); // set each column group to the same width
+}
+// shows or hides the alert at top of page "no inputs created"
+function toggleErrorNotification(isHidden) {
+    isHidden = isHidden === true;
+    if (isHidden) {
+        $("#input-footer").show();
+        $("#input-none").show();
+        $("#feedlist-controls").hide();
+    } else {
+        $("#input-footer").show();
+        $("#input-none").hide();
+        $("#feedlist-controls").show();
+    }
+}
 // ---------------------------------------------------------------------------------------------
 // Draw devices
 // ---------------------------------------------------------------------------------------------
-function draw_devices(data)
+function draw_devices(devices) 
 {
     // Draw node/input list
     var out = "";
     var counter = 0;
     isCollapsed = !(Object.keys(devices).length > 1);
-
     var latest_update = [];
-
-    for (var node in data) {
-        var device = data[node]
+    for (var node in devices) {
+        var device = devices[node]
         counter++
         isCollapsed = !nodes_display[node];
-        out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(device) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
-        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <span class='description' data-col='G'>"+device.description+"</span>";
-        out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
-        out += "     <div class='buttons pull-right'>"
-
-        var control_node = "hidden";
-        if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
-
-        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
-        out += "        <div class='device-last-updated text-center' data-col='E'></div>";
-
-        var devicekey = device.devicekey;
-        if (device.devicekey=="") devicekey = "No device key created";
-
-        out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>";
-        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
-        out += "     </div>";
-        out += "  </div>";
-
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-        for (var i in device.inputs) {
-            var input = device.inputs[i];
-            var selected = selected_inputs[input.id] ? 'checked': '';
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
-            latest_update[node] = latest_update > input.time ? latest_update : input.time;
-
-            var title_lines = [
-                node.toUpperCase() + ': ' + input.name,
-                '-----------------------',
-                _('ID')+': '+ input.id
-            ];
-            if(input.value) {
-                title_lines.push(_('Value')+': ' + input.value);
-            }
-            if(input.time) {
-                title_lines.push(_('Updated')+": "+ time_since(input.time));
-                title_lines.push(_('Time')+': '+ input.time);
-                title_lines.push(format_time(input.time,'LL LTS')+" UTC");
-            }
-
-
-            row_title = title_lines.join("\n");
-
-            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
-            out += "  <div class='select text-center' data-col='B'>";
-            out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
-            out += "  </div>";
-            out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='description' data-col='G'>"+input.description+"</div>";
-            out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
-            out += "  <div class='buttons pull-right'>";
-            out += "    <div class='schedule text-center hidden' data-col='F'></div>";
-            out += "    <div class='time text-center' data-col='E'>"+list_format_updated(input.time)+"</div>";
-            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
-            out += "  </div>";
-            out += "</div>";
-        }
-
-        out += "</div>";
-        out += "</div>";
+        out += buildRow(counter,node,device,isCollapsed)
     }
     $("#table").html(out);
 
@@ -452,23 +519,82 @@ function draw_devices(data)
         }
     )
     $('#input-loader').hide();
-    if (out=="") {
-        $("#input-header").hide();
-        $("#input-footer").show();
-        $("#input-none").show();
-        $("#feedlist-controls").hide();
-    } else {
-        $("#input-header").show();
-        $("#input-footer").show();
-        $("#input-none").hide();
-        $("#feedlist-controls").show();
-    }
+    toggleErrorNotification(out==="")
 
     if(typeof $.fn.collapse == 'function'){
         $("#table .collapse").collapse({toggle: false});
         setExpandButtonState($('#table .collapsed').length == 0);
     }
     autowidth($('#table')); // set each column group to the same width
+}
+
+function buildRow(counter,node,item,isCollapsed) {
+    out = "";
+    out += "<div class='node accordion line-height-expanded'>";
+    out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(item) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+    out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
+    out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
+    out += "     <span class='description' data-col='G'>"+(item.description || '')+"</span>";
+    out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
+    out += "     <div class='buttons pull-right'>"
+
+    var control_node = "hidden";
+    if (device_templates[item.type]!=undefined && device_templates[item.type].control!=undefined && device_templates[item.type].control) control_node = "";
+
+    out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
+    out += "        <div class='device-last-updated text-center' data-col='E'></div>";
+
+    var devicekey = item.devicekey;
+    if (!devicekey) devicekey = "No device key created";
+
+    out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>";
+    out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
+    out += "     </div>";
+    out += "  </div>";
+
+    out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
+    for (var i in item.inputs) {
+        var input = item.inputs[i];
+        var selected = selected_inputs[input.id] ? 'checked': '';
+        var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
+        latest_update[node] = latest_update > input.time ? latest_update : input.time;
+
+        var title_lines = [
+            node.toUpperCase() + ': ' + input.name,
+            '-----------------------',
+            _('ID')+': '+ input.id
+        ];
+        if(input.value) {
+            title_lines.push(_('Value')+': ' + input.value);
+        }
+        if(input.time) {
+            title_lines.push(_('Updated')+": "+ time_since(input.time));
+            title_lines.push(_('Time')+': '+ input.time);
+            title_lines.push(format_time(input.time,'LL LTS')+" UTC");
+        }
+
+
+        row_title = title_lines.join("\n");
+
+        out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
+        out += "  <div class='select text-center' data-col='B'>";
+        out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
+        out += "  </div>";
+        out += "  <div class='name' data-col='A'>"+input.name+"</div>";
+        out += "  <div class='description' data-col='G'>"+input.description+"</div>";
+        out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
+        out += "  <div class='buttons pull-right'>";
+        out += "    <div class='schedule text-center hidden' data-col='F'></div>";
+        out += "    <div class='time text-center' data-col='E'>"+list_format_updated(input.time)+"</div>";
+        out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
+        out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
+        out += "  </div>";
+        out += "</div>";
+    }
+
+    out += "</div>";
+    out += "</div>";
+    return out;
 }
 // ---------------------------------------------------------------------------------------------
 
@@ -509,7 +635,8 @@ $("#table").on("click",".device-key",function(e) {
     if($btn.data('shown') && $btn.data('shown')==true){
         action = 'hide';
     }
-    $(this).tooltip({title:'def'}).tooltip(action);
+    // @todo: fix this
+    $(this).tooltip({title:e.currentTarget.dataset.deviceKey}).tooltip(action);
 })
 // $("#table").on("click",".device-key",function(e) {
 //     e.stopPropagation();
@@ -888,5 +1015,6 @@ function nodeIntervalClass (node) {
     }
     return missedIntervalClassName(missed);
 }
+
 
 </script>
