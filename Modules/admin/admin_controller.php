@@ -39,7 +39,11 @@ function admin_controller()
     $backup_logfile = "$log_location/emonpibackup.log";
     $update_flag = "/tmp/emoncms-flag-update";
     $backup_flag = "/tmp/emonpibackup";
-    $update_script = "$openenergymonitor_dir/emonpi/service-runner-update.sh";
+    if (file_exists("$openenergymonitor_dir/EmonScripts")) {
+        $update_script = "$openenergymonitor_dir/EmonScripts/update/service-runner-update.sh";
+    } else {
+        $update_script = "$openenergymonitor_dir/emonpi/service-runner-update.sh";
+    }
     $backup_file = "$openenergymonitor_dir/data/backup.tar.gz";
     
     $log_levels = array(
