@@ -11,7 +11,6 @@
 
     */
     
-    $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
@@ -381,10 +380,3 @@
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         print "URI not acceptable. Unknown format '".$route->format."'.";
     }
-
-    $ltime = microtime(true) - $ltime;
-
-    // if ($session['userid']>0) {
-    //  $redis->incr("user:postcount:".$session['userid']);
-    //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
-    // }

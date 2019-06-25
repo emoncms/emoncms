@@ -195,9 +195,6 @@ class Feed
             $this->redis->del("feed:$feedid");
             $this->redis->srem("user:feeds:$userid",$feedid);
         }
-
-        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
-        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
         $this->log->info("delete() feedid=$feedid");
     }
 
@@ -216,8 +213,6 @@ class Feed
 
         // Call to engine trim method
         $response = $this->EngineClass($engine)->trim($feedid, $start_time);
-        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
-        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
 
         $this->log->info("feed model: trim() feedid=$feedid");
         return $response;
@@ -237,8 +232,6 @@ class Feed
 
         // Call to engine clear method
         $response = $this->EngineClass($engine)->clear($feedid);
-        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
-        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
 
         $this->log->info("feed model: clear() feedid=$feedid");
         return $response;
@@ -247,24 +240,19 @@ class Feed
     public function exist($feedid)
     {
         $feedid = (int) $feedid;
-        static $feed_exists_cache = array(); // Array to hold the cache
-        if (isset($feed_exists_cache[$feedid])) {
-            $feedexist = $feed_exists_cache[$feedid]; // Retrieve from static cache
-        } else {
-            $feedexist = false;
-            if ($this->redis) {
-                if (!$this->redis->exists("feed:$feedid")) {
-                    if ($this->load_feed_to_redis($feedid)) {
-                        $feedexist = true;
-                    }
-                } else {
+
+        $feedexist = false;
+        if ($this->redis) {
+            if (!$this->redis->exists("feed:$feedid")) {
+                if ($this->load_feed_to_redis($feedid)) {
                     $feedexist = true;
                 }
             } else {
-                $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
-                if ($result->num_rows>0) $feedexist = true;
+                $feedexist = true;
             }
-            $feed_exists_cache[$feedid] = $feedexist; // Cache it
+        } else {
+            $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
+            if ($result->num_rows>0) $feedexist = true;
         }
         return $feedexist;
     }
@@ -585,9 +573,9 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled']) {
             // Add redisbuffer cache if available
-            $bufferstart=end($data)[0];
+            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) $bufferstart=$start; else $bufferstart=end($data)[0];
+            
             $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
-
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
 
@@ -1205,18 +1193,12 @@ class Feed
     /* Other helpers */
     private function get_engine($feedid)
     {
-        static $feed_engine_cache = array(); // Array to hold the cache
-        if (isset($feed_engine_cache[$feedid])) {
-            $engine = $feed_engine_cache[$feedid]; // Retrieve from static cache
+        if ($this->redis) {
+            $engine = $this->redis->hget("feed:$feedid",'engine');
         } else {
-            if ($this->redis) {
-                $engine = $this->redis->hget("feed:$feedid",'engine');
-            } else {
-                $result = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
-                $row = $result->fetch_object();
-                $engine = $row->engine;
-            }
-            $feed_engine_cache[$feedid] = $engine; // Cache it
+            $result = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+            $row = $result->fetch_object();
+            $engine = $row->engine;
         }
         return $engine;
     }
