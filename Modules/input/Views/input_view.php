@@ -230,17 +230,23 @@ var device_templates = {};
 var device_module_installed = <?php echo $deviceModule ? 'true': 'false';?>;
 
 
-if (device_module_installed) {
-    // device module installed, load from /device/list
-    $.getJSON(path+'device/template/listshort.json')
-    .done(function(data){
-        device_templates = data;
+// Process list UI js
+// Set input context
+processlist_ui.init(0)
+.done(function(){
+    // processlist successfully required to display inputs
+    if (device_module_installed) {
+        // device module installed, load from /device/list
+        $.getJSON(path+'device/template/listshort.json')
+        .done(function(data){
+            device_templates = data;
+            update();
+        })
+    } else {
+        // device module not installed, load from /input/list
         update();
-    })
-} else {
-    // device module not installed, load from /input/list
-    update();
-}
+    }
+})
 
 var updater;
 function updaterStart(func, interval){
@@ -248,9 +254,7 @@ function updaterStart(func, interval){
       updater = null;
       if (interval > 0) updater = setInterval(func, interval);
 }
-console.log('increased update x10')
-updaterStart(update, 50000);
-
+updaterStart(update, 5000);
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
@@ -260,15 +264,17 @@ function update() {
     if (!device_module_installed) {
         updateInputs();
     } else {
-        console.log('device module installed')
+        // device module installed...
         updateDevices();
     }
 }
 // fetch input list
 function updateInputs() {
-    $.getJSON(path+"input/list.json").done(function(data,status,xhr){
-        inputs = processInputs(data,status,xhr);
-        draw_inputs(inputs);
+    $.getJSON(path+"input/list.json")
+    .done(function(data,status,xhr){
+        inputs = data; // cash responses
+        nodes = processInputs(data,status,xhr);
+        draw_inputs(nodes);
     })
     .fail(function(xhr,error){
         console.error('issue with loading input/list.json')
@@ -276,26 +282,30 @@ function updateInputs() {
 }
 /**
  * create an object of inputs grouped by nodeid
- * @return object list of inputs using input.id as key
+ * @return object list of nodes with inputs as values
  */ 
 function processInputs(data, textStatus, xhr) {
     table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-    let _inputs = {};
-    // Associative array of inputs by id
+    let nodes = {};
+    // Object of inputs by id
     for (var z in data) {
         let index = data[z].nodeid;
-        if (typeof _inputs[index] === 'undefined') {
-            _inputs[index] = [];
+        if (typeof nodes[index] === 'undefined') {
+            nodes[index] = {
+                name: index,
+                description: ''
+            };
+            nodes[index].inputs = [];
         }
-        _inputs[index].push(data[z]);
+        nodes[index].inputs.push(data[z]);
     }
-    return _inputs;
+    return nodes;
 }
 /**
  * return the combined devices object on success
  * @return Promise - done(Object devices), fail(Array messages)
  */
-function assignInputsToDevices(inputs,devices) {
+function assignInputsToDevices() {
     // use a deferred object resolve on success. 
     // calling function can use the done()/error()/then() function to act on response
     var def = $.Deferred();
@@ -390,10 +400,11 @@ function updateDevices() {
     // Join and include device data
     var devices = {};
     $.getJSON(path+'device/list.json')
-    .done(function(data,status,xhr) {
-        processDevices(data,status,xhr)
-        .done(draw_devices)
-        .fail(showAjaxErrors)
+    .done(function(response) {
+        // map inputs onto devices
+        processDevices(response)
+          .done(draw_devices)
+          .fail(showAjaxErrors)
     })
     .fail(showAjaxErrors)
 }
@@ -415,18 +426,20 @@ function showAjaxErrors(xhr, error, message) {
  * @param data - ajax response body from device/list.json
  * @return Promise - resolve({devices}), reject(message)
  */
-function processDevices(data,status,xhr) {
-    // Associative array of devices by nodeid
+function processDevices(data) {
+    // device objects with nodeid as key
     var def = $.Deferred();
-    var devices = {};
+    // empty cache
+    devices = {};
     for (var z in data) {
         devices[data[z].nodeid] = data[z];
     }
     $.getJSON(path+'input/list.json')
     .done( function(data, status, xhr) {
-        // Assign inputs to devices
+        // store to global
         inputs = processInputs(data,status,xhr);
-        assignInputsToDevices(inputs,devices)
+        // Assign inputs to devices
+        assignInputsToDevices()
         .done(def.resolve)
         .fail(def.reject)
     })
@@ -441,7 +454,6 @@ function noProcessNotification(devices){
 
     for (d in devices) {
         for (i in devices[d].inputs) {
-            console.log('device inputs: ',d,i)
             if(devices[d].inputs[i].processList.length>0) {
                 processList.push(devices[d].inputs[i].processList);
             }
@@ -452,15 +464,13 @@ function noProcessNotification(devices){
     }
     $('#noprocesses').html(message);
 }
-function draw_inputs(inputs) {
+function draw_inputs(nodes) {
     $('#input-loader').hide();
     var out = "";
-    var counter = 0;
-    for (var node in inputs) {
-        console.log(node);
-        var input = inputs[node];
+    for (var key in nodes) {
+        var node = nodes[key];
         isCollapsed = false; //@todo: fix this
-        out += buildRow(counter,node,input,isCollapsed)
+        out += buildRow(key, node)
     }
     $("#table").html(out);
     toggleErrorNotification(out==="")
@@ -486,23 +496,25 @@ function draw_devices(devices)
 {
     // Draw node/input list
     var out = "";
-    var counter = 0;
-    isCollapsed = !(Object.keys(devices).length > 1);
     var latest_update = [];
-    for (var node in devices) {
-        var device = devices[node]
-        counter++
-        isCollapsed = !nodes_display[node];
-        out += buildRow(counter,node,device,isCollapsed)
+
+    isCollapsed = !(Object.keys(devices).length > 1);
+    for (let node in devices) {
+        // isCollapsed = !nodes_display[node]; // @todo: fix this
+        out += buildRow(node, devices[node])
     }
     $("#table").html(out);
 
+    for (let node in devices) {
+        latest_update[node] = latest_update > input.time ? latest_update : input.time;
+    }
     // show the latest time in the node title bar
     for(let node in latest_update) {
         $('#table [data-node="'+node+'"] .device-last-updated').html(list_format_updated(latest_update[node]));
     }
 
     // show tooltip with device key on click
+    // todo: improve efficiency of the tooltip addon 
     $('#table [data-toggle="tooltip"]').tooltip({
         trigger: 'manual',
         container: 'body',
@@ -528,39 +540,44 @@ function draw_devices(devices)
     autowidth($('#table')); // set each column group to the same width
 }
 
-function buildRow(counter,node,item,isCollapsed) {
+function buildRow(key, node) {
+    isCollapsed = false;
+    index = ''; // convert key to hex to use as attribute value
+    for (var i = 0; i < key.length; i++) index += key.charCodeAt(i).toString(16);
     out = "";
     out += "<div class='node accordion line-height-expanded'>";
-    out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(item) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+    out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(node) + '" data-node="'+node.name+'" data-toggle="collapse" data-target="#collapse_'+index+'">'
     out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
-    out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-    out += "     <span class='description' data-col='G'>"+(item.description || '')+"</span>";
+    out += "     <h5 class='name' data-col='A'>"+node.name+":</h5>";
+    out += "     <span class='description' data-col='G'>"+(node.description || '')+"</span>";
     out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
     out += "     <div class='buttons pull-right'>"
 
     var control_node = "hidden";
-    if (device_templates[item.type]!=undefined && device_templates[item.type].control!=undefined && device_templates[item.type].control) control_node = "";
+    if (device_templates[node.type]!=undefined && device_templates[node.type].control!=undefined && device_templates[node.type].control) {
+        control_node = "";
+    }
 
     out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
     out += "        <div class='device-last-updated text-center' data-col='E'></div>";
 
-    var devicekey = item.devicekey;
-    if (!devicekey) devicekey = "No device key created";
-
-    out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>";
-    out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
+    if(device_module_installed) {
+        devicekey = node && node.hasOwnProperty('devicekey') ? node.devicekey: 'No device key created';
+        out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>";
+        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
+    }
     out += "     </div>";
     out += "  </div>";
 
-    out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-    for (var i in item.inputs) {
-        var input = item.inputs[i];
+    out += "  <div id='collapse_"+index+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node.name+"'>";
+
+    for (var i in node.inputs) {
+        var input = node.inputs[i];
         var selected = selected_inputs[input.id] ? 'checked': '';
         var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
-        latest_update[node] = latest_update > input.time ? latest_update : input.time;
 
         var title_lines = [
-            node.toUpperCase() + ': ' + input.name,
+            node.name.toUpperCase() + ': ' + input.name,
             '-----------------------',
             _('ID')+': '+ input.id
         ];
@@ -586,8 +603,10 @@ function buildRow(counter,node,item,isCollapsed) {
         out += "  <div class='buttons pull-right'>";
         out += "    <div class='schedule text-center hidden' data-col='F'></div>";
         out += "    <div class='time text-center' data-col='E'>"+list_format_updated(input.time)+"</div>";
-        out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
-        out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
+        if(device_module_installed) {
+            out += "    <div class='value text-center' data-col='D'>"+list_format_value(input.value)+"</div>";
+            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='<?php echo _('Configure Input processing')?>'></i></div>";
+        }
         out += "  </div>";
         out += "</div>";
     }
@@ -695,7 +714,16 @@ $(".input-delete").click(function(){
       update();
       $("#inputs-to-delete").html(out);
 });
-
+// return input if 'id' property matches given id. else false
+function getInput(id){
+    for(x in inputs) {
+        let input = inputs[x];
+        if (parseInt(input.id) === parseInt(id)) {
+            return input
+        }
+    }
+    return false;
+}
 $("#inputEditModal").on('show',function(e){
     // show input fields for the selected inputs
     let template = document.getElementById('edit-input-form').innerHTML;
@@ -706,11 +734,13 @@ $("#inputEditModal").on('show',function(e){
         let form = document.createElement('div');
         // if input has been selected duplicate <template> and modify values
         if (selected_inputs[inputid]){
+            let input = getInput(inputid);
+            if (!input) return // no form if input not found
             total_selected++;
             form.innerHTML += template;
             form.querySelector('[name="inputid"]').value = inputid;
-            form.querySelector('[name="name"]').value = inputs[inputid].name;
-            form.querySelector('[name="description"]').value = inputs[inputid].description;
+            form.querySelector('[name="name"]').value = input.name;
+            form.querySelector('[name="description"]').value = input.description;
             form.querySelector('.input_id').innerText = '#'+inputid;
             let appended = container.appendChild(form.firstElementChild);
             appended.dataset.originalData = serializeInputData(appended);
@@ -882,9 +912,6 @@ $("#inputDelete-confirm").off('click').on('click', function(){
     update();
     $('#inputDeleteModal').modal('hide');
 });
-
-// Process list UI js
-processlist_ui.init(0); // Set input context
 
 $("#table").on('click', '.configure', function() {
     var i = inputs[$(this).attr('id')];

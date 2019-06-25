@@ -117,7 +117,7 @@ function input_controller()
             $route->format = "html";
             textdomain("messages");
             $deviceModuleInstalled = file_exists('Modules/device');
-            $deviceModuleInstalled = false;
+            // $deviceModuleInstalled = false;
             return view("Modules/input/Views/input_view.php",array('deviceModule'=>$deviceModuleInstalled));
         }    
         else if ($device && $route->action == 'schedule') {

@@ -145,15 +145,25 @@ var processlist_ui =
         }
 
         try {
-            tag = `<span title="${this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '')}" 
-            style="cursor:help" 
-            class="fw-label overflow-hidden label ${this.argtypes[this.processlist[processkey].argtype].cssClass}">${this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;")}</span>`
+            let title = this.processlist[processkey].description.replace(/<(?:.|\n)*?>/gm, '');
+            let shortName = this.processlist[processkey].short.replace(/>/g, "&gt;").replace(/</g, "&lt;");
+            let cssClass = this.argtypes[this.processlist[processkey].argtype].cssClass;
+            tag = '<span title="{title}" \
+            style="cursor:help" \
+            class="fw-label overflow-hidden label {cssClass}"> \
+                {shortName} \
+            </span>'.format({
+                title: title,
+                cssClass: cssClass,
+                shortName: shortName
+            })
         } catch (e) {
             tag = ""
         }
 
         try {
-            latest = lastvalue ? `<small title="Last recorded ${this.processlist[processkey].argtype} value" class="muted">(${lastvalue})</small>` : ''
+            let type = this.processlist[processkey].argtype;
+            latest = lastvalue ? '<small title="Last recorded {type} value" class="muted">({lastvalue})</small>.format({type:type,lastvalue:lastvalue})' : '';
         } catch (e) {
             latest = ""
         }
@@ -216,6 +226,7 @@ var processlist_ui =
         return old_ids[id2].id
       }
     }
+    return id
   },
   'argtypes': {
       0: {cssClass: 'label-important',  title: 'Value: {longText} - {value}'},
@@ -281,7 +292,7 @@ var processlist_ui =
       } else {
         // default else
         badges.push({
-          text: 'wait&hellip;',
+          text: 'wait…',
           title: '',
           cssClass: 'muted',
           href: false
@@ -763,7 +774,7 @@ var processlist_ui =
   'init':function(contexttype){
     this.contexttype = contexttype;
     this.init_done = 4; // going to load 4 lists
-
+    var def = $.Deferred();
     // Processors Select List
     $.ajax({ url: path+"process/list.json", dataType: 'json', async: true, success: function(result){
 
@@ -833,9 +844,12 @@ var processlist_ui =
       }
       $("#process-select").html(out);
       processlist_ui.initprogress();
+      
+      def.resolve();
     }});
 
     // Feeds Select List
+    // @todo: use cached version
     $.ajax({ url: path+"feed/list.json", dataType: 'json', async: true, success: function(result) {
       var feeds = {};
       for (z in result) {
@@ -846,6 +860,7 @@ var processlist_ui =
     }});
 
     // Schedule Select List
+    // @todo: use cached version
     $.ajax({ url: path+"schedule/list.json", dataType: 'json', async: true, success: function(result) {
       var schedules = {};
       for (z in result) schedules[result[z].id] = result[z];
@@ -877,35 +892,44 @@ var processlist_ui =
     }});
 
     // Input Select List  
-    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(result) {
-      var inputs = {};
-      for (z in result) inputs[result[z].id] = result[z];
-      processlist_ui.inputlist = inputs;
+    if(typeof inputs === 'object' && Object.values(inputs).length > 0) {
+        // use cached list
+        this.processInputs(inputs);
+    } else {
+        // load list
+        $.getJSON(path+"input/list.json")
+        .done(this.processInputs(inputs))
+        .error(function(xhr,error,message) {console.log(error,message)})
+    }
+    return def.promise();
+  },
+  processInputs: function(result) {
+    var inputs = {};
+    for (z in result) inputs[result[z].id] = result[z];
+    processlist_ui.inputlist = inputs;
 
-      var groups = [];
-      for (z in processlist_ui.inputlist) {
-        var group = processlist_ui.inputlist[z]['nodeid'];
-        group = 'Node ' + group;
-        if (!groups[group]) groups[group]=[];
-        groups[group].push(processlist_ui.inputlist[z]);
+    var groups = [];
+    for (z in processlist_ui.inputlist) {
+      var group = processlist_ui.inputlist[z]['nodeid'];
+      group = 'Node ' + group;
+      if (!groups[group]) groups[group]=[];
+      groups[group].push(processlist_ui.inputlist[z]);
+    }
+
+    var out = "";
+    for (z in groups) {
+      out += "<optgroup label='"+z+"'>";
+      for (p in groups[z])
+      {
+        out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+ ": " + groups[z][p]['description'] + "</option>";
       }
-
-      var out = "";
-      for (z in groups) {
-        out += "<optgroup label='"+z+"'>";
-        for (p in groups[z])
-        {
-          out += "<option value="+groups[z][p]['id']+">"+groups[z][p]['name']+ ": " + groups[z][p]['description'] + "</option>";
-        }
-        out += "</optgroup>";
-      }
-      $("#input-select").html(out);
-      processlist_ui.initprogress();
-    }});
-
+      out += "</optgroup>";
+    }
+    $("#input-select").html(out);
+    processlist_ui.initprogress();
     processlist_ui.events();
   },
-
+  
   'initprogress':function(){
     processlist_ui.init_done--;
     if (processlist_ui.init_done == 0) {
