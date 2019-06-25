@@ -105,6 +105,14 @@ input[type="checkbox"] { margin:0px; }
     color: #C70!important;
 }
 
+[data-col="B"] { width:40px; }
+[data-col="A"] { width:200px; }
+[data-col="G"] { width:200px; }
+[data-col="F"] { width:50px; }
+[data-col="E"] { width:100px; }
+[data-col="D"] { width:100px; }
+[data-col="C"] { width:50px; }
+
 </style>
 
 <div>
@@ -497,11 +505,19 @@ function draw_devices(devices)
     // Draw node/input list
     var out = "";
     var latest_update = [];
+    
+    var max_name_length = 0;
+    var max_description_length = 0;
+    var max_time_length = 0;
+    var max_value_length = 0;
 
     isCollapsed = !(Object.keys(devices).length > 1);
     for (let node in devices) {
         // isCollapsed = !nodes_display[node]; // @todo: fix this
         out += buildRow(node, devices[node])
+        // Node name and description length
+        if ((""+node).length>max_name_length) max_name_length = (""+node).length;
+        if (device.description.length>max_description_length) max_description_length = device.description.length;
     }
     $("#table").html(out);
 
@@ -537,7 +553,17 @@ function draw_devices(devices)
         $("#table .collapse").collapse({toggle: false});
         setExpandButtonState($('#table .collapsed').length == 0);
     }
-    autowidth($('#table')); // set each column group to the same width
+    
+    // autowidth($('#table')); // set each column group to the same width
+    
+    var charsize = 8;
+    var padding = 20;
+    $('[data-col="A"]').width(max_name_length*charsize+padding);          // name
+    $('[data-col="G"]').width(max_description_length*10+padding);         // description
+    $('[data-col="E"]').width(max_time_length*charsize+padding);          // time
+    $('[data-col="D"]').width(max_value_length*charsize+padding);         // value
+
+    onResize();
 }
 
 function buildRow(key, node) {
