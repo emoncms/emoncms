@@ -103,7 +103,7 @@ var processlist_ui =
                 arg.href = path+"graph/"+feedid
                 lastvalue = (this.feedlist[feedid].value*1).toFixed(2);
               } else {
-                arg.text = 'Feedid "+feedid+" does not exists or was deleted'
+                arg.text = "Feedid " + feedid + " does not exists or was deleted"
               }
               break;
 
@@ -898,7 +898,7 @@ var processlist_ui =
     } else {
         // load list
         $.getJSON(path+"input/list.json")
-        .done(this.processInputs(inputs))
+        .done(function(inputs) {processlist_ui.processInputs(inputs)} )
         .error(function(xhr,error,message) {console.log(error,message)})
     }
     return def.promise();

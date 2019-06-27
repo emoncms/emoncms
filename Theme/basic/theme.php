@@ -44,7 +44,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 
     <script>
         window.onerror = function(msg, source, lineno, colno, error) {
-            return false;
+            // return false;
             if (msg.toLowerCase().indexOf("script error") > -1) {
                 alert('Script Error: See Browser Console for Detail');
             }
