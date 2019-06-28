@@ -285,6 +285,7 @@ function update(){
                 if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
                 // expand if only one feed available
                 if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
+                if (devices[inputs[z].nodeid].description==undefined) devices[inputs[z].nodeid].description = "";
                 // expand if only one feed available or state locally cached in cookie
                 if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
                     nodes_display[inputs[z].nodeid] = false;
