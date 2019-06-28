@@ -1,11 +1,12 @@
 <?php
     global $path;
+    $v = 1;
 ?>
 
-<script src="<?php echo $path; ?>Modules/device/Views/device.js"></script>
-<script src="<?php echo $path; ?>Modules/input/Views/input.js"></script>
-<script src="<?php echo $path; ?>Modules/feed/feed.js"></script>
-<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js"></script>
+<script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <style>
 
