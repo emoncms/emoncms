@@ -1,6 +1,6 @@
 <?php
     global $path;
-    $v = 1;
+    $v = 2;
     
     $device_module = false;
     if (file_exists("Modules/device")) $device_module = true;
@@ -13,6 +13,7 @@
 <script src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <style>
 
@@ -120,6 +121,38 @@ input[type="checkbox"] { margin:0px; }
     </div>
     
     <div id="noprocesses"></div>
+
+    <div id="app">
+      <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices">   
+        <div class="node-info accordion-toggle thead status-danger" data-node="0" data-toggle="collapse" data-target="#collapse1">     
+          <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-down icon-indicator"><span></div>     
+          <h5 class="name" data-col="A" :style="{width:col.A+'px'}">{{ nodeid }}</h5>
+          <span class="description" data-col="G" :style="{width:col.G+'px'}"></span>
+          <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>    
+          <div class="buttons pull-right">
+            <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
+            <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
+            <a href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" data-toggle="tooltip" data-tooltip-title="Show node key" data-device-key="No device key created" data-col-width="50"><i class="icon-lock"></i></a>
+            <div class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}"><i class="icon-cog" title="Configure device using device template"></i></div>
+          </div>
+        </div>
+        <div id="collapse1" class="node-inputs collapse tbody in" data-node="0">
+          <div class="node-input status-danger" id="{{ input.id }}" v-for="(input,index) in device.inputs">  
+            <div class="select text-center" data-col="B"><input class="input-select" type="checkbox" id="{{ input.id }}"  /></div>
+            <div class="name" data-col="A" :style="{width:col.A+'px'}" >{{ input.name }}</div>
+            <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
+            <div class="processlist" data-col="H" :style="{width:col.H+'px'}"><div class="label-container line-height-normal" v-html=input.processlistHtml></div></div>
+            <div class="buttons pull-right">
+              <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
+              <div class="time text-center" data-col="E" :style="{width:col.E+'px', color:input.time_color}">{{ input.time_value }}</div>
+              <div class="value text-center" data-col="D" :style="{width:col.D+'px'}">{{ input.value_str }}</div>
+              <div class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" id="{{ input.id }}"><i class="icon-wrench" title="Configure Input processing"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
     <div id="table" class="input-list"></div>
     
     <div id="output"></div>

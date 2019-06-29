@@ -65,6 +65,23 @@ function updaterStart(func, interval){
 }
 updaterStart(update, 5000);
 
+var app = new Vue({
+  el: '#app',
+  data: {
+    devices: {},
+    col: {
+      B: 40,  // select
+      A: 200, // name
+      G: 200, // description
+      H: 200, // processList
+      F: 50,  // schedule
+      E: 100, // time
+      D: 100, // value     
+      C: 50,  // config       
+    }
+  }
+});
+
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
@@ -167,7 +184,66 @@ function noProcessNotification(devices){
 // ---------------------------------------------------------------------------------------------
 // Draw devices
 // ---------------------------------------------------------------------------------------------
-function draw_devices()
+function draw_devices() {
+
+    max_name_length = 0
+    max_description_length = 0
+    max_time_length = 0
+    max_value_length = 0
+    
+    for (var nodeid in devices) {
+
+        for (var z in devices[nodeid].inputs) {
+            var input = devices[nodeid].inputs[z];
+            
+            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
+            input.processlistHtml = processlistHtml;
+            
+            var fv = list_format_updated_obj(input.time);
+            input.time_color = fv.color
+            input.time_value = fv.value
+            
+            var value_str = list_format_value(input.value);
+            input.value_str = value_str
+            
+            if (input.name.length>max_name_length) max_name_length = input.name.length;
+            if (input.description.length>max_description_length) max_description_length = input.description.length;
+            if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
+            if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;  
+            
+        }
+    }
+    app.col.A = ((max_name_length*8)+20);
+    app.col.G = ((max_description_length*8)+20);
+    app.col.D = ((max_time_length*8)+20);
+    app.col.E = ((max_value_length*8)+20);
+    app.col.H = 200
+
+    resize_view();
+
+    app.devices = devices
+}
+
+function resize_view() {
+    // Hide columns 
+    var rowWidth = $("#app").width();
+    hidden = {}
+    keys = Object.keys(app.col).sort();
+
+    var columnsWidth = 0
+    for (k in keys) {
+        let key = keys[k]
+        columnsWidth += app.col[key];
+        hidden[key] = columnsWidth > rowWidth;
+    }
+
+    for (var key in hidden) {
+        if (hidden[key]) app.col[key] = 0
+    }
+}
+
+/*
+function draw_devices_old()
 {
     // Draw node/input list
     var out = "";
@@ -315,6 +391,7 @@ function draw_devices()
 
     onResize();
 }
+*/
 // ---------------------------------------------------------------------------------------------
 
 $('#wrap').on("device-delete",function() { update(); });
@@ -642,7 +719,11 @@ $("#save-processlist").click(function (){
 // watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
 
 // debouncing causes odd rendering during resize - run this at all resize points...
-$(window).on("resize",onResize);
+var resize_timeout = 0;
+$(window).on("resize",function() {
+    clearTimeout(resize_timeout)
+    resize_timeout = setTimeout(resize_view,40);
+});
 
 
 
