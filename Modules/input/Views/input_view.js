@@ -105,23 +105,25 @@ function update_inputs() {
             if (devices[nodeid]==undefined) {
             
                 devices[nodeid] = {
+                    id: false,
+                    userid: inputs[z].userid,
+                    nodeid: nodeid,
                     name: nodeid,
                     description: "",
+                    type: "",
                     devicekey: false,
+                    time:false,
                     inputs: []
                 }
                 
                 if (device_module) {
                     // Device creation
-                    $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(deviceid) {
-                        if (!deviceid) {
-                            alert("There was an error creating device: nodeid="+nodeid+" deviceid="+deviceid); 
+                    $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(result) {
+                        if (result.success!=undefined) {
+                            alert("There was an error creating device: nodeid="+nodeid+" message="+result.message); 
                         } else {
-                            $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
-                                if (result.name!=undefined) devices[nodeid].name = result.name;
-                                if (result.description!=undefined) devices[nodeid].description = result.description;
-                                if (result.devicekey!=undefined) devices[nodeid].devicekey = result.devicekey;
-                            }});
+                            devices[nodeid].id = result;
+                            devices[nodeid].devicekey = "";
                         }
                     }});
                 }
