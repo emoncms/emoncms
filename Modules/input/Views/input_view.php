@@ -1,9 +1,15 @@
 <?php
     global $path;
     $v = 1;
+    
+    $device_module = false;
+    if (file_exists("Modules/device")) $device_module = true;
 ?>
 
+<?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
+<?php } ?>
+
 <script src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
@@ -28,21 +34,6 @@
 input[type="checkbox"] { margin:0px; }
 .controls { margin-bottom:10px; }
 #inputs-to-delete { font-style:italic; }
-
-#auth-check {
-    padding:10px;
-    background-color:#dc9696;
-    margin-top:50px;
-    margin-bottom:10px;
-    font-weight:bold;
-    border: 1px solid #de6464;
-    color:#fff;
-}
-
-.auth-check-btn {
-    float:right;
-    margin-top:-2px;
-}
 
 #noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
 
@@ -128,11 +119,6 @@ input[type="checkbox"] { margin:0px; }
         <a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
     </div>
     
-    <div id="auth-check" class="hide">
-        <i class="icon-exclamation-sign icon-white"></i> Device on ip address: <span id="auth-check-ip"></span> would like to connect 
-        <button class="btn btn-small auth-check-btn auth-check-allow">Allow</button>
-    </div>
-    
     <div id="noprocesses"></div>
     <div id="table" class="input-list"></div>
     
@@ -149,12 +135,14 @@ input[type="checkbox"] { margin:0px; }
     <div id="input-loader" class="ajax-loader"></div>
 </div>
 
-<?php require "Modules/device/Views/device_dialog.php"; ?>
+<?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
 <?php require "Modules/input/Views/input_dialog.php"; ?>
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
+    var device_module = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
 </script>
@@ -230,11 +218,15 @@ var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.
 var selected_inputs = {};
 var selected_device = false;
 
-var device_templates = {};
-$.ajax({ url: path+"device/template/listshort.json", dataType: 'json', async: true, success: function(data) { 
-    device_templates = data; 
-    update();
-}});
+if (device_module) {
+    var device_templates = {};
+    $.ajax({ url: path+"device/template/listshort.json", dataType: 'json', async: true, success: function(data) { 
+        device_templates = data; 
+        update();
+    }});
+} else {
+    setTimeout(update,100);
+}
 
 var updater;
 function updaterStart(func, interval){
@@ -250,59 +242,82 @@ updaterStart(update, 5000);
 var firstLoad = true;
 function update(){
 
+    devices = {};
     // Join and include device data
-    $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(data) {
+    if (device_module) {
+        $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
+            // Associative array of devices by nodeid
+            for (var z in result) devices[result[z].nodeid] = {
+                name: result[z].name,
+                description: result[z].description,
+                devicekey: result[z].devicekey,
+                inputs: []
+            }
+            update_inputs();
+        }});
+    } else {
+        update_inputs();
+    }
+}
+
+function update_inputs() {
+    var requestTime = (new Date()).getTime();
+    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+        table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+          
+        // Associative array of inputs by id
+        inputs = {};
+        for (var z in data) inputs[data[z].id] = data[z];
         
-        // Associative array of devices by nodeid
-        devices = {};
-        for (var z in data) devices[data[z].nodeid] = data[z];
-        
-        var requestTime = (new Date()).getTime();
-        $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-            table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-              
-            // Associative array of inputs by id
-            inputs = {};
-            for (var z in data) inputs[data[z].id] = data[z];
+        // Assign inputs to devices
+        for (var z in inputs) {
+            let nodeid = inputs[z].nodeid;
             
-            // Assign inputs to devices
-            for (var z in inputs) {
-                // Device does not exist which means this is likely a new system or that the device was deleted
-                // There needs to be a corresponding device for every node and so the system needs to recreate the device here
-                if (devices[inputs[z].nodeid]==undefined) {
-                    devices[inputs[z].nodeid] = {description:""};
+            // Device does not exist which means this is likely a new system or that the device was deleted
+            // There needs to be a corresponding device for every node and so the system needs to recreate the device here
+            if (devices[nodeid]==undefined) {
+            
+                devices[nodeid] = {
+                    name: nodeid,
+                    description: "",
+                    devicekey: false,
+                    inputs: []
+                }
+                
+                if (device_module) {
                     // Device creation
-                    $.ajax({ url: path+"device/create.json?nodeid="+inputs[z].nodeid, dataType: 'json', async: false, success: function(deviceid) {
+                    $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(deviceid) {
                         if (!deviceid) {
-                            alert("There was an error creating device: nodeid="+inputs[z].nodeid+" deviceid="+deviceid); 
+                            alert("There was an error creating device: nodeid="+nodeid+" deviceid="+deviceid); 
                         } else {
                             $.ajax({ url: path+"device/get.json?id="+deviceid, dataType: 'json', async: false, success: function(result) {
-                                devices[inputs[z].nodeid] = result;
+                                if (result.name!=undefined) devices[nodeid].name = result.name;
+                                if (result.description!=undefined) devices[nodeid].description = result.description;
+                                if (result.devicekey!=undefined) devices[nodeid].devicekey = result.devicekey;
                             }});
                         }
                     }});
                 }
-                if (nodes_display[inputs[z].nodeid]==undefined) nodes_display[inputs[z].nodeid] = true;
-                // expand if only one feed available
-                if (devices[inputs[z].nodeid].inputs==undefined) devices[inputs[z].nodeid].inputs = [];
-                if (devices[inputs[z].nodeid].description==undefined) devices[inputs[z].nodeid].description = "";
-                // expand if only one feed available or state locally cached in cookie
-                if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
-                    nodes_display[inputs[z].nodeid] = false;
-                }
-                devices[inputs[z].nodeid].inputs.push(inputs[z]);
             }
-            // cache state in cookie
-            if(firstLoad) {
-                docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
-                $('#input-loader').hide();
-                firstLoad = false;
+            if (nodes_display[nodeid]==undefined) nodes_display[nodeid] = true;
+            
+            // expand if only one feed available or state locally cached in cookie
+            if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
+                nodes_display[nodeid] = false;
             }
-            draw_devices();
-            noProcessNotification(devices);
-        }});
+            devices[nodeid].inputs.push(inputs[z]);
+        }
+        // cache state in cookie
+        if(firstLoad) {
+            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+            $('#input-loader').hide();
+            firstLoad = false;
+        }
+        draw_devices();
+        noProcessNotification(devices);
     }});
 }
+
 /** show a message to the user if no processes have been added */
 function noProcessNotification(devices){
     let processList = [],  message = '';
@@ -350,13 +365,14 @@ function draw_devices()
         out += "     <div class='buttons pull-right'>"
         
         var control_node = "hidden";
-        if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
+        // if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
         
         out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
         out += "        <div class='device-last-updated text-center' data-col='E'></div>"; 
         
         var devicekey = device.devicekey;
-        if (device.devicekey=="") devicekey = "No device key created"; 
+        if (device.devicekey===false) devicekey = "Device module required for this feature";
+        if (device.devicekey==="") devicekey = "No device key created"; 
         
         out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='<?php echo _("Show node key") ?>' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='<?php echo _('Configure device using device template')?>'></i></div>";
@@ -540,9 +556,13 @@ $("#table").on("click",".device-configure",function(e) {
     // Get device of clicked node
     node = $(this).parents('.node-info').first().data("node");
     var device = devices[node];
-    device_dialog.loadConfig(device_templates, device);
+    
+    if (device_module) {
+        device_dialog.loadConfig(device_templates, device);
+    } else {
+        alert("Please install the device module to enable this feature");
+    }
 });
-
 
 // selection buttons ---
 
@@ -780,31 +800,6 @@ $("#table").on('click', '.configure', function() {
 $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
     if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
-});
-
-// -------------------------------------------------------------------------------------------------------
-// Device authentication transfer
-// -------------------------------------------------------------------------------------------------------
-auth_check();
-//setInterval(auth_check,5000);
-function auth_check(){
-    $.ajax({ url: path+"device/auth/check.json", dataType: 'json', async: true, success: function(data) {
-        if (typeof data.ip !== "undefined") {
-            $("#auth-check-ip").html(data.ip);
-            $("#auth-check").show();
-            $("#table").css("margin-top","0");
-        } else {
-            $("#table").css("margin-top","3rem");
-            $("#auth-check").hide();
-        }
-    }});
-}
-
-$(".auth-check-allow").click(function(){
-    var ip = $("#auth-check-ip").html();
-    $.ajax({ url: path+"device/auth/allow.json?ip="+ip, dataType: 'json', async: true, success: function(data) {
-        $("#auth-check").hide();
-    }});
 });
 
 // -------------------------------------------------------------------------------------------------------
