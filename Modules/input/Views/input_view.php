@@ -247,11 +247,9 @@ function update(){
     if (device_module) {
         $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
             // Associative array of devices by nodeid
-            for (var z in result) devices[result[z].nodeid] = {
-                name: result[z].name,
-                description: result[z].description,
-                devicekey: result[z].devicekey,
-                inputs: []
+            for (var z in result) {
+                devices[result[z].nodeid] = result[z]
+                devices[result[z].nodeid].inputs = []
             }
             update_inputs();
         }});
