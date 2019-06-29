@@ -174,13 +174,12 @@ top navbar override
 
 /* tabindex styling */
 /* don't render menu items when not active */
-.sidebar-inner,
-.include-container,
-.collapse{display:none}
-.sidebar-inner.active,
-.include-container.in,
-.collapse.in{display:block}
-
+#sidebar .sidebar-inner,
+#sidebar .include-container,
+#sidebar .collapse{display:none}
+#sidebar .sidebar-inner.active,
+#sidebar .include-container.in,
+#sidebar .collapse.in{display:block}
 
 
 
