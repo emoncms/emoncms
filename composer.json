@@ -1,8 +1,12 @@
 {
     "name": "emoncms/emoncms",
-    "description": "Web-app for processing, logging and visualising energy, temperature and other environmental data https://emoncms.org",
+    "homepage": "https://emoncms.org",
+    "description": "Web-app for processing, logging and visualising energy, temperature and other environmental data",
     "type": "project",
+    "support": {
+        "forum": "https://community.openenergymonitor.org/"
+    },
     "require": {
     },
-    "license": "GNU AFFERO GENERAL PUBLIC LICENSE"
+    "license": "AGPL-3.0-or-later"
 }
