@@ -218,6 +218,8 @@ function draw_devices() {
     app.col.D = ((max_time_length*8)+20);
     app.col.E = ((max_value_length*8)+20);
     app.col.H = 200
+    
+    col_max = JSON.parse(JSON.stringify(app.col));
 
     resize_view();
 
@@ -230,15 +232,19 @@ function resize_view() {
     hidden = {}
     keys = Object.keys(app.col).sort();
 
+    console.log(keys);
+
     var columnsWidth = 0
     for (k in keys) {
         let key = keys[k]
-        columnsWidth += app.col[key];
+        columnsWidth += col_max[key];
         hidden[key] = columnsWidth > rowWidth;
     }
+    
+    console.log(hidden);
 
     for (var key in hidden) {
-        if (hidden[key]) app.col[key] = 0
+        if (hidden[key]) app.col[key] = 0; else app.col[key] = col_max[key]
     }
 }
 

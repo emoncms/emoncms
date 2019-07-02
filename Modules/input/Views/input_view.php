@@ -97,6 +97,8 @@ input[type="checkbox"] { margin:0px; }
     color: #C70!important;
 }
 
+[data-col] { overflow:hidden; }
+
 [data-col="B"] { width:40px; }
 [data-col="A"] { width:200px; }
 [data-col="G"] { width:200px; }
