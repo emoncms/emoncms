@@ -66,22 +66,99 @@ function updaterStart(func, interval){
 updaterStart(update, 5000);
 
 var app = new Vue({
-  el: '#app',
-  data: {
-    devices: {},
-    col: {
-      B: 40,  // select
-      A: 200, // name
-      G: 200, // description
-      H: 200, // processList
-      F: 50,  // schedule
-      E: 100, // time
-      D: 100, // value     
-      C: 50,  // config       
+    el: '#app',
+    data: {
+        devices: {},
+        col: {
+            B: 40,  // select
+            A: 200, // name
+            G: 200, // description
+            H: 200, // processList
+            F: 50,  // schedule
+            E: 100, // time
+            D: 100, // value     
+            C: 50,  // config       
+        },
+        selected: [],
+        collapsed: []
+    },
+    computed: {
+        total_inputs: function() {
+            return this.inputs.length;
+        },
+        total_devices: function() {
+            return Object.keys(this.devices).length
+        },
+        inputs: function() {
+            let inputs = [];
+            Object.keys(this.devices).forEach(function(nodeid){
+                let device = this.devices[nodeid]
+                device.inputs.forEach(function(input){
+                    inputs.push(input);
+                })
+            })
+            return inputs;
+        }
+    },
+    methods: {
+        toggleCollapse: function(event, nodeid) {
+            let index = this.collapsed.indexOf(nodeid);
+            if (index === -1) {
+                this.collapsed.push(nodeid)
+            } else {
+                this.collapsed.splice(index,1)
+            }
+        },
+        toggleSelected: function(event, inputid) {
+            let index = this.selected.indexOf(inputid);
+            if (index === -1) {
+                this.selected.push(inputid)
+            } else {
+                this.selected.splice(index,1)
+            }
+        },
+        isSelected: function(inputid) {
+            return this.selected.indexOf(inputid) > -1
+        },
+        isCollapsed: function(nodeid) {
+            return this.collapsed.indexOf(nodeid) > -1
+        }
     }
-  }
 });
-
+var controls = new Vue({
+    el: '#feedlist-controls',
+    computed: {
+        total_inputs: function(){
+            return app.total_inputs
+        },
+        selected: function() {
+            return app.selected
+        },
+        collapsed: function () {
+            return app.collapsed
+        }
+    },
+    methods: {
+        selectAll: function() {
+            if(app.selected.length < this.total_inputs) {
+                let ids = [];
+                app.inputs.forEach(function(input){
+                    ids.push(input.id)
+                })
+                app.selected = ids
+            } else {
+                app.selected = [];
+            }
+        },
+        collapseAll: function() {
+            if(app.collapsed.length < app.total_devices) {
+                app.collapsed = Object.keys(app.devices)
+            } else {
+                app.collapsed = [];
+            }
+        }
+    }
+});
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
@@ -107,7 +184,7 @@ function update(){
 function update_inputs() {
     var requestTime = (new Date()).getTime();
     $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-        table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+        if( typeof table !== 'undefined') table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
           
         // Associative array of inputs by id
         inputs = {};
@@ -232,8 +309,6 @@ function resize_view() {
     hidden = {}
     keys = Object.keys(app.col).sort();
 
-    console.log(keys);
-
     var columnsWidth = 0
     for (k in keys) {
         let key = keys[k]
@@ -241,8 +316,6 @@ function resize_view() {
         hidden[key] = columnsWidth > rowWidth;
     }
     
-    console.log(hidden);
-
     for (var key in hidden) {
         if (hidden[key]) app.col[key] = 0; else app.col[key] = col_max[key]
     }

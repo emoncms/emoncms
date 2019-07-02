@@ -23,7 +23,7 @@ var processlist_ui =
   engines_hidden:[],
   has_redis: 0,
   
-  table: table,
+  table: typeof table !== 'undefined' ? table : null,
 
   'draw':function(){
     var i = 0;
