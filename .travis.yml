@@ -40,19 +40,16 @@ before_install:
     ## configure apache virtual hosts 
     - sudo cp -f Lib/travis-CI/travis-ci-apache /etc/apache2/sites-available/000-default.conf
     - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
+    - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
     - sudo service apache2 restart
 install:
     # Install emonCMS - adapted from https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md
     ## Setup in apache 
     - sudo apt-add-repository ppa:ondrej/php -y
     - sudo apt-get update
-    - sudo apt-get install php-pear php$TRAVIS_PHP_VERSION-dev redis-server build-essential g++ wget -y 
+    - sudo apt-get install php-pear redis-server build-essential g++ wget -y
     - sudo pear channel-discover pear.swiftmailer.org
     - sudo pecl install swift/swift 
-    # - sudo pecl install redis - redis already installed
-    - printf "extension=redis.so" | sudo tee /etc/php/$TRAVIS_PHP_VERSION/mods-available/redis.ini 1>&2
-    #- sudo php5enmod redis
-    - sudo phpenmod redis
     - sudo cp Lib/travis-CI/emoncms.conf /etc/apache2/sites-available/emoncms.conf
     - sudo a2ensite emoncms
     - sudo service apache2 reload
