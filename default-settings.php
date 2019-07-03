@@ -12,7 +12,7 @@
 
 //2 #### Redis
     $redis_enabled = false;
-    $redis_server = array( 'host'   => 'localhost',
+    $_redis_server = array( 'host'   => 'localhost',
                            'port'   => 6379,
                            'auth'   => '',
                            'dbnum'   => '',
@@ -23,7 +23,7 @@
     // The 'subscriber' topic format is rx/* - where * is the emoncms input node number.
     // The 'publisher' topic format is user selectable from the 'Publish to MQTT' input process, for example power/solar
     $mqtt_enabled = false;          // Activate MQTT by changing to true
-    $mqtt_server = array( 'host'     => 'localhost',
+    $_mqtt_server = array( 'host'     => 'localhost',
                           'port'     => 1883,
                           'user'     => '',
                           'password' => '',
@@ -33,7 +33,7 @@
 
 
 //4 #### Engine settings
-    $feed_settings = array(
+    $_feed_settings = array(
         // Supported engines. Uncommented engines will not be available for user to create a new feed using it. Existing feeds with a hidden engine still work.
         // Place a ',' as the first character on all uncommented engines lines but first.
         // If using emoncms in low-write mode, ensure that PHPFIWA is disabled by removing the leading //, from the PHPFIWA entry
@@ -113,7 +113,7 @@
     $default_emailto = 'root@localhost';
     
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
-    $smtp_email_settings = array(
+    $_smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
       'port'=>"465",  // 25, 465, 587
       'from'=>array('noreply@emoncms.org' => 'EmonCMS'),
