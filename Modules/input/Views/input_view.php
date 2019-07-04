@@ -123,13 +123,13 @@ input[type="checkbox"] { margin:0px; }
 
     <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>">
-            <i class="icon" :class="{'icon-resize-small':true}"></i>
+            <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
         <button @click="selectAll" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>">
             <i class="icon" :class="{'icon-check': selected.length < total_inputs, 'icon-ban-circle': selected.length >= total_inputs}"></i>
         </button>
-        <button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-        <a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
+        <button @click="open_delete" class="btn input-delete" :class="{'hide': selected.length === 0}" title="Delete" data-toggle="vue-modal" data-target="#inputDeleteModal"><i class="icon-trash" ></i></button>
+        <button @click="open_edit" class="btn input-edit" :class="{'hide': selected.length === 0}" title="Edit" data-toggle="vue-modal" data-target="#inputEditModal"><i class="icon-pencil" ></i></button>
     </div>
 
     <div id="noprocesses"></div>
@@ -151,7 +151,7 @@ input[type="checkbox"] { margin:0px; }
           </div>
         </div>
         <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
-          <div class="node-input status-danger" :id="input.id" v-for="(input,index) in device.inputs">
+          <div @click = "toggleSelected($event, input.id)" class="node-input status-danger" :id="input.id" v-for="(input,index) in device.inputs">
             <div class="select text-center" data-col="B">
                 <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
             </div>
@@ -162,9 +162,15 @@ input[type="checkbox"] { margin:0px; }
             </div>
             <div class="buttons pull-right">
                 <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
-                <div class="time text-center" data-col="E" :style="{width:col.E+'px', color:input.time_color}">{{ input.time_value }}</div>
-                <div class="value text-center" data-col="D" :style="{width:col.D+'px'}">{{ input.value_str }}</div>
-                <div class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id"><i class="icon-wrench" title="Configure Input processing"></i></div>
+                <div @click.stop class="time text-center" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
+                    {{ input.time_value }}
+                </div>
+                <div @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
+                    {{ input.value_str }}
+                </div>
+                <div @click.stop="edit_input.hidden = false" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id">
+                    <i class="icon-wrench" title="Configure Input processing"></i>
+                </div>
             </div>
           </div>
         </div>
@@ -188,7 +194,9 @@ input[type="checkbox"] { margin:0px; }
 </div>
 
 <?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
-<?php require "Modules/input/Views/input_dialog.php"; ?>
+<?php // delete and edit modals
+    require "Modules/input/Views/input_dialog.php";
+?>
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>

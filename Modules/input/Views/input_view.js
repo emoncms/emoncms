@@ -59,9 +59,11 @@ if (device_module) {
 
 var updater;
 function updaterStart(func, interval){
-      clearInterval(updater);
-      updater = null;
-      if (interval > 0) updater = setInterval(func, interval);
+    updater = updaterStop();
+    if (interval > 0) updater = setInterval(func, interval);
+}
+function updaterStop(){
+    return clearInterval(updater)
 }
 updaterStart(update, 5000);
 
@@ -80,7 +82,8 @@ var app = new Vue({
             C: 50,  // config       
         },
         selected: [],
-        collapsed: []
+        collapsed: [],
+        paused: false
     },
     computed: {
         total_inputs: function() {
@@ -98,6 +101,16 @@ var app = new Vue({
                 })
             })
             return inputs;
+        }
+    },
+    watch: {
+        paused: function(newVal) {
+            if (newVal === true) {
+                updaterStop()
+            } else {
+                update()
+                updaterStart(update, 5000)
+            }
         }
     },
     methods: {
@@ -131,6 +144,9 @@ var controls = new Vue({
         total_inputs: function(){
             return app.total_inputs
         },
+        total_devices: function(){
+            return app.total_devices
+        },
         selected: function() {
             return app.selected
         },
@@ -156,9 +172,223 @@ var controls = new Vue({
             } else {
                 app.collapsed = [];
             }
+        },
+        open_delete: function(event) {
+            delete_input.hidden = false;
+            app.paused = true;
+        },
+        open_edit: function(event) {
+            edit_input.hidden = false;
+            app.paused = true;
         }
     }
 });
+
+
+
+
+
+
+var delete_input = new Vue({
+    el: '#inputDeleteModal',
+    data: {
+        hidden: true
+    },
+    computed: {
+        total_inputs: function(){
+            return app.total_inputs
+        },
+        total_devices: function(){
+            return app.total_devices
+        },
+        selected: function() {
+            return app.selected
+        }
+    },
+    mounted() {
+        document.addEventListener("keydown", function(e) {
+            if (e.keyCode == 27) {
+                this.hidden = true
+                app.paused = false;
+            }
+        });
+    },
+    methods: {
+        confirm: function(event) {
+            console.log('confirmed', event.type,'send ajax',this.selected)
+        },
+        closeModal: function(event) {
+            this.hidden = true;
+            app.paused = false;
+        },
+        openModal: function(event) {
+            this.hidden = false;
+            app.paused = true;
+        }
+    }
+});
+
+
+var edit_input = new Vue({
+    el: '#inputEditModal',
+    data: {
+        hidden: true,
+        loading: false,
+        message: '',
+        errors: {}
+    },
+    computed: {
+        total_inputs: function(){
+            return app.total_inputs
+        },
+        total_devices: function(){
+            return app.total_devices
+        },
+        selected: function() {
+            return app.selected
+        },
+        inputs: function() {
+            return app.inputs
+        }
+    },
+    mounted() {
+        document.addEventListener("keydown", function(e) {
+            if (e.keyCode == 27) {
+                this.hidden = true;
+                app.paused = false;
+            }
+        });
+    },
+    methods: {
+        save: function(event) {
+            var formData = [new FormData(event.target)]
+            this.loading = true;
+            var self = this
+            this.send(formData)
+            .done(function(){
+                self.message = _('Saved')
+                window.setTimeout(function(){
+                    self.closeModal()
+                }, 2000)
+            })
+            .fail(function(errors){
+                errors.forEach(function(error){
+                    self.errors[inputid] = error.error
+                })
+                self.message = _('Failed')
+            }).always(function(){
+                self.loading = false;
+            })
+        },
+        saveAll: function(event) {
+            var formData = []
+            var forms = document.querySelectorAll('#inputEditModal .modal-body form')
+            if (typeof forms !== 'undefined') {
+                forms.forEach(function(form){
+                    formData.push(new FormData(form))
+                })
+            }
+            this.loading = true;
+            var self = this
+            this.send(formData).done(function(){
+                self.message = _('Saved')
+                window.setTimeout(function(){
+                    self.closeModal()
+                }, 2000)
+            }).fail(function(errors){
+                errors.forEach(function(error){
+                    self.errors[inputid] = error.error
+                })
+                self.message = _('Failed')
+            }).progress(function(inputid, message){
+                self.errors[inputid] = message
+            }).always(function(){
+                self.loading = false;
+            })
+        },
+        /**
+         * submit as many ajax requests as required to update input meta data
+         * on last response from all the calls respond to the 
+         * @param {Array.<FormData>} formData array of any submitted forms' FormData()
+         */
+        send: function(formData) {
+            var def = $.Deferred();
+            var self = this
+            var errors = []
+            var total = formData.length;
+            
+            formData.forEach(function(form, index, array){
+                var inputid = form.get('id')
+                self.inputs.forEach( function(input) {
+                    if(input.id === inputid) {
+                        // store any changed fields
+                        let fields = {
+                            name: form.get('name'),
+                            description: form.get('description')
+                        }
+                        // if something changed submit data to api
+                        $.getJSON(path + 'input/set.json', {
+                            inputid: inputid,
+                            fields: JSON.stringify(fields)
+                        })
+                        .done(function(response){
+                            if(response.success) {
+                                self.errors[inputid] = response.message
+                                if(self.selected.length === 1) {
+                                    self.closeModal()
+                                }
+                            } else {
+                                self.errors[inputid] = _('Error')
+                            }
+                        })
+                        .error(function(xhr,type,error){
+                            errors.push({type:type,error:error})
+                        })
+                        .always(function(){
+                            // notify calling function that entry has saved
+                            def.notify(inputid, _('Saved'))
+                            // once the last ajax call returns respond to calling function
+                            if(index+1 === array.length) {
+                                if(errors.length === 0){
+                                    def.resolve(formData)
+                                } else {
+                                    def.reject(errors)
+                                }
+                            }
+                        })
+                    }
+                })
+            })
+            return def.promise();
+        },
+        closeModal: function(event) {
+            this.hidden = true
+            this.errors = {}
+            this.message = ''
+            app.paused = false
+        },
+        openModal: function(event) {
+            this.hidden = false
+            this.errors = {}
+            this.message = ''
+            app.paused = true
+        }
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
@@ -477,41 +707,43 @@ $('#wrap').on("device-delete",function() { update(); });
 $('#wrap').on("device-init",function() { update(); });
 $('#device-new').on("click",function() { device_dialog.loadConfig(device_templates); });
 
-$("#table").on("click select",".input-select",function(e) {
-    input_selection();
-});
+// $("#table").on("click select",".input-select",function(e) {
+//     input_selection();
+// });
   
-function input_selection() 
-{
-    selected_inputs = {};
-    var num_selected = 0;
-    $(".input-select").each(function(){
-        var id = $(this).attr("id");
-        selected_inputs[id] = $(this)[0].checked;
-        if (selected_inputs[id]==true) num_selected += 1;
-    });
+// function input_selection() 
+// {
+//     selected_inputs = {};
+//     var num_selected = 0;
+//     $(".input-select").each(function(){
+//         var id = $(this).attr("id");
+//         selected_inputs[id] = $(this)[0].checked;
+//         if (selected_inputs[id]==true) num_selected += 1;
+//     });
 
-    if (num_selected>0) {
-        $(".input-delete,.input-edit").removeClass('hide');
-    } else {
-        $(".input-delete,.input-edit").addClass('hide');
-    }
+//     if (num_selected>0) {
+//         $(".input-delete,.input-edit").removeClass('hide');
+//     } else {
+//         $(".input-delete,.input-edit").addClass('hide');
+//     }
 
-}
+// }
 
 // column title buttons ---
 
-$("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
-$("#table").on("hidden",".device-key",function(e) { $(this).data('shown',false) })
-$("#table").on("click",".device-key",function(e) {
-    e.stopPropagation()
-    var $btn = $(this),
-    action = 'show';
-    if($btn.data('shown') && $btn.data('shown')==true){
-        action = 'hide';
-    }
-    $(this).tooltip({title:'def'}).tooltip(action);
-})
+// $("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
+// $("#table").on("hidden",".device-key",function(e) { $(this).data('shown',false) })
+// $("#table").on("click",".device-key",function(e) {
+//     e.stopPropagation()
+//     var $btn = $(this),
+//     action = 'show';
+//     if($btn.data('shown') && $btn.data('shown')==true){
+//         action = 'hide';
+//     }
+//     $(this).tooltip({title:'def'}).tooltip(action);
+// })
+
+
 // $("#table").on("click",".device-key",function(e) {
 //     e.stopPropagation();
 //     var node = $(this).parents('.node-info').first().data("node");
@@ -551,60 +783,60 @@ $("#table").on("click",".device-configure",function(e) {
 
 // selection buttons ---
 
-$(".input-delete").click(function(){
-      $('#inputDeleteModal').modal('show');
-      var out = "";
-      var ids = [];
-      for (var inputid in selected_inputs) {
-            if (selected_inputs[inputid]==true) {
-                  var i = inputs[inputid];
-                  if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
-                        // delete now if has no values and updated +15m
-                        // ids.push(parseInt(inputid)); 
-                        out += i.nodeid+":"+i.name+"<br>";
-                  } else {
-                        out += i.nodeid+":"+i.name+"<br>";        
-                  }
-            }
-      }
+$("#inputDeleteModal").on('show', function(){
+    //   $('#inputDeleteModal').modal('show');
+    //   var out = "";
+    //   var ids = [];
+    //   for (var inputid in selected_inputs) {
+    //         if (selected_inputs[inputid]==true) {
+    //               var i = inputs[inputid];
+    //               if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
+    //                     // delete now if has no values and updated +15m
+    //                     // ids.push(parseInt(inputid)); 
+    //                     out += i.nodeid+":"+i.name+"<br>";
+    //               } else {
+    //                     out += i.nodeid+":"+i.name+"<br>";        
+    //               }
+    //         }
+    //   }
       
-      input.delete_multiple(ids);
-      update();
-      $("#inputs-to-delete").html(out);
+    //   input.delete_multiple(ids);
+    //   update();
+    //   $("#inputs-to-delete").html(out);
 });
 
 $("#inputEditModal").on('show',function(e){
-    // show input fields for the selected inputs
-    let template = document.getElementById('edit-input-form').innerHTML;
-    let container = document.getElementById('edit-input-form-container');
-    container.innerHTML = '';
-    total_selected = 0;
-    for(inputid in selected_inputs){
-        let form = document.createElement('div');
-        // if input has been selected duplicate <template> and modify values
-        if (selected_inputs[inputid]){
-            total_selected++;
-            form.innerHTML += template;
-            form.querySelector('[name="inputid"]').value = inputid;
-            form.querySelector('[name="name"]').value = inputs[inputid].name;
-            form.querySelector('[name="description"]').value = inputs[inputid].description;
-            form.querySelector('.input_id').innerText = '#'+inputid;
-            let appended = container.appendChild(form.firstElementChild);
-            appended.dataset.originalData = serializeInputData(appended);
-            $(appended).on('submit',submitSingleInputForm);
-        }
-    }
-    if(total_selected>1){
-        $('#inputEditModal .btn.single').addClass('hide');
-        $('#inputEditModal .btn.multiple').removeClass('hide');
-    }else{
-        $('#inputEditModal .btn.single').removeClass('hide');
-        $('#inputEditModal .btn.multiple').addClass('hide');
-    }
+    // // show input fields for the selected inputs
+    // let template = document.getElementById('edit-input-form').innerHTML;
+    // let container = document.getElementById('edit-input-form-container');
+    // container.innerHTML = '';
+    // total_selected = 0;
+    // for(inputid in selected_inputs){
+    //     let form = document.createElement('div');
+    //     // if input has been selected duplicate <template> and modify values
+    //     if (selected_inputs[inputid]){
+    //         total_selected++;
+    //         form.innerHTML += template;
+    //         form.querySelector('[name="inputid"]').value = inputid;
+    //         form.querySelector('[name="name"]').value = inputs[inputid].name;
+    //         form.querySelector('[name="description"]').value = inputs[inputid].description;
+    //         form.querySelector('.input_id').innerText = '#'+inputid;
+    //         let appended = container.appendChild(form.firstElementChild);
+    //         appended.dataset.originalData = serializeInputData(appended);
+    //         $(appended).on('submit',submitSingleInputForm);
+    //     }
+    // }
+    // if(total_selected>1){
+    //     $('#inputEditModal .btn.single').addClass('hide');
+    //     $('#inputEditModal .btn.multiple').removeClass('hide');
+    // }else{
+    //     $('#inputEditModal .btn.single').removeClass('hide');
+    //     $('#inputEditModal .btn.multiple').addClass('hide');
+    // }
 })
 $("#inputEditModal").on('show',function(e){
-    showStatus.clear();
-    update();
+    // showStatus.clear();
+    // update();
 })
 // return fields object that matches the api requirements
 function serializeInputData(form){
@@ -750,15 +982,15 @@ function submitAllInputForms(e){
     })
 }
 
-$("#inputDelete-confirm").off('click').on('click', function(){
-    var ids = [];
-    for (var inputid in selected_inputs) {
-        if (selected_inputs[inputid]==true) ids.push(parseInt(inputid));
-    }
-    input.delete_multiple(ids);
-    update();
-    $('#inputDeleteModal').modal('hide');
-});
+// $("#inputDelete-confirm").off('click').on('click', function(){
+//     var ids = [];
+//     for (var inputid in selected_inputs) {
+//         if (selected_inputs[inputid]==true) ids.push(parseInt(inputid));
+//     }
+//     input.delete_multiple(ids);
+//     update();
+//     $('#inputDeleteModal').modal('hide');
+// });
  
 // Process list UI js
 processlist_ui.init(0); // Set input context
