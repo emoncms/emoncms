@@ -546,7 +546,7 @@ $("#table").on("click",".feed-graph-link",function(e) {
     // ignore click on feed-info row
     if ($(this).parent().is('.node-info')) return false;
     var feedid = $(this).attr("feedid");
-    window.location = path+"graph/"+feedid;
+    window.location = path+feedviewpath+feedid;
 });
 
 $(".feed-graph").click(function(){
@@ -554,7 +554,7 @@ $(".feed-graph").click(function(){
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
-    window.location = path+"graph/"+graph_feeds.join(",");      
+    window.location = path+feedviewpath+graph_feeds.join(",");      
 });
 
 function buildFeedNodeList() {
