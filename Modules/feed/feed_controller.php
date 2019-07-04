@@ -31,10 +31,10 @@ function feed_controller()
 
     if ($route->format == 'html')
     {
-        if ($route->action=="") $route->action = "list";
+        if ($route->action=="") $route->action = "view";
 
         textdomain("messages");
-        if ($route->action == "list" && $session['write']) {
+        if (($route->action == "view" || $route->action == "list") && $session['write']) {
             return view("Modules/feed/Views/feedlist_view.php");
         }
         else if ($route->action == "api" && $session['write']) return view("Modules/feed/Views/feedapi_view.php",array());
