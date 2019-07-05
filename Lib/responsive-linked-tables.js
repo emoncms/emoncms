@@ -115,8 +115,12 @@ $(function() {
         // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
 });
 
-// Calculate and format updated time
 function itemUpdateFormat(time) {
+    return "<span class='last-update'>" + itemUpdateString(time) + "</span>";
+}
+
+// Calculate and format updated time
+function itemUpdateString(time) {
     var elapsed = itemElapsedTime(time);
     var secs = Math.abs(elapsed);
     var mins = secs / 60;
@@ -131,7 +135,7 @@ function itemUpdateFormat(time) {
     else if (hour > 2) updated = hour.toFixed(0) + " hrs";
     else if (secs > 180) updated = mins.toFixed(0) + " mins";
     
-    return "<span class='last-update'>" + updated + "</span>";
+    return updated;
 }
 
 /**

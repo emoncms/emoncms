@@ -94,6 +94,21 @@
 /* -------------------------------------------------------------------
    Side nav
 --------------------------------------------------------------------*/
+
+/* tabindex styling */
+/* don't render menu items when not active */
+#sidebar .sidebar-inner,
+#sidebar .include-container,
+#sidebar .collapse {
+  display:none
+}
+
+#sidebar .sidebar-inner.active,
+#sidebar .include-container.in,
+#sidebar .collapse.in {
+  display:block
+}
+
 .sidebar-inner {
   overflow-y: auto;
   overflow-x: hidden;
