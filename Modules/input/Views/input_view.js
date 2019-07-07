@@ -173,36 +173,35 @@ function draw_devices()
     var out = "";
     var counter = 0;
     isCollapsed = !(Object.keys(devices).length > 1);
-
+    
     var latest_update = [];
     
     var max_name_length = 0;
     var max_description_length = 0;
     var max_time_length = 0;
     var max_value_length = 0;
-
+    
     for (var node in devices) {
         var device = devices[node]
         counter++
         isCollapsed = !nodes_display[node];
-        out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeUpdateStatusClass(device) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
-        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <span class='description' data-col='G'>"+device.description+"</span>";
-        out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
-        out += "     <div class='buttons pull-right'>"
         
-        var control_node = "hidden";
-        // if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
-        
-        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
-        out += "        <div class='device-last-updated text-center' data-col='E'></div>"; 
+        var control = "hidden";
+        // if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control = "";
         
         var devicekey = device.devicekey;
         if (device.devicekey===false) devicekey = "Device module required for this feature";
         if (device.devicekey==="") devicekey = "No device key created"; 
         
+        out += "<div class='node accordion line-height-expanded'>";
+        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeUpdateStatus(device.inputs) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
+        out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
+        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
+        out += "     <span class='description' data-col='G'>"+device.description+"</span>";
+        out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
+        out += "     <div class='buttons pull-right'>"
+        out += "        <div class='device-schedule text-center "+control+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
+        out += "        <div class='device-last-updated text-center' data-col='E'></div>"; 
         out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='"+_("Show node key")+"' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
         out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='"+_('Configure device using device template')+"'></i></div>";
         out += "     </div>";
@@ -223,10 +222,10 @@ function draw_devices()
                 '-----------------------',
                 _('ID')+': '+ input.id
             ];
-            if(input.value) {
+            if (input.value) {
                 title_lines.push(_('Value')+': ' + input.value);
             }
-            if(input.time) {
+            if (input.time) {
                 title_lines.push(_('Updated')+": "+ updated);
                 title_lines.push(_('Time')+': '+ input.time);
                 // title_lines.push(format_time(input.time,'LL LTS')+" UTC");
@@ -243,7 +242,6 @@ function draw_devices()
             out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
             out += "  <div class='buttons pull-right'>";
             out += "    <div class='schedule text-center hidden' data-col='F'></div>";
-            
             out += "    <div class='time text-center' data-col='E'><span class='last-update'>" + updated + "</span></div>";
             out += "    <div class='value text-center' data-col='D'>"+value+"</div>";
             out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='"+_('Configure Input processing')+"'></i></div>";

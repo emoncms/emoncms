@@ -63,8 +63,27 @@
   background: #333;
   opacity: 0.3;
 }
-.collapsed #sidebar {
+
+/* -------------------------------------------------------------------
+   Side nav
+--------------------------------------------------------------------*/
+.collapsed #sidebar,
+.user.body-login #sidebar {
   left: 0;
+}
+
+/* tabindex styling */
+/* don't render menu items when not active */
+#sidebar .sidebar-inner,
+#sidebar .include-container,
+#sidebar .collapse {
+  display:none
+}
+
+#sidebar .sidebar-inner.active,
+#sidebar .include-container.in,
+#sidebar .collapse.in {
+  display:block
 }
 
 #sidebar-toggle {
@@ -89,24 +108,6 @@
 }
 #sidebar-toggle:hover:before {
   background: #b2de84;
-}
-
-/* -------------------------------------------------------------------
-   Side nav
---------------------------------------------------------------------*/
-
-/* tabindex styling */
-/* don't render menu items when not active */
-#sidebar .sidebar-inner,
-#sidebar .include-container,
-#sidebar .collapse {
-  display:none
-}
-
-#sidebar .sidebar-inner.active,
-#sidebar .include-container.in,
-#sidebar .collapse.in {
-  display:block
 }
 
 .sidebar-inner {
