@@ -96,23 +96,23 @@ $(function() {
     })
 
     // @todo: not yet implemented. ui element not chosen on to trigger this action
-        // select or deselect all the checkboxes for a node
-        function selectAllInNode(e){
-            e.preventDefault()
-            e.stopPropagation()
-            $container = $(e.target).parents('.accordion').first()
-            $container.find('.collapse').collapse('show')
-            $inputs = $container.find(':checkbox')
-            $selected = $container.find(':checkbox:checked')
-            // use a custom trigger so not to confuse with the click event
-            // if all selected de-select else select all
-            $inputs.prop('checked', $inputs.length != $selected.length).trigger('select')
-        }
-        // check / clear all selection
-        // $(document).on('click','.input-list .has-indicator', selectAllInNode)
-        
-        // feed list view already makes use of the click event
-        // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
+    // select or deselect all the checkboxes for a node
+    function selectAllInNode(e){
+        e.preventDefault()
+        e.stopPropagation()
+        $container = $(e.target).parents('.accordion').first()
+        $container.find('.collapse').collapse('show')
+        $inputs = $container.find(':checkbox')
+        $selected = $container.find(':checkbox:checked')
+        // use a custom trigger so not to confuse with the click event
+        // if all selected de-select else select all
+        $inputs.prop('checked', $inputs.length != $selected.length).trigger('select')
+    }
+    // check / clear all selection
+    // $(document).on('click','.input-list .has-indicator', selectAllInNode)
+    
+    // feed list view already makes use of the click event
+    // $(document).on('mouseup','.feed-list .has-indicator', selectAllInNode)
 });
 
 function itemUpdateFormat(time) {

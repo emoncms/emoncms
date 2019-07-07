@@ -803,13 +803,14 @@ function showSelectedFeeds(feed_inputs) {
             }
         }
     }
-
+    
     // count the number of processess associated with the selected feeds
     let list='',titles={},linked=[],total_linked = 0;
+    
     for(s in selected) {
         titles[s] = selected[s].tag+":"+selected[s].name;
         // virtual feed processes
-        if ( selected[s].hasOwnProperty('processList') && selected[s].processList.length > 0 ) {
+        if (selected[s].hasOwnProperty('processList') && selected[s].processList && selected[s].processList.length > 0 ) {
             linked.push(selected[s]);
             let virtualProcesses = processlist_ui.decode(selected[s].processList);
             for(p in virtualProcesses) {
@@ -817,7 +818,7 @@ function showSelectedFeeds(feed_inputs) {
             }
         }
         // feed's linked/parent process
-        if ( selected[s].hasOwnProperty('process') && selected[s].process && selected[s].process.length > 0 ) {
+        if (selected[s].hasOwnProperty('process') && selected[s].process && selected[s].process.length > 0 ) {
             linked.push(selected[s]);
             for(i=0;i<selected[s].process.length;i++) {
                 total_linked++;
