@@ -23,7 +23,7 @@ function admin_controller()
     if(!$session['write']) {
         $result = ''; // empty result shows login page (now redirects once logged in)
         $message = _('Admin re-authentication required');
-    }   
+    }
 
     // Allow for special admin session if updatelogin property is set to true in settings.php
     // Its important to use this with care and set updatelogin to false or remove from settings
@@ -55,7 +55,6 @@ function admin_controller()
     $path_to_config = 'settings.php';
     
     if ($session['admin']) {
-        
         if ($route->format == 'html') {
             if ($route->action == 'view') {
                 require "Modules/admin/admin_model.php";
@@ -118,7 +117,6 @@ function admin_controller()
                 
                 return view("Modules/admin/admin_main_view.php", $view_data);
             }
-
             else if ($route->action == 'db')
             {
                 $applychanges = get('apply');
@@ -141,7 +139,6 @@ function admin_controller()
             {
                 return view("Modules/admin/userlist_view.php", array());
             }
-
             else if ($route->action == 'setuser' && $session['write'])
             {
                 $_SESSION['userid'] = intval(get('id'));
@@ -149,7 +146,6 @@ function admin_controller()
                 // stop any other code from running once http header sent
                 exit();
             }
-            
             else if ($route->action == 'downloadlog')
             {
               if ($log_enabled) {
@@ -169,7 +165,6 @@ function admin_controller()
                 exit;
               }
             }
-
             else if ($route->action == 'getlog')
             {
                 $route->format = "text";
@@ -215,9 +210,7 @@ function admin_controller()
                 } //End PHP replacement for Tail
                 return trim(ob_get_clean());
             }
-
             else if (($admin_show_update || $allow_emonpi_admin) && $route->action == 'emonpi') {
-                                
                 if ($route->subaction == 'update' && $session['write'] && $session['admin']) {
                     $route->format = "text";
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
@@ -227,7 +220,7 @@ function admin_controller()
                     // Type: all, emoncms, firmware
                     $type="";
                     if (isset($_POST['type'])) $type = $_POST['type'];
-                    if (!in_array($type,array("all","emoncms","firmware","emonhub"))) return "Invalid update type";
+                    if (!in_array($type,array("all","emoncms","emonmuc","emonhub","firmware"))) return "Invalid update type";
                     
                     $redis->rpush("service-runner","$update_script $type $firmware>$update_logfile");
                     return "service-runner trigger sent";

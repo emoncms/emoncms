@@ -71,7 +71,7 @@ listItem;
         </div>
         <a href="<?php echo $path; ?>admin/users" class="btn btn-info"><?php echo _('Users'); ?></a>
     </section>
-
+    
     <?php 
     // UPDATES 
     // -------------------
@@ -80,14 +80,14 @@ listItem;
     <section class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 px-1">
         <div class="text-left">
             <h3 class="mt-1 mb-0"><?php echo _('Updates'); ?></h3>
-            <p><?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?></p>
+            <p><?php echo _('OS, Packages, EmonHub, EmonMUC, Emoncms & Firmware (If new version)'); ?></p>
         </div>
         <div class="btn-group">
-        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, Emoncms & Firmware (If new version)'); ?>">
+        <button class="update btn btn-info" type="all" title="<?php echo _('Update All'); ?> - <?php echo _('OS, Packages, EmonHub, EmonMUC, Emoncms & Firmware (If new version)'); ?>">
             <?php echo _('Full Update'); ?>
         </button>
-        <button class="btn dropdown-toggle btn-info" data-toggle="collapse" data-target="aside" title="<?php echo _(''); ?>">
-            <span class="caret text-black"></span>
+        <button class="update-collapse collapsed btn dropdown-toggle btn-info" data-toggle="collapse" data-target="aside" title="<?php echo _(''); ?>">
+            <span class="icon-chevron-down icon-white"></span>
         </button>
         <!-- <button class="btn dropdown-toggle btn-info" data-toggle="dropdown">
             <span class="caret text-black"></span>
@@ -115,7 +115,21 @@ listItem;
         </div>
         <a class="update btn btn-info" type="emoncms"><?php echo _('Update Emoncms'); ?></a>
     </aside>
-
+    
+    <?php 
+    // EMONMUC UPDATE
+    // -------------------
+    if (is_dir("Modules/muc")) {
+    ?>
+    <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
+        <div class="text-left">
+            <h4 class="text-info text-uppercase mb-2"><?php echo _('Update EmonMUC Only'); ?></h4>
+            <p><b>Release info:</b> <a href="https://github.com/isc-konstanz/emonmuc/releases"> Emoncms</a></p>
+        </div>
+        <a class="update btn btn-info" type="emonmuc"><?php echo _('Update EmonMUC'); ?></a>
+    </aside>
+    <?php } ?>
+    
     <?php 
     // EMONHUB UPDATE
     // -------------------
@@ -742,6 +756,15 @@ $("#getlog").click(function() {
     }
 });
 
+$(".update-collapse").click(function() {
+    if ($(this).hasClass('collapsed')) {
+    	$(this).find('span').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+    }
+    else {
+    	$(this).find('span').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+    }
+});
+
 // update all button clicked
 $(".update").click(function() {
   var type = $(this).attr("type");
@@ -766,6 +789,7 @@ $("#rfm69piupdate").click(function() {
     }
   });
 });
+
 // shrink log file viewers
 $('[data-dismiss="log"]').click(function(event){
     event.preventDefault();
