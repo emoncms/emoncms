@@ -124,7 +124,7 @@ listItem;
     <aside class="d-md-flex justify-content-between align-items-center pb-md-2 border-top pb-md-0 text-right pb-2 border-top px-1 collapse">
         <div class="text-left">
             <h4 class="text-info text-uppercase mb-2"><?php echo _('Update EmonMUC Only'); ?></h4>
-            <p><b>Release info:</b> <a href="https://github.com/isc-konstanz/emonmuc/releases"> Emoncms</a></p>
+            <p><b>Release info:</b> <a href="https://github.com/isc-konstanz/emonmuc/releases"> Emonmuc</a></p>
         </div>
         <a class="update btn btn-info" type="emonmuc"><?php echo _('Update EmonMUC'); ?></a>
     </aside>
