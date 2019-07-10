@@ -25,7 +25,7 @@ http://localhost/emoncms/example/1
 </div>
 --- EXAMPLE END */
 
-global $mysqli,$user,$session;
+global $mysqli,$user,$session,$path;
 
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
@@ -213,7 +213,7 @@ if($session['write']){ ?>
                 ?>
                     <h4 class="sidebar-title d-flex justify-content-between align-items-center">
                         Bookmarks 
-                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="<?php echo $path; ?>user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
                     </h4>
                     <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
                     <?php 
