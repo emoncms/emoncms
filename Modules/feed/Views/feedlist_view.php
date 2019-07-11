@@ -312,7 +312,7 @@ body{padding:0!important}
         </h3>
     </div>
     <div class="modal-body">
-        <div class="clearfix">
+        <div class="clearfix d-flex row">
             <div id="clearContainer" class="span6">
                 <div style="min-height:12.1em; position:relative" class="well well-small">
                     <h4 class="text-info"><?php echo _('Clear') ?>:</h4>
