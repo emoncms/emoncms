@@ -32,6 +32,16 @@
 .modal-body form.align-items-center button{
     margin-top: .75rem;
 }
+.modal-footer::before, .modal-footer::after{
+    content: none
+}
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity 0.25s ease-out;
+}
+.fade-enter, .fade-leave-to {
+    opacity: 0;
+}
 
 </style>
 
@@ -82,17 +92,26 @@
                     <label :for="'description_' + input.id" :class="{away: input.description.length > 0}" class="text-muted muted"><?php echo _('Description') ?></label>
                 </div>
                 <button type="submit" class="btn"><?php echo _('Save') ?></button>
-                <p class="pl-3 mb-0 text-muted muted"><small>{{ errors[input.id] }}</small></p>
+                <transition name="fade">
+                    <p class="pl-3 mb-0 text-muted muted" v-if="errors[input.id]"><small>{{ errors[input.id] }}</small></p>
+                </transition>
             </form>
             <div id="inputEdit-loader" class="ajax-loader" :class="{'hide': !loading}"></div>
             <div id="edit-input-form-container"></div>
             <em v-if="selected.length > 1" class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
         </div>
-        <div class="modal-footer">
-            <p class="pull-left">{{message}}</p>
-            <div id="input-edit-status" class="pull-left" style="max-width:75%"></div>
-            <button @click="closeModal" class="btn" aria-hidden="true" type="button"><?php echo _('Close'); ?></button>
-            <button class="multiple btn btn-primary" type="button" @click="saveAll"><?php echo _('Save All'); ?></button>
+        <div class="modal-footer modal-footer d-flex justify-content-between align-items-center">
+            <div class="position-relative">
+                <h5 class="m-0">
+                    <transition name="fade" appear>
+                        <span v-if="message">{{message}}</span>
+                    </transition>
+                </h5>
+            </div>
+            <div>
+                <button @click="closeModal" class="btn" aria-hidden="true" type="button"><?php echo _('Close'); ?></button>
+                <button class="multiple btn btn-primary" type="button" @click="saveAll"><?php echo _('Save All'); ?></button>
+            </div>
         </div>
     </div>
     <div @click="closeModal" class="modal-backdrop" :class="{'hide': hidden}"></div>

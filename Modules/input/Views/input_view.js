@@ -104,6 +104,7 @@ var app = new Vue({
         }
     },
     watch: {
+        // stop updaing the list when form overlay showing
         paused: function(newVal) {
             if (newVal === true) {
                 updaterStop()
@@ -135,6 +136,16 @@ var app = new Vue({
         },
         isCollapsed: function(nodeid) {
             return this.collapsed.indexOf(nodeid) > -1
+        },
+        showInputConfigure: function(inputid) {
+            var input = getInput(this.devices, inputid);
+            showInputConfigure(input)
+        },
+        device_configure: function(device) {
+            device_configure(device);
+        },
+        show_device_key: function(devicekey) {
+            console.log(devicekey)
         }
     }
 });
@@ -174,12 +185,10 @@ var controls = new Vue({
             }
         },
         open_delete: function(event) {
-            delete_input.hidden = false;
-            app.paused = true;
+            delete_input.openModal(event)
         },
         open_edit: function(event) {
-            edit_input.hidden = false;
-            app.paused = true;
+            edit_input.openModal(event)
         }
     }
 });
@@ -207,9 +216,12 @@ var delete_input = new Vue({
     },
     mounted() {
         document.addEventListener("keydown", function(e) {
+            // close modal on ESC keypress
+            self = this;
             if (e.keyCode == 27) {
-                this.hidden = true
-                app.paused = false;
+                if(typeof self.closeModal !== 'undefined') {
+                    self.closeModal();
+                }
             }
         });
     },
@@ -218,12 +230,27 @@ var delete_input = new Vue({
             console.log('confirmed', event.type,'send ajax',this.selected)
         },
         closeModal: function(event) {
-            this.hidden = true;
+            this.hidden = true
+            this.errors = {}
+            this.message = ''
             app.paused = false;
+            // remove ESC keypress event
+            document.removeEventListener('keydown', this.escape)
         },
         openModal: function(event) {
-            this.hidden = false;
-            app.paused = true;
+            this.hidden = false
+            this.errors = {}
+            this.message = ''
+            app.paused = true
+            document.addEventListener("keydown", this.escape);
+        },
+        escape: function(event) {
+            // listen for ESC keypress and close modal
+            if (event.keyCode == 27) {
+                if(typeof this.closeModal !== 'undefined') {
+                    this.closeModal();
+                }
+            }
         }
     }
 });
@@ -235,7 +262,8 @@ var edit_input = new Vue({
         hidden: true,
         loading: false,
         message: '',
-        errors: {}
+        errors: {},
+        timeouts: {}
     },
     computed: {
         total_inputs: function(){
@@ -251,59 +279,111 @@ var edit_input = new Vue({
             return app.inputs
         }
     },
-    mounted() {
-        document.addEventListener("keydown", function(e) {
-            if (e.keyCode == 27) {
-                this.hidden = true;
-                app.paused = false;
-            }
-        });
-    },
     methods: {
+        clearErrors: function(inputid) {
+            if (typeof inputid !== 'undefined') {
+                this.errors[inputid] = ''
+            } else {
+                this.errors = {}
+            }
+        },
         save: function(event) {
             var formData = [new FormData(event.target)]
             this.loading = true;
+            this.message = "";
+            this.clearErrors();
             var self = this
+            // send formData to api
             this.send(formData)
-            .done(function(){
+            .done(function(response) {
+                // show success message and close overlay
                 self.message = _('Saved')
-                window.setTimeout(function(){
-                    self.closeModal()
-                }, 2000)
+                for (inputid in response.messages) {
+                    let indexes = getInput(app.devices, inputid, true)
+                    let nodeid = indexes[0];
+                    let inputIndex = indexes[1];
+                    // update input's "original" value for subsequent updates
+                    app.devicesOriginal[nodeid].inputs[inputIndex] = clone(app.devices[nodeid].inputs[inputIndex]);
+                    edit_input.$set(self.errors, inputid, response.messages[inputid].message)
+                    // self.timeouts[inputid] = window.setTimeout(function() {
+                    //     self.clearErrors(inputid)
+                    // }, 2000);
+                    let cloned = clone(app.devices[nodeid].inputs[inputIndex]);
+                    app.devicesOriginal[nodeid].inputs[inputIndex] = cloned;
+                }
             })
-            .fail(function(errors){
-                errors.forEach(function(error){
-                    self.errors[inputid] = error.error
-                })
-                self.message = _('Failed')
-            }).always(function(){
+            .fail(function(response) {
+                // show errors
+                if (typeof response !== 'string') {
+                    for (inputid in response) {
+                        // window.clearTimeout(self.timeouts[inputid])
+                        edit_input.$set(self.errors, inputid, response[inputid].message)
+                        self.timeouts[inputid] = window.setTimeout(function(){
+                            self.clearErrors(inputid)
+                        }, 2000)
+                    }
+                } else {
+                    self.message = _(errors)
+                }
+            })
+            .always(function() {
+                // finished loading
                 self.loading = false;
             })
         },
         saveAll: function(event) {
+            // collect input data from all forms
             var formData = []
+            var timeout;
             var forms = document.querySelectorAll('#inputEditModal .modal-body form')
+            this.message = "";
             if (typeof forms !== 'undefined') {
-                forms.forEach(function(form){
+                forms.forEach(function(form) {
                     formData.push(new FormData(form))
                 })
             }
+            // show loader
             this.loading = true;
             var self = this
-            this.send(formData).done(function(){
+            // send all formData to api
+            this.send(formData)
+            .done(function(response) {
+                // show success message and close overlay
                 self.message = _('Saved')
-                window.setTimeout(function(){
-                    self.closeModal()
+                self.errors[response.lastUpdated.inputid] = response.lastUpdated.message
+                for(inputid in response.messages) {
+                    let indexes = getInput(app.devices, inputid, true)
+                    let nodeid = indexes[0];
+                    let inputIndex = indexes[1];
+                    // update input's "original" value for subsequent updates
+                    app.devicesOriginal[nodeid].inputs[inputIndex] = clone(app.devices[nodeid].inputs[inputIndex]);
+                }
+            })
+            .fail(function(errors){
+                // show errors
+                for (inputid in errors) {
+                    self.errors[inputid] = errors[inputid].message
+                    window.clearTimeout(self.timeouts[inputid])
+                    self.timeouts[inputid] = window.setTimeout(function() {
+                        self.clearErrors(inputid)
+                    }, 2000)
+                }
+            })
+            .progress(function(response) {
+                // add message next to input
+                // @todo: check why last update doesn't always get a chance to show messages
+                window.clearTimeout(self.timeouts[response.inputid])
+                self.timeouts[response.inputid] = window.setTimeout(function(){
+                    self.clearErrors(response.inputid)
                 }, 2000)
-            }).fail(function(errors){
-                errors.forEach(function(error){
-                    self.errors[inputid] = error.error
-                })
-                self.message = _('Failed')
-            }).progress(function(inputid, message){
-                self.errors[inputid] = message
-            }).always(function(){
+                self.errors[response.inputid] = response.message
+            })
+            .always(function(inputid) {
+                // finished loading
                 self.loading = false;
+                window.setTimeout(function(){
+                    self.clearErrors(inputid)
+                }, 2000)
             })
         },
         /**
@@ -314,10 +394,11 @@ var edit_input = new Vue({
         send: function(formData) {
             var def = $.Deferred();
             var self = this
-            var errors = []
+            var errors = {}
             var total = formData.length;
-            
-            formData.forEach(function(form, index, array){
+            var messages = {};
+            this.message = '';
+            formData.forEach(function(form, index, array) {
                 var inputid = form.get('id')
                 self.inputs.forEach( function(input) {
                     if(input.id === inputid) {
@@ -327,35 +408,53 @@ var edit_input = new Vue({
                             description: form.get('description')
                         }
                         // if something changed submit data to api
-                        $.getJSON(path + 'input/set.json', {
-                            inputid: inputid,
-                            fields: JSON.stringify(fields)
-                        })
-                        .done(function(response){
-                            if(response.success) {
-                                self.errors[inputid] = response.message
-                                if(self.selected.length === 1) {
-                                    self.closeModal()
+                        let fieldsOriginal = getInput(app.devicesOriginal, inputid)
+                        if(hasChanged(fields, fieldsOriginal) !== false) {
+                            $.getJSON(path + 'input/set.json', {
+                                inputid: inputid,
+                                fields: JSON.stringify(fields)
+                            })
+                            .done(function(response) {
+                                // notify calling function that entry has saved
+                                if(response.message) {
+                                    def.notify({
+                                        inputid: inputid,
+                                        message: response.message,
+                                        success: true
+                                    })
+                                    messages[inputid] = {success: true, message: response.message}
                                 }
-                            } else {
-                                self.errors[inputid] = _('Error')
-                            }
-                        })
-                        .error(function(xhr,type,error){
-                            errors.push({type:type,error:error})
-                        })
-                        .always(function(){
-                            // notify calling function that entry has saved
-                            def.notify(inputid, _('Saved'))
-                            // once the last ajax call returns respond to calling function
-                            if(index+1 === array.length) {
-                                if(errors.length === 0){
-                                    def.resolve(formData)
-                                } else {
-                                    def.reject(errors)
+                            })
+                            .error(function(xhr, type, error) {
+                                errors[inputid] = {message: error}
+                            })
+                            .always(function() {
+                                // once the last ajax call returns respond to calling function
+                                if(index === array.length - 1) {
+                                    if(Object.values(errors).length === array.length) {
+                                        def.reject(errors)
+                                    } else {
+                                        lastUpdated = extend(arguments[0], {inputid: inputid})
+                                        def.resolve({messages: messages, lastUpdated: lastUpdated})
+                                    }
                                 }
+                            })
+                        } else {
+                            // nothing changed for input[inputid]
+                            errors[inputid] = {message: _('Nothing changed')}
+                            // notify calling function that nothing has changed
+                            def.notify({
+                                inputid: inputid,
+                                message: _('Nothing changed'),
+                                success: true
+                            })
+                            // update the status
+                            messages[inputid] = {success: false, message: _('Nothing changed')}
+
+                            if(index === array.length - 1) {
+                                def.reject(errors)
                             }
-                        })
+                        }
                     }
                 })
             })
@@ -365,27 +464,110 @@ var edit_input = new Vue({
             this.hidden = true
             this.errors = {}
             this.message = ''
-            app.paused = false
+            app.paused = false;
+            // remove ESC keypress event
+            document.removeEventListener('keydown', this.escape)
         },
         openModal: function(event) {
             this.hidden = false
             this.errors = {}
             this.message = ''
             app.paused = true
+            document.addEventListener("keydown", this.escape);
+        },
+        escape: function(event) {
+            // listen for ESC keypress and close modal
+            if (event.keyCode == 27) {
+                if(typeof this.closeModal !== 'undefined') {
+                    this.closeModal();
+                }
+            }
         }
     }
 });
 
 
+/**
+ * get the key/property. only returns the last found.
+ * @param {*} newValue 
+ * @param {*} oldValue 
+ * @returns {String|Boolean} the changed property name or false
+ */
+function hasChanged(newValue, oldValue){
+    let changed = false;
+    let properties = Object.keys(newValue)
+    properties.forEach(function(key) {
+        if (newValue[key] !== oldValue[key]) {
+            // value changed
+            changed = key
+        }
+    })
+    return changed
+}
 
 
+/**
+ * Clones a variable, creates a new variable as a copy of original
+ * @param {*} original variable to clone
+ * @returns {*} the new variable
+ */
+function clone(original) {
+    var str = JSON.stringify(original)
+    if(str) {
+        return JSON.parse(str);
+    } else {
+        return false;
+    }
+}
 
+/**
+ * overwrite an object's properties by subsequent objects' properties
+ * @param {*} arguments object1, object2..
+ * @return new object
+ */
+var extend = function () {
+    // Create a new object
+    var extended = {};
+    // Merge the object into the extended object
+    var merge = function (obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                // Push each value from `obj` into `extended`
+                extended[prop] = obj[prop];
+            }
+        }
+    };
+    // Loop through each object and conduct a merge
+    for (var i = 0; i < arguments.length; i++) {
+        merge(arguments[i]);
+    }
+    return extended;
+};
 
-
-
-
-
-
+/**
+ * search all devices for input that matches the inputid
+ * @param {Object} devices data returned from api 
+ * @param {Number} inputid id of input to find as integer
+ * @param {Boolean} returnIndex if true, returns [nodeid, index]
+ * @return {(Object|Boolean|Number)} single input or device index if found, else false
+ */
+function getInput(devices, inputid, returnIndex) {
+    let found = false
+    // vuejs data objects includes setter and getter functions. remove them:
+    for(nodeid in clone(devices)) {
+        let device = devices[nodeid]
+        device.inputs.forEach(function(input, index) {
+            if (input.id === inputid) {
+                if (!returnIndex) {
+                    found = input
+                } else {
+                    found = [nodeid, index]
+                }
+            }
+        })
+    }
+    return found
+}
 
 
 
@@ -531,6 +713,7 @@ function draw_devices() {
     resize_view();
 
     app.devices = devices
+    app.devicesOriginal = clone(devices)
 }
 
 function resize_view() {
@@ -781,6 +964,15 @@ $("#table").on("click",".device-configure",function(e) {
     }
 });
 
+function device_configure(device){
+    console.log('dave',device);
+    if (device_module) {
+        device_dialog.loadConfig(device_templates, device);
+    } else {
+        alert("Please install the device module to enable this feature");
+    }
+};
+
 // selection buttons ---
 
 $("#inputDeleteModal").on('show', function(){
@@ -995,8 +1187,8 @@ function submitAllInputForms(e){
 // Process list UI js
 processlist_ui.init(0); // Set input context
 
-$("#table").on('click', '.configure', function() {
-    var i = inputs[$(this).attr('id')];
+function showInputConfigure(input) {
+    var i = input
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
@@ -1012,7 +1204,7 @@ $("#table").on('click', '.configure', function() {
     var newfeedtag = i.nodeid;
     var processlist = processlist_ui.decode(i.processList); // Input process list
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
-});
+}
 
 $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));

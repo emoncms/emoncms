@@ -146,8 +146,8 @@ input[type="checkbox"] { margin:0px; }
           <div class="buttons pull-right">
             <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
             <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
-            <a href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" data-toggle="tooltip" data-tooltip-title="Show node key" data-device-key="No device key created" data-col-width="50"><i class="icon-lock"></i></a>
-            <div class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}"><i class="icon-cog" title="Configure device using device template"></i></div>
+            <a @click.stop="show_device_key(device.devicekey)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" data-toggle="tooltip" data-tooltip-title="Show node key" data-device-key="No device key created" data-col-width="50"><i class="icon-lock"></i></a>
+            <div @click.stop="device_configure(device)" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}"><i class="icon-cog" title="Configure device using device template"></i></div>
           </div>
         </div>
         <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
@@ -168,7 +168,7 @@ input[type="checkbox"] { margin:0px; }
                 <div @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
                     {{ input.value_str }}
                 </div>
-                <div @click.stop="edit_input.hidden = false" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id">
+                <div @click.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id">
                     <i class="icon-wrench" title="Configure Input processing"></i>
                 </div>
             </div>
