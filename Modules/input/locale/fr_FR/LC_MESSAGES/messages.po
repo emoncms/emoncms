@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-02-19 22:39+0100\n"
-"PO-Revision-Date: 2019-02-19 22:41+0100\n"
+"POT-Creation-Date: 2019-06-29 09:34+0200\n"
+"PO-Revision-Date: 2019-06-29 09:35+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,39 +14,39 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.2.1\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/device_view.php:111 ../../../Views/input_view.php:31
+#: ../../../Views/device_view.php:111 ../../../Views/input_view.php:119
 msgid "Input API Help"
 msgstr "Aide de l'API Source"
 
-#: ../../../Views/device_view.php:112 ../../../Views/input_view.php:32
-#: ../../../input_menu.php:7
+#: ../../../Views/device_view.php:112 ../../../Views/input_view.php:120
+#: ../../../input_menu.php:4
 msgid "Inputs"
 msgstr "Sources"
 
-#: ../../../Views/device_view.php:116
+#: ../../../Views/device_view.php:116 ../../../Views/input_view.php:124
 msgid "Collapse"
 msgstr "Replier"
 
-#: ../../../Views/device_view.php:116
+#: ../../../Views/device_view.php:116 ../../../Views/input_view.php:124
 msgid "Expand"
 msgstr "Déplier"
 
-#: ../../../Views/device_view.php:117
+#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:125
 msgid "Select all"
 msgstr "Tout sélectionner"
 
-#: ../../../Views/device_view.php:117
+#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:125
 msgid "Unselect all"
 msgstr "Tout désélectionner"
 
-#: ../../../Views/device_view.php:133 ../../../Views/input_view.php:37
+#: ../../../Views/device_view.php:133 ../../../Views/input_view.php:141
 msgid "No inputs created"
 msgstr "Aucune source de données n'est disponible"
 
-#: ../../../Views/device_view.php:134 ../../../Views/input_view.php:38
+#: ../../../Views/device_view.php:134 ../../../Views/input_view.php:142
 msgid ""
 "Inputs are the main entry point for your monitoring device. Configure your "
 "device to post values here, you may want to follow the <a href=\"api\">Input "
@@ -57,27 +57,28 @@ msgstr ""
 "consulter l'<a href=\"api\">Aide de l'API Source</a> afin de générer votre "
 "requête."
 
-#: ../../../Views/device_view.php:138
+#: ../../../Views/device_view.php:138 ../../../Views/input_view.php:146
 msgid "New device"
 msgstr "Nouvel appareil"
 
-#: ../../../Views/device_view.php:240
+#: ../../../Views/device_view.php:239 ../../../Views/input_view.php:316
 msgid "Configure your device here"
 msgstr "Configurer votre appareil ici"
 
-#: ../../../Views/device_view.php:278
+#: ../../../Views/device_view.php:277 ../../../Views/input_view.php:359
 msgid "Show node key"
 msgstr "Afficher la clé du noeud"
 
-#: ../../../Views/device_view.php:279
+#: ../../../Views/device_view.php:278 ../../../Views/input_view.php:360
 msgid "Configure device using device template"
 msgstr "Configurer l'appareil en utilisant le modèle d'appareil"
 
-#: ../../../Views/device_view.php:301
+#: ../../../Views/device_view.php:300 ../../../Views/input_view.php:402
 msgid "Configure Input processing"
 msgstr "Configurer le traitement de la source"
 
-#: ../../../Views/device_view.php:575 ../../../Views/device_view.php:606
+#: ../../../Views/device_view.php:574 ../../../Views/device_view.php:605
+#: ../../../Views/input_view.php:695 ../../../Views/input_view.php:726
 msgid "Saving"
 msgstr "Enregistrement"
 
@@ -241,7 +242,7 @@ msgstr ""
 "et POST (les exemples POST donnés utilisent curl)"
 
 #: ../../../Views/input_api.php:49 ../../../Views/input_api.php:75
-#: ../../../Views/input_api.php:125 ../../../Views/input_view.php:70
+#: ../../../Views/input_api.php:125
 msgid "Description"
 msgstr "Description"
 
@@ -543,25 +544,21 @@ msgstr "nom"
 msgid "description"
 msgstr "description"
 
-#: ../../../Views/input_view.php:57 ../../../Views/input_view.php:71
-msgid "Process list"
-msgstr "Liste des traitements"
+#: ../../../Views/input_view.php:196
+msgid "ID"
+msgstr "Identifiant"
 
-#: ../../../Views/input_view.php:58 ../../../Views/input_view.php:72
-msgid "Updated"
-msgstr "Mise à jour"
-
-#: ../../../Views/input_view.php:68
-msgid "Node"
-msgstr "Nœud"
-
-#: ../../../Views/input_view.php:69
-msgid "Name"
-msgstr "Nom"
-
-#: ../../../Views/input_view.php:73
+#: ../../../Views/input_view.php:197
 msgid "Value"
 msgstr "Valeur"
+
+#: ../../../Views/input_view.php:198
+msgid "Time"
+msgstr "Temps"
+
+#: ../../../Views/input_view.php:199
+msgid "Updated"
+msgstr "Mise à jour"
 
 #: ../../../input_model.php:607
 msgid "Invalid feed"
@@ -574,6 +571,15 @@ msgstr "Source non valide"
 #: ../../../input_model.php:655
 msgid "Error setting processlist"
 msgstr "Erreur lors du paramétrage de la liste des traitements"
+
+#~ msgid "Process list"
+#~ msgstr "Liste des traitements"
+
+#~ msgid "Node"
+#~ msgstr "Nœud"
+
+#~ msgid "Name"
+#~ msgstr "Nom"
 
 #~ msgid "Key"
 #~ msgstr "Clé"

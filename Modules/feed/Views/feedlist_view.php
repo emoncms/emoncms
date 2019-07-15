@@ -312,7 +312,7 @@ body{padding:0!important}
         </h3>
     </div>
     <div class="modal-body">
-        <div class="clearfix">
+        <div class="clearfix d-flex row">
             <div id="clearContainer" class="span6">
                 <div style="min-height:12.1em; position:relative" class="well well-small">
                     <h4 class="text-info"><?php echo _('Clear') ?>:</h4>
@@ -546,7 +546,7 @@ $("#table").on("click",".feed-graph-link",function(e) {
     // ignore click on feed-info row
     if ($(this).parent().is('.node-info')) return false;
     var feedid = $(this).attr("feedid");
-    window.location = path+"graph/"+feedid;
+    window.location = path+feedviewpath+feedid;
 });
 
 $(".feed-graph").click(function(){
@@ -554,7 +554,7 @@ $(".feed-graph").click(function(){
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
-    window.location = path+"graph/"+graph_feeds.join(",");      
+    window.location = path+feedviewpath+graph_feeds.join(",");      
 });
 
 function buildFeedNodeList() {
