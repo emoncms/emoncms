@@ -49,26 +49,26 @@ var selected_device = false;
 
 if (DEVICE_MODULE) {
     var device_templates = {};
-    $.getJSON(path+"device/template/listshort.json").done(function(response){
+    $.getJSON(path + "device/template/listshort.json").done( function(response){
         device_templates = response;
         update();
     })
 } else {
-    setTimeout(update,100);
+    setTimeout(update, 100);
 }
 
 var updater;
+function updaterStop(){
+    return clearInterval(updater);
+}
 function updaterStart(func, interval){
     updater = updaterStop();
     if (interval > 0) updater = setInterval(func, interval);
 }
-function updaterStop(){
-    return clearInterval(updater)
-}
 updaterStart(update, 5000);
 
 var app = new Vue({
-    el: '#app',
+    el: "#app",
     data: {
         devices: {},
         col: {
