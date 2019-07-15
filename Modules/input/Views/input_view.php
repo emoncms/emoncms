@@ -202,8 +202,10 @@ input.checkbox-lg,
             <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="_('Select all %s inputs').replace('%s',getDeviceInputIds(device).length)">
           </div>
 
-          <h5 class="name" data-col="A" :style="{width:col.A+'px'}"><span>{{ nodeid }} <small v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small></span></h5>
-          <span class="description" data-col="G" :style="{width:col.G+'px'}"></span>
+          <h5 class="name" data-col="A" :style="{width:col.A+'px'}">
+            <span>{{ nodeid }} <small v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small></span>
+          </h5>
+          <span class="description" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
           <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
           <div class="buttons pull-right">
             <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
