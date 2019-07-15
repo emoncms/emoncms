@@ -718,7 +718,9 @@ var processlist_ui =
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    if (window.table!=undefined && window.table.draw!=undefined)  table.draw();
+    if (window.table!=undefined && window.table.draw!=undefined) {
+        table.draw();
+    }
     if (typeof update == 'function') update()
   },
 

@@ -47,12 +47,12 @@ var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.
 var selected_inputs = {};
 var selected_device = false;
 
-if (device_module) {
+if (DEVICE_MODULE) {
     var device_templates = {};
-    $.ajax({ url: path+"device/template/listshort.json", dataType: 'json', async: true, success: function(data) { 
-        device_templates = data; 
+    $.getJSON(path+"device/template/listshort.json").done(function(response){
+        device_templates = response;
         update();
-    }});
+    })
 } else {
     setTimeout(update,100);
 }
@@ -83,7 +83,9 @@ var app = new Vue({
         },
         selected: [],
         collapsed: [],
-        paused: false
+        paused: false,
+        device_module: DEVICE_MODULE === true,
+        scrolled: false
     },
     computed: {
         total_inputs: function() {
@@ -101,6 +103,9 @@ var app = new Vue({
                 })
             })
             return inputs;
+        },
+        selectMode: function() {
+            return this.selected.length > 0
         }
     },
     watch: {
@@ -120,10 +125,15 @@ var app = new Vue({
             if (index === -1) {
                 this.collapsed.push(nodeid)
             } else {
-                this.collapsed.splice(index,1)
+                this.collapsed.splice(index, 1)
             }
         },
         toggleSelected: function(event, inputid) {
+            if (event.target.tagName !== 'INPUT' && !this.selectMode) {
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
+            }
             let index = this.selected.indexOf(inputid);
             if (index === -1) {
                 this.selected.push(inputid)
@@ -142,15 +152,105 @@ var app = new Vue({
             showInputConfigure(input)
         },
         device_configure: function(device) {
-            device_configure(device);
+            if(DEVICE_MODULE) {
+                device_configure(device);
+            } else {
+                alert(_("Please install the device module to enable this feature"));
+            }
         },
-        show_device_key: function(devicekey) {
-            console.log(devicekey)
+        show_device_key: function(device) {
+            var devicekey = _("Please install the device module to enable this feature");
+            if(DEVICE_MODULE) {
+                devicekey = device.devicekey;
+                if (devicekey === "") devicekey = _("No device key created");
+            }
+            alert(devicekey)
+        },
+        create_device: function(device) {
+            if(typeof device_templates !== 'undefined') {
+                device_dialog.loadConfig(device_templates)
+            }
+        },
+        inputStatus: function(input) {
+            return missedIntervalClassName(missedIntervals(input));
+        },
+        deviceStatus: function(device) {
+            var input = this.oldestDeviceInput(device);
+            return missedIntervalClassName(missedIntervals(input));
+        },
+        oldestDeviceInput: function(device) {
+            var oldest = false;
+            device.inputs.forEach(function(input) {
+                if (!oldest || !oldest.time || input.time < oldest.time) {
+                    oldest = input;
+                }
+            })
+            return oldest;
+        },
+        handleScroll: function () {
+            window.clearTimeout(this.timeout);
+            let self = this;
+            this.timeout = window.setTimeout(function(){
+                self.scrolled = window.scrollY > 45;
+            }, 20)
+        },
+        getDeviceInputIds: function (device) {
+            // return array of ids from array of inputs
+            return find(device.inputs, 'id')
+        },
+        isFullySelected: function(device) {
+            // return true if all device inputs are selected, else false
+            var inputids = this.getDeviceInputIds(device)
+            var totalSelectedInputs = array_intersect(inputids, this.selected).length
+            return device.inputs.length > 0 && totalSelectedInputs === device.inputs.length;
+        },
+        getDeviceSelectedInputids: function(device) {
+            // return array of the selected device's inputids
+            var inputids = this.getDeviceInputIds(device)
+            return array_intersect(inputids, this.selected)
+        },
+        // select all if not all already selected, else clear selection
+        selectAllDeviceInputs: function (device) {
+            let inputids = this.getDeviceInputIds(device)
+            let selectedInputids = this.getDeviceSelectedInputids(device)
+            
+            if (selectedInputids.length === device.inputs.length) {
+                // all already selected, unselect all
+                for(i in inputids) {
+                    let inputid = inputids[i]
+                    let index = this.selected.indexOf(inputid)
+                    if (index > -1) {
+                        // remove from selection array
+                        this.selected.splice(index, 1)
+                    }
+                }
+            } else {
+                // select all if not all selected
+                for(i in inputids) {
+                    let inputid = inputids[i]
+                    if (this.selected.indexOf(inputid) === -1) {
+                        this.selected.push(inputid)
+                    }
+                }
+            }
         }
+    },
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
+    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
     }
 });
+
+
+
 var controls = new Vue({
     el: '#feedlist-controls',
+    data: {
+        timeout: null,
+        overlayControlsOveride: false
+    },
     computed: {
         total_inputs: function(){
             return app.total_inputs
@@ -163,6 +263,33 @@ var controls = new Vue({
         },
         collapsed: function () {
             return app.collapsed
+        },
+        collapse_title: function () {
+            var title = ''
+            if (this.collapsed.length < this.total_inputs) {
+                title += _('Collapse');
+            } else {
+                title += _('Expand');
+            }
+            return title;
+        },
+        checkbox_icon: function () {
+            var icon = '#icon-checkbox-'
+            if (this.selected.length < this.total_inputs) {
+                icon += 'unchecked'
+            } else {
+                icon += 'checked'
+            }
+            return icon;
+        },
+        selectMode: function() {
+            return app.selectMode;
+        },
+        scrolled: function() {
+            return app.scrolled;
+        },
+        overlayControls: function () {
+            return this.overlayControlsOveride || this.selectMode && this.scrolled
         }
     },
     methods: {
@@ -190,10 +317,21 @@ var controls = new Vue({
         open_edit: function(event) {
             edit_input.openModal(event)
         }
+    },
+    watch: {
+        selectMode: function(newVal, oldVal) {
+            if (oldVal && !newVal && this.scrolled) {
+                this.overlayControlsOveride = true;
+            } else {
+                this.overlayControlsOveride = false;
+            }
+            return newVal;
+        },
+        scrolled: function(newVal, oldVal) {
+            if (!newVal) this.overlayControlsOveride = false;
+        }
     }
 });
-
-
 
 
 
@@ -201,39 +339,57 @@ var controls = new Vue({
 var delete_input = new Vue({
     el: '#inputDeleteModal',
     data: {
-        hidden: true
+        hidden: true,
+        buttonLabel: _('Delete'),
+        buttonClass: 'btn-primary',
+        success: false
     },
     computed: {
-        total_inputs: function(){
+        total_inputs: function() {
             return app.total_inputs
         },
-        total_devices: function(){
+        total_devices: function() {
             return app.total_devices
         },
         selected: function() {
             return app.selected
         }
     },
-    mounted() {
-        document.addEventListener("keydown", function(e) {
-            // close modal on ESC keypress
-            self = this;
-            if (e.keyCode == 27) {
-                if(typeof self.closeModal !== 'undefined') {
-                    self.closeModal();
-                }
-            }
-        });
-    },
     methods: {
         confirm: function(event) {
-            console.log('confirmed', event.type,'send ajax',this.selected)
+            var self = this;
+            input.delete_multiple_async(this.selected)
+            .done(function(response){
+                self.buttonLabel = _('Deleted')
+                self.buttonClass = 'btn-success'
+                self.success = true
+                window.setTimeout(function(){
+                    self.closeModal()
+                }, 1500)
+            })
+            .fail(function(xhr, type, error){
+                self.buttonLabel = _('Error')
+                self.buttonClass = 'btn-warning'
+                self.success = false
+            })
+        },
+        getInputName: function(inputid) {
+            var input = getInput(app.devices, inputid);
+            return input.name;
+        },
+        getInputNode: function(inputid) {
+            var input = getInput(app.devices, inputid);
+            return input.nodeid;
         },
         closeModal: function(event) {
+            app.paused = false;
+            // clear selection if succesfully deleted
+            if (this.success) {
+                app.selected = []
+            }
             this.hidden = true
             this.errors = {}
             this.message = ''
-            app.paused = false;
             // remove ESC keypress event
             document.removeEventListener('keydown', this.escape)
         },
@@ -241,6 +397,8 @@ var delete_input = new Vue({
             this.hidden = false
             this.errors = {}
             this.message = ''
+            this.buttonLabel = _('Delete'),
+            this.buttonClass = 'btn-primary'
             app.paused = true
             document.addEventListener("keydown", this.escape);
         },
@@ -579,7 +737,7 @@ function update(){
 
     devices = {};
     // Join and include device data
-    if (device_module) {
+    if (DEVICE_MODULE) {
         $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
             // Associative array of devices by nodeid
             for (var z in result) {
@@ -622,7 +780,7 @@ function update_inputs() {
                     inputs: []
                 }
                 
-                if (device_module) {
+                if (DEVICE_MODULE) {
                     // Device creation
                     $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(result) {
                         if (result.success!=undefined) {
@@ -734,302 +892,58 @@ function resize_view() {
     }
 }
 
-/*
-function draw_devices_old()
-{
-    // Draw node/input list
-    var out = "";
-    var counter = 0;
-    isCollapsed = !(Object.keys(devices).length > 1);
 
-    var latest_update = [];
-    
-    var max_name_length = 0;
-    var max_description_length = 0;
-    var max_time_length = 0;
-    var max_value_length = 0;
-
-    for (var node in devices) {
-        var device = devices[node]
-        counter++
-        isCollapsed = !nodes_display[node];
-        out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(device) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
-        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <span class='description' data-col='G'>"+device.description+"</span>";
-        out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
-        out += "     <div class='buttons pull-right'>"
+$(function(){
+    // create new device
+    $('#device-new').on("click", function() {
+        if(typeof device_templates !== 'undefined') {
+            device_dialog.loadConfig(device_templates);
+        }
+    });
         
-        var control_node = "hidden";
-        // if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
-        
-        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
-        out += "        <div class='device-last-updated text-center' data-col='E'></div>"; 
-        
-        var devicekey = device.devicekey;
-        if (device.devicekey===false) devicekey = "Device module required for this feature";
-        if (device.devicekey==="") devicekey = "No device key created"; 
-        
-        out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='"+_("Show node key")+"' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
-        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='"+_('Configure device using device template')+"'></i></div>";
-        out += "     </div>";
-        out += "  </div>";
+    $("#table").on("click",".device-schedule",function(e) {
+        e.stopPropagation();
+        var node = $(this).parents('.node-info').first().data("node");
+        window.location = path+"demandshaper?node="+node;
+    });
 
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-        for (var i in device.inputs) {
-            var input = device.inputs[i];
-            var selected = selected_inputs[input.id] ? 'checked': '';
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
-            latest_update[node] = latest_update > input.time ? latest_update : input.time;
+    $("#table").on("click",".device-configure",function(e) {
+        e.stopPropagation();
+        // Get device of clicked node
+        node = $(this).parents('.node-info').first().data("node");
+        var device = devices[node];
+        
+        if (DEVICE_MODULE) {
+            device_dialog.loadConfig(device_templates, device);
+        } else {
+            alert("Please install the device module to enable this feature");
+        }
+    });
 
-            var fv = list_format_updated_obj(input.time);
-
-            var title_lines = [ 
-                node.toUpperCase() + ': ' + input.name,
-                '-----------------------',
-                _('ID')+': '+ input.id
-            ];
-            if(input.value) {
-                title_lines.push(_('Value')+': ' + input.value);
+    $(document).on('click','#device-delete', function() {
+        if(confirm(_('Are you sure?'))){
+            response = device.remove(device_dialog.device.id)
+            if (response.hasOwnProperty('success') && response.success === false) {
+                // failed
+                if(response.message) alert(response.message)
+            } else {
+                // success
+                $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
+                update();
             }
-            if(input.time) {
-                title_lines.push(_('Updated')+": "+ fv.value);
-                title_lines.push(_('Time')+': '+ input.time);
-                // title_lines.push(format_time(input.time,'LL LTS')+" UTC");
-            }
-
-            row_title = title_lines.join("\n");
-
-            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
-            out += "  <div class='select text-center' data-col='B'>";
-            out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
-            out += "  </div>";
-            out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='description' data-col='G'>"+input.description+"</div>";
-            out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
-            out += "  <div class='buttons pull-right'>";
-            out += "    <div class='schedule text-center hidden' data-col='F'></div>";
-            
-            out += "    <div class='time text-center' data-col='E'><span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span></div>";
-            var value_str = list_format_value(input.value);
-            out += "    <div class='value text-center' data-col='D'>"+value_str+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='"+_('Configure Input processing')+"'></i></div>";
-            out += "  </div>";
-            out += "</div>";
-            
-            if (input.name.length>max_name_length) max_name_length = input.name.length;
-            if (input.description.length>max_description_length) max_description_length = input.description.length;
-            if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
-            if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;            
         }
-        
-        out += "</div>";
-        out += "</div>";
-        
-        // Node name and description length
-        if ((""+node).length>max_name_length) max_name_length = (""+node).length;
-        if (device.description.length>max_description_length) max_description_length = device.description.length;        
-    }
-    $("#table").html(out);
+    })
+})
 
-    // show the latest time in the node title bar
-    for(let node in latest_update) {
-        $('#table [data-node="'+node+'"] .device-last-updated').html(list_format_updated(latest_update[node]));
-    }
-
-    // show tooltip with device key on click 
-    $('#table [data-toggle="tooltip"]').tooltip({
-        trigger: 'manual',
-        container: 'body',
-        placement: 'left',
-        title: function(){
-           return $(this).data('device-key');
-        }
-    }).hover(
-        // show "fake" title (tooltip-title) on hover
-        function(e){
-            let $btn = $(this);
-            let title = !$btn.data('shown') ? $btn.data('tooltip-title') : '';
-            $btn.attr('title', title);
-        }
-    )
-    
-    if (out=="") {
-        $("#input-header").hide();
-        $("#input-footer").show();
-        $("#input-none").show();
-        $("#feedlist-controls").hide();
-    } else {
-        $("#input-header").show();
-        $("#input-footer").show();
-        $("#input-none").hide();
-        $("#feedlist-controls").show();
-    }
-
-    if(typeof $.fn.collapse == 'function'){
-        $("#table .collapse").collapse({toggle: false});
-        setExpandButtonState($('#table .collapsed').length == 0);
-    }
-    
-    // autowidth($('#table')); // set each column group to the same width
-    
-    var charsize = 8;
-    var padding = 20;
-    $('[data-col="A"]').width(max_name_length*charsize+padding);          // name
-    $('[data-col="G"]').width(max_description_length*10+padding);         // description
-    $('[data-col="E"]').width(max_time_length*charsize+padding);          // time
-    $('[data-col="D"]').width(max_value_length*charsize+padding);         // value
-
-    onResize();
-}
-*/
-// ---------------------------------------------------------------------------------------------
-
-$('#wrap').on("device-delete",function() { update(); });
-$('#wrap').on("device-init",function() { update(); });
-$('#device-new').on("click",function() { device_dialog.loadConfig(device_templates); });
-
-// $("#table").on("click select",".input-select",function(e) {
-//     input_selection();
-// });
-  
-// function input_selection() 
-// {
-//     selected_inputs = {};
-//     var num_selected = 0;
-//     $(".input-select").each(function(){
-//         var id = $(this).attr("id");
-//         selected_inputs[id] = $(this)[0].checked;
-//         if (selected_inputs[id]==true) num_selected += 1;
-//     });
-
-//     if (num_selected>0) {
-//         $(".input-delete,.input-edit").removeClass('hide');
-//     } else {
-//         $(".input-delete,.input-edit").addClass('hide');
-//     }
-
-// }
-
-// column title buttons ---
-
-// $("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
-// $("#table").on("hidden",".device-key",function(e) { $(this).data('shown',false) })
-// $("#table").on("click",".device-key",function(e) {
-//     e.stopPropagation()
-//     var $btn = $(this),
-//     action = 'show';
-//     if($btn.data('shown') && $btn.data('shown')==true){
-//         action = 'hide';
-//     }
-//     $(this).tooltip({title:'def'}).tooltip(action);
-// })
-
-
-// $("#table").on("click",".device-key",function(e) {
-//     e.stopPropagation();
-//     var node = $(this).parents('.node-info').first().data("node");
-//     $this = $(this)
-//     if(!$this.data('original')) $this.data('original',$this.html())
-//     if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
-//     $this.data('state', !$this.data('state')||false)
-//     let width = 315
-//     if($this.data('state')){
-//         $this.html(devices[node].devicekey)
-//         $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
-//     }else{
-//         $this.html($this.data('original'))
-//         $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
-//     }
-// });
-
-$("#table").on("click",".device-schedule",function(e) {
-    e.stopPropagation();
-    var node = $(this).parents('.node-info').first().data("node");
-    window.location = path+"demandshaper?node="+node;
-    
-});
-
-$("#table").on("click",".device-configure",function(e) {
-    e.stopPropagation();
-    // Get device of clicked node
-    node = $(this).parents('.node-info').first().data("node");
-    var device = devices[node];
-    
-    if (device_module) {
-        device_dialog.loadConfig(device_templates, device);
-    } else {
-        alert("Please install the device module to enable this feature");
-    }
-});
 
 function device_configure(device){
-    console.log('dave',device);
-    if (device_module) {
+    if (DEVICE_MODULE) {
         device_dialog.loadConfig(device_templates, device);
     } else {
         alert("Please install the device module to enable this feature");
     }
 };
 
-// selection buttons ---
-
-$("#inputDeleteModal").on('show', function(){
-    //   $('#inputDeleteModal').modal('show');
-    //   var out = "";
-    //   var ids = [];
-    //   for (var inputid in selected_inputs) {
-    //         if (selected_inputs[inputid]==true) {
-    //               var i = inputs[inputid];
-    //               if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
-    //                     // delete now if has no values and updated +15m
-    //                     // ids.push(parseInt(inputid)); 
-    //                     out += i.nodeid+":"+i.name+"<br>";
-    //               } else {
-    //                     out += i.nodeid+":"+i.name+"<br>";        
-    //               }
-    //         }
-    //   }
-      
-    //   input.delete_multiple(ids);
-    //   update();
-    //   $("#inputs-to-delete").html(out);
-});
-
-$("#inputEditModal").on('show',function(e){
-    // // show input fields for the selected inputs
-    // let template = document.getElementById('edit-input-form').innerHTML;
-    // let container = document.getElementById('edit-input-form-container');
-    // container.innerHTML = '';
-    // total_selected = 0;
-    // for(inputid in selected_inputs){
-    //     let form = document.createElement('div');
-    //     // if input has been selected duplicate <template> and modify values
-    //     if (selected_inputs[inputid]){
-    //         total_selected++;
-    //         form.innerHTML += template;
-    //         form.querySelector('[name="inputid"]').value = inputid;
-    //         form.querySelector('[name="name"]').value = inputs[inputid].name;
-    //         form.querySelector('[name="description"]').value = inputs[inputid].description;
-    //         form.querySelector('.input_id').innerText = '#'+inputid;
-    //         let appended = container.appendChild(form.firstElementChild);
-    //         appended.dataset.originalData = serializeInputData(appended);
-    //         $(appended).on('submit',submitSingleInputForm);
-    //     }
-    // }
-    // if(total_selected>1){
-    //     $('#inputEditModal .btn.single').addClass('hide');
-    //     $('#inputEditModal .btn.multiple').removeClass('hide');
-    // }else{
-    //     $('#inputEditModal .btn.single').removeClass('hide');
-    //     $('#inputEditModal .btn.multiple').addClass('hide');
-    // }
-})
-$("#inputEditModal").on('show',function(e){
-    // showStatus.clear();
-    // update();
-})
 // return fields object that matches the api requirements
 function serializeInputData(form){
     let formData = $(form).serializeArray();
@@ -1208,7 +1122,15 @@ function showInputConfigure(input) {
 
 $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+    if (!result.success) {
+        alert('ERROR: Could not save processlist. '+result.message); 
+    } else {
+        this.classList.replace('btn-warning', 'btn-success')
+        this.innerText = _('Saved')
+        if (typeof update === 'function') {
+            update();
+        }
+    }
 });
 
 // -------------------------------------------------------------------------------------------------------
@@ -1233,13 +1155,13 @@ $(window).on("resize",function() {
 /**
  * find out how many intervals an feed/input has missed
  * 
- * @param {object} nodeItem
+ * @param {Object} nodeItem
  * @return mixed
  */
 function missedIntervals(nodeItem) {
     // @todo: interval currently fixed to 5s
     var interval = 5;
-    if (!nodeItem.time) return null;
+    if (!nodeItem || !nodeItem.time) return null;
     var lastUpdated = new Date(nodeItem.time * 1000);
     var now = new Date().getTime();
     var elapsed = (now - lastUpdated) / 1000;
@@ -1249,12 +1171,11 @@ function missedIntervals(nodeItem) {
 /**
  * get css class name based on number of missed intervals
  * 
- * @param {mixed} missed - number of missed intervals, false if error
+ * @param {*} missed - number of missed intervals, false if error
  * @return string
  */
 function missedIntervalClassName (missed) {
     let result = 'status-success';
-    // @todo: interval currently fixed to 5s
     if (missed > 4) result = 'status-warning'; 
     if (missed > 11) result = 'status-danger';
     if (missed === null) result = 'status-danger';
@@ -1290,4 +1211,29 @@ function nodeIntervalClass (node) {
         }
     }
     return missedIntervalClassName(missed);
+}
+
+
+/**
+ * get new array created from values in both arrays
+ * @param {Array} arr1
+ * @param {Array} arr2
+ * @return {Array}
+ */
+function array_intersect(arr1, arr2) {
+    return arr1.filter(function(value) {
+        return arr2.indexOf(value) > -1
+    })
+}
+
+/**
+ * searches [arr] of objects and returns array of [prop] values
+ * @param {Array} arr 
+ * @param {String} prop 
+ * @return {Array}
+ */
+function find(arr, prop) {
+    return arr.map(function(a) { 
+        return a[prop];
+    });
 }

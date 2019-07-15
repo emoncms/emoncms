@@ -106,77 +106,149 @@ input[type="checkbox"] { margin:0px; }
 [data-col="E"] { width:100px; }
 [data-col="D"] { width:100px; }
 [data-col="C"] { width:50px; }
-
-#app {
-    margin-top: 3rem;
+a.text-muted i[class*="icon-"] {
+    opacity: .5;
 }
 #app .accordion {
     margin-bottom: .3rem;
 }
+#feedlist-controls {
+    top: 3.5rem;
+    z-index: 1;
+}
+#feedlist-controls.fixed {
+    position: sticky;
+}
+#feedlist-controls:before {
+    background: rgba(0, 0, 0, 0.5);
+    content: "";
+    position: fixed;
+    top: 3rem;
+    height: 0rem;
+    width: 100%;
+    left: 0;
+    z-index: -1;
+    margin-top: -.18em;
+    transition: .2s height, .16s opacity ease-out;
+    opacity: 0;
+}
+#feedlist-controls.fixed:before {
+    opacity: 1;
+    height: 3.15rem;
+}
+.select-mode .node-inputs .node-input {
+    cursor: pointer;
+}
+input.checkbox-lg {
+    float: none;
+}
+input.checkbox-lg,
+.select-mode .node-inputs .node-input input[type="checkbox"] {
+    transform: scale(1.3);
+}
+.selected {
+    background-color: rgba(68, 179, 226, 0.8) !important;
+    background-color: #C2DBFF!important;
+}
+[v-cloak] {
+  display: none;
+}
+
+/* overwrite bootstrap collapse animation */
+
+.collapse .node-input {
+    height: 0;
+    transition-timing-function: cubic-bezier(.18,.89,.32,1.28);
+    transition-duration: .6s;
+    min-height: 0;
+    border-width: 0;
+}
+.collapse.in .node-input {
+    height: 2.615em;
+    transition: all .2s cubic-bezier(.23,1,.32,1);
+    border-width: 1px;
+}
+.collapse {
+    height: inherit!important;
+}
 </style>
 
-<div>
-    <div id="input-header">
-        <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
-        <h3> <?php echo _('Inputs'); ?></h3>
+<div class="position-relative">
+    <div id="input-header" class="d-flex justify-content-between align-items-center">
+        <h3><?php echo _('Inputs'); ?></h3>
+        <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo _('Input API Help'); ?></a></span>
     </div>
-
-    <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
-        <button @click="collapseAll" id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>">
+    <div v-cloak id="feedlist-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+        <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
             <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
-        <button @click="selectAll" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>">
-            <i class="icon" :class="{'icon-check': selected.length < total_inputs, 'icon-ban-circle': selected.length >= total_inputs}"></i>
+        <button @click="selectAll" class="btn" :title="_('Select all') + ' (' + total_inputs + ')'">
+            <svg class="icon"><use :xlink:href="checkbox_icon"></use></svg>
+            <span>{{selected.length}}</span>
         </button>
-        <button @click="open_delete" class="btn input-delete" :class="{'hide': selected.length === 0}" title="Delete" data-toggle="vue-modal" data-target="#inputDeleteModal"><i class="icon-trash" ></i></button>
-        <button @click="open_edit" class="btn input-edit" :class="{'hide': selected.length === 0}" title="Edit" data-toggle="vue-modal" data-target="#inputEditModal"><i class="icon-pencil" ></i></button>
+        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="Delete"><i class="icon-trash" ></i></button>
+        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="Edit"><i class="icon-pencil" ></i></button>
     </div>
 
     <div id="noprocesses"></div>
 
-    <div id="app">
-      <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices">
-        <div class="node-info accordion-toggle thead status-danger" @click="toggleCollapse($event, nodeid)" data-node="0" data-toggle="vue-collapse" :data-target="'#collapse_' + nodeid">
+    <div id="app" v-cloak>
+      <template v-if="total_devices > -1">
+      <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
+        <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :class="[deviceStatus(device)]" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
+          
           <div class="select text-center has-indicator" data-col="B">
-            <span class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"><span>
+            <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
+            <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="_('Select all %s inputs').replace('%s',getDeviceInputIds(device).length)">
           </div>
-          <h5 class="name" data-col="A" :style="{width:col.A+'px'}">{{ nodeid }}</h5>
+
+          <h5 class="name" data-col="A" :style="{width:col.A+'px'}"><span>{{ nodeid }} <small v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small></span></h5>
           <span class="description" data-col="G" :style="{width:col.G+'px'}"></span>
           <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
           <div class="buttons pull-right">
             <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
             <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
-            <a @click.stop="show_device_key(device.devicekey)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" data-toggle="tooltip" data-tooltip-title="Show node key" data-device-key="No device key created" data-col-width="50"><i class="icon-lock"></i></a>
-            <div @click.stop="device_configure(device)" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}"><i class="icon-cog" title="Configure device using device template"></i></div>
+            <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="Show device key">
+                <i class="icon-lock"></i>
+            </a>
+            <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo _('Configure device using device template') ?>">
+                <i class="icon-cog"></i>
+            </a>
           </div>
         </div>
         <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
-          <div @click = "toggleSelected($event, input.id)" class="node-input status-danger" :id="input.id" v-for="(input,index) in device.inputs">
+          <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :class="[inputStatus(input), {'selected': selected.indexOf(input.id) > -1}]">
             <div class="select text-center" data-col="B">
                 <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
             </div>
-            <div class="name" data-col="A" :style="{width:col.A+'px'}" >{{ input.name }}</div>
+            <div class="name" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
             <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
             <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
                 <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
             </div>
             <div class="buttons pull-right">
                 <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
-                <div @click.stop class="time text-center" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
+                <span @click.stop class="time text-center" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
                     {{ input.time_value }}
-                </div>
-                <div @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
+                </span>
+                <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
                     {{ input.value_str }}
-                </div>
-                <div @click.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id">
-                    <i class="icon-wrench" title="Configure Input processing"></i>
-                </div>
+                </span>
+                <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo _('Configure Input processing') ?>" href="#">
+                    <i class="icon-wrench"></i>
+                </a>
             </div>
-          </div>
         </div>
       </div>
+      </template>
+      <div class="alert" v-else>
+        <h3 class="alert-heading"><?php echo _('No inputs created'); ?></h3>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+        <button @click.prevent="create_device" class="btn" >
+            <i class="icon-plus-sign" ></i> <?php echo _('New device'); ?>
+        </button>
+      </div>
     </div>
-
 
     <!-- <div id="table" class="input-list"></div>
 
@@ -202,7 +274,7 @@ input[type="checkbox"] { margin:0px; }
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
     var path = "<?php echo $path; ?>";
-    var device_module = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+    const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
 
@@ -222,7 +294,11 @@ input[type="checkbox"] { margin:0px; }
             'Show node key': "<?php echo _('Show node key'); ?>",
             'Configure device using device template': "<?php echo _('Configure device using device template'); ?>",
             'Configure Input processing': "<?php echo _('Configure Input processing') ?>",
-            'Saving': "<?php echo _('Saving') ?>"
+            'Saving': "<?php echo _('Saving') ?>",
+            'Collapse': "<?php echo _('Collapse') ?>",
+            'Expand': "<?php echo _('Expand') ?>",
+            'Select all %s inputs': "<?php echo _('Select all %s inputs') ?>",
+            'Select all': "<?php echo _('Select all') ?>"
         }
     }
 </script>

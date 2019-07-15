@@ -55,21 +55,29 @@
             <div class="alert alert-danger">
             <?php echo _('Deleting an Input will lose it name and configured Processlist.<br>A new blank input is automatic created by API data post if it does not already exists.'); ?>
             </div>
-            <p>
-            <?php echo _('Are you sure you want to delete?'); ?>
-            <em class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
-            </p>
+            <h4>
+                <?php echo _('Are you sure you want to delete?'); ?>
+                <em class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
+            </h4>
+            <div class="card well well-small bg-light">
+                <dl class="dl-horizontal row m-0">
+                    <template v-for="inputid in selected">
+                        <dt class="col-2 text-right">{{ getInputNode(inputid) }}:</dt>
+                        <dd class="col-10">{{ getInputName(inputid) }}</dd>
+                    </template>
+                </dl>
+            </div>
+            
             <div id="inputs-to-delete"></div>
             <div id="inputDelete-loader" class="ajax-loader" style="display:none;"></div>
         </div>
         <div class="modal-footer">
             <button @click="closeModal" class="btn"><?php echo _('Cancel'); ?></button>
-            <button @click="confirm" class="btn btn-primary"><?php echo _('Delete'); ?></button>
+            <button @click="confirm" class="btn" :class="buttonClass">{{buttonLabel}}</button>
         </div>
     </div>
     <div @click="closeModal" class="modal-backdrop" :class="{'hide': hidden}"></div>
-
-    <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input_dialog.js"></script>
+    <!-- <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input_dialog.js"></script> -->
 </div>
 
 <div id="inputEditModal">
@@ -79,7 +87,9 @@
             <h3 id="inputEditModalLabel"><?php echo _('Edit Input'); ?></h3>
         </div>
         <div class="modal-body">
-            <p><?php echo _('Edit the input\'s name and description.'); ?></p>
+            <p><?php echo _("Edit the input's name and description."); ?>
+            <em class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
+            </p>
             <form class="d-flex align-items-center" v-for="input in inputs" :key="input.id" v-if="selected.indexOf(input.id)>-1" @submit.prevent="save">
                 <div class="input-prepend form-group mb-0">
                     <span class="add-on">{{input.nodeid}}:</span>
@@ -98,7 +108,6 @@
             </form>
             <div id="inputEdit-loader" class="ajax-loader" :class="{'hide': !loading}"></div>
             <div id="edit-input-form-container"></div>
-            <em v-if="selected.length > 1" class="text-muted muted">({{selected.length}} <?php echo _('Inputs') ?>)</em>
         </div>
         <div class="modal-footer modal-footer d-flex justify-content-between align-items-center">
             <div class="position-relative">
