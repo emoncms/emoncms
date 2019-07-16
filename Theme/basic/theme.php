@@ -112,18 +112,28 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
 
 <!-- ICONS --------------------------------------------- -->
+<?php
+    // THEME ICONS
+    echo $svg_icons;
+?>
+
+<?php
+    // MODULE ICONS
+    if(!empty($menu['includes']['icons'])) :
+?>
 <svg aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <defs>
-
         <?php
-        echo $svg_icons;
-        
-        if(!empty($menu['includes']['icons'])):foreach($menu['includes']['icons'] as $icon):
+        foreach($menu['includes']['icons'] as $icon):
             echo $icon;
-        endforeach; endif;
+        endforeach;
         ?>
     </defs>
 </svg>
+<?php
+    // end of module icons
+    endif;
+?>
 
 </body>
 </html>
