@@ -153,6 +153,9 @@ input.checkbox-lg,
 [v-cloak] {
   display: none;
 }
+.position-absolute{
+    position: absolute;
+}
 
 /* overwrite bootstrap collapse animation */
 
@@ -170,6 +173,9 @@ input.checkbox-lg,
 }
 .collapse {
     height: inherit!important;
+}
+.break-all {
+    word-break: break-all;
 }
 </style>
 
@@ -190,66 +196,71 @@ input.checkbox-lg,
         <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="Edit"><i class="icon-pencil" ></i></button>
     </div>
 
-    <div id="noprocesses"></div>
+    <div id="noprocesses clearfix"></div>
 
     <div id="app" v-cloak>
-      <template v-if="total_devices > -1">
-      <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
-        <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :class="[deviceStatus(device)]" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
-          
-          <div class="select text-center has-indicator" data-col="B">
-            <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
-            <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="_('Select all %s inputs').replace('%s',getDeviceInputIds(device).length)">
-          </div>
+      <template v-if="loaded">
+        <template v-if="total_devices > 0">
+        <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
+            <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :class="[deviceStatus(device)]" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
 
-          <h5 class="name" data-col="A" :style="{width:col.A+'px'}">
-            <span>{{ nodeid }} <small v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small></span>
-          </h5>
-          <span class="description" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
-          <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
-          <div class="buttons pull-right">
-            <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
-            <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
-            <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="Show device key">
-                <i class="icon-lock"></i>
-            </a>
-            <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo _('Configure device using device template') ?>">
-                <i class="icon-cog"></i>
-            </a>
-          </div>
-        </div>
-        <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
-          <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :class="[inputStatus(input), {'selected': selected.indexOf(input.id) > -1}]">
-            <div class="select text-center" data-col="B">
-                <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
+            <div class="select text-center has-indicator" data-col="B">
+                <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
+                <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="_('Select all %s inputs').replace('%s',getDeviceInputIds(device).length)">
             </div>
-            <div class="name" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
-            <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
-            <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
-                <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
-            </div>
+
+            <h5 class="name" data-col="A" :style="{width:col.A+'px'}">
+                <span>{{ nodeid }} 
+                    <small class="position-absolute ml-1" v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small>
+                </span>
+            </h5>
+            <span class="description" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
+            <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
             <div class="buttons pull-right">
-                <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
-                <span @click.stop class="time text-center" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
-                    {{ input.time_value }}
-                </span>
-                <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
-                    {{ input.value_str }}
-                </span>
-                <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo _('Configure Input processing') ?>" href="#">
-                    <i class="icon-wrench"></i>
+                <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
+                <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
+                <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="Show device key">
+                    <i class="icon-lock"></i>
+                </a>
+                <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo _('Configure device using device template') ?>">
+                    <i class="icon-cog"></i>
                 </a>
             </div>
+            </div>
+            <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
+            <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :class="[inputStatus(input), {'selected': selected.indexOf(input.id) > -1}]">
+                <div class="select text-center" data-col="B">
+                    <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
+                </div>
+                <div class="name" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
+                <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
+                <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
+                    <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
+                </div>
+                <div class="buttons pull-right">
+                    <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
+                    <span @click.stop class="time text-center break-all" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
+                        {{ input.time_value }}
+                    </span>
+                    <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
+                        {{ input.value_str }}
+                    </span>
+                    <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo _('Configure Input processing') ?>" href="#">
+                        <i class="icon-wrench"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-      </div>
+        </template>
+        <div class="alert" v-else>
+            <h3 class="alert-heading mt-0"><?php echo _('No inputs created'); ?></h3>
+            <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+            <button @click.prevent="create_device" class="btn" >
+                <i class="icon-plus-sign" ></i> <?php echo _('New device'); ?>
+            </button>
+        </div>
       </template>
-      <div class="alert" v-else>
-        <h3 class="alert-heading"><?php echo _('No inputs created'); ?></h3>
-        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-        <button @click.prevent="create_device" class="btn" >
-            <i class="icon-plus-sign" ></i> <?php echo _('New device'); ?>
-        </button>
-      </div>
+      <h4 v-else><?php echo _('Loading') ?></h4>
     </div>
 
     <!-- <div id="table" class="input-list"></div>
