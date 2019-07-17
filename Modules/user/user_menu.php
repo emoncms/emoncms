@@ -35,7 +35,7 @@ $menu['user'][] = array(
 
 $menu['user'][] = array(
     'title' => _("Login"),
-    'text' => _("Login"),
+    // 'text' => _("Login"),
     'icon' => 'enter',
     'path' => '/',
     'public' => true,
