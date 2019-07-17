@@ -280,6 +280,8 @@ class InputMethods
     {
         $dbinputs = $this->input->get_inputs($userid);
         
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+        
         $validate_access = $this->input->validate_access($dbinputs, $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
         
@@ -291,6 +293,8 @@ class InputMethods
         $tmp = array();
         foreach ($inputs as $name => $value)
         {
+            $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
+            
             if (!isset($dbinputs[$nodeid][$name]))
             {
                 $inputid = $this->input->create_input($userid, $nodeid, $name);

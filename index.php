@@ -342,7 +342,7 @@
             include_once ("Lib/misc/nav_functions.php");
             sortMenu($menu);
             // debugMenu('sidebar');
-            
+            $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
             
             // add css class names to <body> tag based on controller's options
