@@ -213,7 +213,7 @@ function makeLink($params) {
         if(empty($text)){
             $text = sprintf('%s', $icon);
         }else{
-            $text = sprintf('%s<small class="ml-1 flex-fill">%s</small>', $icon, $text);
+            $text = sprintf('%s<span class="ml-1 flex-fill">%s</span>', $icon, $text);
         }
         $class[] = 'd-flex flex-nowrap justify-items-between';
     }
