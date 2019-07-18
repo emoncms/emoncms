@@ -153,4 +153,10 @@ class Histogram implements engine_methods
     public function clear($feedid){
         return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
+
+    public function delete($feedid){}
+    public function post($feedid,$time,$value,$arg=null){}
+    public function get_feed_size($feedid){}
+    public function update($feedid,$time,$value){}
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval){}
 }
