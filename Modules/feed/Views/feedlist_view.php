@@ -154,14 +154,13 @@ body{padding:0!important}
 .node-feeds .node-feed.status-danger .last-update{
     color: #DC3545!important;
 }
-
 </style>
 <div id="feed-header">
     <span id="api-help" style="float:right"><a href="<?php echo $path; ?>feed/api"><?php echo _('Feed API Help'); ?></a></span>
     <h3><?php echo _('Feeds'); ?></h3>
 </div>
 
-<div class="controls" data-spy="affix" data-offset-top="100">
+<div id="controls" class="controls" data-spy="affix" data-offset-top="100">
     <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
     <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
     <button class="btn feed-edit hide" title="<?php echo _('Edit') ?>"><i class="icon-pencil"></i></button>
@@ -171,12 +170,12 @@ body{padding:0!important}
     <button class="btn feed-process hide" title="<?php echo _('Process config') ?>"><i class="icon-wrench"></i></button>
 </div>
 
-<div id="table" class="feed-list"></div>
-
-<div id="feed-none" class="alert alert-block hide">
+<div id="feed-none" class="alert alert-block hide mt-3">
     <h4 class="alert-heading"><?php echo _('No feeds created'); ?></h4>
     <p><?php echo _('Feeds are where your monitoring data is stored. The route for creating storage feeds is to start by creating inputs (see the inputs tab). Once you have inputs you can either log them straight to feeds or if you want you can add various levels of input processing to your inputs to create things like daily average data or to calibrate inputs before storage. Alternatively you can create Virtual feeds, this is a special feed that allows you to do post processing on existing storage feeds data, the main advantage is that it will not use additional storage space and you may modify post processing list that gets applyed on old stored data. You may want the next link as a guide for generating your request: '); ?><a href="api"><?php echo _('Feed API helper'); ?></a></p>
 </div>
+
+<div id="table" class="feed-list"></div>
 
 <div id="feed-footer" class="hide">
     <button id="refreshfeedsize" class="btn btn-small" ><i class="icon-refresh" ></i>&nbsp;<?php echo _('Refresh feed size'); ?></button>
@@ -408,11 +407,13 @@ function update() {
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
-            $("#feed-header").hide();
+            // $("#feed-header").hide();
+            $("#controls").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
         } else {
-            $("#feed-header").show();
+            // $("#feed-header").show();
+            $("#controls").show();
             $("#feed-footer").show();
             $("#feed-none").hide();
         }

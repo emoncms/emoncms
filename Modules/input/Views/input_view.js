@@ -288,12 +288,12 @@ function draw_devices()
     )
     
     if (out=="") {
-        $("#input-header").hide();
+        // $("#input-header").hide();
         $("#input-footer").show();
         $("#input-none").show();
         $("#feedlist-controls").hide();
     } else {
-        $("#input-header").show();
+        // $("#input-header").show();
         $("#input-footer").show();
         $("#input-none").hide();
         $("#feedlist-controls").show();
