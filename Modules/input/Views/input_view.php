@@ -18,9 +18,9 @@
 
 .container-fluid { padding: 0px 10px 0px 10px; }
 
-/* #table {
+#table {
     margin-top:3rem
-} */
+}
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -104,8 +104,6 @@ input[type="checkbox"] { margin:0px; }
 [data-col="D"] { width:100px; }
 [data-col="C"] { width:50px; }
 
-#table:empty{margin:0}
-
 </style>
 
 <div>
@@ -114,7 +112,7 @@ input[type="checkbox"] { margin:0px; }
         <h3> <?php echo _('Inputs'); ?></h3>
     </div>
     
-    <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100" style="display:none">
+    <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
         <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
         <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
         <button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
@@ -122,15 +120,14 @@ input[type="checkbox"] { margin:0px; }
     </div>
     
     <div id="noprocesses"></div>
-
-    <div id="input-none" class="alert alert-block hide mt-3">
-        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-    </div>
-
     <div id="table" class="input-list"></div>
     
     <div id="output"></div>
+
+    <div id="input-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+    </div>
     
     <div id="input-footer" class="hide">
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
