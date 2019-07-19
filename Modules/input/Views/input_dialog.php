@@ -42,6 +42,9 @@
 .fade-enter, .fade-leave-to {
     opacity: 0;
 }
+.dl-horizontal dt {
+    float: left;
+}
 
 </style>
 
@@ -52,7 +55,7 @@
             <h3 id="inputDeleteModalLabel"><?php echo _('Delete Input'); ?></h3>
         </div>
         <div class="modal-body">
-            <div class="alert alert-danger">
+            <div class="alert alert-danger d-inline-block">
             <?php echo _('Deleting an Input will lose it name and configured Processlist.<br>A new blank input is automatic created by API data post if it does not already exists.'); ?>
             </div>
             <h4>
@@ -62,8 +65,8 @@
             <div class="card well well-small bg-light">
                 <dl class="dl-horizontal row m-0">
                     <template v-for="inputid in selected">
-                        <dt class="col-2 text-right">{{ getInputNode(inputid) }}:</dt>
-                        <dd class="col-10">{{ getInputName(inputid) }}</dd>
+                        <dt class="col-6 col-md-3 text-right" :title="getInputNode(inputid)">{{ getInputNode(inputid) }}: </dt>
+                        <dd class="col-6 col-md-9 ml-3 pl-1">{{ getInputName(inputid) }}</dd>
                     </template>
                 </dl>
             </div>

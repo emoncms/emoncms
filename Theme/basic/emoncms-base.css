@@ -331,6 +331,11 @@ ul.nav > li > [disabled] {
     flex-basis: 33.3333%;
     max-width: 33.333333%;
 }
+.col-5 {
+    -ms-flex: 0 0 41.666667%;
+    flex: 0 0 41.666667%;
+    max-width: 41.666667%;
+}
 .col-6 {
     -ms-flex: 0 0 50%;
     flex: 0 0 50%;
@@ -443,6 +448,11 @@ ul.nav > li > [disabled] {
         -ms-flex: 0 0 16.666667%;
         flex: 0 0 16.666667%;
         max-width: 16.666667%;
+    }
+    .col-md-3 {
+        -ms-flex: 0 0 25%;
+        flex: 0 0 25%;
+        max-width: 25%;
     }
     .col-md-4 {
         -ms-flex: 0 0 33.333333%;
