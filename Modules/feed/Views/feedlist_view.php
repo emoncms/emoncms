@@ -494,7 +494,7 @@ function update() {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
                 }
                 var processListHTML = '';
-                if(feed.processList.length > 0){
+                if(feed.processList!=undefined && feed.processList.length > 0){
                     processListHTML = processlist_ui ? processlist_ui.drawpreview(feed.processList, feed) : '';
                 }
 
