@@ -39,7 +39,9 @@ function getTranslations(){
         'Tag': "<?php echo _('Tag') ?>",
         'Feed ID': "<?php echo _('Feed ID') ?>",
         'Feed Interval': "<?php echo _('Feed Interval') ?>",
-        'Feed Start Time': "<?php echo _('Feed Start Time') ?>"
+        'Feed Start Time': "<?php echo _('Feed Start Time') ?>",
+        'Realtime': "<?php echo _('Realtime') ?>",
+        'Daily': "<?php echo _('Daily') ?>"
     }
 }
 /**
@@ -451,6 +453,11 @@ function update() {
                 node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
+        // todo: remove the requirement of a fixed list. Load from api?
+        var datatypes = {
+            1: _('Realtime'),
+            2: _('Daily')
+        }
         // display nodes and feeds
         var counter = 0;
         for (var node in nodes) {
@@ -474,11 +481,13 @@ function update() {
             for (var feed in nodes[node]) {
                 var feed = nodes[node][feed];
                 var feedid = feed.id;
+                var datatype = datatypes[feed.datatype] || '';
 
                 var title_lines = [feed.name,
                                   '-----------------------',
-                                  _('Tag')+': '+ feed.tag,
-                                  _('Feed ID')+': '+ feedid]
+                                  _('Tag') + ': ' + feed.tag,
+                                  _('Feed ID') + ': ' + feedid,
+                                  _('Datatype') + ': ' + datatype]
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
