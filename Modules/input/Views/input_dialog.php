@@ -45,6 +45,15 @@
 .dl-horizontal dt {
     float: left;
 }
+.dl-horizontal dt.text-right{
+    text-align: right 
+}
+.dl-horizontal dt{
+    float: left;
+}
+.clear-both {
+    clear: both!important;
+}
 
 </style>
 
@@ -65,8 +74,8 @@
             <div class="card well well-small bg-light">
                 <dl class="dl-horizontal row m-0">
                     <template v-for="inputid in selected">
-                        <dt class="col-6 col-md-3 text-right" :title="getInputNode(inputid)">{{ getInputNode(inputid) }}: </dt>
-                        <dd class="col-6 col-md-9 ml-3 pl-1">{{ getInputName(inputid) }}</dd>
+                        <dt class="col-6 col-md-3 text-right pull-left clear-both" :title="getInputNode(inputid)">{{ getInputNode(inputid) }}: </dt>
+                        <dd class="col-6 col-md-9 ml-2 pull-left">{{ getInputName(inputid) }}</dd>
                     </template>
                 </dl>
             </div>
