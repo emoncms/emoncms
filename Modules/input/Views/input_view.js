@@ -840,7 +840,6 @@ function draw_devices() {
     max_value_length = 0
     
     for (var nodeid in devices) {
-        console.log('emrys',devices[nodeid]);
         for (var z in devices[nodeid].inputs) {
             var input = devices[nodeid].inputs[z];
             
@@ -923,44 +922,41 @@ $(function(){
     });
 
     $(document).on('click','#device-delete', function() {
-        if(confirm(_('Are you sure?'))) {
-            var inputIds = [];
-            for (var i in device_dialog.device.inputs) {
-                var inputId = device_dialog.device.inputs[i].id;
-                inputIds.push(parseInt(inputId));
-            }
-            // respond/resolve with successful response when all actions done
-            var def = $.Deferred()
-
-            if (inputIds.length > 0) {
-                input.delete_multiple_async(inputIds)
-                .done(function(){
-                    def.resolve(device.remove(device_dialog.device.id))
-                })
-                .fail(function(xhr,type,error){
-                    def.reject([type,error].implode(', '))
-                })
-            } else {
-                def.resolve(device.remove(device_dialog.device.id))
-            }
-            
-            def.done(function(response) {
-                if (response.hasOwnProperty('success') && response.success === false) {
-                    // api action failed
-                    if(response.message) {
-                        alert(response.message)
-                    }
-                } else {
-                    // success
-                    $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
-                    update();
-                }
-
-            }).fail(function(message){
-                console.error(message)
-            })
-
+        var inputIds = [];
+        for (var i in device_dialog.device.inputs) {
+            var inputId = device_dialog.device.inputs[i].id;
+            inputIds.push(parseInt(inputId));
         }
+        // respond/resolve with successful response when all actions done
+        var def = $.Deferred()
+
+        if (inputIds.length > 0) {
+            input.delete_multiple_async(inputIds)
+            .done(function(){
+                def.resolve(device.remove(device_dialog.device.id))
+            })
+            .fail(function(xhr,type,error){
+                def.reject([type,error].implode(', '))
+            })
+        } else {
+            def.resolve(device.remove(device_dialog.device.id))
+        }
+        
+        def.done(function(response) {
+            if (response.hasOwnProperty('success') && response.success === false) {
+                // api action failed
+                if(response.message) {
+                    alert(response.message)
+                }
+            } else {
+                // success
+                $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
+                update();
+            }
+
+        }).fail(function(message){
+            console.error(message)
+        })
     })
 })
 
