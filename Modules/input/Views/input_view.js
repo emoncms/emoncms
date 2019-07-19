@@ -920,46 +920,54 @@ $(function(){
             alert("Please install the device module to enable this feature");
         }
     });
+}) // end of jquery document ready
 
-    $(document).on('click','#device-delete', function() {
-        var inputIds = [];
-        for (var i in device_dialog.device.inputs) {
-            var inputId = device_dialog.device.inputs[i].id;
-            inputIds.push(parseInt(inputId));
-        }
-        // respond/resolve with successful response when all actions done
-        var def = $.Deferred()
+/**
+ * perform the delete action for the currently selected device
+ * deletes any inputs that are associated
+ * 
+ * @requires {Object} jQuery - uses jquery's ajax and promise functions
+ * @requires {Object} device - the group of device related functions
+ * @requires {Object} device_dialog - the group of device_dialog related functions
+ * @returns void
+ */
+function device_delete() {
+    var inputIds = [];
+    for (var i in device_dialog.device.inputs) {
+        var inputId = device_dialog.device.inputs[i].id;
+        inputIds.push(parseInt(inputId));
+    }
+    // respond/resolve with successful response when all actions done
+    var def = $.Deferred()
 
-        if (inputIds.length > 0) {
-            input.delete_multiple_async(inputIds)
-            .done(function(){
-                def.resolve(device.remove(device_dialog.device.id))
-            })
-            .fail(function(xhr,type,error){
-                def.reject([type,error].implode(', '))
-            })
-        } else {
+    if (inputIds.length > 0) {
+        input.delete_multiple_async(inputIds)
+        .done(function(){
             def.resolve(device.remove(device_dialog.device.id))
-        }
-        
-        def.done(function(response) {
-            if (response.hasOwnProperty('success') && response.success === false) {
-                // api action failed
-                if(response.message) {
-                    alert(response.message)
-                }
-            } else {
-                // success
-                $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
-                update();
-            }
-
-        }).fail(function(message){
-            console.error(message)
         })
-    })
-})
+        .fail(function(xhr,type,error){
+            def.reject([type,error].implode(', '))
+        })
+    } else {
+        def.resolve(device.remove(device_dialog.device.id))
+    }
+    
+    def.done(function(response) {
+        if (response.hasOwnProperty('success') && response.success === false) {
+            // api action failed
+            if(response.message) {
+                alert(response.message)
+            }
+        } else {
+            // success
+            $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
+            update();
+        }
 
+    }).fail(function(message){
+        console.error(message)
+    })
+}
 
 function device_configure(device){
     if (DEVICE_MODULE) {
