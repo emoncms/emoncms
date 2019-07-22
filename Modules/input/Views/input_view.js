@@ -44,6 +44,8 @@ var inputs = {};
 var nodes = {};
 var local_cache_key = 'input_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+// clear cookie value if not in correct format
+if (Array.isArray(nodes_display)) nodes_display = {};
 var selected_inputs = {};
 var selected_device = false;
 
@@ -716,5 +718,6 @@ $(function(){
             docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
             firstLoad = false;
         }
+        console.log(event.target.dataset.node,nodes_display)
     })
 })
