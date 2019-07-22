@@ -251,7 +251,11 @@ var app = new Vue({
         this.firstLoad = true;
         if(docCookies.hasItem(this.local_cache_key)) {
             var cached_state = JSON.parse(docCookies.getItem(this.local_cache_key))
-            this.collapsed = cached_state
+            if(Array.isArray(cached_state)) {
+                this.collapsed = cached_state
+            } else {
+                this.collapsed = []
+            }
         }
     },
     destroyed () {
