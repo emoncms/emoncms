@@ -155,6 +155,8 @@ var app = new Vue({
             return this.selected.indexOf(inputid) > -1
         },
         isCollapsed: function(nodeid) {
+            console.log(typeof this.collapsed)
+            if (typeof this.collapsed !== 'array') {}
             return this.collapsed.indexOf(nodeid) > -1
         },
         showInputConfigure: function(inputid) {
@@ -250,8 +252,8 @@ var app = new Vue({
         // load list collapsed state from previous visit
         this.firstLoad = true;
         if(docCookies.hasItem(this.local_cache_key)) {
-            var chached_state = JSON.parse(docCookies.getItem(this.local_cache_key));
-            this.collapsed = chached_state
+            var cached_state = JSON.parse(docCookies.getItem(this.local_cache_key))
+            this.collapsed = cached_state
         }
     },
     destroyed () {
