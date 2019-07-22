@@ -1,3 +1,5 @@
+// JSHint settings
+/* globals path */
 
 var input = {
 
