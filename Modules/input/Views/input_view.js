@@ -86,7 +86,8 @@ var app = new Vue({
         paused: false,
         device_module: DEVICE_MODULE === true,
         scrolled: false,
-        loaded: false
+        loaded: false,
+        local_cache_key: 'input_nodes_display'
     },
     computed: {
         total_inputs: function() {
@@ -117,6 +118,14 @@ var app = new Vue({
             } else {
                 update()
                 updaterStart(update, 5000)
+            }
+        },
+        collapsed: function(newVal) {
+            // cache state in cookie
+            if(!this.firstLoad) {
+                docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
+            } else {
+                this.firstLoad = false;
             }
         }
     },
@@ -238,6 +247,12 @@ var app = new Vue({
     },
     created () {
         window.addEventListener('scroll', this.handleScroll);
+        // load list collapsed state from previous visit
+        this.firstLoad = true;
+        if(docCookies.hasItem(this.local_cache_key)) {
+            var chached_state = JSON.parse(docCookies.getItem(this.local_cache_key));
+            this.collapsed = chached_state
+        }
     },
     destroyed () {
         window.removeEventListener('scroll', this.handleScroll);
