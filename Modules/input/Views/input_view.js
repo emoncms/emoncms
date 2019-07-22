@@ -155,8 +155,6 @@ var app = new Vue({
             return this.selected.indexOf(inputid) > -1
         },
         isCollapsed: function(nodeid) {
-            console.log(typeof this.collapsed)
-            if (typeof this.collapsed !== 'array') {}
             return this.collapsed.indexOf(nodeid) > -1
         },
         showInputConfigure: function(inputid) {

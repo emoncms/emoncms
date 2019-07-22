@@ -1,11 +1,3 @@
-<?php
-    global $path;
-    $v = 2;
-
-    $device_module = false;
-    if (file_exists("Modules/device")) $device_module = true;
-?>
-
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
 <?php } ?>
