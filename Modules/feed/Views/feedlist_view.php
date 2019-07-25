@@ -226,7 +226,7 @@ body{padding:0!important}
     </div>
     <div class="modal-footer">
         <div id="feed-edit-save-message" style="position:absolute"></div>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Cancel'); ?></button>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><?php echo _('Close'); ?></button>
         <button id="feed-edit-save" class="btn btn-primary"><?php echo _('Save'); ?></button>
     </div>
 </div>
