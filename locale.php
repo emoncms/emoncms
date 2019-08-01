@@ -68,7 +68,6 @@ function set_lang($language)
     // DEFAULT - from settings.php (if not in file use 'en_GB')
     $fallback_language = !empty($default_language) ? $default_language : 'en_GB';
 
-    $firstChoice = !empty($language[0]) ? filter_var($language[0], FILTER_SANITIZE_STRING) : $fallback_language;
     $supported_languages = array(
         'cy' => 'cy_GB',
         'da' => 'da_DK',
@@ -93,6 +92,7 @@ function set_lang($language)
     // loop through all given $language values
     // if given language is a key or value in the above list use it 
     foreach($language as $lang_code) {
+        $lang_code = filter_var($lang_code, FILTER_SANITIZE_STRING);
         if (isset($supported_languages[$lang_code])) { // key check
             $lang = $supported_languages[$lang_code];
             break;
