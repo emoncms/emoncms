@@ -232,7 +232,7 @@ class PHPTimeSeries implements engine_methods
         if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array("success"=>false, "message"=>"request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > DATAPOINT_LIMIT) return array("success"=>false, "message"=>"request datapoint limit reached (" . DATAPOINT_LIMIT . "), increase request interval or time range, requested datapoints = $req_dp");
         
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");

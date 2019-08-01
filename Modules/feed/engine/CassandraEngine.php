@@ -177,7 +177,7 @@ class CassandraEngine implements engine_methods
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > DATAPOINT_LIMIT) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . DATAPOINT_LIMIT . "), increase request interval or time range, requested datapoints = $req_dp");
 
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();
