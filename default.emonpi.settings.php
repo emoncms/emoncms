@@ -75,7 +75,8 @@
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    define('DATAPOINT_LIMIT', 8928);
+    $max_datapoints = 8928;
+
 
 //5 #### User Interface settings
     // gettext  translations are found under each Module's locale directory
