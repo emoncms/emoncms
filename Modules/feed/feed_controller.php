@@ -19,7 +19,7 @@ function feed_controller()
 {
     global $mysqli, $redis, $user, $session, $route, $feed_settings;
     $result = false;
-
+    
     require_once "Modules/feed/feed_model.php";
     $feed = new Feed($mysqli,$redis,$feed_settings);
 
