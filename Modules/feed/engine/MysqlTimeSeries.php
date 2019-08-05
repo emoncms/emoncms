@@ -808,7 +808,7 @@ class MysqlTimeSeries implements engine_methods
             $name .= preg_replace('/[^\p{N}\p{L}\_]/u', '_', $options['name']);
         }
         $type = !empty($options['type']) ? $options['type'] : "FLOAT";
-        if (!isset($options['empty']) || bool($options['empty'])) {
+        if (!isset($options['empty']) || boolval($options['empty'])) {
             $type .= " NOT NULL";
         }
         
