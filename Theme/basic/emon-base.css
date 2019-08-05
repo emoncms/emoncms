@@ -10,7 +10,7 @@ body.app #wrap {
 }
 /* animate both elements at same speed to get shift effect */
 #wrap,#footer {
-    transition: margin .3s ease-out;
+  transition: margin .3s ease-out;
 }
 .fullwidth.collapsed #wrap,
 .fullwidth.collapsed #footer{
@@ -24,13 +24,46 @@ body.app #wrap {
 }
 
 .ajax-loader {
-    position: absolute;
-    top: 0; bottom:0; left: 0; right:0;
-    margin: auto;
-    background: rgba(255, 255, 255, .8)
-        url(ajax-loader.gif)
-        center
-        no-repeat;
+  position: absolute;
+  top: 0; bottom:0; left: 0; right:0;
+  margin: auto;
+  background: rgba(255, 255, 255, .8)
+    url(ajax-loader.gif)
+    center
+    no-repeat;
+}
+
+/* -------------------------------------------------------------------
+   Control affix
+--------------------------------------------------------------------*/
+
+.controls {
+  transition: all .2s ease-out
+}
+.controls.affix:before {
+  content: '';
+  opacity: 0.85;
+  width: 100%;
+  display: block;
+  position: fixed;
+  z-index: -1;
+  height: 2.5rem;
+  left: 0;
+  margin-top: -.3rem;
+}
+.controls.affix > * {
+  z-index: 2;
+}
+.controls.affix {
+  z-index: 2;
+  top: 2.5rem;
+  padding-top: .5rem;
+  padding-bottom: .25rem;
+}
+.controls.affix-top{ position:absolute; }
+
+@media only screen and (max-width:979px) {
+  .controls.affix{ top:0 }
 }
 
 /* -------------------------------------------------------------------
