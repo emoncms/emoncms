@@ -293,6 +293,9 @@
             if ($st >= 0) {
                 if (isset($route[$st+1])) {
                     $nodeid = $route[$st+1];
+                    // Filter nodeid, pre input create, to avoid duplicate inputs
+                    $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+                    
                     $dbinputs = $input->get_inputs($userid);
                     
                     if ($jsoninput) {
@@ -328,6 +331,9 @@
                 $nodeid = $i['nodeid'];
                 $name = $i['name'];
                 $value = $i['value'];
+                
+                // Filter name, pre input create, to avoid duplicate inputs
+                $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
                 
                 // Automatic device configuration using device module if 'describe' keyword found
                 if (strtolower($name)=="describe") {

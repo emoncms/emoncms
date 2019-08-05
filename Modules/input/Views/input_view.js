@@ -44,6 +44,8 @@ var inputs = {};
 var nodes = {};
 var local_cache_key = 'input_nodes_display';
 var nodes_display = docCookies.hasItem(local_cache_key) ? JSON.parse(docCookies.getItem(local_cache_key)) : {};
+// clear cookie value if not in correct format
+if (Array.isArray(nodes_display)) nodes_display = {};
 var selected_inputs = {};
 var selected_device = false;
 
@@ -128,19 +130,19 @@ function update_inputs() {
                     }});
                 }
             }
-            if (nodes_display[nodeid]==undefined) nodes_display[nodeid] = true;
-            
+            if (typeof nodes_display[nodeid] === 'undefined') {
+                nodes_display[nodeid] = true;
+            }
             // expand if only one feed available or state locally cached in cookie
-            if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length == 0) {
-                nodes_display[nodeid] = false;
+            if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length === 0) {
+                delete nodes_display[nodeid];
             }
             devices[nodeid].inputs.push(inputs[z]);
-        }
-        // cache state in cookie
-        if(firstLoad) {
-            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
-            $('#input-loader').hide();
-            firstLoad = false;
+            // cache state in cookie
+            if(firstLoad) {
+                $('#input-loader').hide();
+                firstLoad = false;
+            }
         }
         draw_devices();
         noProcessNotification(devices);
@@ -640,3 +642,15 @@ $("#save-processlist").click(function (){
 
 // debouncing causes odd rendering during resize - run this at all resize points...
 $(window).on("resize",onResize);
+
+$(function(){
+    $(document).on('hide show', '#table', function(event){
+        // cache state in cookie
+        if(!firstLoad) {
+            nodes_display[event.target.dataset.node] = event.type === 'show';
+            docCookies.setItem(local_cache_key, JSON.stringify(nodes_display));
+            firstLoad = false;
+        }
+        console.log(event.target.dataset.node,nodes_display)
+    })
+})
