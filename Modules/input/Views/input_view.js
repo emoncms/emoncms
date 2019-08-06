@@ -138,11 +138,11 @@ function update_inputs() {
                 delete nodes_display[nodeid];
             }
             devices[nodeid].inputs.push(inputs[z]);
-            // cache state in cookie
-            if(firstLoad) {
-                $('#input-loader').hide();
-                firstLoad = false;
-            }
+        }
+        // cache state in cookie from now on
+        if (firstLoad) {
+            $('#input-loader').hide();
+            firstLoad = false;
         }
         draw_devices();
         noProcessNotification(devices);
