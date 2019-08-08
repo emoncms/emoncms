@@ -1267,7 +1267,6 @@ function nodeIntervalClass (node) {
     return missedIntervalClassName(missed);
 }
 
-<<<<<<< HEAD
 
 /**
  * get new array created from values in both arrays
@@ -1292,7 +1291,6 @@ function find(arr, prop) {
         return a[prop];
     });
 }
-=======
 $(function(){
     $(document).on('hide show', '#table', function(event){
         // cache state in cookie
@@ -1304,4 +1302,3 @@ $(function(){
         console.log(event.target.dataset.node,nodes_display)
     })
 })
->>>>>>> 67726fe4aef308624290a92ac6489e92a05077a1
