@@ -13,6 +13,26 @@ $(function(){
         }
     });
     
+    // if bookmarks has url hash fragment (eg. controller/view/#fragment) - js must be used to show
+    // @todo : this might not be needed to be done in php now?
+    // @see : https://github.com/emoncms/emoncms/blob/master/Theme/basic/menu_view.php#L66
+    if (typeof user_bookmarks !== 'undefined') {
+        var currentPageIsBookmarked = false
+        for (n in user_bookmarks) {
+            let bookmark = user_bookmarks[n]
+            if (path + bookmark.path === window.location.href) {
+                currentPageIsBookmarked = true
+            }
+        }
+        if (currentPageIsBookmarked) {
+            $('#remove-bookmark').parent().removeClass('d-none')
+            $('#set-bookmark').parent().addClass('d-none')
+        } else {
+            $('#remove-bookmark').parent().addClass('d-none')
+            $('#set-bookmark').parent().removeClass('d-none')
+        }
+    }
+
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event) {
         // if the link has a [data-is-link] attribute navigate to the link
@@ -166,7 +186,7 @@ $(function(){
         return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
     }
     // add current page to user's bookmark list
-    $('#set-bookmark, #remove-bookmark').click(function(event){
+    $('#set-bookmark, #remove-bookmark').click(function(event) {
         event.preventDefault();
         var bookmarks = [];
         var $nav = $('#footer_nav');
@@ -180,6 +200,10 @@ $(function(){
         if(currentTitle.length==0) currentTitle = $('h2').first().text();
         if(currentTitle.length==0) currentTitle = $('h3').first().text();
         if(currentTitle.length==0) currentTitle = document.title;
+        if(currentTitle.toLowerCase().trim() === 'graphs') {
+            let graphName = $('#graphName').val()
+            if(graphName.length > 0) currentTitle = graphName
+        }
         if(getQueryStringValue("name")) {
             currentTitle = decodeURI(getQueryStringValue("name").replace('+',' '));
         }

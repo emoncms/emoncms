@@ -217,7 +217,7 @@ if (session_status() == PHP_SESSION_NONE) {
 $expanded = true;
 
 if($session['write']){ ?>
-                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
+            <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
                 <?php
                     echo makeLink(array(
                         'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
@@ -253,5 +253,12 @@ if($session['write']){ ?>
                     </ul>
                     <!-- used to add more bookmarks -->
                     <template id="bookmark_link"><li><a href=""></a></li></template>
-                </div>
+            </div>
+            <script>
+                <?php if ($bookmarks) { ?>
+    var user_bookmarks = <?php echo json_encode($bookmarks, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>
+                <?php } else { ?>
+    var user_bookmarks = []
+                <?php } ?>
+            </script>
 <?php } ?>
