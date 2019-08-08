@@ -12,26 +12,8 @@ $(function(){
             show_sidebar();
         }
     });
-    
-    // if bookmarks has url hash fragment (eg. controller/view/#fragment) - js must be used to show
-    // @todo : this might not be needed to be done in php now?
-    // @see : https://github.com/emoncms/emoncms/blob/master/Theme/basic/menu_view.php#L66
-    if (typeof user_bookmarks !== 'undefined') {
-        var currentPageIsBookmarked = false
-        for (n in user_bookmarks) {
-            let bookmark = user_bookmarks[n]
-            if (path + bookmark.path === window.location.href) {
-                currentPageIsBookmarked = true
-            }
-        }
-        if (currentPageIsBookmarked) {
-            $('#remove-bookmark').parent().removeClass('d-none')
-            $('#set-bookmark').parent().addClass('d-none')
-        } else {
-            $('#remove-bookmark').parent().addClass('d-none')
-            $('#set-bookmark').parent().removeClass('d-none')
-        }
-    }
+ 
+    highlightBookmarkButton();
 
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event) {
@@ -370,4 +352,28 @@ var docCookies = {
     }
   };
 
+// if bookmarks has url hash fragment (eg. controller/view/#fragment) - js must be used to show
+// @todo : this might not be needed to be done in php now?
+// @see : https://github.com/emoncms/emoncms/blob/master/Theme/basic/menu_view.php#L66
+function highlightBookmarkButton() {
+    if (typeof user_bookmarks !== 'undefined') {
+        var currentPageIsBookmarked = false
+        for (n in user_bookmarks) {
+            let bookmark = user_bookmarks[n]
+            if (path + bookmark.path === window.location.href) {
+                currentPageIsBookmarked = true
+            }
+        }
+        if (currentPageIsBookmarked) {
+            $('#remove-bookmark').parent().removeClass('d-none')
+            $('#set-bookmark').parent().addClass('d-none')
+        } else {
+            $('#remove-bookmark').parent().addClass('d-none')
+            $('#set-bookmark').parent().removeClass('d-none')
+        }
+    }
+}
 
+window.addEventListener('hashchange', function(event) {
+    highlightBookmarkButton()
+});
