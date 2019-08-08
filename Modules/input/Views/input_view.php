@@ -169,6 +169,9 @@ input.checkbox-lg,
 .break-all {
     word-break: break-all;
 }
+[v-cloak] {
+    visibility: hidden
+}
 </style>
 
 <div class="position-relative">
