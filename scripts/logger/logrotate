@@ -2,4 +2,4 @@
 
 test -x /usr/sbin/logrotate || exit 0
 mkdir -p /var/log/logrotate && chown root:root /var/log/logrotate 
-/usr/sbin/logrotate -v -s /var/log/logrotate/logrotate.status /etc/logrotate.conf >> /var/log/logrotate/logrotate.log 
+/usr/sbin/logrotate -v -s /var/log/logrotate/logrotate.status /etc/logrotate.conf >> /var/log/logrotate/logrotate.log 2>&1 
