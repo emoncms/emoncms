@@ -11,6 +11,7 @@ global $path, $session, $menu, $user;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
+
 ?>
 <?php
 // if not logged in show login button top right
@@ -156,7 +157,10 @@ if(!$session['read']){
     if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $item): 
         echo makeListLink($item);
     endforeach; endif;
-} else {
+}
+
+// Show Account menu only if write context
+if ($session['write']){
     echo makeDropdown($item);
 }
 

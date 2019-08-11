@@ -88,7 +88,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
                 <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
             </div>
         </div>
-
+        
         <?php
         $contentContainerClasses[] = 'content-container';
         if ($fullwidth && $route->controller=="dashboard") { 
