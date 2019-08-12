@@ -91,6 +91,7 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
     );
 
     $max_node_id_limit = $ini_array['feed']['max_node_id_limit'];
+    $max_datapoints = $ini_array['feed']['max_datapoints'];
 
     // [interface]
     $default_language = $ini_array['interface']['default_language'];
