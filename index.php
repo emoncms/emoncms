@@ -329,20 +329,22 @@
             $menu = load_menu();
             
             // EMONCMS MENU
-            $menu['tabs'][] = array(
-                'icon'=>'menu',
-                'title'=> _("Emoncms"),
-                'path' => 'feed/list',
-                'order' => 0,
-                'data'=> array(
-                    'sidebar' => '#sidebar_emoncms'
-                )
-            );
+            if($session['write']){
+                $menu['tabs'][] = array(
+                    'icon'=>'menu',
+                    'title'=> _("Emoncms"),
+                    'path' => 'feed/list',
+                    'order' => 0,
+                    'data'=> array(
+                        'sidebar' => '#sidebar_emoncms'
+                    )
+                );
+            }
 
             include_once ("Lib/misc/nav_functions.php");
             sortMenu($menu);
             // debugMenu('sidebar');
-            
+            $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
             
             // add css class names to <body> tag based on controller's options

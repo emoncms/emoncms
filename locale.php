@@ -58,17 +58,16 @@ function lang_http_accept()
 }
 
 /***
- * take the first value from the given list and save it as the user's language
+ * take the values from the given list and save it as the user's language
  * only takes supported language values.
- * @param array $language - array returned by lang_http_accept()  - without the quantify values
- * @todo possibly fall back to second or third choices if available?
+ * @param array $language - array returned by lang_http_accept() - without the validating values
  */
 function set_lang($language)
 {
     global $default_language;
     // DEFAULT - from settings.php (if not in file use 'en_GB')
-    $default = !empty($default_language) ? $default_language : 'en_GB';
-    $firstChoice = !empty($language[0]) ? filter_var($language[0], FILTER_SANITIZE_STRING) : $default;
+    $fallback_language = !empty($default_language) ? $default_language : 'en_GB';
+
     $supported_languages = array(
         'cy' => 'cy_GB',
         'da' => 'da_DK',
@@ -78,15 +77,30 @@ function set_lang($language)
         'nl' => 'nl_NL',
         'en' => 'en_GB'
     );
-    // if given language is a key or value in the above list use it 
-    if (isset($supported_languages[$firstChoice])) { // key check
-        $lang = $supported_languages[$firstChoice];
-    } elseif (in_array($firstChoice, $supported_languages)) { // value check
-        $lang = $firstChoice;
-    } else {
-        $lang = $default; // not found use default
-    }
 
+/**
+ * ORDER OF PREFERENCE WITH LANGUAGE SELECTION
+ * -------------------------------------------
+ * 1. non logged in users use the browser's language
+ * 2. logged in users use their saved language preference 
+ * 3. logged in users without language saved uses `$default_language` from settings.php
+ * 4. else fallback is set to 'en_GB'
+*/
+
+    $lang = $fallback_language; // if not found use fallback
+
+    // loop through all given $language values
+    // if given language is a key or value in the above list use it 
+    foreach($language as $lang_code) {
+        $lang_code = filter_var($lang_code, FILTER_SANITIZE_STRING);
+        if (isset($supported_languages[$lang_code])) { // key check
+            $lang = $supported_languages[$lang_code];
+            break;
+        } elseif (in_array($lang_code, $supported_languages)) { // value check
+            $lang = $lang_code;
+            break;
+        }
+    }
     set_lang_by_user($lang);
 }
 
@@ -100,11 +114,13 @@ function set_lang_by_user($lang)
 
 function set_emoncms_lang($lang)
 {
-    // If no language defined use the language browser
+    // If no language defined use the browser language
     if ($lang == '') {
-        set_lang(lang_http_accept());
+        $browser_languages = lang_http_accept();
+        set_lang($browser_languages);
     } else {
         set_lang_by_user($lang);
     }
+    global $session;
 }
 

@@ -211,9 +211,9 @@ AddDefaultCharset utf-8
 
 # protect phpinfo, only allow localhost and local network access
 <Files php-info.php>
-	Order Deny,Allow
-	Deny from all
-	Allow from 10
-	Allow from 172
-	Allow from 192
+    # LOCAL ACCESS ONLY
+    # Require local 
+
+    # LOCAL AND LAN ACCESS
+    Require ip 10 172 192.168
 </Files>

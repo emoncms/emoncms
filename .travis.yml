@@ -27,6 +27,8 @@ addons:
 env:
     - BROWSER="chrome"
     - BROWSER="firefox"
+  global:
+    - COMPOSER_DISABLE_XDEBUG_WARN=1
 before_install:
      # Install Apache + PHP - adapted from https://docs.travis-ci.com/user/languages/php/
     - sudo apt-get install apache2 libapache2-mod-fastcgi -y
@@ -40,19 +42,16 @@ before_install:
     ## configure apache virtual hosts 
     - sudo cp -f Lib/travis-CI/travis-ci-apache /etc/apache2/sites-available/000-default.conf
     - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
+    - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
     - sudo service apache2 restart
 install:
     # Install emonCMS - adapted from https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md
     ## Setup in apache 
     - sudo apt-add-repository ppa:ondrej/php -y
     - sudo apt-get update
-    - sudo apt-get install php-pear php$TRAVIS_PHP_VERSION-dev redis-server build-essential g++ wget -y 
+    - sudo apt-get install php-pear redis-server build-essential g++ wget -y
     - sudo pear channel-discover pear.swiftmailer.org
     - sudo pecl install swift/swift 
-    # - sudo pecl install redis - redis already installed
-    - printf "extension=redis.so" | sudo tee /etc/php/$TRAVIS_PHP_VERSION/mods-available/redis.ini 1>&2
-    #- sudo php5enmod redis
-    - sudo phpenmod redis
     - sudo cp Lib/travis-CI/emoncms.conf /etc/apache2/sites-available/emoncms.conf
     - sudo a2ensite emoncms
     - sudo service apache2 reload
@@ -71,6 +70,7 @@ install:
     - sed -i 's/$enable_multi_user = false;/$enable_multi_user = true;/g' settings.php
     ### Not setting up SMTP - needs to be done if we want to test emails features
     ## Setup test suite
+    - composer install
     - cd tests
     - npm install
     - "./node_modules/.bin/selenium-standalone install"
@@ -86,6 +86,7 @@ install:
     - export PATH=$PATH:$TRAVIS_BUILD_DIR/tests/webdrivers
 script:
     # - curl -vL http://127.0.0.1 - Uncomment this line to see html of the login page
+    - composer test
     - cd $TRAVIS_BUILD_DIR/tests
     - HEADLESS=true DEBUG=true TRAVIS=true BROWSER=$BROWSER ./node_modules/.bin/wdio wdio.conf.js --spec ./Lib/emonCMS-travis-setup.js
     - HEADLESS=true DEBUG=true TRAVIS=true BROWSER=$BROWSER ./node_modules/.bin/wdio wdio.conf.js

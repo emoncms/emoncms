@@ -21,8 +21,15 @@ if (!isset($session['profile'])) {
  * @return string <li><a> link
  */
 function makeListLink($params) {
-    global $route;
+    global $route, $session;
     $activeClassName = 'active';
+    
+    $public = getKeyValue('public', $params);
+    $public_only = getKeyValue('public_only', $params);
+    $admin_only = getKeyValue('admin_only', $params);
+
+    $logged_in = isset($session['read']) && $session['read'];
+    $is_admin = isset($session['admin']) && $session['admin'];
 
     $li_id = getKeyValue('li_id', $params);
     $li_class = array_filter( (array) getKeyValue('li_class', $params));
@@ -80,7 +87,9 @@ function makeListLink($params) {
         }
         $link .= '<ul class="dropdown-menu">'.implode("\n", $sub_items).'</ul>';
     }
-    return empty($link) ? '' : sprintf('<li%s>%s</li>', $attr, $link);
+    if(($admin_only && $is_admin || !$admin_only) && $logged_in && !$public_only || !$logged_in && $public) {
+        return empty($link) ? '' : sprintf('<li%s>%s</li>', $attr, $link);
+    }
 }
 /**
  * returns true if current view's url matches passed $path(s)
@@ -173,7 +182,7 @@ function tab($num){
 }
 /**
  * build <a> link with 'active' class added if is current page
- * $params = assoc array with keys: [text|path|title|class|id|icon|active|href|data]
+ * $params = assoc array with keys: [text|path|title|class|id|icon|active|href|data|public|public_only]
  *
  * @param array $params associative array
  * @return string <a> tag
