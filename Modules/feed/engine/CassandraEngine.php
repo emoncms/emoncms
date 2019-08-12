@@ -168,6 +168,8 @@ class CassandraEngine implements engine_methods
      */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        global $max_datapoints;
+
         $feedid = (int) $feedid;
         $start = round($start/1000);
         $end = round($end/1000);
@@ -177,7 +179,7 @@ class CassandraEngine implements engine_methods
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $max_datapoints) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
 
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();

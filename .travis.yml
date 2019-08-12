@@ -70,6 +70,7 @@ install:
     - sed -i 's/$enable_multi_user = false;/$enable_multi_user = true;/g' settings.php
     ### Not setting up SMTP - needs to be done if we want to test emails features
     ## Setup test suite
+    - composer install
     - cd tests
     - npm install
     - "./node_modules/.bin/selenium-standalone install"
@@ -83,10 +84,9 @@ install:
     - tar -xvzf geckodriver-v0.23.0-linux64.tar.gz
     - sudo chmod +x geckodriver
     - export PATH=$PATH:$TRAVIS_BUILD_DIR/tests/webdrivers
-    - composer install
 script:
     # - curl -vL http://127.0.0.1 - Uncomment this line to see html of the login page
+    - composer test
     - cd $TRAVIS_BUILD_DIR/tests
     - HEADLESS=true DEBUG=true TRAVIS=true BROWSER=$BROWSER ./node_modules/.bin/wdio wdio.conf.js --spec ./Lib/emonCMS-travis-setup.js
     - HEADLESS=true DEBUG=true TRAVIS=true BROWSER=$BROWSER ./node_modules/.bin/wdio wdio.conf.js
-    - composer test

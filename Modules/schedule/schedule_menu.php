@@ -1,9 +1,10 @@
 <?php
 
-    $menu['setup'][] = array(
+    $menu['sidebar']['emoncms'][] = array(
         'text' => _("Schedule"),
         'path' => 'schedule/view',
         'icon' => 'schedule',
-        'active' => 'schedule'
+        'active' => 'schedule',
+        'order' => 'b3'
     );
 

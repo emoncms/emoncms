@@ -39,7 +39,9 @@ function getTranslations(){
         'Tag': "<?php echo _('Tag') ?>",
         'Feed ID': "<?php echo _('Feed ID') ?>",
         'Feed Interval': "<?php echo _('Feed Interval') ?>",
-        'Feed Start Time': "<?php echo _('Feed Start Time') ?>"
+        'Feed Start Time': "<?php echo _('Feed Start Time') ?>",
+        'Realtime': "<?php echo _('Realtime') ?>",
+        'Daily': "<?php echo _('Daily') ?>"
     }
 }
 /**
@@ -312,7 +314,7 @@ body{padding:0!important}
         </h3>
     </div>
     <div class="modal-body">
-        <div class="clearfix">
+        <div class="clearfix d-flex row">
             <div id="clearContainer" class="span6">
                 <div style="min-height:12.1em; position:relative" class="well well-small">
                     <h4 class="text-info"><?php echo _('Clear') ?>:</h4>
@@ -451,6 +453,11 @@ function update() {
                 node_time[n] = parseInt(feed.engine) !== 7 && feed.time > node_time[n] ? feed.time : node_time[n];
             }
         }
+        // todo: remove the requirement of a fixed list. Load from api?
+        var datatypes = {
+            1: _('Realtime'),
+            2: _('Daily')
+        }
         // display nodes and feeds
         var counter = 0;
         for (var node in nodes) {
@@ -461,8 +468,9 @@ function update() {
             out += '      <div class="select text-center has-indicator" data-col="B"><span class="icon-chevron-'+(isCollapsed ? 'right' : 'down')+' icon-indicator"></span></div>';
             out += '      <h5 class="name" data-col="A">'+node+':</h5>';
             out += '      <div class="public" class="text-center" data-col="E"></div>';
-            out += '      <div class="engine" data-col="F"></div>';
-            out += '      <div class="size text-center" data-col="G">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="engine" data-col="G"></div>';
+            out += '      <div class="size text-center" data-col="H">'+list_format_size(node_size[node])+'</div>';
+            out += '      <div class="processlist" data-col="F"></div>';
             out += '      <div class="node-feed-right pull-right">';
             out += '        <div class="value" data-col="C"></div>';
             out += '        <div class="time" data-col="D">'+list_format_updated(node_time[node])+'</div>';
@@ -474,16 +482,22 @@ function update() {
             for (var feed in nodes[node]) {
                 var feed = nodes[node][feed];
                 var feedid = feed.id;
+                var datatype = datatypes[feed.datatype] || '';
 
                 var title_lines = [feed.name,
                                   '-----------------------',
-                                  _('Tag')+': '+ feed.tag,
-                                  _('Feed ID')+': '+ feedid]
+                                  _('Tag') + ': ' + feed.tag,
+                                  _('Feed ID') + ': ' + feedid,
+                                  _('Datatype') + ': ' + datatype]
                 
                 if(feed.engine == 5) {
                     title_lines.push(_('Feed Interval')+": "+(feed.interval||'')+'s')
                 }
-                
+                var processListHTML = '';
+                if(feed.processList!=undefined && feed.processList.length > 0){
+                    processListHTML = processlist_ui ? processlist_ui.drawpreview(feed.processList, feed) : '';
+                }
+
                 // show the start time if available
                 if(feed.start_time > 0) {
                     title_lines.push(_('Feed Start Time')+": "+feed.start_time);
@@ -501,8 +515,9 @@ function update() {
                 if (feed['public']==1) publicfeed = "<i class='icon-globe'></i>";
                 
                 out += '<div class="public text-center" data-col="E">'+publicfeed+'</div>';
-                out += '  <div class="engine" data-col="F">'+feed_engines[feed.engine]+'</div>';
-                out += '  <div class="size text-center" data-col="G">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="engine" data-col="G">'+feed_engines[feed.engine]+'</div>';
+                out += '  <div class="size text-center" data-col="H">'+list_format_size(feed.size)+'</div>';
+                out += '  <div class="processlist" data-col="F">'+processListHTML+'</div>';
                 out += '  <div class="node-feed-right pull-right">';
                 if (feed.unit==undefined) feed.unit = "";
                 out += '    <div class="value" data-col="C">'+list_format_value(feed.value)+' '+feed.unit+'</div>';
@@ -546,7 +561,7 @@ $("#table").on("click",".feed-graph-link",function(e) {
     // ignore click on feed-info row
     if ($(this).parent().is('.node-info')) return false;
     var feedid = $(this).attr("feedid");
-    window.location = path+"graph/"+feedid;
+    window.location = path+feedviewpath+feedid;
 });
 
 $(".feed-graph").click(function(){
@@ -554,7 +569,7 @@ $(".feed-graph").click(function(){
     for (var feedid in selected_feeds) {
         if (selected_feeds[feedid]==true) graph_feeds.push(feedid);
     }
-    window.location = path+"graph/"+graph_feeds.join(",");      
+    window.location = path+feedviewpath+graph_feeds.join(",");      
 });
 
 function buildFeedNodeList() {
