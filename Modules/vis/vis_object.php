@@ -45,23 +45,6 @@
             )
         ),
         
-        'timestoredaily'=> array('label'=>dgettext('vis_messages','Daily from Multiple (BETA)'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1),
-            array('units',dgettext('vis_messages','units'),5,'kWh'))
-        ),
-        
-        'smoothie'=> array('label'=>dgettext('vis_messages','Smoothie'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),1),
-            array('ufac',dgettext('vis_messages','ufac'),6))
-        ),
-        
-        'histgraph'=> array('label'=>dgettext('vis_messages','Histgraph'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('barwidth',dgettext('vis_messages','barwidth'),7,50),
-            array('start',dgettext('vis_messages','start'),7,0),
-            array('end',dgettext('vis_messages','end'),7,0))
-        ),
-        
         //'dailyhistogram'=> array('options'=>array(array('feedid',3))),
         'zoom'=> array('label'=>dgettext('vis_messages','Zoom'), 'options'=>array(
             array('power',dgettext('vis_messages','power'),1),
@@ -87,12 +70,6 @@
             array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        'threshold'=> array('label'=>dgettext('vis_messages','Threshold'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
-            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500))
-        ),
-        
         'simplezoom'=> array('label'=>dgettext('vis_messages','SimpleZoom'), 'options'=>array(
             array('power',dgettext('vis_messages','power'),1),
             array('kwhd',dgettext('vis_messages','kwh'),0),
@@ -104,11 +81,8 @@
             array('delta',dgettext('vis_messages','delta'),4,0)
         )),
         
-        'orderthreshold'=> array('label'=>dgettext('vis_messages','OrderThreshold'), 'options'=>array(
-            array('feedid',dgettext('vis_messages','feed'),3),
-            array('power',dgettext('vis_messages','power'),1),
-            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
-            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500)
+        'multigraph' => array ('label'=>dgettext('vis_messages','MultiGraph'), 'action'=>'multigraph', 'options'=>array(
+            array('mid',dgettext('vis_messages','mid'),8)
         )),
         
         'editrealtime'=> array('label'=>dgettext('vis_messages','EditRealtime'), 'options'=>array(
@@ -119,10 +93,39 @@
             array('feedid',dgettext('vis_messages','feed'),2)
         )),
         
-        'multigraph' => array ('label'=>dgettext('vis_messages','MultiGraph'), 'action'=>'multigraph', 'options'=>array(
-            array('mid',dgettext('vis_messages','mid'),8)
-        )),
+        // --------------------------------------------------------------------------------
+        // Not currently available on emoncms.org
+        // --------------------------------------------------------------------------------     
+        'timestoredaily'=> array('label'=>dgettext('vis_messages','Daily from Multiple (BETA)'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('units',dgettext('vis_messages','units'),5,'kWh'))
+        ),
         
+        'smoothie'=> array('label'=>dgettext('vis_messages','Smoothie'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),1),
+            array('ufac',dgettext('vis_messages','ufac'),6))
+        ),
+        
+        'histgraph'=> array('label'=>dgettext('vis_messages','Histgraph'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),3),
+            array('barwidth',dgettext('vis_messages','barwidth'),7,50),
+            array('start',dgettext('vis_messages','start'),7,0),
+            array('end',dgettext('vis_messages','end'),7,0))
+        ),  
+
+        'threshold'=> array('label'=>dgettext('vis_messages','Threshold'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),3),
+            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
+            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500))
+        ),      
+
+        'orderthreshold'=> array('label'=>dgettext('vis_messages','OrderThreshold'), 'options'=>array(
+            array('feedid',dgettext('vis_messages','feed'),3),
+            array('power',dgettext('vis_messages','power'),1),
+            array('thresholdA',dgettext('vis_messages','thresholdA'),6,500),
+            array('thresholdB',dgettext('vis_messages','thresholdB'),6,2500)
+        )),
+                
         'compare' => array ('label'=>dgettext('vis_messages','Compare'), 'action'=>'compare', 'options'=>array(
             array('feedA',dgettext('vis_messages','Feed A'),1),
             array('feedB',dgettext('vis_messages','Feed B'),1)
@@ -138,4 +141,5 @@
             array('depth',dgettext('vis_messages','depth'),7,3),
             array('npoints',dgettext('vis_messages','data points'),7,800)
         ))
+        // --------------------------------------------------------------------------------     
     );

@@ -31,9 +31,9 @@ class Input
     {
         $userid = (int) $userid;
         $indx = (int) $indx;
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
         // if (strlen($nodeid)>16) return false; // restriction placed on emoncms.org
-        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
         // if (strlen($name)>64) return false; // restriction placed on emoncms.org
         $id = false;
         
@@ -79,8 +79,8 @@ class Input
     public function exists_nodeid_name($userid,$nodeid,$name)
     {
         $userid = (int) $userid;
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
-        $name = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$name);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
         
         $stmt = $this->mysqli->prepare("SELECT id FROM input WHERE userid=? AND nodeid=? AND name=?");
         $stmt->bind_param("iss",$userid,$nodeid,$name);
@@ -147,7 +147,7 @@ class Input
         $success = false;
 
         if (isset($fields->name)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in input name');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-]/u','',$fields->name)!=$fields->name) return array('success'=>false, 'message'=>'invalid characters in input name');
             $stmt = $this->mysqli->prepare("UPDATE input SET name = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->name,$id);
             if ($stmt->execute()) $success = true;
@@ -157,7 +157,7 @@ class Input
         }
         
         if (isset($fields->description)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in input description');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$fields->description)!=$fields->description) return array('success'=>false, 'message'=>'invalid characters in input description');
             $stmt = $this->mysqli->prepare("UPDATE input SET description = ? WHERE id = ?");
             $stmt->bind_param("si",$fields->description,$id);
             if ($stmt->execute()) $success = true;
@@ -687,7 +687,7 @@ class Input
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in arg'); 
                         break;
                                                 

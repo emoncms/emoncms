@@ -48,18 +48,6 @@ function vis_widgetlist(){
       "html":""
     },
 
-    "timestoredaily":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","units","initzoom"],
-      "optionstype":["feedid","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Units"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Units to show"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
-      "html":""
-    },
-
     "zoom":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
@@ -79,40 +67,6 @@ function vis_widgetlist(){
       "optionstype":["feedid","feedid","boolean"],
       "optionsname":[_Tr_Vis("Power"),_Tr_Vis("kwhd"),_Tr_Vis("delta")],
       "optionshint":[_Tr_Vis("Power to show"),_Tr_Vis("kwhd source"),_Tr_Vis("Show difference between each bar")],
-      "html":""
-    },
-
-    "histgraph":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid"],
-      "optionstype":["feedid"],
-      "optionsname":[_Tr_Vis("Feed")],
-      "optionshint":[_Tr_Vis("Feed source")],
-      "html":""
-    },
-
-    "threshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","thresholdA","thresholdB","initzoom"],
-      "optionstype":["feedid","value","value","dropbox"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B"),_Tr_Vis("Zoom")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used"),_Tr_Vis("Default visible window interval")],
-      "optionsdata": [ , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
-      "html":""
-    },
-
-    "orderthreshold":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","power","thresholdA","thresholdB"],
-      "optionstype":["feedid","feedid","value","value"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Power"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Power"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used")],
       "html":""
     },
 
@@ -149,17 +103,6 @@ function vis_widgetlist(){
       "html":""
     },
 
-    "smoothie":
-    {
-      "offsetx":0,"offsety":0,"width":400,"height":300,
-      "menu":"Visualisations",
-      "options":["feedid","ufac"],
-      "optionstype":["feedid","value"],
-      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Ufac")],
-      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Ufac value")],
-      "html":""
-    },
-
     "multigraph":
     {
       "offsetx":0,"offsety":0,"width":400,"height":300,
@@ -169,6 +112,63 @@ function vis_widgetlist(){
       "optionsname":[_Tr_Vis("Multigraph")],
       "optionshint":[_Tr_Vis("Managed on Visualization module")],
       "optionsdata":[multigraphsDropBoxOptions], // Gets multigraphs from vis_widget.php multigraphsDropBoxOptions variable
+      "html":""
+    },
+
+    "timestoredaily":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid","units","initzoom"],
+      "optionstype":["feedid","value","dropbox"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Units"),_Tr_Vis("Zoom")],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Units to show"),_Tr_Vis("Default visible window interval")],
+      "optionsdata": [ , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
+      "html":""
+    },
+        
+    "histgraph":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid"],
+      "optionstype":["feedid"],
+      "optionsname":[_Tr_Vis("Feed")],
+      "optionshint":[_Tr_Vis("Feed source")],
+      "html":""
+    },
+
+    "threshold":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid","thresholdA","thresholdB","initzoom"],
+      "optionstype":["feedid","value","value","dropbox"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B"),_Tr_Vis("Zoom")],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used"),_Tr_Vis("Default visible window interval")],
+      "optionsdata": [ , , , [["1", _Tr_Vis("Day")],["7", _Tr_Vis("Week")],["30", _Tr_Vis("Month")],["365", _Tr_Vis("Year")]] ],
+      "html":""
+    },
+
+    "orderthreshold":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid","power","thresholdA","thresholdB"],
+      "optionstype":["feedid","feedid","value","value"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Power"),_Tr_Vis("Threshold A"),_Tr_Vis("Threshold B")],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Power"),_Tr_Vis("Threshold A used"),_Tr_Vis("Threshold B used")],
+      "html":""
+    },
+    
+    "smoothie":
+    {
+      "offsetx":0,"offsety":0,"width":400,"height":300,
+      "menu":"Visualisations",
+      "options":["feedid","ufac"],
+      "optionstype":["feedid","value"],
+      "optionsname":[_Tr_Vis("Feed"),_Tr_Vis("Ufac")],
+      "optionshint":[_Tr_Vis("Feed source"),_Tr_Vis("Ufac value")],
       "html":""
     },
 

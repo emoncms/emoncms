@@ -161,20 +161,15 @@ class CassandraEngine implements engine_methods
     }
 
     /**
-     * Return the data for the given timerange
+     * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-     * @param integer $skipmissing Skip null values from returned data (used by some engines)
-     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
-     *
-     * {@inheritdoc}
+     * @param integer $limitinterval not implemented
      *
      */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        global $max_datapoints;
+
         $feedid = (int) $feedid;
         $start = round($start/1000);
         $end = round($end/1000);
@@ -184,7 +179,7 @@ class CassandraEngine implements engine_methods
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $max_datapoints) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
 
         $day_range = range($this->unixtoday($start), $this->unixtoday($end));
         $data = array();

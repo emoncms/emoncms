@@ -29,7 +29,7 @@
 
 [Unit]
 Description=Emoncms MQTT Input Script
-After=mosquitto.service mysql.service redis.service
+After=mosquitto.service mysql.service redis-server.service
 Documentation=https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
 
 [Service]

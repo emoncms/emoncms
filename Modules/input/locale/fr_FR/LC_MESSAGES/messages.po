@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-06 12:45+0200\n"
-"PO-Revision-Date: 2018-08-06 13:02+0200\n"
+"POT-Creation-Date: 2019-06-29 09:34+0200\n"
+"PO-Revision-Date: 2019-06-29 09:35+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,22 +14,39 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/device_view.php:169 ../../../Views/input_view.php:29
+#: ../../../Views/device_view.php:111 ../../../Views/input_view.php:119
 msgid "Input API Help"
 msgstr "Aide de l'API Source"
 
-#: ../../../Views/device_view.php:170
-msgid "My Devices"
-msgstr "Mes Dispositifs"
+#: ../../../Views/device_view.php:112 ../../../Views/input_view.php:120
+#: ../../../input_menu.php:4
+msgid "Inputs"
+msgstr "Sources"
 
-#: ../../../Views/device_view.php:196 ../../../Views/input_view.php:35
+#: ../../../Views/device_view.php:116 ../../../Views/input_view.php:124
+msgid "Collapse"
+msgstr "Replier"
+
+#: ../../../Views/device_view.php:116 ../../../Views/input_view.php:124
+msgid "Expand"
+msgstr "Déplier"
+
+#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:125
+msgid "Select all"
+msgstr "Tout sélectionner"
+
+#: ../../../Views/device_view.php:117 ../../../Views/input_view.php:125
+msgid "Unselect all"
+msgstr "Tout désélectionner"
+
+#: ../../../Views/device_view.php:133 ../../../Views/input_view.php:141
 msgid "No inputs created"
 msgstr "Aucune source de données n'est disponible"
 
-#: ../../../Views/device_view.php:197 ../../../Views/input_view.php:36
+#: ../../../Views/device_view.php:134 ../../../Views/input_view.php:142
 msgid ""
 "Inputs are the main entry point for your monitoring device. Configure your "
 "device to post values here, you may want to follow the <a href=\"api\">Input "
@@ -39,6 +56,31 @@ msgstr ""
 "appareils doivent être configurés pour envoyer leurs données ici, veuillez "
 "consulter l'<a href=\"api\">Aide de l'API Source</a> afin de générer votre "
 "requête."
+
+#: ../../../Views/device_view.php:138 ../../../Views/input_view.php:146
+msgid "New device"
+msgstr "Nouvel appareil"
+
+#: ../../../Views/device_view.php:239 ../../../Views/input_view.php:316
+msgid "Configure your device here"
+msgstr "Configurer votre appareil ici"
+
+#: ../../../Views/device_view.php:277 ../../../Views/input_view.php:359
+msgid "Show node key"
+msgstr "Afficher la clé du noeud"
+
+#: ../../../Views/device_view.php:278 ../../../Views/input_view.php:360
+msgid "Configure device using device template"
+msgstr "Configurer l'appareil en utilisant le modèle d'appareil"
+
+#: ../../../Views/device_view.php:300 ../../../Views/input_view.php:402
+msgid "Configure Input processing"
+msgstr "Configurer le traitement de la source"
+
+#: ../../../Views/device_view.php:574 ../../../Views/device_view.php:605
+#: ../../../Views/input_view.php:695 ../../../Views/input_view.php:726
+msgid "Saving"
+msgstr "Enregistrement"
 
 #: ../../../Views/input_api.php:8
 msgid "Input API"
@@ -50,11 +92,11 @@ msgstr "Authentification clé API"
 
 #: ../../../Views/input_api.php:10
 msgid ""
-"If you want to call any of the following actions when your not logged in you "
-"can authenticate with your API key:"
+"If you want to call any of the following actions when you're not logged in, "
+"you can authenticate with your API key:"
 msgstr ""
 "Si vous souhaitez appeler une des actions suivantes alors que vous n'êtes "
-"pas connecté, vous pouvez vous authentifier avec votre clé API"
+"pas connecté, vous pouvez vous authentifier avec votre clé API :"
 
 #: ../../../Views/input_api.php:12
 msgid "Use POST parameter (Recommended): \"apikey=APIKEY\""
@@ -70,7 +112,7 @@ msgstr "Veuillez ajouter votre clé d'API à la fin de l'url : &apikey=APIKEY."
 
 #: ../../../Views/input_api.php:17
 msgid ""
-"Alternatively use the encrypted input method to post data with higher "
+"Alternatively, use the encrypted input method to post data with higher "
 "security."
 msgstr ""
 "Alternativement utilisez la méthode d'entrée cryptée pour publier vos "
@@ -78,11 +120,11 @@ msgstr ""
 
 #: ../../../Views/input_api.php:19
 msgid "Read only:"
-msgstr "Lecture uniquement : "
+msgstr "Lecture uniquement :"
 
 #: ../../../Views/input_api.php:22
 msgid "Read & Write:"
-msgstr "Lecture & Écriture : "
+msgstr "Lecture & Écriture :"
 
 #: ../../../Views/input_api.php:26
 msgid "Posting data to EmonCMS"
@@ -118,11 +160,11 @@ msgstr "<b>encryption</b> - Une version cryptée des deux ci-dessus."
 #: ../../../Views/input_api.php:35
 msgid ""
 "If you're starting out with EmonCMS, 'input/post' is a good starting point "
-"for testing. This was the original input method for EmonCMS. The EmonPi/"
-"EmonBase uses the 'input/bulk' input method to post to a remote EmonCMS "
-"server as this method provides the option to efficiently bulk upload "
-"buffered data after an internet connection outage. Combining multiple "
-"updates in a single input/bulk request also reduces bandwidth requirements. "
+"for testing. This was emonCMS' original input method. The EmonPi/EmonBase "
+"uses the 'input/bulk' input method to post to a remote EmonCMS server as "
+"that method provides an option to efficiently upload buffered data after an "
+"internet connection outage. Combining multiple updates in a single input/"
+"bulk request also reduces bandwidth requirements. "
 msgstr ""
 "Si votre démarrage avec 'input / post' est un bon point de départ pour des "
 "tests, c'était la méthode d'entrée originale lors de la création de EmonCMS. "
@@ -150,7 +192,7 @@ msgstr "input/post"
 #: ../../../Views/input_api.php:42
 msgid ""
 "The <b>fulljson</b> format is recommended for new integrations. It uses the "
-"PHP JSON decoder and answer is also in json."
+"PHP JSON decoder and the answer is also in json."
 msgstr ""
 "Le format json <b>\"complet\"</b> est recommandé pour de nouvelles "
 "intégrations, il utilise le décodeur PHP JSON et la réponse est également en "
@@ -159,7 +201,7 @@ msgstr ""
 #: ../../../Views/input_api.php:43
 msgid ""
 "The <b>json like</b> format is based on the CSV input parsing implementation "
-"and maintained for backwards compatibility."
+"and maintained for backward compatibility."
 msgstr ""
 "Le format json <b>\"ressemblant\"</b> est basé sur une implémentation "
 "d'analyse d'entrée CSV et est maintenu pour une rétrocompatibilité."
@@ -178,8 +220,8 @@ msgid ""
 "be either a parameter &time (unquoted) or as part of the JSON data "
 "structure. If both are included the parameter value will take precedence. "
 "Time is a UNIX timestamp and can be in seconds or a string PHP can decode "
-"(ISO8061 recommended). If you are having problems check you are using "
-"seconds not milliseconds. If part of the JSON data structure as a string, "
+"(ISO8061 recommended). If you are having problems, ensure you are using "
+"seconds not milliseconds. If part of the JSON data structure is a string, "
 "the node value will report NULL"
 msgstr ""
 "Le temps est paramétré comme temps système à moins qu'un élément <b>temps</"
@@ -258,11 +300,11 @@ msgstr ""
 
 #: ../../../Views/input_api.php:65
 msgid "JSON format:"
-msgstr "Format JSON : "
+msgstr "Format JSON :"
 
 #: ../../../Views/input_api.php:66
 msgid "CSV format:"
-msgstr "Format CSV : "
+msgstr "Format CSV :"
 
 #: ../../../Views/input_api.php:69
 msgid "input/bulk"
@@ -288,7 +330,7 @@ msgstr ""
 
 #: ../../../Views/input_api.php:82
 msgid ""
-"The second number is the node id, this is the unique identifier for the "
+"The second number is the node id. This is the unique identifier for the "
 "wireless node."
 msgstr ""
 "Le second nombre est l'identifiant du nœud, c'est l'identifiant unique du "
@@ -296,7 +338,7 @@ msgstr ""
 
 #: ../../../Views/input_api.php:83
 msgid ""
-"All the numbers after the first two are data values. The second node here "
+"All the numbers after the first two, are data values. The second node here "
 "(node 17) has two data values: 1437 and 3164."
 msgstr ""
 "Tous les nombres qui suivent les deux premiers sont les valeurs de données. "
@@ -355,15 +397,15 @@ msgstr "Format de décalage de temps :"
 
 #: ../../../Views/input_api.php:102
 msgid "Sentat format:"
-msgstr "Format Sentat : "
+msgstr "Format Sentat :"
 
 #: ../../../Views/input_api.php:104
 msgid "Absolute time format:"
 msgstr "Format de temps absolu :"
 
 #: ../../../Views/input_api.php:107
-msgid "encryption"
-msgstr "encryption"
+msgid "Encryption"
+msgstr "Encryption"
 
 #: ../../../Views/input_api.php:109
 msgid ""
@@ -460,7 +502,7 @@ msgstr ""
 
 #: ../../../Views/input_dialog.php:16
 msgid "Are you sure you want to delete?"
-msgstr "Êtes-vous sûr de vouloir supprimer cette source ? "
+msgstr "Êtes-vous sûr de vouloir supprimer cette source ?"
 
 #: ../../../Views/input_dialog.php:22
 msgid "Cancel"
@@ -470,45 +512,77 @@ msgstr "Annuler"
 msgid "Delete"
 msgstr "Supprimer"
 
-#: ../../../Views/input_view.php:30 ../../../input_menu.php:7
-msgid "Inputs"
-msgstr "Sources"
+#: ../../../Views/input_dialog.php:31
+msgid "Edit Input"
+msgstr "Modifier la source"
 
-#: ../../../Views/input_view.php:55 ../../../Views/input_view.php:69
-msgid "Process list"
-msgstr "Liste des traitements"
+#: ../../../Views/input_dialog.php:34
+msgid "Edit the input's name and description."
+msgstr "Modifier le nom et la description de la source."
 
-#: ../../../Views/input_view.php:56 ../../../Views/input_view.php:70
-msgid "Updated"
-msgstr "Mise à jour"
+#: ../../../Views/input_dialog.php:41
+msgid "Close"
+msgstr "Fermer"
 
-#: ../../../Views/input_view.php:66
-msgid "Node"
-msgstr "Nœud"
+#: ../../../Views/input_dialog.php:42 ../../../Views/input_dialog.php:52
+msgid "Save"
+msgstr "Enregister"
 
-#: ../../../Views/input_view.php:67
-msgid "Key"
-msgstr "Clé"
+#: ../../../Views/input_dialog.php:43
+msgid "Save All"
+msgstr "Enregistrer tout"
 
-#: ../../../Views/input_view.php:68
-msgid "Name"
-msgstr "Nom"
+#: ../../../Views/input_dialog.php:50 ../../../Views/input_dialog.php:51
+msgid "Basic text only. Symbols allowed _-.@"
+msgstr "Texte de base seulement. Symboles autorisés _-.@"
 
-#: ../../../Views/input_view.php:71
+#: ../../../Views/input_dialog.php:50
+msgid "name"
+msgstr "nom"
+
+#: ../../../Views/input_dialog.php:51
+msgid "description"
+msgstr "description"
+
+#: ../../../Views/input_view.php:196
+msgid "ID"
+msgstr "Identifiant"
+
+#: ../../../Views/input_view.php:197
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../input_model.php:550
+#: ../../../Views/input_view.php:198
+msgid "Time"
+msgstr "Temps"
+
+#: ../../../Views/input_view.php:199
+msgid "Updated"
+msgstr "Mise à jour"
+
+#: ../../../input_model.php:607
 msgid "Invalid feed"
 msgstr "Champ non valide"
 
-#: ../../../input_model.php:557
+#: ../../../input_model.php:614
 msgid "Invalid input"
 msgstr "Source non valide"
 
-#: ../../../input_model.php:598
+#: ../../../input_model.php:655
 msgid "Error setting processlist"
 msgstr "Erreur lors du paramétrage de la liste des traitements"
+
+#~ msgid "Process list"
+#~ msgstr "Liste des traitements"
+
+#~ msgid "Node"
+#~ msgstr "Nœud"
+
+#~ msgid "Name"
+#~ msgstr "Nom"
+
+#~ msgid "Key"
+#~ msgstr "Clé"
 
 #~ msgid "Invalid process"
 #~ msgstr "Traitement non valide"
@@ -656,9 +730,6 @@ msgstr "Erreur lors du paramétrage de la liste des traitements"
 
 #~ msgid "List input process list"
 #~ msgstr "Liste des processus de traitement"
-
-#~ msgid "name"
-#~ msgstr "Nom"
 
 #~ msgid ""
 #~ "Input processes are executed sequentially with the result being passed "

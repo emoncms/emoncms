@@ -2,178 +2,391 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Welsh translation of user module\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-24 09:52+0100\n"
-"PO-Revision-Date: 2013-02-24 09:52+0100\n"
+"POT-Creation-Date: 2019-02-25 11:59+0000\n"
+"PO-Revision-Date: 2019-02-25 12:10+0000\n"
 "Last-Translator: Trystan <trystan.lea@googlemail.com>\n"
 "Language-Team: \n"
-"Language: \n"
+"Language: cy_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
-"X-Poedit-Basepath: /var/www/framework/Modules/user/.\n"
-"X-Poedit-Language: Welsh\n"
-"X-Poedit-Country: UNITED KINGDOM\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-SearchPath-0: /var/www/framework/Modules/user/.\n"
+"X-Poedit-Basepath: ../../..\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"X-Poedit-SearchPath-0: .\n"
 
-#: /var/www/framework/Modules/user/./login_block.php:33
-msgid "Username:"
-msgstr "Enw defnyddiwr:"
-
-#: /var/www/framework/Modules/user/./login_block.php:38
-msgid "Email:"
-msgstr "E-bost:"
-
-#: /var/www/framework/Modules/user/./login_block.php:43
-msgid "Password:"
-msgstr "Cyfrinair:"
-
-#: /var/www/framework/Modules/user/./login_block.php:48
-msgid "Confirm password:"
-msgstr "Cadarnhau cyfrinair:"
-
-#: /var/www/framework/Modules/user/./login_block.php:56
-msgid "register"
-msgstr "cofrestru"
-
-#: /var/www/framework/Modules/user/./login_block.php:60
-msgid "Register"
-msgstr "Cofrestru"
-
-#: /var/www/framework/Modules/user/./login_block.php:61
-msgid "cancel"
-msgstr "canslo"
-
-#: /var/www/framework/Modules/user/./user_model.php:93
-msgid "Missing username, password or email paramater"
-msgstr "Mae enw defnyddiwr, cyfrinair neu e-bost ar goll"
-
-#: /var/www/framework/Modules/user/./user_model.php:95
-#: /var/www/framework/Modules/user/./user_model.php:204
-msgid "Username must only contain a-z and 0-9 characters"
-msgstr "Rhaid i enw defnyddiwr ond yn cynnwys a-z 0-9"
-
-#: /var/www/framework/Modules/user/./user_model.php:99
-#: /var/www/framework/Modules/user/./user_model.php:215
-msgid "Username already exists"
-msgstr "Enw defnyddiwr wedi cael ei gymryd yn barod"
-
-#: /var/www/framework/Modules/user/./user_model.php:101
-#: /var/www/framework/Modules/user/./user_model.php:222
-msgid "Email address format error"
-msgstr "Mae gwall yn fformat e-bost"
-
-#: /var/www/framework/Modules/user/./user_model.php:103
-#: /var/www/framework/Modules/user/./user_model.php:202
-msgid "Username length error"
-msgstr "Mae gwall yn hyd enw defnyddiwr"
-
-#: /var/www/framework/Modules/user/./user_model.php:104
-#: /var/www/framework/Modules/user/./user_model.php:175
-#: /var/www/framework/Modules/user/./user_model.php:176
-msgid "Password length error"
-msgstr "Mae gwall yn hyd cyfrinair"
-
-#: /var/www/framework/Modules/user/./user_model.php:127
-msgid "Username or password empty"
-msgstr "Mae'r enw defnyddiwr neu gyfrinair yn gwag"
-
-#: /var/www/framework/Modules/user/./user_model.php:130
-msgid "Username must only contain a-z and 0-9 characters, if you created an account before this rule was in place enter your username without the non a-z 0-9 characters to login and feel free to change your username on the profile page."
-msgstr "Rhaid i enw defnyddiwr ddim ond cynnwys a-z a 0-9"
-
-#: /var/www/framework/Modules/user/./user_model.php:137
-msgid "Username does not exist"
-msgstr "Nid ywr enw defnyddiwr yn bodoli"
-
-#: /var/www/framework/Modules/user/./user_model.php:144
-msgid "Incorrect password"
-msgstr "Cyfrinair presenol"
-
-#: /var/www/framework/Modules/user/./user_model.php:157
-msgid "Login successful"
-msgstr "Mewngofnodi llwyddiannus"
-
-#: /var/www/framework/Modules/user/./user_model.php:195
-msgid "Old password incorect"
-msgstr "Hen cyfrinair anghywir"
-
-#: /var/www/framework/Modules/user/./user_model.php:211
-msgid "Username updated"
-msgstr "Enw defnyddiwr"
-
-#: /var/www/framework/Modules/user/./user_model.php:225
-msgid "Email updated"
-msgstr "E-bost wedi ei diweddaru"
-
-#: /var/www/framework/Modules/user/./profile/profile.php:17
-msgid "My account"
-msgstr "Fy nghyfrif"
-
-#: /var/www/framework/Modules/user/./profile/profile.php:21
-msgid "Username"
-msgstr "Enw defnyddiwr"
-
-#: /var/www/framework/Modules/user/./profile/profile.php:25
-#: /var/www/framework/Modules/user/./profile/profile.php:34
-#: /var/www/framework/Modules/user/./profile/profile.php:57
-msgid "Save"
-msgstr "Cadw"
-
-#: /var/www/framework/Modules/user/./profile/profile.php:30
+#: login_block.php:40 profile/profile.php:71
 msgid "Email"
 msgstr "E-bost:"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:39
+#: login_block.php:46 profile/profile.php:62
+msgid "Username"
+msgstr "Enw defnyddiwr"
+
+#: login_block.php:53
+msgid "Password"
+msgstr "Cyfrinair"
+
+#: login_block.php:59
+msgid "Confirm password"
+msgstr "Cadarnhau cyfrinair"
+
+#: login_block.php:70
+msgid "Remember me"
+msgstr "Cofiwch fi"
+
+#: login_block.php:74
+msgid "Login"
+msgstr "Mewngofnodi"
+
+#: login_block.php:75 login_block.php:82 login_block.php:100
+msgid "or"
+msgstr "neu"
+
+#: login_block.php:76
+msgid "register"
+msgstr "cofrestru"
+
+#: login_block.php:81
+msgid "Register"
+msgstr "Cofrestru"
+
+#: login_block.php:83 login_block.php:101
+msgid "login"
+msgstr "mewngofnodi"
+
+#: profile/profile.php:54
+msgid "My account"
+msgstr "Fy nghyfrif"
+
+#: profile/profile.php:58
+msgid "User ID"
+msgstr "Rhif Cyfrif"
+
+#: profile/profile.php:63 profile/profile.php:72
+msgid "Edit"
+msgstr "Golygu"
+
+#: profile/profile.php:66 profile/profile.php:75 profile/profile.php:100
+msgid "Save"
+msgstr "Cadw"
+
+#: profile/profile.php:81
 msgid "Change Password"
 msgstr "Newid Cyfrinair"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:45
+#: profile/profile.php:88
 msgid "Current password"
 msgstr "Cyfrinair presenol"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:49
+#: profile/profile.php:92
 msgid "New password"
 msgstr "Cyfrinair newydd"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:53
+#: profile/profile.php:96
 msgid "Repeat new password"
 msgstr "Ailadrodd cyfrinair newydd"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:58
+#: profile/profile.php:101 profile/profile.php:198
 msgid "Cancel"
 msgstr "Canslo"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:64
+#: profile/profile.php:107
+msgid "Write API Key"
+msgstr ""
+
+#: profile/profile.php:107 profile/profile.php:111
+msgid "Copy"
+msgstr "Copi"
+
+#: profile/profile.php:111
+msgid "Read API Key"
+msgstr ""
+
+#: profile/profile.php:119
+msgid "Delete my account"
+msgstr "Dileu fy nghyfrif"
+
+#: profile/profile.php:122
+msgid "Mobile app"
+msgstr "App symudol"
+
+#: profile/profile.php:127
+msgid "Scan QR code from the iOS or Android app to connect:"
+msgstr "Sganiwch cod QR o'r app iOS neu Android i'w gysylltu:"
+
+#: profile/profile.php:129
+msgid "Or using a barcode scanner scan to view MyElectric graph"
+msgstr "Neu ddefnyddio sganiwr sganiwr cod bar i weld graff MyElectric"
+
+#: profile/profile.php:143
 msgid "My Profile"
 msgstr "Fy Proffil"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:78
+#: profile/profile.php:147
+msgid "Please update your database"
+msgstr "Diweddarwch eich cronfa ddata"
+
+#: profile/profile.php:150
+msgid "Beta Features"
+msgstr "Nodweddion Beta"
+
+#: profile/profile.php:152
+msgid "Saved"
+msgstr ""
+
+#: profile/profile.php:153
+msgid "Error"
+msgstr ""
+
+#: profile/profile.php:154
+msgid "Saving..."
+msgstr ""
+
+#: profile/profile.php:161
+msgid "Device Module Beta"
+msgstr "Modiwl Dyfais Beta"
+
+#: profile/profile.php:164
+msgid "On"
+msgstr ""
+
+#: profile/profile.php:165
+msgid "Off"
+msgstr ""
+
+#: profile/profile.php:179
+msgid "WARNING deleting an account is permanent"
+msgstr ""
+
+#: profile/profile.php:183
+msgid "Are you sure you want to delete your account?"
+msgstr "Ydych chi'n siŵr eich bod am ddileu eich cyfrif?"
+
+#: profile/profile.php:187
+msgid "Your account has been successfully deleted."
+msgstr ""
+
+#: profile/profile.php:193
+msgid "Confirm password to delete:"
+msgstr "Cadarnhau cyfrinair i c:"
+
+#: profile/profile.php:199
+msgid "Delete permanently"
+msgstr ""
+
+#: profile/profile.php:200 user_menu.php:9
+msgid "Logout"
+msgstr "Allgofnodi"
+
+#: profile/profile.php:241
 msgid "Gravatar"
 msgstr "Gravatar"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:79
+#: profile/profile.php:242
 msgid "Name"
 msgstr "Enw"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:80
+#: profile/profile.php:243
 msgid "Location"
 msgstr "Lleoliad"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:81
-msgid "Timezone"
-msgstr "Cylchfa amser"
-
-#: /var/www/framework/Modules/user/./profile/profile.php:82
-msgid "Language"
-msgstr "Iaith"
-
-#: /var/www/framework/Modules/user/./profile/profile.php:83
+#: profile/profile.php:244
 msgid "Bio"
 msgstr "Bywgraffiad"
 
-#: /var/www/framework/Modules/user/./profile/profile.php:205
+#: profile/profile.php:245
+msgid "Timezone"
+msgstr "Cylchfa amser"
+
+#: profile/profile.php:246
+msgid "Language"
+msgstr "Iaith"
+
+#: profile/profile.php:247
+msgid "Starting page"
+msgstr "Tudalen gychwyn"
+
+#: profile/profile.php:374
 msgid "Passwords do not match"
 msgstr "Nid yw'r cyfrinair yn matchio"
 
+#: user_controller.php:125
+msgid "Preference Saved"
+msgstr "Dewis wedi arbed"
+
+#: user_controller.php:127
+msgid "Problem saving Preferences"
+msgstr ""
+
+#: user_controller.php:130
+msgid "Invalid parameters"
+msgstr ""
+
+#: user_controller.php:143
+msgid "Error getting data"
+msgstr ""
+
+#: user_controller.php:149
+msgid "Empty"
+msgstr "Gwag"
+
+#: user_menu.php:8
+msgid "My Account"
+msgstr "Fy nghyfrif"
+
+#: user_menu.php:10
+msgid "Log In"
+msgstr "Mewngofnodi"
+
+#: user_model.php:228
+msgid "Missing username, password or email parameter"
+msgstr "Enw defnyddiwr, cyfrinair neu e-bost ar goll"
+
+#: user_model.php:229 user_model.php:545
+msgid "Username must only contain a-z and 0-9 characters"
+msgstr "Rhaid i enw defnyddiwr ond yn cynnwys a-z 0-9"
+
+#: user_model.php:230 user_model.php:559
+msgid "Username already exists"
+msgstr "Enw defnyddiwr wedi cael ei gymryd yn barod"
+
+#: user_model.php:232 user_model.php:325 user_model.php:491 user_model.php:568
+msgid "Email address format error"
+msgstr "Mae gwall yn fformat e-bost"
+
+#: user_model.php:234 user_model.php:543
+msgid "Username length error"
+msgstr "Mae gwall yn hyd enw defnyddiwr"
+
+#: user_model.php:235 user_model.php:460 user_model.php:461
+msgid "Password length error"
+msgstr "Mae gwall yn hyd cyfrinair"
+
+#: user_model.php:251
+msgid "Error creating user, mysql error: "
+msgstr ""
+
+#: user_model.php:271
+msgid "Invalid username"
+msgstr "Enw defnyddiwr anghywir"
+
+#: user_model.php:275 user_model.php:365
+msgid "Database error, you may need to run database update"
+msgstr ""
+
+#: user_model.php:285 user_model.php:378
+msgid "Username does not exist"
+msgstr "Nid ywr enw defnyddiwr yn bodoli"
+
+#: user_model.php:287
+msgid "Email already verified"
+msgstr ""
+
+#: user_model.php:320
+msgid "Email verification email sent, please check your inbox"
+msgstr ""
+
+#: user_model.php:326
+msgid "Invalid verification key"
+msgstr ""
+
+#: user_model.php:354 user_model.php:421
+msgid "Username or password empty"
+msgstr "Mae'r enw defnyddiwr neu gyfrinair yn gwag"
+
+#: user_model.php:360
+msgid ""
+"Username must only contain a-z 0-9 dash and underscore, if you created an "
+"account before this rule was in place enter your username without the non a-"
+"z 0-9 dash underscore characters to login and feel free to change your "
+"username on the profile page."
+msgstr "Rhaid i enw defnyddiwr ond gynnwys dash-z 0-9 a thanlinell"
+
+#: user_model.php:379
+msgid "Please verify email address"
+msgstr "Gwiriwch cyfeiriad e-bost"
+
+#: user_model.php:385
+msgid ""
+"Incorrect password, if your sure its correct try clearing your browser cache"
+msgstr ""
+"Cyfrinair anghywir, os ydych chi'n siŵr ei bod yn gywir, ceisiwch glirio "
+"cache eich porwr"
+
+#: user_model.php:403
+msgid "Error creating rememberme cookie, try login without rememberme"
+msgstr "Gwall wrth greu cwci cofio, ceisiwch mewngofnodi heb gofio"
+
+#: user_model.php:412
+msgid "Login successful"
+msgstr "Mewngofnodi llwyddiannus"
+
+#: user_model.php:423
+msgid "Username must only contain a-z 0-9 dash and underscore"
+msgstr "Rhaid i enw defnyddiwr ond gynnwys dash-z 0-9 a thanlinell"
+
+#: user_model.php:436 user_model.php:441
+msgid "Incorrect authentication"
+msgstr ""
+
+#: user_model.php:484
+msgid "Old password incorect"
+msgstr "Hen cyfrinair anghywir"
+
+#: user_model.php:540
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change username"
+msgstr ""
+
+#: user_model.php:555
+msgid "Username updated"
+msgstr "Enw defnyddiwr"
+
+#: user_model.php:565
+msgid ""
+"As you are using a cookie based remember me login, please logout and log "
+"back in to change email"
+msgstr ""
+
+#: user_model.php:584
+msgid "Email updated"
+msgstr "E-bost wedi ei diweddaru"
+
+#: user_model.php:750 user_model.php:768
+msgid "Error updating user info"
+msgstr ""
+
+#: user_model.php:899
+msgid "Please update database"
+msgstr ""
+
+#~ msgid "Username:"
+#~ msgstr "Enw defnyddiwr:"
+
+#~ msgid "Email:"
+#~ msgstr "E-bost:"
+
+#~ msgid "Password:"
+#~ msgstr "Cyfrinair:"
+
+#~ msgid "Confirm password:"
+#~ msgstr "Cadarnhau cyfrinair:"
+
+#~ msgid "cancel"
+#~ msgstr "canslo"
+
+#~ msgid "Missing username, password or email paramater"
+#~ msgstr "Mae enw defnyddiwr, cyfrinair neu e-bost ar goll"
+
+#~ msgid ""
+#~ "Username must only contain a-z and 0-9 characters, if you created an "
+#~ "account before this rule was in place enter your username without the non "
+#~ "a-z 0-9 characters to login and feel free to change your username on the "
+#~ "profile page."
+#~ msgstr "Rhaid i enw defnyddiwr ddim ond cynnwys a-z a 0-9"
+
+#~ msgid "Incorrect password"
+#~ msgstr "Cyfrinair presenol"

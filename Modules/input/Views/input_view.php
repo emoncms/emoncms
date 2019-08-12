@@ -1,164 +1,170 @@
 <?php
-	global $path;
-	
-	$v=2;
+    global $path;
+    $v = 1;
+    
+    $device_module = false;
+    if (file_exists("Modules/device")) $device_module = true;
 ?>
 
-<script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/custom-table-fields.js?v=<?php echo $v; ?>"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<?php if ($device_module) { ?>
+<script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
+<?php } ?>
+
+<script src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
 
 <style>
-#table input[type="text"] {
-	width: 88%;
+
+.container-fluid { padding: 0px 10px 0px 10px; }
+
+#table {
+    margin-top:3rem
+}
+#footer {
+    margin-left: 0px;
+    margin-right: 0px;
 }
 
-#table td:nth-of-type(1) { width:5%;}
-#table td:nth-of-type(2) { width:5%;}
-#table td:nth-of-type(3) { width:20%;}
-#table th:nth-of-type(5), #table td:nth-of-type(5) { text-align: right; }
-#table th:nth-of-type(6), #table td:nth-of-type(6) { text-align: right; }
-#table th[fieldg="time"] { font-weight:normal; text-align: right; }
-#table th[fieldg="processList"] { font-weight:normal; text-align: left; }
-#table td:nth-of-type(7) { width:14px; text-align: center; }
-#table td:nth-of-type(8) { width:14px; text-align: center; }
-#table td:nth-of-type(9) { width:14px; text-align: center; }
-.overflow-hidden {overflow:hidden}
+.navbar-fixed-top {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+input[type="checkbox"] { margin:0px; }
+.controls { margin-bottom:10px; }
+#inputs-to-delete { font-style:italic; }
+
+#noprocesses .alert{margin:0;border-bottom-color:#fcf8e3;border-radius: 4px 4px 0 0;padding-right:14px}
+
+@media (min-width: 768px) {
+    .container-fluid { padding: 0px 20px 0px 20px; }
+    .modal-wide{
+        width:650px;
+        margin-left:-325px
+    }
+}
+
+@media (max-width: 768px) {
+    body {padding:0};
+}
+
+.node .node-info{
+    border-bottom: 1px solid white;
+}
+.node .node-info,
+.node .node-input {
+    position: relative;
+}
+.node .node-info::after,
+.node .node-input::after {
+    content: '';
+    width: .4em;
+    height: 100%;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background: rgba(0,0,0,.1);
+}
+.buttons{ 
+    padding-right: .4em;
+}
+.status-success.node-info::after,
+.status-success.node-input::after{
+    background: #28A745!important;
+}
+.status-danger.node-info::after,
+.status-danger.node-input::after{
+    background: #DC3545!important;
+}
+.status-warning.node-info::after,
+.status-warning.node-input::after{
+    background: #FFC107!important;
+}
+
+.status-success.node-info .last-update,
+.status-success.node-input .last-update{
+    color: #28A745!important;
+}
+.status-danger.node-info .last-update,
+.status-danger.node-input .last-update{
+    color: #DC3545!important;
+}
+.status-warning.node-info .last-update,
+.status-warning.node-input .last-update{
+    color: #C70!important;
+}
+
+[data-col="B"] { width:40px; }
+[data-col="A"] { width:200px; }
+[data-col="G"] { width:200px; }
+[data-col="F"] { width:50px; }
+[data-col="E"] { width:100px; }
+[data-col="D"] { width:100px; }
+[data-col="C"] { width:50px; }
+
 </style>
 
 <div>
-	<div id="apihelphead" style="float:right;"><a href="api"><?php echo _('Input API Help'); ?></a></div>
-	<div id="localheading"><h2><?php echo _('Inputs'); ?></h2></div>
+    <div id="input-header">
+        <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
+        <h3> <?php echo _('Inputs'); ?></h3>
+    </div>
+    
+    <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
+        <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
+        <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
+        <button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
+        <a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
+    </div>
+    
+    <div id="noprocesses"></div>
+    <div id="table" class="input-list"></div>
+    
+    <div id="output"></div>
 
-	<div id="table"></div>
-
-	<div id="noinputs" class="alert alert-block hide">
-			<h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
-			<p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-	</div>
-	
-	<div id="input-loader" class="ajax-loader"></div>
+    <div id="input-none" class="alert alert-block hide">
+        <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
+        <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+    </div>
+    
+    <div id="input-footer" class="hide">
+        <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
+    </div>
+    <div id="input-loader" class="ajax-loader"></div>
 </div>
 
+<?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
 <?php require "Modules/input/Views/input_dialog.php"; ?>
-
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
+<script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-  var path = "<?php echo $path; ?>";
-
-  // Extend table library field types
-  for (z in customtablefields) table.fieldtypes[z] = customtablefields[z];
-  table.element = "#table";
-  table.groupprefix = "Node ";
-  table.groupby = 'nodeid';
-  table.groupfields = {
-	'processList':{'title':'<?php echo _("Process list"); ?>','type':"group-processlist"},
-	'time':{'title':"<?php echo _('Updated'); ?>", 'type':"group-updated"},
-	'dummy-6':{'title':'', 'type':"blank"},
-	'dummy-7':{'title':'', 'type':"blank"},
-	'dummy-8':{'title':'', 'type':"blank"},
-	'dummy-9':{'title':'', 'type':"blank"}
-  }
-
-  table.deletedata = false;
-  table.fields = {
-	//'id':{'type':"fixed"},
-	'nodeid':{'title':'<?php echo _("Node"); ?>','type':"fixed"},
-	'indx':{'title':'<?php echo _("Index"); ?>','type':"fixed"},
-	'name':{'title':'<?php echo _("Name"); ?>','type':"text"},
-	'description':{'title':'<?php echo _("Description"); ?>','type':"text"},
-	'processList':{'title':'<?php echo _("Process list"); ?>','type':"processlist"},
-	'time':{'title':'<?php echo _("Updated"); ?>', 'type':"updated"},
-	'value':{'title':'<?php echo _("Value"); ?>','type':"value"},
-	// Actions
-	'edit-action':{'title':'', 'type':"edit"},
-	'delete-action':{'title':'', 'type':"delete"},
-	'view-action':{'title':'', 'type':"iconbasic", 'icon':'icon-wrench'}
-  }
-
-  setTimeout(update,50);
-
-  function update(){   
-	var requestTime = (new Date()).getTime();
-	$.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-	  table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
-	  table.data = data;
-	  table.draw();
-	  $('#input-loader').hide();
-	  if (table.data.length == 0) {
-		$("#noinputs").show();
-		$("#localheading").hide();
-		$("#apihelphead").hide();
-	  } else {
-		$("#noinputs").hide();
-		$("#localheading").show();
-		$("#apihelphead").show();
-	  }
-	}});
-  }
-
-  var updater;
-  function updaterStart(func, interval){
-	clearInterval(updater);
-	updater = null;
-	if (interval > 0) updater = setInterval(func, interval);
-  }
-  updaterStart(update, 10000);
-
-  $("#table").bind("onEdit", function(e){
-	updaterStart(update, 0);
-  });
-
-  $("#table").bind("onSave", function(e,id,fields_to_update){
-	$('#input-loader').show();
-	input.set(id,fields_to_update);
-	$('#input-loader').hide();
-  });
-
-  $("#table").bind("onResume", function(e){
-	updaterStart(update, 10000);
-  });
-
-  $("#table").bind("onDelete", function(e,id,row){
-	var i = table.data[row];
-	if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
-	  // delete now if has no values and updated +15m
-	  input.remove(id);
-	  table.remove(row);
-	  update();
-	} else {
-	  input_dialog.loadDelete(null, id, row);
-	}
-  });
-
- 
-  // Process list UI js
-  processlist_ui.init(0); // Set input context
-
-  $("#table").on('click', '.icon-wrench', function() {
-	var i = table.data[$(this).attr('row')];
-	// console.log(i);
-	var contextid = i.id; // Current Input ID
-	// Input name
-	var newfeedname = "";
-	var contextname = "";
-	if (i.description != "") { 
-		newfeedname = i.description;
-		contextname = "Node " + i.nodeid + " : " + newfeedname;
-	}
-	else { 
-		newfeedname = "node:" + i.nodeid+":" + i.name;
-		contextname = "Node " + i.nodeid + " : " + i.name;
-	}
-	var newfeedtag = "Node " + i.nodeid;
-	var processlist = processlist_ui.decode(i.processList); // Input process list
-	processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
-   });
-
-  $("#save-processlist").click(function (){
-	var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-	if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
-  });
+    var path = "<?php echo $path; ?>";
+    var device_module = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+    var _user = {};
+    _user.lang = "<?php echo $_SESSION['lang']; ?>";
+    
+    // @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
+    /**
+     * return object of gettext translated strings
+     *
+     * @return object
+     */
+    function getTranslations(){
+        return {
+            'ID': "<?php echo _('ID'); ?>",
+            'Value': "<?php echo _('Value'); ?>",
+            'Time': "<?php echo _('Time'); ?>",
+            'Updated': "<?php echo _('Updated'); ?>",
+            'Configure your device here': "<?php echo _('Configure your device here'); ?>",
+            'Show node key': "<?php echo _('Show node key'); ?>",
+            'Configure device using device template': "<?php echo _('Configure device using device template'); ?>",
+            'Configure Input processing': "<?php echo _('Configure Input processing') ?>",
+            'Saving': "<?php echo _('Saving') ?>"
+        }
+    }
 </script>
+<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>

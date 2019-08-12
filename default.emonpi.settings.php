@@ -26,7 +26,8 @@
                           'port'     => 1883,
                           'user'     => 'emonpi',
                           'password' => 'emonpimqtt2016',
-                          'basetopic'=> 'emon'
+                          'basetopic'=> 'emon',
+                          'client_id' => 'emoncms'
                           );
 
 
@@ -73,6 +74,8 @@
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
+    // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
+    $max_datapoints = 8928;
 
 
 //5 #### User Interface settings
@@ -141,7 +144,7 @@
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
-    $log_filename = '/var/log/emoncms.log';
+    $log_location = "/var/log/emoncms";
     // Log Level: 1=INFO, 2=WARN, 3=ERROR
     $log_level = 2;
 

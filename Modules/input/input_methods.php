@@ -51,7 +51,7 @@ class InputMethods
         } else if ($param->exists('node')) {
             $nodeid = $param->val('node');
         }
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
         if ($nodeid=="") $nodeid = 0;
         
         // Time
@@ -141,7 +141,7 @@ class InputMethods
                 return "Input in not a valid JSON object";
             }
         } else {
-            $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);
+            $json = preg_replace('/[^\p{N}\p{L}_\s\-.:,]/u','',$datain);
             $datapairs = explode(',', $json);
             
             $inputs = array();
@@ -209,8 +209,15 @@ class InputMethods
     public function bulk($userid)
     {
         global $param;
+
+        $data = $param->val('data');
+
+        if ($param->exists('c')) {
+            // data is compressed
+            $data = gzuncompress(hex2bin($data));
+        }
         
-        $data = json_decode($param->val('data'));
+        $data = json_decode($data);
 
         $len = count($data);
         
@@ -284,6 +291,8 @@ class InputMethods
         $dbinputs = $this->input->get_inputs($userid);
         if ($dbinputs===false) return false;
         
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+        
         $validate_access = $this->input->validate_access($dbinputs['byindx'], $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
 
@@ -292,13 +301,14 @@ class InputMethods
             $dbinputs['byname'][$nodeid] = array();
             if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
-           
+
         $tmp = array();
         foreach ($inputs as $indx => $i)
         {
             // key:value format
             if (is_array($i)) {
                 $name = $i[0];
+                $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
                 $value = $i[1];
                 if (isset($dbinputs['byname'][$nodeid][$name])) 
                     $indx = $dbinputs['byname'][$nodeid][$name]['indx'];

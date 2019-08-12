@@ -7,7 +7,7 @@
 
 <h2><?php echo _("Users"); ?></h2>
 
-<p>Number of users: <span id="numberofusers"></span></p>
+<p><?php echo _("Number of users:"); ?> <span id="numberofusers"></span></p>
 
 <style>
 
@@ -24,31 +24,32 @@
 </div>
 
 <div class="input-prepend">
-  <span class="add-on">Order by</span>
-  <select id="orderby" style="width:120px">
-    <option value="id" selected>Id</option>
-    <option value="username">Username</option>
-    <option value="email">Email</option>
-    <option value="email_verified">Email Verified</option>
+  <span class="add-on"><?php echo _("Order by"); ?></span>
+  <select id="orderby" style="width:150px">
+    <option value="id" selected><?php echo _("Id"); ?></option>
+    <option value="username"><?php echo _("Username"); ?></option>
+    <option value="email"><?php echo _("Email"); ?></option>
+    <option value="email_verified"><?php echo _("Email Verified"); ?></option>
   </select>
   
   <select id="order" style="width:120px">
-    <option value="ascending" selected>Ascending</option>
-    <option value="decending">Decending</option>
+    <option value="ascending" selected><?php echo _("Ascending"); ?></option>
+    <option value="decending"><?php echo _("Descending"); ?></option>
   </select>
 </div>
 
 <div class="input-prepend input-append" style="padding-left:20px">
-  <span class="add-on">User search</span>
+  <span class="add-on"><?php echo _("User search"); ?></span>
   <input id="user-search-key" type="text" />
-  <button class="btn" id="user-search">Search</button>
+  <button class="btn" id="user-search"><?php echo _("Search"); ?></button>
 </div>
 
 <table class="table">
   <tr>
-    <th>Id</th>
-    <th>Username</th>
-    <th>Email</th>
+    <th><?php echo _("Id"); ?></th>
+    <th><?php echo _("Username"); ?></th>
+    <th><?php echo _("Email"); ?></th>
+    <th><?php echo _("Feeds"); ?></th>
   </tr>
   <tbody id="users"></tbody>
 </table>
@@ -143,9 +144,10 @@ function table_draw() {
       } else {
           out += "<tr>";
       }
-      out += "<td><a href='../admin/setuser.json?id="+users[z].id+"'>"+users[z].id+"</a></td>";
+      out += "<td><a href='../admin/setuser?id="+users[z].id+"'>"+users[z].id+"</a></td>";
       out += "<td>"+users[z].username+"</td>";
       out += "<td>"+users[z].email+"</td>";
+      out += "<td>"+users[z].feeds+"</td>";
       out += "</tr>";
   }
   $("#users").html(out);

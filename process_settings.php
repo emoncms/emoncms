@@ -72,6 +72,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
     if (!isset($log_level)) $log_level=2;  //default to warning log level
+    if (!isset($log_location)) $log_location = "/var/log/emoncms";
 
     if (!isset($redis_enabled)) $redis_enabled = false;
     if ($redis_enabled) {
@@ -95,6 +96,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (!isset($mqtt_server['user'])) $mqtt_server['user'] = null;
         if (!isset($mqtt_server['password'])) $mqtt_server['password'] = null;
         if (!isset($mqtt_server['basetopic'])) $mqtt_server['basetopic'] = "nodes";
+        if (!isset($mqtt_server['client_id'])) $mqtt_server['client_id'] = "emoncms";
     }
 
     if (!isset($feed_settings)) $feed_settings = array();
@@ -105,12 +107,16 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
+
+    if (!isset($max_datapoints)) $max_datapoints = 8928; // default
+
     if (!isset($data_sampling)) $data_sampling = true; // default
 
     if (!isset($fullwidth)) $fullwidth = false;
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
     if (!isset($email_verification)) $email_verification = false;
+    if (!isset($admin_show_update)) $admin_show_update = true;
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';
@@ -122,6 +128,18 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
+    
+    // emoncms_dir and openenergymonitor_dir to replace homedir as installation path reference
+    if (!isset($emoncms_dir)) $emoncms_dir = $homedir;
+    if (!isset($openenergymonitor_dir)) $openenergymonitor_dir = $homedir;
+    
+    if (!isset($linked_modules_dir)) {
+        if (is_dir("$emoncms_dir/modules")) {
+            $linked_modules_dir = "$emoncms_dir/modules";
+        } else {
+            $linked_modules_dir = $emoncms_dir;
+        }
+    }
 
     if ($error_out!="") {
       echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";

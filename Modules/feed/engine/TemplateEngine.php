@@ -101,14 +101,10 @@ class TemplateEngine implements engine_methods
     }
 
     /**
-     * Return the data for the given timerange
+     * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-     * @param integer $skipmissing Skip null values from returned data (used by some engines)
-     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
+     * please note that unix timestamps should be expressed in ms cause coming from the js
+     * 
     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
