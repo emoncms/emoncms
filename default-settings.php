@@ -68,18 +68,20 @@ $_settings = array(
     ),
 
     // Redis Low-write mode
-    // If enabled is true, requires redis enabled and feedwriter service running
-    'redisbuffer_enabled'   => false,
-    // Number of seconds to wait before write buffer to disk - user selectable option
-    'redisbuffer_sleep'     => 600,   
+    'redisbuffer'   => array(
+        // If enabled is true, requires redis enabled and feedwriter service running
+        'enabled' => false,
+        // Number of seconds to wait before write buffer to disk - user selectable option
+        'redisbuffer_sleep' => 600
+    ),   
     
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
     // On windows or shared hosting you will likely need to specify a different data directory--
     // Make sure that emoncms has write permission's to the datadirectory folders
-    'phpfiwa_datadir'       => '/var/lib/phpfiwa/',
-    'phpfina_datadir'       => '/var/lib/phpfina/',
-    'phptimeseries_datadir' => '/var/lib/phptimeseries/',
-    'cassandra_keyspace'    => 'emoncms',
+    'phpfiwa'       => array('datadir'  => '/var/lib/phpfiwa/'),
+    'phpfina'       => array('datadir'  => '/var/lib/phpfina/'),
+    'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/'),
+    'cassandra'     => array('keyspace' => 'emoncms'),
 
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
     'max_datapoints'        => 8928,
