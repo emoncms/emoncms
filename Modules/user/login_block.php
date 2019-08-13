@@ -12,7 +12,7 @@
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
 
-global $path, $enable_rememberme, $enable_password_reset, $theme;
+global $path, $settings;
 
 ?>
 <style>
@@ -31,7 +31,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
 
 <div class="main">
   <div class="well">
-    <img src="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_login.png" alt="Login" width="256" height="46" />
+    <img src="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_login.png" alt="Login" width="256" height="46" />
         
     <div class="login-container">
         <div id="login-form">
@@ -64,7 +64,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                 <div id="loginmessage"></div>
 
                 <div class="form-group login-item">
-                    <?php if ($enable_rememberme) { ?>
+                    <?php if ($settings["interface"]["enable_rememberme"]) { ?>
                         <div class="checkbox">
                             <label>
                                 <input type="checkbox" tabindex="5" id="rememberme" value="1" name="rememberme"><?php echo '&nbsp;'._('Remember me'); ?>
@@ -72,7 +72,7 @@ global $path, $enable_rememberme, $enable_password_reset, $theme;
                         </div>
                     <?php } ?>
                     <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo _('Login'); ?></button>
-                    <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp;' ?>
+                    <?php if ($settings["interface"]["enable_multi_user"]) { echo '&nbsp;'._('or').'&nbsp;' ?>
                         <a id="register-link" href="#"><?php echo _('register'); ?></a>
                     <?php } ?>
                 </div>
@@ -123,7 +123,7 @@ if (verify.success!=undefined) {
     }
 }
 
-var passwordreset = "<?php echo $enable_password_reset; ?>";
+var passwordreset = "<?php echo $settings['interface']['enable_password_reset']; ?>";
 $(document).ready(function() {
     if (!passwordreset) $("#passwordreset-link").hide();
 });

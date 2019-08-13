@@ -20,7 +20,7 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
+    $emoncms_version = ($settings['feed']['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
     $sidebarFixed = true;
@@ -30,18 +30,18 @@
     if (isset($_GET['q'])) $log->info($_GET['q']);
 
     // 2) Database
-    if ($redis_enabled) {
+    if ($settings['redis']['enabled']) {
         $redis = new Redis();
-        $connected = $redis->connect($redis_server['host'], $redis_server['port']);
-        if (!$connected) { echo "Can't connect to redis at ".$redis_server['host'].":".$redis_server['port']." , it may be that redis-server is not installed or started see readme for redis installation"; die; }
-        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
-        if (!empty($redis_server['auth'])) {
-            if (!$redis->auth($redis_server['auth'])) {
-                echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
+        $connected = $redis->connect($settings['redis']['host'], $settings['redis']['port']);
+        if (!$connected) { echo "Can't connect to redis at ".$settings['redis']['host'].":".$settings['redis']['port']." , it may be that redis-server is not installed or started see readme for redis installation"; die; }
+        if (!empty($settings['redis']['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $settings['redis']['prefix']);
+        if (!empty($settings['redis']['auth'])) {
+            if (!$redis->auth($settings['redis']['auth'])) {
+                echo "Can't connect to redis at ".$settings['redis']['host'].", autentication failed"; die;
             }
         }
-        if (!empty($redis_server['dbnum'])) {
-            $redis->select($redis_server['dbnum']);
+        if (!empty($settings['redis']['dbnum'])) {
+            $redis->select($settings['redis']['dbnum']);
         }
     } else {
         $redis = false;
@@ -58,8 +58,15 @@
     if (!extension_loaded('gettext')){
        echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms. <br> See /php-info.php (restricted to local access)"; die;
     }
-
-    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+        
+    $mysqli = @new mysqli(
+        $settings["sql"]["server"],
+        $settings["sql"]["username"],
+        $settings["sql"]["password"],
+        $settings["sql"]["database"],
+        $settings["sql"]["port"]
+    );
+    
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {
@@ -70,9 +77,9 @@
     // Set charset to utf8
     $mysqli->set_charset("utf8");
 
-    if (!$mysqli->connect_error && $dbtest==true) {
+    if (!$mysqli->connect_error && $settings["sql"]["dbtest"]==true) {
         require "Lib/dbschemasetup.php";
-        if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
+        if (!db_check($mysqli,$settings["sql"]["database"])) db_schema_setup($mysqli,load_db_schema(),true);
     }
 
     // 3) User sessions
@@ -170,12 +177,12 @@
     if ($route->isRouteNotDefined())
     {
         // EmonPi Setup Wizard
-        if ($allow_emonpi_admin) {
+        if ($settings["interface"]["enable_admin_ui"]) {
             if (file_exists("Modules/setup")) {
                 require "Modules/setup/setup_model.php";
                 $setup = new Setup($mysqli);
                 if ($setup->status()=="unconfigured") {
-                    $default_controller = "setup";
+                    $settings["interface"]["default_controller"] = "setup";
                     $default_action = "";
                     // Provide special setup access to WIFI module functions
                     $_SESSION['setup_access'] = true;
@@ -185,8 +192,8 @@
         
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults
-            $route->controller = $default_controller;
-            $route->action = $default_action;
+            $route->controller = $settings["interface"]["default_controller"];
+            $route->action = $settings["interface"]["default_action"];
             $route->subaction = "";
         } else {
             if (isset($session["startingpage"]) && $session["startingpage"]!="") {
@@ -194,8 +201,8 @@
                 die;
             } else {
                 // Authenticated defaults
-                $route->controller = $default_controller_auth;
-                $route->action = $default_action_auth;
+                $route->controller = $settings["interface"]["default_controller_auth"];
+                $route->action = $settings["interface"]["default_action_auth"];
                 $route->subaction = "";
             }
         }
@@ -216,7 +223,7 @@
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if ($output['content'] == EMPTY_ROUTE && $public_profile_enabled && $route->controller!='admin')
+    if ($output['content'] == EMPTY_ROUTE && $settings["public_profile"]["enabled"] && $route->controller!='admin')
     {
         $userid = $user->get_id($route->controller);
         if ($userid) {
@@ -225,8 +232,8 @@
             $session['username'] = $route->controller;
             $session['read'] = 1;
             $session['profile'] = 1;
-            $route->controller = $public_profile_controller;
-            $route->action = $public_profile_action;
+            $route->controller = $settings["public_profile"]["controller"];
+            $route->action = $settings["public_profile"]["action"];
             $output = controller($route->controller);
 
             // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists
@@ -322,7 +329,7 @@
     else if ($route->format == 'html')
     {
         // Select the theme
-        $themeDir = "Theme/" . $theme . "/";
+        $themeDir = "Theme/" . $settings["interface"]["theme"] . "/";
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {
@@ -350,7 +357,7 @@
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
             
-            if($fullwidth) $output['page_classes'][] = 'fullwidth';
+            if($settings["interface"]["fullwidth"]) $output['page_classes'][] = 'fullwidth';
 
             if($session['read']){
                 $output['sidebar'] = view($themeDir . "sidebar_view.php", 

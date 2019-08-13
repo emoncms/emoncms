@@ -383,7 +383,7 @@ class PHPFina implements engine_methods
     */
     public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        global $max_datapoints;
+        global $settings;
         
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
@@ -397,7 +397,7 @@ class PHPFina implements engine_methods
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp > $max_datapoints) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $settings["feed"]["max_datapoints"]) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $settings["feed"]["max_datapoints"] . "), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
