@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
-global $ltime,$route,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
+global $route,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu;
 
 $v = 7;
 

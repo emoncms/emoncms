@@ -10,10 +10,17 @@
   http://openenergymonitor.org
 */
 global $path,$theme,$themecolor;
+
 $v = 7;
-if (!is_dir("Theme/".$theme)) $theme = "basic";
-if (!in_array($themecolor, ["blue", "sun", "standard"])) $themecolor = "standard";
+
+if (!is_dir("Theme/".$theme)) {
+    $theme = "basic";
+}
+if (!in_array($themecolor, ["blue", "sun", "standard"])) {
+    $themecolor = "standard";
+}
 ?>
+
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -25,8 +32,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) $themecolor = "standard
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
 
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/basic/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-        
+        <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-base.css?v=<?php echo $v; ?>" rel="stylesheet">
         <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
         

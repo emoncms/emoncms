@@ -166,14 +166,18 @@
 .has-sidebar .sidebar {
   display: block;
 }
-.sidebar-title {
+.sidebar-title,
+.sidebar-subtitle {
   text-indent: 1rem;
   padding: 1em 0 0.75em 0;
   margin: 0;
   text-transform: capitalize;
 }
+.sidebar-subtitle {
+  padding-top: 2em;
+}
 #sidebar .close:hover {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .btn-li .btn,
