@@ -13,52 +13,33 @@
 // built up from each Module's `*_menu.php` file
 // will mark the active menu and any parent menus
 
-/* EXAMPLE MARKUP OF A SINGLE MENU --------------------------------------
-http://localhost/emoncms/example/1
+/*  EXAMPLE MARKUP OF A SINGLE MENU --------------------------------------
+    http://localhost/emoncms/example/1
 
-<div id="sidebar_apps" class="sidebar-inner active">
-    <h4 class="sidebar-title">Apps</h4>
-    <ul id="menu-apps" class="nav sidebar-menu">
-        <li class="collapse in active"><a class="active" href="http://localhost/emoncms/example/1" title="Example 1">Example 1</a></li>
-        <li class="collapse in"><a href="http://localhost/emoncms/example/2" title="Example 2">Example 2</a></li>
-    </ul>
-</div>
---- EXAMPLE END */
+    <div id="sidebar_apps" class="sidebar-inner active">
+        <h4 class="sidebar-title">Apps</h4>
+        <ul id="menu-apps" class="nav sidebar-menu">
+            <li class="collapse in active"><a class="active" href="http://localhost/emoncms/example/1" title="Example 1">Example 1</a></li>
+            <li class="collapse in"><a href="http://localhost/emoncms/example/2" title="Example 2">Example 2</a></li>
+        </ul>
+    </div>
 
-global $mysqli,$user,$session,$path;
+    EXAMPLE END -----------------------------------------------------------
+*/
 
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
 $third_level_open_status = array();
 $default_nav = 'emoncms';
+if ($session['profile']) $default_nav = 'dashboard';
 // blank menus
 $second_level_menus = array(); // sidebars & dropdowns
 $third_level_menus = array(); // sub menu sidebars
 $third_level_includes = array(); // module specific sidebar include
 $bookmarks = array();
 
-if (is_file("Modules/dashboard/dashboard_model.php")) {
-    require_once "Modules/dashboard/dashboard_model.php";
-    $dashboard = new Dashboard($mysqli);
-    $default_dash = array();
-    foreach($dashboard->get_list($session['userid'],false,false) as $item){
-        if($item['main']===true){
-            $default_dash = $item;
-        }
-    }
-    // ADD DEFAULT DASHBOARD
-    if (!empty($default_dash)) {
-        $bookmarks[] = array(
-            'text' => _('Default Dashboard'),
-            'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
-            'icon' => 'star',
-            'order'=> 999,
-            'path' => 'dashboard/view?id='.$default_dash['id'],
-            'li_class' => array('default-dashboard')
-        );
-    }
-}
+global $mysqli,$user;
 
 // build the individual menu parts
 foreach($menu['sidebar'] as $menu_key => $sub_menu) {
@@ -153,12 +134,14 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
     $_close = _('Close');
 
-    // logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
-    // ---------------------------------------------------------------------------------
-    // view starts here
-    echo "<div id='sidebar_{$menu_key}' class='sidebar-inner{$active_css}'>
-        <a href='#' class='btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2' data-toggle='slide-collapse' data-target='#sidebar' title='{$_close}'>&times;</a>
-        <h4 class='sidebar-title'>{$menu_key}</h4>";
+// logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
+// -------------------------------------------------------
+// view starts here
+    echo <<<SIDEBARSTART
+    <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
+        <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
+        <h4 class="sidebar-title">{$menu_key}</h4>
+SIDEBARSTART;
 
     if(!empty($markup)) {
         printf(tab(2).'<ul id="menu-%s" class="nav sidebar-menu">%s'.tab(2).'</ul>', $menu_key, tab(3).implode(tab(3),$markup));
@@ -198,41 +181,41 @@ if (session_status() == PHP_SESSION_NONE) {
 $expanded = true;
 
 if($session['write']){ ?>
-                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
-                <?php
-                    echo makeLink(array(
-                        'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
-                        'class'=> array('d-none',!$expanded ? 'collapsed':''),
-                        'href' => '#',
-                        'id' => 'sidebar_user_toggle',
-                        'data' => array(
-                            'toggle' => 'collapse',
-                            'target' => '#sidebar_bookmarks'
-                        )
-                    ));
-                ?>
-                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">
-                        Bookmarks 
-                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="<?php echo $path; ?>user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
-                    </h4>
-                    <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
-                    <?php 
-                        // bookmarks
-                        // make menu item link to the original and not the bookmark 
-                        foreach ($bookmarks as $item){
-                            $url_parts = parse_url($item['path']);
-                            $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
-                            if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
-                            $item['path'] = ''; // empty original relative path
-                            // highlight active bookmark
-                            if(is_current($item['href'])) {
-                                $item['li_class'][] = 'active';
-                            }
-                            echo makeListLink($item);
-                        }
-                    ?>
-                    </ul>
-                    <!-- used to add more bookmarks -->
-                    <template id="bookmark_link"><li><a href=""></a></li></template>
-                </div>
+    <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
+        <?php
+        echo makeLink(array(
+            'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
+            'class'=> array('d-none',!$expanded ? 'collapsed':''),
+            'href' => '#',
+            'id' => 'sidebar_user_toggle',
+            'data' => array(
+                'toggle' => 'collapse',
+                'target' => '#sidebar_bookmarks'
+            )
+        ));
+        ?>
+        <h4 class="sidebar-title d-flex justify-content-between align-items-center">
+            Bookmarks 
+            <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+        </h4>
+        <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
+        <?php 
+            // bookmarks
+            // make menu item link to the original and not the bookmark 
+            foreach ($bookmarks as $item){
+                $url_parts = parse_url($item['path']);
+                $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
+                if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
+                $item['path'] = ''; // empty original relative path
+                // highlight active bookmark
+                if(is_current($item['href'])) {
+                    $item['li_class'][] = 'active';
+                }
+                echo makeListLink($item);
+            }
+        ?>
+        </ul>
+        <!-- used to add more bookmarks -->
+        <template id="bookmark_link"><li><a href=""></a></li></template>
+    </div>
 <?php } ?>

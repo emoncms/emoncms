@@ -1,6 +1,6 @@
 <!doctype html>
 <?php
-  /*
+/*
   All Emoncms code is released under the GNU Affero General Public License.
   See COPYRIGHT.txt and LICENSE.txt.
 
@@ -8,8 +8,11 @@
   Emoncms - open source energy visualisation
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
-  */
-  global $ltime,$path,$fullwidth,$emoncms_version,$theme;
+*/
+global $path,$theme,$themecolor;
+$v = 7;
+if (!is_dir("Theme/".$theme)) $theme = "basic";
+if (!in_array($themecolor, ["blue", "sun", "standard"])) $themecolor = "standard";
 ?>
 <html>
     <head>
@@ -21,8 +24,14 @@
         <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/ios_load.png">
         <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
 
-        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+        <link href="<?php echo $path; ?>Theme/basic/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+        
+        <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
+        <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
+        
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
+
         <script>
             var path = "<?php echo $path ?>";
         </script>

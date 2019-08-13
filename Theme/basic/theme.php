@@ -85,6 +85,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <div id="sidebar" class="sidebar d-flex flex-column">
             <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
         </div>
+
         <?php
         $container[] = 'content-container';
         if ($fullwidth && $route->controller=="dashboard") { 
