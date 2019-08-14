@@ -119,7 +119,7 @@ function input_controller()
             $device_module = false;
             if (file_exists("Modules/device")) $device_module = true;
             return view("Modules/input/Views/input_view.php", array(
-                'v' => 3,
+                'v' => 4,
                 'path' => $path,
                 'device_module' => $device_module
             ));
