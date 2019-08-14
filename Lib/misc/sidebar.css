@@ -34,6 +34,20 @@ Top nav
 #emoncms-navbar .navbar-inner .nav {
   font-size: 1.25rem;
 }
+#emoncms-navbar .navbar-inner .nav a span{
+    font-size: 1rem;
+    padding-top: .1rem;
+}
+#emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+    display: none;
+}
+@media (min-width: 768px) {
+    #emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+        display: inline-block;
+    }
+}
+
+d-none d-md-block
 .navbar .nav > li > a {
   padding: .6em;
 }
