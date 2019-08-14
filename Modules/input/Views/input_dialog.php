@@ -57,7 +57,7 @@
 
 </style>
 
-<div id="inputDeleteModal">
+<div id="inputDeleteModal" v-cloak>
     <div class="modal" :class="{'hide': hidden}" tabindex="-1" role="dialog" aria-labelledby="inputDeleteModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button @click="closeModal" type="button" class="close" aria-hidden="true">×</button>
@@ -92,7 +92,7 @@
     <!-- <script type="text/javascript" src="<?php echo $path; ?>Modules/input/Views/input_dialog.js"></script> -->
 </div>
 
-<div id="inputEditModal">
+<div id="inputEditModal" v-cloak>
     <div :class="{hide: hidden}" class="modal modal-wide" tabindex="-1" role="dialog" aria-labelledby="inputEditModalLabel" aria-hidden="true" data-backdrop="static">
         <div class="modal-header">
             <button @click="closeModal" type="button" class="close" aria-hidden="true">×</button>
@@ -139,7 +139,7 @@
 </div>
 
 <!-- this template will repeat for every selected input -->
-<template id="edit-input-form">
+<template id="edit-input-form" v-cloak>
     <form class="form-inline" style="margin-bottom:.5em">
         <input name="inputid" type="hidden">
         <input name="name" required pattern="[A-Za-z0-9_\-@\.' ]*" title="<?php echo _('Basic text only. Symbols allowed _-.@')?>" class="form-control" placeholder="<?php echo _('name') ?>" data-lpignore="true">

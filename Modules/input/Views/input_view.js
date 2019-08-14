@@ -102,9 +102,11 @@ var app = new Vue({
             let inputs = [];
             Object.keys(this.devices).forEach(function(nodeid){
                 let device = this.devices[nodeid]
-                device.inputs.forEach(function(input){
-                    inputs.push(input);
-                })
+                if (device) {
+                    device.inputs.forEach(function(input){
+                        inputs.push(input);
+                    })
+                }
             })
             return inputs;
         },
@@ -375,25 +377,81 @@ var delete_input = new Vue({
         },
         selected: function() {
             return app.selected
+        },
+        inputs: function() {
+            return app.inputs
+        },
+        devices: function() {
+            return app.devices
         }
     },
     methods: {
         confirm: function(event) {
-            var self = this;
+            var vm = this;
             input.delete_multiple_async(this.selected)
-            .done(function(response){
-                self.buttonLabel = _('Deleted')
-                self.buttonClass = 'btn-success'
-                self.success = true
-                window.setTimeout(function(){
-                    self.closeModal()
-                }, 1500)
+            .done(function() {
+                // if all device inputs deleted, then delete the device
+                vm.buttonLabel = _('Deleted')
+                vm.buttonClass = 'btn-success'
+                vm.success = true
+                // wait for user to read response, then update & close modal
+                setTimeout(function() {
+                    update().done(function() {
+                        // remove empty devices
+                        vm.removeEmptyDevices()
+                        .then(function() {
+                            // all empty devices removed
+                            vm.closeModal()
+                        })
+                    })
+                }, 1000)
             })
             .fail(function(xhr, type, error){
-                self.buttonLabel = _('Error')
-                self.buttonClass = 'btn-warning'
-                self.success = false
+                vm.buttonLabel = _('Error')
+                vm.buttonClass = 'btn-warning'
+                vm.success = false
             })
+        },
+        removeEmptyDevices: function() {
+            // remove any devices without inputs
+            var def = $.Deferred()
+            var empty_devices = []
+            var deleted_counter = 0
+            var remove_responses = []
+
+            // make list of empty devices
+            for (n in devices) {
+                let device = devices[n]
+                if(device.inputs.length === 0) {
+                    empty_devices.push(device.id)
+                }
+            }
+            if (empty_devices.length === 0) {
+                def.reject('no empty devices');
+            }
+            // delete each empty device
+            for (n in empty_devices) {
+                let deviceid = empty_devices[n]
+                let ajax
+                if(typeof device2 !== 'undefined') {
+                    // use new async ajax call from device module js
+                    ajax = device2.remove(deviceid)
+                } else {
+                    // remove this once device module change are in master
+                    ajax = $.getJSON(path+"device/delete.json", "id="+deviceid)
+                }
+                ajax.done(function(remove_response) {
+                    remove_response.deviceid = deviceid
+                    remove_responses.push(remove_response)
+                    deleted_counter ++
+                    // on last loop resolve the promise
+                    if (deleted_counter >= empty_devices.length) {
+                        def.resolve(remove_responses)
+                    }
+                })
+            }
+            // return promise
+            return def.promise()
         },
         getInputName: function(inputid) {
             var input = getInput(app.devices, inputid);
@@ -756,26 +814,31 @@ function getInput(devices, inputid, returnIndex) {
 // ---------------------------------------------------------------------------------------------
 var firstLoad = true;
 function update(){
-
     devices = {};
     // Join and include device data
     if (DEVICE_MODULE) {
+        var def = $.Deferred()
         $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
             // Associative array of devices by nodeid
             for (var z in result) {
                 devices[result[z].nodeid] = result[z]
                 devices[result[z].nodeid].inputs = []
             }
-            update_inputs();
+            update_inputs().done(function() {
+                // inputs list done downloading
+                def.resolve()
+            })
         }});
+        return def.promise()
     } else {
-        update_inputs();
+        // update_inputs returns jquery ajax promise
+        return update_inputs()
     }
 }
 
 function update_inputs() {
     var requestTime = (new Date()).getTime();
-    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+    return $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
         if( typeof table !== 'undefined') table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
           
         // Associative array of inputs by id
@@ -972,7 +1035,7 @@ function device_delete() {
     } else {
         def.resolve(device.remove(device_dialog.device.id))
     }
-    
+    // call this function once above ajax requests complete
     def.done(function(response) {
         if (response.hasOwnProperty('success') && response.success === false) {
             // api action failed
@@ -982,9 +1045,10 @@ function device_delete() {
         } else {
             // success
             $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
-            update();
+            update().done(function(update_response){
+                console.log(update_response)
+            })
         }
-
     }).fail(function(message){
         console.error(message)
     })
