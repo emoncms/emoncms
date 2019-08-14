@@ -150,7 +150,7 @@ class MysqlTimeSeries implements engine_methods
      */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
-        global $data_sampling;
+        global $settings;
         
         $feedid = intval($feedid);
         $start = round($start/1000);
@@ -178,7 +178,7 @@ class MysqlTimeSeries implements engine_methods
 
         $data = array();
         $range = $end - $start; // window duration in seconds
-        if ($data_sampling && $range > 180000 && $dp > 0) // 50 hours
+        if ($settings["feed"]["mysqltimeseries"]["data_sampling"] && $range > 180000 && $dp > 0) // 50 hours
         {
             $td = $range / $dp; // time duration for each datapoint
             $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
@@ -601,7 +601,7 @@ class MysqlTimeSeries implements engine_methods
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator, $data_sampling;
+        global $settings;
 
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -647,7 +647,7 @@ class MysqlTimeSeries implements engine_methods
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
         $range = $end - $start; // window duration in seconds
-        if ($data_sampling && $range > 180000 && $dp > 0) // 50 hours
+        if ($settings["feed"]["mysqltimeseries"]["data_sampling"] && $range > 180000 && $dp > 0) // 50 hours
         {
             $td = $range / $dp; // time duration for each datapoint
             $stmt = $this->mysqli->prepare("SELECT time, data FROM $feedname WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
@@ -661,7 +661,7 @@ class MysqlTimeSeries implements engine_methods
                 if ($stmt->fetch()) {
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-                        fwrite($exportfh, $timenew.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                        fwrite($exportfh, $timenew.$settings["csv"]["field_separator"].number_format((float)$dataValue,$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'')."\n");
                     }
                 }
                 $t = $tb;
@@ -685,7 +685,7 @@ class MysqlTimeSeries implements engine_methods
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * $td;
                         $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-                        fwrite($exportfh, $timenew.$csv_field_separator.number_format((float)$dataValue,$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+                        fwrite($exportfh, $timenew.$settings["csv"]["field_separator"].number_format((float)$dataValue,$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'')."\n");
                     }
                 }
             }

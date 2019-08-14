@@ -1433,7 +1433,7 @@ class Process_ProcessList
     // Set data_sampling to false in settings.php to allow precise average feed data calculation. It will be 10x slower!
     public function source_feed_data_time($feedid, $time, $value, $options)
     {
-        global $data_sampling;
+        global $settings;
         $starttime = microtime(true);
         $value = null;
         if (isset($options['start']) && isset($options['end'])) {
@@ -1444,7 +1444,7 @@ class Process_ProcessList
             } else {
                 $interval = ($end - $start);
             }
-            if ($data_sampling) {
+            if ($settings["feed"]["virtualfeed"]["data_sampling"]) {
                 // To speed up reading, but will miss some average data
                 $meta=$this->feed->get_meta($feedid);
                 if (isset($meta->interval) && (int)$meta->interval > 1) {

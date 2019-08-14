@@ -25,10 +25,10 @@ class User
     public function __construct($mysqli,$redis)
     {
         //copy the settings value, otherwise the enable_rememberme will always be false.
-        global $enable_rememberme, $email_verification, $appname;
-        $this->enable_rememberme = $enable_rememberme;
-        $this->email_verification = $email_verification;
-        $this->appname = $appname;
+        global $settings;
+        $this->enable_rememberme = $settings["interface"]["enable_rememberme"];
+        $this->email_verification = $settings["interface"]["email_verification"];
+        $this->appname = $settings["interface"]["appname"];
 
         $this->mysqli = $mysqli;
 
@@ -500,8 +500,8 @@ class User
         
         if ($userid!==false && $userid>0)
         {
-            global $enable_password_reset;
-            if ($enable_password_reset==true)
+            global $settings;
+            if ($settings["interface"]["enable_password_reset"]==true)
             {
                 // Generate new random password
                 $newpass = hash('sha256',md5(uniqid(rand(), true)));
@@ -743,8 +743,8 @@ class User
 
     public function set($userid,$data)
     {
-        global $default_language;
-        $default_locale = !empty($default_language) ? $default_language : 'en_GB';
+        global $settings;
+        $default_locale = $settings["interface"]["default_language"];
         $default_timezone = 'Europe/London';
         // Validation
         $userid = (int) $userid;

@@ -734,7 +734,7 @@ class Feed
         // Basic name input sanitisation
         $name = preg_replace('/[^\w\s\-]/','',$name);
         
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
         
         $exportdata = $this->csv_export_multi_prepare($feedids,$start,$end,$outinterval);
         if (isset($exportdata['success']) && !$exportdata['success']) return $exportdata;
@@ -779,7 +779,7 @@ class Feed
                 if ($firstline) {
                     $dataline[$feedid] = $data[$feedid];
                 } else if (isset($data[$feedid])) {
-                    $dataline[$feedid] = number_format((float)$data[$feedid],$csv_decimal_places,$csv_decimal_place_separator,'');
+                    $dataline[$feedid] = number_format((float)$data[$feedid],$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'');
                 } else {
                     $dataline[$feedid] = "";
                 }
@@ -787,7 +787,7 @@ class Feed
             if (!$firstline) {
                 $time = $helperclass->getTimeZoneFormated($time,$usertimezone);
             }
-            fputcsv($fh, array($time)+$dataline,$csv_field_separator);
+            fputcsv($fh, array($time)+$dataline,$settings["csv"]["field_separator"]);
             $firstline = false;
         }
         fclose($fh);

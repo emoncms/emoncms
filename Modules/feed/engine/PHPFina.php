@@ -636,7 +636,7 @@ class PHPFina implements engine_methods
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
 
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -713,7 +713,7 @@ class PHPFina implements engine_methods
             $time = $meta->start_time + $pos * $meta->interval;
             $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$csv_field_separator.number_format($val[1],$csv_decimal_places,$csv_decimal_place_separator,'')."\n");
+            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$settings["csv"]["field_separator"].number_format($val[1],$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'')."\n");
 
             $i++;
         }
@@ -943,7 +943,7 @@ class PHPFina implements engine_methods
         
     public function get_average($id,$start,$end,$interval)
     {
-        global $max_datapoints;
+        global $settings;
 
         $start = intval($start/1000);
         $end = intval($end/1000);
@@ -953,7 +953,7 @@ class PHPFina implements engine_methods
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp > $max_datapoints) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $settings["feed"]["max_datapoints"]) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $settings["feed"]["max_datapoints"] . "), increase request interval or time range, requested datapoints = $req_dp");
         
         $layer_interval = 0;
         //if ($interval>=600) $layer_interval = 600;

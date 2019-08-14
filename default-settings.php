@@ -82,12 +82,11 @@ $_settings = array(
     'phpfina'       => array('datadir'  => '/var/lib/phpfina/'),
     'phptimeseries' => array('datadir'  => '/var/lib/phptimeseries/'),
     'cassandra'     => array('keyspace' => 'emoncms'),
-
-    // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    'max_datapoints'        => 8928,
-
     // experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
-    'virtual_feed_data_sampling' => false
+    'virtualfeed'   => array('data_sampling' => false),
+    'mysqltimeseries'   => array('data_sampling' => false),
+    // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
+    'max_datapoints'        => 8928
 ),
 
 // User Interface settings
@@ -140,7 +139,10 @@ $_settings = array(
     'enable_admin_ui' => false,
     
     // Show update section in admin
-    'enable_update_ui' => true
+    'enable_update_ui' => true,
+    
+    // Email verification
+    'email_verification' => false
 ),
 
 "public_profile"=>array(

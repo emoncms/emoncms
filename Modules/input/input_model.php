@@ -93,7 +93,7 @@ class Input
 
     public function validate_access($dbinputs, $nodeid)
     {
-        global $session, $max_node_id_limit;
+        global $session, $settings;
         $success=true;
         $message = "";
         if (isset($session['deviceid']) && isset($session['nodeid'])) {
@@ -104,9 +104,9 @@ class Input
                 $success = false;
                 $message = "Node '$nodeid' does not belong to device.";
             }
-        } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $max_node_id_limit )) {
+        } else if (!isset($dbinputs[$nodeid]) && (count($dbinputs) >= $settings["input"]["max_node_id_limit"] )) {
             $success = false;
-            $message = "Reached the maximal allowed number of different NodeIds, limit is $max_node_id_limit. Node '$nodeid' was ignored.";
+            $message = "Reached the maximal allowed number of different NodeIds, limit is ".$settings["input"]["max_node_id_limit"].". Node '$nodeid' was ignored.";
         }
         return array('success'=>$success, 'message'=>$message);
     }
