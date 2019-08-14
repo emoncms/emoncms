@@ -115,6 +115,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($fullwidth)) $fullwidth = false;
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
+    if (!isset($show_menu_titles)) $show_menu_titles = false;
     if (!isset($email_verification)) $email_verification = false;
     if (!isset($admin_show_update)) $admin_show_update = true;
 
