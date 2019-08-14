@@ -35,6 +35,7 @@ if (!isset($session['profile'])) {
 }
 $third_level_open_status = array();
 $default_nav = 'emoncms';
+if ($session['profile']) $default_nav = 'dashboard';
 // blank menus
 $second_level_menus = array(); // sidebars & dropdowns
 $third_level_menus = array(); // sub menu sidebars
@@ -42,31 +43,6 @@ $third_level_includes = array(); // module specific sidebar include
 $bookmarks = array();
 
 global $mysqli,$user;
-
-if (file_exists("Modules/dashboard/dashboard_model.php")) {
-require_once "Modules/dashboard/dashboard_model.php";
-$dashboard = new Dashboard($mysqli);
-$default_dashboard = array();
-foreach($dashboard->get_list($session['userid'],false,false) as $item){
-    if($item['main']===true){
-        $default_dash = $item;
-    }
-    if($item['published']===true){
-        $fav_dash[] = $item;
-    }
-}
-}
-// ADD DEFAULT DASHBOARD
-if (!empty($default_dash)) {
-    $bookmarks[] = array(
-        'text' => _('Default Dashboard'),
-        'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
-        'icon' => 'star',
-        'order'=> 999,
-        'path' => 'dashboard/view?id='.$default_dash['id'],
-        'li_class' => array('default-dashboard')
-    );
-}
 
 // build the individual menu parts
 foreach($menu['sidebar'] as $menu_key => $sub_menu) {
@@ -161,22 +137,13 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
     $_close = _('Close');
 
-
-
 // logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
 // -------------------------------------------------------
 // view starts here
-
-
-
-
-
     echo <<<SIDEBARSTART
-
     <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
         <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
         <h4 class="sidebar-title">{$menu_key}</h4>
-
 SIDEBARSTART;
 
     if(!empty($markup)) {
@@ -231,7 +198,7 @@ if($session['write']){ ?>
                     ));
                 ?>
                     <h4 class="sidebar-title d-flex justify-content-between align-items-center">
-                        Bookmarks 
+                        <?php echo _("Bookmarks") ?>
                         <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
                     </h4>
                     <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
