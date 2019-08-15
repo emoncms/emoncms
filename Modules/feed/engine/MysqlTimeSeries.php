@@ -661,7 +661,7 @@ class MysqlTimeSeries implements engine_methods
                 if ($stmt->fetch()) {
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-                        fwrite($exportfh, $timenew.$settings["csv"]["field_separator"].number_format((float)$dataValue,$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'')."\n");
+                        fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format((float)$dataValue,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
                     }
                 }
                 $t = $tb;
@@ -685,7 +685,7 @@ class MysqlTimeSeries implements engine_methods
                     if ($dataValue!=NULL || $skipmissing===0) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * $td;
                         $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
-                        fwrite($exportfh, $timenew.$settings["csv"]["field_separator"].number_format((float)$dataValue,$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'')."\n");
+                        fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format((float)$dataValue,$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
                     }
                 }
             }
