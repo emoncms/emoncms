@@ -288,6 +288,19 @@ body.app #wrap {
   }
 }
 
+/* extra large deivces */
+@media (min-width: 1200px) {
+}
+/* large landscape screens that have a mouse */
+@media screen and (min-width: 1200px) and (any-hover: hover) and (min-aspect-ratio: 4/3){
+    .fullwidth.has-sidebar.collapsed #wrap {
+        margin-left: auto!important;
+        margin-right: auto;
+    }
+}
+
+
+
 html {
     scroll-behavior: smooth;
 }
