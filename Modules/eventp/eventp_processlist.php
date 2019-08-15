@@ -100,7 +100,7 @@ class Eventp_ProcessList
     }
     
     public function sendEmail($emailbody, $time, $value, $options) {
-        global $user, $session, $default_emailto;
+        global $user, $session, $settings;
 
         $timeformated = DateTime::createFromFormat("U", (int)$time);
         if(!empty($this->parentProcessModel->timezone)) $timeformated->setTimezone(new DateTimeZone($this->parentProcessModel->timezone));
@@ -120,7 +120,7 @@ class Eventp_ProcessList
         }
 
         //need to get an email address from the config file or the form ?
-        $emailto = $default_emailto;
+        $emailto = $settings['smtp']['default_emailto'];
 
         if (!empty($emailto)) { 
             require_once "Lib/email.php";

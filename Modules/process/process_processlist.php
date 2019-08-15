@@ -40,9 +40,9 @@ class Process_ProcessList
 
         // Load MQTT if enabled
         // Publish value to MQTT topic, see: http://openenergymonitor.org/emon/node/5943
-        global $mqtt_enabled, $mqtt_server, $log;
+        global $settings, $log;
         
-        if ($mqtt_enabled && !$this->mqtt)
+        if ($settings['mqtt']['enabled'] && !$this->mqtt)
         {
             // @see: https://github.com/emoncms/emoncms/blob/master/docs/RaspberryPi/MQTT.md
             if (class_exists("Mosquitto\Client")) {
