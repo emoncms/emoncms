@@ -142,7 +142,7 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
 // view starts here
     echo <<<SIDEBARSTART
     <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
-        <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
+        <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
         <h4 class="sidebar-title">{$menu_key}</h4>
 SIDEBARSTART;
 

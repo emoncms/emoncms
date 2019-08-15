@@ -278,9 +278,7 @@ body.has-sidebar #wrap .content-container{
 body.has-sidebar #wrap .content-container{
     margin-left: 15rem;
 }
-body.has-sidebar.collapsed #wrap .content-container{
-    margin-left: 0;
-}
+
 /* large landscape screens that have a mouse */
 /* @media screen and (min-width: 1200px) and (any-hover: hover) and (min-aspect-ratio: 4/3){
 } */
@@ -294,10 +292,6 @@ body.fullwidth #wrap .content-container{
 }
 body.has-sidebar.fullwidth #wrap .content-container{
     width: auto;
-}
-body.has-sidebar.collapsed #wrap .content-container{
-    padding-right: 0;
-    padding-left: 0;
 }
 
 /* feed and input views always use full width */
@@ -324,31 +318,20 @@ main.content {
 /* override above to center content on screen when sidebar hidden */
 /* @todo: remove any redundant css */
 
-body.has-sidebar #wrap .content-container {
-    display: flex;
-}
-body.has-sidebar #wrap .content-container .content {
-    /* full width minus sidebar minus padding */
-    width: calc(100% - 15rem - 2rem);
-}
 /* expand content when $fullwidth setting is true */
 body.has-sidebar #wrap .content-container .content {
     transition: flex-grow .4s cubic-bezier(0,.82,.8,1.79), margin 1s ease-out;
+    width: 100%;
 }
-body.has-sidebar.expanded.fullwidth #wrap .content-container .content {
-    flex-grow: 0.00001;
-}
-body.has-sidebar.collapsed.fullwidth #wrap .content-container .content{
-    flex-grow: 1;
-}
+
 /* sidebar collapsed style */
-body.has-sidebar.collapsed #wrap .content-container{
+body.has-sidebar #wrap .content-container {
     max-width: none;
     width: auto;
+    margin-left: 0;
+    padding-right: 0;
+    padding-left: 0;
     justify-content: center;
-}
-body.has-sidebar.collapsed #wrap .content-container .content{
-    width: 1175px;
 }
 
 @media (min-width: 1024px) {
@@ -493,8 +476,46 @@ ul.nav > li > [disabled] {
 /* 
 // Medium devices (tablets, 768px and up)
 */
+body.has-sidebar #wrap .content-container {
+    margin-left: 0;
+}
 @media (min-width: 768px) {
-    .d-md-none {
+    /*
+
+@todo: push content beside sidebar
+*/
+    body.has-sidebar #wrap .content-container {
+        margin-left: 15rem;
+    }
+    body.has-sidebar.collapsed #wrap .content-container {
+        display: flex;
+        max-width: none;
+        width: auto;
+        margin-left: 0;
+        padding-right: 0;
+        padding-left: 0;
+        justify-content: center;
+    }
+    body.has-sidebar #wrap .content-container .content {
+        /* full width minus sidebar minus padding */
+        width: calc(100% - 15rem - 2rem);
+    }
+    body.has-sidebar.collapsed #wrap .content-container .content{
+        max-width: 1175px;
+        width: 100%;
+    }
+    body.has-sidebar.expanded.fullwidth #wrap .content-container .content {
+        flex-grow: 0.00001;
+    }
+    body.has-sidebar.fullwidth #wrap .content-container .content{
+        flex-grow: 1;
+        max-width: initial;
+        width: auto;
+    }
+
+
+
+    .d-md-none{
         display: none!important;
     }
     .d-md-inline-block {
