@@ -5,9 +5,6 @@ pre {
     overflow: scroll;
     overflow-x: hidden;
 }
-.admin-container {
-    max-width: 60rem;
-}
 #export-log {
     padding-left:20px;
     padding-top:20px;

@@ -38,7 +38,13 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     
     <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
     <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
-
+    <?php if ($fullwidth === true) { ?>
+        <style>
+            body #wrap .content-container .content{
+                flex-grow: 1!important;
+            }
+        </style>
+    <?php } ?>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
 
@@ -98,9 +104,11 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         } else { 
             $contentContainerClasses[] = 'container';
         }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
-            <?php echo $content; ?>
-        </main>
+        <div class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+            <main class="content">
+                <?php echo $content; ?>
+            </main>
+        </div>
         
     </div><!-- eof #wrap -->
 

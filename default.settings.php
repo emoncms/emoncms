@@ -95,7 +95,7 @@
     $favicon = "favicon.png";
 
     // Use full screen width
-    $fullwidth = true;
+    $fullwidth = false;
 
     // Main menu collapses on lower screen widths
     $menucollapses = false;
