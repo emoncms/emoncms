@@ -7,7 +7,7 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-global $path, $session, $menu, $user;
+global $path, $session, $menu, $user,$show_menu_titles;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
@@ -46,7 +46,13 @@ if(!empty($menu['tabs'])) {
         // add active class to <li>  if item in matching sidebar is current page/route
         if(is_current_menu($matching_menu)) $item['li_class'][] = 'active';
         // render menu item
-        echo makeListLink($item);
+        $item['data']['hide-narrow'] = true;
+
+        if(!$show_menu_titles){
+            $item['text'] = '';
+        }
+
+        echo makeListLink($item)."\n";
     }
 }
 
@@ -80,6 +86,7 @@ if($isBookmarked){
 } else {
     $removeBookmark['li_class'] = 'd-none';
 }
+
 if ($session['write']) {
     echo makeListLink($removeBookmark);
     echo makeListLink($addBookmark);

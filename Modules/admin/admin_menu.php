@@ -3,7 +3,9 @@
 
     $menu['sidebar']['emoncms'][] = array(
         'text' => _("Setup"),
+        'path' => null,
         'li_class' => 'sidebar-subtitle',
+        'icon' => '',
         'order' => 'b'
     );
 
