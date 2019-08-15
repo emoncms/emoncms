@@ -287,15 +287,15 @@ body.app #wrap {
     position: fixed;
   }
 }
-
-/* extra large deivces */
-@media (min-width: 1200px) {
+.fullwidth.has-sidebar #wrap main.content-container{
+    width: 100%;
+    transition: width 0.2s ease-out; 
 }
 /* large landscape screens that have a mouse */
 @media screen and (min-width: 1200px) and (any-hover: hover) and (min-aspect-ratio: 4/3){
-    .fullwidth.has-sidebar.collapsed #wrap {
-        margin-left: auto!important;
-        margin-right: auto;
+    .fullwidth.has-sidebar.collapsed #wrap,
+    .fullwidth.has-sidebar.collapsed #wrap main.content-container{
+        width: 100vw;
     }
 }
 
