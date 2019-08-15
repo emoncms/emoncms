@@ -40,10 +40,10 @@
     
     define('EMONCMS_EXEC', 1);
 
-    $fp = fopen("/var/lock/phpmqtt_input.lock", "w");
+    $fp = fopen("/var/lock/emoncms_mqtt.lock", "w");
     if (! flock($fp, LOCK_EX | LOCK_NB)) { echo "Already running\n"; die; }
     
-    chdir(dirname(__FILE__)."/../");
+    chdir(dirname(__FILE__)."/../../../");
     require "Lib/EmonLogger.php";
     require "process_settings.php";
     
@@ -52,13 +52,20 @@
     $log = new EmonLogger(__FILE__);
     $log->info("Starting MQTT Input script");
     
-    if (!$mqtt_enabled) {
+    if (!$settings["mqtt"]["enabled"]) {
         //echo "Error MQTT input script: MQTT must be enabled in settings.php\n";
         $log->error("MQTT must be enabled in settings.php");
         die;
     }
     
-    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+    $mysqli = @new mysqli(
+        $settings["sql"]["server"],
+        $settings["sql"]["username"],
+        $settings["sql"]["password"],
+        $settings["sql"]["database"],
+        $settings["sql"]["port"]
+    );
+    
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
         if ( $display_errors ) {
@@ -73,15 +80,15 @@
     // $mysqli->query("SET interactive_timeout=60;");
     // $mysqli->query("SET wait_timeout=60;");
 
-    if ($redis_enabled) {
+    if ($settings['mqtt']['enabled']) {
         $redis = new Redis();
-        if (!$redis->connect($redis_server['host'], $redis_server['port'])) {
-            $log->error("Cannot connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n');
+        if (!$redis->connect($settings['mqtt']['host'], $settings['mqtt']['port'])) {
+            $log->error("Cannot connect to redis at ".$settings['mqtt']['host'].":".$settings['mqtt']['port']);  die('Check log\n');
         }
-        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
-        if (!empty($redis_server['auth'])) {
-            if (!$redis->auth($redis_server['auth'])) {
-                $log->error("Cannot connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
+        if (!empty($settings['mqtt']['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $settings['mqtt']['prefix']);
+        if (!empty($settings['mqtt']['auth'])) {
+            if (!$redis->auth($settings['mqtt']['auth'])) {
+                $log->error("Cannot connect to redis at ".$settings['mqtt']['host'].", autentication failed"); die('Check log\n');
             }
         }
     } else {
@@ -92,7 +99,7 @@
     $user = new User($mysqli,$redis,null);
     
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $feed_settings);
+    $feed = new Feed($mysqli,$redis, $settings['feed']);
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);
@@ -110,13 +117,14 @@
         $id (string) – The client ID. If omitted or null, one will be generated at random.
         $cleanSession (boolean) – Set to true to instruct the broker to clean all messages and subscriptions on disconnect. Must be true if the $id parameter is null.
     */ 
-    $mqtt_client = new Mosquitto\Client($mqtt_server['client_id'],true);
+    $mqtt_client = new Mosquitto\Client($settings['mqtt']['client_id'],true);
     
     $connected = false;
     $subscribed = 0;
     $last_retry = 0;
     $last_heartbeat = time();
     $count = 0;
+    $pub_count = 0; // used to reduce load relating to checking for messages to be published
     
     $mqtt_client->onConnect('connect');
     $mqtt_client->onDisconnect('disconnect');
@@ -125,20 +133,20 @@
 
     // Option 1: extend on this:
      while(true){
-        try { 
-            $mqtt_client->loop(); 
+        try {
+            $mqtt_client->loop();
         } catch (Exception $e) {
             if ($connected) $log->error($e);
         }
-        
+
         if (!$connected && (time()-$last_retry)>5.0) {
             $subscribed = 0;
             $last_retry = time();
             try {
                 // SUBSCRIBE
                 $log->warn("Not connected, retrying connection");
-                $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
-                $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
+                $mqtt_client->setCredentials($settings['mqtt']['user'],$settings['mqtt']['password']);
+                $mqtt_client->connect($settings['mqtt']['host'], $settings['mqtt']['port'], 5);
                 // moved subscribe to onConnect callback
 
             } catch (Exception $e) {
@@ -149,46 +157,48 @@
 
         // PUBLISH
         // loop through all queued items in redis
-        if ($connected) {
+        if ($connected && $pub_count>10) {
+            $pub_count = 0;
             $publish_to_mqtt = $redis->hgetall("publish_to_mqtt");
             foreach ($publish_to_mqtt as $topic=>$value) {
                 $redis->hdel("publish_to_mqtt",$topic);
                 $mqtt_client->publish($topic, $value);
             }
-        }
-        // Queue option
-        $queue_topic = 'mqtt-pub-queue';
-        for ($i=0; $i<$redis->llen($queue_topic); $i++) {
-            if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
-                $mqtt_client->publish($data['topic'], json_encode(array("time"=>$data['time'],"value"=>$data['value'])));
+            // Queue option
+            $queue_topic = 'mqtt-pub-queue';
+            for ($i=0; $i<$redis->llen($queue_topic); $i++) {
+                if ($connected && $data = filter_var_array(json_decode($redis->lpop($queue_topic), true))) {
+                    $mqtt_client->publish($data['topic'], json_encode(array("time"=>$data['time'],"value"=>$data['value'])));
+                }
             }
         }
-        
+        $pub_count++;
+
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
             $log->info("$count Messages processed in last 5 minutes");
             $count = 0;
-            
+
             // Keep mysql connection open with periodic ping
             if (!$mysqli->ping()) {
                 $log->warn("mysql ping false");
                 die;
             }
         }
-        
-        usleep(1000);
+
+        usleep(10000);
     }
     
 
     function connect($r, $message) {
-        global $log, $connected, $mqtt_server, $mqtt_client, $subscribed;
+        global $log, $connected, $settings, $mqtt_client, $subscribed;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
         if( $r==0 ) {
             // if CONACK is zero 
             $connected = true;
             if ($subscribed==0) {
-                $topic = $mqtt_server['basetopic']."/#";
+                $topic = $settings['mqtt']['basetopic']."/#";
                 $subscribed = $mqtt_client->subscribe($topic,2);
                 $log->info("Subscribed to: ".$topic." ID - ".$subscribed);
             }
@@ -227,7 +237,7 @@
             $value = $message->payload;
             $time = time();
 
-            global $mqtt_server, $user, $input, $process, $device, $log, $count;
+            global $settings, $user, $input, $process, $device, $log, $count;
 
             //remove characters that emoncms topics cannot handle
             $topic = str_replace(":","",$topic);
@@ -281,7 +291,7 @@
             $inputs = array();
             
             $route = explode("/",$topic);
-            $basetopic = explode("/",$mqtt_server['basetopic']);
+            $basetopic = explode("/",$settings['mqtt']['basetopic']);
 
             /*Iterate over base topic to determine correct sub-topic*/
             $st=-1;
@@ -302,6 +312,9 @@
                 if (isset($route[$st+1]))
                 {
                     $nodeid = $route[$st+1];
+                    // Filter nodeid, pre input create, to avoid duplicate inputs
+                    $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+                    
                     $dbinputs = $input->get_inputs($userid);
 
                     if ($jsoninput) {
@@ -337,6 +350,9 @@
                 $nodeid = $i['nodeid'];
                 $name = $i['name'];
                 $value = $i['value'];
+                
+                // Filter name, pre input create, to avoid duplicate inputs
+                $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
                 
                 // Automatic device configuration using device module if 'describe' keyword found
                 if (strtolower($name)=="describe") {

@@ -21,15 +21,15 @@ class EmonLogger
 
     public function __construct($clientFileName)
     {
-        global $log_location, $log_enabled, $log_level;
+        global $settings;
 
-        if (!$log_enabled) {
+        if (!$settings['log']['enabled']) {
             $this->logenabled = false;
         }
         else 
         {
-            $this->logfile = "$log_location/emoncms.log";
-            if ($log_level) $this->log_level = $log_level;
+            $this->logfile = $settings['log']['location']."/emoncms.log";
+            if ($log_level) $this->log_level = $settings['log']['level'];
             $this->caller = basename($clientFileName);
             if (!file_exists($this->logfile))
             {
