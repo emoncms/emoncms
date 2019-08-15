@@ -302,7 +302,8 @@ body.has-sidebar.feed #wrap .content-container {
 
 body.has-sidebar.input #wrap .content-container .content,
 body.has-sidebar.feed #wrap .content-container .content {
-    width: 100%!important;
+    width: 100%!important; /* with sidebar showing */
+    max-width: 100%!important; /* with sidebar collapsed */
 }
 
 body.has-sidebar #wrap .content-container {
