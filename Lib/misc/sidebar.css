@@ -90,9 +90,9 @@ Sidebar sub menus----------------------------------------------------*/
   position: fixed;
   display: none;
   margin-top: 0px;
-  top: 2.7rem;
+  top: 2.5rem;
   z-index: 1000;
-  height: calc(100vh - 2.7rem);
+  height: calc(100vh - 2.5rem);
   margin-bottom: 2rem;
   
   left: 15rem;
@@ -118,7 +118,12 @@ Sidebar sub menus----------------------------------------------------*/
     text-decoration: none;
 }
 
-
+@media screen and (min-width: 380px) {
+  #sidebar {
+    top: 2.7rem;
+    height: calc(100vh - 2.7rem);
+  }
+}
 /* -------------------------------------------------------------------
 gravitar icon in toolbar
 --------------------------------------------------------------------*/
