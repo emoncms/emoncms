@@ -11,6 +11,11 @@
 */
 global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
 
+global $page_width;
+
+$max_width = "";
+if (isset($page_width)) $max_width = "max-width:$page_width"."px";
+
 $v = 9;
 
 if (!is_dir("Theme/".$theme)) {
@@ -65,6 +70,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             return true; // true == prevents the firing of the default event handler.
         }
         var path = "<?php echo $path ?>";
+        
     </script>
 </head>
 <body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
@@ -98,7 +104,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         } else { 
             $contentContainerClasses[] = 'container';
         }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
+        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>" style="<?php echo $max_width; ?>">
             <?php echo $content; ?>
         </main>
         
@@ -137,3 +143,15 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 
 </body>
 </html>
+
+<script>
+$('#sidebar').on('hide.sidebar.collapse',function(){
+    console.log("collapse");
+    $(".content-container").css("margin","2.7rem auto");
+});
+
+$('#sidebar').on('show.sidebar.collapse',function(){
+    console.log("collapse");
+    $(".content-container").css("margin","2.7rem 0");
+});
+</script>
