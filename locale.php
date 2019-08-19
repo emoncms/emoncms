@@ -64,9 +64,9 @@ function lang_http_accept()
  */
 function set_lang($language)
 {
-    global $default_language;
+    global $settings;
     // DEFAULT - from settings.php (if not in file use 'en_GB')
-    $fallback_language = !empty($default_language) ? $default_language : 'en_GB';
+    $fallback_language = $settings['default_language'];
 
     $supported_languages = array(
         'cy' => 'cy_GB',
