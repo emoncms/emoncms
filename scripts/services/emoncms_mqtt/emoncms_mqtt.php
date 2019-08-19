@@ -80,15 +80,15 @@
     // $mysqli->query("SET interactive_timeout=60;");
     // $mysqli->query("SET wait_timeout=60;");
 
-    if ($settings['mqtt']['enabled']) {
+    if ($settings['redis']['enabled']) {
         $redis = new Redis();
-        if (!$redis->connect($settings['mqtt']['host'], $settings['mqtt']['port'])) {
-            $log->error("Cannot connect to redis at ".$settings['mqtt']['host'].":".$settings['mqtt']['port']);  die('Check log\n');
+        if (!$redis->connect($settings['redis']['host'], $settings['redis']['port'])) {
+            $log->error("Cannot connect to redis at ".$settings['redis']['host'].":".$settings['redis']['port']);  die('Check log\n');
         }
-        if (!empty($settings['mqtt']['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $settings['mqtt']['prefix']);
-        if (!empty($settings['mqtt']['auth'])) {
-            if (!$redis->auth($settings['mqtt']['auth'])) {
-                $log->error("Cannot connect to redis at ".$settings['mqtt']['host'].", autentication failed"); die('Check log\n');
+        if (!empty($settings['redis']['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $settings['redis']['prefix']);
+        if (!empty($settings['redis']['auth'])) {
+            if (!$redis->auth($settings['redis']['auth'])) {
+                $log->error("Cannot connect to redis at ".$settings['redis']['host'].", autentication failed"); die('Check log\n');
             }
         }
     } else {

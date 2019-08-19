@@ -82,7 +82,7 @@ function admin_controller()
                 if(isset($services['feedwriter'])) {
                     $message = '<font color="red">Service is not running</font>';
                     if ($services['feedwriter']['running']) {
-                        $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                        $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
                     }
                     $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
                 }
@@ -417,7 +417,7 @@ function admin_controller()
                 if(isset($services['feedwriter'])) {
                     $message = 'Service is not running';
                     if ($services['feedwriter']['running']) {
-                        $message = ' - sleep ' . $feed_settings['redisbuffer']['sleep'] . 's';
+                        $message = ' - sleep ' . $settings['feed']['redisbuffer']['sleep'] . 's';
                     }
                     $services['feedwriter']['text'] .= $message;
                 }
