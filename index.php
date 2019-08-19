@@ -340,6 +340,7 @@
                 $menu['tabs'][] = array(
                     'icon'=>'menu',
                     'title'=> _("Emoncms"),
+                    'text'=> _("Setup"),
                     'path' => 'feed/list',
                     'order' => 0,
                     'data'=> array(

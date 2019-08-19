@@ -12,7 +12,7 @@
 global $settings;
 global $ltime,$path,$emoncms_version,$menu;
 
-$v = 7;
+$v = 9;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
