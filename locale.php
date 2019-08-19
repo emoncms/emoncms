@@ -66,7 +66,7 @@ function set_lang($language)
 {
     global $settings;
     // DEFAULT - from settings.php (if not in file use 'en_GB')
-    $fallback_language = $settings['default_language'];
+    $fallback_language = $settings['interface']['default_language'];
 
     $supported_languages = array(
         'cy' => 'cy_GB',

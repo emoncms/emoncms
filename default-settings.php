@@ -195,6 +195,6 @@ $_settings = array(
     // different logfile directory
     "location" => "/var/log/emoncms",
     // Log Level: 1=INFO, 2=WARN, 3=ERROR
-    "log_level" => 2
+    "level" => 2
 )
 );

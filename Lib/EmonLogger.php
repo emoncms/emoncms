@@ -29,7 +29,7 @@ class EmonLogger
         else 
         {
             $this->logfile = $settings['log']['location']."/emoncms.log";
-            if ($log_level) $this->log_level = $settings['log']['level'];
+            if ($settings['log']['level']) $this->log_level = $settings['log']['level'];
             $this->caller = basename($clientFileName);
             if (!file_exists($this->logfile))
             {
