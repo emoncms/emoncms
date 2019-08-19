@@ -11,11 +11,6 @@
 */
 global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
 
-global $page_width;
-
-$max_width = "";
-if (isset($page_width)) $max_width = "max-width:$page_width"."px";
-
 $v = 9;
 
 if (!is_dir("Theme/".$theme)) {
@@ -111,7 +106,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         } else { 
             $contentContainerClasses[] = 'container';
         }?>
-        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>" style="<?php echo $max_width; ?>">
+        <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
             <?php echo $content; ?>
         </main>
         
