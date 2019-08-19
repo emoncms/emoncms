@@ -42,13 +42,6 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
 
-    <style>
-        body.app .content-container { max-width:1150px; }
-        body.graph .content-container { max-width:1150px; }
-        body.graph .content-container { max-width:1150px; }
-        body.dashboard .content-container { max-width:1150px; }
-    </style>
-
     <script>
         window.onerror = function(msg, source, lineno, colno, error) {
             // return false;
@@ -72,7 +65,6 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             return true; // true == prevents the firing of the default event handler.
         }
         var path = "<?php echo $path ?>";
-
     </script>
 </head>
 <body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">

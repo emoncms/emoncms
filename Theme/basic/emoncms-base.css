@@ -1,5 +1,9 @@
 html,body{height: initial!important}
 
+body.app .content-container { max-width:1150px; }
+body.graph .content-container { max-width:1150px; }
+body.dashboard .content-container { max-width:1150px; }
+
 #wrap{
   min-height: calc(100vh - 5.4rem)!important;
   margin-top: 0;

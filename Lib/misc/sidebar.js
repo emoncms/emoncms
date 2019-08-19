@@ -1,5 +1,4 @@
 var sidebar_mode = "auto";
-
 $(function(){
     // re-create the bootstrap collapse... but slide from left
     $(document).on('click', '[data-toggle="slide-collapse"]', function(event) {
@@ -41,7 +40,6 @@ $(function(){
                 // closed sidebar
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
-                
                 if (sidebar_mode=="auto") sidebar_mode = "manual"; else sidebar_mode = "auto"; 
             } else {
                 // already open sidebar
@@ -54,8 +52,7 @@ $(function(){
                         // @todo: make the sidebar show 2nd level and not hide_sidebar()
                         hide_sidebar();
                     }
-                    if (sidebar_mode=="auto") sidebar_mode = "manual"; else sidebar_mode = "auto"; 
-                    
+                    if (sidebar_mode=="auto") sidebar_mode = "manual"; else sidebar_mode = "auto";
                 } else {
                     // enable correct sidebar inner based on clicked tab
                     $sidebar_inner.addClass(activeClass).find('li a').each(function(){
