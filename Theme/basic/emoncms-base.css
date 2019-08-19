@@ -14,7 +14,7 @@ html,body{height: initial!important}
 }
 #wrap main.content-container{
   height: 100%;
-  margin-top: 2.7rem;
+  margin: 2.7rem 0 0 15rem;
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }
@@ -273,7 +273,7 @@ html,body{height: initial!important}
  @media only screen and (min-width:870px) {
   .fullwidth.has-sidebar #wrap,
   .fullwidth.has-sidebar #footer {
-    margin-left: 15rem!important;
+    /*margin-left: 15rem!important;*/
   }
   .fullwidth.has-sidebar.collapsed #wrap,
   .fullwidth.has-sidebar.collapsed #footer {
