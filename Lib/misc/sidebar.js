@@ -291,8 +291,6 @@ $(function(){
     });
 
 }); // end of jquery ready()
-
-
     
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
@@ -302,6 +300,12 @@ function show_sidebar(options) {
         $('#sidebar').trigger('shown.sidebar.collapse');
     }, 350);
     $('body').removeClass('collapsed').addClass('expanded');
+    
+    if ($(window).width() < 870) {
+        $(".content-container").css("margin","2.7rem 0 0 0");
+    } else {
+        $(".content-container").css("margin","2.7rem 0 0 15rem");
+    } 
 }
 function hide_sidebar(options) {
     // @note: assumes the css animation takes 300ms
@@ -310,6 +314,8 @@ function hide_sidebar(options) {
         $('#sidebar').trigger('hidden.sidebar.collapse');
     }, 350);
     $('body').addClass('collapsed').removeClass('expanded');
+    
+    $(".content-container").css("margin","2.7rem auto 0 auto");
 }
 
 

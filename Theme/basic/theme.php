@@ -84,7 +84,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <?php } ?>
         
         <div id="sidebar" class="bg-dark text-light">
-            <div class="sidebar-content">
+            <div class="sidebar-content d-flex flex-column">
                 <?php if(isset($sidebar) && !empty($sidebar)) echo $sidebar; ?>
             </div>
         </div>
@@ -137,20 +137,3 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 
 </body>
 </html>
-
-<script>
-
-// HIDE
-$('#sidebar').on('hide.sidebar.collapse',function(){
-    $(".content-container").css("margin","2.7rem auto 0 auto");
-});
-
-// SHOW
-$('#sidebar').on('show.sidebar.collapse',function(){
-    if ($(window).width() < 870) {
-        $(".content-container").css("margin","2.7rem 0 0 0");
-    } else {
-        $(".content-container").css("margin","2.7rem 0 0 15rem");
-    }
-});
-</script>
