@@ -40,7 +40,7 @@ $(function(){
                 // closed sidebar
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
-                if (sidebar_mode=="auto") sidebar_mode = "manual"; else sidebar_mode = "auto"; 
+                if (sidebar_mode=="auto") sidebar_mode = "manual"; 
             } else {
                 // already open sidebar
                 if ($sidebar_inner.hasClass(activeClass)) {
@@ -52,7 +52,7 @@ $(function(){
                         // @todo: make the sidebar show 2nd level and not hide_sidebar()
                         hide_sidebar();
                     }
-                    if (sidebar_mode=="auto") sidebar_mode = "manual"; else sidebar_mode = "auto";
+                    if (sidebar_mode=="auto") sidebar_mode = "manual";
                 } else {
                     // enable correct sidebar inner based on clicked tab
                     $sidebar_inner.addClass(activeClass).find('li a').each(function(){
@@ -117,6 +117,7 @@ $(function(){
                 if ($(window).width() < 870) {
                     $(".content-container").css("margin","2.7rem 0 0 0");
                 } else {
+                    sidebar_mode = "auto"
                     $(".content-container").css("margin","2.7rem 0 0 15rem");
                 }   
             }
