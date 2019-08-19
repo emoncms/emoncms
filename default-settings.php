@@ -129,6 +129,8 @@ $_settings = array(
     // Main menu collapses on lower screen widths
     'menucollapses' => false,
     
+    'show_menu_titles' => true, 
+    
     // Default controller and action if none are specified and user is anonymous
     'default_controller' => "user",
     'default_action' => "login",
