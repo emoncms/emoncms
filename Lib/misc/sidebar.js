@@ -98,6 +98,9 @@ $(function(){
         if (typeof resize === 'function'){
             resize();
         }
+        if (typeof vis_resize === 'function'){
+            vis_resize();
+        }
     });
 
     // hide sidebar on smaller devices

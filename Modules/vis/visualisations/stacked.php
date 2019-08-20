@@ -90,11 +90,14 @@
   monthsA = get_months(dataA);
   monthsB = get_months(dataB);
 
-  $(window).resize(function(){
+  $(window).resize(vis_resize);
+  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
     bargraph(monthsA.data,monthsB.data,3600*24*20,"month");
-  });
+  }
 
   bargraph(monthsA.data,monthsB.data,3600*24*20,"month");
 
