@@ -227,7 +227,7 @@ Part of the OpenEnergyMonitor project: http://openenergymonitor.org
   }
 
   function vis_resize() {
-    var width = $("#vispage").width() - 325;
+    var width = $("#vispage").width() - 349;
     if (width < 320) width = 320;
     var height = width * 0.5625;
     var vistype = $("#visselect").val();

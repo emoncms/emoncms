@@ -368,7 +368,10 @@
         });
         
         
-        $(window).resize(function(){
+        $(window).resize(vis_resize);
+        $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+        
+        function vis_resize() {
             var width = placeholder_bound.width();
             var height = placeholder_bound.width();
 
@@ -379,7 +382,7 @@
 
             if (embed) placeholder.height($(window).height()-top_offset);
             plot();
-        });
+        }
     });
 </script>
 

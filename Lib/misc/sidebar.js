@@ -1,3 +1,4 @@
+var sidebar_mode = "auto";
 $(function(){
     // re-create the bootstrap collapse... but slide from left
     $(document).on('click', '[data-toggle="slide-collapse"]', function(event) {
@@ -39,6 +40,7 @@ $(function(){
                 // closed sidebar
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
+                if (sidebar_mode=="auto") sidebar_mode = "manual"; 
             } else {
                 // already open sidebar
                 if ($sidebar_inner.hasClass(activeClass)) {
@@ -50,6 +52,7 @@ $(function(){
                         // @todo: make the sidebar show 2nd level and not hide_sidebar()
                         hide_sidebar();
                     }
+                    if (sidebar_mode=="auto") sidebar_mode = "manual";
                 } else {
                     // enable correct sidebar inner based on clicked tab
                     $sidebar_inner.addClass(activeClass).find('li a').each(function(){
@@ -95,17 +98,32 @@ $(function(){
         if (typeof resize === 'function'){
             resize();
         }
+        if (typeof vis_resize === 'function'){
+            vis_resize();
+        }
     });
 
     // hide sidebar on smaller devices
     window.addEventListener('resize', function(event) {
-        if ($(window).width() < 870) {
-            hide_sidebar();
-            document.body.classList.add('narrow');
-        }
-        if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
-            show_sidebar();
-            document.body.classList.remove('narrow');
+    
+        if (sidebar_mode=="auto") {
+            if ($(window).width() < 870) {
+                hide_sidebar();
+                document.body.classList.add('narrow');
+            }
+            if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
+                show_sidebar();
+                document.body.classList.remove('narrow');
+            }
+        } else {
+            if (!$(document.body).hasClass('collapsed')) {
+                if ($(window).width() < 870) {
+                    $(".content-container").css("margin","2.7rem 0 0 0");
+                } else {
+                    sidebar_mode = "auto"
+                    $(".content-container").css("margin","2.7rem 0 0 15rem");
+                }   
+            }
         }
     })
     
@@ -277,8 +295,6 @@ $(function(){
     });
 
 }); // end of jquery ready()
-
-
     
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
@@ -288,6 +304,12 @@ function show_sidebar(options) {
         $('#sidebar').trigger('shown.sidebar.collapse');
     }, 350);
     $('body').removeClass('collapsed').addClass('expanded');
+    
+    if ($(window).width() < 870) {
+        $(".content-container").css("margin","2.7rem 0 0 0");
+    } else {
+        $(".content-container").css("margin","2.7rem 0 0 15rem");
+    } 
 }
 function hide_sidebar(options) {
     // @note: assumes the css animation takes 300ms
@@ -296,6 +318,8 @@ function hide_sidebar(options) {
         $('#sidebar').trigger('hidden.sidebar.collapse');
     }, 350);
     $('body').addClass('collapsed').removeClass('expanded');
+    
+    $(".content-container").css("margin","2.7rem auto 0 auto");
 }
 
 
