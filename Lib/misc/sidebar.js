@@ -18,6 +18,10 @@ $(function(){
         // if the link has a [data-is-link] attribute navigate to the link
         if(!event.currentTarget.dataset.isLink) {
             event.preventDefault();
+        } else {
+            var href = event.currentTarget.href;
+            window.location.href = href;
+            return false;
         }
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
