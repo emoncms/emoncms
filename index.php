@@ -350,8 +350,6 @@
             
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
-            
-            if($fullwidth) $output['page_classes'][] = 'fullwidth';
 
             $output['sidebar'] = view($themeDir . "sidebar_view.php", 
             array(

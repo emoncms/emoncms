@@ -111,8 +111,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($max_datapoints)) $max_datapoints = 8928; // default
 
     if (!isset($data_sampling)) $data_sampling = true; // default
-
-    if (!isset($fullwidth)) $fullwidth = false;
+    
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
     if (!isset($show_menu_titles)) $show_menu_titles = true;
