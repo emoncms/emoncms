@@ -12,12 +12,21 @@ html,body{height: initial!important}
 .fullwidth.collapsed #footer{
     margin-left: 0!important;
 }
+
 #wrap main.content-container{
   height: 100%;
-  margin: 2.7rem 0 0 15rem;
+  margin-top: 2.7rem;
+  margin-left: 15rem;
+  margin-bottom: 0;
+  margin-right: 0;
   padding-bottom: 2rem!important;
   box-sizing: border-box;
 }
+
+body.collapsed #wrap main.content-container{
+  margin-left: auto;
+  margin-right: auto;
+} 
 
 /*-------------------------------------*/
 /* utilities */

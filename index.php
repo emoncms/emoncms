@@ -353,18 +353,19 @@
             
             if($fullwidth) $output['page_classes'][] = 'fullwidth';
 
-            if($session['read']){
-                $output['sidebar'] = view($themeDir . "sidebar_view.php", 
-                array(
-                    'menu' => $menu,
-                    'path' => $path,
-                    'session' => $session,
-                    'route' => $route
-                ));
-                $output['page_classes'][] = 'has-sidebar';
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", 
+            array(
+                'menu' => $menu,
+                'path' => $path,
+                'session' => $session,
+                'route' => $route
+            ));
+            $output['page_classes'][] = 'has-sidebar';
+            if (!$session['read']) {
+                $output['page_classes'][] = 'collapsed manual';
+            } else {
+                $output['page_classes'][] = 'auto';
             }
-            
-
             print view($themeDir . "theme.php", $output);
         }
     }

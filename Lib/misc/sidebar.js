@@ -1,4 +1,3 @@
-var sidebar_mode = "auto";
 $(function(){
     // re-create the bootstrap collapse... but slide from left
     $(document).on('click', '[data-toggle="slide-collapse"]', function(event) {
@@ -40,7 +39,8 @@ $(function(){
                 // closed sidebar
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
-                if (sidebar_mode=="auto") sidebar_mode = "manual"; 
+                if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
+                
             } else {
                 // already open sidebar
                 if ($sidebar_inner.hasClass(activeClass)) {
@@ -52,7 +52,7 @@ $(function(){
                         // @todo: make the sidebar show 2nd level and not hide_sidebar()
                         hide_sidebar();
                     }
-                    if (sidebar_mode=="auto") sidebar_mode = "manual";
+                    if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
                 } else {
                     // enable correct sidebar inner based on clicked tab
                     $sidebar_inner.addClass(activeClass).find('li a').each(function(){
@@ -98,6 +98,9 @@ $(function(){
         if (typeof resize === 'function'){
             resize();
         }
+        if (typeof app_resize === 'function'){
+            app_resize();
+        }
         if (typeof vis_resize === 'function'){
             vis_resize();
         }
@@ -106,7 +109,7 @@ $(function(){
     // hide sidebar on smaller devices
     window.addEventListener('resize', function(event) {
     
-        if (sidebar_mode=="auto") {
+        if ($('body').hasClass('auto')) {
             if ($(window).width() < 870) {
                 hide_sidebar();
                 document.body.classList.add('narrow');
@@ -120,7 +123,7 @@ $(function(){
                 if ($(window).width() < 870) {
                     $(".content-container").css("margin","2.7rem 0 0 0");
                 } else {
-                    sidebar_mode = "auto"
+                    $('body').toggleClass('manual auto')
                     $(".content-container").css("margin","2.7rem 0 0 15rem");
                 }   
             }
