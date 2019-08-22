@@ -12,13 +12,42 @@ $(function(){
             show_sidebar();
         }
     });
+
+
+    // checks for sidebar items that match the current page
+    // uses the 'active' property of the *_menu.php files to match
+    var links_with_active = document.querySelectorAll('#sidebar [data-active]')
+    if(links_with_active) {
+        for(n in Object.values(links_with_active)) {
+            let link = links_with_active[n]
+            // mark active link on load
+            if(link.dataset.active === window.location.href) {
+                link.parentNode.classList.add('active')
+            }
+            // mark active link on click
+            link.addEventListener("click", function(event){
+                $(event.currentTarget).parents('ul').first().find('li').removeClass('active')
+            })
+            window.addEventListener("hashchange", function(){
+                if(link.dataset.active === window.location.href) {
+                    link.parentNode.classList.add('active')
+                }
+            }, false);
+        }
+    }
     
+
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event) {
         // if the link has a [data-is-link] attribute navigate to the link
         if(!event.currentTarget.dataset.isLink) {
             event.preventDefault();
+        } else {
+            var href = event.currentTarget.href;
+            window.location.href = href;
+            return false;
         }
+
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
         const activeClass = 'active';
@@ -283,7 +312,6 @@ $(function(){
     $(document).on('click', '#menu-emoncms li.active a', hideMenuItems);
     // show hide 2nd / 3rd menu items
     // setTimeout(hideMenuItems, 100);
-    
 
     // save a cookie to remember user's choice to hide or show the bookmarks
     $('#sidebar_bookmarks').on('show hide', function(event) {
