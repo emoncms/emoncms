@@ -21,7 +21,9 @@ $(function(){
     checkActiveHashLinks()
     
     // highlight active item on browser hash change
-    window.addEventListener("hashchange", checkActiveHashLinks(), false);
+    window.addEventListener("hashchange", function(event) {
+        checkActiveHashLinks()
+    }, false);
 
     // clear active item on click
     $(document).on('click', '#sidebar [data-active]', function(event) {
