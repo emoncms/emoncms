@@ -9,7 +9,7 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
-global $route,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu;
+global $route,$path,$emoncms_version,$theme,$themecolor,$favicon,$menu;
 
 $v = 9;
 
@@ -66,7 +66,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         var path = "<?php echo $path ?>";
     </script>
 </head>
-<body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
+<body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <?php echo $mainmenu; ?>
@@ -88,12 +88,10 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 
         <?php
         $container[] = 'content-container';
-        if ($fullwidth && $route->controller=="dashboard") { 
+        if ($route->controller=="dashboard") { 
             $container[] = '';
-        } else if ($fullwidth) { 
-            $container[] = 'container-fluid';
         } else { 
-            $container[] = 'container';
+            $container[] = 'container-fluid';
         }?>
         <main class="<?php echo implode(' ',array_filter(array_unique($container))) ?>">
             <?php echo $content; ?>

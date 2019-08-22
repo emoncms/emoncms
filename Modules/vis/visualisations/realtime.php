@@ -82,11 +82,14 @@
       plot();
     }
 
-    $(window).resize(function(){
+    $(window).resize(vis_resize);
+    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    
+    function vis_resize() {
       graph.width(graph_bound.width());
       if (embed) graph.height($(window).height());
       window.requestAnimationFrame(plot);
-    });
+    }
 
     function getdp(){
       $.ajax({ url: 
