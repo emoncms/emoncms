@@ -123,9 +123,6 @@ $_settings = array(
     // Favicon filenme in Theme/$theme
     'favicon' => "favicon.png",
 
-    // Use full screen width
-    'fullwidth' => true,
-
     // Main menu collapses on lower screen widths
     'menucollapses' => false,
     
