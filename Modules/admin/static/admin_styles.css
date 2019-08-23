@@ -1,12 +1,12 @@
+.content-container {
+    max-width:1150px;
+}
 pre {
     height:12rem;
     color:#fff;
     background-color:#300a24;
     overflow: scroll;
     overflow-x: hidden;
-}
-.admin-container {
-    max-width: 60rem;
 }
 #export-log {
     padding-left:20px;
