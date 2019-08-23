@@ -26,7 +26,7 @@ $(function(){
     }, false);
 
     // clear active item on click
-    $(document).on('click', '#sidebar [data-active]', function(event) {
+    $(document).on('click', '#sidebar [data-active]:not([data-sidebar])', function(event) {
         $(event.currentTarget).parents('ul').first().find('li').removeClass(activeClass)
     });
 
