@@ -9,9 +9,9 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
-global $ltime,$path,$fullwidth,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
+global $ltime,$path,$emoncms_version,$theme,$themecolor,$favicon,$menu,$menucollapses;
 
-$v = 8;
+$v = 10;
 
 if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
@@ -67,7 +67,7 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         var path = "<?php echo $path ?>";
     </script>
 </head>
-<body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
+<body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
 
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
@@ -91,12 +91,10 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         
         <?php
         $contentContainerClasses[] = 'content-container';
-        if ($fullwidth && $route->controller=="dashboard") { 
+        if ($route->controller=="dashboard") { 
             $contentContainerClasses[] = '';
-        } else if ($fullwidth) { 
-            $contentContainerClasses[] = 'container-fluid';
         } else { 
-            $contentContainerClasses[] = 'container';
+            $contentContainerClasses[] = 'container-fluid';
         }?>
         <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
             <?php echo $content; ?>
