@@ -72,7 +72,7 @@ $_settings = array(
         // If enabled is true, requires redis enabled and feedwriter service running
         'enabled' => false,
         // Number of seconds to wait before write buffer to disk - user selectable option
-        'redisbuffer_sleep' => 600
+        'sleep' => 600
     ),   
     
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
