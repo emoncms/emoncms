@@ -1,4 +1,5 @@
-### Updating emoncms via Git
+## Updating emoncms via Git
+
 Emoncms is regularly updated to add new functions and general improvements, and updating your emoncms installation can be achieved quickly and easily using Git.
 
 It is however important, that emoncms was initially installed by following the [Raspberry Pi installation guide](readme.md) or by git-cloning the emoncms github repository.
@@ -38,12 +39,11 @@ Save and exit.
 
 ***
 
-### Module installation
+## Module installation
 
 [Apps Module](general.md#install-emoncms-apps-module)  
 [Device Module](general.md#install-emoncms-device-module)  
 [Dashboard Module](general.md#install-emoncms-dashboard-module)  
-[OpenBEM Module](general.md#install-openbem-module)
 
 #### Install emoncms Apps Module
 Installing 'Apps' to emoncms adds a number of pre-formatted templates, enabling data to be displayed across a wide range of devices such as desktops, tablets and smartphones.
@@ -54,7 +54,7 @@ To install Apps, cd to the Modules folder, and git clone 'apps':
 
 The 'apps' need to save their configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
 
-##### App configuration
+#### App configuration
 You should now see a new menu item - 'Apps' on the menu bar, with a number of sub-menus. At this stage they will not display any data as they have not been configured.  
 To configure each app, using 'My Electric' as an example, select the spanner/wrench icon top right which will open the 'My Electric' configuration options page, and select the appropriate feeds & currency details and 'save'.  
 The choice of feeds is totally a user preference, and you could use appropriate feeds to:
@@ -63,7 +63,7 @@ The choice of feeds is totally a user preference, and you could use appropriate 
 * Solar Generation
 * etc!
 
-##### App update
+#### App update
 The emoncms 'apps' are updated to add new functions and general improvements, and updating your apps installation can be achieved quickly and easily using Github.
 
 To check if an 'apps' update is available, and update your installation:
@@ -89,11 +89,6 @@ The dashboard module enables users to create customisable workspaces, by draggin
 `cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/dashboard.git`
 
 The 'dashboard' module needs to save it's configurations in the emoncms database, so in your browser - update your emoncms database: Setup > Administration > Update database (you may need to log out, and log back into emoncms to see the Administration menu).
-
-#### Install OpenBEM Module
-OpenBEM is an open source energy assessment tool to help you explore how you can achieve this level of performance improvement in your own home.
-
-`cd /var/www/emoncms/Modules && git clone https://github.com/emoncms/openbem.git`
 
 ***
 

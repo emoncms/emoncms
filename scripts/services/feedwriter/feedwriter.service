@@ -1,0 +1,70 @@
+# Systemd unit file for feedwriter script
+
+# INSTALL:
+# sudo ln -s /var/www/emoncms/scripts/services/feedwriter/feedwriter.service /lib/systemd/system
+
+# RUN AT STARTUP
+# sudo systemctl daemon-reload
+# sudo systemctl enable feedwriter.service
+
+# START / STOP With:
+# sudo systemctl start feedwriter
+# sudo systemctl stop feedwriter    
+
+# VIEW STATUS / LOG
+# If Using Syslog:
+# sudo systemctl status feedwriter -n50
+# where -nX is the number of log lines to view 
+# sudo journalctl -f -u feedwriter
+# Otherwise:
+# Specify
+#StandardOutput=file:/var/log/feedwriter.log
+# tail -f /var/log/feedwriter.log
+
+###
+#
+#  All Emoncms code is released under the GNU Affero General Public License.
+#  See COPYRIGHT.txt and LICENSE.txt.
+#
+#  ---------------------------------------------------------------------
+#  Emoncms - open source energy visualisation
+#  Part of the OpenEnergyMonitor project:
+#  http://openenergymonitor.org
+###
+
+[Unit]
+Description=Emoncms feedwriter script
+Wants=mysql.service redis-server.service
+After=mysql.service redis-server.service
+Documentation=https://github.com/emoncms/emoncms/blob/master/scripts/services/install-service-feedwriter.md
+
+# Uncomment this line to use a dedicated log file for StdOut and StdErr.
+# NOTE: only works in systemd v236+
+#       Debain "stretch" includes v232, "buster" includes v239
+#StandardOutput=file:/var/log/feedwriter.log
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/php /var/www/emoncms/scripts/feedwriter.php
+
+# Setup log folder if it does not exist
+# To be loaded from EnvironmentFile in future
+Environment='LOG_PATH=/var/log/emoncms'
+PermissionsStartOnly=true
+ExecStartPre=/bin/mkdir -p ${LOG_PATH}
+ExecStartPre=/bin/chown pi ${LOG_PATH}
+ExecStartPre=/bin/touch ${LOG_PATH}/emoncms.log
+ExecStartPre=/bin/chmod 666 ${LOG_PATH}/emoncms.log
+
+# Restart script if stopped on a failure. Will not restart if not configured correctly
+Restart=on-failure
+# Wait 60s before restart
+RestartSec=60
+
+# Tag things in the log
+# If you want to use the journal instead of the file above, uncomment SyslogIdentifier below
+# View with: sudo journalctl -f -u feedwriter -o cat
+SyslogIdentifier=feedwriter
+
+[Install]
+WantedBy=multi-user.target

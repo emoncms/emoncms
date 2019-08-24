@@ -1,0 +1,286 @@
+<!-- ---------------------------------------------------------------- -->
+<!-- GRID -> ROW -> COLUMN -> INPUT TEPLATE -->
+<script type="text/x-template" id="grid-input">
+    <div class="control-group">
+        <div class="controls">
+            <input @input="input" :value="value" type="text" class="form-control border-0 m-0" @keyup.enter="enterPressed" :title="title">
+            <span class="help-inline d-none d-sm-block text-right"></span>
+        </div>
+    </div>
+</script>
+<script>
+/**
+ * GRID -> ROW -> COLUMN -> INPUT
+ */
+Vue.component("grid-input", {
+    template: "#grid-input",
+    props: ['value','property','title'],
+    data: function(){
+        return {
+            inputVal: this.value
+        }
+    },
+    methods: {
+        input: function(event){
+            this.$emit('field:input', event)
+        },
+        enterPressed: function(event) {
+            event.target.blur();
+        }
+    }
+})
+</script>
+<!-- ---------------------------------------------------------------- -->
+
+
+
+
+
+<!-- ---------------------------------------------------------------- -->
+<!-- GRID -> ROW -> COLUMN TEMPLATE -->
+<script type="text/x-template" id="grid-column">
+    <td :class="{'d-none d-sm-table-cell': column.hideNarrow}">
+        <div v-if="column.icon">
+            <!-- show link -->
+            <a v-if="column.link"
+                class="btn btn-light btn-sm-md btn-small"
+                :title = "title"
+                :href="entry[property]">
+                <svg class="icon"><use :xlink:href="column.icon"></use></svg>
+            </a>
+            <!-- show toggle -->
+            <button v-else-if="typeof entry[property] === 'boolean'"
+                @click="input"
+                class="btn btn-sm-md btn-small"
+                :class="entry[property] ? buttonActive + ' active' : button"
+                :title = "title">
+                <svg class="icon"><use :xlink:href="column.icon"></use></svg>
+            </button>
+            <!-- show button -->
+            <button v-else
+                @click="input"
+                class="btn btn-light btn-sm-md btn-small"
+                :title = "title">
+                <svg class="icon"><use :xlink:href="column.icon"></use></svg>
+            </button>
+        </div>
+        <div v-else>
+            <!-- show html -->
+            <div v-if="column.raw" v-html="entry[property]"></div>
+            <!-- show editable text -->
+            <grid-input v-else-if="column.input"
+                :title = "title"
+                :property="property"
+                @field:input="input"
+                :value="entry[property]">
+            </grid-input>
+            <!-- show text -->
+            <div v-else>
+                {{entry[property]}}
+            </div>
+        </div>
+    </td>
+</script>
+
+<script>
+/**
+* GRID -> ROW -> COLUMN
+*/
+Vue.component("grid-column", {
+    template: "#grid-column",
+    props: ['property','entry','column'],
+    data: function() {
+        return {
+            button: this.$root.classes.button,
+            buttonActive: this.$root.classes.buttonActive
+        }
+    },
+    computed: {
+        title: function(){
+            return '#' +
+            this.entry.id + ' ' +
+            (this.column.label || this.property).toUpperCase() + '\n' +
+            (this.column.title || '')
+        }
+    },
+    methods: {
+        input: function(event) {
+            let vm = this
+            let container = event.target.parentNode.parentNode;
+            let feedback = event.target.parentNode.querySelector('.help-inline');
+            let success, error, always
+            // if input has a .help-inline sibling show user feedback
+            if (feedback) {
+                // reset feedback
+                container.classList.remove(vm.$root.classes.error, vm.$root.classes.warning, vm.$root.classes.success)
+                feedback.innerText = '';
+                let value = event.target.value;
+                let changed = this.entry[this.property] !== value;
+                let timeout_key = this.entry.id+'_'+this.property;
+                let timeout = vm.$root.timeouts[timeout_key];
+                let timeout_reset = vm.$root.timeouts[timeout_key+'_reset'];
+
+                window.clearTimeout(timeout);
+                success = function() {
+                    feedback.classList.add(vm.$root.classes.fade)
+                    container.classList.add(vm.$root.classes.success);
+                    feedback.innerText = (vm.column.messages && vm.column.messages.success) ? vm.column.messages.success: ''
+                }
+                error = function(xhr, message) {
+                    if(!changed) {
+                        window.clearTimeout(timeout);
+                    }
+                }
+                always = function() {
+                    vm.$root.timeouts[timeout_key] = window.setTimeout(function() {
+                        window.clearTimeout(timeout_reset);
+                        container.classList.remove(vm.$root.classes.error, vm.$root.classes.warning, vm.$root.$root.classes.success)
+                        feedback.innerText = '';
+                        feedback.classList.remove(vm.$root.classes.fade)
+                    }, vm.$root.wait * 2.3)
+                }
+            }
+            
+            // pass on success,error and always callbacks to gridColumn item handler() function
+            vm.$root.$emit('event:handler',event,this.entry,this.property,event.target.value,success,error,always);
+        }
+    }
+})
+</script>
+<!-- ---------------------------------------------------------------- -->
+
+
+
+
+
+<!-- ---------------------------------------------------------------- -->
+<!-- GRID -> ROW TEMPLATE -->
+<script type="text/x-template" id="grid-row">
+    <tr>
+        <grid-column v-for="(column, colIndex) in columns"
+            :key="colIndex"
+            :entry="entry"
+            :property="colIndex"
+            :column="column"
+        >
+        </grid-column>
+    </tr>
+</script>
+
+<script>
+/**
+* GRID -> ROW
+*/
+Vue.component("grid-row", {
+    template: "#grid-row",
+    props: ['entry','columns']
+})
+</script>
+<!-- ---------------------------------------------------------------- -->
+
+
+
+
+
+
+<!-- ---------------------------------------------------------------- -->
+<!-- DATA GRID TEMPLATE -->
+<script type="text/x-template" id="grid-data">
+    <table class="table table-sm table-hover table-condensed">
+        <caption class="text-muted muted text-left mt-3">{{ status.title }}</caption>
+        <thead>
+            <tr>
+                <th v-for="(column, key) in columns" v-if="column.sort"
+                    :key="key"
+                    :class="{ active: sortKey == key, 'd-none d-sm-table-cell': column.hideNarrow}"
+                    :title="column.title"
+                    @click="sortBy(key)">
+                    <!-- sortable headers required-->
+                    <a href="#" class="text-body d-flex align-items-center" :class="{'pl-2': column.input}">
+                        <span v-if="column.label">{{ column.label | capitalize }}</span>
+                        <span v-else>{{ key | capitalize }}</span>
+                        <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'"></span>
+                    </a>
+                </th>
+                <th v-else-if="!column.noHeader" :class="{'d-none d-sm-table-cell': column.hideNarrow}">
+                    <!-- header required-->
+                    <span v-if="column.label">{{ column.label | capitalize }}</span>
+                    <span v-else>{{ key | capitalize }}</span>
+                </th>
+                <th v-else :class="{'d-none d-sm-table-cell': column.hideNarrow}"><!-- header not required--></th>
+            </tr>
+        </thead>
+        <tbody>
+            <grid-row v-for="(entry, rowIndex) in filteredColumns"
+                :key="entry.id"
+                :entry="entry"
+                :columns="columns">
+            </grid-row>
+        </tbody>
+    </table>
+</script>
+
+<script>
+/**
+* GRID
+*/
+    Vue.component("grid-data", {
+        template: "#grid-data",
+        props: ['gridData','columns','filterKey','status','default-sort'],
+        data: function() {
+            var sortOrders = {};
+            Object.keys(this.columns).forEach(function(key) {
+                sortOrders[key] = 1;
+            });
+            return {
+                sortKey: this.defaultSort || "",
+                sortOrders: sortOrders
+            };
+        },
+        filters: {
+            capitalize: function(str) {
+                return str.charAt(0).toUpperCase() + str.slice(1);
+            }
+        },
+        computed: {
+            filteredColumns: function() {
+                var sortKey = this.sortKey;
+                var filterKey = this.filterKey && this.filterKey.toLowerCase();
+                var order = this.sortOrders[sortKey] || 1;
+                var data = this.gridData;
+                if (filterKey) {
+                    data = data.filter(function(row) {
+                        return Object.keys(row).some(function(key) {
+                            return (
+                                String(row[key])
+                                .toLowerCase()
+                                .indexOf(filterKey) > -1
+                                );
+                            });
+                        });
+                    }
+                    if (sortKey) {
+                        data = data.slice().sort(function(a, b) {
+                            a = a[sortKey];
+                            b = b[sortKey];
+                            return (a === b ? 0 : a > b ? 1 : -1) * order;
+                        });
+                    }
+                    return data;
+                }
+            },
+            watch: {
+                filteredColumns: function(results){
+                    this.$emit("update:total", results.length);
+                }
+            },
+            methods: {
+                sortBy: function(key) {
+                    this.sortKey = key;
+                    this.sortOrders[key] = this.sortOrders[key] * -1;
+                }
+                // @todo: add utility functions Handler() and Set_field() function from #app view instance to here... if possible
+            }
+        });
+    </script>
+<!-- ---------------------------------------------------------------- -->

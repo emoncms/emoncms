@@ -36,6 +36,11 @@ class Route
      * @var string
      */
     public $subaction2 = '';
+
+    /**
+     * @var string
+     */
+    public $query = '';
     
     /**
      * @var string
@@ -46,7 +51,6 @@ class Route
      * @var string
      */
     public $format = 'html';
-
 
     /**
      * @var bool
@@ -98,8 +102,8 @@ class Route
         // trim slashes: '/user/view' => 'user/view'
         $q = trim($q, '/');
 
-        // filter out all except a-z and / .
-        $q = preg_replace('/[^.\/A-Za-z0-9-]/', '', $q);
+        // filter out all except alphanumerics and / . _ -
+        $q = preg_replace('/[^.\/_A-Za-z0-9-]/', '', $q);
 
         // Split by /
         $args = preg_split('/[\/]/', $q);
@@ -124,9 +128,21 @@ class Route
         if (count($args) > 3) {
             $this->subaction2 = $args[3];
         }
+        $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
         
-        if (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
+        // allow for method to be added as post variable
+        if(post('_method')=='DELETE') {
+            $this->method = 'DELETE';
+        } elseif(post('_method')=='PUT') {
+            $this->method = 'PUT';
+        } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
+        } elseif($requestMethod === 'OPTIONS') {
+            // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Headers: Authorization');
+            header('Access-Control-Allow-Methods: GET');
+            exit();
         }
     }
 

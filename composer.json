@@ -1,0 +1,18 @@
+{
+    "name": "emoncms/emoncms",
+    "homepage": "https://emoncms.org",
+    "description": "Web-app for processing, logging and visualising energy, temperature and other environmental data",
+    "type": "project",
+    "support": {
+        "forum": "https://community.openenergymonitor.org/"
+    },
+    "require-dev": {
+        "jakub-onderka/php-parallel-lint": "1.0.0"
+    },
+    "scripts": {
+        "test": [
+            "parallel-lint . --exclude vendor"
+        ]
+    },
+    "license": "AGPL-3.0-or-later"
+}

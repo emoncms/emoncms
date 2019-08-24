@@ -2,9 +2,7 @@
     global $path;
 ?>
 <?php
-    $domain4 = "schedule_messages";
-    bindtextdomain($domain4, "Modules/schedule/locale");
-    bind_textdomain_codeset($domain4, 'UTF-8');
+    load_language_files("Modules/schedule/locale", "schedule_messages");
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/schedule/Views/schedule.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/tablejs/table.js"></script>
@@ -20,12 +18,15 @@
     <div id="apihelphead" style="float:right;"><a href="api"><?php echo dgettext('schedule_messages','Schedule Help'); ?></a></div>
     <div id="localheading"><h2><?php echo dgettext('schedule_messages','Schedules'); ?></h2></div>
 
-    <div id="table"></div>
-
-    <div id="noschedules" class= "alert alert-block hide">
+    <div id="noschedules" class= "hide">
+        <h2><?php echo dgettext('schedule_messages','Schedules'); ?></h2>
+        <div id="noschedules" class= "alert alert-block">
             <h4 class="alert-heading"><?php echo dgettext('schedule_messages','No schedules'); ?></h4><br>
             <p><?php echo dgettext('schedule_messages','There are no public schedules and you have not created your own yet. Please add a new schedule.<br><br>For help and examples on how to configure a schedule, read the <a href="api#expression">Expression documentation</a>.'); ?></p>
+        </div>
     </div>
+
+    <div id="table"></div>
 
     <div id="schedule-loader" class="ajax-loader"></div>
 

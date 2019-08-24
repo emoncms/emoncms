@@ -52,11 +52,11 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (!isset($mqtt_server)) $mqtt_server = array();
         if (isset($_ENV["EMONCMS_MQTT_ENABLED"]))  $mqtt_enabled = $_ENV["EMONCMS_MQTT_ENABLED"] === 'true';
 
-        if (isset($_ENV["EMONCMS_MQTT_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_MQTT_HOST"];
-        if (isset($_ENV["EMONCMS_MQTT_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_MQTT_PORT"];
-        if (isset($_ENV["EMONCMS_MQTT_USER"]))     $redis_server['user'] = $_ENV["EMONCMS_MQTT_USER"];
-        if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))     $redis_server['password'] = $_ENV["EMONCMS_MQTT_PASSWORD"];
-        if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"]))     $redis_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
+        if (isset($_ENV["EMONCMS_MQTT_HOST"]))      $mqtt_server['host']      = $_ENV["EMONCMS_MQTT_HOST"];
+        if (isset($_ENV["EMONCMS_MQTT_PORT"]))      $mqtt_server['port']      = $_ENV["EMONCMS_MQTT_PORT"];
+        if (isset($_ENV["EMONCMS_MQTT_USER"]))      $mqtt_server['user']      = $_ENV["EMONCMS_MQTT_USER"];
+        if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))  $mqtt_server['password']  = $_ENV["EMONCMS_MQTT_PASSWORD"];
+        if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"])) $mqtt_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
     }
     
     //  Validate settings are complete
@@ -72,6 +72,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
 
     if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
     if (!isset($log_level)) $log_level=2;  //default to warning log level
+    if (!isset($log_location)) $log_location = "/var/log/emoncms";
 
     if (!isset($redis_enabled)) $redis_enabled = false;
     if ($redis_enabled) {
@@ -95,6 +96,7 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
         if (!isset($mqtt_server['user'])) $mqtt_server['user'] = null;
         if (!isset($mqtt_server['password'])) $mqtt_server['password'] = null;
         if (!isset($mqtt_server['basetopic'])) $mqtt_server['basetopic'] = "nodes";
+        if (!isset($mqtt_server['client_id'])) $mqtt_server['client_id'] = "emoncms";
     }
 
     if (!isset($feed_settings)) $feed_settings = array();
@@ -105,12 +107,16 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
-    if (!isset($data_sampling)) $data_sampling = true; // default
 
-    if (!isset($fullwidth)) $fullwidth = false;
+    if (!isset($max_datapoints)) $max_datapoints = 8928; // default
+
+    if (!isset($data_sampling)) $data_sampling = true; // default
+    
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
+    if (!isset($show_menu_titles)) $show_menu_titles = true;
     if (!isset($email_verification)) $email_verification = false;
+    if (!isset($admin_show_update)) $admin_show_update = true;
 
     if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
     if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';
@@ -122,6 +128,18 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
+    
+    // emoncms_dir and openenergymonitor_dir to replace homedir as installation path reference
+    if (!isset($emoncms_dir)) $emoncms_dir = $homedir;
+    if (!isset($openenergymonitor_dir)) $openenergymonitor_dir = $homedir;
+    
+    if (!isset($linked_modules_dir)) {
+        if (is_dir("$emoncms_dir/modules")) {
+            $linked_modules_dir = "$emoncms_dir/modules";
+        } else {
+            $linked_modules_dir = $emoncms_dir;
+        }
+    }
 
     if ($error_out!="") {
       echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";

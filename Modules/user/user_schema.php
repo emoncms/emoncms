@@ -17,12 +17,13 @@ $schema['users'] = array(
     'location'=>array('type'=>'varchar(30)', 'default'=>''),
     'timezone' => array('type'=>'varchar(64)', 'default'=>'UTC'),
     'language' => array('type' => 'varchar(5)', 'default'=>'en_EN'),
-    'bio' => array('type' => 'text', 'default'=>''),
+    'bio' => array('type' => 'text'),
 
-    'tags' => array('type' => 'text', 'default'=>NULL, 'Null'=>true),
+    'tags' => array('type' => 'text'),
     'startingpage' => array('type'=>'varchar(64)', 'default'=>'feed/list'),
     'email_verified' => array('type' => 'int(11)', 'default'=>0),
-    'verification_key' => array('type' => 'varchar(64)', 'default'=>'')
+    'verification_key' => array('type' => 'varchar(64)', 'default'=>''),
+    'preferences' => array('type' => 'text', 'default'=>NULL, 'Null'=>true)
 );
 
 $schema['rememberme'] = array(

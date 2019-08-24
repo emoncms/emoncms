@@ -51,47 +51,47 @@ Edit the settings file:
 
 In the settings file in the **MQTT** section change `$mqtt_enabled` from `false` to `true`, and also change the `$mqtt_server` IP address to that of your MQTT server. On the emonPi the host is `localhost` and authentication is enabled: `user => emonpi` and `password => emonpimqtt2016`.
 
-The `basetopic` option sets the base MQTT topic to which Emoncms subscribers. The default base topic is `emon` which means Enmoncms will subcribe to `emon/#`. In emonpi, this base topic needs to match the MQTT basetopic published from emonHub.
+The `basetopic` option sets the base MQTT topic to which Emoncms subscribes. The default base topic is `emon` which means Enmoncms will subcribe to `emon/#`. In emonpi, this base topic needs to match the MQTT basetopic published from emonHub.
 
-### Run Emoncms phpmqtt_input script
+### Run Emoncms emoncms_mqtt script
 
-Install `phpmqtt_input` systemd unit script and make starts on boot:
+Install `emoncms_mqtt` systemd unit script and make it start on boot:
 
 ```
-sudo cp /var/www/emoncms/scripts/mqtt_input.service /etc/systemd/system/mqtt_input.service
-sudo systemctl daemon-reload
-sudo systemctl enable mqtt_input.service
+sudo ln -s /var/www/emoncms/scripts/services/emoncms_mqtt/emoncms_mqtt.service /lib/systemd/system
+sudo systemctl enable emoncms_mqtt.service
 ```
 
 Start / stop / restart with:
 
 ```
-sudo systemctl start mqtt_input
-sudo systemctl stop mqtt_input    
-sudo systemctl restart mqtt_input
+sudo systemctl start emoncms_mqtt
+sudo systemctl stop emoncms_mqtt    
+sudo systemctl restart emoncms_mqtt
 ```
 
 View status / log snippet with:
 
-`sudo systemctl status mqtt_input -n50`
+`sudo systemctl status emoncms_mqtt -n50`
 
 *Where -nX is the number of log lines to view*
 
 Log can be viewed as text and standard text manipulation tools can be applied:
 
-`sudo journalctl -f -u mqtt_input -o cat | grep emonpi`
+`sudo journalctl -f -u emoncms_mqtt -o cat | grep emonpi`
 
 Or with a datestamp:
 
-`sudo journalctl -f -u mqtt_input -o short`
+`sudo journalctl -f -u emoncms_mqtt -o short`
 
 There are lots of journalctrl output options: `short, short-iso, short-precise, short-monotonic, verbose,export, json, json-pretty, json-sse, cat`
 
-To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `mqtt_input`.
+To view `mqtt_info` in the emoncms log, change emoncms loglevel to `1` (info) in `settings.php` then restart `emoncms_mqtt`.
 
 #### An alternative for systems not running systemd
 
-On older operating systems, or those not running systemd, the mqtt_input script can be run as a init.d daemon instead of the above which uses a systemd unit script instead. Install either this or the above, **Not both!**
+On older operating systems, or those not running systemd, the emoncms mqtt service can be run as a init.d daemon instead of the above which uses a systemd unit script instead. 
+Install either this or the above, **Not both!**
 
 Create a symlink to run the MQTT Input script as a daemon and set permissions
 ```
@@ -109,7 +109,7 @@ In the process 'Text' box add the topic, for example; `house/power/solar`
 
 #### emoncms as a subscriber
 
-[basetopic] and user ID of the target Emocnms account can be set in settings.php. **Default basetopic = `emon`**, which mean Emoncms will subcribe to `emon/#` where # is any higher level topics.
+[basetopic] and user ID of the target Emoncms account can be set in settings.php. **Default basetopic = `emon`**, which means Emoncms will subscribe to `emon/#` where # is any higher level topics.
 
 E.g. Data posted to `emon/[nodeID/name]/[keyname (optional)]` is posted to Emoncms inputs where it can be logged to feeds e.g:
 

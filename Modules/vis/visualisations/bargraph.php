@@ -22,8 +22,17 @@
 <script language="javascript" type="text/javascript" src="<?php echo $path;?>Modules/vis/visualisations/common/vis.helper.js"></script>
 
 <div id="vis-title"></div>
-
-<div id="placeholder_bound" style="width:100%; height:400px; position:relative; ">
+<style>
+    .stats-container{
+        position: absolute;
+        bottom: 0.3em;
+        width: 100%;
+        text-align: center;
+        text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+        font-size: 1.3rem;
+    }
+</style>
+<div id="placeholder_bound" style="position: relative; height: 75vh">
     <div id="placeholder" style="position:absolute; top:0px;"></div>
     <div id="graph-buttons" style="position:absolute; top:18px; right:32px; opacity:0.5;">
         <div class='btn-group'>
@@ -44,7 +53,7 @@
             <button class='btn graph-nav' id='right'>></button>
         </div>
     </div>
-    <h3 style="position:absolute; top:0px; left:32px;"><span id="stats"></span></h3>
+    <h3 class="stats-container"><span id="stats"></span></h3>
 </div>
 
 <script id="source" language="javascript" type="text/javascript">
@@ -95,9 +104,10 @@
     var placeholder = $('#placeholder');
 
     var width = placeholder_bound.width();
-    var height = width * 0.5;
+    var height = placeholder_bound.height();
 
     placeholder.width(width);
+
     placeholder_bound.height(height);
     placeholder.height(height-top_offset);
 
@@ -303,7 +313,6 @@
                ;
 
             stats.calc(data);
-
             plot();
         }
         
@@ -359,17 +368,21 @@
         });
         
         
-        $(window).resize(function(){
+        $(window).resize(vis_resize);
+        $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+        
+        function vis_resize() {
             var width = placeholder_bound.width();
-            var height = width * 0.5;
+            var height = placeholder_bound.width();
 
             placeholder.width(width);
-            placeholder_bound.height(height);
-            placeholder.height(height-top_offset);
+            // placeholder_bound.height(height);
+            // placeholder.height(height-top_offset);
+            placeholder.height('75vh');
 
             if (embed) placeholder.height($(window).height()-top_offset);
             plot();
-        });
+        }
     });
 </script>
 

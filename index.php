@@ -10,8 +10,7 @@
     http://openenergymonitor.org
 
     */
-
-    $ltime = microtime(true);
+    
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
@@ -21,9 +20,11 @@
     require "param.php";
     require "locale.php";
 
-    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . "9.8.31 | 2018.06.21";
+    $emoncms_version = ($feed_settings['redisbuffer']['enabled'] ? "low-write " : "") . version();
 
     $path = get_application_path();
+    $sidebarFixed = true;
+
     require "Lib/EmonLogger.php";
     $log = new EmonLogger(__FILE__);
     if (isset($_GET['q'])) $log->info($_GET['q']);
@@ -38,6 +39,9 @@
             if (!$redis->auth($redis_server['auth'])) {
                 echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
             }
+        }
+        if (!empty($redis_server['dbnum'])) {
+            $redis->select($redis_server['dbnum']);
         }
     } else {
         $redis = false;
@@ -105,7 +109,7 @@
               header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
               header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
               print "Invalid API key";
-              $log->error("Invalid API key '" . $apikey. "'");
+              $log->error("Invalid API key '" . $apikey. "' | ".$_SERVER["REMOTE_ADDR"]);
               exit();
         }
     } else if ($devicekey && (@include "Modules/device/device_model.php")) {
@@ -127,6 +131,10 @@
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
+    
+    // output string if controller or action not found. used to return error.
+    define('EMPTY_ROUTE', "#UNDEFINED#");
+
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
     
     // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
@@ -136,7 +144,25 @@
     // Special routes
 
     // Return brief device descriptor for hub detection
-    if ($route->controller=="describe") { header('Content-Type: text'); echo "emonbase"; die; }
+    if ($route->controller=="describe") { 
+        header('Content-Type: text/plain');
+        header('Access-Control-Allow-Origin: *');
+        if(file_exists('/home/pi/data/emonbase')) {
+            $type = 'emonbase';
+        } elseif(file_exists('/home/pi/data/emonpi')) {
+            $type = 'emonpi';
+        } else {
+            $type = 'emoncms';
+        }
+        echo $type;
+        die;
+    }
+    // read the version file and return the value;
+    if ($route->controller=="version") { 
+        header('Content-Type: text/plain; charset=utf-8'); 
+        echo version();
+        exit; 
+    }
 
     if (get('embed')==1) $embed = 1; else $embed = 0;
 
@@ -152,7 +178,7 @@
                     $default_controller = "setup";
                     $default_action = "";
                     // Provide special setup access to WIFI module functions
-                    $_SESSION['setup_access'] = true; 
+                    $_SESSION['setup_access'] = true;
                 }
             }
         }
@@ -187,11 +213,10 @@
 
     // 6) Load the main page controller
     $output = controller($route->controller);
-
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if ($output['content'] == "#UNDEFINED#" && $public_profile_enabled && $route->controller!='admin')
+    if ($output['content'] == EMPTY_ROUTE && $public_profile_enabled && $route->controller!='admin')
     {
         $userid = $user->get_id($route->controller);
         if ($userid) {
@@ -204,7 +229,7 @@
             $route->action = $public_profile_action;
             $output = controller($route->controller);
 
-            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists 
+            // catch "username/graph" and redirect to the graphs module if no dashboard called "graph" exists
             if ($output["content"]=="" && $route->subaction=="graph") {
                 $route->controller = "graph";
                 $route->action = "";
@@ -215,16 +240,37 @@
     }
 
     // If no controller found or nothing is returned, give friendly error
-    if ($output['content'] === "#UNDEFINED#") {
+    if ($output['content'] === EMPTY_ROUTE) {
+        // alter output is $route has $action
+        $actions = implode("/",array_filter(array($route->action, $route->subaction)));
+        $message = sprintf(_('%s cannot respond to %s'), sprintf("<strong>%s</strong>",ucfirst($route->controller)), sprintf('<strong>"%s"</strong>',$actions));
+        // alter the http header code
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
-        $output['content'] = "URI not acceptable. No controller '" . $route->controller . "'. (" . $route->action . "/" . $route->subaction .")";
+        $title = _('406 Not Acceptable');
+        $plain_text = _('Route not found');
+        $intro = sprintf('%s %s',_('URI not acceptable.'), $message);
+        $text = _('Try another link from the menu.');
+        // return the formatted string
+        if($route->format==='html') {
+            $output['content'] = sprintf('<h2>%s</h2><p class="lead">%s.</p><p>%s</p>', $title, $intro, $text);
+        } else {
+            $output['content'] = array(
+                'success'=> false,
+                'message'=> sprintf('%s. %s', $title, $plain_text)
+            );
+        }
+        $log->warn(sprintf('%s|%s', $title, implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
     }
 
     // If not authenticated and no ouput, asks for login
     if ($output['content'] == "" && (!isset($session['read']) || (isset($session['read']) && !$session['read']))) {
+        $log->error(sprintf('%s|%s',_('Not Authenticated'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
         $route->controller = "user";
         $route->action = "login";
         $route->subaction = "";
+        $message = urlencode(_('Authentication Required'));
+        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
+        $route->query = sprintf("msg=%s&ref=%s",$message,$referrer);
         $output = controller($route->controller);
     }
 
@@ -245,7 +291,32 @@
             print $output['content'];
         } else {
             header('Content-Type: application/json');
+            if(!empty($output['message'])){
+                header(sprintf('X-emoncms-message: %s', $output['message']));
+            }
             print json_encode($output['content']);
+            if (json_last_error()!=JSON_ERROR_NONE) {
+                switch (json_last_error()) {
+                    case JSON_ERROR_DEPTH:
+                        $log->error("json_encode - $route->controller: Maximum stack depth exceeded");
+                        break;
+                    case JSON_ERROR_STATE_MISMATCH:
+                        $log->error("json_encode - $route->controller: Underflow or the modes mismatch");
+                        break;
+                    case JSON_ERROR_CTRL_CHAR:
+                        $log->error("json_encode - $route->controller: Unexpected control character found");
+                        break;
+                    case JSON_ERROR_SYNTAX:
+                        $log->error("json_encode - $route->controller: Syntax error, malformed JSON");
+                        break;
+                    case JSON_ERROR_UTF8:
+                        $log->error("json_encode - $route->controller: Malformed UTF-8 characters, possibly incorrectly encoded");
+                        break;
+                    default:
+                        $log->error("json_encode - $route->controller: Unknown error");
+                        break;
+                }
+            }
         }
     }
     else if ($route->format == 'html')
@@ -256,7 +327,43 @@
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-            $output['mainmenu'] = view($themeDir . "menu_view.php", array());
+            
+            // EMONCMS MENU
+            if($session['write']){
+                $menu['tabs'][] = array(
+                    'icon'=>'menu',
+                    'title'=> _("Emoncms"),
+                    'text'=> _("Setup"),
+                    'path' => 'feed/list',
+                    'order' => 0,
+                    'data'=> array(
+                        'sidebar' => '#sidebar_emoncms'
+                    )
+                );
+            }
+
+            include_once ("Lib/misc/nav_functions.php");
+            sortMenu($menu);
+            // debugMenu('sidebar');
+            $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
+            $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
+            
+            // add css class names to <body> tag based on controller's options
+            $output['page_classes'][] = $route->controller;
+
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", 
+            array(
+                'menu' => $menu,
+                'path' => $path,
+                'session' => $session,
+                'route' => $route
+            ));
+            $output['page_classes'][] = 'has-sidebar';
+            if (!$session['read']) {
+                $output['page_classes'][] = 'collapsed manual';
+            } else {
+                if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
+            }
             print view($themeDir . "theme.php", $output);
         }
     }
@@ -265,14 +372,13 @@
         header('Content-Type: text/plain');
         print $output['content'];
     }
+
+    else if ($route->format == 'csv')
+    {
+        header('Content-Type: text/csv');
+        print $output['content'];
+    }
     else {
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         print "URI not acceptable. Unknown format '".$route->format."'.";
     }
-
-    $ltime = microtime(true) - $ltime;
-
-    // if ($session['userid']>0) {
-    //  $redis->incr("user:postcount:".$session['userid']);
-    //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
-    // }

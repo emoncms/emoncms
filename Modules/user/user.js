@@ -1,13 +1,19 @@
 
 var user = {
 
-  'login':function(username,password,rememberme)
+  'login':function(username,password,rememberme,referrer)
   {
     var result = {};
+    var data = {
+        username: encodeURIComponent(username),
+        password: encodeURIComponent(password),
+        rememberme: encodeURIComponent(rememberme),
+        referrer: encodeURIComponent(referrer)
+    }
     $.ajax({
       type: "POST",
       url: path+"user/login.json",
-      data: "&username="+encodeURIComponent(username)+"&password="+encodeURIComponent(password)+"&rememberme="+encodeURIComponent(rememberme),
+      data: data,
       dataType: "text",
       async: false,
       success: function(data_in)
@@ -18,7 +24,14 @@ var user = {
          } catch (e) {
              result = data_in;
          }
-      } 
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        if(xhr.status==404) {
+            result = "404 Not Found: Is modrewrite configured on your system?"
+        } else {
+            result = xhr.status+" "+thrownError;
+        }
+      }
     });
     return result;
   },
@@ -40,6 +53,13 @@ var user = {
          } catch (e) {
              result = data_in;
          }
+      },
+      error: function (xhr, ajaxOptions, thrownError) {
+        if(xhr.status==404) {
+            result = "404 Not Found: Is modrewrite configured on your system?"
+        } else {
+            result = xhr.status+" "+thrownError;
+        }
       }
     });
     return result;

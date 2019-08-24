@@ -1,7 +1,7 @@
 <?php
 
 //1 #### Mysql database settings
-    $server   = "localhost";
+    $server   = "127.0.0.1";
     $database = "emoncms";
     $username = "emoncms";
     $password = "emonpiemoncmsmysql2016";
@@ -30,7 +30,8 @@
                           'clientid' => '',
                           'sub_qos'  => 2,
                           'pub_qos'  => 0,
-                          'qos0_limit'=> 120
+                          'qos0_limit'=> 120,
+                          'client_id' => 'emoncms'
                           );
 
 
@@ -77,9 +78,14 @@
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
+    // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
+    $max_datapoints = 8928;
 
 
 //5 #### User Interface settings
+    // gettext  translations are found under each Module's locale directory
+    $default_language = 'en_GB';
+    
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
@@ -106,7 +112,7 @@
     $enable_password_reset = false;
 
     // Email address to email proccessed input values
-    $default_emailto = 'emrys@localhost';
+    $default_emailto = 'root@localhost';
 
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
@@ -142,7 +148,7 @@
 //6 #### Other settings
     // Log file configuration
     $log_enabled = true;
-    $log_filename = '/var/log/emoncms.log';
+    $log_location = "/var/log/emoncms";
     // Log Level: 1=INFO, 2=WARN, 3=ERROR
     $log_level = 2;
 

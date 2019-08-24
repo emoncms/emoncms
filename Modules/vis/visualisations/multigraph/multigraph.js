@@ -9,6 +9,7 @@ var datetimepicker2;
 var datatype;
 
 function convertToPlotlist(multigraphFeedlist) {
+  if (!multigraphFeedlist[0]) return;
   var plotlist = [];
   var showtag = (multigraphFeedlist[0]["showtag"] != undefined ? multigraphFeedlist[0]["showtag"] : true);
   showlegend = (multigraphFeedlist[0]["showlegend"]==undefined || multigraphFeedlist[0]["showlegend"]);
@@ -291,15 +292,18 @@ function multigraphInit(element) {
     }
   });
 
-  $("#graph").width($("#graph_bound").width());
-  $("#graph").height($("#graph_bound").height());
-  if (embed) $("#graph").height($(window).height());
-
-  $(window).resize(function() {
-    $("#graph").width($("#graph_bound").width());
-    if (embed) $("#graph").height($(window).height());
+  vis_resize();
+  $(window).resize(vis_resize);
+  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
+    var width = $("#graph_bound").width();
+    $("#graph").width(width);
+    var height = width * 0.5;
+    
+    if (embed) $("#graph").height($(window).height()); else $("#graph").height(height);
     plot();
-  });
+  }
 
   // Graph selections
   $("#graph").bind("plotselected", function (event, ranges) {

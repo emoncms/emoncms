@@ -1,7 +1,18 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    $domain = "messages";
-    bindtextdomain($domain, "Modules/admin/locale");
-    bind_textdomain_codeset($domain, 'UTF-8');
 
-    $menu_dropdown_config[] = array('name'=> dgettext($domain, "Administration"), 'icon'=>'icon-tasks', 'path'=>"admin/view" , 'session'=>"admin", 'order' => 50 );
+    $menu['sidebar']['emoncms'][] = array(
+        'text' => '',
+        'path' => ' ',
+        'li_class' => 'divider',
+        'icon' => '',
+        'order' => 'b'
+    );
+
+    $menu['sidebar']['emoncms'][] = array(
+        'text' => _("Admin"),
+        'path' => 'admin/view',
+        'active' => 'admin',
+        'icon' => 'tasks',
+        'order' => 'b7'
+    );

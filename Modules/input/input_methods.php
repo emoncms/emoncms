@@ -39,7 +39,7 @@ class InputMethods
     public function post($userid)
     {   
         // Nodeid
-        global $route,$param;
+        global $route,$param,$log;
         
         // Default nodeid is zero
         $nodeid = 0;
@@ -49,11 +49,34 @@ class InputMethods
         } else if ($param->exists('node')) {
             $nodeid = $param->val('node');
         }
-        $nodeid = preg_replace('/[^\p{N}\p{L}_\s-.]/u','',$nodeid);
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
         if ($nodeid=="") $nodeid = 0;
         
         // Time
-        if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
+        //if ($param->exists('time')) $time = (int) $param->val('time'); else $time = time();
+        if ($param->exists('time')) {
+            $inputtime = $param->val('time');
+
+            // validate time
+            if (is_numeric($inputtime)){
+                $log->info("Valid time in seconds used ".$inputtime);
+                $time = (int) $inputtime;
+            } elseif (is_string($inputtime)){
+                if (($timestamp = strtotime($inputtime)) === false) {
+                    //If time string is not valid, use system time.
+                    $log->warn("Time string not valid ".$inputtime);
+                    $time = time();
+                } else {
+                    $log->info("Valid time string used ".$inputtime);
+                    $time = $timestamp;
+                }
+            } else {
+                $log->warn("Time parameter not valid ".$inputtime);
+                $time = time();
+            }
+        } else {
+            $time = time();
+        }
 
         // Data
         $datain = false;
@@ -70,14 +93,49 @@ class InputMethods
         if ($datain=="") return "Request contains no data via csv, json or data tag";
         
         if ($param->exists('fulljson')) {
-            $inputs = json_decode($datain, true, 2);
-            if (is_null($inputs)) {
-                return "Error decoding JSON string (invalid or too deeply nested)";
-            } else if (!is_array($inputs)) {
-                return "Input must be a JSON object";
+            $jsondata = null;
+            $jsondata = json_decode($datain,true,2);
+            if ((json_last_error() === JSON_ERROR_NONE) && is_array($jsondata)) {
+                // JSON is valid - is it an array
+                //$jsoninput = true;
+                $log->info("Valid JSON found ");
+                //Create temporary array and change all keys to lower case to look for a 'time' key
+                $jsondataLC = array_change_key_case($jsondata);
+
+                // If JSON, check to see if there is a time value else set to time now.
+                // Time set as a parameter takes precedence.
+                if ($param->exists('time')) {
+                    $log->info("Time from parameter used");
+                } elseif (array_key_exists('time',$jsondataLC)){
+                    $inputtime = $jsondataLC['time'];
+
+                    // validate time
+                    if (is_numeric($inputtime)){
+                        $log->info("Valid time in seconds used ".$inputtime);
+                        $time = (int) $inputtime;
+                    } elseif (is_string($inputtime)){
+                        if (($timestamp = strtotime($inputtime)) === false) {
+                            //If time string is not valid, use system time.
+                            $log->warn("Time string not valid ".$inputtime);
+                            $time = time();
+                        } else {
+                            $log->info("Valid time string used ".$inputtime);
+                            $time = $timestamp;
+                        }
+                    } else {
+                        $log->warn("Time not valid ".$inputtime);
+                        $time = time();
+                    }
+                } else {
+                    $log->info("No time element found in JSON - System time used");
+                    $time = time();
+                }
+                $inputs = $jsondata;
+            } else {
+                return "Input in not a valid JSON object";
             }
         } else {
-            $json = preg_replace('/[^\p{N}\p{L}_\s-.:,]/u','',$datain);
+            $json = preg_replace('/[^\p{N}\p{L}_\s\-.:,]/u','',$datain);
             $datapairs = explode(',', $json);
             
             $inputs = array();
@@ -140,8 +198,15 @@ class InputMethods
     public function bulk($userid)
     {
         global $param;
+
+        $data = $param->val('data');
+
+        if ($param->exists('c')) {
+            // data is compressed
+            $data = gzuncompress(hex2bin($data));
+        }
         
-        $data = json_decode($param->val('data'));
+        $data = json_decode($data);
 
         $len = count($data);
         
@@ -215,17 +280,21 @@ class InputMethods
     {
         $dbinputs = $this->input->get_inputs($userid);
         
+        $nodeid = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$nodeid);
+        
         $validate_access = $this->input->validate_access($dbinputs, $nodeid);
         if (!$validate_access['success']) return "Error: ".$validate_access['message'];
-
+        
         if (!isset($dbinputs[$nodeid])) {
             $dbinputs[$nodeid] = array();
-            if ($this->device) $this->device->create($userid,$nodeid);
+            if ($this->device) $this->device->create($userid,$nodeid,null,null,null);
         }
-                
+        
         $tmp = array();
         foreach ($inputs as $name => $value)
         {
+            $name = preg_replace('/[^\p{N}\p{L}_\s\-.]/u','',$name);
+            
             if (!isset($dbinputs[$nodeid][$name]))
             {
                 $inputid = $this->input->create_input($userid, $nodeid, $name);
@@ -243,6 +312,8 @@ class InputMethods
                     'opt'=>array('sourcetype' => ProcessOriginType::INPUT,
                     'sourceid'=>$dbinputs[$nodeid][$name]['id'])
                 );
+
+                if (isset($_GET['mqttpub'])) $this->process->publish_to_mqtt("emon/$nodeid/$name",$time,$value);
             }
         }
 

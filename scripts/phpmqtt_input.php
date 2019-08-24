@@ -58,7 +58,15 @@
         die;
     }
     
-    $mysqli = new mysqli($server,$username,$password,$database,$port);
+    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+    if ( $mysqli->connect_error ) {
+        echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
+        if ( $display_errors ) {
+            echo "Error message: <b>" . $mysqli->connect_error . "</b>";
+        }
+        die();
+    }
+
     if ($mysqli->connect_error) { $log->error("Cannot connect to MYSQL database:". $mysqli->connect_error);  die('Check log\n'); }
 
     // Enable for testing
@@ -105,6 +113,7 @@
     $mqtt_client = new Mosquitto\Client($mqtt_server['clientid'],($mqtt_server['clientid'] && $mqtt_server['sub_qos']) ? 'false' : 'true' );
     
     $connected = false;
+    $subscribed = 0;
     $last_retry = 0;
     $last_heartbeat = time();
     $last_queuelog = time();
@@ -124,18 +133,19 @@
         }
         
         if (!$connected && (time()-$last_retry)>5.0) {
+            $subscribed = 0;
             $last_retry = time();
             try {
                 // SUBSCRIBE
+                $log->warn("Not connected, retrying connection");
                 $mqtt_client->setCredentials($mqtt_server['user'],$mqtt_server['password']);
                 $mqtt_client->connect($mqtt_server['host'], $mqtt_server['port'], 5);
                 // moved subscribe to onConnect callback
 
             } catch (Exception $e) {
                 $log->error($e);
+                $subscribed = 0;
             }
-            //echo "Not connected, retrying connection\n";
-            $log->warn("Not connected, retrying connection");
         }
 
         // PUBLISH
@@ -173,7 +183,7 @@
             // if there is no queue do not loop too fast
             usleep(1000);
         }
-
+        
         if ((time()-$last_heartbeat)>300) {
             $last_heartbeat = time();
             $log->info("$count Messages processed in last 5 minutes");
@@ -189,17 +199,20 @@
     
 
     function connect($r, $message) {
-        global $log, $connected, $mqtt_server, $mqtt_client;
+        global $log, $connected, $mqtt_server, $mqtt_client, $subscribed;
         //echo "Connected to MQTT server with code {$r} and message {$message}\n";
         $log->warn("Connecting to MQTT server: {$message}: code: {$r}");
         if( $r==0 ) {
             // if CONACK is zero 
             $connected = true;
-            $topic = $mqtt_server['basetopic']."/#";
-            //echo "Subscribing to: ".$topic."\n";
-            $mqtt_client->subscribe($topic,$mqtt_server['sub_qos']);
-            $log->info("Subscribing to: ".$topic. "QoS ".$mqtt_server['sub_qos']);
+            if ($subscribed==0) {
+                $topic = $mqtt_server['basetopic']."/#";
+                //echo "Subscribing to: ".$topic."\n";
+                $subscribed = $mqtt_client->subscribe($topic,$mqtt_server['sub_qos']);
+                $log->info("Subscribing to: ".$topic. "QoS ".$mqtt_server['sub_qos']);
+            }
         } else {
+            $subscribed = 0;
             $log->error('unexpected connection problem mqtt server:'.$message);
         }
     }
@@ -207,17 +220,19 @@
     function subscribe() {
         global $log, $topic;
         //echo "Subscribed to topic: ".$topic."\n";
-        $log->info("Subscribed to topic: ".$topic);
+        $log->info("Callback subscribed to topic: ".$topic);
     }
 
     function unsubscribe() {
-        global $log, $topic;
+        global $log, $topic, $subscribed;
         //echo "Unsubscribed from topic:".$topic."\n";
+        $subscribed = 0;
         $log->error("Unsubscribed from topic: ".$topic);
     }
 
     function disconnect() {
-        global $connected, $log;
+        global $connected, $log, $subscribed;
+        $subscribed = 0;
         $connected = false;
         //echo "Disconnected cleanly\n";
         $log->info("Disconnected cleanly");
@@ -229,8 +244,12 @@
             $jsoninput = false;
             $topic = $message->topic;
             $value = $message->payload;
-            
+            $time = time();
+
             global $mqtt_server, $user, $input, $process, $device, $log, $count;
+
+            //remove characters that emoncms topics cannot handle
+            $topic = str_replace(":","",$topic);
 
             //Check and see if the input is a valid JSON and when decoded is an array. A single number is valid JSON.
             $jsondata = json_decode($value,true,2);
@@ -241,21 +260,26 @@
                 //Create temporary array and change all keys to lower case to look for a 'time' key
                 $jsondataLC = array_change_key_case($jsondata);
 
-                #If JSON check to see if there is a time value else set to time now.
+                // If JSON, check to see if there is a time value else set to time now.
                 if (array_key_exists('time',$jsondataLC)){
-                    $time = $jsondataLC['time'];
-                    if (is_string($time)){
-                        if (($timestamp = strtotime($time)) === false) {
+                    $inputtime = $jsondataLC['time'];
+
+                    // validate time
+                    if (is_numeric($inputtime)){
+                        $log->info("Valid time in seconds used ".$inputtime);
+                        $time = (int) $inputtime;
+                    } elseif (is_string($inputtime)){
+                        if (($timestamp = strtotime($inputtime)) === false) {
                             //If time string is not valid, use system time.
+                            $log->warn("Time string not valid ".$inputtime);
                             $time = time();
-                            $log->warn("Time string not valid ".$time);
                         } else {
-                            $log->info("Valid time string used ".$time);
+                            $log->info("Valid time string used ".$inputtime);
                             $time = $timestamp;
                         }
                     } else {
-                        $log->info("Valid time in seconds used ".$time);
-                        //Do nothings as it has been assigned to $time as a value
+                        $log->warn("Time value not valid ".$inputtime);
+                        $time = time();
                     }
                 } else {
                     $log->info("No time element found in JSON - System time used");
@@ -263,7 +287,6 @@
                 }
             } else {
                 $jsoninput = false;
-                $log->info("No JSON found - System time used");
                 $time = time();
             }
 
@@ -319,12 +342,11 @@
             } else {
                 $log->error("No matching MQTT topics! None or null inputs will be recorded!");  
             }
-            
-            // Enabled in device-support branch
-            // if (!isset($dbinputs[$nodeid])) {
-            //     $dbinputs[$nodeid] = array();
-            //     if ($device && method_exists($device,"create")) $device->create($userid,$nodeid);
-            // }
+
+            if (!isset($dbinputs[$nodeid])) {
+                $dbinputs[$nodeid] = array();
+                if ($device && method_exists($device,"create")) $device->create($userid,$nodeid,null,null,null);
+            }
 
             $tmp = array();
             foreach ($inputs as $i)

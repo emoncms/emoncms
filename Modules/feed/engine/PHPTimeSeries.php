@@ -1,6 +1,8 @@
 <?php
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
 
-class PHPTimeSeries
+class PHPTimeSeries implements engine_methods
 {
     private $dir = "/var/lib/phptimeseries/";
     private $log;
@@ -29,7 +31,8 @@ class PHPTimeSeries
     {
         $fh = @fopen($this->dir."feed_$feedid.MYD", 'a');
         if (!$fh) {
-            $msg = "could not write data file " . error_get_last()['message'];
+            $error = error_get_last();
+            $msg = "could not write data file ".$error['message'];
             $this->log->error("create() ".$msg);
             return $msg;
         }
@@ -213,30 +216,31 @@ class PHPTimeSeries
     }
     
     /**
-     * Return the data for the given timerange
+     * Return the data for the given timerange - cf shared_helper.php
      *
-     * @param integer $feedid The id of the feed to fetch from
-     * @param integer $start The unix timestamp in ms of the start of the data range
-     * @param integer $end The unix timestamp in ms of the end of the data range
-     * @param integer $interval The number os seconds for each data point to return (used by some engines)
-     * @param integer $skipmissing Skip null values from returned data (used by some engines)
-     * @param integer $limitinterval Limit datapoints returned to this value (used by some engines)
+     * @param integer $limitinterval When set to 1 , return the calculated timestamp if difference between calculated and hardcoded timestamps (based on metadata) is less than $interval - When set to 0, return the harcoded timestamp
     */
     public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        global $max_datapoints;
+
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
 
         // Minimum interval
         if ($interval<1) $interval = 1;
+        // End must be larger than start
+        if ($end<=$start) return array("success"=>false, "message"=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array("success"=>false, "message"=>"request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $max_datapoints) return array("success"=>false, "message"=>"request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
         
         $fh = fopen($this->dir."feed_$feedid.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$feedid.MYD");
 
+        if ($filesize==0) return array();
+        
         $data = array();
         $time = 0; $i = 0;
         $atime = 0;
@@ -288,10 +292,12 @@ class PHPTimeSeries
         if ($timezone===0) $timezone = "UTC";
         $date->setTimezone(new DateTimeZone($timezone));
         $date->setTimestamp($start);
+        
         $date->modify("midnight");
-        if ($mode=="weekly") $date->modify("this monday");
-        if ($mode=="monthly") $date->modify("first day of this month");
-
+        $increment="+1 day";
+        if ($mode=="weekly") { $date->modify("this monday"); $increment="+1 week"; }
+        if ($mode=="monthly") { $date->modify("first day of this month"); $increment="+1 month"; }
+        
         $fh = fopen($this->dir."feed_$id.MYD", 'rb');
         $filesize = filesize($this->dir."feed_$id.MYD");
 
@@ -310,11 +316,12 @@ class PHPTimeSeries
             $array = unpack("x/Itime/fvalue",$d);
             
             if ($array['time']!=$lastarray['time']) {
-                $data[] = array($array['time']*1000,$array['value']);
+                if ($array['time']>=$start && $array['time']<$end) {
+                    $data[] = array($array['time']*1000,$array['value']);
+                }
             }
-            if ($mode=="daily") $date->modify("+1 day");
-            if ($mode=="weekly") $date->modify("+1 week");
-            if ($mode=="monthly") $date->modify("+1 month");
+            $date->modify($increment);
+            
             $n++;
         }
         
@@ -534,7 +541,6 @@ class PHPTimeSeries
             
         if (isset($this->writebuffer[$feedid]))
             $bytesize += strlen($this->writebuffer[$feedid]);
-            
         return floor($bytesize / 9.0);
     } 
 
@@ -612,6 +618,13 @@ class PHPTimeSeries
             if ($time>$array['time']) $start = $mid; else $end = $mid;
         }
         return -1;
+    }
+
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
     }
 
 }

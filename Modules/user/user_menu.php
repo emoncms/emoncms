@@ -1,10 +1,44 @@
 <?php
-    global $session;
 
-    $domain = "messages";
-    bindtextdomain($domain, "Modules/user/locale");
-    bind_textdomain_codeset($domain, 'UTF-8');
+global $session;
 
-    $menu_dropdown_config[] = array('name'=> dgettext($domain, "My Account"), 'icon'=>'icon-user', 'path'=>"user/view", 'session'=>"write", 'order' => 40, 'divider' => true);
-    $menu_right[] = array('name'=> dgettext($domain, "Logout"), 'icon'=>'icon-off icon-white', 'path'=>"user/logout", 'session'=>"write", 'order' => 1000);
-    if (!$session['write']) $menu_right[] = array('name'=>dgettext($domain, "Log In"), 'icon'=>'icon-home icon-white', 'path'=>"user/login", 'order' => 1000);
+$menu['right'][] = array(
+    'text' => _("Add Bookmark"),
+    'icon' => 'plus',
+    'path' => 'user/bookmarks/add',
+    'order' => 0,
+    'text'=> _("Apps")
+);
+$menu['user'][] = array(
+    'text' => _("Bookmarks"),
+    'path' => 'user/bookmarks',
+    'icon' => 'star',
+    'order' => 2
+);
+$menu['user'][] = array(
+    'text' => _("My Account"),
+    'icon' => 'user',
+    'path' => 'user/view',
+    'order' => 1
+);
+$menu['user'][] = array(
+    'li_class' => 'divider',
+    'href' => '#',
+    'order' => 3
+);
+$menu['user'][] = array(
+    'text' => _("Logout"),
+    'icon' => 'logout',
+    'path' => 'user/logout',
+    'order' => 4,
+    'id' => 'logout-link'
+);
+
+$menu['user'][] = array(
+    'title' => _("Login"),
+    // 'text' => _("Login"),
+    'icon' => 'enter',
+    'path' => '/',
+    'public' => true,
+    'public_only' => true
+);

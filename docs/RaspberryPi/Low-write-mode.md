@@ -88,20 +88,20 @@ Comment out all redis saves:
 
 Save & exit:
 
-    sudo service redis-server reboot
+    sudo service redis-server restart
 
 Ensure all redis databases have been removed from `/var/lib/redis` with: 
     
-   rm -rf /var/lib/redis/*
+    sudo su -c 'rm -rf /var/lib/redis/*'
 
 #### Configure Feedwriter
 
-Create a symlink to run feedwriter as a daemon and set permissions:
+Install feedwriter service:
 
-    cd /etc/init.d && sudo ln -s /var/www/emoncms/scripts/feedwriter
-    sudo chown root:root /var/www/emoncms/scripts/feedwriter
-    sudo chmod 755 /var/www/emoncms/scripts/feedwriter
-    sudo update-rc.d feedwriter defaults
+    sudo ln -s /var/www/emoncms/scripts/services/feedwriter/feedwriter.service /lib/systemd/system
+    sudo systemctl enable feedwriter.service
+    sudo systemctl start feedwriter.service
+    systemctl status feedwriter.service
 
 #### Enable Low-write mode in emoncms
 

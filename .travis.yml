@@ -1,11 +1,92 @@
+#########################################################
+# Travis Continuous Integration for emonCMS
+# 
+# Contributed by Carbon Co-op (https://carbon.coop)
+#
+# In this Travis build we:
+#    - install and run emonCMS using 2 different versions of PHP: 5.6 and 7.2
+#    - configure settings.php leaving it to the default values except for database, 
+#      database user & password and we enable multi_user (required for the tests). 
+#    - set up test suite
+#    - run behavioural tests in Chrome and Firefox. Because no SMTP details have 
+#      been added to settings.php we cannot test any email feature at this point.
+#    
+##########################################################
+
 language: php
 php:
-  - '5.4'
-  - '5.5'
-  - '5.6'
-  - '7.0'
-
-before_script:
-  - if find . -name "*.php" ! -path "./vendor/*" -exec php -l {} 2>&1 \; | grep "syntax error, unexpected"; then exit 1; fi
-
-script: phpunit test.php
+    - '5.6'
+    - '7.2'
+dist: trusty
+sudo: required
+services:
+    - mysql
+addons:
+  chrome: stable
+  firefox: "60.0"    
+env:
+    - BROWSER="chrome"
+    - BROWSER="firefox"
+  global:
+    - COMPOSER_DISABLE_XDEBUG_WARN=1
+before_install:
+     # Install Apache + PHP - adapted from https://docs.travis-ci.com/user/languages/php/
+    - sudo apt-get install apache2 libapache2-mod-fastcgi -y
+    ## enable php-fpm
+    - sudo cp ~/.phpenv/versions/$TRAVIS_PHP_VERSION/etc/php-fpm.conf.default ~/.phpenv/versions/$TRAVIS_PHP_VERSION/etc/php-fpm.conf
+    - sudo a2enmod rewrite actions fastcgi alias
+    - echo "cgi.fix_pathinfo = 1" >> ~/.phpenv/versions/$TRAVIS_PHP_VERSION/etc/php.ini
+    - sudo sed -i -e "s,www-data,travis,g" /etc/apache2/envvars
+    - sudo chown -R travis:travis /var/lib/apache2/fastcgi
+    - ~/.phpenv/versions/$TRAVIS_PHP_VERSION/sbin/php-fpm
+    ## configure apache virtual hosts 
+    - sudo cp -f Lib/travis-CI/travis-ci-apache /etc/apache2/sites-available/000-default.conf
+    - sudo sed -e "s?%TRAVIS_BUILD_DIR%?$(pwd)?g" --in-place /etc/apache2/sites-available/000-default.conf
+    - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+    - sudo service apache2 restart
+install:
+    # Install emonCMS - adapted from https://github.com/emoncms/emoncms/blob/master/docs/LinuxInstall.md
+    ## Setup in apache 
+    - sudo apt-add-repository ppa:ondrej/php -y
+    - sudo apt-get update
+    - sudo apt-get install php-pear redis-server build-essential g++ wget -y
+    - sudo pear channel-discover pear.swiftmailer.org
+    - sudo pecl install swift/swift 
+    - sudo cp Lib/travis-CI/emoncms.conf /etc/apache2/sites-available/emoncms.conf
+    - sudo a2ensite emoncms
+    - sudo service apache2 reload
+    ## Setup database and feeds
+    - mysql -e 'CREATE DATABASE IF NOT EXISTS emoncms DEFAULT CHARACTER SET utf8;'
+    - sudo mkdir /var/lib/phpfiwa
+    - sudo mkdir /var/lib/phpfina
+    - sudo mkdir /var/lib/phptimeseries
+    - sudo chown www-data:root /var/lib/phpfiwa
+    - sudo chown www-data:root /var/lib/phpfina
+    - sudo chown www-data:root /var/lib/phptimeseries
+    ## Create settings.php
+    - cp default.settings.php settings.php
+    - sed -i 's/_DB_USER_/travis/g' settings.php
+    - sed -i 's/_DB_PASSWORD_//g' settings.php
+    - sed -i 's/$enable_multi_user = false;/$enable_multi_user = true;/g' settings.php
+    ### Not setting up SMTP - needs to be done if we want to test emails features
+    ## Setup test suite
+    - composer install
+    - cd tests
+    - npm install
+    - "./node_modules/.bin/selenium-standalone install"
+    - "./node_modules/.bin/selenium-standalone start > /dev/null 2>&1 &"
+    - mkdir webdrivers
+    - cd webdrivers
+    - wget https://chromedriver.storage.googleapis.com/2.42/chromedriver_linux64.zip
+    - unzip chromedriver_linux64.zip
+    - sudo chmod +x chromedriver
+    - wget https://github.com/mozilla/geckodriver/releases/download/v0.23.0/geckodriver-v0.23.0-linux64.tar.gz
+    - tar -xvzf geckodriver-v0.23.0-linux64.tar.gz
+    - sudo chmod +x geckodriver
+    - export PATH=$PATH:$TRAVIS_BUILD_DIR/tests/webdrivers
+script:
+    # - curl -vL http://127.0.0.1 - Uncomment this line to see html of the login page
+    - composer test
+    - cd $TRAVIS_BUILD_DIR/tests
+    - HEADLESS=true DEBUG=true TRAVIS=true BROWSER=$BROWSER ./node_modules/.bin/wdio wdio.conf.js --spec ./Lib/emonCMS-travis-setup.js
+    - HEADLESS=true DEBUG=true TRAVIS=true BROWSER=$BROWSER ./node_modules/.bin/wdio wdio.conf.js

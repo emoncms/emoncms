@@ -1,69 +1,483 @@
 /* -------------------------------------------------------------------
-Page wrapper
+Side nav
 --------------------------------------------------------------------*/
-#wrapper {
-  padding:0px;
-  margin:0 auto;
-  padding-left: 0px;
-  max-width:1150px;
+.sidebar-inner {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-top: 0px;
+  height: 0;
+}
+.sidebar-inner.active {
+  padding-bottom: 2rem;
+  /* height: calc(100vh - 8.8rem); */
+  height: auto;
+}
+
+.sidebar-inner .close {
+  color: white;
+  display: none;
+}
+.narrow .sidebar-inner .close {
+  display: inline-block;
+}
+/* -------------------------------------------------------------------
+Top nav
+--------------------------------------------------------------------*/
+#emoncms-navbar {
+  position: fixed;
+  margin: 0;
+}
+#emoncms-navbar .navbar-inner {
+  /* height: 2.75rem; */
+  padding: 0 !important;
+}
+#emoncms-navbar .navbar-inner .nav {
+  font-size: 1.25rem;
+}
+#emoncms-navbar .navbar-inner .nav a span{
+    font-size: 1rem;
+    padding-top: .1rem;
+}
+#emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+    display: none;
+}
+@media (min-width: 768px) {
+    #emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+        display: inline-block;
+    }
+}
+
+d-none d-md-block
+.navbar .nav > li > a {
+  padding: .6em;
+}
+.navbar .nav {
+    float: none;
+}
+.navbar .navbar-inner:before,
+.navbar .navbar-inner:after {
+    content: none;
+}
+@media screen and (min-width: 380px) {
+  #emoncms-navbar .navbar-inner .nav {
+    font-size: 1.5rem;
+  }
+  .navbar .nav > li > a {
+    padding: .415em .626em;
+  }
+}
+
+#emoncms-navbar .navbar-inner .nav ul li{
+    font-size: 1.1rem;
+}
+#emoncms-navbar .navbar-inner .nav ul li a{
+  padding: .5em 1em;
 }
 
 /* -------------------------------------------------------------------
-Side nav
+site-wide overriding css
+@todo: move to blue.css
 --------------------------------------------------------------------*/
-.sidenav {
-  margin-top:0px;
-  margin-left: -250px;
-  left: 250px;
-  width: 250px;
-  background: #333;
+
+/* eof site css changes */
+
+
+
+/* -------------------------------------------------------------------
+Sidebar sub menus----------------------------------------------------*/
+
+#sidebar {
   position: fixed;
+  display: none;
+  margin-top: 0px;
+  top: 2.5rem;
+  z-index: 1000;
+  height: calc(100vh - 2.5rem);
+  margin-bottom: 2rem;
+  
+  left: 15rem;
+  margin-left: -15rem;
+  width: 15rem;
+
   overflow-y: auto;
-  z-index: 1000; 
+  overflow-x: hidden;
+}
+.has-animation #sidebar {
+  transition: all 0.3s ease-out;
+}
+.has-sidebar #sidebar {
+  display: block;
+}
+.sidebar-title {
+  text-indent: 1rem;
+  padding: 1em 0 0.75em 0;
+  margin: 0;
+  text-transform: capitalize;
+}
+#sidebar .close:hover {
+    text-decoration: none;
 }
 
-.sidenav-inner {
-  padding-top:20px;
+@media screen and (min-width: 380px) {
+  #sidebar {
+    top: 2.7rem;
+    height: calc(100vh - 2.7rem);
+  }
+}
+/* -------------------------------------------------------------------
+gravitar icon in toolbar
+--------------------------------------------------------------------*/
+ul#right-nav li.menu-user{
+  padding-right: .125em;
+  padding-left: .125em;
+}
+.navbar .nav > li > a.grav-container {
+  padding: .25em;
+  display: block;
+}
+a.grav-container img.grav {
+  max-height: 1.2em;
+}
+a.grav-container img.grav {
+  border: 2px solid #ccc;
+}
+a.grav-container:hover img.grav {
+  border-color: #dedede;
+}
+a.is_admin.grav-container:hover img.grav {
+  border-color: #efefef;
+}
+.no-gravitar a.grav-container {
+  border-radius: 50%;
+  background: #c5c5c5;
+  padding: 0 !important;
+  text-align: center;
+  width: 1.36em;
+  height: 1.36em;
+  line-height: 1.37em;
+  border: 2px solid #ccc;
+  overflow: hidden;
+  margin: 0.2em;
+}
+.no-gravitar a.grav-container .icon.user {
+  font-size: 1.66em;
+  margin: 0 -.1em;
+}
+/* eof gravitar */
+
+/* -------------------------------------------------------------------
+top navbar override
+@todo: move to blue.css
+--------------------------------------------------------------------*/
+
+/* active top nav indicator */
+#left-nav li.active a {
+  position: relative;
+}
+#left-nav li a:before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+}
+.collapsed #left-nav li.active a:before {
+  background: #209ed3;
+}
+.collapsed #left-nav li.active a:hover:before {
+  background: #333;
+  opacity: 0.3;
 }
 
-.sidenav-open {
-  float:left;
-  margin-right:10px;
+/* tabindex styling */
+/* don't render menu items when not active */
+#sidebar .sidebar-inner,
+#sidebar .include-container,
+#sidebar .collapse{display:none}
+#sidebar .sidebar-inner.active,
+#sidebar .include-container.in,
+#sidebar .collapse.in{display:block}
+
+
+
+#sidebar-toggle {
+  display: none !important;
+}
+.has-sidebar #sidebar-toggle {
+  display: block !important;
+}
+#sidebar-toggle:before {
+  content: '';
+  display: block;
+  background: #a1d57d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.2s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+  width: 0 !important;
+  height: 100% !important;
+}
+.has-sidebar #sidebar-toggle:before {
+  width: 0.2em !important;
+}
+#sidebar-toggle:hover:before {
+  background: #b2de84;
 }
 
-.sidenav-close {
-  float:right; 
-  cursor:pointer; 
-  padding:10px;
+/* SVG animation */
+/* body.collapsed #sidebar-toggle:before{
+  width: 0!important;
+}
+#icon-menu .icon-menu-top{
+  transform: translate(-1px, 0) rotate(-38deg);
+}
+#icon-menu .icon-menu-middle{
+  transform: scaleY(1.12) scaleX(1.6) translate(2px,0)
+}
+#icon-menu .icon-menu-bottom{
+  transform: translate(-1px, 0) rotate(38deg);
+}
+.collapsed #icon-menu path{
+  transform: none;
+} */
+
+/* collapse sidebar */
+.collapsed #sidebar {
+  left: 0;
 }
 
+/* custom menu icon formatting */
+#emoncms-navbar .icon.folder-plus {
+  margin-bottom: 1px;
+}
+
+/* eof navbar override */
+
+
+.btn-li .btn,
+#top_nav li .btn {
+  background: none;
+  border-radius: 0;
+  border: 0;
+  margin: 0;
+}
+
+/* bottom of sidebar */
+#footer_nav {
+  margin-bottom: 0;
+  width: 15rem;
+}
+
+#sidebar_user_toggle {
+  background: #333;
+  padding-top: 0.6em !important;
+  padding-bottom: 0.75em !important;
+}
+
+.expanded #sidebar_user_toggle,
+#sidebar_user_toggle:hover {
+  background: #212121;
+}
+#footer_nav #sidebar_bookmarks li {
+    border-bottom: 1px solid #444;
+}
+#footer_nav #sidebar_bookmarks li a {
+  padding: 0.67em 0.94em;
+}
+
+#edit_bookmarks {
+    padding: .7em!important;
+    color: #545454!important;
+    transition: color .3s ease-out;
+}
+#edit_bookmarks:hover,
+#edit_bookmarks:focus {
+    color: #FFF!important;
+}
+
+/* sidebar toggle switch */
+#sidebar-toggle-bar {
+  position: fixed;
+  width: 0;
+  left: 0;
+  height: 100vh;
+  top: 0;
+  z-index: 999;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease-in;
+  transition-delay: 0;
+  display: none !important;
+}
+.has-sidebar #sidebar-toggle-bar {
+  display: flex !important;
+}
+body.collapsed #sidebar-toggle-bar {
+  width: 1rem;
+  transition-delay: 1s;
+}
+#sidebar-toggle-bar:after {
+  content: '';
+  width: 1rem;
+  height: 100%;
+  background: #8c8b8b;
+  top: 0;
+  left: 0;
+  opacity: 0.1;
+  transition: all 0.2s ease-out;
+  margin-left: -0.2rem;
+}
+
+#sidebar-toggle-bar:hover:after {
+  opacity: 0.8;
+}
+
+.menu-overlay {
+  display: none;
+  background-color: #000;
+  bottom: 0;
+  left: 0;
+  opacity: 0.3;
+  position: fixed;
+  right: 0;
+  top: 2.5rem;
+  z-index: 49;
+}
+
+
+
+/* svg icons */
+svg.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
+#left-nav .active .icon {
+  vertical-align: -0.1em;
+}
 /* The navigation menu links */
-.sidenav a {
+#sidebar .nav a {
   text-decoration: none;
   color: #fff;
   display: block;
-  padding:15px;
-  transition: 0.3s
-  
+  padding: 0.94em;
 }
-
+#sidebar .nav.sub-nav {
+  border-top: 0 solid transparent;
+}
+#sidebar .nav.sidebar-menu li.active a,
+#sidebar .nav.sidebar-menu li a:focus {
+  background: rgba(33, 33, 33, 0.7) !important;
+}
 /* When you mouse over the navigation links, change their color */
-.sidenav a:hover, .offcanvas a:focus{
+#sidebar .nav a:hover,
+.offcanvas a:focus {
   color: #f1f1f1;
 }
-
+#sidebar .nav.sidebar-menu a:hover {
+  background: #212121 !important;
+}
 /* -------------------------------------------------------------------
 Side nav: app list
 --------------------------------------------------------------------*/
-.sidenav-menu {
+.sidebar-menu {
   list-style: none;
-  margin:0px;
-  padding:0px;
+  margin: 0px;
+  padding: 0px;
+  border-top: 1px solid #444;
+}
+.sidebar-menu li {
+  transition: all 0.2s ease-in !important;
+}
+.sidebar-menu li.collapse {
+  border-bottom: 0px solid transparent;
+}
+.include-container.collapse.in > li,
+.sidebar-menu li.collapse.in {
+  border-bottom: 1px solid #444;
+}
+#sidebar svg.icon {
+  margin-top: .1em;
+}
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid white;
 }
 
-.sidenav-menu li {
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid white;
+}
+.arrow {
+  margin: 0.4em 0;
+  transform: scaleY(-1);
+  filter: FlipH;
+  /* transition: transform .15s ease-out; */
+}
+.collapsed .arrow {
+  transform: scaleY(1);
+  filter: none;
 }
 
-.sidenav-menu li:hover {
-  background-color: #444;
+/* specific to single view's sidebar */
+
+.include-container {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition: all 0.2s ease-out;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+/* show #feeds when expanded */
+.include-container.in {
+  width: 99%;
+  opacity: 1;
+  height: auto;
+}
+
+.include-container h4 {
+  padding-bottom: 0.5rem;
+}
+.include-container h4 a {
+  color: white;
+  display: block;
+}
+.include-container h4 a:hover {
+  text-decoration: underline;
+}
+
+
+/* On screens that are 870px or less, hide the sidebar on load */
+@media screen and (max-width: 870px) {
+  #sidebar {
+    transition: none;
+    left: 0;
+  }
+  /* js adds .has-animation on load */
+  .has-animation #sidebar {
+    transition: all 0.3s ease-out;
+  }
+  /* js adds .expanded on click */
+  .expanded #sidebar {
+    left: 15rem;
+  }
+}
+@media screen and (min-width: 871px) {
+  #sidebar {
+    left: 15rem;
+    transition: all 0.3s ease-out;
+  }
 }

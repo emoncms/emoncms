@@ -1,6 +1,8 @@
 <?php
+// engine_methods interface in shared_helper.php
+include_once dirname(__FILE__) . '/shared_helper.php';
 
-class Histogram
+class Histogram implements engine_methods
 {
     private $mysqli;
 
@@ -144,5 +146,27 @@ class Histogram
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
     
+    }
+    public function trim($feedid,$start_time){
+        return array('success'=>false,'message'=>'"Trim" not available for this storage engine');
+    }
+    public function clear($feedid){
+        return array('success'=>false,'message'=>'"Clear" not available for this storage engine');
+    }
+
+    public function delete($feedid){
+        return array('success'=>false,'message'=>'"Delete" not available for this storage engine');
+    }
+    public function post($feedid,$time,$value,$arg=null){
+        return array('success'=>false,'message'=>'"Post" not available for this storage engine');
+    }
+    public function get_feed_size($feedid){
+        return array('success'=>false,'message'=>'"Get_Feed_Size" not available for this storage engine');
+    }
+    public function update($feedid,$time,$value){
+        return array('success'=>false,'message'=>'"Update" not available for this storage engine');
+    }
+    public function get_data($feedid,$start,$end,$interval,$skipmissing,$limitinterval){
+        return array('success'=>false,'message'=>'"Get_Data" not available for this storage engine');
     }
 }

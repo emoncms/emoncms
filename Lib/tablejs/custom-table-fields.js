@@ -60,7 +60,7 @@ var customtablefields = {
   'processlist': {
     'draw': function (t,row,child_row,field) {
       var processlist = t.data[row][field];
-      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist);
+      if (processlist_ui != undefined) return processlist_ui.drawpreview(processlist,t.data[row]);
       else return "";
     }
   },
@@ -178,27 +178,52 @@ function list_format_updated(time) {
   var servertime = (new Date()).getTime() - table.timeServerLocalOffset;
   var update = (new Date(time)).getTime();
 
+  var delta = servertime - update;
+  var secs = Math.abs(delta) / 1000;
+  var mins = secs / 60;
+  var hour = secs / 3600;
+  var day = hour / 24;
+
+  var updated = secs.toFixed(0) + "s";
+  if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
+  else if (secs.toFixed(0) == 0) updated = "now";
+  else if (day > 7 && delta > 0) updated = "inactive";
+  else if (day > 2) updated = day.toFixed(1) + " days";
+  else if (hour > 2) updated = hour.toFixed(0) + " hrs";
+  else if (secs > 180) updated = mins.toFixed(0) + " mins";
+
+  secs = Math.abs(secs);
+  var color = "rgb(255,0,0)";
+  if (delta < 0) color = "rgb(60,135,170)"
+  else if (secs < 25) color = "rgb(50,200,50)"
+  else if (secs < 60) color = "rgb(240,180,20)"; 
+  else if (secs < (3600*2)) color = "rgb(255,125,20)"
+
+  return "<span style='color:"+color+";'>"+updated+"</span>";
+}
+
+// Calculate relative time
+function relative_time(time) {
+  time = time * 1000;
+  var servertime = (new Date()).getTime() - table.timeServerLocalOffset;
+  var update = (new Date(time)).getTime();
+
   var secs = (servertime-update)/1000;
   var mins = secs/60;
   var hour = secs/3600;
   var day = hour/24;
+  var year = day/365;
 
-  var updated = secs.toFixed(0) + "s";
-  if ((update == 0) || (!$.isNumeric(secs))) updated = "n/a";
-  else if (secs< 0) updated = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
-  else if (secs.toFixed(0) == 0) updated = "now";
-  else if (day>7) updated = "inactive";
-  else if (day>2) updated = day.toFixed(1)+" days";
-  else if (hour>2) updated = hour.toFixed(0)+" hrs";
-  else if (secs>180) updated = mins.toFixed(0)+" mins";
+  var relative_time = secs.toFixed(0) + "s";
+  if (update == 0) relative_time = "n/a";
+  else if (secs < 0) relative_time = secs.toFixed(0) + "s"; // update time ahead of server date is signal of slow network
+  else if (secs.toFixed(0) < 10) relative_time = "a few seconds";
+  else if (day>365) relative_time = year.toFixed(2)+" years";
+  else if (day>2) relative_time = day.toFixed(1)+" days";
+  else if (hour>2) relative_time = hour.toFixed(0)+" hrs";
+  else if (secs>180) relative_time = mins.toFixed(0)+" mins";
 
-  secs = Math.abs(secs);
-  var color = "rgb(255,0,0)";
-  if (secs<25) color = "rgb(50,200,50)"
-  else if (secs<60) color = "rgb(240,180,20)"; 
-  else if (secs<(3600*2)) color = "rgb(255,125,20)"
-
-  return "<span style='color:"+color+";'>"+updated+"</span>";
+  return relative_time
 }
 
 // Format value dynamically 

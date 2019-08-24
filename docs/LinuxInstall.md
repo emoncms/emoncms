@@ -8,13 +8,17 @@ You may need to start by updating the system repositories
 
     sudo apt-get update
 
-**For Ubuntu 14.04:**
-
-    sudo apt-get install apache2 mysql-server mysql-client php5 libapache2-mod-php5 php5-mysql php5-curl php-pear php5-dev php5-mcrypt php5-json git-core redis-server build-essential -y
-
 **For Ubuntu 16.04:**
 
-    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential -y
+*PHP7*
+
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-mcrypt php-json git-core redis-server build-essential php7.0-mbstring -y
+
+**For Ubuntu 18.04:**
+
+*PHP 7.2*
+
+    sudo apt-get install apache2 mysql-server mysql-client php libapache2-mod-php php-mysql php-curl php-pear php-dev php-json git-core redis-server build-essential php7.2-mbstring -y
 
 ### Install PHP pecl dependencies
 
@@ -23,14 +27,14 @@ You may need to start by updating the system repositories
     sudo pear channel-discover pear.swiftmailer.org
     sudo pecl install swift/swift redis
 
-**If running PHP5:** Add pecl modules to php5 config
-
-    printf "extension=redis.so" | sudo tee /etc/php5/mods-available/redis.ini 1>&2
-    sudo php5enmod redis
-
  **If running PHP7:** Add pecl modules to php7 config
 
     printf "extension=redis.so" | sudo tee /etc/php/7.0/mods-available/redis.ini 1>&2
+    sudo phpenmod redis
+
+ **If running PHP7.2:** Add pecl modules to php7.2 config
+
+    printf "extension=redis.so" | sudo tee /etc/php/7.2/mods-available/redis.ini 1>&2
     sudo phpenmod redis
 
 ### Configure Apache
@@ -48,7 +52,7 @@ sudo cat <<EOF >> /etc/apache2/sites-available/emoncms.conf
     Allow from all
 </Directory>
 EOF
-sudo echo 'ServerName localhost' >> /etc/apache2/apache2.conf
+printf "ServerName localhost" | sudo tee -a /etc/apache2/apache2.conf 1>&2
 sudo a2ensite emoncms
 sudo service apache2 reload
 ```
@@ -79,7 +83,7 @@ Once installed you can pull in updates with:
 
     cd /var/www/html/emoncms
     git pull
-
+    
 ## Create a MYSQL database
 
     mysql -u root -p
@@ -137,8 +141,10 @@ Save (Ctrl-X), type Y and exit
 ### Install add-on emoncms modules (optional)
 
     cd /var/www/html/emoncms/Modules
-    git clone https://github.com/emoncms/dashboard.git
-    git clone https://github.com/emoncms/app.git
+    git clone -b stable https://github.com/emoncms/graph.git
+    git clone https://github.com/emoncms/device.git
+    git clone -b stable https://github.com/emoncms/dashboard.git
+    git clone -b stable https://github.com/emoncms/app.git
 
 The 'modules' need to save their configurations in the emoncms database, so in your browser - update your emoncms database:
 `Setup > Administration > Update database` (you may need to log out, and log back into emoncms to see the Administration menu).
@@ -153,27 +159,9 @@ The first time you run emoncms it will automatically setup the database and you 
 
 Create an account by entering your email and password and clicking register to complete.
 
-#### Note: Browser Compatibility
-
-**Chrome Ubuntu 48.0.2564.81** - developed with, works great.
-
-**Chrome Windows 25.0.1364.172** - quick check revealed no browser specific bugs.
-
-**Firefox Ubuntu 15.0.1** - no critical browser specific bugs, but movement in the dashboard editor is much less smooth than chrome.
-
-**Internet explorer 9** - works well with compatibility mode turned off. F12 Development tools -> browser mode: IE9. Some widgets such as the hot water cylinder do load later than the dial.
-
-**IE 8, 7** - not recommended, widgets and dashboard editor <b>do not work</b> due to no html5 canvas fix implemented but visualisations do work as these have a fix applied.
-
 ***
 
-#### PHP Suhosin module configuration (Debian 6, not required in ubuntu)
-
-Dashboard editing needs to pass parameters through HTTP-GET mechanism and on Debian 6 the max
-allowable length of a single parameter is very small (512 byte). This is a problem for designing of dashboard
-and when you exceed this threshold all created dashboard are lost...
-
-To overcome this problem modify "suhosin.get.max_value_length" in /etc/php5/conf.d/suhosin.ini" to large
+x_value_length" in /etc/php5/conf.d/suhosin.ini" to large
 value (8000, 16000 should be fine).
 
 #### Enable Multi lingual support using gettext
@@ -220,4 +208,4 @@ Now save and close and restart your apache.
 
 ### /user/register.json cannot be found
 
-If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates an problem with apache mod_rewrite.
+If the login page loads but a user cannot be created and error `invalid` is displayed and console log shows error `/user/register.json` cannot be found this indicates a problem with apache mod_rewrite.

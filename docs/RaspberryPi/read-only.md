@@ -64,7 +64,11 @@ The line:
 
 	/dev/mmcblk0p3  /home/pi/data   ext2    defaults,rw,noatime,nodiratime,errors=remount-ro 0 2
 
-Set the ext2 partition we created earlier to be mounted RO with the file and dir and file access time recording turned off and commit=180 sets the frequency in seconds that data can be written to disk (default 5s). Better explanation is given [here](http://unix.stackexchange.com/questions/155784/advantages-disadvantages-of-increasing-commit-in-fstab) and [here](http://superuser.com/questions/479379/how-long-can-file-system-writes-be-cached-with-ext4/479384#479384). [Forum topic discussion](http://openenergymonitor.org/emon/node/11695). 
+Set the ext2 partition we created earlier to be mounted RO with the file and dir and file access time recording turned off.
+
+Commit fstab option is not implemented for ext2 file-systems:
+
+~~commit=180 sets the frequency in seconds that data can be written to disk (default 5s). Better explanation is given [here](http://unix.stackexchange.com/questions/155784/advantages-disadvantages-of-increasing-commit-in-fstab) and [here](http://superuser.com/questions/479379/how-long-can-file-system-writes-be-cached-with-ext4/479384#479384). [Forum topic discussion](http://openenergymonitor.org/emon/node/11695).~~
 
 Before restarting create two scripts to switch between read-only and write access modes. These scripts are in the emonPi git repo and can be installed with:
 
@@ -138,8 +142,28 @@ After MYSQL has been installed (see Raspberry Pi Emoncms install) we will need t
 Move the database:
 
 	mkdir /home/pi/data/mysql
-	sudo cp -rp /var/lib/mysql/. /home/pi/data/mysql
+	chown -R mysql:mysql /home/pi/data/mysql
+	cp -R -p /var/lib/mysql/* /home/pi/data/mysql
+	sudo rm -rf /var/lib/mysql
 
-Change MYSQL config to use database in new RW location change line `datadir` to `/home/pi/data/mysql`
+Change MYSQL config to use database in new RW location change the config file:
 
 	sudo nano /etc/mysql/my.cnf
+	
+	Under [mysqld]:
+	datadir=/home/pi/data/mysql
+	socket=/home/pi/data/mysql/mysql.sock
+	Under [client]:
+	port=3306
+	socket=/home/pi/data/mysql/mysql.sock
+	
+If using mariadb (Stretch default) we need another change to run the database from the home folder
+
+	sudo systemctl edit mariadb.service
+	
+Enter
+
+	[Service]
+	ProtectHome=false
+	
+Exit and save.

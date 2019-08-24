@@ -97,15 +97,15 @@ class Feed
     Configurations operations
     create, delete, exist, update_user_feeds_size, get_buffer_size, get_meta
     */
-    public function create($userid,$tag,$name,$datatype,$engine,$options_in)
+    public function create($userid,$tag,$name,$datatype,$engine,$options_in,$unit='')
     {
         $userid = (int) $userid;
-        if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
-        if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag)!=$tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
+        if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$name)!=$name) return array('success'=>false, 'message'=>'invalid characters in feed name');
+        if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$tag)!=$tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
         $datatype = (int) $datatype;
         $engine = (int) $engine;
         $public = false;
-
+    
         if (!ENGINE::is_valid($engine)) {
             $this->log->error("Engine id '".$engine."' is not supported.");
             return array('success'=>false, 'message'=>"ABORTED: Engine id $engine is not supported.");
@@ -117,8 +117,8 @@ class Feed
         // Histogram engine requires MYSQL
         if ($datatype==DataType::HISTOGRAM && $engine!=Engine::MYSQL) $engine = Engine::MYSQL;
 
-        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine) VALUES (?,?,?,?,?,?)");
-        $stmt->bind_param("issiii",$userid,$tag,$name,$datatype,$public,$engine);
+        $stmt = $this->mysqli->prepare("INSERT INTO feeds (userid,tag,name,datatype,public,engine,unit) VALUES (?,?,?,?,?,?,?)");
+        $stmt->bind_param("issiiis",$userid,$tag,$name,$datatype,$public,$engine,$unit);
         $stmt->execute();
         $stmt->close();
         
@@ -137,7 +137,8 @@ class Feed
                     'tag'=>$tag,
                     'public'=>false,
                     'size'=>0,
-                    'engine'=>$engine
+                    'engine'=>$engine,
+                    'unit'=>$unit
                 ));
             }
 
@@ -194,33 +195,64 @@ class Feed
             $this->redis->del("feed:$feedid");
             $this->redis->srem("user:feeds:$userid",$feedid);
         }
-
-        if (isset($feed_exists_cache[$feedid])) { unset($feed_exists_cache[$feedid]); } // Clear static cache
-        if (isset($feed_engine_cache[$feedid])) { unset($feed_engine_cache[$feedid]); } // Clear static cache
         $this->log->info("delete() feedid=$feedid");
+    }
+
+    public function trim($feedid,$start_time)
+    {
+        $response = false;
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine trim method
+        $response = $this->EngineClass($engine)->trim($feedid, $start_time);
+
+        $this->log->info("feed model: trim() feedid=$feedid");
+        return $response;
+    }
+    public function clear($feedid)
+    {
+        $response = false;
+        $feedid = (int) $feedid;
+        if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
+
+        $engine = $this->get_engine($feedid);
+
+        if ($this->settings['redisbuffer']['enabled']) {
+            // Call to buffer delete
+            $this->EngineClass(Engine::REDISBUFFER)->delete($feedid);
+        }
+
+        // Call to engine clear method
+        $response = $this->EngineClass($engine)->clear($feedid);
+
+        $this->log->info("feed model: clear() feedid=$feedid");
+        return $response;
     }
 
     public function exist($feedid)
     {
         $feedid = (int) $feedid;
-        static $feed_exists_cache = array(); // Array to hold the cache
-        if (isset($feed_exists_cache[$feedid])) {
-            $feedexist = $feed_exists_cache[$feedid]; // Retrieve from static cache
-        } else {
-            $feedexist = false;
-            if ($this->redis) {
-                if (!$this->redis->exists("feed:$feedid")) {
-                    if ($this->load_feed_to_redis($feedid)) {
-                        $feedexist = true;
-                    }
-                } else {
+
+        $feedexist = false;
+        if ($this->redis) {
+            if (!$this->redis->exists("feed:$feedid")) {
+                if ($this->load_feed_to_redis($feedid)) {
                     $feedexist = true;
                 }
             } else {
-                $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
-                if ($result->num_rows>0) $feedexist = true;
+                $feedexist = true;
             }
-            $feed_exists_cache[$feedid] = $feedexist; // Cache it
+        } else {
+            $result = $this->mysqli->query("SELECT id FROM feeds WHERE id = '$feedid'");
+            if ($result->num_rows>0) $feedexist = true;
         }
         return $feedexist;
     }
@@ -244,7 +276,7 @@ class Feed
     public function get_id($userid,$name)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\w\s-:]/','',$name);
+        $name = preg_replace('/[^\w\s\-:]/','',$name);
         
         $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND name=?");
         $stmt->bind_param("is",$userid,$name);
@@ -259,10 +291,10 @@ class Feed
     public function exists_tag_name($userid,$tag,$name)
     {
         $userid = (int) $userid;
-        $name = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$name);
-        $tag = preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$tag);
+        $name = preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$name);
+        $tag = preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$tag);
         
-        $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND name=? AND tag=?");
+        $stmt = $this->mysqli->prepare("SELECT id FROM feeds WHERE userid=? AND BINARY name=? AND BINARY tag=?");
         $stmt->bind_param("iss",$userid,$name,$tag);
         $stmt->execute();
         $stmt->bind_result($id);
@@ -352,6 +384,9 @@ class Feed
             $lastvalue = $this->get_timevalue($id);
             $row['time'] = $lastvalue['time'];
             $row['value'] = $lastvalue['value'];
+            $meta = $this->get_meta($id);
+            if (isset($meta->start_time)) $row['start_time'] = $meta->start_time;
+            if (isset($meta->interval)) $row['interval'] = $meta->interval;
             $feeds[] = $row;
         }
 
@@ -370,6 +405,9 @@ class Feed
                 $lastvirtual = $this->EngineClass(Engine::VIRTUALFEED)->lastvalue($row['id']);
                 $row['time'] = $lastvirtual['time'];
                 $row['value'] = $lastvirtual['value'];
+                $meta = $this->get_meta($row['id']);
+                $row['start_time'] = $meta->start_time;
+                $row['interval'] = $meta->interval;
             }
             $feeds[] = $row;
         }
@@ -447,7 +485,7 @@ class Feed
 
         if ($field!=null) // if the feed exists
         {
-            $field = preg_replace('/[^\w\s-]/','',$field);
+            $field = preg_replace('/[^\w\s\-]/','',$field);
          
             if ($field=='time' || $field=='value') {
                 $lastvalue = $this->get_timevalue($id);
@@ -535,9 +573,9 @@ class Feed
 
         if ($this->settings['redisbuffer']['enabled']) {
             // Add redisbuffer cache if available
-            $bufferstart=end($data)[0];
+            if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) $bufferstart=$start; else $bufferstart=end($data)[0];
+            
             $bufferdata = $this->EngineClass(Engine::REDISBUFFER)->get_data($feedid,$bufferstart,$end,$outinterval,$skipmissing,$limitinterval);
-
             if (!empty($bufferdata)) {
                 $this->log->info("get_data() Buffer cache merged feedid=$feedid start=". reset($data)[0]/1000 ." end=". end($data)[0]/1000 ." bufferstart=". reset($bufferdata)[0]/1000 ." bufferend=". end($bufferdata)[0]/1000);
 
@@ -573,7 +611,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
         
-        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
+        if ($engine != Engine::PHPFINA && $engine != Engine::PHPTIMESERIES && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina, PHPTimeseries AND MySQLTimeseries");
         
         // Call to engine get_data
         $userid = $this->get_field($feedid,"userid");
@@ -590,7 +628,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         $engine = $this->get_engine($feedid);
         
-        if ($engine != Engine::PHPFINA) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND PHPTimeseries");
+        if ($engine != Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
         // Call to engine get_data
         $userid = $this->get_field($feedid,"userid");
@@ -606,7 +644,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         
         $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA) return false;
+        if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
         
         return $this->EngineClass($engine)->get_average($feedid,$start,$end,$outinterval);
     }
@@ -617,7 +655,7 @@ class Feed
         if (!$this->exist($feedid)) return array('success'=>false, 'message'=>'Feed does not exist');
         
         $engine = $this->get_engine($feedid);
-        if ($engine!=Engine::PHPFINA) return false;
+        if ($engine!=Engine::PHPFINA && $engine != Engine::MYSQL ) return array('success'=>false, 'message'=>"This request is only supported by PHPFina AND MySQLTimeseries");
 
         // Call to engine get_data
         $userid = $this->get_field($feedid,"userid");
@@ -694,7 +732,7 @@ class Feed
             $feedids[$i] = $feedid;
         }
         // Basic name input sanitisation
-        $name = preg_replace('/[^\w\s-]/','',$name);
+        $name = preg_replace('/[^\w\s\-]/','',$name);
         
         global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
         
@@ -790,7 +828,7 @@ class Feed
         }
         
         if (isset($fields->tag)) {
-            if (preg_replace('/[^\p{N}\p{L}_\s-:]/u','',$fields->tag)!=$fields->tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
+            if (preg_replace('/[^\p{N}\p{L}_\s\-:]/u','',$fields->tag)!=$fields->tag) return array('success'=>false, 'message'=>'invalid characters in feed tag');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET tag = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->tag,$id);
                 if ($stmt->execute()) $success = true;
@@ -800,7 +838,7 @@ class Feed
         }
 
         if (isset($fields->unit)) {
-            if (preg_replace('/[^\p{N}\p{L}_°%\s-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed unit');
+            if (preg_replace('/[^\p{N}\p{L}_°\/%\s\-:]/u','',$fields->unit)!=$fields->unit) return array('success'=>false, 'message'=>'invalid characters in feed unit');
             if (strlen($fields->unit) > 10) return array('success'=>false, 'message'=>'feed unit too long');
             if ($stmt = $this->mysqli->prepare("UPDATE feeds SET unit = ? WHERE id = ?")) {
                 $stmt->bind_param("si",$fields->unit,$id);
@@ -984,12 +1022,18 @@ class Feed
     }
 
     public function set_processlist($userid, $id, $processlist, $process_list)
-    {    
+    {
         $userid = (int) $userid;
         
         // Validate processlist
         $pairs = explode(",",$processlist);
         $pairs_out = array();
+        
+        // Build map of processids where set
+        $map = array();
+        foreach ($process_list as $key=>$process) {
+            if (isset($process['id_num'])) $map[$process['id_num']] = $key;
+        }
         
         foreach ($pairs as $pair)
         {
@@ -997,15 +1041,28 @@ class Feed
             if (count($inputprocess)==2) {
             
                 // Verify process id
-                $processid = $inputprocess[0];
-                if (!isset($process_list[$processid])) return array('success'=>false, 'message'=>_("Invalid process"));
+                $processkey = $inputprocess[0];
+                // If key is in the map, switch to associated full process key
+                if (isset($map[$processkey])) $processkey = $map[$processkey];
+            
+                // Load process
+                if (isset($process_list[$processkey])) {
+                    $processarg = $process_list[$processkey]['argtype'];
+                    $proccess_name = $process_list[$processkey]['function'];
+                    
+                    // remap process back to use map id if available
+                    if (isset($process_list[$processkey]['id_num']))
+                        $processkey = $process_list[$processkey]['id_num'];
+                    
+                } else {
+                    return array('success'=>false, 'message'=>_("Invalid process processid:$processkey"));
+                }
                 
                 // Verify argument
                 $arg = $inputprocess[1];
 
                 // Stop virtual feeds from adding email and mqtt processes.
-                $isVirtual = $this->get($id)['engine']==7;
-                $proccess_name = $process_list[$processid][2];
+                $isVirtual = $this->get_engine($id)===7;
                 $not_for_virtual_feeds = array('publish_to_mqtt','sendEmail');
                 if (in_array($proccess_name, $not_for_virtual_feeds) && $isVirtual) {
                     $this->log->error('Publish to MQTT and SendMail blocked for Virtual Feeds');
@@ -1013,12 +1070,15 @@ class Feed
                 }
 
                 // Check argument against process arg type
-                switch($process_list[$processid][1]){
+                switch($processarg){
                 
                     case ProcessArg::FEEDID:
                         $feedid = (int) $arg;
+                        $isVirtual = $this->get_engine($id)===7;
                         if (!$this->access($userid,$feedid)) {
                             return array('success'=>false, 'message'=>_("Invalid feed"));
+                        } else if ($isVirtual) {
+                            return array('success'=>false, 'message'=>_("Cannot use virtual feed as source"));
                         }
                         break;
                         
@@ -1036,7 +1096,7 @@ class Feed
                         break;
 
                     case ProcessArg::TEXT:
-                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.-]/u','',$arg)!=$arg) 
+                        if (preg_replace('/[^{}\p{N}\p{L}_\s\/.\-]/u','',$arg)!=$arg) 
                             return array('success'=>false, 'message'=>'Invalid characters in argx'); 
                         break;
                                                 
@@ -1056,7 +1116,7 @@ class Feed
                         break;
                 }
                 
-                $pairs_out[] = implode(":",array($processid,$arg));
+                $pairs_out[] = implode(":",array($processkey,$arg));
             }
         }
         
@@ -1133,23 +1193,17 @@ class Feed
     /* Other helpers */
     private function get_engine($feedid)
     {
-        static $feed_engine_cache = array(); // Array to hold the cache
-        if (isset($feed_engine_cache[$feedid])) {
-            $engine = $feed_engine_cache[$feedid]; // Retrieve from static cache
+        if ($this->redis) {
+            $engine = $this->redis->hget("feed:$feedid",'engine');
         } else {
-            if ($this->redis) {
-                $engine = $this->redis->hget("feed:$feedid",'engine');
-            } else {
-                $result = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
-                $row = $result->fetch_object();
-                $engine = $row->engine;
-            }
-            $feed_engine_cache[$feedid] = $engine; // Cache it
+            $result = $this->mysqli->query("SELECT engine FROM feeds WHERE `id` = '$feedid'");
+            $row = $result->fetch_object();
+            $engine = $row->engine;
         }
         return $engine;
     }
     
-    private function get_user_timezone($userid) 
+    public function get_user_timezone($userid) 
     {
         $userid = (int) $userid;
         $result = $this->mysqli->query("SELECT timezone FROM users WHERE id = '$userid';");
