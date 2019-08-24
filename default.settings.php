@@ -90,6 +90,8 @@
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
     $themecolor = "blue";
+    // Show menu titles when screen size is large enough
+    $show_menu_titles = false;
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon.png";
