@@ -71,11 +71,15 @@
         )
     );
     
-    // For use with emoncms module that require installation in home directory
-    // $homedir = "/home/username";
+    // Suggested installation path for symlinked emoncms modules /opt/emoncms/modules
+    $emoncms_dir = "/opt/emoncms";
+    // Suggested installation path for emonpi and EmonScripts repository:
+    $openenergymonitor_dir = "/opt/openenergymonitor";
 
     // Max number of allowed different inputs per user. For limiting garbage rf data
     $max_node_id_limit = 32;
+    // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
+    $max_datapoints = 8928;
 
 
 //5 #### User Interface settings
@@ -86,6 +90,8 @@
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
     $themecolor = "blue";
+    // Show menu titles when screen size is large enough
+    $show_menu_titles = false;
 
     // Favicon filenme in Theme/$theme
     $favicon = "favicon.png";

@@ -107,11 +107,14 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
 
     if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
-    if (!isset($data_sampling)) $data_sampling = true; // default
 
-    if (!isset($fullwidth)) $fullwidth = false;
+    if (!isset($max_datapoints)) $max_datapoints = 8928; // default
+
+    if (!isset($data_sampling)) $data_sampling = true; // default
+    
     if (!isset($menucollapses)) $menucollapses = true;
     if (!isset($favicon)) $favicon = "favicon.png";
+    if (!isset($show_menu_titles)) $show_menu_titles = true;
     if (!isset($email_verification)) $email_verification = false;
     if (!isset($admin_show_update)) $admin_show_update = true;
 
@@ -125,12 +128,16 @@ if(file_exists(dirname(__FILE__)."/settings.php"))
     
     if (!isset($homedir)) $homedir = "/home/pi";
     if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
-
+    
+    // emoncms_dir and openenergymonitor_dir to replace homedir as installation path reference
+    if (!isset($emoncms_dir)) $emoncms_dir = $homedir;
+    if (!isset($openenergymonitor_dir)) $openenergymonitor_dir = $homedir;
+    
     if (!isset($linked_modules_dir)) {
-        if (is_dir("$homedir/modules")) {
-            $linked_modules_dir = "$homedir/modules";
+        if (is_dir("$emoncms_dir/modules")) {
+            $linked_modules_dir = "$emoncms_dir/modules";
         } else {
-            $linked_modules_dir = $homedir;
+            $linked_modules_dir = $emoncms_dir;
         }
     }
 

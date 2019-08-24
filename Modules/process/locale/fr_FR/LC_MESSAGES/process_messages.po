@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: emoncms\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-08-06 13:03+0200\n"
-"PO-Revision-Date: 2018-08-06 14:58+0200\n"
+"POT-Creation-Date: 2019-06-29 14:18+0200\n"
+"PO-Revision-Date: 2019-06-29 14:20+0200\n"
 "Last-Translator: Aymeric THIBAUT\n"
 "Language-Team: Baptiste Gaultier (Télécom Bretagne) <baptiste."
 "gaultier@telecom-bretagne.eu>\n"
@@ -14,18 +14,18 @@ msgstr ""
 "X-Poedit-KeywordsList: _;gettext;gettext_noop\n"
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 2.1.1\n"
+"X-Generator: Poedit 2.2.3\n"
 "X-Poedit-SearchPath-0: ../../..\n"
 
-#: ../../../Views/process_api.php:7
+#: ../../../Views/process_api.php:5
 msgid "Process API"
 msgstr "API traitement"
 
-#: ../../../Views/process_api.php:8
+#: ../../../Views/process_api.php:6
 msgid "Apikey authentication"
 msgstr "Authentification clé API"
 
-#: ../../../Views/process_api.php:9
+#: ../../../Views/process_api.php:7
 msgid ""
 "If you want to call any of the following actions when your not logged in you "
 "have this options to authenticate with the API key:"
@@ -33,57 +33,57 @@ msgstr ""
 "Si vous souhaitez appeler une des actions suivantes alors que vous n'êtes "
 "pas connecté, vous pouvez vous authentifier avec votre clé API :"
 
-#: ../../../Views/process_api.php:10
+#: ../../../Views/process_api.php:8
 msgid "Append on the URL of your request: &apikey=APIKEY"
 msgstr "Veuillez ajouter votre clé d'API à la fin de l'url : &apikey=APIKEY"
 
-#: ../../../Views/process_api.php:11
+#: ../../../Views/process_api.php:9
 msgid "Use POST parameter: \"apikey=APIKEY\""
 msgstr "Utilisez le paramètre POST \"apikey=APIKEY\""
 
-#: ../../../Views/process_api.php:12
+#: ../../../Views/process_api.php:10
 msgid "Add the HTTP header: \"Authorization: Bearer APIKEY\""
 msgstr "Ajoutez l'en-tête HTTP : \"Authorization: Bearer APIKEY\""
 
-#: ../../../Views/process_api.php:13
+#: ../../../Views/process_api.php:11
 msgid "Read only:"
 msgstr "Lecture uniquement : "
 
-#: ../../../Views/process_api.php:16
+#: ../../../Views/process_api.php:14
 msgid "Read & Write:"
 msgstr "Lecture & Écriture : "
 
-#: ../../../Views/process_api.php:20
+#: ../../../Views/process_api.php:18
 msgid "Available HTML URLs"
 msgstr "URLs HTML disponibles"
 
-#: ../../../Views/process_api.php:22
+#: ../../../Views/process_api.php:20
 msgid "This page"
 msgstr "Cette page"
 
-#: ../../../Views/process_api.php:25
+#: ../../../Views/process_api.php:23
 msgid "Available JSON commands"
 msgstr "Commandes JSON disponibles"
 
-#: ../../../Views/process_api.php:26
+#: ../../../Views/process_api.php:24
 msgid "To use the json api the request url needs to include <b>.json</b>"
 msgstr ""
 "Si vous souhaitez utiliser l'API json, veuillez ajouter <b>.json</b> à la "
 "fin de l'url"
 
-#: ../../../Views/process_api.php:29
+#: ../../../Views/process_api.php:27
 msgid "Process actions"
 msgstr "Actions de traitement"
 
-#: ../../../Views/process_api.php:31
+#: ../../../Views/process_api.php:29
 msgid "List all supported process"
 msgstr "Lister tous les traitements supportés"
 
-#: ../../../Views/process_ui.php:38
+#: ../../../Views/process_ui.php:41
 msgid "process list setup"
 msgstr "paramétrage liste des traitements"
 
-#: ../../../Views/process_ui.php:41
+#: ../../../Views/process_ui.php:44
 msgid ""
 "Processes are executed sequentially with the result value being passed down "
 "for further processing to the next processor on this processing list."
@@ -92,124 +92,136 @@ msgstr ""
 "transmise pour traitement ultérieur au processus suivant sur cette liste de "
 "traitement."
 
-#: ../../../Views/process_ui.php:43
+#: ../../../Views/process_ui.php:46
 msgid "You have no processes defined"
 msgstr "Vous n'avez aucun traitement défini"
 
-#: ../../../Views/process_ui.php:48
+#: ../../../Views/process_ui.php:51
 msgid "Order"
 msgstr "Ordre"
 
-#: ../../../Views/process_ui.php:49
+#: ../../../Views/process_ui.php:52
 msgid "Process"
 msgstr "Traitement"
 
-#: ../../../Views/process_ui.php:51
+#: ../../../Views/process_ui.php:54
 msgid "Arg"
 msgstr "Argument"
 
-#: ../../../Views/process_ui.php:52
+#: ../../../Views/process_ui.php:55
 msgid "Latest"
 msgstr "Dernière valeur"
 
-#: ../../../Views/process_ui.php:53
+#: ../../../Views/process_ui.php:56
 msgid "Actions"
 msgstr "Actions"
 
-#: ../../../Views/process_ui.php:60
+#: ../../../Views/process_ui.php:63
 msgid "Add process"
 msgstr "Ajouter un traitement"
 
-#: ../../../Views/process_ui.php:65
+#: ../../../Views/process_ui.php:68
 msgid "Edit process"
 msgstr "Modifier un traitement"
 
-#: ../../../Views/process_ui.php:73 ../../../process_langjs.php:44
+#: ../../../Views/process_ui.php:76 ../../../process_langjs.php:44
 msgid "Value"
 msgstr "Valeur"
 
-#: ../../../Views/process_ui.php:74
+#: ../../../Views/process_ui.php:77
 msgid "Type value..."
 msgstr "Saisir valeur..."
 
-#: ../../../Views/process_ui.php:80 ../../../process_langjs.php:43
+#: ../../../Views/process_ui.php:83 ../../../process_langjs.php:43
 msgid "Text"
 msgstr "Texte"
 
-#: ../../../Views/process_ui.php:81
+#: ../../../Views/process_ui.php:84
 msgid "Type text..."
 msgstr "Saisir texte..."
 
-#: ../../../Views/process_ui.php:87 ../../../process_langjs.php:35
+#: ../../../Views/process_ui.php:90 ../../../process_langjs.php:35
 #: ../../../process_processlist.php:145 ../../../process_processlist.php:157
 #: ../../../process_processlist.php:198 ../../../process_processlist.php:212
 #: ../../../process_processlist.php:224 ../../../process_processlist.php:354
 msgid "Input"
 msgstr "Source"
 
-#: ../../../Views/process_ui.php:96
+#: ../../../Views/process_ui.php:99
 msgid "Schedule"
 msgstr "Planification"
 
-#: ../../../Views/process_ui.php:105
+#: ../../../Views/process_ui.php:108
 msgid "Data"
 msgstr "Données"
 
-#: ../../../Views/process_ui.php:117 ../../../process_langjs.php:33
+#: ../../../Views/process_ui.php:120 ../../../process_langjs.php:33
 #: ../../../process_processlist.php:445 ../../../process_processlist.php:457
 #: ../../../process_processlist.php:469 ../../../process_processlist.php:481
 msgid "Feed"
 msgstr "Flux"
 
-#: ../../../Views/process_ui.php:120
+#: ../../../Views/process_ui.php:125
+msgid "Type feed tag..."
+msgstr "Saisir étiquette du flux..."
+
+#: ../../../Views/process_ui.php:125
+msgid "Tag"
+msgstr "Étiquette"
+
+#: ../../../Views/process_ui.php:128
 msgid "Type feed name..."
 msgstr "Saisir nom du flux..."
 
-#: ../../../Views/process_ui.php:126
+#: ../../../Views/process_ui.php:128
+msgid "Name"
+msgstr "Nom"
+
+#: ../../../Views/process_ui.php:133
 msgid "Engine"
 msgstr "Moteur"
 
-#: ../../../Views/process_ui.php:139
+#: ../../../Views/process_ui.php:146
 msgid "Select interval"
 msgstr "Sélectionner intervalle"
 
-#: ../../../Views/process_ui.php:140 ../../../Views/process_ui.php:141
-#: ../../../Views/process_ui.php:142 ../../../Views/process_ui.php:143
-#: ../../../Views/process_ui.php:144 ../../../Views/process_ui.php:145
+#: ../../../Views/process_ui.php:147 ../../../Views/process_ui.php:148
+#: ../../../Views/process_ui.php:149 ../../../Views/process_ui.php:150
+#: ../../../Views/process_ui.php:151 ../../../Views/process_ui.php:152
 msgid "s"
 msgstr "s"
 
-#: ../../../Views/process_ui.php:146 ../../../Views/process_ui.php:147
-#: ../../../Views/process_ui.php:148 ../../../Views/process_ui.php:149
-#: ../../../Views/process_ui.php:150 ../../../Views/process_ui.php:151
+#: ../../../Views/process_ui.php:153 ../../../Views/process_ui.php:154
+#: ../../../Views/process_ui.php:155 ../../../Views/process_ui.php:156
+#: ../../../Views/process_ui.php:157 ../../../Views/process_ui.php:158
 msgid "m"
 msgstr "m"
 
-#: ../../../Views/process_ui.php:152
+#: ../../../Views/process_ui.php:159
 msgid "h"
 msgstr "h"
 
-#: ../../../Views/process_ui.php:153
+#: ../../../Views/process_ui.php:160
 msgid "d"
 msgstr "j"
 
-#: ../../../Views/process_ui.php:160
+#: ../../../Views/process_ui.php:167
 msgid "Add"
 msgstr "Ajouter"
 
-#: ../../../Views/process_ui.php:165 ../../../process_langjs.php:32
+#: ../../../Views/process_ui.php:172 ../../../process_langjs.php:32
 msgid "Edit"
 msgstr "Modifier"
 
-#: ../../../Views/process_ui.php:168
+#: ../../../Views/process_ui.php:175
 msgid "Cancel"
 msgstr "Annuler"
 
-#: ../../../Views/process_ui.php:179
+#: ../../../Views/process_ui.php:186
 msgid "Close"
 msgstr "Fermer"
 
-#: ../../../Views/process_ui.php:180 ../../../process_langjs.php:40
+#: ../../../Views/process_ui.php:187 ../../../process_langjs.php:40
 msgid "Not modified"
 msgstr "Non modifié"
 
@@ -299,6 +311,7 @@ msgid "x"
 msgstr "x"
 
 #: ../../../process_processlist.php:93 ../../../process_processlist.php:105
+#: ../../../process_processlist.php:810
 msgid "Calibration"
 msgstr "Calibrage"
 
@@ -624,7 +637,6 @@ msgstr ""
 "sélectionné la valeur la plus élevée atteinte chaque jour</p>"
 
 #: ../../../process_processlist.php:438
-#| msgid " + feed"
 msgid "+ feed"
 msgstr "+ feed"
 
@@ -637,7 +649,6 @@ msgstr ""
 "dans la liste des flux.</p>"
 
 #: ../../../process_processlist.php:450
-#| msgid " - feed"
 msgid "- feed"
 msgstr "- feed"
 
@@ -650,7 +661,6 @@ msgstr ""
 "dans la liste des flux.</p>"
 
 #: ../../../process_processlist.php:462
-#| msgid " * feed"
 msgid "* feed"
 msgstr "* feed"
 
@@ -663,7 +673,6 @@ msgstr ""
 "dans la liste des flux.</p>"
 
 #: ../../../process_processlist.php:474
-#| msgid " / feed"
 msgid "/ feed"
 msgstr "/ feed"
 
@@ -937,7 +946,6 @@ msgstr ""
 "les demandes de visualisations qui utilisent ce flux virtuel.</p>"
 
 #: ../../../process_processlist.php:704
-#| msgid " + source feed"
 msgid "+ source feed"
 msgstr "+ source feed"
 
@@ -946,7 +954,6 @@ msgid "<p>Add the specified feed.</p>"
 msgstr "<p>Ajoute le flux spécifié.</p>"
 
 #: ../../../process_processlist.php:716
-#| msgid " - source feed"
 msgid "- source feed"
 msgstr "- source feed"
 
@@ -955,7 +962,6 @@ msgid "<p>Subtract the specified feed.</p>"
 msgstr "<p>Soustrait le flux spécifié.</p>"
 
 #: ../../../process_processlist.php:728
-#| msgid " * source feed"
 msgid "* source feed"
 msgstr "* source feed"
 
@@ -964,7 +970,6 @@ msgid "<p>Multiply by specified feed.</p>"
 msgstr "<p>Multiplie par le flux spécifié.</p>"
 
 #: ../../../process_processlist.php:740 ../../../process_processlist.php:752
-#| msgid " / source feed"
 msgid "/ source feed"
 msgstr "/ source feed"
 
@@ -1002,7 +1007,6 @@ msgstr ""
 "d'éléments et supprimez cette entrée pour reprendre l'exécution.</p>"
 
 #: ../../../process_processlist.php:777
-#| msgid "Max daily value"
 msgid "Max value allowed"
 msgstr "Max value allowed"
 
@@ -1015,7 +1019,6 @@ msgstr ""
 "passée au traitement suivant est <i>max value allowed</i></p>"
 
 #: ../../../process_processlist.php:790
-#| msgid "Min daily value"
 msgid "Min value allowed"
 msgstr "Min value allowed"
 
@@ -1026,6 +1029,20 @@ msgid ""
 msgstr ""
 "<p>Si la valeur est inférieure à <i>min value allowed</i> alors la valeur "
 "passée au traitement suivant est <i>min value allowed</i></p>"
+
+#: ../../../process_processlist.php:803
+msgid "Absolute value"
+msgstr "Valeur absolue"
+
+#: ../../../process_processlist.php:811
+msgid ""
+"<p>Return the absolute value of the current value. This can be useful for "
+"calibrating a particular variable on the web rather than by reprogramming "
+"hardware.</p>"
+msgstr ""
+"<p>Décale la valeur absolue d'une valeur donnée. Cela peut être utile pour "
+"calibrer une variable particulière sur le web plutôt que par reprogrammation "
+"matérielle.</p>"
 
 #~ msgid "1/ source feed"
 #~ msgstr "1/ source feed"
@@ -1316,9 +1333,6 @@ msgstr ""
 
 #~ msgid "Key"
 #~ msgstr "Clé"
-
-#~ msgid "Name"
-#~ msgstr "Nom"
 
 #~ msgid "Invalid process"
 #~ msgstr "Traitement non valide"

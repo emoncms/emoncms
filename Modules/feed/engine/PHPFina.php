@@ -383,6 +383,8 @@ class PHPFina implements engine_methods
     */
     public function get_data($name,$start,$end,$interval,$skipmissing,$limitinterval)
     {
+        global $max_datapoints;
+        
         $skipmissing = (int) $skipmissing;
         $limitinterval = (int) $limitinterval;
         $start = intval($start/1000);
@@ -395,7 +397,7 @@ class PHPFina implements engine_methods
         if ($end<=$start) return array('success'=>false, 'message'=>"request end time before start time");
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $max_datapoints) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
         
         // If meta data file does not exist exit
         if (!$meta = $this->get_meta($name)) return array('success'=>false, 'message'=>"Error reading meta data feedid=$name");
@@ -941,6 +943,8 @@ class PHPFina implements engine_methods
         
     public function get_average($id,$start,$end,$interval)
     {
+        global $max_datapoints;
+
         $start = intval($start/1000);
         $end = intval($end/1000);
         $interval= (int) $interval;
@@ -949,7 +953,7 @@ class PHPFina implements engine_methods
         if ($interval<1) $interval = 1;
         // Maximum request size
         $req_dp = round(($end-$start) / $interval);
-        if ($req_dp>8928) return array('success'=>false, 'message'=>"Request datapoint limit reached (8928), increase request interval or time range, requested datapoints = $req_dp");
+        if ($req_dp > $max_datapoints) return array('success'=>false, 'message'=>"Request datapoint limit reached (" . $max_datapoints . "), increase request interval or time range, requested datapoints = $req_dp");
         
         $layer_interval = 0;
         //if ($interval>=600) $layer_interval = 600;

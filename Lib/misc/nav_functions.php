@@ -21,8 +21,15 @@ if (!isset($session['profile'])) {
  * @return string <li><a> link
  */
 function makeListLink($params) {
-    global $route;
+    global $route, $session;
     $activeClassName = 'active';
+    
+    $public = getKeyValue('public', $params);
+    $public_only = getKeyValue('public_only', $params);
+    $admin_only = getKeyValue('admin_only', $params);
+
+    $logged_in = isset($session['read']) && $session['read'];
+    $is_admin = isset($session['admin']) && $session['admin'];
 
     $li_id = getKeyValue('li_id', $params);
     $li_class = array_filter( (array) getKeyValue('li_class', $params));
@@ -35,6 +42,8 @@ function makeListLink($params) {
     $href = getKeyValue('href', $params);
     $title = getKeyValue('title', $params);
     $icon = getKeyValue('icon', $params);
+    $order = getKeyValue('order', $params);
+    
     $active = array_filter( (array) getKeyValue('active', $params));
     $sub_items = array_filter( (array) getKeyValue('sub_items', $params));
     $style = array_filter( (array) getKeyValue('style', $params));
@@ -60,7 +69,8 @@ function makeListLink($params) {
         'active'=> $active,
         'data'=> $data,
         'style'=> $style,
-        'attr'=> $attr
+        'attr'=> $attr,
+        'order'=>$order
     ));
     $attr = buildAttributes(array_merge($li_attr, array(
         'id' => $li_id,
@@ -77,7 +87,9 @@ function makeListLink($params) {
         }
         $link .= '<ul class="dropdown-menu">'.implode("\n", $sub_items).'</ul>';
     }
-    return empty($link) ? '' : sprintf('<li%s>%s</li>', $attr, $link);
+    if(($admin_only && $is_admin || !$admin_only) && $logged_in && !$public_only || !$logged_in && $public) {
+        return empty($link) ? '' : sprintf('<li%s>%s</li>', $attr, $link);
+    }
 }
 /**
  * returns true if current view's url matches passed $path(s)
@@ -116,10 +128,35 @@ function path_is_current($path) {
 /**
  * return the current route path
  *
- * @return void
+ * @return string
  */
 function current_route() {
-    return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    global $path;
+    if ( (!empty($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] == 'https') ||
+         (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ||
+         (!empty($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == '443') ) {
+        $parts['scheme'] = 'https';
+    } else {
+        $parts['scheme'] = 'http';
+    }
+    if(!empty($_SERVER['SERVER_NAME'])) {
+        $parts['host'] = $_SERVER['SERVER_NAME'];
+    } elseif (!empty($_SERVER['HTTP_HOST'])) {
+        $parts['host'] = $_SERVER['HTTP_HOST'];
+    }
+    if(!empty($_SERVER['REQUEST_URI'])) {
+        $parts['path'] = $_SERVER['REQUEST_URI'];
+    }
+    $url = (isset($parts['scheme']) ? "{$parts['scheme']}:" : '') . 
+    ((isset($parts['user']) || isset($parts['host'])) ? '//' : '') . 
+    (isset($parts['host']) ? "{$parts['host']}" : '') . 
+    (isset($parts['port']) ? ":{$parts['port']}" : '') . 
+    (isset($parts['path']) ? "{$parts['path']}" : '') . 
+    (isset($parts['query']) ? "?{$parts['query']}" : '');
+
+    // return the app's route (not full url)
+    $current_route = str_replace($path,'',$url);
+    return filter_var($current_route, FILTER_VALIDATE_URL) ? $current_route: '';
 }
 /**
  * return $array[$key] value if not empty
@@ -145,7 +182,7 @@ function tab($num){
 }
 /**
  * build <a> link with 'active' class added if is current page
- * $params = assoc array with keys: [text|path|title|class|id|icon|active|href|data]
+ * $params = assoc array with keys: [text|path|title|class|id|icon|active|href|data|public|public_only]
  *
  * @param array $params associative array
  * @return string <a> tag
@@ -160,6 +197,7 @@ function makeLink($params) {
     $id = getKeyValue('id', $params);
     $icon = getKeyValue('icon', $params);
     $active = getKeyValue('active', $params);
+    $order = getKeyValue('order', $params);
     
     $style = array_filter((array) getKeyValue('style', $params));
     $class = array_filter((array) getKeyValue('class', $params));
@@ -201,6 +239,7 @@ function makeLink($params) {
     if(empty($href)) return $text;
 
     // return <a> tag with all the attributes and child elements
+    // return sprintf('<a %s>%s %s</a>', $attr, $text, $order);
     return sprintf('<a %s>%s</a>', $attr, $text);
 }
 /**
@@ -249,18 +288,15 @@ function buildAttributes($attributes){
 /**
  * return full url of given relative path of controller/action
  *
- * @param string $_path
+ * @param string $_path eg. feed/list
  * @return string eg. http://localhost/emoncms/feed/list
  */
 function getAbsoluteUrl($_passedPath) {
-    if(empty($_passedPath)) return '';
     global $path;
+    if(empty($_passedPath)) return '';
+
     // if passed path ($_passedPath) begins with /emoncms remove it
     $_passedPathParts = getPathParts($_passedPath);
-    // if first path part is 'emoncms' remove it
-    if(getKeyValue(0, $_passedPathParts)=='emoncms') {
-        array_shift($_passedPathParts);
-    }
     // add to global $path 
     $url = $path . implode('/', $_passedPathParts);
     
@@ -276,7 +312,7 @@ function getAbsoluteUrl($_passedPath) {
         $url .= '?' . $query;
     }
     // encode the url parts like a application/x-www-form-urlencoded
-    return encodePath($url);
+    return $url;
 }
 
 /**
@@ -369,23 +405,24 @@ function encodeMenuItemUrl(&$item) {
  * 
  * individually encode the parts of given $path string
  *
- * @param string $path
- * @return string
+ * @param string $passed_path relative or absolute url
+ * @return string encoded relative or absolute url
  */
-function encodePath($path){
+function encodePath($passed_path) {
+    global $path;
     // split url into parts
-    $parts = parse_url($path);
+    $parts = parse_url($passed_path);
     // encode url path parts
     if(isset($parts['path'])) {
         $path_parts = [];
-        foreach(getPathParts($path) as $p) {
+        foreach(getPathParts($passed_path) as $p) {
             $path_parts[] = urlencode($p);
         }
         $parts['path'] = implode('/', $path_parts);
     }
     
     if(isset($parts['query'])) {
-        $query_parts = getQueryParts($path);
+        $query_parts = getQueryParts($passed_path);
         $query_parts = array_map('urldecode', $query_parts);
         $parts['query'] = http_build_query($query_parts);
     }
@@ -396,7 +433,7 @@ function encodePath($path){
     (isset($parts['port']) ? ":{$parts['port']}" : '') . 
     (isset($parts['path']) ? "/{$parts['path']}" : '') . 
     (isset($parts['query']) ? "?{$parts['query']}" : '');
-
+    
     return $url;
 }
 
@@ -699,27 +736,27 @@ function pathRequiresSidebar($path){
  * empty elements removed from array
  *
  * @param string $url if empty current route used
- * @return array
+ * @return array eg. ['input','view']
  */
-function getPathParts($path='') {
-    if(empty($path)) $path = current_route();
-    $path = parse_url($path, PHP_URL_PATH);
+function getPathParts($passed_path='') {
+    global $path;
+    if(empty($passed_path)) $passed_path = current_route();
+    $passed_path = str_replace($path,'',$passed_path);
+    $_path = parse_url($passed_path, PHP_URL_PATH);
     // separate the path by a forward slash
-    $pathParts = explode('/', $path);
-    return array_values(array_filter($pathParts));
+    $_pathParts = explode('/', $_path);
+    return array_values(array_filter($_pathParts));
 }
 /**
  * return the first part of the route path (controller name)
- * eg: if $path is /emoncms/input/view function will return "input"
+ * eg: if $path is input/view function will return "input"
  *
  * @param string $path
  * @return string
  */
 function getPathController($path='') {
-    // getPathParts return array with 'emoncms' as the first
     $parts = getPathParts($path);
-    array_shift($parts); // drop off the first segment
-    return array_shift($parts); // return the original 2nd segment
+    return array_shift($parts); // return the first item
 }
 
 /**
@@ -904,52 +941,6 @@ function getChildMenuItems($parent) {
     }
     return $children;
 }
-/**
- * check if any menu items match the current request path
- *
- * @param [type] $child
- * @return boolean
- */
-function hasActiveParents($child) {
-    global $menu;
-    $parents = getParents($child);
-    foreach($parents as $parent) {
-        $parentUrl = getKeyValue('path',$parent);
-        $routeUrl = getAbsoluteUrl(current_route());
-        if($parentUrl === $routeUrl) {
-            return true;
-        }
-    }
-    return false;
-}
-/**
- * return list of menu items that share the same controller 
- *
- * @param array $child a menu item
- * @return array
- */
-function getParents($child) {
-    global $menu;
-    $parents = array();
-    foreach($menu['sidebar'] as $sub_menu) {
-        foreach($sub_menu as $item) {
-            $path1 = getKeyValue('path',$child);
-            $path2 = getKeyValue('path',$item);
-
-            $url1 = getAbsoluteUrl($path1);
-            $url2 = getAbsoluteUrl($path2);
-
-            $controller1 = getPathController($path1);
-            $controller2 = getPathController($path2);
-
-            // save matching controllers. ignore self
-            if($controller1 === $controller2 && $url1 != $url2) {
-                $parents[] = $item;
-            }
-        }
-    }
-    return $parents;
-}
 
 /**
  * return true if current route is bookmarked by user
@@ -959,8 +950,8 @@ function getParents($child) {
 function currentPageIsBookmarked(){
     // @todo: change this to retreive current bookmarks when user logs in
     global $mysqli, $user, $session, $route;
-    require_once "Modules/dashboard/dashboard_model.php";
-    $current_path = str_replace('/emoncms/','',current_route());
+
+    $current_path = current_route();
     if(!empty($route->query)) $current_path.='?'.$route->query;
 
     if($bookmarks = $user->getUserBookmarks($session['userid'])) {
@@ -970,11 +961,15 @@ function currentPageIsBookmarked(){
             }
         }
     }
-    
-    if($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
-        foreach($dashboard_bookmarks as $b) {
-            if (!empty($b['path']) && $b['path']===$current_path){
-                return true;
+
+    if (file_exists("Modules/dashboard/dashboard_model.php")) {
+        require_once "Modules/dashboard/dashboard_model.php";
+
+        if($dashboard_bookmarks = getUserBookmarkedDashboards($session['userid'])) {
+            foreach($dashboard_bookmarks as $b) {
+                if (!empty($b['path']) && $b['path']===$current_path){
+                    return true;
+                }
             }
         }
     }

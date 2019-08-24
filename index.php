@@ -11,7 +11,6 @@
 
     */
     
-    $ltime = microtime(true);
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
@@ -330,39 +329,41 @@
             $menu = load_menu();
             
             // EMONCMS MENU
-            $menu['tabs'][] = array(
-                'icon'=>'menu',
-                'title'=> _("Emoncms"),
-                'path' => 'feed/list',
-                'order' => 0,
-                'data'=> array(
-                    'sidebar' => '#sidebar_emoncms'
-                )
-            );
+            if($session['write']){
+                $menu['tabs'][] = array(
+                    'icon'=>'menu',
+                    'title'=> _("Emoncms"),
+                    'text'=> _("Setup"),
+                    'path' => 'feed/list',
+                    'order' => 0,
+                    'data'=> array(
+                        'sidebar' => '#sidebar_emoncms'
+                    )
+                );
+            }
 
             include_once ("Lib/misc/nav_functions.php");
             sortMenu($menu);
             // debugMenu('sidebar');
-            
+            $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
             
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
-            
-            if($fullwidth) $output['page_classes'][] = 'fullwidth';
 
-            if($session['read']){
-                $output['sidebar'] = view($themeDir . "sidebar_view.php", 
-                array(
-                    'menu' => $menu,
-                    'path' => $path,
-                    'session' => $session,
-                    'route' => $route
-                ));
-                $output['page_classes'][] = 'has-sidebar';
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", 
+            array(
+                'menu' => $menu,
+                'path' => $path,
+                'session' => $session,
+                'route' => $route
+            ));
+            $output['page_classes'][] = 'has-sidebar';
+            if (!$session['read']) {
+                $output['page_classes'][] = 'collapsed manual';
+            } else {
+                if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
             }
-            
-
             print view($themeDir . "theme.php", $output);
         }
     }
@@ -381,10 +382,3 @@
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         print "URI not acceptable. Unknown format '".$route->format."'.";
     }
-
-    $ltime = microtime(true) - $ltime;
-
-    // if ($session['userid']>0) {
-    //  $redis->incr("user:postcount:".$session['userid']);
-    //  $redis->incrbyfloat("user:reqtime:".$session['userid'],$ltime);
-    // }

@@ -7,10 +7,11 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-global $path, $session, $menu, $user;
+global $path, $session, $menu, $user,$show_menu_titles;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
+
 ?>
 <?php
 // if not logged in show login button top right
@@ -46,7 +47,13 @@ if(!empty($menu['tabs'])) {
         // add active class to <li>  if item in matching sidebar is current page/route
         if(is_current_menu($matching_menu)) $item['li_class'][] = 'active';
         // render menu item
-        echo makeListLink($item);
+        $item['data']['hide-narrow'] = true;
+
+        if(!$show_menu_titles){
+            $item['text'] = '';
+        }
+
+        echo makeListLink($item)."\n";
     }
 }
 
@@ -81,6 +88,7 @@ if($isBookmarked){
 } else {
     $removeBookmark['li_class'] = 'd-none';
 }
+
 if ($session['write']) {
     echo makeListLink($removeBookmark);
     echo makeListLink($addBookmark);
@@ -109,29 +117,32 @@ if ($session['read']) {
 <?php
 // top navbar user menu
 $menu_index = 'user';
-if($session['read']){
-    $item = array(
-        'title' => $session['username'],
-        'href' => '#',
-        'icon' => 'user',
-        'class'=> 'grav-container img-circle',
-        'id'=>'user-dropdown',
-    );
-    $item['li_class'][] = 'menu-user';
-    $item['li_class'][] = 'd-flex';
-    $item['li_class'][] = 'align-items-center';
+$item = array(
+    'title' => $session['username'],
+    'href' => '#',
+    'icon' => 'user',
+    'class'=> 'grav-container img-circle',
+    'id'=>'user-dropdown',
+);
+$item['li_class'][] = 'menu-user';
+$item['li_class'][] = 'd-flex';
+$item['li_class'][] = 'align-items-center';
 
-    // use the text as the title if not available
-    if(empty($item['title'])) $item['title'] = $item['text'];
+// use the text as the title if not available
+if(empty($item['title'])) $item['title'] = $item['text'];
 
-    // indicate if user is admin
-    if ($session['admin'] == 1) {
-        settype($item['class'],'array');
-        $item['class'][] = 'is_admin';
-        $item['title'] .= sprintf(' (%s)',_('Admin'));
-    }
-    // add gravitar
-    $grav_email = $user->get($session['userid'])->gravatar;
+// indicate if user is admin
+if ($session['admin'] == 1) {
+    settype($item['class'],'array');
+    $item['class'][] = 'is_admin';
+    $item['title'] .= sprintf(' (%s)',_('Admin'));
+}
+
+// add gravitar
+$grav_user = $user->get($session['userid']);
+if(!empty($grav_user)) {
+    $grav_email = $grav_user->gravatar;
+
     if(!empty($grav_email)) {
         $item['icon'] = '';
         $atts['class'] = 'grav img-circle';
@@ -139,21 +150,28 @@ if($session['read']){
     } else {
         $item['li_class'][] = 'no-gravitar';
     }
-    // add user_menu.php items
-    if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $sub_item): 
-        $item['sub_items'][] = $sub_item;
-    endforeach; endif;
-
-    // build dropdown with above items
-    echo makeDropdown($item);
 
 } else {
-    // show login link to non-logged in users
+    $item['li_class'][] = 'no-gravitar';
+}
+// add user_menu.php items
+if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $sub_item): 
+    $item['sub_items'][] = $sub_item;
+endforeach; endif;
+
+// build dropdown with above items
+if(!$session['read']){
     if(!empty($menu[$menu_index])): foreach($menu[$menu_index] as $item): 
         echo makeListLink($item);
     endforeach; endif;
+}
 
-} ?>
+// Show Account menu only if write context
+if ($session['write']){
+    echo makeDropdown($item);
+}
+
+?>
 </ul>
 </div>
 
