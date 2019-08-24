@@ -18,7 +18,18 @@ require_once('Lib/enum.php');
 if(file_exists(dirname(__FILE__)."/settings.php")) {
     require_once('default-settings.php');
     require_once('settings.php');
-    if (!isset($settings)) $settings = array();
+    if (!isset($settings)) {
+        if (PHP_SAPI === 'cli') {
+            echo "settings.php file error\n";
+            echo "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php\n";
+        } else {
+            echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
+            echo "<h3>settings.php file error</h3>";
+            echo "<p>It looks like you are using an old version of <i>settings.php</i> try re-creating your <i>settings.php</i> file from <i>default-settings.php</i></p>";
+            echo "</div>";
+        }
+        die;
+    }
     $settings = array_replace_recursive($_settings,$settings);
 } else if(file_exists(dirname(__FILE__)."/settings.ini")) {
     $CONFIG_INI = parse_ini_file("default-settings.ini", true);
