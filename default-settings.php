@@ -72,7 +72,7 @@ $_settings = array(
         // If enabled is true, requires redis enabled and feedwriter service running
         'enabled' => false,
         // Number of seconds to wait before write buffer to disk - user selectable option
-        'redisbuffer_sleep' => 600
+        'sleep' => 600
     ),   
     
     // Engines working folder. Default is /var/lib/phpfiwa,phpfina,phptimeseries
@@ -86,7 +86,23 @@ $_settings = array(
     'virtualfeed'   => array('data_sampling' => false),
     'mysqltimeseries'   => array('data_sampling' => false),
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
-    'max_datapoints'        => 8928
+    'max_datapoints'        => 8928,
+    
+    // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
+    // The thousands separator is not used (specified as "nothing")
+    // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
+    // Adjust as appropriate for your location
+    // number of decimal places
+    'csv_decimal_places' => 2,
+
+    // decimal place separator
+    'csv_decimal_place_separator' => ".",
+
+    // field separator
+    'csv_field_separator' => ",",
+    
+    // Max csv download size in MB
+    'csv_downloadlimit_mb' => 25
 ),
 
 // User Interface settings
@@ -107,11 +123,11 @@ $_settings = array(
     // Favicon filenme in Theme/$theme
     'favicon' => "favicon.png",
 
-    // Use full screen width
-    'fullwidth' => true,
-
     // Main menu collapses on lower screen widths
     'menucollapses' => false,
+    
+    // Show menu titles
+    'show_menu_titles' => true,
     
     // Default controller and action if none are specified and user is anonymous
     'default_controller' => "user",
@@ -179,24 +195,6 @@ $_settings = array(
     // different logfile directory
     "location" => "/var/log/emoncms",
     // Log Level: 1=INFO, 2=WARN, 3=ERROR
-    "log_level" => 2
-),
-
-"csv"=>array(
-    // CSV export options for the number of decimal_places, decimal_place_separator and field_separator
-    // The thousands separator is not used (specified as "nothing")
-    // NOTE: don't make $csv_decimal_place_separator == $csv_field_separator
-    // Adjust as appropriate for your location
-    // number of decimal places
-    'decimal_places' => 2,
-
-    // decimal place separator
-    'decimal_place_separator' => ".",
-
-    // field separator
-    'field_separator' => ",",
-    
-    // Max csv download size in MB
-    'downloadlimit_mb' => 25
+    "level" => 2
 )
 );

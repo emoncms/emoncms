@@ -12,7 +12,7 @@
 global $settings;
 global $ltime,$path,$emoncms_version,$menu;
 
-$v = 7;
+$v = 10;
 
 if (!is_dir("Theme/".$settings["interface"]["theme"])) {
     $settings["interface"]["theme"] = "basic";
@@ -68,7 +68,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
         var path = "<?php echo $path ?>";
     </script>
 </head>
-<body class="<?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
+<body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
 
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
@@ -92,12 +92,11 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
         
         <?php
         $contentContainerClasses[] = 'content-container';
-        if ($settings["interface"]["fullwidth"] && $route->controller=="dashboard") { 
+        
+        if ($route->controller=="dashboard") { 
             $contentContainerClasses[] = '';
-        } else if ($settings["interface"]["fullwidth"]) { 
-            $contentContainerClasses[] = 'container-fluid';
         } else { 
-            $contentContainerClasses[] = 'container';
+            $contentContainerClasses[] = 'container-fluid';
         }?>
         <main class="<?php echo implode(' ',array_filter(array_unique($contentContainerClasses))) ?>">
             <?php echo $content; ?>

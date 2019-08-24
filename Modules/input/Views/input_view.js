@@ -139,11 +139,12 @@ function update_inputs() {
             }
             devices[nodeid].inputs.push(inputs[z]);
             // cache state in cookie
-            if(firstLoad) {
-                $('#input-loader').hide();
-                firstLoad = false;
-            }
         }
+        if(firstLoad) {
+            $('#input-loader').hide();
+            firstLoad = false;
+        }
+        
         draw_devices();
         noProcessNotification(devices);
     }});

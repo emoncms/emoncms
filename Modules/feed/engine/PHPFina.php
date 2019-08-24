@@ -713,7 +713,7 @@ class PHPFina implements engine_methods
             $time = $meta->start_time + $pos * $meta->interval;
             $timenew = $helperclass->getTimeZoneFormated($time,$usertimezone);
             // add to the data array if its not a nan value
-            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$settings["csv"]["field_separator"].number_format($val[1],$settings["csv"]["decimal_places"],$settings["csv"]["decimal_place_separator"],'')."\n");
+            if (!is_nan($val[1])) fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format($val[1],$settings["feed"]["csv_decimal_places"],$settings["feed"]["csv_decimal_place_separator"],'')."\n");
 
             $i++;
         }

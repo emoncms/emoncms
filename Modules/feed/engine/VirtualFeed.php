@@ -185,7 +185,7 @@ class VirtualFeed implements engine_methods
 
     public function csv_export($feedid,$start,$end,$outinterval,$usertimezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator;
+        global $settings;
         
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -210,8 +210,8 @@ class VirtualFeed implements engine_methods
         for ($i=0; $i<$max; $i++){
             $timenew = $helperclass->getTimeZoneFormated($data[$i][0]/1000,$usertimezone);
             $value = $data[$i][1];
-            if ($value != null) $value = number_format($value,$csv_decimal_places,$csv_decimal_place_separator,'');
-            fwrite($exportfh, $timenew.$csv_field_separator.$value."\n");
+            if ($value != null) $value = number_format($value,$settings['feed']['csv_decimal_places'],$settings['feed']['csv_decimal_place_separator'],'');
+            fwrite($exportfh, $timenew.$settings['feed']['csv_field_separator'].$value."\n");
         }
         fclose($exportfh);
         exit;

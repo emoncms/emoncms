@@ -69,11 +69,14 @@
 
   vis_feed_data();
 
-  $(window).resize(function(){
+  $(window).resize(vis_resize);
+  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     if (embed) $('#graph').height($(window).height());
     vis_feed_data();
-  });
+  }
 
   function vis_feed_data()
   {
