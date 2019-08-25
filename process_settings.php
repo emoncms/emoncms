@@ -15,20 +15,15 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 require_once('Lib/enum.php');
 
 // Load settings.php
+$settings_error = false;
+
 if(file_exists(dirname(__FILE__)."/settings.php")) {
     require_once('default-settings.php');
     require_once('settings.php');
     if (!isset($settings)) {
-        if (PHP_SAPI === 'cli') {
-            echo "settings.php file error\n";
-            echo "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php\n";
-        } else {
-            echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
-            echo "<h3>settings.php file error</h3>";
-            echo "<p>It looks like you are using an old version of <i>settings.php</i> try re-creating your <i>settings.php</i> file from <i>default-settings.php</i></p>";
-            echo "</div>";
-        }
-        die;
+        $settings_error = true;
+        $settings_error_title = "settings.php file error";    
+        $settings_error_message = "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php";
     }
     $settings = array_replace_recursive($_settings,$settings);
 } else if(file_exists(dirname(__FILE__)."/settings.ini")) {
@@ -36,7 +31,25 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
     $CUSTOM_INI = parse_ini_file("settings.ini", true);
     $settings = ini_merge($CONFIG_INI, $CUSTOM_INI);
     // $settings = ini_check_envvars($settings);
+} else {
+    $settings_error = true;
+    $settings_error_title = "missing settings file";
+    $settings_error_message = "Create a settings.ini or settings.php file from a default-settings template";
 }
+
+if ($settings_error) {
+    if (PHP_SAPI === 'cli') {
+        echo "$settings_error_title\n";
+        echo "$settings_error_message\n";
+    } else {
+        echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
+        echo "<h3>$settings_error_title</h3>";
+        echo "<p>$settings_error_message</p>";
+        echo "</div>";
+    }
+    die;
+}
+
 // ---------------------------------------------------------------------------------------
 /*
 if (!isset($linked_modules_dir)) {
