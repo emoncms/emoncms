@@ -362,7 +362,7 @@
             if (!$session['read']) {
                 $output['page_classes'][] = 'collapsed manual';
             } else {
-                $output['page_classes'][] = 'auto';
+                if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
             }
             print view($themeDir . "theme.php", $output);
         }

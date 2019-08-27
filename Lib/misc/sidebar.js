@@ -12,7 +12,41 @@ $(function(){
             show_sidebar();
         }
     });
+    const activeClass = 'active';
+
+    // checks for sidebar items that match the current page
+    // uses the 'active' property of the *_menu.php files to match
     
+    // highlight active time on page load
+    checkActiveHashLinks()
+    
+    // highlight active item on browser hash change
+    window.addEventListener("hashchange", function(event) {
+        checkActiveHashLinks()
+    }, false);
+
+    // clear active item on click
+    $(document).on('click', '#sidebar [data-active]:not([data-sidebar])', function(event) {
+        $(event.currentTarget).parents('ul').first().find('li').removeClass(activeClass)
+    });
+
+    /**
+     * checks the sidebar for any links that match the current url and adds the active class to it's parent <li> 
+     */
+    function checkActiveHashLinks() {
+        var links_with_active = document.querySelectorAll('#sidebar [data-active]')
+        if(links_with_active) {
+            for(n in Object.values(links_with_active)) {
+                let link = links_with_active[n]
+                // mark active link on load
+                if(link.dataset.active === window.location.href) {
+                    link.parentNode.classList.add(activeClass)
+                }
+            }
+        }
+    }
+    
+
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event) {
         // if the link has a [data-is-link] attribute navigate to the link
@@ -23,9 +57,9 @@ $(function(){
             window.location.href = href;
             return false;
         }
+
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
-        const activeClass = 'active';
 
         // show 2nd level - if on 3rd level
         let secondlevel_menuitems = $('.sidebar-menu > li.collapse').length;

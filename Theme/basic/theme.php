@@ -11,7 +11,7 @@
 */
 global $route,$path,$emoncms_version,$theme,$themecolor,$favicon,$menu;
 
-$v = 9;
+$v = 10;
 
 if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
