@@ -10,7 +10,7 @@
   http://openenergymonitor.org
 */
 global $path,$theme,$themecolor;
-$v = 7;
+$v = 8;
 if (!is_dir("Theme/".$theme)) $theme = "basic";
 if (!in_array($themecolor, ["blue", "sun", "standard"])) $themecolor = "standard";
 ?>
