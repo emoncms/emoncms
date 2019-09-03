@@ -129,4 +129,5 @@ LANG_JS_VIS["Units to show"] = '<?php echo addslashes(dgettext('vis_messages',"U
 LANG_JS_VIS["Week"] = '<?php echo addslashes(dgettext('vis_messages',"Week")); ?>';
 LANG_JS_VIS["Year"] = '<?php echo addslashes(dgettext('vis_messages',"Year")); ?>';
 LANG_JS_VIS["Zoom"] = '<?php echo addslashes(dgettext('vis_messages',"Zoom")); ?>';
+LANG_JS_VIS["Display power as kW"] = '<?php echo addslashes(dgettext('vis_messages',"Display power as kW")); ?>';
 //END 
