@@ -65,6 +65,18 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
             return true; // true == prevents the firing of the default event handler.
         }
         var path = "<?php echo $path ?>";
+
+        $(function() {
+            // trigger jquery window.resized custom event after debounce delay
+            var resizeTimeout = false
+            window.addEventListener('resize', function(event) {
+                clearTimeout(resizeTimeout)
+                resizeTimeout = setTimeout(function() {
+                    $.event.trigger('window.resized')
+                }, 200);
+            })
+        })
+
     </script>
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
