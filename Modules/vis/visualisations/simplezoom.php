@@ -74,8 +74,7 @@
   feedlist[0] = {id: power, selected: 0, plot: {data: null, lines: { show: true, fill: true } } };
   feedlist[1] = {id: kwhd, mode:"daily", delta: delta, interval:86400, selected: 1, plot: {data: null, bars: { show: true, align: "center", barWidth: 3600*18*1000, fill: true}, yaxis:2} };
 
-  $(window).resize(vis_resize);
-  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
   
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());

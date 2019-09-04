@@ -34,6 +34,16 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) $themecolor = "standard
 
         <script>
             var path = "<?php echo $path ?>";
+            $(function(){
+                // trigger jquery window.resized custom event after debounce delay
+                var resizeTimeout = false
+                window.addEventListener('resize', function(event) {
+                    clearTimeout(resizeTimeout)
+                    resizeTimeout = setTimeout(function() {
+                        $.event.trigger('window.resized')
+                    }, 200);
+                })
+            })
         </script>
     </head>
     <body>

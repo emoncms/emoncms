@@ -65,8 +65,7 @@
     if (valid) vis_feed_data(apikey,feedid);
     if (feedid == 0) plotGraph();
 
-    $(window).resize(vis_resize);
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
     
     function vis_resize() {
       $('#graph').width($('#graph_bound').width());

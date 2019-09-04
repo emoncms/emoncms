@@ -184,9 +184,7 @@ $(function() {
         draw();
     });
         
-
-    $(window).resize(vis_resize);
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
     
     function vis_resize() {
         placeholder.width(placeholder_bound.width());
