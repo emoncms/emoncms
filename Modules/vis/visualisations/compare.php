@@ -72,7 +72,6 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var valid = "<?php echo $valid; ?>";
 

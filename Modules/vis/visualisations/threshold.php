@@ -53,7 +53,6 @@
   var thresholdA = <?php echo $thresholdA; ?>;
   var thresholdB = <?php echo $thresholdB; ?>;
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   
   var initzoom = urlParams.initzoom;

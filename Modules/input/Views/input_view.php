@@ -138,7 +138,6 @@ input[type="checkbox"] { margin:0px; }
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-    var path = "<?php echo $path; ?>";
     var device_module = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";

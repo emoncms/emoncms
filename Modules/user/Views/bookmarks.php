@@ -85,9 +85,7 @@
 </style>
 
 <script>
-var path = "<?php echo $path ?>";
 $(function(){
-    var path = "<?php echo $path ?>";
     // SHOW EDIT BOOKMARK FORM
     $(document).on('click', 'form[data-read] [data-title]', function(event) {
         event.preventDefault();

@@ -28,7 +28,6 @@ $device = $_GET['node'];
 
 <script>
 
-var path = "<?php echo $path; ?>";
 var device = "<?php echo $device; ?>";
 $("#devicename").html(jsUcfirst(device));
 

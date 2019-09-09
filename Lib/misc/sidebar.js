@@ -185,13 +185,8 @@ $(function(){
         let active_menu_name = active_menu.attr('id').split('-');
         active_menu_name.shift();
         
-        path = window.path; // e.g: http://localhost/emoncms
-        if(typeof path === 'undefined') {
-            console.log("Sidebar error: path undefined");
-            path = '';
-        }
         let relative_path = window.location.href.replace(path,''); // eg subtracts http://localhost/emoncms from http://localhost/emoncms/feed/list
-        let controller = relative_path.split('/')[0]; // eg. feed
+        let controller = relative_path.split('/')[0].replace(/(.*)#.*/,'$1'); // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
         let include = $('#' + include_id);
 

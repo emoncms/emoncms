@@ -61,7 +61,6 @@ var interval = 3600*24;
 
 var top_offset = 0;
 
-var path = "<?php echo $path; ?>";
 var apikey = "";
 
 // var feedid = urlParams['feedid'];

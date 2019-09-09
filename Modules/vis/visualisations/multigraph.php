@@ -38,7 +38,6 @@
 <script id="source" language="javascript" type="text/javascript">
 
     var mid = <?php echo $mid; ?>;
-    var path = "<?php echo $path; ?>";
     var embed = <?php echo $embed; ?>;
     var apikey = "<?php echo $apikey; ?>";
     var multigraphFeedlist = {};

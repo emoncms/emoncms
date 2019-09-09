@@ -389,7 +389,6 @@ body{padding:0!important}
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
 
-var path = "<?php echo $path; ?>";
 var feedviewpath = "<?php echo $feedviewpath; ?>";
 
 var feeds = {};
