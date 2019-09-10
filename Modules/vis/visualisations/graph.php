@@ -94,7 +94,6 @@
 </div>
 <script>
     app_graph.feedname = parseInt("<?php echo $feedid; ?>");
-    var path = "<?php echo $path; ?>";
     app_graph.init();
     app_graph.show();
 </script>

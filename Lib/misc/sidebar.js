@@ -78,43 +78,25 @@ $(function(){
     // on trigger sidebar hide/show
     $('#sidebar').on('hide.sidebar.collapse show.sidebar.collapse', function(event){
         // resize after slight delay
-        var interval = setInterval(function(){
-            if (typeof graph_resize === 'function'){
-                graph_resize();
+        var timeout = false
+        timeout = setTimeout(function(){
+            if(timeout) clearTimeout(timeout)
+            // if (typeof graph_resize === 'function'){
+            //     graph_resize();
+            // }
+            // if (typeof graph_draw === 'function'){
+            //     graph_draw();
+            // }
+            // @note: assumes the css animation takes 200ms
+            if(event.type === 'hide') {
+                $('#sidebar').trigger('hidden.sidebar.collapse')
+            }else{
+                $('#sidebar').trigger('shown.sidebar.collapse')
             }
-            if (typeof graph_draw === 'function'){
-                graph_draw();
-            }
-        }, 75);
-        // stop resizing
-        setTimeout(function(){
-            clearInterval(interval);
-        }, 300);
+        }, 200);
     });
 
-    // on finish sidebar hide/show
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse', function(event){
-        // resize once finished animating
-        if (typeof graph_resize === 'function'){
-            graph_resize();
-        }
-        if (typeof graph_draw === 'function'){
-            graph_draw();
-        }
-        if (typeof resize === 'function'){
-            resize();
-        }
-        if (typeof app_resize === 'function'){
-            app_resize();
-        }
-        if (typeof vis_resize === 'function'){
-            vis_resize();
-        }
-    });
-
-    // hide sidebar on smaller devices
-    window.addEventListener('resize', function(event) {
-    
+    $(document).on('window.resized', function(){
         if ($('body').hasClass('auto')) {
             if ($(window).width() < 870) {
                 hide_sidebar();
@@ -135,11 +117,10 @@ $(function(){
             }
         }
     })
-    
+
     // hide sidebar on load on narrow devices
     if ($(window).width() < 870) {
         document.body.classList.add('narrow','collapsed');
-        $('#sidebar').trigger('hidden.sidebar.collapse');
         hide_sidebar();
         // allow narrow screens to expand sidebar after delay to avoid animation of hiding sidebar
         setTimeout(function(){
@@ -172,13 +153,8 @@ $(function(){
         let active_menu_name = active_menu.attr('id').split('-');
         active_menu_name.shift();
         
-        path = window.path; // e.g: http://localhost/emoncms
-        if(typeof path === 'undefined') {
-            console.log("Sidebar error: path undefined");
-            path = '';
-        }
         let relative_path = window.location.href.replace(path,''); // eg subtracts http://localhost/emoncms from http://localhost/emoncms/feed/list
-        let controller = relative_path.split('/')[0]; // eg. feed
+        let controller = relative_path.split('/')[0].replace(/(.*)#.*/,'$1'); // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
         let include = $('#' + include_id);
 
@@ -310,27 +286,18 @@ $(function(){
     
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
-    // @note: assumes the css animation takes 300ms
     $('#sidebar').trigger('show.sidebar.collapse');
-    setTimeout(function(){
-        $('#sidebar').trigger('shown.sidebar.collapse');
-    }, 350);
     $('body').removeClass('collapsed').addClass('expanded');
     
     if ($(window).width() < 870) {
         $(".content-container").css("margin","2.7rem 0 0 0");
     } else {
         $(".content-container").css("margin","2.7rem 0 0 15rem");
-    } 
+    }
 }
 function hide_sidebar(options) {
-    // @note: assumes the css animation takes 300ms
     $('#sidebar').trigger('hide.sidebar.collapse');
-    setTimeout(function(){
-        $('#sidebar').trigger('hidden.sidebar.collapse');
-    }, 350);
     $('body').addClass('collapsed').removeClass('expanded');
-    
     $(".content-container").css("margin","2.7rem auto 0 auto");
 }
 

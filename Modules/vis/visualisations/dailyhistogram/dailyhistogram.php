@@ -73,7 +73,6 @@
     var kwhd = <?php echo $kwhd; ?>;
     var whw = <?php echo $whw; ?>;
     var power = <?php echo $power; ?>;
-    var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";
 
     $('#placeholder').width($('#test').width()-60);

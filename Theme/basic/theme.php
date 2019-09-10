@@ -20,7 +20,6 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     $themecolor = "standard";
 }
 ?>
-
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -41,35 +40,10 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
-
-    <script>
-        window.onerror = function(msg, source, lineno, colno, error) {
-            // return false;
-            if (msg.toLowerCase().indexOf("script error") > -1) {
-                alert('Script Error: See Browser Console for Detail');
-            }
-            else {
-                var messages = [
-                    'EmonCMS Error',
-                    '-------------',
-                    'Message: ' + msg,
-                    'Route: ' + source.replace('<?php echo $path; ?>',''),
-                    'Line: ' + lineno,
-                    'Column: ' + colno
-                ];
-                if (Object.keys(error).length > 0) {
-                    messages.push('Error: ' + JSON.stringify(error));
-                }
-                alert(messages.join("\n"));
-            }
-            return true; // true == prevents the firing of the default event handler.
-        }
-        var path = "<?php echo $path ?>";
-    </script>
+    <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <?php echo $mainmenu; ?>
         </div>
@@ -132,6 +106,5 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
     // end of module icons
     endif;
 ?>
-
 </body>
 </html>

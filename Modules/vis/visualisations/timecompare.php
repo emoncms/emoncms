@@ -33,7 +33,6 @@
 
 <script id="source" language="javascript" type="text/javascript">
 
-    var path = "<?php echo $path; ?>";
     var embed = <?php echo $embed; ?>;
     var apikey = "<?php echo $apikey; ?>";
     var feedid = "<?php echo $feedid; ?>";

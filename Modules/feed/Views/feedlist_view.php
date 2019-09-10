@@ -389,7 +389,6 @@ body{padding:0!important}
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
 
-var path = "<?php echo $path; ?>";
 var feedviewpath = "<?php echo $feedviewpath; ?>";
 
 var feeds = {};
@@ -410,11 +409,11 @@ function update() {
         // Show/hide no feeds alert
         $('#feed-loader').hide();
         if (data.length == 0){
-            $("#feed-header").hide();
+            //$("#feed-header").hide();
             $("#feed-footer").hide();
             $("#feed-none").show();
         } else {
-            $("#feed-header").show();
+            //$("#feed-header").show();
             $("#feed-footer").show();
             $("#feed-none").hide();
         }

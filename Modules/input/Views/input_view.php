@@ -18,9 +18,6 @@
 
 .container-fluid { padding: 0px 10px 0px 10px; }
 
-#table {
-    margin-top:3rem
-}
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -141,7 +138,6 @@ input[type="checkbox"] { margin:0px; }
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
-    var path = "<?php echo $path; ?>";
     var device_module = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";

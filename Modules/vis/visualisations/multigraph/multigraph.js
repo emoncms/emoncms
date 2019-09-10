@@ -293,8 +293,8 @@ function multigraphInit(element) {
   });
 
   vis_resize();
-  $(window).resize(vis_resize);
-  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+
+  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
   
   function vis_resize() {
     var width = $("#graph_bound").width();

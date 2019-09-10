@@ -291,12 +291,14 @@ function draw_devices()
     )
     
     if (out=="") {
-        $("#input-header").hide();
+        $("#table").css("margin-top","0em");
+        //$("#input-header").hide();
         $("#input-footer").show();
         $("#input-none").show();
         $("#feedlist-controls").hide();
     } else {
-        $("#input-header").show();
+        $("#table").css("margin-top","3em");
+        //$("#input-header").show();
         $("#input-footer").show();
         $("#input-none").hide();
         $("#feedlist-controls").show();

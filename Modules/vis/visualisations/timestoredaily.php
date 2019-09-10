@@ -61,7 +61,6 @@ var interval = 3600*24;
 
 var top_offset = 0;
 
-var path = "<?php echo $path; ?>";
 var apikey = "";
 
 // var feedid = urlParams['feedid'];
@@ -184,9 +183,7 @@ $(function() {
         draw();
     });
         
-
-    $(window).resize(vis_resize);
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
     
     function vis_resize() {
         placeholder.width(placeholder_bound.width());
