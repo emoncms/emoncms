@@ -376,7 +376,7 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Pi'); ?></h4>
         <dl class="row">
             <?php echo row(sprintf('<span class="align-self-center">%s</span>',_('Model')), $rpi_info['model'].'<div>'.RebootBtn().ShutdownBtn().'</div>','d-flex','d-flex align-items-center justify-content-between') ?>
-            <?php echo row(_('SoC'), $rpi_info['hw']) ?>
+            <!-- <?php echo row(_('SoC'), $rpi_info['hw']) ?> -->
             <?php echo row(_('Serial num.'), strtoupper(ltrim($rpi_info['sn'], '0'))) ?>
             <?php echo row(_('Temperature'), sprintf('%s - %s', $rpi_info['cputemp'], $rpi_info['gputemp'])) ?>
             <?php echo row(_('emonpiRelease'), $rpi_info['emonpiRelease']) ?>

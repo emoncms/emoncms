@@ -91,9 +91,10 @@
   monthsB = get_months(dataB);
   monthsC = get_months(dataC);
 
-  $(window).resize(vis_resize);
-  $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
+  $(function() {
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse', vis_resize);
+  })
+
   function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     $('#graph').height($('#graph_bound').height());
