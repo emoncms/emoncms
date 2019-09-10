@@ -91,12 +91,16 @@
   monthsB = get_months(dataB);
   monthsC = get_months(dataC);
 
-  $(window).resize(function(){
+  $(function() {
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse', vis_resize);
+  })
+
+  function vis_resize() {
     $('#graph').width($('#graph_bound').width());
     $('#graph').height($('#graph_bound').height());
     if (embed) $('#graph').height($(window).height());
     bargraph(monthsA.data,monthsB.data,monthsC.data,3600*24*20,"month");
-  });
+  }
 
   bargraph(monthsA.data,monthsB.data,monthsC.data,3600*24*20,"month");
 

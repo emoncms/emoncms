@@ -886,11 +886,12 @@ function update_inputs() {
             }
             devices[nodeid].inputs.push(inputs[z]);
             // cache state in cookie
-            if(firstLoad) {
-                $('#input-loader').hide();
-                firstLoad = false;
-            }
         }
+        if(firstLoad) {
+            $('#input-loader').hide();
+            firstLoad = false;
+        }
+        
         draw_devices();
         noProcessNotification(devices);
     }});
@@ -964,6 +965,36 @@ function resize_view() {
     var rowWidth = $("#app").width();
     hidden = {}
     keys = Object.keys(app.col).sort();
+    // show tooltip with device key on click 
+    $('#table [data-toggle="tooltip"]').tooltip({
+        trigger: 'manual',
+        container: 'body',
+        placement: 'left',
+        title: function(){
+           return $(this).data('device-key');
+        }
+    }).hover(
+        // show "fake" title (tooltip-title) on hover
+        function(e){
+            let $btn = $(this);
+            let title = !$btn.data('shown') ? $btn.data('tooltip-title') : '';
+            $btn.attr('title', title);
+        }
+    )
+    
+    if (out=="") {
+        $("#table").css("margin-top","0em");
+        //$("#input-header").hide();
+        $("#input-footer").show();
+        $("#input-none").show();
+        $("#feedlist-controls").hide();
+    } else {
+        $("#table").css("margin-top","3em");
+        //$("#input-header").show();
+        $("#input-footer").show();
+        $("#input-none").hide();
+        $("#feedlist-controls").show();
+    }
 
     var columnsWidth = 0
     for (k in keys) {

@@ -329,15 +329,18 @@
             $menu = load_menu();
             
             // EMONCMS MENU
-            $menu['tabs'][] = array(
-                'icon'=>'menu',
-                'title'=> _("Emoncms"),
-                'path' => 'feed/list',
-                'order' => 0,
-                'data'=> array(
-                    'sidebar' => '#sidebar_emoncms'
-                )
-            );
+            if($session['write']){
+                $menu['tabs'][] = array(
+                    'icon'=>'menu',
+                    'title'=> _("Emoncms"),
+                    'text'=> _("Setup"),
+                    'path' => 'feed/list',
+                    'order' => 0,
+                    'data'=> array(
+                        'sidebar' => '#sidebar_emoncms'
+                    )
+                );
+            }
 
             include_once ("Lib/misc/nav_functions.php");
             sortMenu($menu);
@@ -347,21 +350,20 @@
             
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
-            
-            if($fullwidth) $output['page_classes'][] = 'fullwidth';
 
-            if($session['read']){
-                $output['sidebar'] = view($themeDir . "sidebar_view.php", 
-                array(
-                    'menu' => $menu,
-                    'path' => $path,
-                    'session' => $session,
-                    'route' => $route
-                ));
-                $output['page_classes'][] = 'has-sidebar';
+            $output['sidebar'] = view($themeDir . "sidebar_view.php", 
+            array(
+                'menu' => $menu,
+                'path' => $path,
+                'session' => $session,
+                'route' => $route
+            ));
+            $output['page_classes'][] = 'has-sidebar';
+            if (!$session['read']) {
+                $output['page_classes'][] = 'collapsed manual';
+            } else {
+                if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
             }
-            
-
             print view($themeDir . "theme.php", $output);
         }
     }

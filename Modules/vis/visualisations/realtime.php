@@ -1,4 +1,4 @@
- <?php
+<?php
 /*
    All Emoncms code is released under the GNU Affero General Public License.
    See COPYRIGHT.txt and LICENSE.txt.
@@ -35,6 +35,7 @@
     var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";  
     var embed = <?php echo $embed; ?>;
+    var is_kw = <?php echo $kw === 1 ? 'true': 'false'; ?>;
     var data = [];
     var timerget;
     var fast_update_fps = 10;
@@ -60,7 +61,7 @@
     var end = now;                     // end time
     var interval = parseInt(((end*0.001+10) - (start*0.001-10)) / 800);
     data = get_feed_data(feedid,(start-10000),(end+10000),interval,1,1);
-    
+
     timerget = setInterval(getdp,7500);
     gpu_fast();
     //setInterval(fast,150);
@@ -82,11 +83,13 @@
       plot();
     }
 
-    $(window).resize(function(){
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    
+    function vis_resize() {
       graph.width(graph_bound.width());
       if (embed) graph.height($(window).height());
       window.requestAnimationFrame(plot);
-    });
+    }
 
     function getdp(){
       $.ajax({ url: 
@@ -95,16 +98,25 @@
         dataType: 'json', 
         async: true, 
         success: function(result) {
-          if (data.length==0 || data[data.length-1][0]!=result.time*1000) {
+          if (data[data.length-1] && data.length==0 || data[data.length-1][0]!=result.time*1000) {
             data.push([result.time*1000,parseFloat(result.value)]);
           }
-          if (data.length>0 && data[1][0]<(start)) data.splice(0, 1);
+          if (data.length>0 && data[1] && data[1][0]<(start)) data.splice(0, 1);
           data.sort();
         }
      });
     }
 
     function plot(){
+        if(is_kw) {
+            var word = 'converted';
+            for(n in data) {
+                if(data[n] && data[n][1] && typeof data[n][2] === 'undefined' && typeof data[n][2] !== word) {
+                    data[n][1] = data[n][1] / 1000;
+                    data[n][2] = word
+                }
+            }
+        }
       $.plot(graph,[{data: data, color: plotColour}],
       {
         canvas: true,

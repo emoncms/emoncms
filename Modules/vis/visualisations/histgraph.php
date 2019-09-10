@@ -65,11 +65,13 @@
     if (valid) vis_feed_data(apikey,feedid);
     if (feedid == 0) plotGraph();
 
-    $(window).resize(function(){
-    $('#graph').width($('#graph_bound').width());
-    if (embed) $('#graph').height($(window).height());
-    plotGraph();
-    });
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    
+    function vis_resize() {
+      $('#graph').width($('#graph_bound').width());
+      if (embed) $('#graph').height($(window).height());
+      plotGraph();
+    }
 
     // Plot flot graph
     function plotGraph()

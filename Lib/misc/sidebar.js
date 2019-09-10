@@ -12,16 +12,54 @@ $(function(){
             show_sidebar();
         }
     });
+    const activeClass = 'active';
+
+    // checks for sidebar items that match the current page
+    // uses the 'active' property of the *_menu.php files to match
     
+    // highlight active time on page load
+    checkActiveHashLinks()
+    
+    // highlight active item on browser hash change
+    window.addEventListener("hashchange", function(event) {
+        checkActiveHashLinks()
+    }, false);
+
+    // clear active item on click
+    $(document).on('click', '#sidebar [data-active]:not([data-sidebar])', function(event) {
+        $(event.currentTarget).parents('ul').first().find('li').removeClass(activeClass)
+    });
+
+    /**
+     * checks the sidebar for any links that match the current url and adds the active class to it's parent <li> 
+     */
+    function checkActiveHashLinks() {
+        var links_with_active = document.querySelectorAll('#sidebar [data-active]')
+        if(links_with_active) {
+            for(n in Object.values(links_with_active)) {
+                let link = links_with_active[n]
+                // mark active link on load
+                if(link.dataset.active === window.location.href) {
+                    link.parentNode.classList.add(activeClass)
+                }
+            }
+        }
+    }
+    
+
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event) {
         // if the link has a [data-is-link] attribute navigate to the link
         if(!event.currentTarget.dataset.isLink) {
             event.preventDefault();
+        } else {
+            var href = event.currentTarget.href;
+            window.location.href = href;
+            return false;
         }
+
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
-        const activeClass = 'active';
 
         // show 2nd level - if on 3rd level
         let secondlevel_menuitems = $('.sidebar-menu > li.collapse').length;
@@ -39,6 +77,8 @@ $(function(){
                 // closed sidebar
                 show_sidebar();
                 $sidebar_inner.addClass(activeClass).siblings().removeClass(activeClass)
+                if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
+                
             } else {
                 // already open sidebar
                 if ($sidebar_inner.hasClass(activeClass)) {
@@ -50,6 +90,7 @@ $(function(){
                         // @todo: make the sidebar show 2nd level and not hide_sidebar()
                         hide_sidebar();
                     }
+                    if ($('body').hasClass('auto')) $('body').toggleClass('auto manual')
                 } else {
                     // enable correct sidebar inner based on clicked tab
                     $sidebar_inner.addClass(activeClass).find('li a').each(function(){
@@ -69,50 +110,49 @@ $(function(){
     // on trigger sidebar hide/show
     $('#sidebar').on('hide.sidebar.collapse show.sidebar.collapse', function(event){
         // resize after slight delay
-        var interval = setInterval(function(){
-            if (typeof graph_resize === 'function'){
-                graph_resize();
+        var timeout = false
+        timeout = setTimeout(function(){
+            if(timeout) clearTimeout(timeout)
+            // if (typeof graph_resize === 'function'){
+            //     graph_resize();
+            // }
+            // if (typeof graph_draw === 'function'){
+            //     graph_draw();
+            // }
+            // @note: assumes the css animation takes 200ms
+            if(event.type === 'hide') {
+                $('#sidebar').trigger('hidden.sidebar.collapse')
+            }else{
+                $('#sidebar').trigger('shown.sidebar.collapse')
             }
-            if (typeof graph_draw === 'function'){
-                graph_draw();
-            }
-        }, 75);
-        // stop resizing
-        setTimeout(function(){
-            clearInterval(interval);
-        }, 300);
+        }, 200);
     });
 
-    // on finish sidebar hide/show
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse', function(event){
-        // resize once finished animating
-        if (typeof graph_resize === 'function'){
-            graph_resize();
-        }
-        if (typeof graph_draw === 'function'){
-            graph_draw();
-        }
-        if (typeof resize === 'function'){
-            resize();
-        }
-    });
-
-    // hide sidebar on smaller devices
-    window.addEventListener('resize', function(event) {
-        if ($(window).width() < 870) {
-            hide_sidebar();
-            document.body.classList.add('narrow');
-        }
-        if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
-            show_sidebar();
-            document.body.classList.remove('narrow');
+    $(document).on('window.resized', function(){
+        if ($('body').hasClass('auto')) {
+            if ($(window).width() < 870) {
+                hide_sidebar();
+                document.body.classList.add('narrow');
+            }
+            if ($(window).width() >= 870 && $(document.body).hasClass('collapsed')) {
+                show_sidebar();
+                document.body.classList.remove('narrow');
+            }
+        } else {
+            if (!$(document.body).hasClass('collapsed')) {
+                if ($(window).width() < 870) {
+                    $(".content-container").css("margin","2.7rem 0 0 0");
+                } else {
+                    $('body').toggleClass('manual auto')
+                    $(".content-container").css("margin","2.7rem 0 0 15rem");
+                }   
+            }
         }
     })
-    
+
     // hide sidebar on load on narrow devices
     if ($(window).width() < 870) {
         document.body.classList.add('narrow','collapsed');
-        $('#sidebar').trigger('hidden.sidebar.collapse');
         hide_sidebar();
         // allow narrow screens to expand sidebar after delay to avoid animation of hiding sidebar
         setTimeout(function(){
@@ -262,7 +302,6 @@ $(function(){
     $(document).on('click', '#menu-emoncms li.active a', hideMenuItems);
     // show hide 2nd / 3rd menu items
     // setTimeout(hideMenuItems, 100);
-    
 
     // save a cookie to remember user's choice to hide or show the bookmarks
     $('#sidebar_bookmarks').on('show hide', function(event) {
@@ -277,25 +316,22 @@ $(function(){
     });
 
 }); // end of jquery ready()
-
-
     
 // trigger the events to allow module js scripts to attach actions to the events
 function show_sidebar(options) {
-    // @note: assumes the css animation takes 300ms
     $('#sidebar').trigger('show.sidebar.collapse');
-    setTimeout(function(){
-        $('#sidebar').trigger('shown.sidebar.collapse');
-    }, 350);
     $('body').removeClass('collapsed').addClass('expanded');
+    
+    if ($(window).width() < 870) {
+        $(".content-container").css("margin","2.7rem 0 0 0");
+    } else {
+        $(".content-container").css("margin","2.7rem 0 0 15rem");
+    }
 }
 function hide_sidebar(options) {
-    // @note: assumes the css animation takes 300ms
     $('#sidebar').trigger('hide.sidebar.collapse');
-    setTimeout(function(){
-        $('#sidebar').trigger('hidden.sidebar.collapse');
-    }, 350);
     $('body').addClass('collapsed').removeClass('expanded');
+    $(".content-container").css("margin","2.7rem auto 0 auto");
 }
 
 

@@ -35,6 +35,7 @@ if (!isset($session['profile'])) {
 }
 $third_level_open_status = array();
 $default_nav = 'emoncms';
+if ($session['profile']) $default_nav = 'dashboard';
 // blank menus
 $second_level_menus = array(); // sidebars & dropdowns
 $third_level_menus = array(); // sub menu sidebars
@@ -42,31 +43,6 @@ $third_level_includes = array(); // module specific sidebar include
 $bookmarks = array();
 
 global $mysqli,$user;
-
-if (file_exists("Modules/dashboard/dashboard_model.php")) {
-require_once "Modules/dashboard/dashboard_model.php";
-$dashboard = new Dashboard($mysqli);
-$default_dashboard = array();
-foreach($dashboard->get_list($session['userid'],false,false) as $item){
-    if($item['main']===true){
-        $default_dash = $item;
-    }
-    if($item['published']===true){
-        $fav_dash[] = $item;
-    }
-}
-}
-// ADD DEFAULT DASHBOARD
-if (!empty($default_dash)) {
-    $bookmarks[] = array(
-        'text' => _('Default Dashboard'),
-        'title'=> sprintf('%s - %s',$default_dash['name'], $default_dash['description']),
-        'icon' => 'star',
-        'order'=> 999,
-        'path' => 'dashboard/view?id='.$default_dash['id'],
-        'li_class' => array('default-dashboard')
-    );
-}
 
 // build the individual menu parts
 foreach($menu['sidebar'] as $menu_key => $sub_menu) {
@@ -136,6 +112,7 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
                     // active 2nd level menu item (parent)
                     if ($route->controller === getPathController(getKeyValue('path', $item))) {
                         $item['li_class'][] = 'in';
+                        if( empty($item['text'])) $item['text'] = "";
                         if( empty($item['title'])) $item['title'] = stripslashes($item['text']);
                         $item['text'].='<span class="pull-right third-level-indicator">';
                         $item['text'].='  <svg class="icon"><use xlink:href="#icon-arrow_back"></use></svg>';
@@ -161,22 +138,13 @@ foreach($second_level_menus as $menu_key => $second_level_menu) {
     $active_css = is_current_group($second_level_menu) ||  ($menu_key == $default_nav && $empty_sidebar) ? ' active': '';
     $_close = _('Close');
 
-
-
 // logic ends here (should be in a controller or model?? eg. sidebar_controller.php)
 // -------------------------------------------------------
 // view starts here
-
-
-
-
-
     echo <<<SIDEBARSTART
-
     <div id="sidebar_{$menu_key}" class="sidebar-inner{$active_css}">
         <a href="#" class="btn btn-large btn-link pull-right btn-dark btn-inverse text-light d-md-none p-3 pb-2" data-toggle="slide-collapse" data-target="#sidebar" title="{$_close}">&times;</a>
         <h4 class="sidebar-title">{$menu_key}</h4>
-
 SIDEBARSTART;
 
     if(!empty($markup)) {
@@ -217,41 +185,41 @@ if (session_status() == PHP_SESSION_NONE) {
 $expanded = true;
 
 if($session['write']){ ?>
-                <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
-                <?php
-                    echo makeLink(array(
-                        'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
-                        'class'=> array('d-none',!$expanded ? 'collapsed':''),
-                        'href' => '#',
-                        'id' => 'sidebar_user_toggle',
-                        'data' => array(
-                            'toggle' => 'collapse',
-                            'target' => '#sidebar_bookmarks'
-                        )
-                    ));
-                ?>
-                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">
-                        Bookmarks 
-                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
-                    </h4>
-                    <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
-                    <?php 
-                        // bookmarks
-                        // make menu item link to the original and not the bookmark 
-                        foreach ($bookmarks as $item){
-                            $url_parts = parse_url($item['path']);
-                            $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
-                            if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
-                            $item['path'] = ''; // empty original relative path
-                            // highlight active bookmark
-                            if(is_current($item['href'])) {
-                                $item['li_class'][] = 'active';
-                            }
-                            echo makeListLink($item);
-                        }
-                    ?>
-                    </ul>
-                    <!-- used to add more bookmarks -->
-                    <template id="bookmark_link"><li><a href=""></a></li></template>
-                </div>
+    <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
+        <?php
+        echo makeLink(array(
+            'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
+            'class'=> array('d-none',!$expanded ? 'collapsed':''),
+            'href' => '#',
+            'id' => 'sidebar_user_toggle',
+            'data' => array(
+                'toggle' => 'collapse',
+                'target' => '#sidebar_bookmarks'
+            )
+        ));
+        ?>
+        <h4 class="sidebar-title d-flex justify-content-between align-items-center">
+            Bookmarks 
+            <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+        </h4>
+        <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
+        <?php 
+            // bookmarks
+            // make menu item link to the original and not the bookmark 
+            foreach ($bookmarks as $item){
+                $url_parts = parse_url($item['path']);
+                $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
+                if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
+                $item['path'] = ''; // empty original relative path
+                // highlight active bookmark
+                if(is_current($item['href'])) {
+                    $item['li_class'][] = 'active';
+                }
+                echo makeListLink($item);
+            }
+        ?>
+        </ul>
+        <!-- used to add more bookmarks -->
+        <template id="bookmark_link"><li><a href=""></a></li></template>
+    </div>
 <?php } ?>

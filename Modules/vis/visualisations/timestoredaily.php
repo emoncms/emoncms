@@ -184,13 +184,14 @@ $(function() {
         draw();
     });
         
-
-    $(window).resize(function(){
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    
+    function vis_resize() {
         placeholder.width(placeholder_bound.width());
         if (embed) placeholder.height($(window).height()-top_offset);
 
         plot();
-    });
+    }
 });
 
 </script>
