@@ -946,13 +946,11 @@ function draw_devices() {
         }
     }
     app.col.A = ((max_name_length * 8) + 30);
-    app.col.G = ((max_description_length * 8) + 40); // additional padding to accomodate description length
-    app.col.D = ((max_time_length * 8) + 20);
+    app.col.G = ((max_description_length * 8) + 55); // additional padding to accomodate description length
+    app.col.D = ((max_time_length * 8) + 15);
     app.col.E = ((max_value_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
     app.col.H = 200
     
-    col_max = JSON.parse(JSON.stringify(app.col));
-
     resize_view();
 
     app.devices = devices
@@ -961,7 +959,8 @@ function draw_devices() {
 }
 
 function resize_view() {
-    // Hide columns 
+    // Hide columns
+    var col_max = JSON.parse(JSON.stringify(app.col));
     var rowWidth = $("#app").width();
     hidden = {}
     keys = Object.keys(app.col).sort();
@@ -982,20 +981,6 @@ function resize_view() {
         }
     )
     
-    if (out=="") {
-        $("#table").css("margin-top","0em");
-        //$("#input-header").hide();
-        $("#input-footer").show();
-        $("#input-none").show();
-        $("#feedlist-controls").hide();
-    } else {
-        $("#table").css("margin-top","3em");
-        //$("#input-header").show();
-        $("#input-footer").show();
-        $("#input-none").hide();
-        $("#feedlist-controls").show();
-    }
-
     var columnsWidth = 0
     for (k in keys) {
         let key = keys[k]
