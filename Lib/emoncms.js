@@ -13,7 +13,7 @@
 "use strict";
 
 var _SETTINGS = {
-    show_errors: false // false to allow errors to be handled by browser developer console
+    show_errors: true // false to allow errors to be handled by browser developer console
 }
 
 /**
