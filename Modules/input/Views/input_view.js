@@ -216,7 +216,7 @@ function draw_devices()
             var input = device.inputs[i];
             var selected = selected_inputs[input.id] ? 'checked': '';
             var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
-            latest_update[node] = latest_update > input.time ? latest_update : input.time;
+            latest_update[node] = latest_update[node] > input.time ? latest_update[node] : input.time;
 
             var fv = list_format_updated_obj(input.time);
 
