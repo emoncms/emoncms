@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings,$param,$device;
+    global $mysqli, $redis, $user, $session, $route, $feed_settings, $param, $device, $path;
     
     // requires at least read access
     if (!isset($session['read'])) return false;
@@ -116,7 +116,13 @@ function input_controller()
         else if ($route->action == 'view') {
             $route->format = "html";
             textdomain("messages");
-            return view("Modules/input/Views/input_view.php");
+            $device_module = false;
+            if (file_exists("Modules/device")) $device_module = true;
+            return view("Modules/input/Views/input_view.php", array(
+                'v' => 4,
+                'path' => $path,
+                'device_module' => $device_module
+            ));
         }    
         else if ($device && $route->action == 'schedule') {
             $route->format = "html";
