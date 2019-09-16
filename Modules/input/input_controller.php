@@ -181,6 +181,7 @@ function input_controller()
 
     else if ($route->action == "list") return $input->getlist($session['userid']);
     else if ($route->action == "getinputs") return $input->get_inputs($session['userid']);
+    else if ($route->action == "get_inputs") return $input->get_inputs($session['userid']);
 
     return array('content'=>$result);
 }
