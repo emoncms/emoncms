@@ -60,7 +60,6 @@
 <script id="source" language="javascript" type="text/javascript">
   var kwhd = <?php echo $kwhd; ?>;
   var power = <?php echo $power; ?>;
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var embed = <?php echo $embed; ?>;
   var delta = <?php echo $delta; ?>;

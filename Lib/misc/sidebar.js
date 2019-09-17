@@ -12,40 +12,8 @@ $(function(){
             show_sidebar();
         }
     });
-    const activeClass = 'active';
-
-    // checks for sidebar items that match the current page
-    // uses the 'active' property of the *_menu.php files to match
-    
-    // highlight active time on page load
-    checkActiveHashLinks()
-    
-    // highlight active item on browser hash change
-    window.addEventListener("hashchange", function(event) {
-        checkActiveHashLinks()
-    }, false);
-
-    // clear active item on click
-    $(document).on('click', '#sidebar [data-active]:not([data-sidebar])', function(event) {
-        $(event.currentTarget).parents('ul').first().find('li').removeClass(activeClass)
-    });
-
-    /**
-     * checks the sidebar for any links that match the current url and adds the active class to it's parent <li> 
-     */
-    function checkActiveHashLinks() {
-        var links_with_active = document.querySelectorAll('#sidebar [data-active]')
-        if(links_with_active) {
-            for(n in Object.values(links_with_active)) {
-                let link = links_with_active[n]
-                // mark active link on load
-                if(link.dataset.active === window.location.href) {
-                    link.parentNode.classList.add(activeClass)
-                }
-            }
-        }
-    }
-    
+ 
+    highlightBookmarkButton();
 
     // open sidebar if active page link clicked
     $('#left-nav li a').on('click', function(event) {
@@ -60,6 +28,7 @@ $(function(){
 
         const $link = $(this);
         const $sidebar_inner = $($link.data('sidebar')); // (.sidebar_inner)
+        const activeClass = 'active';
 
         // show 2nd level - if on 3rd level
         let secondlevel_menuitems = $('.sidebar-menu > li.collapse').length;
@@ -185,13 +154,8 @@ $(function(){
         let active_menu_name = active_menu.attr('id').split('-');
         active_menu_name.shift();
         
-        path = window.path; // e.g: http://localhost/emoncms
-        if(typeof path === 'undefined') {
-            console.log("Sidebar error: path undefined");
-            path = '';
-        }
         let relative_path = window.location.href.replace(path,''); // eg subtracts http://localhost/emoncms from http://localhost/emoncms/feed/list
-        let controller = relative_path.split('/')[0]; // eg. feed
+        let controller = relative_path.split('/')[0].replace(/(.*)#.*/,'$1'); // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
         let include = $('#' + include_id);
 
@@ -206,7 +170,7 @@ $(function(){
         return decodeURIComponent(window.location.search.replace(new RegExp("^(?:.*[&\\?]" + encodeURIComponent(key).replace(/[\.\+\*]/g, "\\$&") + "(?:\\=([^&]*))?)?.*$", "i"), "$1"));  
     }
     // add current page to user's bookmark list
-    $('#set-bookmark, #remove-bookmark').click(function(event){
+    $('#set-bookmark, #remove-bookmark').click(function(event) {
         event.preventDefault();
         var bookmarks = [];
         var $nav = $('#footer_nav');
@@ -220,6 +184,10 @@ $(function(){
         if(currentTitle.length==0) currentTitle = $('h2').first().text();
         if(currentTitle.length==0) currentTitle = $('h3').first().text();
         if(currentTitle.length==0) currentTitle = document.title;
+        if(currentTitle.toLowerCase().trim() === 'graphs') {
+            let graphName = $('#graphName').val()
+            if(graphName.length > 0) currentTitle = graphName
+        }
         if(getQueryStringValue("name")) {
             currentTitle = decodeURI(getQueryStringValue("name").replace('+',' '));
         }
@@ -382,4 +350,28 @@ var docCookies = {
     }
   };
 
+// if bookmarks has url hash fragment (eg. controller/view/#fragment) - js must be used to show
+// @todo : this might not be needed to be done in php now?
+// @see : https://github.com/emoncms/emoncms/blob/master/Theme/basic/menu_view.php#L66
+function highlightBookmarkButton() {
+    if (typeof user_bookmarks !== 'undefined') {
+        var currentPageIsBookmarked = false
+        for (n in user_bookmarks) {
+            let bookmark = user_bookmarks[n]
+            if (path + bookmark.path === window.location.href) {
+                currentPageIsBookmarked = true
+            }
+        }
+        if (currentPageIsBookmarked) {
+            $('#remove-bookmark').parent().removeClass('d-none')
+            $('#set-bookmark').parent().addClass('d-none')
+        } else {
+            $('#remove-bookmark').parent().addClass('d-none')
+            $('#set-bookmark').parent().removeClass('d-none')
+        }
+    }
+}
 
+window.addEventListener('hashchange', function(event) {
+    highlightBookmarkButton()
+});

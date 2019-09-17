@@ -43,7 +43,6 @@
 <script id="source" language="javascript" type="text/javascript">
   var barwidth = <?php echo $barwidth; ?>;       //Fetch table name
   var feedid = "<?php echo $feedid; ?>";         //Fetch table name
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var valid = "<?php echo $valid; ?>";
   // Eventually We can store the plot colors in the DB, and use a php command to stick it here

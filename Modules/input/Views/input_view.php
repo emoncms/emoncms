@@ -280,6 +280,7 @@ input.checkbox-lg,
 <script>
     var path = "<?php echo $path; ?>";
     const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
 

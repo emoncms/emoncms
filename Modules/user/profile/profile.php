@@ -205,7 +205,6 @@ function languagecode_to_name($langs) {
 
 <script>
 
-    var path = "<?php echo $path; ?>";
     var lang = <?php echo json_encode($languages); ?>;
     var lang_name = <?php echo json_encode($languages_name); ?>;
 

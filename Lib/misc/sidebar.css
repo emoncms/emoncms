@@ -286,7 +286,9 @@ top navbar override
 #footer_nav #sidebar_bookmarks li a {
   padding: 0.67em 0.94em;
 }
-
+#bookmarks a:hover::after {
+    content: attr(data-edit)
+}
 #edit_bookmarks {
     padding: .7em!important;
     color: #545454!important;
