@@ -33,7 +33,6 @@
 
   var feedid = "<?php echo $feedid; ?>";
   var feedname = "<?php echo $feedidname; ?>";
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
   var delta = <?php echo $delta; ?>;
   

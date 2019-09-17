@@ -45,7 +45,6 @@
   var thresholdA = <?php echo $thresholdA; ?>;
   var thresholdB = <?php echo $thresholdB; ?>;
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
 
   var timeWindow = (3600000*24.0*7);        //Initial time window

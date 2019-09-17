@@ -30,7 +30,6 @@
   var kwhdB = <?php echo $consumption; ?>;
   var delta = <?php echo $delta; ?>;
   
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey?>";
 
   var timeWindow = (3600000*24.0*365*5);   //Initial time window

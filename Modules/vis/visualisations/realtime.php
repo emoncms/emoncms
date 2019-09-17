@@ -32,7 +32,6 @@
 
     <script id="source" language="javascript" type="text/javascript">
     var feedid = <?php echo $feedid; ?>;                //Fetch table name
-    var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";  
     var embed = <?php echo $embed; ?>;
     var is_kw = <?php echo $kw === 1 ? 'true': 'false'; ?>;

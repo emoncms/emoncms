@@ -52,7 +52,6 @@
   $('#graph').height($('#graph_bound').height());
   if (embed) $('#graph').height($(window).height());
 
-  var path = "<?php echo $path; ?>";
   var apikey = "<?php echo $apikey; ?>";
 
   var power = "<?php echo $power; ?>";
