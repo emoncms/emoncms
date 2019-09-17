@@ -49,50 +49,797 @@ if (Array.isArray(nodes_display)) nodes_display = {};
 var selected_inputs = {};
 var selected_device = false;
 
-if (device_module) {
+if (DEVICE_MODULE) {
     var device_templates = {};
-    $.ajax({ url: path+"device/template/listshort.json", dataType: 'json', async: true, success: function(data) { 
-        device_templates = data; 
+    $.getJSON(path + "device/template/listshort.json").done( function(response){
+        device_templates = response;
         update();
-    }});
+    })
 } else {
-    setTimeout(update,100);
+    setTimeout(update, 100);
 }
 
 var updater;
+function updaterStop(){
+    return clearInterval(updater);
+}
 function updaterStart(func, interval){
-      clearInterval(updater);
-      updater = null;
-      if (interval > 0) updater = setInterval(func, interval);
+    updater = updaterStop();
+    if (interval > 0) updater = setInterval(func, interval);
 }
 updaterStart(update, 5000);
+
+var app = new Vue({
+    el: "#app",
+    data: {
+        devices: {},
+        col: {
+            B: 40,  // select
+            A: 200, // name
+            G: 200, // description
+            H: 200, // processList
+            F: 50,  // schedule
+            E: 100, // time
+            D: 100, // value     
+            C: 50,  // config       
+        },
+        selected: [],
+        collapsed: [],
+        paused: false,
+        device_module: DEVICE_MODULE === true,
+        scrolled: false,
+        loaded: false,
+        local_cache_key: 'input_nodes_display'
+    },
+    computed: {
+        total_inputs: function() {
+            return this.inputs.length;
+        },
+        total_devices: function() {
+            return Object.keys(this.devices).length
+        },
+        inputs: function() {
+            let inputs = [];
+            Object.keys(this.devices).forEach(function(nodeid){
+                let device = this.devices[nodeid]
+                if (device) {
+                    device.inputs.forEach(function(input){
+                        inputs.push(input);
+                    })
+                }
+            })
+            return inputs;
+        },
+        selectMode: function() {
+            return this.selected.length > 0
+        }
+    },
+    watch: {
+        // stop updaing the list when form overlay showing
+        paused: function(newVal) {
+            if (newVal === true) {
+                updaterStop()
+            } else {
+                update()
+                updaterStart(update, 5000)
+            }
+        },
+        collapsed: function(newVal) {
+            // cache state in cookie
+            if(!this.firstLoad) {
+                docCookies.setItem(this.local_cache_key, JSON.stringify(newVal));
+            } else {
+                this.firstLoad = false;
+            }
+        }
+    },
+    methods: {
+        toggleCollapse: function(event, nodeid) {
+            let index = this.collapsed.indexOf(nodeid);
+            if (index === -1) {
+                this.collapsed.push(nodeid)
+            } else {
+                this.collapsed.splice(index, 1)
+            }
+        },
+        toggleSelected: function(event, inputid) {
+            if (event.target.tagName !== 'INPUT' && !this.selectMode) {
+                event.stopPropagation();
+                event.preventDefault();
+                return false;
+            }
+            let index = this.selected.indexOf(inputid);
+            if (index === -1) {
+                this.selected.push(inputid)
+            } else {
+                this.selected.splice(index,1)
+            }
+        },
+        isSelected: function(inputid) {
+            return this.selected.indexOf(inputid) > -1
+        },
+        isCollapsed: function(nodeid) {
+            return this.collapsed.indexOf(nodeid) > -1
+        },
+        showInputConfigure: function(inputid) {
+            var input = getInput(this.devices, inputid);
+            showInputConfigure(input)
+        },
+        device_configure: function(device) {
+            if(DEVICE_MODULE) {
+                device_configure(device);
+            } else {
+                alert(_("Please install the device module to enable this feature"));
+            }
+        },
+        show_device_key: function(device) {
+            var devicekey = _("Please install the device module to enable this feature");
+            if(DEVICE_MODULE) {
+                devicekey = device.devicekey;
+                if (devicekey === "") devicekey = _("No device key created");
+            }
+            alert(devicekey)
+        },
+        create_device: function(device) {
+            if(typeof device_templates !== 'undefined') {
+                device_dialog.loadConfig(device_templates)
+            }
+        },
+        inputStatus: function(input) {
+            return missedIntervalClassName(missedIntervals(input));
+        },
+        deviceStatus: function(device) {
+            var input = this.oldestDeviceInput(device);
+            return missedIntervalClassName(missedIntervals(input));
+        },
+        oldestDeviceInput: function(device) {
+            var oldest = false;
+            device.inputs.forEach(function(input) {
+                if (!oldest || !oldest.time || input.time < oldest.time) {
+                    oldest = input;
+                }
+            })
+            return oldest;
+        },
+        handleScroll: function () {
+            window.clearTimeout(this.timeout);
+            let self = this;
+            this.timeout = window.setTimeout(function(){
+                self.scrolled = window.scrollY > 45;
+            }, 20)
+        },
+        getDeviceInputIds: function (device) {
+            // return array of ids from array of inputs
+            return find(device.inputs, 'id')
+        },
+        isFullySelected: function(device) {
+            // return true if all device inputs are selected, else false
+            var inputids = this.getDeviceInputIds(device)
+            var totalSelectedInputs = array_intersect(inputids, this.selected).length
+            return device.inputs.length > 0 && totalSelectedInputs === device.inputs.length;
+        },
+        getDeviceSelectedInputids: function(device) {
+            // return array of the selected device's inputids
+            var inputids = this.getDeviceInputIds(device)
+            return array_intersect(inputids, this.selected)
+        },
+        // select all if not all already selected, else clear selection
+        selectAllDeviceInputs: function (device) {
+            let inputids = this.getDeviceInputIds(device)
+            let selectedInputids = this.getDeviceSelectedInputids(device)
+            
+            if (selectedInputids.length === device.inputs.length) {
+                // all already selected, unselect all
+                for(i in inputids) {
+                    let inputid = inputids[i]
+                    let index = this.selected.indexOf(inputid)
+                    if (index > -1) {
+                        // remove from selection array
+                        this.selected.splice(index, 1)
+                    }
+                }
+            } else {
+                // select all if not all selected
+                for(i in inputids) {
+                    let inputid = inputids[i]
+                    if (this.selected.indexOf(inputid) === -1) {
+                        this.selected.push(inputid)
+                    }
+                }
+            }
+        }
+    },
+    created () {
+        window.addEventListener('scroll', this.handleScroll);
+        // load list collapsed state from previous visit
+        this.firstLoad = true;
+        if(docCookies.hasItem(this.local_cache_key)) {
+            var cached_state = JSON.parse(docCookies.getItem(this.local_cache_key))
+            if(Array.isArray(cached_state)) {
+                this.collapsed = cached_state
+            } else {
+                this.collapsed = []
+            }
+        }
+    },
+    destroyed () {
+        window.removeEventListener('scroll', this.handleScroll);
+    }
+});
+
+
+
+var controls = new Vue({
+    el: '#feedlist-controls',
+    data: {
+        timeout: null,
+        overlayControlsOveride: false
+    },
+    computed: {
+        total_inputs: function(){
+            return app.total_inputs
+        },
+        total_devices: function(){
+            return app.total_devices
+        },
+        selected: function() {
+            return app.selected
+        },
+        collapsed: function () {
+            return app.collapsed
+        },
+        collapse_title: function () {
+            var title = ''
+            if (this.collapsed.length < this.total_inputs) {
+                title += _('Collapse');
+            } else {
+                title += _('Expand');
+            }
+            return title;
+        },
+        checkbox_icon: function () {
+            var icon = '#icon-checkbox-'
+            if (this.selected.length < this.total_inputs) {
+                icon += 'unchecked'
+            } else {
+                icon += 'checked'
+            }
+            return icon;
+        },
+        selectMode: function() {
+            return app.selectMode;
+        },
+        scrolled: function() {
+            return app.scrolled;
+        },
+        overlayControls: function () {
+            return this.overlayControlsOveride || this.selectMode && this.scrolled
+        }
+    },
+    methods: {
+        selectAll: function() {
+            if(app.selected.length < this.total_inputs) {
+                let ids = [];
+                app.inputs.forEach(function(input){
+                    ids.push(input.id)
+                })
+                app.selected = ids
+            } else {
+                app.selected = [];
+            }
+        },
+        collapseAll: function() {
+            if(app.collapsed.length < app.total_devices) {
+                app.collapsed = Object.keys(app.devices)
+            } else {
+                app.collapsed = [];
+            }
+        },
+        open_delete: function(event) {
+            delete_input.openModal(event)
+        },
+        open_edit: function(event) {
+            edit_input.openModal(event)
+        }
+    },
+    watch: {
+        selectMode: function(newVal, oldVal) {
+            if (oldVal && !newVal && this.scrolled) {
+                this.overlayControlsOveride = true;
+            } else {
+                this.overlayControlsOveride = false;
+            }
+            return newVal;
+        },
+        scrolled: function(newVal, oldVal) {
+            if (!newVal) this.overlayControlsOveride = false;
+        }
+    }
+});
+
+
+
+
+var delete_input = new Vue({
+    el: '#inputDeleteModal',
+    data: {
+        hidden: true,
+        buttonLabel: _('Delete'),
+        buttonClass: 'btn-primary',
+        success: false
+    },
+    computed: {
+        total_inputs: function() {
+            return app.total_inputs
+        },
+        total_devices: function() {
+            return app.total_devices
+        },
+        selected: function() {
+            return app.selected
+        },
+        inputs: function() {
+            return app.inputs
+        },
+        devices: function() {
+            return app.devices
+        }
+    },
+    methods: {
+        confirm: function(event) {
+            var vm = this;
+            input.delete_multiple_async(this.selected)
+            .done(function() {
+                // if all device inputs deleted, then delete the device
+                vm.buttonLabel = _('Deleted')
+                vm.buttonClass = 'btn-success'
+                vm.success = true
+                // wait for user to read response, then update & close modal
+                setTimeout(function() {
+                    update().done(function() {
+                        // remove empty devices
+                        vm.removeEmptyDevices()
+                        .then(function() {
+                            // all empty devices removed
+                            vm.closeModal()
+                        })
+                    })
+                }, 1000)
+            })
+            .fail(function(xhr, type, error){
+                vm.buttonLabel = _('Error')
+                vm.buttonClass = 'btn-warning'
+                vm.success = false
+            })
+        },
+        removeEmptyDevices: function() {
+            // remove any devices without inputs
+            var def = $.Deferred()
+            var empty_devices = []
+            var deleted_counter = 0
+            var remove_responses = []
+
+            // make list of empty devices
+            for (n in devices) {
+                let device = devices[n]
+                if(device.inputs.length === 0) {
+                    empty_devices.push(device.id)
+                }
+            }
+            if (empty_devices.length === 0) {
+                def.reject('no empty devices');
+            }
+            // delete each empty device
+            for (n in empty_devices) {
+                let deviceid = empty_devices[n]
+                let ajax
+                if(typeof device2 !== 'undefined') {
+                    // use new async ajax call from device module js
+                    ajax = device2.remove(deviceid)
+                } else {
+                    // remove this once device module change are in master
+                    ajax = $.getJSON(path+"device/delete.json", "id="+deviceid)
+                }
+                ajax.done(function(remove_response) {
+                    remove_response.deviceid = deviceid
+                    remove_responses.push(remove_response)
+                    deleted_counter ++
+                    // on last loop resolve the promise
+                    if (deleted_counter >= empty_devices.length) {
+                        def.resolve(remove_responses)
+                    }
+                })
+            }
+            // return promise
+            return def.promise()
+        },
+        getInputName: function(inputid) {
+            var input = getInput(app.devices, inputid);
+            return input.name;
+        },
+        getInputNode: function(inputid) {
+            var input = getInput(app.devices, inputid);
+            return input.nodeid;
+        },
+        closeModal: function(event) {
+            app.paused = false;
+            // clear selection if succesfully deleted
+            if (this.success) {
+                app.selected = []
+            }
+            this.hidden = true
+            this.errors = {}
+            this.message = ''
+            // remove ESC keypress event
+            document.removeEventListener('keydown', this.escape)
+        },
+        openModal: function(event) {
+            this.hidden = false
+            this.errors = {}
+            this.message = ''
+            this.buttonLabel = _('Delete'),
+            this.buttonClass = 'btn-primary'
+            app.paused = true
+            document.addEventListener("keydown", this.escape);
+        },
+        escape: function(event) {
+            // listen for ESC keypress and close modal
+            if (event.keyCode == 27) {
+                if(typeof this.closeModal !== 'undefined') {
+                    this.closeModal();
+                }
+            }
+        }
+    }
+});
+
+
+var edit_input = new Vue({
+    el: '#inputEditModal',
+    data: {
+        hidden: true,
+        loading: false,
+        message: '',
+        errors: {},
+        timeouts: {}
+    },
+    computed: {
+        total_inputs: function(){
+            return app.total_inputs
+        },
+        total_devices: function(){
+            return app.total_devices
+        },
+        selected: function() {
+            return app.selected
+        },
+        inputs: function() {
+            return app.inputs
+        }
+    },
+    methods: {
+        clearErrors: function(inputid) {
+            if (typeof inputid !== 'undefined') {
+                this.errors[inputid] = ''
+            } else {
+                this.errors = {}
+            }
+        },
+        save: function(event) {
+            var formData = [new FormData(event.target)]
+            this.loading = true;
+            this.message = "";
+            this.clearErrors();
+            var self = this
+            // send formData to api
+            this.send(formData)
+            .done(function(response) {
+                // show success message and close overlay
+                self.message = _('Saved')
+                for (inputid in response.messages) {
+                    let indexes = getInput(app.devices, inputid, true)
+                    let nodeid = indexes[0];
+                    let inputIndex = indexes[1];
+                    // update input's "original" value for subsequent updates
+                    app.devicesOriginal[nodeid].inputs[inputIndex] = clone(app.devices[nodeid].inputs[inputIndex]);
+                    edit_input.$set(self.errors, inputid, response.messages[inputid].message)
+                    // self.timeouts[inputid] = window.setTimeout(function() {
+                    //     self.clearErrors(inputid)
+                    // }, 2000);
+                    let cloned = clone(app.devices[nodeid].inputs[inputIndex]);
+                    app.devicesOriginal[nodeid].inputs[inputIndex] = cloned;
+                }
+            })
+            .fail(function(response) {
+                // show errors
+                if (typeof response !== 'string') {
+                    for (inputid in response) {
+                        // window.clearTimeout(self.timeouts[inputid])
+                        edit_input.$set(self.errors, inputid, response[inputid].message)
+                        self.timeouts[inputid] = window.setTimeout(function(){
+                            self.clearErrors(inputid)
+                        }, 2000)
+                    }
+                } else {
+                    self.message = _(errors)
+                }
+            })
+            .always(function() {
+                // finished loading
+                self.loading = false;
+            })
+        },
+        saveAll: function(event) {
+            // collect input data from all forms
+            var formData = []
+            var timeout;
+            var forms = document.querySelectorAll('#inputEditModal .modal-body form')
+            this.message = "";
+            if (typeof forms !== 'undefined') {
+                forms.forEach(function(form) {
+                    formData.push(new FormData(form))
+                })
+            }
+            // show loader
+            this.loading = true;
+            var self = this
+            // send all formData to api
+            this.send(formData)
+            .done(function(response) {
+                // show success message and close overlay
+                self.message = _('Saved')
+                self.errors[response.lastUpdated.inputid] = response.lastUpdated.message
+                for(inputid in response.messages) {
+                    let indexes = getInput(app.devices, inputid, true)
+                    let nodeid = indexes[0];
+                    let inputIndex = indexes[1];
+                    // update input's "original" value for subsequent updates
+                    app.devicesOriginal[nodeid].inputs[inputIndex] = clone(app.devices[nodeid].inputs[inputIndex]);
+                }
+            })
+            .fail(function(errors){
+                // show errors
+                for (inputid in errors) {
+                    self.errors[inputid] = errors[inputid].message
+                    window.clearTimeout(self.timeouts[inputid])
+                    self.timeouts[inputid] = window.setTimeout(function() {
+                        self.clearErrors(inputid)
+                    }, 2000)
+                }
+            })
+            .progress(function(response) {
+                // add message next to input
+                // @todo: check why last update doesn't always get a chance to show messages
+                window.clearTimeout(self.timeouts[response.inputid])
+                self.timeouts[response.inputid] = window.setTimeout(function(){
+                    self.clearErrors(response.inputid)
+                }, 2000)
+                self.errors[response.inputid] = response.message
+            })
+            .always(function(inputid) {
+                // finished loading
+                self.loading = false;
+                window.setTimeout(function(){
+                    self.clearErrors(inputid)
+                }, 2000)
+            })
+        },
+        /**
+         * submit as many ajax requests as required to update input meta data
+         * on last response from all the calls respond to the 
+         * @param {Array.<FormData>} formData array of any submitted forms' FormData()
+         */
+        send: function(formData) {
+            var def = $.Deferred();
+            var self = this
+            var errors = {}
+            var total = formData.length;
+            var messages = {};
+            this.message = '';
+            formData.forEach(function(form, index, array) {
+                var inputid = form.get('id')
+                self.inputs.forEach( function(input) {
+                    if(input.id === inputid) {
+                        // store any changed fields
+                        let fields = {
+                            name: form.get('name'),
+                            description: form.get('description')
+                        }
+                        // if something changed submit data to api
+                        let fieldsOriginal = getInput(app.devicesOriginal, inputid)
+                        if(hasChanged(fields, fieldsOriginal) !== false) {
+                            $.getJSON(path + 'input/set.json', {
+                                inputid: inputid,
+                                fields: JSON.stringify(fields)
+                            })
+                            .done(function(response) {
+                                // notify calling function that entry has saved
+                                if(response.message) {
+                                    def.notify({
+                                        inputid: inputid,
+                                        message: response.message,
+                                        success: true
+                                    })
+                                    messages[inputid] = {success: true, message: response.message}
+                                }
+                            })
+                            .error(function(xhr, type, error) {
+                                errors[inputid] = {message: error}
+                            })
+                            .always(function() {
+                                // once the last ajax call returns respond to calling function
+                                if(index === array.length - 1) {
+                                    if(Object.values(errors).length === array.length) {
+                                        def.reject(errors)
+                                    } else {
+                                        lastUpdated = extend(arguments[0], {inputid: inputid})
+                                        def.resolve({messages: messages, lastUpdated: lastUpdated})
+                                    }
+                                }
+                            })
+                        } else {
+                            // nothing changed for input[inputid]
+                            errors[inputid] = {message: _('Nothing changed')}
+                            // notify calling function that nothing has changed
+                            def.notify({
+                                inputid: inputid,
+                                message: _('Nothing changed'),
+                                success: true
+                            })
+                            // update the status
+                            messages[inputid] = {success: false, message: _('Nothing changed')}
+
+                            if(index === array.length - 1) {
+                                def.reject(errors)
+                            }
+                        }
+                    }
+                })
+            })
+            return def.promise();
+        },
+        closeModal: function(event) {
+            this.hidden = true
+            this.errors = {}
+            this.message = ''
+            app.paused = false;
+            // remove ESC keypress event
+            document.removeEventListener('keydown', this.escape)
+        },
+        openModal: function(event) {
+            this.hidden = false
+            this.errors = {}
+            this.message = ''
+            app.paused = true
+            document.addEventListener("keydown", this.escape);
+        },
+        escape: function(event) {
+            // listen for ESC keypress and close modal
+            if (event.keyCode == 27) {
+                if(typeof this.closeModal !== 'undefined') {
+                    this.closeModal();
+                }
+            }
+        }
+    }
+});
+
+
+/**
+ * get the key/property. only returns the last found.
+ * @param {*} newValue 
+ * @param {*} oldValue 
+ * @returns {String|Boolean} the changed property name or false
+ */
+function hasChanged(newValue, oldValue){
+    let changed = false;
+    let properties = Object.keys(newValue)
+    properties.forEach(function(key) {
+        if (newValue[key] !== oldValue[key]) {
+            // value changed
+            changed = key
+        }
+    })
+    return changed
+}
+
+
+/**
+ * Clones a variable, creates a new variable as a copy of original
+ * @param {*} original variable to clone
+ * @returns {*} the new variable
+ */
+function clone(original) {
+    var str = JSON.stringify(original)
+    if(str) {
+        return JSON.parse(str);
+    } else {
+        return false;
+    }
+}
+
+/**
+ * overwrite an object's properties by subsequent objects' properties
+ * @param {*} arguments object1, object2..
+ * @return new object
+ */
+var extend = function () {
+    // Create a new object
+    var extended = {};
+    // Merge the object into the extended object
+    var merge = function (obj) {
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                // Push each value from `obj` into `extended`
+                extended[prop] = obj[prop];
+            }
+        }
+    };
+    // Loop through each object and conduct a merge
+    for (var i = 0; i < arguments.length; i++) {
+        merge(arguments[i]);
+    }
+    return extended;
+};
+
+/**
+ * search all devices for input that matches the inputid
+ * @param {Object} devices data returned from api 
+ * @param {Number} inputid id of input to find as integer
+ * @param {Boolean} returnIndex if true, returns [nodeid, index]
+ * @return {(Object|Boolean|Number)} single input or device index if found, else false
+ */
+function getInput(devices, inputid, returnIndex) {
+    let found = false
+    // vuejs data objects includes setter and getter functions. remove them:
+    for(nodeid in clone(devices)) {
+        let device = devices[nodeid]
+        device.inputs.forEach(function(input, index) {
+            if (input.id === inputid) {
+                if (!returnIndex) {
+                    found = input
+                } else {
+                    found = [nodeid, index]
+                }
+            }
+        })
+    }
+    return found
+}
+
+
 
 // ---------------------------------------------------------------------------------------------
 // Fetch device and input lists
 // ---------------------------------------------------------------------------------------------
 var firstLoad = true;
 function update(){
-
     devices = {};
     // Join and include device data
-    if (device_module) {
+    if (DEVICE_MODULE) {
+        var def = $.Deferred()
         $.ajax({ url: path+"device/list.json", dataType: 'json', async: true, success: function(result) {
             // Associative array of devices by nodeid
             for (var z in result) {
                 devices[result[z].nodeid] = result[z]
                 devices[result[z].nodeid].inputs = []
             }
-            update_inputs();
+            update_inputs().done(function() {
+                // inputs list done downloading
+                def.resolve()
+            })
         }});
+        return def.promise()
     } else {
-        update_inputs();
+        // update_inputs returns jquery ajax promise
+        return update_inputs()
     }
 }
 
 function update_inputs() {
     var requestTime = (new Date()).getTime();
-    $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
-        table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
+    return $.ajax({ url: path+"input/list.json", dataType: 'json', async: true, success: function(data, textStatus, xhr) {
+        if( typeof table !== 'undefined') table.timeServerLocalOffset = requestTime-(new Date(xhr.getResponseHeader('Date'))).getTime(); // Offset in ms from local to server time
           
         // Associative array of inputs by id
         inputs = {};
@@ -118,7 +865,7 @@ function update_inputs() {
                     inputs: []
                 }
                 
-                if (device_module) {
+                if (DEVICE_MODULE) {
                     // Device creation
                     $.ajax({ url: path+"device/create.json?nodeid="+nodeid, dataType: 'json', async: false, success: function(result) {
                         if (result.success!=undefined) {
@@ -170,109 +917,53 @@ function noProcessNotification(devices){
 // ---------------------------------------------------------------------------------------------
 // Draw devices
 // ---------------------------------------------------------------------------------------------
-function draw_devices()
-{
-    // Draw node/input list
-    var out = "";
-    var counter = 0;
-    isCollapsed = !(Object.keys(devices).length > 1);
+function draw_devices() {
 
-    var latest_update = [];
+    max_name_length = 0
+    max_description_length = 0
+    max_time_length = 0
+    max_value_length = 0
     
-    var max_name_length = 0;
-    var max_description_length = 0;
-    var max_time_length = 0;
-    var max_value_length = 0;
-
-    for (var node in devices) {
-        var device = devices[node]
-        counter++
-        isCollapsed = !nodes_display[node];
-        out += "<div class='node accordion line-height-expanded'>";
-        out += '   <div class="node-info accordion-toggle thead'+(isCollapsed ? ' collapsed' : '') + ' ' + nodeIntervalClass(device) + '" data-node="'+node+'" data-toggle="collapse" data-target="#collapse'+counter+'">'
-        out += "     <div class='select text-center has-indicator' data-col='B'><span class='icon-chevron-"+(isCollapsed ? 'right' : 'down')+" icon-indicator'><span></div>";
-        out += "     <h5 class='name' data-col='A'>"+node+":</h5>";
-        out += "     <span class='description' data-col='G'>"+device.description+"</span>";
-        out += "     <div class='processlist' data-col='H' data-col-width='auto'></div>";
-        out += "     <div class='buttons pull-right'>"
-        
-        var control_node = "hidden";
-        // if (device_templates[device.type]!=undefined && device_templates[device.type].control!=undefined && device_templates[device.type].control) control_node = "";
-        
-        out += "        <div class='device-schedule text-center "+control_node+"' data-col='F' data-col-width='50'><i class='icon-time'></i></div>";
-        out += "        <div class='device-last-updated text-center' data-col='E'></div>"; 
-        
-        var devicekey = device.devicekey;
-        if (device.devicekey===false) devicekey = "Device module required for this feature";
-        if (device.devicekey==="") devicekey = "No device key created"; 
-        
-        out += "        <a href='#' class='device-key text-center' data-col='D' data-toggle='tooltip' data-tooltip-title='"+_("Show node key")+"' data-device-key='"+devicekey+"' data-col-width='50'><i class='icon-lock'></i></a>"; 
-        out += "        <div class='device-configure text-center' data-col='C' data-col-width='50'><i class='icon-cog' title='"+_('Configure device using device template')+"'></i></div>";
-        out += "     </div>";
-        out += "  </div>";
-
-        out += "  <div id='collapse"+counter+"' class='node-inputs collapse tbody "+( !isCollapsed ? 'in':'' )+"' data-node='"+node+"'>";
-        for (var i in device.inputs) {
-            var input = device.inputs[i];
-            var selected = selected_inputs[input.id] ? 'checked': '';
-            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
-            latest_update[node] = latest_update[node] > input.time ? latest_update[node] : input.time;
-
-            var fv = list_format_updated_obj(input.time);
-
-            var title_lines = [ 
-                node.toUpperCase() + ': ' + input.name,
-                '-----------------------',
-                _('ID')+': '+ input.id
-            ];
-            if(input.value) {
-                title_lines.push(_('Value')+': ' + input.value);
-            }
-            if(input.time) {
-                title_lines.push(_('Updated')+": "+ fv.value);
-                title_lines.push(_('Time')+': '+ input.time);
-                // title_lines.push(format_time(input.time,'LL LTS')+" UTC");
-            }
-
-            row_title = title_lines.join("\n");
-
-            out += "<div class='node-input " + nodeItemIntervalClass(input) + "' id="+input.id+" title='"+row_title+"'>";
-            out += "  <div class='select text-center' data-col='B'>";
-            out += "   <input class='input-select' type='checkbox' id='"+input.id+"' "+selected+" />";
-            out += "  </div>";
-            out += "  <div class='name' data-col='A'>"+input.name+"</div>";
-            out += "  <div class='description' data-col='G'>"+input.description+"</div>";
-            out += "  <div class='processlist' data-col='H'><div class='label-container line-height-normal'>"+processlistHtml+"</div></div>";
-            out += "  <div class='buttons pull-right'>";
-            out += "    <div class='schedule text-center hidden' data-col='F'></div>";
+    for (var nodeid in devices) {
+        for (var z in devices[nodeid].inputs) {
+            var input = devices[nodeid].inputs[z];
             
-            out += "    <div class='time text-center' data-col='E'><span class='last-update' style='color:" + fv.color + ";'>" + fv.value + "</span></div>";
+            var processlistHtml = processlist_ui ? processlist_ui.drawpreview(input.processList, input) : '';
+
+            input.processlistHtml = processlistHtml;
+            
+            var fv = list_format_updated_obj(input.time);
+            input.time_color = fv.color
+            input.time_value = fv.value
+            
             var value_str = list_format_value(input.value);
-            out += "    <div class='value text-center' data-col='D'>"+value_str+"</div>";
-            out += "    <div class='configure text-center cursor-pointer' data-col='C' id='"+input.id+"'><i class='icon-wrench' title='"+_('Configure Input processing')+"'></i></div>";
-            out += "  </div>";
-            out += "</div>";
+            input.value_str = value_str
             
             if (input.name.length>max_name_length) max_name_length = input.name.length;
             if (input.description.length>max_description_length) max_description_length = input.description.length;
             if (String(fv.value).length>max_time_length) max_time_length = String(fv.value).length;
-            if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;            
+            if (String(value_str).length>max_value_length) max_value_length = String(value_str).length;
         }
-        
-        out += "</div>";
-        out += "</div>";
-        
-        // Node name and description length
-        if ((""+node).length>max_name_length) max_name_length = (""+node).length;
-        if (device.description.length>max_description_length) max_description_length = device.description.length;        
     }
-    $("#table").html(out);
+    app.col.A = ((max_name_length * 8) + 30);
+    app.col.G = ((max_description_length * 8) + 70); // additional padding to accomodate description length
+    app.col.D = ((max_time_length * 8) + 17);
+    app.col.E = ((max_value_length * 8) + 20) + 20; // additional padding to accomodate the 'weeks/days/hours/minutes/s' suffix
+    app.col.H = 200
+    
+    resize_view();
 
-    // show the latest time in the node title bar
-    for(let node in latest_update) {
-        $('#table [data-node="'+node+'"] .device-last-updated').html(list_format_updated(latest_update[node]));
-    }
+    app.devices = devices
+    app.loaded = true;
+    app.devicesOriginal = clone(devices)
+}
 
+function resize_view() {
+    // Hide columns
+    var col_max = JSON.parse(JSON.stringify(app.col));
+    var rowWidth = $("#app").width();
+    hidden = {}
+    keys = Object.keys(app.col).sort();
     // show tooltip with device key on click 
     $('#table [data-toggle="tooltip"]').tooltip({
         trigger: 'manual',
@@ -290,171 +981,103 @@ function draw_devices()
         }
     )
     
-    if (out=="") {
-        $("#table").css("margin-top","0em");
-        //$("#input-header").hide();
-        $("#input-footer").show();
-        $("#input-none").show();
-        $("#feedlist-controls").hide();
-    } else {
-        $("#table").css("margin-top","3em");
-        //$("#input-header").show();
-        $("#input-footer").show();
-        $("#input-none").hide();
-        $("#feedlist-controls").show();
-    }
-
-    if(typeof $.fn.collapse == 'function'){
-        $("#table .collapse").collapse({toggle: false});
-        setExpandButtonState($('#table .collapsed').length == 0);
+    var columnsWidth = 0
+    for (k in keys) {
+        let key = keys[k]
+        columnsWidth += col_max[key];
+        hidden[key] = columnsWidth > rowWidth;
     }
     
-    // autowidth($('#table')); // set each column group to the same width
-    
-    var charsize = 8;
-    var padding = 20;
-    $('[data-col="A"]').width(max_name_length*charsize+padding);          // name
-    $('[data-col="G"]').width(max_description_length*10+padding);         // description
-    $('[data-col="E"]').width(max_time_length*charsize+padding);          // time
-    $('[data-col="D"]').width(max_value_length*charsize+padding);         // value
-
-    onResize();
+    for (var key in hidden) {
+        if (hidden[key]) app.col[key] = 0; else app.col[key] = col_max[key]
+    }
 }
-// ---------------------------------------------------------------------------------------------
 
-$('#wrap').on("device-delete",function() { update(); });
-$('#wrap').on("device-init",function() { update(); });
-$('#device-new').on("click",function() { device_dialog.loadConfig(device_templates); });
 
-$("#table").on("click select",".input-select",function(e) {
-    input_selection();
-});
-  
-function input_selection() 
-{
-    selected_inputs = {};
-    var num_selected = 0;
-    $(".input-select").each(function(){
-        var id = $(this).attr("id");
-        selected_inputs[id] = $(this)[0].checked;
-        if (selected_inputs[id]==true) num_selected += 1;
+$(function(){
+    // create new device
+    $('#device-new').on("click", function() {
+        if(typeof device_templates !== 'undefined') {
+            device_dialog.loadConfig(device_templates);
+        }
+    });
+        
+    $("#table").on("click",".device-schedule",function(e) {
+        e.stopPropagation();
+        var node = $(this).parents('.node-info').first().data("node");
+        window.location = path+"demandshaper?node="+node;
     });
 
-    if (num_selected>0) {
-        $(".input-delete,.input-edit").removeClass('hide');
-    } else {
-        $(".input-delete,.input-edit").addClass('hide');
-    }
+    $("#table").on("click",".device-configure",function(e) {
+        e.stopPropagation();
+        // Get device of clicked node
+        node = $(this).parents('.node-info').first().data("node");
+        var device = devices[node];
+        
+        if (DEVICE_MODULE) {
+            device_dialog.loadConfig(device_templates, device);
+        } else {
+            alert("Please install the device module to enable this feature");
+        }
+    });
+}) // end of jquery document ready
 
+/**
+ * perform the delete action for the currently selected device
+ * deletes any inputs that are associated
+ * 
+ * @requires {Object} jQuery - uses jquery's ajax and promise functions
+ * @requires {Object} device - the group of device related functions
+ * @requires {Object} device_dialog - the group of device_dialog related functions
+ * @returns void
+ */
+function device_delete() {
+    var inputIds = [];
+    for (var i in device_dialog.device.inputs) {
+        var inputId = device_dialog.device.inputs[i].id;
+        inputIds.push(parseInt(inputId));
+    }
+    // respond/resolve with successful response when all actions done
+    var def = $.Deferred()
+
+    if (inputIds.length > 0) {
+        input.delete_multiple_async(inputIds)
+        .done(function(){
+            def.resolve(device.remove(device_dialog.device.id))
+        })
+        .fail(function(xhr,type,error){
+            def.reject([type,error].implode(', '))
+        })
+    } else {
+        def.resolve(device.remove(device_dialog.device.id))
+    }
+    // call this function once above ajax requests complete
+    def.done(function(response) {
+        if (response.hasOwnProperty('success') && response.success === false) {
+            // api action failed
+            if(response.message) {
+                alert(response.message)
+            }
+        } else {
+            // success
+            $('#device-config-modal .modal-footer [data-dismiss="modal"]').click()
+            update().done(function(update_response){
+                console.log(update_response)
+            })
+        }
+    }).fail(function(message){
+        console.error(message)
+    })
 }
 
-// column title buttons ---
-
-$("#table").on("shown",".device-key",function(e) { $(this).data('shown',true) })
-$("#table").on("hidden",".device-key",function(e) { $(this).data('shown',false) })
-$("#table").on("click",".device-key",function(e) {
-    e.stopPropagation()
-    var $btn = $(this),
-    action = 'show';
-    if($btn.data('shown') && $btn.data('shown')==true){
-        action = 'hide';
-    }
-    $(this).tooltip({title:'def'}).tooltip(action);
-})
-// $("#table").on("click",".device-key",function(e) {
-//     e.stopPropagation();
-//     var node = $(this).parents('.node-info').first().data("node");
-//     $this = $(this)
-//     if(!$this.data('original')) $this.data('original',$this.html())
-//     if(!$this.data('originalWidth')) $this.data('originalWidth',$this.width())
-//     $this.data('state', !$this.data('state')||false)
-//     let width = 315
-//     if($this.data('state')){
-//         $this.html(devices[node].devicekey)
-//         $this.css({position:'absolute'}).animate({marginLeft:-Math.abs(width-$(this).width()), width:width}) // value will be of fixed size
-//     }else{
-//         $this.html($this.data('original'))
-//         $this.animate({marginLeft:0, width:$this.data('originalWidth')},'fast') // reset to original width
-//     }
-// });
-
-$("#table").on("click",".device-schedule",function(e) {
-    e.stopPropagation();
-    var node = $(this).parents('.node-info').first().data("node");
-    window.location = path+"demandshaper?node="+node;
-    
-});
-
-$("#table").on("click",".device-configure",function(e) {
-    e.stopPropagation();
-    // Get device of clicked node
-    node = $(this).parents('.node-info').first().data("node");
-    var device = devices[node];
-    
-    if (device_module) {
+function device_configure(device){
+    if (DEVICE_MODULE) {
         device_dialog.loadConfig(device_templates, device);
     } else {
         alert("Please install the device module to enable this feature");
     }
-});
+};
 
-// selection buttons ---
-
-$(".input-delete").click(function(){
-      $('#inputDeleteModal').modal('show');
-      var out = "";
-      var ids = [];
-      for (var inputid in selected_inputs) {
-            if (selected_inputs[inputid]==true) {
-                  var i = inputs[inputid];
-                  if (i.processList == "" && i.description == "" && (parseInt(i.time) + (60*15)) < ((new Date).getTime() / 1000)){
-                        // delete now if has no values and updated +15m
-                        // ids.push(parseInt(inputid)); 
-                        out += i.nodeid+":"+i.name+"<br>";
-                  } else {
-                        out += i.nodeid+":"+i.name+"<br>";        
-                  }
-            }
-      }
-      
-      input.delete_multiple(ids);
-      update();
-      $("#inputs-to-delete").html(out);
-});
-
-$("#inputEditModal").on('show',function(e){
-    // show input fields for the selected inputs
-    let template = document.getElementById('edit-input-form').innerHTML;
-    let container = document.getElementById('edit-input-form-container');
-    container.innerHTML = '';
-    total_selected = 0;
-    for(inputid in selected_inputs){
-        let form = document.createElement('div');
-        // if input has been selected duplicate <template> and modify values
-        if (selected_inputs[inputid]){
-            total_selected++;
-            form.innerHTML += template;
-            form.querySelector('[name="inputid"]').value = inputid;
-            form.querySelector('[name="name"]').value = inputs[inputid].name;
-            form.querySelector('[name="description"]').value = inputs[inputid].description;
-            form.querySelector('.input_id').innerText = '#'+inputid;
-            let appended = container.appendChild(form.firstElementChild);
-            appended.dataset.originalData = serializeInputData(appended);
-            $(appended).on('submit',submitSingleInputForm);
-        }
-    }
-    if(total_selected>1){
-        $('#inputEditModal .btn.single').addClass('hide');
-        $('#inputEditModal .btn.multiple').removeClass('hide');
-    }else{
-        $('#inputEditModal .btn.single').removeClass('hide');
-        $('#inputEditModal .btn.multiple').addClass('hide');
-    }
-})
-$("#inputEditModal").on('show',function(e){
-    showStatus.clear();
-    update();
-})
 // return fields object that matches the api requirements
 function serializeInputData(form){
     let formData = $(form).serializeArray();
@@ -599,21 +1222,21 @@ function submitAllInputForms(e){
     })
 }
 
-$("#inputDelete-confirm").off('click').on('click', function(){
-    var ids = [];
-    for (var inputid in selected_inputs) {
-        if (selected_inputs[inputid]==true) ids.push(parseInt(inputid));
-    }
-    input.delete_multiple(ids);
-    update();
-    $('#inputDeleteModal').modal('hide');
-});
+// $("#inputDelete-confirm").off('click').on('click', function(){
+//     var ids = [];
+//     for (var inputid in selected_inputs) {
+//         if (selected_inputs[inputid]==true) ids.push(parseInt(inputid));
+//     }
+//     input.delete_multiple(ids);
+//     update();
+//     $('#inputDeleteModal').modal('hide');
+// });
  
 // Process list UI js
 processlist_ui.init(0); // Set input context
 
-$("#table").on('click', '.configure', function() {
-    var i = inputs[$(this).attr('id')];
+function showInputConfigure(input) {
+    var i = input
     var contextid = i.id; // Current Input ID
     // Input name
     var newfeedname = "";
@@ -629,11 +1252,19 @@ $("#table").on('click', '.configure', function() {
     var newfeedtag = i.nodeid;
     var processlist = processlist_ui.decode(i.processList); // Input process list
     processlist_ui.load(contextid,processlist,contextname,newfeedname,newfeedtag); // load configs
-});
+}
 
 $("#save-processlist").click(function (){
     var result = input.set_process(processlist_ui.contextid,processlist_ui.encode(processlist_ui.contextprocesslist));
-    if (result.success) { processlist_ui.saved(table); } else { alert('ERROR: Could not save processlist. '+result.message); }
+    if (!result.success) {
+        alert('ERROR: Could not save processlist. '+result.message); 
+    } else {
+        this.classList.replace('btn-warning', 'btn-success')
+        this.innerText = _('Saved')
+        if (typeof update === 'function') {
+            update();
+        }
+    }
 });
 
 // -------------------------------------------------------------------------------------------------------
@@ -647,20 +1278,24 @@ $("#save-processlist").click(function (){
 // watchResize(onResize,50) // only call onResize() after delay (similar to debounce)
 
 // debouncing causes odd rendering during resize - run this at all resize points...
-$(window).on("resize",onResize);
+var resize_timeout = 0;
+$(window).on("resize",function() {
+    clearTimeout(resize_timeout)
+    resize_timeout = setTimeout(resize_view,40);
+});
 
 
 
 /**
  * find out how many intervals an feed/input has missed
  * 
- * @param {object} nodeItem
+ * @param {Object} nodeItem
  * @return mixed
  */
 function missedIntervals(nodeItem) {
     // @todo: interval currently fixed to 5s
     var interval = 5;
-    if (!nodeItem.time) return null;
+    if (!nodeItem || !nodeItem.time) return null;
     var lastUpdated = new Date(nodeItem.time * 1000);
     var now = new Date().getTime();
     var elapsed = (now - lastUpdated) / 1000;
@@ -670,12 +1305,11 @@ function missedIntervals(nodeItem) {
 /**
  * get css class name based on number of missed intervals
  * 
- * @param {mixed} missed - number of missed intervals, false if error
+ * @param {*} missed - number of missed intervals, false if error
  * @return string
  */
 function missedIntervalClassName (missed) {
     let result = 'status-success';
-    // @todo: interval currently fixed to 5s
     if (missed > 4) result = 'status-warning'; 
     if (missed > 11) result = 'status-danger';
     if (missed === null) result = 'status-danger';
@@ -713,6 +1347,30 @@ function nodeIntervalClass (node) {
     return missedIntervalClassName(missed);
 }
 
+
+/**
+ * get new array created from values in both arrays
+ * @param {Array} arr1
+ * @param {Array} arr2
+ * @return {Array}
+ */
+function array_intersect(arr1, arr2) {
+    return arr1.filter(function(value) {
+        return arr2.indexOf(value) > -1
+    })
+}
+
+/**
+ * searches [arr] of objects and returns array of [prop] values
+ * @param {Array} arr 
+ * @param {String} prop 
+ * @return {Array}
+ */
+function find(arr, prop) {
+    return arr.map(function(a) { 
+        return a[prop];
+    });
+}
 $(function(){
     $(document).on('hide show', '#table', function(event){
         // cache state in cookie
