@@ -13,7 +13,7 @@
 "use strict";
 
 var _SETTINGS = {
-    show_errors: true // false to allow errors to be handled by browser developer console
+    showErrors: true // false to allow errors to be handled by browser developer console
 }
 
 /**
@@ -24,10 +24,10 @@ var _SETTINGS = {
  * each <script> is loaded in order so this <script> would always be the last one in the parent <html>
  */
 if(!document.currentScript) {
-    document.currentScript = (function() {
-        var scripts = document.getElementsByTagName('script');
+    document.currentScript = (function () { 
+        var scripts = document.getElementsByTagName("script");
         return scripts[scripts.length - 1];
-    })();
+    }());
 }
 /**
  * Set the passed path as a constant that cannot be changed by other scripts
@@ -42,7 +42,7 @@ if(!document.currentScript) {
  */
 var path = (function() {
     // if [data-path] not in initial <script> tag, this file is in the /Lib directory
-    const filePath = 'Lib/emoncms.js'
+    const filePath = "Lib/emoncms.js"
     var _path = document.currentScript.dataset.path
     /**
      * remove the filePath from given url
@@ -50,68 +50,70 @@ var path = (function() {
      * @returns url and path of emoncms system
      */
     function getPathFromScript(src) {
-        var regex = new RegExp('(.*)' + filePath)
-        var match = src.match(regex)
-        return match[1]
+        var regex = new RegExp("(.*)" + filePath);
+        var match = src.match(regex);
+        return match[1];
     }
     // if path not set as [data-path] of <script> tag get the path from emoncms.js url
     // @todo: more testing ond different devices/browsers
     if (!_path) {
-        _path = getPathFromScript(document.currentScript.src)
+        _path = getPathFromScript(document.currentScript.src);
     }
-    return _path
+    return _path;
 })();
 
 // on JQuery Ready...
 $(function(){
     // trigger jquery "window.resized" custom event after debounce delay
-    var resizeTimeout = false
+    var resizeTimeout = false;
     window.addEventListener('resize', function(event) {
         clearTimeout(resizeTimeout)
         resizeTimeout = setTimeout(function() {
-            $.event.trigger('window.resized')
+            $.event.trigger("window.resized");
         }, 200);
     })
-})
+});
 
 // Display alert if js error encountered
 window.onerror = function(msg, source, lineno, colno, error) {
-    if (_SETTINGS && !_SETTINGS.show_errors) return false;
-    if (msg.toLowerCase().indexOf("script error") > -1) {
-        alert('Script Error: See Browser Console for Detail');
-    }
-    else {
-        // REMOVE API KEY FROM ALERT
-        // ----------------------------
-        var maskedSource = source
-        var pattern = /(([\?&])?apikey=)([\w]*)/
-        // pattern match result examples:
-        //  0 = ?apikey=abc123
-        //  1 = ?apikey=
-        //  2 = ?
-        //  3 = abc123
-        var match = source.match(pattern)
-        if (match) {
-            // if apikey first parameter replace with '?'
-            // if apikey not first parameter replace with ''
-            if(match[2]==='&') {
-                maskedSource = source.replace(match[0], '')
-            } else {
-                maskedSource = source.replace(match[0], '?')
+    if (_SETTINGS && !_SETTINGS.showErrors) {
+        return false;
+    } else {
+        if (msg.toLowerCase().indexOf("script error") > -1) {
+            alert("Script Error: See Browser Console for Detail");
+        } else {
+            // REMOVE API KEY FROM ALERT
+            // ----------------------------
+            var maskedSource = source;
+            var pattern = /(([\?&])?apikey=)([\w]*)/;
+            // pattern match result examples:
+            //  0 = ?apikey=abc123
+            //  1 = ?apikey=
+            //  2 = ?
+            //  3 = abc123
+            var match = source.match(pattern);
+            if (match) {
+                // if apikey first parameter replace with '?'
+                // if apikey not first parameter replace with ''
+                if(match[2]==="&") {
+                    maskedSource = source.replace(match[0], "")
+                } else {
+                    maskedSource = source.replace(match[0], "?")
+                }
             }
+            var messages = [
+                "EmonCMS Error",
+                '-------------',
+                "Message: " + msg,
+                "Route: " + maskedSource.replace(path,""),
+                "Line: " + lineno,
+                "Column: " + colno
+            ];
+            if (Object.keys(error).length > 0) {
+                messages.push("Error: " + JSON.stringify(error));
+            }
+            alert(messages.join("\n"));
         }
-        var messages = [
-            'EmonCMS Error',
-            '-------------',
-            'Message: ' + msg,
-            'Route: ' + maskedSource.replace(path,''),
-            'Line: ' + lineno,
-            'Column: ' + colno
-        ];
-        if (Object.keys(error).length > 0) {
-            messages.push('Error: ' + JSON.stringify(error));
-        }
-        alert(messages.join("\n"));
-    }
-    return true; // true == prevents the firing of the default event handler.
+        return true; // true == prevents the firing of the default event handler.
+    };
 }
