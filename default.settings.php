@@ -1,4 +1,12 @@
 <?php
+/**
+ * All Emoncms code is released under the GNU Affero General Public License.
+ * See COPYRIGHT.txt and LICENSE.txt.
+ * ---------------------------------------------------------------------
+ * Emoncms - open source energy visualisation
+ * Part of the OpenEnergyMonitor project:
+ * https://openenergymonitor.org
+ */
 
 //1 #### Mysql database settings
     $server   = "localhost";
@@ -70,7 +78,7 @@
             'keyspace' => 'emoncms'
         )
     );
-    
+
     // Suggested installation path for symlinked emoncms modules /opt/emoncms/modules
     $emoncms_dir = "/opt/emoncms";
     // Suggested installation path for emonpi and EmonScripts repository:
@@ -85,7 +93,7 @@
 //5 #### User Interface settings
     // gettext  translations are found under each Module's locale directory
     $default_language = 'en_GB';
-    
+
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
@@ -115,7 +123,7 @@
 
     // Email address to email proccessed input values
     $default_emailto = 'root@localhost';
-    
+
     // (OPTIONAL) Email SMTP, used for password reset or other email functions
     $smtp_email_settings = array(
       'host'=>"smtp.gmail.com",
@@ -142,7 +150,7 @@
     $public_profile_enabled = true;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
-    
+
     // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
     $feedviewpath = "vis/auto?feedid=";
 
@@ -156,7 +164,7 @@
 
     // If installed on Emonpi, allow admin menu tools
     $allow_emonpi_admin = false;
-    
+
     // Show update section in admin
     $admin_show_update = true;
 
@@ -178,16 +186,16 @@
 
     // field separator
     $csv_field_separator = ",";
-	
+
     // set true on docker installations
     $allow_config_env_vars = false;
 
     // Dont change - developer updates this when the config format changes
     $config_file_version = "10";
-    
+
     // Set to true to run database update without logging in
     // URL Example: http://localhost/emoncms/admin/db
     $updatelogin = false;
-    
+
     // Applicaton name
     $appname = "emoncms";

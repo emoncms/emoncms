@@ -1,16 +1,13 @@
 <?php
-    /*
+/**
+ * All Emoncms code is released under the GNU Affero General Public License.
+ * See COPYRIGHT.txt and LICENSE.txt.
+ * ---------------------------------------------------------------------
+ * Emoncms - open source energy visualisation
+ * Part of the OpenEnergyMonitor project:
+ * https://openenergymonitor.org
+ */
 
-    All Emoncms code is released under the GNU Affero General Public License.
-    See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
-    */
-    
     define('EMONCMS_EXEC', 1);
 
     // 1) Load settings and core scripts
@@ -27,17 +24,25 @@
 
     require "Lib/EmonLogger.php";
     $log = new EmonLogger(__FILE__);
-    if (isset($_GET['q'])) $log->info($_GET['q']);
+    if (isset($_GET['q'])) {
+        $log->info($_GET['q']);
+    }
 
     // 2) Database
     if ($redis_enabled) {
         $redis = new Redis();
         $connected = $redis->connect($redis_server['host'], $redis_server['port']);
-        if (!$connected) { echo "Can't connect to redis at ".$redis_server['host'].":".$redis_server['port']." , it may be that redis-server is not installed or started see readme for redis installation"; die; }
-        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
+        if (!$connected) {
+            echo "Can't connect to redis at ".$redis_server['host'].":".$redis_server['port']." , it may be that redis-server is not installed or started see readme for redis installation";
+            die;
+        }
+        if (!empty($redis_server['prefix'])) {
+            $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
+        }
         if (!empty($redis_server['auth'])) {
             if (!$redis->auth($redis_server['auth'])) {
-                echo "Can't connect to redis at ".$redis_server['host'].", autentication failed"; die;
+                echo "Can't connect to redis at ".$redis_server['host'].", autentication failed";
+                die;
             }
         }
         if (!empty($redis_server['dbnum'])) {
@@ -48,21 +53,23 @@
     }
 
     $mqtt = false;
-    
+
     # Check MySQL PHP modules are loaded
-    if (!extension_loaded('mysql') && !extension_loaded('mysqli')){
-       echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)"; die;
-    }
-    
-    # Check Gettext PHP  module is loaded
-    if (!extension_loaded('gettext')){
-       echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms. <br> See /php-info.php (restricted to local access)"; die;
+    if (!extension_loaded('mysql') && !extension_loaded('mysqli')) {
+        echo "Your PHP installation appears to be missing the MySQL extension(s) which are required by Emoncms. <br> See /php-info.php (restricted to local access)";
+        die;
     }
 
-    $mysqli = @new mysqli($server,$username,$password,$database,$port);
-    if ( $mysqli->connect_error ) {
+    # Check Gettext PHP  module is loaded
+    if (!extension_loaded('gettext')) {
+        echo "Your PHP installation appears to be missing the gettext extension which is required by Emoncms. <br> See /php-info.php (restricted to local access)";
+        die;
+    }
+
+    $mysqli = @new mysqli($server, $username, $password, $database, $port);
+    if ($mysqli->connect_error) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
-        if ( $display_errors ) {
+        if ($display_errors) {
             echo "Error message: <b>" . $mysqli->connect_error . "</b>";
         }
         die();
@@ -72,29 +79,31 @@
 
     if (!$mysqli->connect_error && $dbtest==true) {
         require "Lib/dbschemasetup.php";
-        if (!db_check($mysqli,$database)) db_schema_setup($mysqli,load_db_schema(),true);
+        if (!db_check($mysqli, $database)) {
+            db_schema_setup($mysqli, load_db_schema(), true);
+        }
     }
 
     // 3) User sessions
     require("Modules/user/user_model.php");
-    $user = new User($mysqli,$redis);
+    $user = new User($mysqli, $redis);
 
     $apikey = false;
     $devicekey = false;
     if (isset($_GET['apikey'])) {
         $apikey = $_GET['apikey'];
-    } else if (isset($_POST['apikey'])) {
+    } elseif (isset($_POST['apikey'])) {
         $apikey = $_POST['apikey'];
-    } else if (isset($_GET['devicekey'])) {
+    } elseif (isset($_GET['devicekey'])) {
         $devicekey = $_GET['devicekey'];
-    } else if (isset($_POST['devicekey'])) {
+    } elseif (isset($_POST['devicekey'])) {
         $devicekey = $_POST['devicekey'];
-    } else if (isset($_SERVER["HTTP_AUTHORIZATION"])) {
+    } elseif (isset($_SERVER["HTTP_AUTHORIZATION"])) {
         // Support passing apikey on Authorization header per rfc6750, like example:
         //      GET /resource HTTP/1.1
         //      Host: server.example.com
         //      Authorization: Bearer THE_API_KEY_HERE
-        
+
         if (isset($_SERVER["CONTENT_TYPE"]) && $_SERVER["CONTENT_TYPE"]=="aes128cbc") {
             // If content_type is AES128CBC
         } else {
@@ -106,50 +115,52 @@
     if ($apikey) {
         $session = $user->apikey_session($apikey);
         if (empty($session)) {
-              header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
-              header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
-              print "Invalid API key";
-              $log->error("Invalid API key '" . $apikey. "' | ".$_SERVER["REMOTE_ADDR"]);
-              exit();
+            header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
+            header('WWW-Authenticate: Bearer realm="API KEY", error="invalid_apikey", error_description="Invalid API key"');
+            print "Invalid API key";
+            $log->error("Invalid API key '" . $apikey. "' | ".$_SERVER["REMOTE_ADDR"]);
+            exit();
         }
-    } else if ($devicekey && (@include "Modules/device/device_model.php")) {
-        $device = new Device($mysqli,$redis);
+    } elseif ($devicekey && (@include "Modules/device/device_model.php")) {
+        $device = new Device($mysqli, $redis);
         $session = $device->devicekey_session($devicekey);
         if (empty($session)) {
-              header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
-              header('WWW-Authenticate: Bearer realm="Device KEY", error="invalid_devicekey", error_description="Invalid device key"');
-              print "Invalid device key";
-              $log->error("Invalid device key '" . $devicekey. "'");
-              exit();
+            header($_SERVER["SERVER_PROTOCOL"]." 401 Unauthorized");
+            header('WWW-Authenticate: Bearer realm="Device KEY", error="invalid_devicekey", error_description="Invalid device key"');
+            print "Invalid device key";
+            $log->error("Invalid device key '" . $devicekey. "'");
+            exit();
         }
     } else {
         $session = $user->emon_session_start();
     }
-    
+
     // 4) Language
-    if (!isset($session['lang'])) $session['lang']='';
+    if (!isset($session['lang'])) {
+        $session['lang']='';
+    }
     set_emoncms_lang($session['lang']);
 
     // 5) Get route and load controller
-    
+
     // output string if controller or action not found. used to return error.
     define('EMPTY_ROUTE', "#UNDEFINED#");
 
     $route = new Route(get('q'), server('DOCUMENT_ROOT'), server('REQUEST_METHOD'));
-    
+
     // Load get/post/encrypted parameters - only used by input/post and input/bulk API's
-    $param = new Param($route,$user);
-    
+    $param = new Param($route, $user);
+
     // --------------------------------------------------------------------------------------
     // Special routes
 
     // Return brief device descriptor for hub detection
-    if ($route->controller=="describe") { 
+    if ($route->controller=="describe") {
         header('Content-Type: text/plain');
         header('Access-Control-Allow-Origin: *');
-        if(file_exists('/home/pi/data/emonbase')) {
+        if (file_exists('/home/pi/data/emonbase')) {
             $type = 'emonbase';
-        } elseif(file_exists('/home/pi/data/emonpi')) {
+        } elseif (file_exists('/home/pi/data/emonpi')) {
             $type = 'emonpi';
         } else {
             $type = 'emoncms';
@@ -158,17 +169,20 @@
         die;
     }
     // read the version file and return the value;
-    if ($route->controller=="version") { 
-        header('Content-Type: text/plain; charset=utf-8'); 
+    if ($route->controller=="version") {
+        header('Content-Type: text/plain; charset=utf-8');
         echo version();
-        exit; 
+        exit;
     }
 
-    if (get('embed')==1) $embed = 1; else $embed = 0;
+    if (get('embed')==1) {
+        $embed = 1;
+    } else {
+        $embed = 0;
+    }
 
     // If no route specified use defaults
-    if ($route->isRouteNotDefined())
-    {
+    if ($route->isRouteNotDefined()) {
         // EmonPi Setup Wizard
         if ($allow_emonpi_admin) {
             if (file_exists("Modules/setup")) {
@@ -182,7 +196,7 @@
                 }
             }
         }
-        
+
         if (!isset($session['read']) || (isset($session['read']) && !$session['read'])) {
             // Non authenticated defaults
             $route->controller = $default_controller;
@@ -208,16 +222,18 @@
         exit();
     }
 
-    if ($route->controller == 'input' && $route->action == 'bulk') $route->format = 'json';
-    else if ($route->controller == 'input' && $route->action == 'post') $route->format = 'json';
+    if ($route->controller == 'input' && $route->action == 'bulk') {
+        $route->format = 'json';
+    } elseif ($route->controller == 'input' && $route->action == 'post') {
+        $route->format = 'json';
+    }
 
     // 6) Load the main page controller
     $output = controller($route->controller);
     // If no controller of this name - then try username
     // need to actually test if there isnt a controller rather than if no content
     // is returned from the controller.
-    if ($output['content'] == EMPTY_ROUTE && $public_profile_enabled && $route->controller!='admin')
-    {
+    if ($output['content'] == EMPTY_ROUTE && $public_profile_enabled && $route->controller!='admin') {
         $userid = $user->get_id($route->controller);
         if ($userid) {
             $route->subaction = $route->action;
@@ -242,16 +258,16 @@
     // If no controller found or nothing is returned, give friendly error
     if ($output['content'] === EMPTY_ROUTE) {
         // alter output is $route has $action
-        $actions = implode("/",array_filter(array($route->action, $route->subaction)));
-        $message = sprintf(_('%s cannot respond to %s'), sprintf("<strong>%s</strong>",ucfirst($route->controller)), sprintf('<strong>"%s"</strong>',$actions));
+        $actions = implode("/", array_filter(array($route->action, $route->subaction)));
+        $message = sprintf(_('%s cannot respond to %s'), sprintf("<strong>%s</strong>", ucfirst($route->controller)), sprintf('<strong>"%s"</strong>', $actions));
         // alter the http header code
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         $title = _('406 Not Acceptable');
         $plain_text = _('Route not found');
-        $intro = sprintf('%s %s',_('URI not acceptable.'), $message);
+        $intro = sprintf('%s %s', _('URI not acceptable.'), $message);
         $text = _('Try another link from the menu.');
         // return the formatted string
-        if($route->format==='html') {
+        if ($route->format==='html') {
             $output['content'] = sprintf('<h2>%s</h2><p class="lead">%s.</p><p>%s</p>', $title, $intro, $text);
         } else {
             $output['content'] = array(
@@ -259,18 +275,18 @@
                 'message'=> sprintf('%s. %s', $title, $plain_text)
             );
         }
-        $log->warn(sprintf('%s|%s', $title, implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
+        $log->warn(sprintf('%s|%s', $title, implode('/', array_filter(array($route->controller,$route->action,$route->subaction)))));
     }
 
     // If not authenticated and no ouput, asks for login
     if ($output['content'] == "" && (!isset($session['read']) || (isset($session['read']) && !$session['read']))) {
-        $log->error(sprintf('%s|%s',_('Not Authenticated'), implode('/',array_filter(array($route->controller,$route->action,$route->subaction)))));
+        $log->error(sprintf('%s|%s', _('Not Authenticated'), implode('/', array_filter(array($route->controller,$route->action,$route->subaction)))));
         $route->controller = "user";
         $route->action = "login";
         $route->subaction = "";
         $message = urlencode(_('Authentication Required'));
-        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'] , FILTER_SANITIZE_URL)));
-        $route->query = sprintf("msg=%s&ref=%s",$message,$referrer);
+        $referrer = urlencode(base64_encode(filter_var($_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL)));
+        $route->query = sprintf("msg=%s&ref=%s", $message, $referrer);
         $output = controller($route->controller);
     }
 
@@ -278,8 +294,7 @@
     $output['session'] = $session;
 
     // 7) Output
-    if ($route->format == 'json')
-    {
+    if ($route->format == 'json') {
         if ($route->controller=='time') {
             header('Content-Type: text/plain');
             print $output['content'];
@@ -291,7 +306,7 @@
             print $output['content'];
         } else {
             header('Content-Type: application/json');
-            if(!empty($output['message'])){
+            if (!empty($output['message'])) {
                 header(sprintf('X-emoncms-message: %s', $output['message']));
             }
             print json_encode($output['content']);
@@ -318,18 +333,16 @@
                 }
             }
         }
-    }
-    else if ($route->format == 'html')
-    {
+    } elseif ($route->format == 'html') {
         // Select the theme
         $themeDir = "Theme/" . $theme . "/";
         if ($embed == 1) {
             print view($themeDir . "embed.php", $output);
         } else {
             $menu = load_menu();
-            
+
             // EMONCMS MENU
-            if($session['write']){
+            if ($session['write']) {
                 $menu['tabs'][] = array(
                     'icon'=>'menu',
                     'title'=> _("Emoncms"),
@@ -342,43 +355,41 @@
                 );
             }
 
-            include_once ("Lib/misc/nav_functions.php");
+            include_once("Lib/misc/nav_functions.php");
             sortMenu($menu);
             // debugMenu('sidebar');
             $output['svg_icons'] = view($themeDir . "svg_icons.svg", array());
             $output['mainmenu'] = view($themeDir . "menu_view.php", array('menu'=>$menu));
-            
+
             // add css class names to <body> tag based on controller's options
             $output['page_classes'][] = $route->controller;
 
-            $output['sidebar'] = view($themeDir . "sidebar_view.php", 
-            array(
+            $output['sidebar'] = view(
+                $themeDir . "sidebar_view.php",
+                array(
                 'menu' => $menu,
                 'path' => $path,
                 'session' => $session,
                 'route' => $route
-            ));
+            )
+            );
             $output['page_classes'][] = 'has-sidebar';
             if (!$session['read']) {
                 $output['page_classes'][] = 'collapsed manual';
             } else {
-                if (!in_array("manual",$output['page_classes'])) $output['page_classes'][] = 'auto';
+                if (!in_array("manual", $output['page_classes'])) {
+                    $output['page_classes'][] = 'auto';
+                }
             }
             print view($themeDir . "theme.php", $output);
         }
-    }
-    else if ($route->format == 'text')
-    {
+    } elseif ($route->format == 'text') {
         header('Content-Type: text/plain');
         print $output['content'];
-    }
-
-    else if ($route->format == 'csv')
-    {
+    } elseif ($route->format == 'csv') {
         header('Content-Type: text/csv');
         print $output['content'];
-    }
-    else {
+    } else {
         header($_SERVER["SERVER_PROTOCOL"]." 406 Not Acceptable");
         print "URI not acceptable. Unknown format '".$route->format."'.";
     }

@@ -1,4 +1,12 @@
 <?php
+/**
+ * All Emoncms code is released under the GNU Affero General Public License.
+ * See COPYRIGHT.txt and LICENSE.txt.
+ * ---------------------------------------------------------------------
+ * Emoncms - open source energy visualisation
+ * Part of the OpenEnergyMonitor project:
+ * https://openenergymonitor.org
+ */
 
 //1 #### Mysql database settings
     $server   = "127.0.0.1";
@@ -81,7 +89,7 @@
 //5 #### User Interface settings
     // gettext  translations are found under each Module's locale directory
     $default_language = 'en_GB';
-    
+
     // Theme location (folder located under Theme/, and must have the same structure as the basic one)
     $theme = "basic";
     // Theme colour options: "standard", "blue", "sun"
@@ -136,7 +144,7 @@
     $public_profile_enabled = true;
     $public_profile_controller = "dashboard";
     $public_profile_action = "view";
-    
+
     // Default feed viewer: "vis/auto?feedid=" or "graph/" - requires module https://github.com/emoncms/graph
     $feedviewpath = "graph/";
 
@@ -175,7 +183,7 @@
 
     // Dont change - developer updates this when the config format changes
     $config_file_version = "10";
-    
+
     // Set to true to run database update without logging in
     // URL Example: http://localhost/emoncms/admin/db
     $updatelogin = false;

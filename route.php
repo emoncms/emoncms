@@ -1,16 +1,12 @@
 <?php
-
-/*
-
-    All Emoncms code is released under the GNU Affero General Public License.
-    See COPYRIGHT.txt and LICENSE.txt.
-
-    ---------------------------------------------------------------------
-    Emoncms - open source energy visualisation
-    Part of the OpenEnergyMonitor project:
-    http://openenergymonitor.org
-
-*/
+/**
+ * All Emoncms code is released under the GNU Affero General Public License.
+ * See COPYRIGHT.txt and LICENSE.txt.
+ * ---------------------------------------------------------------------
+ * Emoncms - open source energy visualisation
+ * Part of the OpenEnergyMonitor project:
+ * https://openenergymonitor.org
+ */
 
 // no direct access
 defined('EMONCMS_EXEC') or die('Restricted access');
@@ -41,7 +37,7 @@ class Route
      * @var string
      */
     public $query = '';
-    
+
     /**
      * @var string
      */
@@ -129,15 +125,15 @@ class Route
             $this->subaction2 = $args[3];
         }
         $this->query = parse_url($_SERVER['REQUEST_URI'], PHP_URL_QUERY);
-        
+
         // allow for method to be added as post variable
-        if(post('_method')=='DELETE') {
+        if (post('_method')=='DELETE') {
             $this->method = 'DELETE';
-        } elseif(post('_method')=='PUT') {
+        } elseif (post('_method')=='PUT') {
             $this->method = 'PUT';
-        } elseif(in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
+        } elseif (in_array($requestMethod, array('POST', 'DELETE', 'PUT'))) {
             $this->method = $requestMethod;
-        } elseif($requestMethod === 'OPTIONS') {
+        } elseif ($requestMethod === 'OPTIONS') {
             // "CORS PREFLIGHT REQUESTS" EXPECT THESE HEADERS. no content required
             header('Access-Control-Allow-Origin: *');
             header('Access-Control-Allow-Headers: Authorization');
