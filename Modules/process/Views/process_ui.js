@@ -349,19 +349,9 @@ var processlist_ui =
   'events':function(){
     $("#processlist-ui #feed-engine").change(function(){
       var engine = $(this).val();
-      if (engine==6 || engine==5 || engine==4 || engine==1) {
-    	  $("#feed-interval").show();
-      }
-      else {
-          $("#feed-interval").hide();
-      }
-      if (engine==8 || engine==0) {
-    	  $("#feed-table").empty().show();
-      }
-      else {
-          $("#feed-table").hide();
-      }
-      
+      $("#feed-interval").hide();
+      if (engine==6 || engine==5 || engine==4 || engine==1) $("#feed-interval").show();
+
       var processid = $("#process-select").val();
       var datatype = processlist_ui.processlist[processid].datatype; // 1:REALTIME, 2:DAILY, 3:HISTOGRAM
       // If the datatype is daily then the interval is fixed to 3600s x 24h = 1d and user cant select other
@@ -375,7 +365,7 @@ var processlist_ui =
         $("#feed-interval option").show(); // Show all
         $("#feed-interval option").prop('disabled', false);  //for IE show
         $("#feed-interval").val(10);   // default to 10s
-      }
+      } 
     });
 
     $('#processlist-ui #process-add, #processlist-ui #process-edit').click(function(){
@@ -406,15 +396,10 @@ var processlist_ui =
             var feedtag = $('#new-feed-tag').val();
             var engine = $('#feed-engine').val();
             var datatype = process.datatype;
-            
+
             var options = {};
-            if (engine==6 || engine==5 || engine==4 || engine==1) {
-              options = {"interval":$('#feed-interval').val()};
-            }
-            else if (engine==8 || engine==0) {
-              options = {"name":$('#feed-table').val()};
-            }
-            
+            options = {interval:$('#feed-interval').val()};
+
             if (feedname == '') {
               alert('ERROR: Please enter a feed name');
               return false;
@@ -548,7 +533,6 @@ var processlist_ui =
         $("#new-feed-tag").hide();
         $('#feed-select').css({'border-radius': 4, 'border-right': 4})
         $("#feed-interval").hide();
-        $("#feed-table").hide();
         $("#feed-engine, .feed-engine-label").hide(); 
       }
       if (typeof nodes_display !== 'undefined') {
