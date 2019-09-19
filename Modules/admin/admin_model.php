@@ -201,12 +201,13 @@ class Admin {
 
     /**
      * get an array of raspberry pi properites
-     *
-     * @return array has keys hw,rev,sn,model
+     * 
+     * @see: SoC 'hw' now not required - https://github.com/emoncms/emoncms/issues/1364
+     * @return array has keys [hw,]rev,sn,model     * @return array has keys hw,rev,sn,model
      */
     public static function get_rpi_info() {
         // create empty array with all the required keys
-        $rpi_info = array_map(function($n) {return '';},array_flip(explode(',','hw,rev,sn,model,emonpiRelease,cputemp,gputemp,currentfs')));
+        $rpi_info = array_map(function($n) {return '';},array_flip(explode(',','rev,sn,model,emonpiRelease,cputemp,gputemp,currentfs')));
         // exit with empty array if not a raspberry pi
         if ( !Admin::is_Pi()) return $rpi_info;
         // add the rpi details
@@ -226,7 +227,7 @@ class Admin {
             preg_match_all('/^(revision|serial|hardware)\\s*: (.*)/mi', file_get_contents("/proc/cpuinfo"), $matches);
             $matches = array_filter($matches);
             if(!empty($matches)) {
-                $rpi_info['hw'] = "Broadcom ".$matches[2][0];
+                // $rpi_info['hw'] = "Broadcom ".$matches[2][0];
                 $rpi_info['rev'] = $matches[2][1];
                 $rpi_info['sn'] = $matches[2][2];
                 $rpi_info['model'] = '';

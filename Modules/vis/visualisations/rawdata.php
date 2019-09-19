@@ -56,7 +56,6 @@
 
 var feedid = <?php echo $feedid; ?>;
 var feedname = "<?php echo $feedidname; ?>";
-var path = "<?php echo $path; ?>";
 var apikey = "<?php echo $apikey; ?>";
 var embed = <?php echo $embed; ?>;
 var valid = "<?php echo $valid; ?>";
@@ -217,8 +216,7 @@ $(function() {
         draw();
     });
 
-    $(window).resize(vis_resize);
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
     
     function vis_resize() {
         var width = placeholder_bound.width();

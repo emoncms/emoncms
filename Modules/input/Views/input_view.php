@@ -1,11 +1,3 @@
-<?php
-    global $path;
-    $v = 1;
-    
-    $device_module = false;
-    if (file_exists("Modules/device")) $device_module = true;
-?>
-
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
 <?php } ?>
@@ -13,14 +5,12 @@
 <script src="<?php echo $path; ?>Modules/input/Views/input.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Modules/feed/feed.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/responsive-linked-tables.js?v=<?php echo $v; ?>"></script>
+<script src="<?php echo $path; ?>Lib/vue.min.js"></script>
 
 <style>
 
 .container-fluid { padding: 0px 10px 0px 10px; }
 
-#table {
-    margin-top:3rem
-}
 #footer {
     margin-left: 0px;
     margin-right: 0px;
@@ -67,7 +57,7 @@ input[type="checkbox"] { margin:0px; }
     right: 0;
     background: rgba(0,0,0,.1);
 }
-.buttons{ 
+.buttons{
     padding-right: .4em;
 }
 .status-success.node-info::after,
@@ -96,6 +86,8 @@ input[type="checkbox"] { margin:0px; }
     color: #C70!important;
 }
 
+[data-col] { overflow:hidden; }
+
 [data-col="B"] { width:40px; }
 [data-col="A"] { width:200px; }
 [data-col="G"] { width:200px; }
@@ -103,32 +95,175 @@ input[type="checkbox"] { margin:0px; }
 [data-col="E"] { width:100px; }
 [data-col="D"] { width:100px; }
 [data-col="C"] { width:50px; }
+a.text-muted i[class*="icon-"] {
+    opacity: .5;
+}
+#app .accordion {
+    margin-bottom: .3rem;
+}
+#feedlist-controls {
+    top: 3.5rem;
+    z-index: 1;
+}
+#feedlist-controls.fixed {
+    position: sticky;
+}
+#feedlist-controls:before {
+    background: rgba(0, 0, 0, 0.5);
+    content: "";
+    position: fixed;
+    top: 3rem;
+    height: 0rem;
+    width: 100%;
+    left: 0;
+    z-index: -1;
+    margin-top: -.18em;
+    transition: .2s height, .16s opacity ease-out;
+    opacity: 0;
+}
+#feedlist-controls.fixed:before {
+    opacity: 1;
+    height: 3.15rem;
+}
+.select-mode .node-inputs .node-input {
+    cursor: pointer;
+}
+input.checkbox-lg {
+    float: none;
+}
+input.checkbox-lg,
+.select-mode .node-inputs .node-input input[type="checkbox"] {
+    transform: scale(1.3);
+}
+.selected {
+    background-color: rgba(68, 179, 226, 0.8) !important;
+    background-color: #C2DBFF!important;
+}
+[v-cloak] {
+  display: none;
+}
+.position-absolute{
+    position: absolute;
+}
 
+/* overwrite bootstrap collapse animation */
+
+.collapse .node-input {
+    height: 0;
+    transition-timing-function: cubic-bezier(.18,.89,.32,1.28);
+    transition-duration: .6s;
+    min-height: 0;
+    border-width: 0;
+}
+.collapse.in .node-input {
+    height: 2.615em;
+    transition: all .2s cubic-bezier(.23,1,.32,1);
+    border-width: 1px;
+}
+.collapse {
+    height: inherit!important;
+}
+.break-all {
+    word-break: break-all;
+}
+[v-cloak] {
+    visibility: hidden
+}
 </style>
 
-<div>
-    <div id="input-header">
-        <span id="api-help" style="float:right"><a href="api"><?php echo _('Input API Help'); ?></a></span>
-        <h3> <?php echo _('Inputs'); ?></h3>
+<div class="position-relative">
+    <div id="input-header" class="d-flex justify-content-between align-items-center">
+        <h3><?php echo _('Inputs'); ?></h3>
+        <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo _('Input API Help'); ?></a></span>
     </div>
-    
-    <div id="feedlist-controls" class="controls" data-spy="affix" data-offset-top="100">
-        <button id="expand-collapse-all" class="btn" title="<?php echo _('Collapse') ?>" data-alt-title="<?php echo _('Expand') ?>"><i class="icon icon-resize-small"></i></button>
-        <button id="select-all" class="btn" title="<?php echo _('Select all') ?>" data-alt-title="<?php echo _('Unselect all') ?>"><i class="icon icon-check"></i></button>
-        <button class="btn input-delete hide" title="Delete"><i class="icon-trash" ></i></button>
-        <a href="#inputEditModal" class="btn input-edit hide" title="Edit" data-toggle="modal"><i class="icon-pencil" ></i></a>
+    <div v-cloak id="feedlist-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+        <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
+            <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
+        </button>
+        <button @click="selectAll" class="btn" :title="_('Select all') + ' (' + total_inputs + ')'">
+            <svg class="icon"><use :xlink:href="checkbox_icon"></use></svg>
+            <span>{{selected.length}}</span>
+        </button>
+        <button @click="open_delete" class="btn input-delete" :class="{'hide': !selectMode}" title="Delete"><i class="icon-trash" ></i></button>
+        <button @click="open_edit" class="btn input-edit" :class="{'hide': !selectMode}" title="Edit"><i class="icon-pencil" ></i></button>
     </div>
-    
-    <div id="noprocesses"></div>
-    <div id="table" class="input-list"></div>
-    
-    <div id="output"></div>
+
+    <div id="noprocesses clearfix"></div>
+
+    <div id="app" v-cloak>
+      <template v-if="loaded">
+        <template v-if="total_devices > 0">
+        <div class="node accordion line-height-expanded" v-for="(device,nodeid) in devices" :class="{'select-mode': selectMode}">
+            <div @click="toggleCollapse($event, nodeid)" class="node-info accordion-toggle thead" :class="[deviceStatus(device)]" :data-node="nodeid" :data-target="'#collapse_' + nodeid">
+
+            <div class="select text-center has-indicator" data-col="B">
+                <span v-if="!selectMode || getDeviceInputIds(device) == 0" class="icon-indicator" :class="{'icon-chevron-down': isCollapsed(nodeid),'icon-chevron-up': !isCollapsed(nodeid)}"></span>
+                <input v-else @click.stop="selectAllDeviceInputs(device)" type="checkbox" class="checkbox-lg" :checked="isFullySelected(device)" :title="_('Select all %s inputs').replace('%s',getDeviceInputIds(device).length)">
+            </div>
+
+            <h5 class="name" data-col="A" :style="{width:col.A+'px'}">
+                <span>{{ nodeid }} 
+                    <small class="position-absolute ml-1" v-if="getDeviceSelectedInputids(device).length > 0">({{ getDeviceSelectedInputids(device).length }})</small>
+                </span>
+            </h5>
+            <span class="description" data-col="G" :style="{width:col.G+'px'}">{{device.description}}</span>
+            <div class="processlist" data-col="H" :style="{width:col.H+'px'}"></div>
+            <div class="buttons pull-right">
+                <div class="device-schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"><i class="icon-time"></i></div>
+                <div class="device-last-updated text-center" data-col="E" :style="{width:col.E+'px'}"></div>
+                <a @click.prevent.stop="show_device_key(device)" href="#" class="device-key text-center" data-col="D" :style="{width:col.D+'px'}" :class="{'text-muted': !device_module}" data-col-width="50"  title="Show device key">
+                    <i class="icon-lock"></i>
+                </a>
+                <a @click.prevent.stop="device_configure(device)" href="#" class="device-configure text-center" data-col="C" :style="{width:col.C+'px'}" :class="{'text-muted': !device_module}" title="<?php echo _('Configure device using device template') ?>">
+                    <i class="icon-cog"></i>
+                </a>
+            </div>
+            </div>
+            <div :id="'collapse_' + nodeid" class="node-inputs collapse tbody" :class="{in: collapsed.indexOf(nodeid) === -1}" :data-node="nodeid">
+            <div @click="toggleSelected($event, input.id)" class="node-input" :id="input.id" v-for="(input,index) in device.inputs" :class="[inputStatus(input), {'selected': selected.indexOf(input.id) > -1}]">
+                <div class="select text-center" data-col="B">
+                    <input class="input-select" type="checkbox" :value="input.id" v-model="selected">
+                </div>
+                <div class="name" data-col="A" :style="{width:col.A+'px'}">{{ input.name }}</div>
+                <div class="description" data-col="G" :style="{width:col.G+'px'}">{{ input.description }}</div>
+                <div class="processlist" data-col="H" :style="{width:col.H+'px'}">
+                    <div class="label-container line-height-normal" v-html=input.processlistHtml></div>
+                </div>
+                <div class="buttons pull-right">
+                    <div class="schedule text-center hidden" data-col="F" :style="{width:col.F+'px'}"></div>
+                    <span @click.stop class="time text-center break-all" data-col="E" :style="{width:col.E+'px', color:input.time_color}">
+                        {{ input.time_value }}
+                    </span>
+                    <span @click.stop class="value text-center" data-col="D" :style="{width:col.D+'px'}">
+                        {{ input.value_str }}
+                    </span>
+                    <a @click.prevent.stop="showInputConfigure(input.id)" class="configure text-center cursor-pointer" data-col="C" :style="{width:col.C+'px'}" :id="input.id" title="<?php echo _('Configure Input processing') ?>" href="#">
+                        <i class="icon-wrench"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        </template>
+        <div class="alert" v-else>
+            <h3 class="alert-heading mt-0"><?php echo _('No inputs created'); ?></h3>
+            <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
+            <button @click.prevent="create_device" class="btn" >
+                <i class="icon-plus-sign" ></i> <?php echo _('New device'); ?>
+            </button>
+        </div>
+      </template>
+      <h4 v-else><?php echo _('Loading') ?></h4>
+    </div>
+
+    <!-- <div id="table" class="input-list"></div>
+
+    <div id="output"></div> -->
 
     <div id="input-none" class="alert alert-block hide">
         <h4 class="alert-heading"><?php echo _('No inputs created'); ?></h4>
         <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
     </div>
-    
+
     <div id="input-footer" class="hide">
         <button id="device-new" class="btn btn-small" >&nbsp;<i class="icon-plus-sign" ></i>&nbsp;<?php echo _('New device'); ?></button>
     </div>
@@ -136,16 +271,19 @@ input[type="checkbox"] { margin:0px; }
 </div>
 
 <?php if ($device_module) require "Modules/device/Views/device_dialog.php"; ?>
-<?php require "Modules/input/Views/input_dialog.php"; ?>
+<?php // delete and edit modals
+    require "Modules/input/Views/input_dialog.php";
+?>
 <?php require "Modules/process/Views/process_ui.php"; ?>
 
 <script src="<?php echo $path; ?>Lib/moment.min.js"></script>
 <script>
     var path = "<?php echo $path; ?>";
-    var device_module = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+    const DEVICE_MODULE = <?php if ($device_module) echo 'true'; else echo 'false'; ?>;
+
     var _user = {};
     _user.lang = "<?php echo $_SESSION['lang']; ?>";
-    
+
     // @todo: standardise these translations functions, also used in admin_main_view.php and feedlist_view.php
     /**
      * return object of gettext translated strings
@@ -162,9 +300,14 @@ input[type="checkbox"] { margin:0px; }
             'Show node key': "<?php echo _('Show node key'); ?>",
             'Configure device using device template': "<?php echo _('Configure device using device template'); ?>",
             'Configure Input processing': "<?php echo _('Configure Input processing') ?>",
-            'Saving': "<?php echo _('Saving') ?>"
+            'Saving': "<?php echo _('Saving') ?>",
+            'Collapse': "<?php echo _('Collapse') ?>",
+            'Expand': "<?php echo _('Expand') ?>",
+            'Select all %s inputs': "<?php echo _('Select all %s inputs') ?>",
+            'Select all': "<?php echo _('Select all') ?>"
         }
     }
 </script>
+<script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Lib/user_locale.js"></script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>

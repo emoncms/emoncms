@@ -20,6 +20,7 @@
         'realtime' => array('label'=>dgettext('vis_messages','RealTime'), 'options'=>array(
             array('feedid',dgettext('vis_messages','feed'),1),
             array('colour',dgettext('vis_messages','colour'),9,'EDC240'),
+            array('kw',dgettext('vis_messages','kW'),4,false),
             )
         ),
         

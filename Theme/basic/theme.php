@@ -21,7 +21,6 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     $settings["interface"]["themecolor"] = "standard";
 }
 ?>
-
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -42,35 +41,11 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/sidebar.js?v=<?php echo $v; ?>"></script>
-
-    <script>
-        window.onerror = function(msg, source, lineno, colno, error) {
-            // return false;
-            if (msg.toLowerCase().indexOf("script error") > -1) {
-                alert('Script Error: See Browser Console for Detail');
-            }
-            else {
-                var messages = [
-                    'EmonCMS Error',
-                    '-------------',
-                    'Message: ' + msg,
-                    'Route: ' + source.replace('<?php echo $path; ?>',''),
-                    'Line: ' + lineno,
-                    'Column: ' + colno
-                ];
-                if (Object.keys(error).length > 0) {
-                    messages.push('Error: ' + JSON.stringify(error));
-                }
-                alert(messages.join("\n"));
-            }
-            return true; // true == prevents the firing of the default event handler.
-        }
-        var path = "<?php echo $path ?>";
-    </script>
+    <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+    <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
 </head>
 <body class="fullwidth <?php if(isset($page_classes)) echo implode(' ', $page_classes) ?>">
     <div id="wrap">
-
         <div id="emoncms-navbar" class="navbar navbar-inverse navbar-fixed-top">
             <?php echo $mainmenu; ?>
         </div>
@@ -105,8 +80,8 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     </div><!-- eof #wrap -->
 
     <div id="footer">
-        <?php echo _('Powered by '); ?><a href="http://openenergymonitor.org">OpenEnergyMonitor.org</a>
-        <span> | <a href="https://github.com/emoncms/emoncms/releases"><?php echo $emoncms_version; ?></a></span>
+        <?php echo _('Powered by '); ?><a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
+        <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
     <script type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
@@ -134,6 +109,5 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     // end of module icons
     endif;
 ?>
-
 </body>
 </html>
