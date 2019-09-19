@@ -3,7 +3,6 @@
 $settings = array(
 
     "sql"=>array(
-        "database" => "emoncms",
         "username" => "emoncms",
         "password" => "emonpiemoncmsmysql2016",
     ),
