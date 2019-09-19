@@ -23,7 +23,7 @@ var processlist_ui =
   engines_hidden:[],
   has_redis: 0,
   
-  table: table,
+  table: typeof table !== "undefined" ? table : null,
 
   'draw':function(){
     var i = 0;
@@ -734,7 +734,9 @@ var processlist_ui =
         feeds[z].processList = processlist_ui.encode(processlist_ui.contextprocesslist);
       }
     }
-    if (window.table!=undefined && window.table.draw!=undefined)  table.draw();
+    if (window.table!=undefined && window.table.draw!=undefined) {
+        table.draw();
+    }
     if (typeof update == 'function') update()
   },
 

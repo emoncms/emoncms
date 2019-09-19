@@ -182,41 +182,48 @@ if (session_status() == PHP_SESSION_NONE) {
 $expanded = true;
 
 if($session['write']){ ?>
-    <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
-        <?php
-        echo makeLink(array(
-            'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
-            'class'=> array('d-none',!$expanded ? 'collapsed':''),
-            'href' => '#',
-            'id' => 'sidebar_user_toggle',
-            'data' => array(
-                'toggle' => 'collapse',
-                'target' => '#sidebar_bookmarks'
-            )
-        ));
-        ?>
-        <h4 class="sidebar-title d-flex justify-content-between align-items-center">
-            Bookmarks 
-            <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
-        </h4>
-        <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
-        <?php 
-            // bookmarks
-            // make menu item link to the original and not the bookmark 
-            foreach ($bookmarks as $item){
-                $url_parts = parse_url($item['path']);
-                $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
-                if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
-                $item['path'] = ''; // empty original relative path
-                // highlight active bookmark
-                if(is_current($item['href'])) {
-                    $item['li_class'][] = 'active';
-                }
-                echo makeListLink($item);
-            }
-        ?>
-        </ul>
-        <!-- used to add more bookmarks -->
-        <template id="bookmark_link"><li><a href=""></a></li></template>
-    </div>
+            <div id="footer_nav" class="nav <?php echo $expanded ? 'expanded':''?>"<?php if(empty($bookmarks)) echo ' style="display:none"' ?>>
+                <?php
+                    echo makeLink(array(
+                        'text' => _('Bookmarks').':<span class="arrow arrow-up pull-right"></span>',
+                        'class'=> array('d-none',!$expanded ? 'collapsed':''),
+                        'href' => '#',
+                        'id' => 'sidebar_user_toggle',
+                        'data' => array(
+                            'toggle' => 'collapse',
+                            'target' => '#sidebar_bookmarks'
+                        )
+                    ));
+                ?>
+                    <h4 class="sidebar-title d-flex justify-content-between align-items-center">
+                        <?php echo _("Bookmarks") ?>
+                        <a id="edit_bookmarks" style="text-indent: 0" class="btn btn-inverse btn-link p-2" type="button" href="/emoncms/user/bookmarks" title="<?php echo _("Edit") ?>"><svg class="icon"><use xlink:href="#icon-cog"></use></svg></a>
+                    </h4>
+                    <ul id="sidebar_bookmarks" class="nav sidebar-menu collapse<?php echo $expanded ? ' in':''?>">
+                    <?php 
+                        // bookmarks
+                        // make menu item link to the original and not the bookmark 
+                        foreach ($bookmarks as $item){
+                            $url_parts = parse_url($item['path']);
+                            $item['href'] = !empty($item['path']) ? getAbsoluteUrl($item['path']) : ''; // add absolute path
+                            if(!empty($url_parts['fragment'])) $item['href'].= sprintf('#%s',$url_parts['fragment']);
+                            $item['path'] = ''; // empty original relative path
+                            // highlight active bookmark
+                            if(is_current($item['href'])) {
+                                $item['li_class'][] = 'active';
+                            }
+                            echo makeListLink($item);
+                        }
+                    ?>
+                    </ul>
+                    <!-- used to add more bookmarks -->
+                    <template id="bookmark_link"><li><a href=""></a></li></template>
+            </div>
+            <script>
+                <?php if ($bookmarks) { ?>
+    var user_bookmarks = <?php echo json_encode($bookmarks, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES); ?>
+                <?php } else { ?>
+    var user_bookmarks = []
+                <?php } ?>
+            </script>
 <?php } ?>

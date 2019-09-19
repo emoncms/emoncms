@@ -238,6 +238,10 @@ body.collapsed #sidebar-toggle-bar {
   opacity: 0.8;
 }
 
+#bookmarks a:hover::after {
+  content: attr(data-edit)
+}
+
 .menu-overlay {
   display: none;
   background-color: #000;

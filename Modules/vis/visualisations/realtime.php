@@ -32,7 +32,6 @@
 
     <script id="source" language="javascript" type="text/javascript">
     var feedid = <?php echo $feedid; ?>;                //Fetch table name
-    var path = "<?php echo $path; ?>";
     var apikey = "<?php echo $apikey; ?>";  
     var embed = <?php echo $embed; ?>;
     var is_kw = <?php echo $kw === 1 ? 'true': 'false'; ?>;
@@ -83,8 +82,7 @@
       plot();
     }
 
-    $(window).resize(vis_resize);
-    $('#sidebar').on('hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
+    $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
     
     function vis_resize() {
       graph.width(graph_bound.width());

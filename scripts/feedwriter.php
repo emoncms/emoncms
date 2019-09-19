@@ -13,7 +13,7 @@
     require "process_settings.php";
 
     $log = new EmonLogger(__FILE__);
-    $log->error("Starting feedwriter script");
+    $log->info("Starting feedwriter script");
     
     if (!$redis_enabled) { $log->error("Error: setting must be true: redis_enabled"); die; }
     if (!$feed_settings['redisbuffer']['enabled']) { $log->error("Error: setting must be true: feed_settings['redisbuffer']['enabled']"); die; }

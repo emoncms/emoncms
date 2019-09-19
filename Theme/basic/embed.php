@@ -11,7 +11,7 @@
 */
 global $path,$theme,$themecolor;
 
-$v = 7;
+$v = 8;
 
 if (!is_dir("Theme/".$theme)) {
     $theme = "basic";
@@ -37,10 +37,8 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
         
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>
-
-        <script>
-            var path = "<?php echo $path ?>";
-        </script>
+        <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
+        <script src="<?php echo $path; ?>Lib/emoncms.js?v=<?php echo $v; ?>"></script>
     </head>
     <body>
         <div>

@@ -62,7 +62,6 @@
 
 <script>
 
-var path = "<?php echo $path; ?>";
 var users = {};
 
 var admin = {
