@@ -1,115 +1,6 @@
 /* -------------------------------------------------------------------
-   Top nav
---------------------------------------------------------------------*/
-#emoncms-navbar {
-  position: fixed;
-  margin: 0;
-}
-.navbar-inner {
-  height: 2.75rem;
-  padding: 0 !important;
-}
-.navbar-inner .nav {
-  font-size: 1.25rem;
-}
-.navbar .nav > li > a {
-  padding: .6em;
-}
-.navbar .nav {
-  float: none;
-}
-.navbar .navbar-inner:before,
-.navbar .navbar-inner:after {
-  content: none;
-}
-@media screen and (min-width: 380px) {
-  .navbar-inner .nav {
-    font-size: 1.5rem;
-  }
-  .navbar .nav > li > a {
-    padding: .415em .626em;
-  }
-}
-
-.navbar-inner .nav ul li {
-  font-size: 1.1rem;
-}top:
-.navbar-inner .nav ul li a {
-  padding: .5em 1em;
-}
-
-/* -------------------------------------------------------------------
-   Top nav override
-   @todo: move to blue.css
---------------------------------------------------------------------*/
-
-/* active top nav indicator */
-#left-nav li.active a {
-  position: relative;
-}
-#left-nav li a:before {
-  content: '';
-  display: block;
-  width: 100%;
-  height: 0;
-  bottom: 0;
-  left: 0;
-  position: absolute;
-}
-.collapsed #left-nav li.active a:before {
-  background: #209ed3;
-}
-.collapsed #left-nav li.active a:hover:before {
-  background: #333;
-  opacity: 0.3;
-}
-
-/* -------------------------------------------------------------------
    Side nav
 --------------------------------------------------------------------*/
-.collapsed #sidebar,
-.user.body-login #sidebar {
-  left: 0;
-}
-
-/* tabindex styling */
-/* don't render menu items when not active */
-#sidebar .sidebar-inner,
-#sidebar .include-container,
-#sidebar .collapse {
-  display:none
-}
-
-#sidebar .sidebar-inner.active,
-#sidebar .include-container.in,
-#sidebar .collapse.in {
-  display:block
-}
-
-#sidebar-toggle {
-  display: none !important;
-}
-.has-sidebar #sidebar-toggle {
-  display: block !important;
-}
-#sidebar-toggle:before {
-  content: '';
-  display: block;
-  background: #a1d57d;
-  position: absolute;
-  top: 0;
-  left: 0;
-  transition: all 0.2s cubic-bezier(0.46, 0.03, 0.52, 0.96);
-  width: 0 !important;
-  height: 100% !important;
-}
-.has-sidebar #sidebar-toggle:before {
-  width: 0.2em !important;
-}
-#sidebar-toggle:hover:before {
-  background: #b2de84;
-}
-
 .sidebar-inner {
   overflow-y: auto;
   overflow-x: hidden;
@@ -121,30 +12,81 @@
   /* height: calc(100vh - 8.8rem); */
   height: auto;
 }
+
 .sidebar-inner .close {
   color: white;
   display: none;
 }
-.sidebar-inner .narrow .close {
+.narrow .sidebar-inner .close {
   display: inline-block;
 }
 
+
 /* -------------------------------------------------------------------
-   Side nav menu items
+   Top nav
 --------------------------------------------------------------------*/
-.sidebar .nav a {
-  text-decoration: none;
-  display: block;
-  padding: 0.94em;
+#emoncms-navbar {
+  position: fixed;
+  margin: 0;
 }
-.sidebar .nav.sub-nav {
-  border-top: 0 solid transparent;
+#emoncms-navbar .navbar-inner {
+  /* height: 2.75rem; */
+  padding: 0 !important;
+}
+#emoncms-navbar .navbar-inner .nav {
+  font-size: 1.25rem;
+}
+#emoncms-navbar .navbar-inner .nav a span{
+  font-size: 1rem;
+  padding-top: .1rem;
+}
+#emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+  display: none;
+}
+@media (min-width: 768px) {
+  #emoncms-navbar .navbar-inner .nav a[data-hide-narrow] span {
+    display: inline-block;
+  }
+}
+
+d-none d-md-block
+.navbar .nav > li > a {
+  padding: .6em;
+}
+.navbar .nav {
+  float: none;
+}
+.navbar .navbar-inner:before,
+.navbar .navbar-inner:after {
+  content: none;
+}
+@media screen and (min-width: 380px) {
+  #emoncms-navbar .navbar-inner .nav {
+    font-size: 1.5rem;
+  }
+  .navbar .nav > li > a {
+    padding: .415em .626em;
+  }
+}
+
+#emoncms-navbar .navbar-inner .nav ul li{
+  font-size: 1.1rem;
+}
+#emoncms-navbar .navbar-inner .nav ul li a{
+  padding: .5em 1em;
 }
 
 /* -------------------------------------------------------------------
-   Side nav sub menus
+   Site-wide overriding css
+   @TODO: move to blue.css
 --------------------------------------------------------------------*/
-.sidebar {
+
+/* eof site css changes */
+
+/* -------------------------------------------------------------------
+   Sidebar sub menus
+--------------------------------------------------------------------*/
+#sidebar {
   position: fixed;
   display: none;
   margin-top: 0px;
@@ -160,10 +102,10 @@
   overflow-y: auto;
   overflow-x: hidden;
 }
-.has-animation .sidebar {
+.has-animation #sidebar {
   transition: all 0.3s ease-out;
 }
-.has-sidebar .sidebar {
+.has-sidebar #sidebar {
   display: block;
 }
 .sidebar-title,
@@ -180,149 +122,6 @@
   text-decoration: none;
 }
 
-.btn-li .btn,
-#top_nav li .btn {
-  background: none;
-  border-radius: 0;
-  border: 0;
-  margin: 0;
-}
-
-/* bottom of sidebar */
-#footer_nav {
-  margin-bottom: 0;
-  width: 15rem;
-}
-#footer_nav #sidebar_bookmarks li a {
-  padding: 0.67em 0.94em;
-}
-
-#sidebar_user_toggle {
-  padding-top: 0.6em !important;
-  padding-bottom: 0.75em !important;
-}
-
-/* sidebar toggle switch */
-#sidebar-toggle-bar {
-  position: fixed;
-  width: 0;
-  left: 0;
-  height: 100vh;
-  top: 0;
-  z-index: 999;
-  cursor: pointer;
-  overflow: hidden;
-  transition: all 0.3s ease-in;
-  transition-delay: 0;
-  display: none !important;
-}
-.has-sidebar #sidebar-toggle-bar {
-  display: flex !important;
-}
-body.collapsed #sidebar-toggle-bar {
-  width: 1rem;
-  transition-delay: 1s;
-}
-#sidebar-toggle-bar:after {
-  content: '';
-  width: 1rem;
-  height: 100%;
-  background: #8c8b8b;
-  top: 0;
-  left: 0;
-  opacity: 0.1;
-  transition: all 0.2s ease-out;
-  margin-left: -0.2rem;
-}
-#sidebar-toggle-bar:hover:after {
-  opacity: 0.8;
-}
-
-#bookmarks a:hover::after {
-  content: attr(data-edit)
-}
-
-.menu-overlay {
-  display: none;
-  background-color: #000;
-  bottom: 0;
-  left: 0;
-  opacity: 0.3;
-  position: fixed;
-  right: 0;
-  top: 2.5rem;
-  z-index: 49;
-}
-
-/* -------------------------------------------------------------------
-   App nav
---------------------------------------------------------------------*/
-.sidebar-menu {
-  list-style: none;
-  margin: 0px;
-  padding: 0px;
-}
-.sidebar-menu li {
-  transition: all 0.2s ease-in !important;
-}
-.sidebar-menu li.collapse {
-  border-bottom: 0px solid transparent;
-}
-.sidebar svg.icon {
-  margin-top: .1em;
-}
-.arrow-up {
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-bottom: 5px solid;
-}
-.arrow-down {
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid;
-}
-.arrow {
-  margin: 0.4em 0;
-  transform: scaleY(-1);
-  filter: FlipH;
-  /* transition: transform .15s ease-out; */
-}
-.collapsed .arrow {
-  transform: scaleY(1);
-  filter: none;
-}
-
-/* specific to single view's sidebar */
-.include-container {
-  width: 0;
-  height: 0;
-  opacity: 0;
-  transition: all 0.2s ease-out;
-  overflow: hidden;
-  box-sizing: border-box;
-}
-
-/* show #feeds when expanded */
-.include-container.in {
-  width: 99%;
-  opacity: 1;
-  height: auto;
-}
-
-.include-container h4 {
-  padding-bottom: 0.5rem;
-}
-.include-container h4 a {
-  display: block;
-}
-.include-container h4 a:hover {
-  text-decoration: underline;
-}
-
 @media screen and (min-width: 380px) {
   #sidebar {
     top: 2.7rem;
@@ -330,66 +129,6 @@ body.collapsed #sidebar-toggle-bar {
   }
 }
 
-/* On screens that are 870px or less, hide the sidebar on load */
-@media screen and (max-width: 870px) {
-  #sidebar {
-    transition: none;
-    left: 0;
-  }
-  /* js adds .has-animation on load */
-  .has-animation #sidebar {
-    transition: all 0.3s ease-out;
-  }
-  /* js adds .expanded on click */
-  .expanded #sidebar {
-    left: 15rem;
-  }
-}
-
-@media screen and (min-width: 871px) {
-  #sidebar {
-    left: 15rem;
-    transition: all 0.3s ease-out;
-  }
-}
-
-/* -------------------------------------------------------------------
-   SVG icons
---------------------------------------------------------------------*/
-svg.icon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-  stroke-width: 0;
-  stroke: currentColor;
-  fill: currentColor;
-  vertical-align: -0.15em;
-}
-#left-nav .active .icon {
-  vertical-align: -0.1em;
-}
-
-/* SVG animation */
-/* body.collapsed #sidebar-toggle:before{
-  width: 0!important;
-}
-#icon-menu .icon-menu-top{
-  transform: translate(-1px, 0) rotate(-38deg);
-}
-#icon-menu .icon-menu-middle{
-  transform: scaleY(1.12) scaleX(1.6) translate(2px,0)
-}
-#icon-menu .icon-menu-bottom{
-  transform: translate(-1px, 0) rotate(38deg);
-}
-.collapsed #icon-menu path{
-  transform: none;
-} */
-
-/* custom menu icon formatting */
-#emoncms-navbar .icon.folder-plus {
-  margin-bottom: 1px;
-}
 
 /* -------------------------------------------------------------------
    Gravatar icon in toolbar
@@ -429,4 +168,295 @@ a.is_admin.grav-container:hover img.grav {
 .no-gravitar a.grav-container .icon.user {
   font-size: 1.66em;
   margin: 0 -.1em;
+}
+/* eof gravitar */
+
+/* -------------------------------------------------------------------
+top navbar override
+@todo: move to blue.css
+--------------------------------------------------------------------*/
+
+/* active top nav indicator */
+#left-nav li.active a {
+  position: relative;
+}
+#left-nav li a:before {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 0;
+  bottom: 0;
+  left: 0;
+  position: absolute;
+}
+.collapsed #left-nav li.active a:before {
+  background: #209ed3;
+}
+.collapsed #left-nav li.active a:hover:before {
+  background: #333;
+  opacity: 0.3;
+}
+
+/* tabindex styling */
+/* don't render menu items when not active */
+#sidebar .sidebar-inner,
+#sidebar .include-container,
+#sidebar .collapse{display:none}
+#sidebar .sidebar-inner.active,
+#sidebar .include-container.in,
+#sidebar .collapse.in{display:block}
+
+#sidebar-toggle {
+  display: none !important;
+}
+.has-sidebar #sidebar-toggle {
+  display: block !important;
+}
+#sidebar-toggle:before {
+  content: '';
+  display: block;
+  background: #a1d57d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transition: all 0.2s cubic-bezier(0.46, 0.03, 0.52, 0.96);
+  width: 0 !important;
+  height: 100% !important;
+}
+.has-sidebar #sidebar-toggle:before {
+  width: 0.2em !important;
+}
+#sidebar-toggle:hover:before {
+  background: #b2de84;
+}
+
+/* SVG animation */
+/* body.collapsed #sidebar-toggle:before{
+  width: 0!important;
+}
+#icon-menu .icon-menu-top{
+  transform: translate(-1px, 0) rotate(-38deg);
+}
+#icon-menu .icon-menu-middle{
+  transform: scaleY(1.12) scaleX(1.6) translate(2px,0)
+}
+#icon-menu .icon-menu-bottom{
+  transform: translate(-1px, 0) rotate(38deg);
+}
+.collapsed #icon-menu path{
+  transform: none;
+} */
+
+/* collapse sidebar */
+.collapsed #sidebar {
+  left: 0;
+}
+
+/* custom menu icon formatting */
+#emoncms-navbar .icon.folder-plus {
+  margin-bottom: 1px;
+}
+
+/* eof navbar override */
+
+
+.btn-li .btn,
+#top_nav li .btn {
+  background: none;
+  border-radius: 0;
+  border: 0;
+  margin: 0;
+}
+
+/* bottom of sidebar */
+#footer_nav {
+  margin-bottom: 0;
+  width: 15rem;
+}
+
+#sidebar_user_toggle {
+  padding-top: 0.6em !important;
+  padding-bottom: 0.75em !important;
+}
+
+#footer_nav #sidebar_bookmarks li {
+  border-bottom: 1px solid #444;
+}
+#footer_nav #sidebar_bookmarks li a {
+  padding: 0.67em 0.94em;
+}
+#bookmarks a:hover::after {
+    content: attr(data-edit)
+}
+#edit_bookmarks {
+  padding: .7em !important;
+  transition: color .3s ease-out;
+}
+
+/* sidebar toggle switch */
+#sidebar-toggle-bar {
+  position: fixed;
+  width: 0;
+  left: 0;
+  height: 100vh;
+  top: 0;
+  z-index: 999;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease-in;
+  transition-delay: 0;
+  display: none !important;
+}
+.has-sidebar #sidebar-toggle-bar {
+  display: flex !important;
+}
+body.collapsed #sidebar-toggle-bar {
+  width: 1rem;
+  transition-delay: 1s;
+}
+#sidebar-toggle-bar:after {
+  content: '';
+  width: 1rem;
+  height: 100%;
+  background: #8c8b8b;
+  top: 0;
+  left: 0;
+  opacity: 0.1;
+  transition: all 0.2s ease-out;
+  margin-left: -0.2rem;
+}
+
+#sidebar-toggle-bar:hover:after {
+  opacity: 0.8;
+}
+
+.menu-overlay {
+  display: none;
+  background-color: #000;
+  bottom: 0;
+  left: 0;
+  opacity: 0.3;
+  position: fixed;
+  right: 0;
+  top: 2.5rem;
+  z-index: 49;
+}
+
+
+
+/* svg icons */
+svg.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  stroke-width: 0;
+  stroke: currentColor;
+  fill: currentColor;
+  vertical-align: -0.15em;
+}
+#left-nav .active .icon {
+  vertical-align: -0.1em;
+}
+/* The navigation menu links */
+#sidebar .nav a {
+  text-decoration: none;
+  display: block;
+  padding: 0.94em;
+}
+#sidebar .nav.sub-nav {
+  border-top: 0 solid transparent;
+}
+
+
+/* -------------------------------------------------------------------
+Side nav: app list
+--------------------------------------------------------------------*/
+.sidebar-menu {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+.sidebar-menu li {
+  transition: all 0.2s ease-in !important;
+}
+.sidebar-menu li.collapse {
+  border-bottom: 0px solid transparent;
+}
+#sidebar svg.icon {
+  margin-top: .1em;
+}
+.arrow-up {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 5px solid;
+}
+
+.arrow-down {
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid;
+}
+.arrow {
+  margin: 0.4em 0;
+  transform: scaleY(-1);
+  filter: FlipH;
+  /* transition: transform .15s ease-out; */
+}
+.collapsed .arrow {
+  transform: scaleY(1);
+  filter: none;
+}
+
+/* specific to single view's sidebar */
+
+.include-container {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  transition: all 0.2s ease-out;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+/* show #feeds when expanded */
+.include-container.in {
+  width: 99%;
+  opacity: 1;
+  height: auto;
+}
+
+.include-container h4 {
+  padding-bottom: 0.5rem;
+}
+.include-container h4 a {
+  display: block;
+}
+.include-container h4 a:hover {
+  text-decoration: underline;
+}
+
+
+/* On screens that are 870px or less, hide the sidebar on load */
+@media screen and (max-width: 870px) {
+  #sidebar {
+    transition: none;
+    left: 0;
+  }
+  /* js adds .has-animation on load */
+  .has-animation #sidebar {
+    transition: all 0.3s ease-out;
+  }
+  /* js adds .expanded on click */
+  .expanded #sidebar {
+    left: 15rem;
+  }
+}
+@media screen and (min-width: 871px) {
+  #sidebar {
+    left: 15rem;
+    transition: all 0.3s ease-out;
+  }
 }

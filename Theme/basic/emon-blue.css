@@ -126,24 +126,25 @@ div#account {
     border-bottom: 1px solid #f0f0f0;
 }
 
-.sidebar {
+#sidebar {
     background: #e3e3e3;
     color: #666;
 }
-.sidebar .nav a {
+#sidebar .nav a {
     color: #333;
 }
-.sidebar .nav.sidebar-menu li.active a,
-.sidebar .nav.sidebar-menu li a:focus {
+#sidebar .nav.sidebar-menu li.active a,
+#sidebar .nav.sidebar-menu li a:focus {
     background: #f5f5f5;
-    color: black;
+    color: #000;
 }
 /* When you mouse over the navigation items, change their color */
-.sidebar .nav.sidebar-menu a:hover {
+#sidebar .nav.sidebar-menu a:hover {
     background: #f0f0f0;
 }
-.sidebar .nav a:hover {
-    color: black;
+#sidebar .nav a:hover,
+.offcanvas a:focus {
+    color: #000;
 }
 
 .include-container h4 a {
@@ -152,17 +153,16 @@ div#account {
 
 #sidebar_user_toggle .expanded,
 #sidebar_user_toggle:hover {
-  background: #f0f0f0;
+    background: #f0f0f0;
 }
 #edit_bookmarks {
-    padding: .7em;
     color: #545454;
-    transition: color .3s ease-out;
 }
 #edit_bookmarks:hover,
 #edit_bookmarks:focus {
-    color: black;
+    color: #000;
 }
+
 
 /* -------------------------------------------------------------------
    Footer

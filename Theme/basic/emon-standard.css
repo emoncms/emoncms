@@ -112,38 +112,37 @@ div#account {
     border-bottom: 1px solid #444;
 }
 
-.sidebar {
+#sidebar {
     background: #333;
     color: #aaa;
 }
-.sidebar .nav a {
+#sidebar .nav a {
     color: #fff;
 }
-.sidebar .nav.sidebar-menu li.active a,
-.sidebar .nav.sidebar-menu li a:focus {
+#sidebar .nav.sidebar-menu li.active a,
+#sidebar .nav.sidebar-menu li a:focus {
     background: #212121b3;
     color: #f1f1f1;
 }
 /* When you mouse over the navigation items, change their color */
-.sidebar .nav.sidebar-menu a:hover {
+#sidebar .nav.sidebar-menu a:hover {
     background: #212121;
 }
-.sidebar .nav a:hover {
+#sidebar .nav a:hover,
+.offcanvas a:focus {
     color: #f1f1f1;
 }
 
 .include-container h4 a {
-    color: white;
+    color: #fff;
 }
 
 #sidebar_user_toggle .expanded,
 #sidebar_user_toggle:hover {
-  background: #212121;
+    background: #212121;
 }
 #edit_bookmarks {
-    padding: .7em;
     color: #545454;
-    transition: color .3s ease-out;
 }
 #edit_bookmarks:hover,
 #edit_bookmarks:focus {
