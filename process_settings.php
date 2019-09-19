@@ -21,9 +21,10 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
     require_once('default-settings.php');
     require_once('settings.php');
     if (!isset($settings)) {
-        $settings_error = true;
-        $settings_error_title = "settings.php file error";    
-        $settings_error_message = "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php";
+        require_once('Lib/process_old_settings.php');
+        //$settings_error = true;
+        //$settings_error_title = "settings.php file error";    
+        //$settings_error_message = "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php";
     } else {
         $settings = array_replace_recursive($_settings,$settings);
     }
