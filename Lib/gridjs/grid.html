@@ -90,9 +90,16 @@ Vue.component("grid-column", {
     template: "#grid-column",
     props: ['property','entry','column'],
     data: function() {
-        return {
-            button: this.$root.classes.button,
-            buttonActive: this.$root.classes.buttonActive
+        if (this.$root.classes) {
+            return {
+                button: this.$root.classes.button,
+                buttonActive: this.$root.classes.buttonActive
+            }
+        } else {
+            return {
+                button: '',
+                buttonActive: ''
+            }
         }
     },
     computed: {
@@ -187,7 +194,7 @@ Vue.component("grid-row", {
 <!-- DATA GRID TEMPLATE -->
 <script type="text/x-template" id="grid-data">
     <table class="table table-sm table-hover table-condensed">
-        <caption class="text-muted muted text-left mt-3">{{ status.title }}</caption>
+        <caption v-if="status" class="text-muted muted text-left mt-3">{{ status.title }}</caption>
         <thead>
             <tr>
                 <th v-for="(column, key) in columns" v-if="column.sort"
