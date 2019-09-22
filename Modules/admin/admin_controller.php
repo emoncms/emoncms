@@ -87,6 +87,15 @@ function admin_controller()
                     }
                     $services['feedwriter']['text'] .= $message . ' <span id="bufferused">loading...</span>';
                 }
+                $redis_info = array();
+                if($redis_enabled) {
+                    $redis_info = $redis->info();
+                    $redis_info['dbSize'] = $redis->dbSize();
+                    $phpRedisPattern = 'Redis Version =>';
+                    $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
+                    $pipRedisPattern = "Version: ";
+                    $redis_info['pipRedis'] = substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
+                }
 
                 $view_data = array(
                     'system'=>$system,
@@ -101,7 +110,7 @@ function admin_controller()
                     'path'=>$path,
                     'allow_emonpi_admin'=>$allow_emonpi_admin,
                     'emoncms_logfile'=>$emoncms_logfile,
-                    'redis'=>$redis,
+                    'redis_info'=>$redis_info,
                     'feed_settings'=>$feed_settings,
                     'emoncms_modules'=>$system['emoncms_modules'],
                     'php_modules'=>Admin::php_modules($system['php_modules']),

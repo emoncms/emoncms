@@ -347,14 +347,22 @@ listItem;
         <?php if ($redis_enabled) : ?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Redis'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
+            <?php
+            $git_details = sprintf('<dl class="row">%s</dl>',implode('', array(
+                row(_('Redis Server'), $redis_info['redis_version']),
+                row(_('Python Redis'), $redis_info['pipRedis']),
+                row(_('PHP Redis'), $redis_info['phpRedis'])
+            )));
+            echo row(_('Version'), $git_details); ?>
             <?php echo row(_('Host'), $system['redis_server']); ?>
             <?php 
             $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
-            $redis_keys = sprintf('%s keys',$redis->dbSize());
-            $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
-            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
-            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
+            $redis_keys = sprintf('%s keys',$redis_info['dbSize']);
+            $redis_size = sprintf('(%s)',$redis_info['used_memory_human']);
+            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
+            ?>
+            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
+            
         </dl>
         <?php endif; ?>
 
