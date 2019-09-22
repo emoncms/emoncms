@@ -34,7 +34,7 @@
     //there is a urlParams var in Modules/vis/visualisations/common/vis_helper.js with a custom function
     //anyway, the use of the generic function URLSearchParams could be a simplier solution
     //does not work with IE but IE is a kind of deprecated
-    console.log(window.location.search);
+    //console.log(window.location.search);
     //for user logged in emoncms, the url is like /vis/multigraph?mid=1&embed=0
     //for visitor, the url can be /vis/multigraph?mid=1&embed=1&apikey=apikey_read
     const url_Params = new URLSearchParams(window.location.search);
