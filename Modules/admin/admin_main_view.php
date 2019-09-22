@@ -348,12 +348,14 @@ listItem;
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Redis'); ?></h4>
         <dl class="row">
             <?php
-            $git_details = sprintf('<dl class="row">%s</dl>',implode('', array(
-                row(_('Redis Server'), $redis_info['redis_version']),
-                row(_('Python Redis'), $redis_info['pipRedis']),
-                row(_('PHP Redis'), $redis_info['phpRedis'])
-            )));
-            echo row(_('Version'), $git_details); ?>
+            $redis_version_lines[] = row(_('Redis Server'), $redis_info['redis_version']);
+            if(!empty($redis_info['pipRedis'])) {
+                $redis_version_lines[] = row(_('Python Redis'), $redis_info['pipRedis']);
+            }
+            if(!empty($redis_info['phpRedis'])) {
+                $redis_version_lines[] = row(_('PHP Redis'), $redis_info['phpRedis']);
+            }
+            echo row(_('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
             <?php echo row(_('Host'), $system['redis_server']); ?>
             <?php 
             $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
