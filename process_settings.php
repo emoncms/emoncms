@@ -14,156 +14,112 @@ defined('EMONCMS_EXEC') or die('Restricted access');
 
 require_once('Lib/enum.php');
 
-// Check if settings.php file exists
-if(file_exists(dirname(__FILE__)."/settings.php"))
-{
-    // Load settings.php
+// Load settings.php
+$settings_error = false;
+
+if(file_exists(dirname(__FILE__)."/settings.php")) {
+    require_once('default-settings.php');
     require_once('settings.php');
-
-    if (!isset($allow_config_env_vars)) $allow_config_env_vars = false;
-    if ($allow_config_env_vars) {
-        /*
-            Load settings from environment variables
-
-            Environment settings override settings.php and defaults, 
-            and allow you to run multiple variants of the same
-            installation (e.g. for testing).
-        */
-
-        //1 #### Mysql database settings
-        if (isset($_ENV["EMONCMS_MYSQL_HOST"]))     $server = $_ENV["EMONCMS_MYSQL_HOST"];
-        if (isset($_ENV["EMONCMS_MYSQL_DATABASE"])) $database = $_ENV["EMONCMS_MYSQL_DATABASE"];
-        if (isset($_ENV["EMONCMS_MYSQL_USER"]))     $username = $_ENV["EMONCMS_MYSQL_USER"];
-        if (isset($_ENV["EMONCMS_MYSQL_PASSWORD"])) $password = $_ENV["EMONCMS_MYSQL_PASSWORD"];
-        if (isset($_ENV["EMONCMS_MYSQL_PORT"]))     $port = $_ENV["EMONCMS_MYSQL_PORT"];
-
-        //2 #### redis
-        // create the array if it's not already been done
-        if (!isset($redis_server)) $redis_server = array();
-
-        if (isset($_ENV["EMONCMS_REDIS_ENABLED"]))  $redis_enabled = $_ENV["EMONCMS_REDIS_ENABLED"] === 'true';
-        if (isset($_ENV["EMONCMS_REDIS_HOST"]))     $redis_server['host'] = $_ENV["EMONCMS_REDIS_HOST"];
-        if (isset($_ENV["EMONCMS_REDIS_PORT"]))     $redis_server['port'] = $_ENV["EMONCMS_REDIS_PORT"];
-        if (isset($_ENV["EMONCMS_REDIS_AUTH"]))     $redis_server['auth'] = $_ENV["EMONCMS_REDIS_AUTH"];
-        if (isset($_ENV["EMONCMS_REDIS_PREFIX"]))   $redis_server['prefix'] = $_ENV["EMONCMS_REDIS_PREFIX"];
-
-        //3 #### MQTT
-        // create the array if it's not already been done
-        if (!isset($mqtt_server)) $mqtt_server = array();
-        if (isset($_ENV["EMONCMS_MQTT_ENABLED"]))  $mqtt_enabled = $_ENV["EMONCMS_MQTT_ENABLED"] === 'true';
-
-        if (isset($_ENV["EMONCMS_MQTT_HOST"]))      $mqtt_server['host']      = $_ENV["EMONCMS_MQTT_HOST"];
-        if (isset($_ENV["EMONCMS_MQTT_PORT"]))      $mqtt_server['port']      = $_ENV["EMONCMS_MQTT_PORT"];
-        if (isset($_ENV["EMONCMS_MQTT_USER"]))      $mqtt_server['user']      = $_ENV["EMONCMS_MQTT_USER"];
-        if (isset($_ENV["EMONCMS_MQTT_PASSWORD"]))  $mqtt_server['password']  = $_ENV["EMONCMS_MQTT_PASSWORD"];
-        if (isset($_ENV["EMONCMS_MQTT_BASETOPIC"])) $mqtt_server['basetopic'] = $_ENV["EMONCMS_MQTT_BASETOPIC"];
-    }
-    
-    //  Validate settings are complete
-
-    $error_out = "";
-
-    if (!isset($config_file_version) || $config_file_version < 9) $error_out .= '<p>settings.php config file has new settings for this version. Copy default.settings.php to settings.php and modify the later.</p>';
-    if (!isset($username) || $username=="") $error_out .= '<p>missing setting: $username</p>';
-    if (!isset($password)) $error_out .= '<p>missing setting: $password</p>';
-    if (!isset($server) || $server=="") $error_out .= '<p>missing setting: $server</p>';
-    if (!isset($database) || $database=="") $error_out .= '<p>missing setting: $database</p>';
-    if ($enable_password_reset && !isset($smtp_email_settings)) $error_out .= '<p>missing setting: $smtp_email_settings</p>';
-
-    if (!isset($log_enabled)) $error_out .= "<p>missing setting: log_enabled</p>";
-    if (!isset($log_level)) $log_level=2;  //default to warning log level
-    if (!isset($log_location)) $log_location = "/var/log/emoncms";
-
-    if (!isset($redis_enabled)) $redis_enabled = false;
-    if ($redis_enabled) {
-        if (!class_exists('Redis')) $error_out .= "<p>redis enabled but not installed, check setting: redis_enabled</p>";
-        if (!isset($redis_server['host'])) $error_out .= "<p>redis server not configured, check setting: redis_server.host</p>";
-        if (!isset($redis_server['port'])) $error_out .= "<p>redis server not configured, check setting: redis_server.port</p>";
-        if (!isset($redis_server['auth'])) $error_out .= "<p>redis server not configured, check setting: redis_server.auth</p>";
-        if (!isset($redis_server['prefix'])) $error_out .= "<p>redis server not configured, check setting: redis_server.prefix</p>";
-        if (!empty($redis_server['prefix'])) $redis_server['prefix'] = $redis_server['prefix'] . ":";
-        if (!isset($feed_settings['redisbuffer']['enabled'])) $feed_settings['redisbuffer'] = array('enabled'=>false);
-        if (!$feed_settings['redisbuffer']['sleep']) $feed_settings['redisbuffer']['sleep'] = 60;
-        if ((int)$feed_settings['redisbuffer']['sleep'] < 1) $error_out .= "<p>buffered writing sleep interval must be > 0, check settings: settings['redisbuffer']['sleep']";
+    if (!isset($settings)) {
+        require_once('Lib/process_old_settings.php');
+        //$settings_error = true;
+        //$settings_error_title = "settings.php file error";    
+        //$settings_error_message = "It looks like you are using an old version of settings.php try re-creating your settings.php file from default-settings.php";
     } else {
-        if ($feed_settings['redisbuffer']['enabled']) $error_out .= "<p>buffered writing requires redis but its disabled, check settings: settings['redisbuffer']['enabled'], redis_enabled";
+        $settings = array_replace_recursive($_settings,$settings);
     }
+} else if(file_exists(dirname(__FILE__)."/settings.ini")) {
+    $CONFIG_INI = parse_ini_file("default-settings.ini", true);
+    $CUSTOM_INI = parse_ini_file("settings.ini", true);
+    $settings = ini_merge($CONFIG_INI, $CUSTOM_INI);
+    // $settings = ini_check_envvars($settings);
+} else {
+    $settings_error = true;
+    $settings_error_title = "missing settings file";
+    $settings_error_message = "Create a settings.ini or settings.php file from a default-settings template";
+}
 
-    if (!isset($mqtt_enabled)) $mqtt_enabled = false;
-    if ($mqtt_enabled) {
-        if (!isset($mqtt_server['host'])) $error_out .= "<p>mqtt server not configured, check setting: mqtt_server</p>";
-        if (!isset($mqtt_server['port'])) $mqtt_server['port'] = 1883;
-        if (!isset($mqtt_server['user'])) $mqtt_server['user'] = null;
-        if (!isset($mqtt_server['password'])) $mqtt_server['password'] = null;
-        if (!isset($mqtt_server['basetopic'])) $mqtt_server['basetopic'] = "nodes";
-        if (!isset($mqtt_server['client_id'])) $mqtt_server['client_id'] = "emoncms";
+if ($settings_error) {
+    if (PHP_SAPI === 'cli') {
+        echo "$settings_error_title\n";
+        echo "$settings_error_message\n";
+    } else {
+        echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
+        echo "<h3>$settings_error_title</h3>";
+        echo "<p>$settings_error_message</p>";
+        echo "</div>";
     }
+    die;
+}
 
-    if (!isset($feed_settings)) $feed_settings = array();
-    if (!isset($feed_settings['phpfiwa'])) $error_out .= "<p>feed setting for phpfiwa is not configured, check settings: settings['phpfiwa']";
-    if (!isset($feed_settings['phpfina'])) $error_out .= "<p>feed setting for phpfina is not configured, check settings: settings['phpfina']";
-    if (!isset($feed_settings['phptimeseries'])) $error_out .= "<p>feed setting for phptimeseries is not configured, check settings: settings['phptimeseries']";
-    if (!isset($feed_settings['redisbuffer'])) $error_out .= "<p>feed setting for redisbuffer is not configured, check settings: settings['redisbuffer']";
-    if (!isset($feed_settings['engines_hidden'])) $error_out .= "<p>feed setting for engines_hidden is not configured, check settings: settings['engines_hidden']";
+// ---------------------------------------------------------------------------------------
+if (is_dir($settings["emoncms_dir"]."/modules")) {
+    $linked_modules_dir = $settings["emoncms_dir"]."/modules";
+} else {
+    $linked_modules_dir = $settings["emoncms_dir"];
+}
 
-    if (!isset($feed_settings['csvdownloadlimit_mb'])) $feed_settings['csvdownloadlimit_mb'] = 10; // default
+// Set display errors
+if (isset($settings["display_errors"]) && ($settings["display_errors"])) {
+    error_reporting(E_ALL);
+    ini_set('display_errors', 'on');
+}
 
-    if (!isset($max_datapoints)) $max_datapoints = 8928; // default
+// ---------------------------------------------------------------------------------------
+// FUNCTIONS
+// ---------------------------------------------------------------------------------------
 
-    if (!isset($data_sampling)) $data_sampling = true; // default
-    
-    if (!isset($menucollapses)) $menucollapses = true;
-    if (!isset($favicon)) $favicon = "favicon.png";
-    if (!isset($show_menu_titles)) $show_menu_titles = true;
-    if (!isset($email_verification)) $email_verification = false;
-    if (!isset($admin_show_update)) $admin_show_update = true;
-
-    if (!isset($csv_decimal_places) || $csv_decimal_places=="") $csv_decimal_places = 2;
-    if (!isset($csv_decimal_place_separator) || $csv_decimal_place_separator=="") $csv_decimal_place_separator = '.';
-    if (!isset($csv_field_separator) || $csv_field_separator=="") $csv_field_separator = ',';
-
-    if ($csv_decimal_place_separator == $csv_field_separator) $error_out .= '<p>settings incorrect: $csv_decimal_place_separator==$csv_field_separator</p>';
-    
-    if (!isset($appname)) $appname = 'emoncms';
-    
-    if (!isset($homedir)) $homedir = "/home/pi";
-    if ($homedir!="/home/pi" && !is_dir($homedir)) $error_out .= "<p>homedir is not configured or directory does not exists, check settings: homedir";
-    
-    // emoncms_dir and openenergymonitor_dir to replace homedir as installation path reference
-    if (!isset($emoncms_dir)) $emoncms_dir = $homedir;
-    if (!isset($openenergymonitor_dir)) $openenergymonitor_dir = $homedir;
-    
-    if (!isset($linked_modules_dir)) {
-        if (is_dir("$emoncms_dir/modules")) {
-            $linked_modules_dir = "$emoncms_dir/modules";
+// This function takes two arrays of settings and merges them, using
+// the value from $overrides where it differs from the one in $defaults.
+function ini_merge ($defaults, $overrides) {
+    foreach ($overrides as $k => $v) {
+        if (is_array($v)) {
+            $defaults[$k] = ini_merge($defaults[$k], $overrides[$k]);
         } else {
-            $linked_modules_dir = $emoncms_dir;
+            $defaults[$k] = $v;
         }
     }
 
-    if ($error_out!="") {
-      echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
-      echo "<h3>settings.php file error</h3>";
-      echo $error_out;
-      echo "<p>To fix, check that the settings are set in <i>settings.php</i> or try re-creating your <i>settings.php</i> file from <i>default.settings.php</i> template</p>";
-      echo "</div>";
-      die;
+    return $defaults;
+};
+
+// This function iterates over all the config file entries, replacing values
+// of the format {{VAR_NAME}} with the environment variable 'VAR_NAME'.
+//
+// This can be useful in containerised setups, or testing environments.
+function ini_check_envvars($config) {
+    global $error_out;
+
+    foreach ($config as $section => $options) {
+        foreach ($options as $key => $value) {
+            // Find {{ }} vars and replace what's within them with the
+            // named environment var
+            if (strpos($value, '{{') !== false && strpos($value, '}}') !== false) {
+                preg_match_all( '/{{([^}]*)}}/', $value, $matches);
+                foreach ($matches[1] as $match) {
+                    if (!isset($_ENV[$match])) {
+                        $error_out .= "<p>Error: environment var '${match}' not defined in config section [${section}], setting '${key}'</p>";
+                    } else {
+                        $newval = str_replace('{{'.$match.'}}', $_ENV[$match], $value);
+
+                        // Convert booleans from strings
+                        if ($newval === 'true') {
+                            $newval = true;
+                        } else if ($newval === 'false') {
+                            $newval = false;
+
+                        // Convert numbers from strings
+                        } else if (is_numeric($newval)) {
+                            $newval = $newval + 0;
+                        }
+
+                        // Set the new value
+                        $config[$section][$key] = $newval;
+                    }
+                }
+            }
+        }
     }
 
-    if (!isset($default_emailto)) $default_emailto = 'pi@localhost';
-
-    // Set display errors
-    if (isset($display_errors) && ($display_errors)) {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 'on');
-    }
-}
-else
-{
-    echo "<div style='width:600px; background-color:#eee; padding:20px; font-family:arial;'>";
-    echo "<h3>settings.php file error</h3>";
-    echo 'Copy and modify default.settings.php to settings.php<br>';
-    echo 'For more information about configure settings.php file go to <a href="http://emoncms.org">http://emoncms.org</a>';
-    echo "</div>";
-    die;
+    return $config;
 }

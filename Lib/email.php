@@ -8,7 +8,7 @@ class Email {
     private $message;
 
     function __construct(){
-        global $smtp_email_settings;
+        global $settings;
         $this->log = new EmonLogger(__FILE__);
 
         $this->message = null;
@@ -20,7 +20,7 @@ class Email {
         }
         if ($this->have_swift){
             $this->message = Swift_Message::newInstance();
-            $this->message->setFrom($smtp_email_settings['from']);
+            $this->message->setFrom($settings['smtp']['from']);
         }
     }
 
@@ -60,13 +60,13 @@ class Email {
     }
 
     function send(){
-        global $smtp_email_settings;
+        global $settings;
         if ($this->check()) {
             try {
-                $transport = Swift_SmtpTransport::newInstance($smtp_email_settings['host'], $smtp_email_settings['port']);
-                if (isset($smtp_email_settings['encryption'])) $transport->setEncryption($smtp_email_settings['encryption']);
-                if (isset($smtp_email_settings['username'])) $transport->setUsername($smtp_email_settings['username']);
-                if (isset($smtp_email_settings['password'])) $transport->setPassword($smtp_email_settings['password']);
+                $transport = Swift_SmtpTransport::newInstance($settings['smtp']['host'], $settings['smtp']['port']);
+                if (isset($settings['smtp']['encryption'])) $transport->setEncryption($settings['smtp']['encryption']);
+                if (isset($settings['smtp']['username'])) $transport->setUsername($settings['smtp']['username']);
+                if (isset($settings['smtp']['password'])) $transport->setPassword($settings['smtp']['password']);
 
                 $mailer = Swift_Mailer::newInstance($transport);
                 $mailer->send($this->message);

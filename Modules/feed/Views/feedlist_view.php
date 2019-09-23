@@ -1,6 +1,5 @@
 <?php
-    global $path, $feedviewpath;
-    if (!isset($feedviewpath)) $feedviewpath = "vis/auto?feedid=";
+    global $path, $settings;
 ?>
 
 <script type="text/javascript" src="<?php echo $path; ?>Modules/user/user.js"></script>
@@ -389,7 +388,7 @@ body{padding:0!important}
 <!------------------------------------------------------------------------------------------------------------------------------------------------- -->
 <script>
 
-var feedviewpath = "<?php echo $feedviewpath; ?>";
+var feedviewpath = "<?php echo $settings['interface']['feedviewpath']; ?>";
 
 var feeds = {};
 var nodes = {};
@@ -1405,7 +1404,7 @@ $("#export").click(function()
     if (export_start>=export_end) {alert("<?php echo _('Start date must be further back in time than end date.'); ?>"); return false; }
     if (export_interval=="") {alert("<?php echo _('Please select interval to download.'); ?>"); return false; }
 
-    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
     var downloadsize = calculate_download_size(ids.length);
     
     if (ids.length>1) {
@@ -1434,7 +1433,7 @@ function calculate_download_size(feedcount){
         downloadsize = ((export_end - export_start) / export_interval) * (export_timeformat_size + export_data_size) * feedcount; 
     }
     $("#downloadsize").html((downloadsize / 1024 / 1024).toFixed(2));
-    var downloadlimit = <?php global $feed_settings; echo $feed_settings['csvdownloadlimit_mb']; ?>;
+    var downloadlimit = <?php echo $settings['feed']['csv_downloadlimit_mb']; ?>;
     $("#downloadsizeplaceholder").css('color', (downloadsize == 0 || downloadsize > (downloadlimit*1048576) ? 'red' : ''));
     
     return downloadsize;

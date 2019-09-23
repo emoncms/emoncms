@@ -3,6 +3,7 @@
 .settings*
 debian/emoncms*
 settings.php
+settings.ini
 old.settings.php
 emoncms.log
 .idea

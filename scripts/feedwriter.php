@@ -15,22 +15,29 @@
     $log = new EmonLogger(__FILE__);
     $log->info("Starting feedwriter script");
     
-    if (!$redis_enabled) { $log->error("Error: setting must be true: redis_enabled"); die; }
-    if (!$feed_settings['redisbuffer']['enabled']) { $log->error("Error: setting must be true: feed_settings['redisbuffer']['enabled']"); die; }
-    if (!$feed_settings['redisbuffer']['sleep'] || (int)$feed_settings['redisbuffer']['sleep'] < 1) { $log->error("Error: setting must be > 0 : feed_settings['redisbuffer']['sleep']"); die; }
+    if (!$settings['redis']['enabled']) { $log->error("Error: setting must be true: redis_enabled"); die; }
+    if (!$settings['feed']['redisbuffer']['enabled']) { $log->error("Error: setting must be true: settings['feed']['redisbuffer']['enabled']"); die; }
+    if (!$settings['feed']['redisbuffer']['sleep'] || (int)$settings['feed']['redisbuffer']['sleep'] < 1) { $log->error("Error: setting must be > 0 : settings['feed']['redisbuffer']['sleep']"); die; }
 
-    $mysqli = @new mysqli($server,$username,$password,$database,$port);
+    $mysqli = @new mysqli(
+        $settings["sql"]["server"],
+        $settings["sql"]["username"],
+        $settings["sql"]["password"],
+        $settings["sql"]["database"],
+        $settings["sql"]["port"]
+    );
+    
     if ($mysqli->connect_error) { $log->error("Can't connect to database:". $mysqli->connect_error);  die('Check log\n'); }
 
-    if ($redis_enabled) {
+    if ($settings['redis']['enabled']) {
         $redis = new Redis();
-        if (!$redis->connect($redis_server['host'], $redis_server['port'])) { 
-            $log->error("Could not connect to redis at ".$redis_server['host'].":".$redis_server['port']);  die('Check log\n'); 
+        if (!$redis->connect($settings['redis']['host'], $settings['redis']['port'])) {
+            $log->error("Cannot connect to redis at ".$settings['redis']['host'].":".$settings['redis']['port']);  die('Check log\n');
         }
-        if (!empty($redis_server['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $redis_server['prefix']);
-        if (!empty($redis_server['auth'])) {
-            if (!$redis->auth($redis_server['auth'])) { 
-                $log->error("Could not connect to redis at ".$redis_server['host'].", autentication failed"); die('Check log\n');
+        if (!empty($settings['redis']['prefix'])) $redis->setOption(Redis::OPT_PREFIX, $settings['redis']['prefix']);
+        if (!empty($settings['redis']['auth'])) {
+            if (!$redis->auth($settings['redis']['auth'])) {
+                $log->error("Cannot connect to redis at ".$settings['redis']['host'].", autentication failed"); die('Check log\n');
             }
         }
     } else {
@@ -41,7 +48,7 @@
     $user = new User($mysqli,$redis,null);
 
     require("Modules/feed/feed_model.php");
-    $feed = new Feed($mysqli,$redis,$feed_settings);
+    $feed = new Feed($mysqli,$redis,$settings['feed']);
 
     // Remove write locks just in case something halted without releasing
     $feedids = $redis->sMembers("feed:bufferactive");
@@ -49,9 +56,9 @@
         $feed->EngineClass(Engine::REDISBUFFER)->removeLock($feedid,"write"); 
     }
 
-    $log->info("Buffered feed writer daemon started with sleep " . $feed_settings['redisbuffer']['sleep'] . "s...");
+    $log->info("Buffered feed writer daemon started with sleep " . $settings['feed']['redisbuffer']['sleep'] . "s...");
     while(true)
     {
         $feed->EngineClass(Engine::REDISBUFFER)->process_buffers();
-        sleep((int)$feed_settings['redisbuffer']['sleep']);
+        sleep((int)$settings['feed']['redisbuffer']['sleep']);
     }

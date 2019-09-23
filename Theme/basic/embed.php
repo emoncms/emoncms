@@ -9,10 +9,14 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
-global $path,$theme,$themecolor;
+global $path,$settings;
 $v = 8;
-if (!is_dir("Theme/".$theme)) $theme = "basic";
-if (!in_array($themecolor, ["blue", "sun", "standard"])) $themecolor = "standard";
+if (!is_dir("Theme/".$settings["interface"]["theme"])) {
+    $settings["interface"]["theme"] = "basic";
+}
+if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])) {
+    $settings["interface"]["themecolor"] = "standard";
+}
 ?>
 <html>
     <head>
