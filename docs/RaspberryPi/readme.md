@@ -99,9 +99,9 @@ Add an emoncms database user and set that user's permissions. In the command bel
 
 ### Configure emoncms database settings
 
-Make a copy of default.settings.php and call it settings.php:
+Make a copy of example.settings.ini and call it settings.ini:
 
-    cd /var/www/emoncms && cp default.settings.php settings.php
+    cd /var/www/emoncms && cp example.settings.ini settings.ini
 
 Open settings.php in an editor:
 
