@@ -11,22 +11,34 @@
     //$embed = (int)(get("embed"));
     //$mid = intval(get("mid"));
 ?>
+<script>
+//still needed ?
+var srcIeScript = path+"Lib/flot/excanvas.min.js";
+document.write('<!--[if IE]><script language="javascript" type="text/javascript" src="'+srcIeScript+'"><\/script><![endif]-->');
 
-<!--[if IE]><script language="javascript" type="text/javascript" src="<?php echo $path;?>Lib/flot/excanvas.min.js"></script><![endif]-->
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.merged.js"></script>
+//srcScripts includes all the needed js libraries
+var srcScripts = [];
+srcScripts.push(path+"Lib/flot/jquery.flot.merged.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.togglelegend.min.js");
+srcScripts.push(path+"Lib/flot/jquery.flot.stack.min.js");
+srcScripts.push(path+"Modules/vis/visualisations/common/api.js");
+srcScripts.push(path+"Modules/vis/visualisations/common/vis.helper.js");
+srcScripts.push(path+"Modules/vis/visualisations/multigraph/multigraph.js");
+srcScripts.push(path+"Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js");
+srcScripts.push(path+"Lib/bootstrap/js/bootstrap.js");
+srcScripts.forEach(function(srcScript){
+  document.write('<script language="javascript" type="text/javascript" src="'+srcScript+'"><\/script>');
+});
 
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.togglelegend.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/flot/jquery.flot.stack.min.js"></script>
-
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/api.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/common/vis.helper.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Modules/vis/visualisations/multigraph/multigraph.js"></script>
-
-<link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
-<link href="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap-datetimepicker-0.0.11/js/bootstrap-datetimepicker.min.js"></script>
-<script language="javascript" type="text/javascript" src="<?php echo $path; ?>Lib/bootstrap/js/bootstrap.js"></script>
+//srcLinks includes all the needed css
+var srcLinks = [];
+srcLinks.push(path+"Lib/bootstrap/css/bootstrap.min.css");
+srcLinks.push(path+"Lib/bootstrap/css/bootstrap-responsive.min.css");
+srcLinks.push(path+"Lib/bootstrap-datetimepicker-0.0.11/css/bootstrap-datetimepicker.min.css");
+srcLinks.forEach(function(srcLink){
+  document.write('<link href="'+srcLink+'" rel="stylesheet">');
+});
+</script>
 
 <div id="multigraph"></div>
 
