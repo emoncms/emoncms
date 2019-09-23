@@ -123,18 +123,19 @@ Make a copy of example.settings.ini and call it settings.ini
 
     cp example.settings.ini settings.ini
 
-Open settings.php in an editor:
+Open settings.ini in an editor:
 
-    nano settings.php
+    nano settings.ini
 
 Update your database settings to use your new secure password:
 
-    $username = "USERNAME";
-    $password = "YOUR_SECURE_PASSWORD_HERE";
-    $server   = "localhost";
-    $database = "emoncms";
+    [sql]
+    server = "localhost"
+    database = "emoncms"
+    username = "emoncms"
+    password = "my_secure_password"
 
-You will also want to modify SMTP settings and the password reset flag further down in the settings file.
+You may also want to configure other settings, see the default-settings.ini file for a list of all available settings.
 
 Save (Ctrl-X), type Y and exit
 
