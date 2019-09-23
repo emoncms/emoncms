@@ -69,7 +69,7 @@
     
     if ( $mysqli->connect_error ) {
         echo "Can't connect to database, please verify credentials/configuration in settings.php<br />";
-        if ( $display_errors ) {
+        if ( $settings["display_errors"] ) {
             echo "Error message: <b>" . $mysqli->connect_error . "</b>";
         }
         die();
