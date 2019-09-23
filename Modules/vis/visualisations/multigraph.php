@@ -36,7 +36,7 @@
     //does not work with IE but IE is a kind of deprecated
     //console.log(window.location.search);
     //for user logged in emoncms, the url is like /vis/multigraph?mid=1&embed=0
-    //for visitor, the url can be /vis/multigraph?mid=1&embed=1&apikey=apikey_read
+    //for visitors, the url can be /vis/multigraph?mid=1&embed=1&apikey=apikey_read
     const url_Params = new URLSearchParams(window.location.search);
     var mid = url_Params.get("mid");
     var embed = url_Params.get("embed");
@@ -44,7 +44,6 @@
     if (url_Params.has("apikey")){
       apikey = url_Params.get("apikey");
     }
-    //var apikey = "<?php echo $apikey; ?>";
     var multigraphFeedlist = {};
     
     if (mid==0) $("body").css('background-color','#eee');
