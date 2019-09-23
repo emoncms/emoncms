@@ -46,7 +46,7 @@
     }
     var multigraphFeedlist = {};
     
-    if (mid==0) $("body").css('background-color','#eee');
+    if (mid===0) $("body").css('background-color','#eee');
 
     $.ajax({
         url: path+"vis/multigraph/get.json",
@@ -55,7 +55,7 @@
         async: true,
         success: function(data)
         {
-            if (data['feedlist'] != undefined) multigraphFeedlist = data['feedlist'];
+            if (data['feedlist'] !== undefined) {multigraphFeedlist = data['feedlist'];}
             multigraphInit("#multigraph");
             visFeedData();
         }
