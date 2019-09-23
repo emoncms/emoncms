@@ -31,7 +31,7 @@ Each php file includes specific instructions to catch the url parameters in orde
 That's why the script section of each individual vis object generally begins by extracting 
 from the url the value of feedid/mid, embed, apikey  .....
 
-## edition facilities
+## Edition facilities
 
 The EditDaily and EditRealtime vis objects permits to edit respectively PhpTimeSeries and PhpFina feeds 
 
