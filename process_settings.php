@@ -36,7 +36,7 @@ if(file_exists(dirname(__FILE__)."/settings.php")) {
 } else {
     $settings_error = true;
     $settings_error_title = "missing settings file";
-    $settings_error_message = "Create a settings.ini or settings.php file from a default-settings template";
+    $settings_error_message = "Create a settings.ini file from a example.settings.ini template";
 }
 
 if ($settings_error) {
