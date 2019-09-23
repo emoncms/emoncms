@@ -9,6 +9,7 @@ var showlegend = true;
 var datetimepicker1;
 var datetimepicker2;
 var datatype;
+var graphtype;
 
 function convertToPlotlist(multigraphFeedlist) {
   if (!multigraphFeedlist[0]) return;
@@ -24,7 +25,7 @@ function convertToPlotlist(multigraphFeedlist) {
 
   datatype=1;
 
-  for (z in multigraphFeedlist) {
+  for (var z in multigraphFeedlist) {
     var tag = (showtag && typeof multigraphFeedlist[z]["tag"] !== "undefined" && multigraphFeedlist[z]["tag"] !== "" ? multigraphFeedlist[z]["tag"]+": " : "");
     var stacked = (typeof multigraphFeedlist[z]["stacked"] !== "undefined" && multigraphFeedlist[z]["stacked"]);
     barwidth = typeof multigraphFeedlist[z]["barwidth"] === "undefined" ? 1 : multigraphFeedlist[z]["barwidth"];
