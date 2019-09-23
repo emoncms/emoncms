@@ -11,14 +11,14 @@ When vis objects are integrated in dashboards or external website or viewed thro
 the followed route looks like <b>/vis/visualisation_key</b>, where visualisation_key can be multigraph, bargraph 
 (cf [/Modules/vis/vis_object.php](/Modules/vis/vis_object.php) to find all existing vis objects)
 the route must include either : 
-- the mid parameter when dealing with a multigraph
-- the feedid parameter when dealing with a feed
+  - the mid parameter when dealing with a multigraph
+  - the feedid parameter when dealing with a feed
 
 Minimal vis routes can be : /vis/multigraph?mid=1 or /vis/graph?feedid=1
 
 An embed parameter can be used : 
-- full screen view / integration into dashboard : /vis/multigraph?mid=1&embed=1
-- within the 'main' viewport of emoncms : /vis/multigraph?mid=1&embed=0
+  - full screen view / integration into dashboard : /vis/multigraph?mid=1&embed=1
+  - within the 'main' viewport of emoncms : /vis/multigraph?mid=1&embed=0
 
 For visitors or usage outside of emoncms, the read_only apikey can also be given as a parameter : 
 /vis/multigraph?mid=1&embed=0&apikey=32_chars_apikey_read
