@@ -21,26 +21,8 @@ i.e. You should end up with all the files in the directory public_html/emoncms/
 (Note: NOT public_html as the data files should not be publicly accessible).  
 Then create three folders within your emoncmsdata folder called: phpfiwa, phpfina and phptimeseries
 
-5) In the emoncms app directory make a copy of default_settings.php and call it settings.php.  
+5) In the emoncms app directory make a copy of example.settings.ini and call it settings.ini.  
 
-6)  Open settings.php and edit the following:
-
-    a)  1 #### Mysql database settings
-    
-    your mysql username,
-    
-    password and database.
-    
-    b)  4 #### Engine settings
-    
-    //Engines working folder
-    
-    Edit the datadir definitions and set them to the location of each of the feed engine data folders on your system.
-
-    c)  6 #### Other settings
-    
-    In the 'Other settings' section, change the $log_location location to:  
-
-    $log_location = dirname(__FILE__);
+6)  Open settings.ini and edit as applicable.
 
 6) That's it, emoncms should now be ready to use!
