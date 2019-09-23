@@ -119,9 +119,9 @@ cd into the emoncms directory where the settings file is located
 
     cd /var/www/html/emoncms/
 
-Make a copy of default.settings.php and call it settings.php
+Make a copy of example.settings.ini and call it settings.ini
 
-    cp default.settings.php settings.php
+    cp example.settings.ini settings.ini
 
 Open settings.php in an editor:
 
