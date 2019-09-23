@@ -1,3 +1,5 @@
+/*global view */
+/*eslint no-undef: "error"*/
 var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
@@ -11,33 +13,33 @@ var datatype;
 function convertToPlotlist(multigraphFeedlist) {
   if (!multigraphFeedlist[0]) return;
   var plotlist = [];
-  var showtag = (multigraphFeedlist[0]["showtag"] != undefined ? multigraphFeedlist[0]["showtag"] : true);
-  showlegend = (multigraphFeedlist[0]["showlegend"]==undefined || multigraphFeedlist[0]["showlegend"]);
+  var showtag = (typeof multigraphFeedlist[0]["showtag"] !== "undefined" ? multigraphFeedlist[0]["showtag"] : true);
+  showlegend = (typeof multigraphFeedlist[0]["showlegend"] === "undefined" || multigraphFeedlist[0]["showlegend"]);
   var barwidth = 1;
-  var grpahtype;
   
-  view.ymin = (multigraphFeedlist[0]["ymin"] != undefined ? multigraphFeedlist[0]["ymin"] : null);
-  view.ymax = (multigraphFeedlist[0]["ymax"] != undefined ? multigraphFeedlist[0]["ymax"] : null);
-  view.y2min = (multigraphFeedlist[0]["y2min"] != undefined ? multigraphFeedlist[0]["y2min"] : null);
-  view.y2max = (multigraphFeedlist[0]["y2max"] != undefined ? multigraphFeedlist[0]["y2max"] : null);
+  view.ymin = (typeof multigraphFeedlist[0]["ymin"] !== "undefined" ? multigraphFeedlist[0]["ymin"] : null);
+  view.ymax = (typeof multigraphFeedlist[0]["ymax"] !== "undefined" ? multigraphFeedlist[0]["ymax"] : null);
+  view.y2min = (typeof multigraphFeedlist[0]["y2min"] !== "undefined" ? multigraphFeedlist[0]["y2min"] : null);
+  view.y2max = (typeof multigraphFeedlist[0]["y2max"] !== "undefined" ? multigraphFeedlist[0]["y2max"] : null);
 
   datatype=1;
 
   for (z in multigraphFeedlist) {
-    var tag = (showtag && multigraphFeedlist[z]["tag"]!=undefined && multigraphFeedlist[z]["tag"]!="" ? multigraphFeedlist[z]["tag"]+": " : "");
-    var stacked = (multigraphFeedlist[z]["stacked"]!=undefined && multigraphFeedlist[z]["stacked"]);
-    barwidth = multigraphFeedlist[z]["barwidth"]===undefined ? 1 : multigraphFeedlist[z]["barwidth"];
+    var tag = (showtag && typeof multigraphFeedlist[z]["tag"] !== "undefined" && multigraphFeedlist[z]["tag"] !== "" ? multigraphFeedlist[z]["tag"]+": " : "");
+    var stacked = (typeof multigraphFeedlist[z]["stacked"] !== "undefined" && multigraphFeedlist[z]["stacked"]);
+    barwidth = typeof multigraphFeedlist[z]["barwidth"] === "undefined" ? 1 : multigraphFeedlist[z]["barwidth"];
 
-    if ( multigraphFeedlist[z]["graphtype"]===undefined ) {
-      multigraphFeedlist[z]["datatype"]==1 ? graphtype="lines" : graphtype="bars";
+    if ( typeof multigraphFeedlist[z]["graphtype"] === "undefined" ) {
+      //console.log(multigraphFeedlist[z]);
+      multigraphFeedlist[z]["datatype"] === "1" ? graphtype="lines" : graphtype="bars";
     } else {
       graphtype=multigraphFeedlist[z]["graphtype"];
     }
 
-    if (multigraphFeedlist[z]["datatype"]==2)
+    if (multigraphFeedlist[z]["datatype"] === "2")
       datatype=2;
 
-    if (graphtype.substring(0, 5)=="lines") {
+    if (graphtype.substring(0, 5) === "lines") {
       plotlist[z] = {
         id: multigraphFeedlist[z]["id"],
         selected: 1,
@@ -54,13 +56,13 @@ function convertToPlotlist(multigraphFeedlist) {
           lines: {
             show: true,
             fill: multigraphFeedlist[z]["fill"] ? (stacked ? 1.0 : 0.5) : 0.0,
-            steps: graphtype=="lineswithsteps" ? true : false
+            steps: graphtype === "lineswithsteps" ? true : false
           }
         }
       };
     }
 
-    else if (graphtype=="bars") {
+    else if (graphtype === "bars") {
       plotlist[z] = {
         id: multigraphFeedlist[z]["id"],
         selected: 1,
@@ -78,9 +80,9 @@ function convertToPlotlist(multigraphFeedlist) {
       console.log("ERROR: Unknown plot graphtype! Graphtype: ", multigraphFeedlist[z]["graphtype"]);
     }
 
-    if (multigraphFeedlist[z]["left"]==true) {
+    if (multigraphFeedlist[z]["left"] === true) {
       plotlist[z].plot.yaxis = 1;
-    } else if (multigraphFeedlist[z]["right"]==true) {
+    } else if (multigraphFeedlist[z]["right"] === true) {
       plotlist[z].plot.yaxis = 2;
     } else {
       console.log("ERROR: Unknown plot alignment! Alignment setting: ", multigraphFeedlist[z]["right"]);
@@ -90,14 +92,14 @@ function convertToPlotlist(multigraphFeedlist) {
     if (multigraphFeedlist[z]["lineColour"]) {
       // Some browsers really want the leading "#". It works without in chrome, not in IE and opera.
       // What the hell, people?
-      if (multigraphFeedlist[z]["lineColour"].indexOf("#") == -1) {
+      if (multigraphFeedlist[z]["lineColour"].indexOf("#") === -1) {
         plotlist[z].plot.color = "#" + multigraphFeedlist[z]["lineColour"];
       } else {
         plotlist[z].plot.color = multigraphFeedlist[z]["lineColour"];
       }
     }
 
-    if (multigraphFeedlist[z]["left"]==false && multigraphFeedlist[z]["right"]==false) {
+    if (multigraphFeedlist[z]["left"] === false && multigraphFeedlist[z]["right"] === false) {
       plotlist[z].selected = 0;
     }
   }
@@ -108,7 +110,7 @@ function convertToPlotlist(multigraphFeedlist) {
  Handle Feeds
 */
 function visFeedData() {
-    if (multigraphFeedlist !== undefined && multigraphFeedlist[0] != undefined && multigraphFeedlist[0]["autorefresh"] != undefined) {
+    if (typeof multigraphFeedlist !== "undefined" && typeof multigraphFeedlist[0] !== "undefined" && typeof multigraphFeedlist[0]["autorefresh"] !== "undefined") {
         var now = new Date().getTime();
         var timeWindow = view.end - view.start;
         if (now - view.end < 2000 * multigraphFeedlist[0]["autorefresh"]) {
@@ -134,7 +136,7 @@ function visFeedDataOri() {
 
   clearTimeout(event_visFeedData); // Cancel any pending events
   event_visFeedData = setTimeout(function() { visFeedDataDelayed(); }, 500);
-  if (multigraphFeedlist !== undefined && multigraphFeedlist.length != plotdata.length) plotdata = [];
+  if (typeof multigraphFeedlist !== "undefined" && multigraphFeedlist.length !== plotdata.length) {plotdata = [];}
   plot();
 }
   
@@ -147,9 +149,9 @@ function visFeedDataDelayed() {
   for(var i in plotlist) {
     if (plotlist[i].selected) {
       if (!plotlist[i].plot.data) {
-        var skipmissing = 0; if (multigraphFeedlist[i]["skipmissing"]) skipmissing = 1;
+        var skipmissing = 0; if (multigraphFeedlist[i]["skipmissing"]) {skipmissing = 1;}
 
-        if (plotdata[i] === undefined) plotdata[i] = [];
+        if (typeof plotdata[i] === "undefined") plotdata[i] = [];
 
         if (typeof ajaxAsyncXdr[i] !== "undefined") { 
           ajaxAsyncXdr[i].abort(); // Abort pending loads
@@ -196,7 +198,7 @@ function multigraphInit(element) {
   view.start = now - timeWindow;
   view.end = now;
 
-  if (multigraphFeedlist !== undefined && multigraphFeedlist[0] != undefined) {
+  if (typeof multigraphFeedlist !== "undefined" && typeof multigraphFeedlist[0] !== "undefined") {
     view.end = multigraphFeedlist[0].end;
     if (view.end==0) view.end = now;
     if (multigraphFeedlist[0].timeWindow) {
@@ -274,7 +276,7 @@ function multigraphInit(element) {
             y=Number((item.datapoint[1]-item.datapoint[2]).toFixed(2));
           }
 
-          if (datatype==1)
+          if (datatype === 1)
             options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
           else
             options = { month:"short", day:"2-digit"};
@@ -364,7 +366,7 @@ function multigraphInit(element) {
   });
 
   $("#datetimepicker2").on("changeDate", function (e) {
-    if (view.datetimepicker_previous == null) view.datetimepicker_previous = view.end;
+    if (view.datetimepicker_previous === null) {view.datetimepicker_previous = view.end;}
     if (Math.abs(view.datetimepicker_previous - e.date.getTime()) > 1000*60*60*24)
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
