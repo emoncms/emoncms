@@ -53,14 +53,11 @@ if ($settings_error) {
 }
 
 // ---------------------------------------------------------------------------------------
-/*
-if (!isset($linked_modules_dir)) {
-    if (is_dir("$emoncms_dir/modules")) {
-        $linked_modules_dir = "$emoncms_dir/modules";
-    } else {
-        $linked_modules_dir = $emoncms_dir;
-    }
-}*/
+if (is_dir($settings["emoncms_dir"]."/modules")) {
+    $linked_modules_dir = $settings["emoncms_dir"]."/modules";
+} else {
+    $linked_modules_dir = $settings["emoncms_dir"];
+}
 
 // Set display errors
 if (isset($settings["display_errors"]) && ($settings["display_errors"])) {
