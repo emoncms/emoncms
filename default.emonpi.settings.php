@@ -3,6 +3,8 @@
 $settings = array(
 
     "sql"=>array(
+        "server" => "127.0.0.1",
+        "database" => "emoncms",
         "username" => "emoncms",
         "password" => "emonpiemoncmsmysql2016",
     ),
@@ -27,8 +29,8 @@ $settings = array(
         'redisbuffer'   => array(
             'enabled' => true
         ),
-        "phpfina"=>array("datadir"=>"/var/opt/emoncms/phpfina/"),
-        "phptimeseries"=>array("datadir"=>"/var/opt/emoncms/phptimeseries/")
+        "phpfina"=>array("datadir"=>"/home/pi/data/phpfina/"),
+        "phptimeseries"=>array("datadir"=>"/home/pi/data/phptimeseries/")
     ),
     
     "interface"=>array(
