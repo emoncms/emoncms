@@ -26,8 +26,8 @@ function convertToPlotlist(multigraphFeedlist) {
   datatype=1;
 
   for (var z in multigraphFeedlist) {
-    z = parseInt(z);
-    var tag = (showtag && typeof multigraphFeedlist[z]["tag"] !== "undefined" && multigraphFeedlist[z]["tag"] !== "" ? multigraphFeedlist[z]["tag"]+": " : "");
+    z = parseInt(z,10);
+    var tag = (showtag && typeof multigraphFeedlist[parseInt(z,10)]["tag"] !== "undefined" && multigraphFeedlist[parseInt(z,10)]["tag"] !== "" ? multigraphFeedlist[parseInt(z,10)]["tag"]+": " : "");
     var stacked = (typeof multigraphFeedlist[z]["stacked"] !== "undefined" && multigraphFeedlist[z]["stacked"]);
     barwidth = typeof multigraphFeedlist[z]["barwidth"] === "undefined" ? 1 : multigraphFeedlist[z]["barwidth"];
 
