@@ -31,7 +31,7 @@ The easiest way to do this via a GUI is through a program called phpmyadmin. The
 
 To create a database in phpmyadmin, click on Databases at the top, then enter 'emoncms' in the text input box and click create.
 
-When, in phpmyadmin, the database has been created, a new user must also be created on host "localhost" (not "%") and have a password set.  When the user has been created, the user needs to have "all" privileges over the new database that has just been created (scroll down for Database-specific privileges). Those 4 items - the new user name, password, "localhost" and database name are the values that go into the settings.php file.
+When, in phpmyadmin, the database has been created, a new user must also be created on host "localhost" (not "%") and have a password set.  When the user has been created, the user needs to have "all" privileges over the new database that has just been created (scroll down for Database-specific privileges). Those 4 items - the new user name, password, "localhost" and database name are the values that go into the settings.ini file.
 
 **Note:** this user isn't necessarily the same as one of the users who are allowed to register in emoncms once it's running.
 
@@ -61,27 +61,13 @@ Create a folder on your system for emoncms data to be saved in to, ie:
 
 Inside this folder create 3 other folders: phpfiwa, phpfina and phptimeseries, these are the main feed engines used by emoncms.
 
-#### 8) Set emoncms settings.php
+#### 8) Set emoncms settings.ini
 
-Copy default.settings.php and rename to settings.php. Enter your database username, password, server and database name.
+Copy example.settings.ini and rename to settings.ini. Enter your database username, password, server and database name.
 
-In the feedsettings section uncomment the datadir defenitions and set them to the location of each of the feed engine data folders on your system:
-
-    'phpfiwa'=>array(
-        'datadir'=>"C:\\Users\\Username\\emoncmsdata\\phpfiwa\\"
-    ),
-    'phpfina'=>array(
-        'datadir'=>"C:\\Users\\Username\\emoncmsdata\\phpfina\\"
-    ),
-    'phptimeseries'=>array(
-        'datadir'=>"C:\\Users\\Username\\emoncmsdata\\phptimeseries\\"
-    )
+In the feed settings section set the datadir directories to relevant locations for windows e.g "C:\\Users\\Username\\emoncmsdata\\phpfina\\".
 
 On Windows '\' must be escaped with another '\' hence the '\\'
-
-In the 'Other settings' section, change the $log_location location to:
-
-    $log_location = dirname('FILE');
 
 #### 9) Thats it! Open emoncms in your browser
 
