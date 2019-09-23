@@ -103,21 +103,22 @@ Make a copy of example.settings.ini and call it settings.ini:
 
     cd /var/www/emoncms && cp example.settings.ini settings.ini
 
-Open settings.php in an editor:
+Open settings.ini in an editor:
 
-    nano settings.php
+    nano settings.ini
 
 Update your settings to use your Database 'user' & 'password', which will enable emoncms to access the database:
 
-    $server   = "localhost";
-    $database = "emoncms";
-    $username = "emoncms";
-    $password = "new_secure_password";
+    [sql]
+    server = "localhost"
+    database = "emoncms"
+    username = "emoncms"
+    password = "new_secure_password"
     
 Further down in settings is an optional 'data structure store' - Redis, which acts as a cache for the data produced by emoncms, to ensure that it is efficiently written to disk. To activate Redis, change 'false' to 'true'. :
 
-	//2 #### Redis
-	$redis_enabled = true;
+    [redis]
+    enabled = true
 
 Save and exit.
 Create a symlink to reference emoncms within the web root folder:
