@@ -7,7 +7,7 @@
     Part of the OpenEnergyMonitor project: http://openenergymonitor.org
 */
 
-global $path, $session, $menu, $user,$show_menu_titles;
+global $path, $session, $menu, $user, $settings;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
@@ -49,7 +49,7 @@ if(!empty($menu['tabs'])) {
         // render menu item
         $item['data']['hide-narrow'] = true;
 
-        if(!$show_menu_titles){
+        if(!$settings['interface']['show_menu_titles']){
             $item['text'] = '';
         }
 

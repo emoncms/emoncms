@@ -14,7 +14,7 @@
 
 function input_controller()
 {
-    global $mysqli, $redis, $user, $session, $route, $feed_settings, $param, $device, $path;
+    global $mysqli, $redis, $user, $session, $route, $settings, $param, $device, $path;
     
     // requires at least read access
     if (!isset($session['read'])) return false;
@@ -23,7 +23,7 @@ function input_controller()
     $result = false;
 
     require_once "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $feed_settings);
+    $feed = new Feed($mysqli,$redis, $settings["feed"]);
 
     require_once "Modules/input/input_model.php";
     $input = new Input($mysqli,$redis, $feed);

@@ -42,7 +42,7 @@ class Admin {
     
     // Retrieve server information
     public static function system_information() {
-        global $mysqli, $server, $redis_server, $mqtt_server;
+        global $settings, $mysqli;
         $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
         $db = $result->fetch_array();
     
@@ -97,20 +97,20 @@ class Admin {
                      'http_server' => $_SERVER['SERVER_SOFTWARE'],
                      'php' => PHP_VERSION,
                      'zend' => (function_exists('zend_version') ? zend_version() : 'n/a'),
-                     'db_server' => $server,
-                     'db_ip' => gethostbyname($server),
+                     'db_server' => $settings['sql']['server'],
+                     'db_ip' => gethostbyname($settings['sql']['server']),
                      'db_version' => $mysqli->server_info,
                      'db_stat' => $mysqli->stat(),
                      'db_date' => $db['datetime'] . " (UTC " . $db['timezone'] . ")",
     
-                     'redis_server' => $redis_server['host'].":".$redis_server['port'],
-                     'redis_ip' => gethostbyname($redis_server['host']),
+                     'redis_server' => $settings['redis']['host'].":".$settings['redis']['port'],
+                     'redis_ip' => gethostbyname($settings['redis']['host']),
                      
                      'services' => $services,
                      
-                     'mqtt_server' => $mqtt_server['host'],
-                     'mqtt_ip' => gethostbyname($mqtt_server['host']),
-                     'mqtt_port' => $mqtt_server['port'],
+                     'mqtt_server' => $settings['mqtt']['host'],
+                     'mqtt_ip' => gethostbyname($settings['mqtt']['host']),
+                     'mqtt_port' => $settings['mqtt']['port'],
     
                      'hostbyaddress' => @gethostbyaddr(gethostbyname($host)),
                      'http_proto' => $_SERVER['SERVER_PROTOCOL'],
