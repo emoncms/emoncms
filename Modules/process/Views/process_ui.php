@@ -23,7 +23,7 @@
    #new-feed-tag_autocomplete-list{width: 120px}
 
 </style>
-<script type="text/javascript"><?php require "Modules/process/process_langjs.php?v=<?php echo $v; ?>"; ?></script>
+<script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
 <script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=<?php echo $v; ?>"></script>
 <script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
 <link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
