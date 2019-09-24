@@ -1,4 +1,5 @@
 /*global view */
+/*global multigraphFeedlist */
 /*eslint no-undef: "error"*/
 var plotdata = [];
 var timeWindowChanged = 0;
@@ -28,7 +29,6 @@ function convertToPlotlist(multigraphFeedlist) {
 
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];
-    //Console.log(currentFeed);
     var tag = (showtag && typeof currentFeed["tag"] !== "undefined" && currentFeed["tag"] !== "" ? currentFeed["tag"]+": " : "");
     var stacked = (typeof currentFeed["stacked"] !== "undefined" && currentFeed["stacked"]);
     barwidth = typeof currentFeed["barwidth"] === "undefined" ? 1 : currentFeed["barwidth"]["barwidth"];
@@ -39,9 +39,10 @@ function convertToPlotlist(multigraphFeedlist) {
       graphtype=currentFeed["graphtype"];
     }
 
-    if (currentFeed["datatype"] === "2")
+    if (currentFeed["datatype"] === "2") {
       datatype=2;
-
+    }
+    
     if (graphtype.substring(0, 5) === "lines") {
       plotlist[parseInt(z,10)] = {
         id: currentFeed["id"],
@@ -80,7 +81,7 @@ function convertToPlotlist(multigraphFeedlist) {
         }
       };
     } else {
-      Console.log("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
+      console.log("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
     }
 
     if (currentFeed["left"] === true) {
@@ -88,7 +89,7 @@ function convertToPlotlist(multigraphFeedlist) {
     } else if (currentFeed["right"] === true) {
       plotlist[parseInt(z,10)].plot.yaxis = 2;
     } else {
-      Console.log("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
+      console.log("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
     }
 
     // Only set the plotcolour variable if we have a value to set it with
@@ -128,7 +129,7 @@ function visFeedDataCallback(context,data) {
   var i = context["index"];
   context["plotlist"].plot.data = data;
   if (context["plotlist"].plot.data) {
-    plotdata[i] = context["plotlist"].plot;
+    plotdata[parseInt(i,10)] = context["plotlist"].plot;
   }
   plot();
 }
@@ -140,18 +141,18 @@ function visFeedDataDelayed() {
   interval = Math.round(((view.end - view.start)/npoints)/1000);
 
   for(var i in plotlist) {
-    if (plotlist[i].selected) {
-      if (!plotlist[i].plot.data) {
-        var skipmissing = 0; if (multigraphFeedlist[i]["skipmissing"]) {skipmissing = 1;}
+    if (plotlist[parseInt(i,10)].selected) {
+      if (!plotlist[parseInt(i,10)].plot.data) {
+        var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) {skipmissing = 1;}
 
-        if (typeof plotdata[i] === "undefined") plotdata[i] = [];
+        if (typeof plotdata[parseInt(i,10)] === "undefined") plotdata[parseInt(i,10)] = [];
 
-        if (typeof ajaxAsyncXdr[i] !== "undefined") { 
-          ajaxAsyncXdr[i].abort(); // Abort pending loads
-          ajaxAsyncXdr[i]=undefined;
+        if (typeof ajaxAsyncXdr[parseInt(i,10)] !== "undefined") { 
+          ajaxAsyncXdr[parseInt(i,10)].abort(); // Abort pending loads
+          ajaxAsyncXdr[parseInt(i,10)]=undefined;
         }
-        var context = {index:i, plotlist:plotlist[i]}; 
-        ajaxAsyncXdr[i] = get_feed_data_async(visFeedDataCallback,context,plotlist[i].id,view.start,view.end,interval,skipmissing,1);
+        var context = {index:i, plotlist:plotlist[parseInt(i,10)]}; 
+        ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,interval,skipmissing,1);
       }
     }
   }
