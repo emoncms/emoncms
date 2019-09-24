@@ -1,4 +1,8 @@
 <?php
+# ------------------------------------------------------------
+# Default emoncms settings.php - DO NOT EDIT!!
+# ------------------------------------------------------------
+    
 $_settings = array(
 // Suggested installation path for symlinked emoncms modules /opt/emoncms/modules
 "emoncms_dir" => "/opt/emoncms",
