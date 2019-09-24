@@ -7,8 +7,8 @@
 /*global multigraphFeedlist */
 /*global embed*/
 /*eslint no-undef: "error"*/
-/*eslint no-console: "error"*/
-var Console;
+/*eslint no-console: ["error", { allow: ["warn", "error"] }] */
+
 var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
@@ -90,7 +90,7 @@ function convertToPlotlist(multigraphFeedlist) {
       };
     } else {
       // custom console
-      Console.log("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
+      console.error("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
     }
 
     if (currentFeed["left"] === true) {
@@ -99,7 +99,7 @@ function convertToPlotlist(multigraphFeedlist) {
       plotlist[parseInt(z,10)].plot.yaxis = 2;
     } else {
       // custom console
-      Console.log("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
+      console.error("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
     }
 
     // Only set the plotcolour variable if we have a value to set it with
