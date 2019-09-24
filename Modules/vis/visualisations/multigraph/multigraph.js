@@ -1,9 +1,10 @@
 //get_feed_data_async is defined in /Modules/vis/visualisations/common/api.js
 /*global get_feed_data_async */
-//tooltip and parse_timepicker_time are defined in Modules/vis/visualisations/common/vis.helper.js
+//view, tooltip and parse_timepicker_time are defined in Modules/vis/visualisations/common/vis.helper.js
 /*global tooltip */
 /*global parse_timepicker_time */
 /*global view */
+//multigraphFeedlist and embed are defined in the script part of multigraph.php
 /*global multigraphFeedlist */
 /*global embed*/
 /*eslint no-undef: "error"*/
