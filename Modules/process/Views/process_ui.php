@@ -2,7 +2,8 @@
     defined('EMONCMS_EXEC') or die('Restricted access');
     global $path, $settings;
     load_language_files("Modules/process/locale", "process_messages");
-    $v=1;
+    
+    $v=6;
 ?>
 <style>
   .modal-processlist {
