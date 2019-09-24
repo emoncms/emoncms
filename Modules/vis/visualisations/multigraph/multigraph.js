@@ -1,11 +1,12 @@
 /*global view */
 /*global multigraphFeedlist */
+/*global embed*/
 /*eslint no-undef: "error"*/
 var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
-var event_visFeedData;
-var event_refresh;
+var eventVisFeedData;
+var eventRefresh;
 var showlegend = true;
 var datetimepicker1;
 var datetimepicker2;
@@ -138,18 +139,18 @@ function visFeedDataCallback(context,data) {
 function visFeedDataDelayed() {
   var plotlist = convertToPlotlist(multigraphFeedlist);
   var npoints = 800;
-  interval = Math.round(((view.end - view.start)/npoints)/1000);
+  var interval = Math.round(((view.end - view.start)/npoints)/1000);
 
   for(var i in plotlist) {
     if (plotlist[parseInt(i,10)].selected) {
       if (!plotlist[parseInt(i,10)].plot.data) {
         var skipmissing = 0; if (multigraphFeedlist[parseInt(i,10)]["skipmissing"]) {skipmissing = 1;}
 
-        if (typeof plotdata[parseInt(i,10)] === "undefined") plotdata[parseInt(i,10)] = [];
+        if (typeof plotdata[parseInt(i,10)] === "undefined") {plotdata[parseInt(i,10)] = [];}
 
         if (typeof ajaxAsyncXdr[parseInt(i,10)] !== "undefined") { 
           ajaxAsyncXdr[parseInt(i,10)].abort(); // Abort pending loads
-          ajaxAsyncXdr[parseInt(i,10)]=undefined;
+          ajaxAsyncXdr[parseInt(i,10)]="undefined";
         }
         var context = {index:i, plotlist:plotlist[parseInt(i,10)]}; 
         ajaxAsyncXdr[parseInt(i,10)] = get_feed_data_async(visFeedDataCallback,context,plotlist[parseInt(i,10)].id,view.start,view.end,interval,skipmissing,1);
@@ -165,8 +166,8 @@ function visFeedDataOri() {
   datetimepicker1.setEndDate(new Date(view.end));
   datetimepicker2.setStartDate(new Date(view.start));
 
-  clearTimeout(event_visFeedData); // Cancel any pending events
-  event_visFeedData = setTimeout(function() { visFeedDataDelayed(); }, 500);
+  clearTimeout(eventVisFeedData); // Cancel any pending events
+  eventVisFeedData = setTimeout(function() { visFeedDataDelayed(); }, 500);
   if (typeof multigraphFeedlist !== "undefined" && multigraphFeedlist.length !== plotdata.length) {plotdata = [];}
   plot();
 }
@@ -182,8 +183,8 @@ function visFeedData() {
         view.end = now;
         view.start = view.end - timeWindow;
             visFeedDataOri();
-            clearTimeout(event_refresh); // Cancel any pending event
-            event_refresh = setTimeout(visFeedData, 1000 * multigraphFeedlist[0]["autorefresh"]);
+            clearTimeout(eventRefresh); // Cancel any pending event
+            eventRefresh = setTimeout(visFeedData, 1000 * multigraphFeedlist[0]["autorefresh"]);
         } else {        
             visFeedDataOri();
         }
@@ -204,7 +205,7 @@ function multigraphInit(element) {
 
   if (typeof multigraphFeedlist !== "undefined" && typeof multigraphFeedlist[0] !== "undefined") {
     view.end = multigraphFeedlist[0].end;
-    if (view.end==0) view.end = now;
+    if (view.end === 0) {view.end = now;}
     if (multigraphFeedlist[0].timeWindow) {
         view.start = view.end - multigraphFeedlist[0].timeWindow;
     }
@@ -298,18 +299,22 @@ function multigraphInit(element) {
     }
   });
 
-  vis_resize();
-
-  $(document).on('window.resized hidden.sidebar.collapse shown.sidebar.collapse',vis_resize);
-  
   function vis_resize() {
     var width = $("#graph_bound").width();
     $("#graph").width(width);
     var height = width * 0.5;
     
-    if (embed) $("#graph").height($(window).height()); else $("#graph").height(height);
+    if (embed) {
+        $("#graph").height($(window).height());
+    } else {
+        $("#graph").height(height);
+    }
     plot();
   }
+  
+  vis_resize();
+
+  $(document).on("window.resized hidden.sidebar.collapse shown.sidebar.collapse",vis_resize);
 
   // Graph selections
   $("#graph").bind("plotselected", function (event, ranges) {
@@ -359,10 +364,10 @@ function multigraphInit(element) {
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
-        var out = d;    
+        out = d;    
 		$("#datetimepicker1").data("datetimepicker").setDate(out);
     } else {
-        var out = e.date;
+        out = e.date;
     }
     view.datetimepicker_previous = e.date.getTime();
 
@@ -375,10 +380,10 @@ function multigraphInit(element) {
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
         d.setTime( d.getTime() - e.date.getTimezoneOffset()*60*1000 );
-        var out = d;    
+        out = d;    
 		$("#datetimepicker2").data("datetimepicker").setDate(out);
     } else {
-        var out = e.date;
+        out = e.date;
     }
     view.datetimepicker_previous = e.date.getTime();
 
