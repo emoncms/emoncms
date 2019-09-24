@@ -1,6 +1,7 @@
 /*global view */
 /*global multigraphFeedlist */
 /*global embed*/
+/*global parse_timepicker_time */
 /*eslint no-undef: "error"*/
 var plotdata = [];
 var timeWindowChanged = 0;
@@ -269,24 +270,27 @@ function multigraphInit(element) {
 
     if ($("#enableTooltip:checked").length > 0) {
       if (item) {
-        if (previousPoint != item.dataIndex || previousSeries != item.seriesIndex) {
+        if (previousPoint !== item.dataIndex || previousSeries !== item.seriesIndex) {
           previousPoint = item.dataIndex;
           previousSeries = item.seriesIndex;
 
           $("#tooltip").remove();
           var x = item.datapoint[0].toFixed(2);
+          var y;
+          var options;
           if (typeof(item.datapoint[2])==="undefined") {
             y=Number(item.datapoint[1].toFixed(2));
           } else {
             y=Number((item.datapoint[1]-item.datapoint[2]).toFixed(2));
           }
 
-          if (datatype === 1)
+          if (datatype === 1) {
             options = { month:"short", day:"2-digit", hour:"2-digit", minute:"2-digit", second:"2-digit"};
-          else
+          } else {
             options = { month:"short", day:"2-digit"};
+          }
 
-          var formattedTime=new Date(parseInt(x));
+          var formattedTime=new Date(parseInt(x,10));
 
           // I'd like to eventually add colour hinting to the background of the tooltop.
           // This is why showTooltip has the bgColour parameter.
@@ -299,7 +303,7 @@ function multigraphInit(element) {
     }
   });
 
-  function vis_resize() {
+  function visResize() {
     var width = $("#graph_bound").width();
     $("#graph").width(width);
     var height = width * 0.5;
@@ -312,9 +316,9 @@ function multigraphInit(element) {
     plot();
   }
   
-  vis_resize();
+  visResize();
 
-  $(document).on("window.resized hidden.sidebar.collapse shown.sidebar.collapse",vis_resize);
+  $(document).on("window.resized hidden.sidebar.collapse shown.sidebar.collapse",visResize);
 
   // Graph selections
   $("#graph").bind("plotselected", function (event, ranges) {
@@ -336,30 +340,30 @@ function multigraphInit(element) {
   });
 
   $(".graph-timewindow-set").click(function () {
-    var timewindow_start = parse_timepicker_time($("#timewindow-start").val());
-    var timewindow_end = parse_timepicker_time($("#timewindow-end").val());
-    if (!timewindow_start) {alert("Please enter a valid start date."); return false; }
-    if (!timewindow_end) {alert("Please enter a valid end date."); return false; }
-    if (timewindow_start>=timewindow_end) {alert("Start date must be further back in time than end date."); return false; }
+    var timewindowStart = parse_timepicker_time($("#timewindow-start").val());
+    var timewindowEnd = parse_timepicker_time($("#timewindow-end").val());
+    if (!timewindowStart) {alert("Please enter a valid start date."); return false; }
+    if (!timewindowEnd) {alert("Please enter a valid end date."); return false; }
+    if (timewindowStart>=timewindowEnd) {alert("Start date must be further back in time than end date."); return false; }
 
     $("#graph-buttons-timemanual").hide();
     $("#graph-buttons-normal").show();
-    view.start = timewindow_start * 1000;
-    view.end = timewindow_end *1000;
+    view.start = timewindowStart * 1000;
+    view.end = timewindowEnd *1000;
     visFeedData();
   });
 
   $("#datetimepicker1").datetimepicker({
-    language: 'en-EN'
+    language: "en-EN"
   });
 
   $("#datetimepicker2").datetimepicker({
-    language: 'en-EN',
+    language: "en-EN",
     useCurrent: false //Important! See issue #1075
   });
 
   $("#datetimepicker1").on("changeDate", function (e) {
-    if (view.datetimepicker_previous == null) view.datetimepicker_previous = view.start;
+    if (view.datetimepicker_previous == null) {view.datetimepicker_previous = view.start;}
     if (Math.abs(view.datetimepicker_previous - e.date.getTime()) > 1000*60*60*24)
     {
         var d = new Date(e.date.getFullYear(), e.date.getMonth(), e.date.getDate());
