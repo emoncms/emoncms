@@ -8,7 +8,7 @@
 /*global embed*/
 /*eslint no-undef: "error"*/
 /*eslint no-console: "error"*/
-var Console;
+
 var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
@@ -89,6 +89,7 @@ function convertToPlotlist(multigraphFeedlist) {
         }
       };
     } else {
+      // custom console
       Console.log("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
     }
 
@@ -97,6 +98,7 @@ function convertToPlotlist(multigraphFeedlist) {
     } else if (currentFeed["right"] === true) {
       plotlist[parseInt(z,10)].plot.yaxis = 2;
     } else {
+      // custom console
       Console.log("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
     }
 
