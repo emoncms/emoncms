@@ -73,7 +73,7 @@ srcLinks.forEach(function(srcLink){
         async: true,
         success: function(data)
         {
-            if (data['feedlist'] !== undefined) {multigraphFeedlist = data['feedlist'];}
+            if (data['feedlist'] !== "undefined") {multigraphFeedlist = data['feedlist'];}
             multigraphInit("#multigraph");
             visFeedData();
         }
