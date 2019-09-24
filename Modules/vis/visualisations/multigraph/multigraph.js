@@ -8,7 +8,7 @@
 /*global embed*/
 /*eslint no-undef: "error"*/
 /*eslint no-console: "error"*/
-
+var Console;
 var plotdata = [];
 var timeWindowChanged = 0;
 var ajaxAsyncXdr = [];
@@ -39,7 +39,7 @@ function convertToPlotlist(multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];
     var tag = (showtag && typeof currentFeed["tag"] !== "undefined" && currentFeed["tag"] !== "" ? currentFeed["tag"]+": " : "");
     var stacked = (typeof currentFeed["stacked"] !== "undefined" && currentFeed["stacked"]);
-    barwidth = typeof currentFeed["barwidth"] === "undefined" ? 1 : currentFeed["barwidth"]["barwidth"];
+    barwidth = typeof currentFeed["barwidth"] === "undefined" ? 1 : currentFeed["barwidth"];
 
     if ( typeof currentFeed["graphtype"] === "undefined" ) {
       currentFeed["datatype"] === "1" ? graphtype="lines" : graphtype="bars";
