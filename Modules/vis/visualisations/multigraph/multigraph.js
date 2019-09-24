@@ -12,7 +12,7 @@ var datatype;
 var graphtype;
 
 function convertToPlotlist(multigraphFeedlist) {
-  if (!multigraphFeedlist[0]) {return;}
+  if (!multigraphFeedlist[0]) {return false;}
   var plotlist = [];
   
   var showtag = (typeof multigraphFeedlist[0]["showtag"] !== "undefined" ? multigraphFeedlist[0]["showtag"] : true);
@@ -28,7 +28,7 @@ function convertToPlotlist(multigraphFeedlist) {
 
   for (var z in multigraphFeedlist) {
     var currentFeed=multigraphFeedlist[parseInt(z,10)];
-    //console.log(currentFeed);
+    //Console.log(currentFeed);
     var tag = (showtag && typeof currentFeed["tag"] !== "undefined" && currentFeed["tag"] !== "" ? currentFeed["tag"]+": " : "");
     var stacked = (typeof currentFeed["stacked"] !== "undefined" && currentFeed["stacked"]);
     barwidth = typeof currentFeed["barwidth"] === "undefined" ? 1 : currentFeed["barwidth"]["barwidth"];
@@ -43,7 +43,7 @@ function convertToPlotlist(multigraphFeedlist) {
       datatype=2;
 
     if (graphtype.substring(0, 5) === "lines") {
-      plotlist[z] = {
+      plotlist[parseInt(z,10)] = {
         id: currentFeed["id"],
         selected: 1,
         plot: {
@@ -66,7 +66,7 @@ function convertToPlotlist(multigraphFeedlist) {
     }
 
     else if (graphtype === "bars") {
-      plotlist[z] = {
+      plotlist[parseInt(z,10)] = {
         id: currentFeed["id"],
         selected: 1,
         plot: {
@@ -80,15 +80,15 @@ function convertToPlotlist(multigraphFeedlist) {
         }
       };
     } else {
-      console.log("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
+      Console.log("ERROR: Unknown plot graphtype! Graphtype: ", currentFeed["graphtype"]);
     }
 
     if (currentFeed["left"] === true) {
-      plotlist[z].plot.yaxis = 1;
+      plotlist[parseInt(z,10)].plot.yaxis = 1;
     } else if (currentFeed["right"] === true) {
-      plotlist[z].plot.yaxis = 2;
+      plotlist[parseInt(z,10)].plot.yaxis = 2;
     } else {
-      console.log("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
+      Console.log("ERROR: Unknown plot alignment! Alignment setting: ", currentFeed["right"]);
     }
 
     // Only set the plotcolour variable if we have a value to set it with
@@ -96,14 +96,14 @@ function convertToPlotlist(multigraphFeedlist) {
       // Some browsers really want the leading "#". It works without in chrome, not in IE and opera.
       // What the hell, people?
       if (currentFeed["lineColour"].indexOf("#") === -1) {
-        plotlist[z].plot.color = "#" + currentFeed["lineColour"];
+        plotlist[parseInt(z,10)].plot.color = "#" + currentFeed["lineColour"];
       } else {
-        plotlist[z].plot.color = currentFeed["lineColour"];
+        plotlist[parseInt(z,10)].plot.color = currentFeed["lineColour"];
       }
     }
 
     if (currentFeed["left"] === false && currentFeed["right"] === false) {
-      plotlist[z].selected = 0;
+      plotlist[parseInt(z,10)].selected = 0;
     }
   }
   return plotlist;
