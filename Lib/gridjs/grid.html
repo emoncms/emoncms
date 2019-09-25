@@ -3,7 +3,7 @@
 <script type="text/x-template" id="grid-input">
     <div class="control-group mb-0">
         <div class="controls">
-            <input @input="input" :value="value" type="text" class="form-control border-0 m-0" @keyup.enter="enterPressed" :title="title">
+            <input @input="input" :value="value" type="text" class="form-control border-0 m-0 w-auto" @keyup.enter="enterPressed" :title="title">
             <span class="help-inline d-none d-sm-block text-right"></span>
         </div>
     </div>
@@ -13,7 +13,7 @@
  * GRID -> ROW -> COLUMN -> INPUT
  */
 Vue.component("grid-input", {
-    // template: "#grid-input",
+    template: "#grid-input",
     props: ['value','property','title'],
     data: function(){
         return {
@@ -40,7 +40,8 @@ Vue.component("grid-input", {
 <!-- GRID -> ROW -> COLUMN TEMPLATE -->
 <script type="text/x-template" id="grid-column">
     <td :class="{'d-none d-sm-table-cell': column.hideNarrow}">
-        <div v-if="column.icon">
+        <template v-if="column.icon">
+
             <!-- show link -->
             <a v-if="column.link"
                 class="btn btn-light btn-sm-md btn-small"
@@ -48,14 +49,16 @@ Vue.component("grid-input", {
                 :href="entry[property]">
                 <svg class="icon"><use :xlink:href="column.icon"></use></svg>
             </a>
+
             <!-- show toggle -->
             <button v-else-if="typeof entry[property] === 'boolean'"
                 @click="input"
                 class="btn btn-sm-md btn-small"
-                :class="entry[property] ? buttonActive + ' active' : button"
+                :class="entry[property] ? classNames.buttonActive + ' active' : classNames.button"
                 :title = "title">
                 <svg class="icon"><use :xlink:href="column.icon"></use></svg>
             </button>
+
             <!-- show button -->
             <button v-else
                 @click="input"
@@ -63,10 +66,25 @@ Vue.component("grid-input", {
                 :title = "title">
                 <svg class="icon"><use :xlink:href="column.icon"></use></svg>
             </button>
-        </div>
-        <div v-else>
+        </template>
+
+        <template v-else-if="column.values">
+            <!-- show dropdown -->
+            <select class="w-auto">
+                <option v-for="(option, optIndex) in column.values" :value="option.value"
+                :selected="entry[property] === option.value"
+                :title = "title"
+                @field:input="input">
+                    {{option.name}}
+                </option>
+                <option value="">{{ _('Custom') }}</option>
+            </select>
+        </template>
+        
+        <template v-else>
             <!-- show html -->
             <div v-if="column.raw" v-html="entry[property]"></div>
+
             <!-- show editable text -->
             <grid-input v-else-if="column.input"
                 :title = "title"
@@ -74,19 +92,21 @@ Vue.component("grid-input", {
                 @field:input="input"
                 :value="entry[property]">
             </grid-input>
+
             <!-- show toggle -->
             <button v-else-if="typeof entry[property] === 'boolean'"
                 @click="input"
                 class="btn btn-sm-md btn-small"
-                :class="entry[property] ? buttonActive + ' active' : button"
+                :class="entry[property] ? classNames.buttonActive + ' active' : classNames.button"
                 :title = "title">
                 <svg class="icon"><use :xlink:href="'#icon-' + (entry[property] === true ? 'checkbox-checked' : 'checkbox-unchecked')"></use></svg>
             </button>
+
             <!-- show text -->
-            <div v-else :data-type="typeof entry[property]">
+            <span v-else :data-type="typeof entry[property]">
                 {{entry[property]}}
-            </div>
-        </div>
+            </span>
+        </template>
     </td>
 </script>
 
@@ -94,15 +114,9 @@ Vue.component("grid-input", {
 /**
 * GRID -> ROW -> COLUMN
 */
-Vue.component("grid-column", {
-    // template: "#grid-column",
-    props: ['property','entry','column','classes'],
-    data: function() {
-        return {
-            button: classes ? classes.button : '',
-            buttonActive: classes ? classes.buttonActive: ''
-        }
-    },
+Vue.component("grid-row-column", {
+    template: "#grid-column",
+    props: ['property','entry','column','classNames'],
     computed: {
         title: function(){
             return '#' +
@@ -120,7 +134,7 @@ Vue.component("grid-column", {
             // if input has a .help-inline sibling show user feedback
             if (feedback) {
                 // reset feedback
-                container.classList.remove(vm.$root.classes.error, vm.$root.classes.warning, vm.$root.classes.success)
+                container.classList.remove(this.classNames.error, this.classNames.warning, this.classNames.success)
                 feedback.innerText = '';
                 let value = event.target.value;
                 let changed = this.entry[this.property] !== value;
@@ -130,8 +144,8 @@ Vue.component("grid-column", {
 
                 window.clearTimeout(timeout);
                 success = function() {
-                    feedback.classList.add(vm.$root.classes.fade)
-                    container.classList.add(vm.$root.classes.success);
+                    feedback.classList.add(this.classNames.fade)
+                    container.classList.add(this.classNames.success);
                     feedback.innerText = (vm.column.messages && vm.column.messages.success) ? vm.column.messages.success: ''
                 }
                 error = function(xhr, message) {
@@ -142,9 +156,9 @@ Vue.component("grid-column", {
                 always = function() {
                     vm.$root.timeouts[timeout_key] = window.setTimeout(function() {
                         window.clearTimeout(timeout_reset);
-                        container.classList.remove(vm.$root.classes.error, vm.$root.classes.warning, vm.$root.$root.classes.success)
+                        container.classList.remove(this.classNames.error, this.classNames.warning, vm.$root.$root.classes.success)
                         feedback.innerText = '';
-                        feedback.classList.remove(vm.$root.classes.fade)
+                        feedback.classList.remove(this.classNames.fade)
                     }, vm.$root.wait * 2.3)
                 }
             }
@@ -165,14 +179,14 @@ Vue.component("grid-column", {
 <!-- GRID -> ROW TEMPLATE -->
 <script type="text/x-template" id="grid-row">
     <tr>
-        <grid-column v-for="(column, colIndex) in columns"
+        <grid-row-column v-for="(column, colIndex) in columns"
             :key="colIndex"
             :entry="entry"
             :property="colIndex"
             :column="column"
-            :classes="classes"
+            :class-names="classNames"
         >
-        </grid-column>
+        </grid-row-column>
     </tr>
 </script>
 
@@ -180,9 +194,9 @@ Vue.component("grid-column", {
 /**
 * GRID -> ROW
 */
-Vue.component("grid-row", {
-    // template: "#grid-row",
-    props: ['entry','columns','classes']
+Vue.component("grid-data-row", {
+    template: "#grid-row",
+    props: ['entry','columns','classNames']
 })
 </script>
 <!-- ---------------------------------------------------------------- -->
@@ -220,12 +234,13 @@ Vue.component("grid-row", {
             </tr>
         </thead>
         <tbody>
-            <grid-row v-for="(entry, rowIndex) in filteredColumns"
+            <!--<tr is="grid-row"></tr>-->
+            <grid-data-row v-for="(entry, rowIndex) in filteredColumns"
                 :key="entry.id"
                 :entry="entry"
-                :classes="classes"
-                :columns="columns">
-            </grid-row> 
+                :columns="columns"
+                :class-names="classNames">
+            </grid-data-row>
         </tbody>
     </table>
 </script>
@@ -234,9 +249,9 @@ Vue.component("grid-row", {
 /**
 * GRID
 */
-    Vue.component("grid-data", {
-        // template: "#grid-data",
-        props: ['gridData','columns','filterKey','status','default-sort'],
+    Vue.component('grid-data-container', {
+        template: "#grid-data",
+        props: ['gridData','columns','filterKey','status','default-sort','classNames'],
         data: function() {
             var sortOrders = {};
             Object.keys(this.columns).forEach(function(key) {
@@ -244,7 +259,7 @@ Vue.component("grid-row", {
             });
             return {
                 sortKey: this.defaultSort || "",
-                sortOrders: sortOrders
+                sortOrders: sortOrders,
             };
         },
         filters: {
@@ -265,32 +280,31 @@ Vue.component("grid-row", {
                                 String(row[key])
                                 .toLowerCase()
                                 .indexOf(filterKey) > -1
-                                );
-                            });
+                            );
                         });
-                    }
-                    if (sortKey) {
-                        data = data.slice().sort(function(a, b) {
-                            a = a[sortKey];
-                            b = b[sortKey];
-                            return (a === b ? 0 : a > b ? 1 : -1) * order;
-                        });
-                    }
-                    return data;
+                    });
                 }
-            },
-            watch: {
-                filteredColumns: function(results){
-                    this.$emit("update:total", results.length);
+                if (sortKey) {
+                    data = data.slice().sort(function(a, b) {
+                        a = a[sortKey];
+                        b = b[sortKey];
+                        return (a === b ? 0 : a > b ? 1 : -1) * order;
+                    });
                 }
-            },
-            methods: {
-                sortBy: function(key) {
-                    this.sortKey = key;
-                    this.sortOrders[key] = this.sortOrders[key] * -1;
-                }
-                // @todo: add utility functions Handler() and Set_field() function from #app view instance to here... if possible
+                return data;
             }
-        });
+        },
+        watch: {
+            filteredColumns: function(results){
+                this.$emit("update:total", results.length);
+            }
+        },
+        methods: {
+            sortBy: function(key) {
+                this.sortKey = key;
+                this.sortOrders[key] = this.sortOrders[key] * -1;
+            }
+        }
+    });
     </script>
 <!-- ---------------------------------------------------------------- -->
