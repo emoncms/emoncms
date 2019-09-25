@@ -136,11 +136,17 @@ var app = new Vue({
     methods: {
         toggleCollapse: function(event, nodeid) {
             let index = this.collapsed.indexOf(nodeid);
-            if (index === -1) {
-                this.collapsed.push(nodeid)
+
+            if(Array.isArray(this.collapsed)) {
+                if (index === -1) {
+                    this.collapsed.push(nodeid)
+                } else {
+                    this.collapsed.splice(index, 1)
+                }
             } else {
-                this.collapsed.splice(index, 1)
+                this.collapsed = [nodeid]
             }
+
         },
         toggleSelected: function(event, inputid) {
             if (event.target.tagName !== 'INPUT' && !this.selectMode) {
