@@ -884,8 +884,12 @@ function update_inputs() {
             if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length === 0) {
                 delete nodes_display[nodeid];
             }
-            devices[nodeid].inputs.push(inputs[z]);
             // cache state in cookie
+            if(Array.isArray(devices[nodeid].inputs)) {
+                devices[nodeid].inputs.push(inputs[z]);
+            } else {
+                devices[nodeid].inputs = [inputs[z]];
+            }
         }
         if(firstLoad) {
             $('#input-loader').hide();
