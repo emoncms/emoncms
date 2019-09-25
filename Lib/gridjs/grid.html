@@ -1,7 +1,7 @@
 <!-- ---------------------------------------------------------------- -->
 <!-- GRID -> ROW -> COLUMN -> INPUT TEPLATE -->
 <script type="text/x-template" id="grid-input">
-    <div class="control-group">
+    <div class="control-group mb-0">
         <div class="controls">
             <input @input="input" :value="value" type="text" class="form-control border-0 m-0" @keyup.enter="enterPressed" :title="title">
             <span class="help-inline d-none d-sm-block text-right"></span>
@@ -13,7 +13,7 @@
  * GRID -> ROW -> COLUMN -> INPUT
  */
 Vue.component("grid-input", {
-    template: "#grid-input",
+    // template: "#grid-input",
     props: ['value','property','title'],
     data: function(){
         return {
@@ -74,8 +74,16 @@ Vue.component("grid-input", {
                 @field:input="input"
                 :value="entry[property]">
             </grid-input>
+            <!-- show toggle -->
+            <button v-else-if="typeof entry[property] === 'boolean'"
+                @click="input"
+                class="btn btn-sm-md btn-small"
+                :class="entry[property] ? buttonActive + ' active' : button"
+                :title = "title">
+                <svg class="icon"><use :xlink:href="'#icon-' + (entry[property] === true ? 'checkbox-checked' : 'checkbox-unchecked')"></use></svg>
+            </button>
             <!-- show text -->
-            <div v-else>
+            <div v-else :data-type="typeof entry[property]">
                 {{entry[property]}}
             </div>
         </div>
@@ -87,19 +95,12 @@ Vue.component("grid-input", {
 * GRID -> ROW -> COLUMN
 */
 Vue.component("grid-column", {
-    template: "#grid-column",
-    props: ['property','entry','column'],
+    // template: "#grid-column",
+    props: ['property','entry','column','classes'],
     data: function() {
-        if (this.$root.classes) {
-            return {
-                button: this.$root.classes.button,
-                buttonActive: this.$root.classes.buttonActive
-            }
-        } else {
-            return {
-                button: '',
-                buttonActive: ''
-            }
+        return {
+            button: classes ? classes.button : '',
+            buttonActive: classes ? classes.buttonActive: ''
         }
     },
     computed: {
@@ -169,6 +170,7 @@ Vue.component("grid-column", {
             :entry="entry"
             :property="colIndex"
             :column="column"
+            :classes="classes"
         >
         </grid-column>
     </tr>
@@ -179,8 +181,8 @@ Vue.component("grid-column", {
 * GRID -> ROW
 */
 Vue.component("grid-row", {
-    template: "#grid-row",
-    props: ['entry','columns']
+    // template: "#grid-row",
+    props: ['entry','columns','classes']
 })
 </script>
 <!-- ---------------------------------------------------------------- -->
@@ -221,8 +223,9 @@ Vue.component("grid-row", {
             <grid-row v-for="(entry, rowIndex) in filteredColumns"
                 :key="entry.id"
                 :entry="entry"
+                :classes="classes"
                 :columns="columns">
-            </grid-row>
+            </grid-row> 
         </tbody>
     </table>
 </script>
@@ -232,7 +235,7 @@ Vue.component("grid-row", {
 * GRID
 */
     Vue.component("grid-data", {
-        template: "#grid-data",
+        // template: "#grid-data",
         props: ['gridData','columns','filterKey','status','default-sort'],
         data: function() {
             var sortOrders = {};

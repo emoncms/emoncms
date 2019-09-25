@@ -155,6 +155,11 @@ $(function(){
         active_menu_name.shift();
         
         let relative_path = window.location.href.replace(path,''); // eg subtracts http://localhost/emoncms from http://localhost/emoncms/feed/list
+        let end = relative_path.indexOf('?');
+        if (end <= 0) { 
+            end = relative_path.length;
+        }
+        relative_path = relative_path.substr(0, end)
         let controller = relative_path.split('/')[0].replace(/(.*)#.*/,'$1'); // eg. feed
         let include_id = [active_menu_name,controller,'sidebar','include'].join('-'); // eg. setup-feed-sidebar-include
         let include = $('#' + include_id);

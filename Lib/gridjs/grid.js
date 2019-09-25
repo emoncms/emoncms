@@ -26,7 +26,7 @@ Vue.component("grid-input", {
  */
 Vue.component("grid-column", {
     template: "#grid-column",
-    props: ['property','entry','column'],
+    props: ['property','entry','column','classes'],
     computed: {
         title: function(){
             return '#' +
@@ -58,7 +58,7 @@ Vue.component("grid-row", {
  */
 Vue.component("grid-data", {
     template: "#grid-data",
-    props: ['gridData','columns','filterKey','caption'],
+    props: ['gridData','columns','filterKey','caption','status','classes'],
     data: function() {
         var sortOrders = {};
         Object.keys(this.columns).forEach(function(key) {
