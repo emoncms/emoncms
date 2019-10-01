@@ -82,37 +82,37 @@ Vue.component("grid-input", {
  */
 Vue.component("grid-column", {
     template: "#grid-column",
-    props: ['property','entry','column','classNames','selected'],
+    props: ["property","entry","column","classNames","selected"],
     computed: {
         title: function(){
             // return '#' +
             // this.entry.id + ' ' +
-            return (this.column.label || this.property).toUpperCase() + '\n' +
+            return (this.column.label || this.property).toUpperCase() + "\n" +
             (this.column.title || '')
         }
     },
     methods: {
         input: function(event) {
-            let vm = this
+            let vm = this;
             let container = event.target.parentNode.parentNode;
-            let feedback = event.target.parentNode.querySelector('.help-inline');
-            let success, error, always
+            let feedback = event.target.parentNode.querySelector(".help-inline");
+            let success, error, always;
             // if input has a .help-inline sibling show user feedback
             if (feedback) {
                 // reset feedback
-                container.classList.remove(this.classNames.error, this.classNames.warning, this.classNames.success)
-                feedback.innerText = '';
+                container.classList.remove(this.classNames.error, this.classNames.warning, this.classNames.success);
+                feedback.innerText = "";
                 let value = event.target.value;
                 let changed = this.entry[this.property] !== value;
-                let timeout_key = this.entry.id+'_'+this.property;
-                let timeout = vm.$root.timeouts[timeout_key];
-                let timeout_reset = vm.$root.timeouts[timeout_key+'_reset'];
+                let timeoutKey = this.entry.id + "_" + this.property;
+                let timeout = vm.$root.timeouts[timeoutKey];
+                let timeout_reset = vm.$root.timeouts[timeoutKey + "_reset"];
 
                 window.clearTimeout(timeout);
                 success = function() {
-                    feedback.classList.add(this.classNames.fade)
+                    feedback.classList.add(this.classNames.fade);
                     container.classList.add(this.classNames.success);
-                    feedback.innerText = (vm.column.messages && vm.column.messages.success) ? vm.column.messages.success: ''
+                    feedback.innerText = (vm.column.messages && vm.column.messages.success) ? vm.column.messages.success: "";
                 }
                 error = function(xhr, message) {
                     if(!changed) {
@@ -120,17 +120,17 @@ Vue.component("grid-column", {
                     }
                 }
                 always = function() {
-                    vm.$root.timeouts[timeout_key] = window.setTimeout(function() {
+                    vm.$root.timeouts[timeoutKey] = window.setTimeout(function() {
                         window.clearTimeout(timeout_reset);
-                        container.classList.remove(this.classNames.error, this.classNames.warning, vm.$root.$root.classes.success)
-                        feedback.innerText = '';
-                        feedback.classList.remove(this.classNames.fade)
-                    }, vm.$root.wait * 2.3)
+                        container.classList.remove(this.classNames.error, this.classNames.warning, vm.$root.$root.classes.success);
+                        feedback.innerText = "";
+                        feedback.classList.remove(this.classNames.fade);
+                    }, vm.$root.wait * 2.3);
                 }
             }
             
             // pass on success,error and always callbacks to gridColumn item handler() function
-            vm.$root.$emit('event:handler',event,this.entry,this.property,event.target.value,success,error,always);
+            vm.$root.$emit("event:handler",event,this.entry,this.property,event.target.value,success,error,always);
         }
     }
 })
@@ -140,7 +140,7 @@ Vue.component("grid-column", {
  */
 Vue.component("grid-row", {
     template: "#grid-row",
-    props: ['entry','columns','classNames','selected']
+    props: ["entry","columns","classNames","selected"]
 })
 
 
@@ -149,7 +149,7 @@ Vue.component("grid-row", {
  */
 Vue.component("grid-data", {
     template: "#grid-data",
-    props: ['gridData','columns','filterKey','status','default-sort','classNames','selected'],
+    props: ["gridData","columns","filterKey","status","default-sort","classNames","selected"],
     data: function() {
         var sortOrders = {};
         Object.keys(this.columns).forEach(function(key) {
@@ -157,7 +157,7 @@ Vue.component("grid-data", {
         });
         return {
             sortKey: this.defaultSort || "",
-            sortOrders: sortOrders,
+            sortOrders: sortOrders
         };
     },
     filters: {
