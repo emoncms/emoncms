@@ -4,9 +4,9 @@
 // ------------------------------------------------------------------------------
 $settings = array(
 // Suggested installation path for symlinked emoncms modules /opt/emoncms/modules
-"emoncms_dir" => isset($emoncms_dir)?$emoncms_dir:"/opt/emoncms",
+"emoncms_dir" => isset($emoncms_dir)?$emoncms_dir:"/home/pi",
 // Suggested installation path for emonpi and EmonScripts repository:
-"openenergymonitor_dir" => isset($openenergymonitor_dir)?$openenergymonitor_dir:"/opt/openenergymonitor",
+"openenergymonitor_dir" => isset($openenergymonitor_dir)?$openenergymonitor_dir:"/home/pi",
 
 // Show all fatal PHP errors
 "display_errors" => isset($display_errors)?$display_errors:true,
