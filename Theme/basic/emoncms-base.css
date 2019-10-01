@@ -271,6 +271,52 @@ body.collapsed #wrap main.content-container{
     color: #FFF!important;
 }
 
+@keyframes spinner-border {
+  to { transform: rotate(360deg); }
+}
+
+.spinner-border {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  border: .25em solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spinner-border .75s linear infinite;
+}
+
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: .2em;
+}
+
+
+@keyframes spinner-grow {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.spinner-grow {
+  display: inline-block;
+  width: 2rem;
+  height: 2rem;
+  vertical-align: text-bottom;
+  background-color: currentColor;
+  border-radius: 50%;
+  opacity: 0;
+  animation: spinner-grow .75s linear infinite;
+}
+.spinner-grow-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
 
 /* 
  * #sidebar above #wrap on narrow screens
@@ -314,6 +360,7 @@ ul.nav > li > [disabled] {
 /* bs4 style grid 
 @todo: upgrade to bs4 if possible
 */
+/* use .d-flex not .row as .row not added to avoid clashing with existing css of bs2 */
 [class*="col-"]{
     position: relative;
     width: 100%;
@@ -352,6 +399,11 @@ ul.nav > li > [disabled] {
     flex-grow: 0;
     flex-basis: 66.6667%;
     max-width: 66.666667%;
+}
+.col-9 {
+    -ms-flex: 0 0 75%;
+    flex: 0 0 75%;
+    max-width: 75%;
 }
 .col-10 {
     -ms-flex: 0 0 83.333333%;

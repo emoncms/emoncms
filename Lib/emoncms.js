@@ -117,3 +117,16 @@ window.onerror = function(msg, source, lineno, colno, error) {
         return true; // true == prevents the firing of the default event handler.
     };
 }
+
+// Create an object similar to the PHP $_GET array
+var _GET = (function() {
+    var str = window.location.search;
+    var objURL = {};
+    str.replace(
+        new RegExp( "([^?=&]+)(=([^&]*))?", "g" ),
+        function( $0, $1, $2, $3 ) {
+            objURL[ $1 ] = $3;
+        }
+    );
+    return objURL;
+}());

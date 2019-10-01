@@ -1,3 +1,6 @@
+<!--
+    see grid.js for install instructions
+-->
 <!-- ---------------------------------------------------------------- -->
 <!-- GRID -> ROW -> COLUMN -> INPUT TEPLATE -->
 <script type="text/x-template" id="grid-input">
@@ -8,31 +11,6 @@
         </div>
     </div>
 </script>
-<script>
-/**
- * GRID -> ROW -> COLUMN -> INPUT
- */
-Vue.component("grid-input", {
-    template: "#grid-input",
-    props: ['value','property','title'],
-    data: function(){
-        return {
-            inputVal: this.value
-        }
-    },
-    methods: {
-        input: function(event){
-            this.$emit('field:input', event)
-        },
-        enterPressed: function(event) {
-            event.target.blur();
-        }
-    }
-})
-</script>
-<!-- ---------------------------------------------------------------- -->
-
-
 
 
 
@@ -44,7 +22,9 @@ Vue.component("grid-input", {
 
             <!-- show link -->
             <a v-if="column.link"
-                class="btn btn-light btn-sm-md btn-small"
+                @click="input"
+                class="btn btn-sm-md btn-small"
+                :class="entry.id.toString() === selected.toString() ? 'active' : classNames.button"
                 :title = "title"
                 :href="entry[property]">
                 <svg class="icon"><use :xlink:href="column.icon"></use></svg>
@@ -70,7 +50,7 @@ Vue.component("grid-input", {
 
         <template v-else-if="column.values">
             <!-- show dropdown -->
-            <select class="w-auto">
+            <select class="w-auto mb-0">
                 <option v-for="(option, optIndex) in column.values" :value="option.value"
                 :selected="entry[property] === option.value"
                 :title = "title"
@@ -93,7 +73,7 @@ Vue.component("grid-input", {
                 :value="entry[property]">
             </grid-input>
 
-            <!-- show toggle -->
+            <!-- show toggle with default tickbox -->
             <button v-else-if="typeof entry[property] === 'boolean'"
                 @click="input"
                 class="btn btn-sm-md btn-small"
@@ -110,99 +90,23 @@ Vue.component("grid-input", {
     </td>
 </script>
 
-<script>
-/**
-* GRID -> ROW -> COLUMN
-*/
-Vue.component("grid-row-column", {
-    template: "#grid-column",
-    props: ['property','entry','column','classNames'],
-    computed: {
-        title: function(){
-            return '#' +
-            this.entry.id + ' ' +
-            (this.column.label || this.property).toUpperCase() + '\n' +
-            (this.column.title || '')
-        }
-    },
-    methods: {
-        input: function(event) {
-            let vm = this
-            let container = event.target.parentNode.parentNode;
-            let feedback = event.target.parentNode.querySelector('.help-inline');
-            let success, error, always
-            // if input has a .help-inline sibling show user feedback
-            if (feedback) {
-                // reset feedback
-                container.classList.remove(this.classNames.error, this.classNames.warning, this.classNames.success)
-                feedback.innerText = '';
-                let value = event.target.value;
-                let changed = this.entry[this.property] !== value;
-                let timeout_key = this.entry.id+'_'+this.property;
-                let timeout = vm.$root.timeouts[timeout_key];
-                let timeout_reset = vm.$root.timeouts[timeout_key+'_reset'];
-
-                window.clearTimeout(timeout);
-                success = function() {
-                    feedback.classList.add(this.classNames.fade)
-                    container.classList.add(this.classNames.success);
-                    feedback.innerText = (vm.column.messages && vm.column.messages.success) ? vm.column.messages.success: ''
-                }
-                error = function(xhr, message) {
-                    if(!changed) {
-                        window.clearTimeout(timeout);
-                    }
-                }
-                always = function() {
-                    vm.$root.timeouts[timeout_key] = window.setTimeout(function() {
-                        window.clearTimeout(timeout_reset);
-                        container.classList.remove(this.classNames.error, this.classNames.warning, vm.$root.$root.classes.success)
-                        feedback.innerText = '';
-                        feedback.classList.remove(this.classNames.fade)
-                    }, vm.$root.wait * 2.3)
-                }
-            }
-            
-            // pass on success,error and always callbacks to gridColumn item handler() function
-            vm.$root.$emit('event:handler',event,this.entry,this.property,event.target.value,success,error,always);
-        }
-    }
-})
-</script>
-<!-- ---------------------------------------------------------------- -->
-
-
-
 
 
 <!-- ---------------------------------------------------------------- -->
 <!-- GRID -> ROW TEMPLATE -->
 <script type="text/x-template" id="grid-row">
     <tr>
-        <grid-row-column v-for="(column, colIndex) in columns"
+        <grid-column v-for="(column, colIndex) in columns"
             :key="colIndex"
             :entry="entry"
             :property="colIndex"
             :column="column"
             :class-names="classNames"
+            :selected="selected"
         >
-        </grid-row-column>
+        </grid-column>
     </tr>
 </script>
-
-<script>
-/**
-* GRID -> ROW
-*/
-Vue.component("grid-data-row", {
-    template: "#grid-row",
-    props: ['entry','columns','classNames']
-})
-</script>
-<!-- ---------------------------------------------------------------- -->
-
-
-
 
 
 
@@ -234,77 +138,17 @@ Vue.component("grid-data-row", {
             </tr>
         </thead>
         <tbody>
-            <!--<tr is="grid-row"></tr>-->
-            <grid-data-row v-for="(entry, rowIndex) in filteredColumns"
+            <grid-row v-for="(entry, rowIndex) in filteredColumns"
                 :key="entry.id"
+                :data-key="entry.id"
+                :data-selected="selected"
                 :entry="entry"
                 :columns="columns"
-                :class-names="classNames">
-            </grid-data-row>
+                :class-names="classNames"
+                :selected="selected"
+                :class="[selected.toString() === entry.id.toString() ? classNames.selectedRow: '']"
+                >
+            </grid-row>
         </tbody>
     </table>
 </script>
-
-<script>
-/**
-* GRID
-*/
-    Vue.component('grid-data-container', {
-        template: "#grid-data",
-        props: ['gridData','columns','filterKey','status','default-sort','classNames'],
-        data: function() {
-            var sortOrders = {};
-            Object.keys(this.columns).forEach(function(key) {
-                sortOrders[key] = 1;
-            });
-            return {
-                sortKey: this.defaultSort || "",
-                sortOrders: sortOrders,
-            };
-        },
-        filters: {
-            capitalize: function(str) {
-                return str.charAt(0).toUpperCase() + str.slice(1);
-            }
-        },
-        computed: {
-            filteredColumns: function() {
-                var sortKey = this.sortKey;
-                var filterKey = this.filterKey && this.filterKey.toLowerCase();
-                var order = this.sortOrders[sortKey] || 1;
-                var data = this.gridData;
-                if (filterKey) {
-                    data = data.filter(function(row) {
-                        return Object.keys(row).some(function(key) {
-                            return (
-                                String(row[key])
-                                .toLowerCase()
-                                .indexOf(filterKey) > -1
-                            );
-                        });
-                    });
-                }
-                if (sortKey) {
-                    data = data.slice().sort(function(a, b) {
-                        a = a[sortKey];
-                        b = b[sortKey];
-                        return (a === b ? 0 : a > b ? 1 : -1) * order;
-                    });
-                }
-                return data;
-            }
-        },
-        watch: {
-            filteredColumns: function(results){
-                this.$emit("update:total", results.length);
-            }
-        },
-        methods: {
-            sortBy: function(key) {
-                this.sortKey = key;
-                this.sortOrders[key] = this.sortOrders[key] * -1;
-            }
-        }
-    });
-    </script>
-<!-- ---------------------------------------------------------------- -->
