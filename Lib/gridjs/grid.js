@@ -106,7 +106,7 @@ Vue.component("grid-column", {
                 let changed = this.entry[this.property] !== value;
                 let timeoutKey = this.entry.id + "_" + this.property;
                 let timeout = vm.$root.timeouts[timeoutKey];
-                let timeout_reset = vm.$root.timeouts[timeoutKey + "_reset"];
+                let timeoutReset = vm.$root.timeouts[timeoutKey + "_reset"];
 
                 window.clearTimeout(timeout);
                 success = function() {
@@ -121,7 +121,7 @@ Vue.component("grid-column", {
                 }
                 always = function() {
                     vm.$root.timeouts[timeoutKey] = window.setTimeout(function() {
-                        window.clearTimeout(timeout_reset);
+                        window.clearTimeout(timeoutReset);
                         container.classList.remove(this.classNames.error, this.classNames.warning, vm.$root.$root.classes.success);
                         feedback.innerText = "";
                         feedback.classList.remove(this.classNames.fade);
@@ -161,7 +161,7 @@ Vue.component("grid-data", {
         };
     },
     filters: {
-        capitalize: function(str) {
+        capitalize() {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
     },
