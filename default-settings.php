@@ -5,9 +5,9 @@
     
 $_settings = array(
 // Suggested installation path for symlinked emoncms modules /opt/emoncms
-"emoncms_dir" => "/home/pi",
+"emoncms_dir" => "/opt/emoncms",
 // Suggested installation path for emonpi and EmonScripts repository: /opt/openenergymonitor
-"openenergymonitor_dir" => "/home/pi",
+"openenergymonitor_dir" => "/opt/openenergymonitor",
 
 // Show all fatal PHP errors
 "display_errors" => true,
