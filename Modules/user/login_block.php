@@ -72,7 +72,7 @@ global $path, $settings;
                         </div>
                     <?php } ?>
                     <button id="login" class="btn btn-primary" tabindex="6" type="submit"><?php echo _('Login'); ?></button>
-                    <?php if ($settings["interface"]["enable_multi_user"]) { echo '&nbsp;'._('or').'&nbsp;' ?>
+                    <?php if ($allowusersregister) { echo '&nbsp;'._('or').'&nbsp;' ?>
                         <a id="register-link" href="#"><?php echo _('register'); ?></a>
                     <?php } ?>
                 </div>
