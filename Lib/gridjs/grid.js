@@ -161,7 +161,7 @@ Vue.component("grid-data", {
         };
     },
     filters: {
-        capitalize() {
+        capitalize: function(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
         }
     },
