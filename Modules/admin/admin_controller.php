@@ -222,7 +222,7 @@ function admin_controller()
                     // Get update argument e.g. 'emonpi' or 'rfm69pi'
                     $firmware="";
                     if (isset($_POST['firmware'])) $firmware = $_POST['firmware'];
-                    if (!in_array($firmware,array("emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
+                    if (!in_array($firmware,array("none","emonpi","rfm69pi","rfm12pi","custom"))) return "Invalid firmware type";
                     // Type: all, emoncms, firmware
                     $type="";
                     if (isset($_POST['type'])) $type = $_POST['type'];
