@@ -22,7 +22,7 @@ function user_controller()
 
     $allowusersregister = true;
     // Disables further user creation after first admin user is created
-    if ($settings["interface"]["enable_multi_user"]===false && $user->get_number_of_users()>0) {
+    if ($settings["interface"]["enable_multi_user"]==false && $user->get_number_of_users()>0) {
         $allowusersregister = false;
     }
 
