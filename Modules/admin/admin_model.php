@@ -45,9 +45,9 @@ class Admin {
         global $settings, $mysqli;
         $result = $mysqli->query("select now() as datetime, time_format(timediff(now(),convert_tz(now(),@@session.time_zone,'+00:00')),'%H:%i‌​') AS timezone");
         $db = $result->fetch_array();
-    
+
         @list($system, $host, $kernel) = preg_split('/[\s,]+/', php_uname('a'), 5);
-    
+
         $services = array();
         $services['emonhub'] = Admin::getServiceStatus('emonhub.service');
         $services['mqtt_input'] = Admin::getServiceStatus('mqtt_input.service'); // depreciated, replaced with emoncms_mqtt
@@ -57,7 +57,8 @@ class Admin {
         $services['emonPiLCD'] = Admin::getServiceStatus('emonPiLCD.service');
         $services['redis-server'] = Admin::getServiceStatus('redis-server.service');
         $services['mosquitto'] = Admin::getServiceStatus('mosquitto.service');
-    
+        $services['demandshaper'] = Admin::getServiceStatus('demandshaper.service');
+
         //@exec("hostname -I", $ip); $ip = $ip[0];
         $meminfo = false;
         if (@is_readable('/proc/meminfo')) {
