@@ -140,6 +140,7 @@ listItem;
         </div>
         <div class="input-append">
             <select id="selected_firmware">
+                <option value="none">none</option>
                 <option value="emonpi">EmonPi</option>
                 <option value="rfm69pi">RFM69Pi</option>
                 <option value="rfm12pi">RFM12Pi</option>
