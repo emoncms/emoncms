@@ -2,6 +2,11 @@
 
 This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see the [RaspberryPi installation guides](RaspberryPi/readme.md).
 
+# Interactive session of these steps
+
+https://www.katacoda.com/astralship/scenarios/emon-cms
+
+
 ## Install dependencies
 
 You may need to start by updating the system repositories
