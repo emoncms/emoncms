@@ -136,11 +136,17 @@ var app = new Vue({
     methods: {
         toggleCollapse: function(event, nodeid) {
             let index = this.collapsed.indexOf(nodeid);
-            if (index === -1) {
-                this.collapsed.push(nodeid)
+
+            if(Array.isArray(this.collapsed)) {
+                if (index === -1) {
+                    this.collapsed.push(nodeid)
+                } else {
+                    this.collapsed.splice(index, 1)
+                }
             } else {
-                this.collapsed.splice(index, 1)
+                this.collapsed = [nodeid]
             }
+
         },
         toggleSelected: function(event, inputid) {
             if (event.target.tagName !== 'INPUT' && !this.selectMode) {
@@ -884,8 +890,12 @@ function update_inputs() {
             if (firstLoad && Object.keys(devices).length > 1 && Object.keys(nodes_display).length === 0) {
                 delete nodes_display[nodeid];
             }
-            devices[nodeid].inputs.push(inputs[z]);
             // cache state in cookie
+            if(Array.isArray(devices[nodeid].inputs)) {
+                devices[nodeid].inputs.push(inputs[z]);
+            } else {
+                devices[nodeid].inputs = [inputs[z]];
+            }
         }
         if(firstLoad) {
             $('#input-loader').hide();
