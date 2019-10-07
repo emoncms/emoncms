@@ -133,6 +133,9 @@ class Admin {
        */
       public static function disk_list()
       {
+          $uptime = @exec("uptime -s");
+          $elapsed = time() - strtotime($uptime);
+      
           $partitions = array();
           // Fetch partition information from df command
           // I would have used disk_free_space() and disk_total_space() here but
@@ -152,15 +155,16 @@ class Admin {
             // (This has the bonus of ignoring the first row which is 7)
             if(count($columns) == 6)
             {
+              $filesystem = $columns[0];
               $partition = $columns[5];
               $partitions[$partition]['Temporary']['bool'] = in_array($columns[0], array('tmpfs', 'devtmpfs'));
               $partitions[$partition]['Partition']['text'] = $partition;
-              $partitions[$partition]['FileSystem']['text'] = $columns[0];
+              $partitions[$partition]['FileSystem']['text'] = $filesystem;
               if(is_numeric($columns[1]) && is_numeric($columns[2]) && is_numeric($columns[3]))
               {
                 $partitions[$partition]['Size']['value'] = $columns[1];
                 $partitions[$partition]['Free']['value'] = $columns[3];
-                $partitions[$partition]['Used']['value'] = $columns[2];
+                $partitions[$partition]['Used']['value'] = $columns[2];                
               }
               else
               {
@@ -169,6 +173,29 @@ class Admin {
                 $partitions[$partition]['Used']['text'] = $columns[2];
                 $partitions[$partition]['Free']['text'] = $columns[3];
               }
+              
+              $total_sectors_written = 0;
+              if ($partition=="/boot") {
+                  if ($mmcblk0p1 = @exec("awk '/mmcblk0p1/ {print $10}' /proc/diskstats")) {
+                      $total_sectors_written = $mmcblk0p1*512/$elapsed;
+                  }
+              }
+              else if ($partition=="/") {
+                  if ($mmcblk0p2 = @exec("awk '/mmcblk0p2/ {print $10}' /proc/diskstats")) {
+                      $total_sectors_written = $mmcblk0p2*512/$elapsed;
+                  }
+              }
+              else if ($partition=="/var/opt/emoncms") {
+                  if ($mmcblk0p3 = @exec("awk '/mmcblk0p3/ {print $10}' /proc/diskstats")) {
+                      $total_sectors_written = $mmcblk0p3*512/$elapsed;
+                  }
+              }
+              else if ($partition=="/home/pi/data") {
+                  if ($mmcblk0p3 = @exec("awk '/mmcblk0p3/ {print $10}' /proc/diskstats")) {
+                      $total_sectors_written = $mmcblk0p3*512/$elapsed;
+                  }
+              }
+              $partitions[$partition]['WriteLoad']['value'] = $total_sectors_written;
             }
           }
           return $partitions;
@@ -340,6 +367,7 @@ class Admin {
                     $diskFree = $fs['Free']['value'];
                     $diskTotal = $fs['Size']['value'];
                     $diskUsed = $fs['Used']['value'];
+                    $writeLoad = $fs['WriteLoad']['value'];
                     $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
                     $diskPercent = sprintf('%.2f',$diskPercentRaw);
                     $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
@@ -352,6 +380,7 @@ class Admin {
                         'free'=>Admin::formatSize($diskFree),
                         'total'=>Admin::formatSize($diskTotal),
                         'used'=>Admin::formatSize($diskUsed),
+                        'writeload'=>Admin::formatSize($writeLoad)."/s",
                         'raw'=>$diskPercentRaw,
                         'percent'=>$diskPercent,
                         'table'=>$diskPercentTable,

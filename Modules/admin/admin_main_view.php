@@ -323,7 +323,8 @@ listItem;
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
-                        'Free'=>$mount_info['free']
+                        'Free'=>$mount_info['free'],
+                        'Write Load'=>$mount_info['writeload']
                     ))
                 );
             }
