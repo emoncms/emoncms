@@ -133,9 +133,6 @@ class Admin {
        */
       public static function disk_list()
       {
-          $uptime = @exec("uptime -s");
-          $elapsed = time() - strtotime($uptime);
-      
           $partitions = array();
           // Fetch partition information from df command
           // I would have used disk_free_space() and disk_total_space() here but
@@ -173,29 +170,35 @@ class Admin {
                 $partitions[$partition]['Used']['text'] = $columns[2];
                 $partitions[$partition]['Free']['text'] = $columns[3];
               }
-              
-              $total_sectors_written = 0;
-              if ($partition=="/boot") {
-                  if ($mmcblk0p1 = @exec("awk '/mmcblk0p1/ {print $10}' /proc/diskstats")) {
-                      $total_sectors_written = $mmcblk0p1*512/$elapsed;
+
+              $writeload = 0;
+              global $redis;
+              if ($redis) {
+                // translate partition mount point to mmcblk0pX based name
+                $partition_name = false;
+                if ($partition=="/boot") $partition_name = "mmcblk0p1";
+                else if ($partition=="/") $partition_name = "mmcblk0p2";
+                else if ($partition=="/var/opt/emoncms") $partition_name = "mmcblk0p3";
+                else if ($partition=="/home/pi/data") $partition_name = "mmcblk0p3";
+                
+                if ($partition_name) {
+                  if ($sectors_written = @exec("awk '/$partition_name/ {print $10}' /proc/diskstats")) {
+                    $last_sectors_written = 0;
+                    if ($redis->exists("diskstats:$partition_name")) {
+                      $last_sectors_written = $redis->get("diskstats:$partition_name");
+                      $last_time = $redis->get("diskstats:time");
+                      $elapsed = time() - $last_time;
+                      $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
+                    } else {
+                      $redis->set("diskstats:$partition_name",$sectors_written);
+                      $redis->set("diskstats:time",time());
+                      $writeload = 0;
+                    }
+                    
                   }
+                }
               }
-              else if ($partition=="/") {
-                  if ($mmcblk0p2 = @exec("awk '/mmcblk0p2/ {print $10}' /proc/diskstats")) {
-                      $total_sectors_written = $mmcblk0p2*512/$elapsed;
-                  }
-              }
-              else if ($partition=="/var/opt/emoncms") {
-                  if ($mmcblk0p3 = @exec("awk '/mmcblk0p3/ {print $10}' /proc/diskstats")) {
-                      $total_sectors_written = $mmcblk0p3*512/$elapsed;
-                  }
-              }
-              else if ($partition=="/home/pi/data") {
-                  if ($mmcblk0p3 = @exec("awk '/mmcblk0p3/ {print $10}' /proc/diskstats")) {
-                      $total_sectors_written = $mmcblk0p3*512/$elapsed;
-                  }
-              }
-              $partitions[$partition]['WriteLoad']['value'] = $total_sectors_written;
+              $partitions[$partition]['WriteLoad']['value'] = $writeload;
             }
           }
           return $partitions;

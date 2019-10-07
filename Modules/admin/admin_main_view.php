@@ -315,7 +315,13 @@ listItem;
             
         </dl>
 
+        <div class="input-prepend" style="float:right; padding-top:5px">
+            <span class="add-on">Write Load Period</span>
+            <button id="resetwriteload" class="btn btn-info">Reset</button>
+        </div>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
+        <br>
+        
         <dl class="row">
             <?php 
             foreach($disk_info as $mount_info) {
@@ -789,6 +795,14 @@ $("#redisflush").click(function() {
     {
       var data = JSON.parse(result);
       $("#redisused").html(data.dbsize+" keys ("+data.used+")");
+    }
+  });
+});
+
+$("#resetwriteload").click(function() {
+  $.ajax({ url: path+"admin/resetwriteload.json", async: true, dataType: "text", success: function(result)
+    {
+      location.reload(); 
     }
   });
 });

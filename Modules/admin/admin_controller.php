@@ -444,6 +444,16 @@ function admin_controller()
                 
                 return $view_data;
             }
+            else if ($route->action == 'resetwriteload' && $session['write'])
+            {
+                if ($redis) {
+                    $redis->del("diskstats:mmcblk0p1");
+                    $redis->del("diskstats:mmcblk0p2");
+                    $redis->del("diskstats:mmcblk0p3");
+                    $redis->del("diskstats:time");
+                }
+                return true;
+            }
             /*
             else if ($route->action === 'loglevel' && $session['write']) {
                 // current values
