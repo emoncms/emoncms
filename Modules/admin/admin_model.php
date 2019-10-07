@@ -389,7 +389,6 @@ class Admin {
                         $days = floor($writeLoadTime / 86400);
                         $hours = floor(($writeLoadTime - ($days*86400))/3600);
                         $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
-                        if ($mins<10) $mins = "0".$mins;
                         
                         $writeloadstr = Admin::formatSize($writeLoad)."/s (";
                         if ($days) $writeloadstr .= $days." days ";
