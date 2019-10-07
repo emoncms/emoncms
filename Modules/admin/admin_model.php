@@ -172,6 +172,7 @@ class Admin {
               }
 
               $writeload = 0;
+              $writeloadtime = "";
               global $redis;
               if ($redis) {
                 // translate partition mount point to mmcblk0pX based name
@@ -189,6 +190,7 @@ class Admin {
                       $last_time = $redis->get("diskstats:time");
                       $elapsed = time() - $last_time;
                       $writeload = ($sectors_written-$last_sectors_written)*512/$elapsed;
+                      $writeloadtime = $elapsed;
                     } else {
                       $redis->set("diskstats:$partition_name",$sectors_written);
                       $redis->set("diskstats:time",time());
@@ -199,6 +201,7 @@ class Admin {
                 }
               }
               $partitions[$partition]['WriteLoad']['value'] = $writeload;
+              $partitions[$partition]['WriteLoadTime']['value'] = $writeloadtime;
             }
           }
           return $partitions;
@@ -371,6 +374,7 @@ class Admin {
                     $diskTotal = $fs['Size']['value'];
                     $diskUsed = $fs['Used']['value'];
                     $writeLoad = $fs['WriteLoad']['value'];
+                    $writeLoadTime = $fs['WriteLoadTime']['value'];
                     $diskPercentRaw = ($diskUsed / $diskTotal) * 100;
                     $diskPercent = sprintf('%.2f',$diskPercentRaw);
                     $diskPercentTable = number_format(round($diskPercentRaw, 2), 2, '.', '');
@@ -379,11 +383,25 @@ class Admin {
                     } else {
                         $mountpoint = $fs['Partition']['text'];
                     }
+                    
+                    $writeloadstr = "n/a";
+                    if ($writeLoadTime) {
+                        $days = floor($writeLoadTime / 86400);
+                        $hours = floor(($writeLoadTime - ($days*86400))/3600);
+                        $mins = floor(($writeLoadTime - ($days*86400) - ($hours*3600))/60);
+                        if ($mins<10) $mins = "0".$mins;
+                        
+                        $writeloadstr = Admin::formatSize($writeLoad)."/s (";
+                        if ($days) $writeloadstr .= $days." days ";
+                        if ($hours) $writeloadstr .= $hours." hours "; 
+                        $writeloadstr .= $mins." mins)";
+                    }
+                    
                     $mounts[] = array(
                         'free'=>Admin::formatSize($diskFree),
                         'total'=>Admin::formatSize($diskTotal),
                         'used'=>Admin::formatSize($diskUsed),
-                        'writeload'=>Admin::formatSize($writeLoad)."/s",
+                        'writeload'=>$writeloadstr,
                         'raw'=>$diskPercentRaw,
                         'percent'=>$diskPercent,
                         'table'=>$diskPercentTable,
