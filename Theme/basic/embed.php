@@ -9,15 +9,13 @@
   Part of the OpenEnergyMonitor project:
   http://openenergymonitor.org
 */
-global $path,$theme,$themecolor;
-
+global $path,$settings;
 $v = 8;
-
-if (!is_dir("Theme/".$theme)) {
-    $theme = "basic";
+if (!is_dir("Theme/".$settings["interface"]["theme"])) {
+    $settings["interface"]["theme"] = "basic";
 }
-if (!in_array($themecolor, ["blue", "sun", "standard"])) {
-    $themecolor = "standard";
+if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])) {
+    $settings["interface"]["themecolor"] = "standard";
 }
 ?>
 
@@ -28,12 +26,12 @@ if (!in_array($themecolor, ["blue", "sun", "standard"])) {
         <title>Emoncms embed - <?php echo $route->controller.' '.$route->action.' '.$route->subaction; ?></title>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
-        <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/ios_load.png">
-        <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/logo_normal.png">
+        <link rel="apple-touch-startup-image" href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/ios_load.png">
+        <link rel="apple-touch-icon" href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/logo_normal.png">
 
         <link href="<?php echo $path; ?>Lib/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-base.css?v=<?php echo $v; ?>" rel="stylesheet">
-        <link href="<?php echo $path; ?>Theme/<?php echo $theme; ?>/emon-<?php echo $themecolor; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
+        <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emoncms-base.css?v=<?php echo $v; ?>" rel="stylesheet">
+        <link href="<?php echo $path; ?>Theme/<?php echo $settings["interface"]["theme"]; ?>/emon-<?php echo $settings["interface"]["themecolor"]; ?>.css?v=<?php echo $v; ?>" rel="stylesheet">
         <link href="<?php echo $path; ?>Lib/misc/sidebar.css?v=<?php echo $v; ?>" rel="stylesheet">
         
         <script type="text/javascript" src="<?php echo $path; ?>Lib/jquery-1.11.3.min.js"></script>

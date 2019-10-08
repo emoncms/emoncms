@@ -106,9 +106,8 @@
     <!-- END MAIN TEMPLATE CONTAINER ----------------------------------------------------------------  -->
 
 
-
-
-    <script src="/emoncms/Modules/config/vue.js"></script>
+    
+    <script src="/emoncms/Lib/vue.min.js"></script>
     <script src="/emoncms/Lib/jquery-1.11.3.min.js"></script>
     <script src="/emoncms/Lib/bootstrap/js/bootstrap.min.js"></script>
     <script src="/emoncms/Modules/dashboard/dashboard.js"></script>
@@ -250,7 +249,6 @@
                     status.title = ''
                     status.message = ''
                     this.statusData = status;
-
                     switch (typeof value) {
                         case 'object':
                             this.statusData = value

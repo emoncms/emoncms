@@ -1,7 +1,9 @@
 <?php
     defined('EMONCMS_EXEC') or die('Restricted access');
-    global $path, $feed_settings, $redis_enabled,$default_emailto;
+    global $path, $settings;
     load_language_files("Modules/process/locale", "process_messages");
+    
+    $v=6;
 ?>
 <style>
   .modal-processlist {
@@ -23,12 +25,12 @@
 
 </style>
 <script type="text/javascript"><?php require "Modules/process/process_langjs.php"; ?></script>
-<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js"></script>
-<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css">
+<script type="text/javascript" src="<?php echo $path; ?>Modules/process/Views/process_ui.js?v=<?php echo $v; ?>"></script>
+<script type="text/javascript" src="<?php echo $path; ?>Lib/misc/autocomplete.js?v=<?php echo $v; ?>"></script>
+<link rel="stylesheet" href="<?php echo $path; ?>Lib/misc/autocomplete.css?v=<?php echo $v; ?>">
 <script>
-  processlist_ui.engines_hidden = <?php echo json_encode($feed_settings['engines_hidden']); ?>;
-  <?php if ($redis_enabled) echo "processlist_ui.has_redis = 1;"; ?>
+  processlist_ui.engines_hidden = <?php echo json_encode($settings["feed"]['engines_hidden']); ?>;
+  <?php if ($settings["redis"]["enabled"]) echo "processlist_ui.has_redis = 1;"; ?>
 
   $(window).resize(function(){
     processlist_ui.adjustmodal() 

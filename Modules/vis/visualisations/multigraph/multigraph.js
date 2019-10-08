@@ -9,6 +9,7 @@ var datetimepicker2;
 var datatype;
 
 function convertToPlotlist(multigraphFeedlist) {
+  if (multigraphFeedlist==undefined) return;
   if (!multigraphFeedlist[0]) return;
   var plotlist = [];
   var showtag = (multigraphFeedlist[0]["showtag"] != undefined ? multigraphFeedlist[0]["showtag"] : true);
