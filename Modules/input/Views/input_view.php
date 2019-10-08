@@ -100,17 +100,14 @@ input[type="checkbox"] { margin:0px; }
 a.text-muted i[class*="icon-"] {
     opacity: .5;
 }
-#app .accordion {
-    margin-bottom: .3rem;
-}
-#feedlist-controls {
+#input-controls {
     top: 3.5rem;
     z-index: 1;
 }
-#feedlist-controls.fixed {
+#input-controls.fixed {
     position: sticky;
 }
-#feedlist-controls:before {
+#input-controls:before {
     background: rgba(0, 0, 0, 0.5);
     content: "";
     position: fixed;
@@ -123,7 +120,7 @@ a.text-muted i[class*="icon-"] {
     transition: .2s height, .16s opacity ease-out;
     opacity: 0;
 }
-#feedlist-controls.fixed:before {
+#input-controls.fixed:before {
     opacity: 1;
     height: 3.15rem;
 }
@@ -144,25 +141,27 @@ input.checkbox-lg,
 [v-cloak] {
   display: none;
 }
-.position-absolute{
+.position-absolute {
     position: absolute;
 }
 
+#app .accordion {
+    margin-bottom: .3rem;
+}
 /* overwrite bootstrap collapse animation */
-
-.collapse .node-input {
+#app .collapse .node-input {
     height: 0;
     transition-timing-function: cubic-bezier(.18,.89,.32,1.28);
     transition-duration: .6s;
     min-height: 0;
     border-width: 0;
 }
-.collapse.in .node-input {
+#app .collapse.in .node-input {
     height: 2.615em;
     transition: all .2s cubic-bezier(.23,1,.32,1);
     border-width: 1px;
 }
-.collapse {
+#app .collapse {
     height: inherit!important;
 }
 .break-all {
@@ -178,7 +177,7 @@ input.checkbox-lg,
         <h3><?php echo _('Inputs'); ?></h3>
         <span id="api-help"><a href="<?php echo $path ?>input/api"><?php echo _('Input API Help'); ?></a></span>
     </div>
-    <div v-cloak id="feedlist-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
+    <div v-cloak id="input-controls" class="controls" v-if="total_devices > 0" :class="{'fixed': overlayControls}">
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
             <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
