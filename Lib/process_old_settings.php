@@ -87,14 +87,7 @@ $settings = array(
     'cassandra'     => array('keyspace' => isset($feed_settings["cassandra"]["keyspace"])?$feed_settings["cassandra"]["keyspace"]:'emoncms'),
     // experimental feature for virtual feeds average, default is true, set to false to activate average agregation with all data points, will be slower
     'virtualfeed'   => array('data_sampling' => false),
-    'mysqltimeseries'   => array(
-        'data_sampling' => false,
-        'prefix'        => isset($feed_settings["mysql"]["prefix"])?$feed_settings["mysql"]["prefix"]:'feed_',
-        'generic'       => isset($feed_settings["mysql"]["generic"])?$feed_settings["mysql"]["generic"]:true,
-        'prefix'        => isset($feed_settings["mysql"]["database"])?$feed_settings["mysql"]["database"]:null,
-        'prefix'        => isset($feed_settings["mysql"]["username"])?$feed_settings["mysql"]["username"]:null,
-        'prefix'        => isset($feed_settings["mysql"]["password"])?$feed_settings["mysql"]["password"]:null
-    ),
+    'mysqltimeseries' => array('data_sampling' => false),
     // Datapoint limit. Increasing this effects system performance but allows for more data points to be read from one api call
     'max_datapoints' => isset($max_datapoints)?$max_datapoints:8928,
 
