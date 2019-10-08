@@ -1,3 +1,5 @@
+<?php $v=6; ?>
+
 <?php if ($device_module) { ?>
 <script src="<?php echo $path; ?>Modules/device/Views/device.js?v=<?php echo $v; ?>"></script>
 <?php } ?>
@@ -309,5 +311,5 @@ input.checkbox-lg,
     }
 </script>
 <script src="<?php echo $path; ?>Lib/misc/gettext.js?v=<?php echo $v; ?>"></script>
-<script src="<?php echo $path; ?>Lib/user_locale.js"></script>
+<script src="<?php echo $path; ?>Lib/user_locale.js?v=<?php echo $v; ?>"></script>
 <script src="<?php echo $path; ?>Modules/input/Views/input_view.js?v=<?php echo $v; ?>"></script>

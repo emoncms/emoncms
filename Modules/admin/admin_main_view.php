@@ -140,6 +140,7 @@ listItem;
         </div>
         <div class="input-append">
             <select id="selected_firmware">
+                <option value="none">none</option>
                 <option value="emonpi">EmonPi</option>
                 <option value="rfm69pi">RFM69Pi</option>
                 <option value="rfm12pi">RFM12Pi</option>
@@ -315,7 +316,13 @@ listItem;
             
         </dl>
 
+        <div class="input-prepend" style="float:right; padding-top:5px">
+            <span class="add-on">Write Load Period</span>
+            <button id="resetwriteload" class="btn btn-info">Reset</button>
+        </div>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Disk'); ?></h4>
+        <br>
+        
         <dl class="row">
             <?php 
             foreach($disk_info as $mount_info) {
@@ -323,7 +330,8 @@ listItem;
                     bar($mount_info['table'], sprintf(_('Used: %s%%'), $mount_info['percent']), array(
                         'Total'=>$mount_info['total'],
                         'Used'=>$mount_info['used'],
-                        'Free'=>$mount_info['free']
+                        'Free'=>$mount_info['free'],
+                        'Write Load'=>$mount_info['writeload']
                     ))
                 );
             }
@@ -347,14 +355,24 @@ listItem;
         <?php if ($redis_enabled) : ?>
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Redis'); ?></h4>
         <dl class="row">
-            <?php echo row(_('Version'), $redis->info()['redis_version']); ?>
+            <?php
+            $redis_version_lines[] = row(_('Redis Server'), $redis_info['redis_version']);
+            if(!empty($redis_info['pipRedis'])) {
+                $redis_version_lines[] = row(_('Python Redis'), $redis_info['pipRedis']);
+            }
+            if(!empty($redis_info['phpRedis'])) {
+                $redis_version_lines[] = row(_('PHP Redis'), $redis_info['phpRedis']);
+            }
+            echo row(_('Version'), sprintf('<dl class="row">%s</dl>',implode('', $redis_version_lines))); ?>
             <?php echo row(_('Host'), $system['redis_server']); ?>
             <?php 
             $redis_flush_btn = sprintf('<button id="redisflush" class="btn btn-info btn-small pull-right">%s</button>',_('Flush'));
-            $redis_keys = sprintf('%s keys',$redis->dbSize());
-            $redis_size = sprintf('(%s)',$redis->info()['used_memory_human']);
-            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between'); ?>
-            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis->info()['uptime_in_days'])); ?>
+            $redis_keys = sprintf('%s keys',$redis_info['dbSize']);
+            $redis_size = sprintf('(%s)',$redis_info['used_memory_human']);
+            echo row(sprintf('<span class="align-self-center">%s</span>',_('Size')), sprintf('<span id="redisused">%s %s</span>%s',$redis_keys,$redis_size,$redis_flush_btn),'d-flex','d-flex align-items-center justify-content-between');
+            ?>
+            <?php echo row(_('Uptime'), sprintf(_("%s days"), $redis_info['uptime_in_days'])); ?>
+            
         </dl>
         <?php endif; ?>
 
@@ -788,6 +806,14 @@ $("#redisflush").click(function() {
     {
       var data = JSON.parse(result);
       $("#redisused").html(data.dbsize+" keys ("+data.used+")");
+    }
+  });
+});
+
+$("#resetwriteload").click(function() {
+  $.ajax({ url: path+"admin/resetwriteload.json", async: true, dataType: "text", success: function(result)
+    {
+      location.reload(); 
     }
   });
 });

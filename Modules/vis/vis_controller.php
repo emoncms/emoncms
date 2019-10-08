@@ -12,12 +12,12 @@
 
   function vis_controller()
   {
-    global $mysqli, $redis, $session, $route, $user, $feed_settings;
+    global $mysqli, $redis, $session, $route, $user, $settings;
 
     $result = false;
 
     require "Modules/feed/feed_model.php";
-    $feed = new Feed($mysqli,$redis, $feed_settings);
+    $feed = new Feed($mysqli,$redis, $settings['feed']);
 
     require "Modules/vis/multigraph_model.php";
     $multigraph = new Multigraph($mysqli);

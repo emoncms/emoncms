@@ -5,8 +5,8 @@ class MysqlTimeSeries implements engine_methods
 {
     protected $generic = true;
     protected $prefix = "feed_";
-    protected $redis = false; 
     protected $mysqli;
+    protected $redis; 
     protected $log;
     private $writebuffer = array();
 
@@ -15,7 +15,7 @@ class MysqlTimeSeries implements engine_methods
      *
      * @api
     */
-    public function __construct($mysqli, $redis, $settings) {
+    public function __construct($mysqli, $redis=false, $settings=array()) {
         $this->log = new EmonLogger(__FILE__);
         if (isset($settings['database'])) {
             $database = $settings['database'];
@@ -44,12 +44,13 @@ class MysqlTimeSeries implements engine_methods
         else {
             $this->mysqli = $mysqli;
         }
+        $this->redis = $redis;
+        
         if (isset($settings['prefix'])) {
             $this->prefix = $settings['prefix'];
         }
         if (isset($settings['generic']) && !$settings['generic']) {
             $this->generic = $settings['generic'];
-            $this->redis = $redis;
         }
     }
 
@@ -180,7 +181,7 @@ class MysqlTimeSeries implements engine_methods
      */
     public function get_data($id, $start, $end, $interval, $skipmissing, $limitinterval)
     {
-        global $data_sampling;
+        global $settings;
         
         $id = intval($id);
         $start = round($start/1000);
@@ -201,7 +202,7 @@ class MysqlTimeSeries implements engine_methods
         $data = array();
         $data_time = null;
         $data_value = null;
-        if ($data_sampling && $range > 180000 && $dp > 0) // 50 hours
+        if ($settings["feed"]["mysqltimeseries"]["data_sampling"] && $range > 180000 && $dp > 0) // 50 hours
         {
             $td = $range / $dp; // time duration for each datapoint
             $stmt = $this->mysqli->prepare("SELECT time, data FROM $table WHERE time BETWEEN ? AND ? ORDER BY time ASC LIMIT 1");
@@ -532,7 +533,7 @@ class MysqlTimeSeries implements engine_methods
 
     public function csv_export($id, $start, $end, $interval, $timezone)
     {
-        global $csv_decimal_places, $csv_decimal_place_separator, $csv_field_separator, $data_sampling;
+        global $settings;
         
         require_once "Modules/feed/engine/shared_helper.php";
         $helperclass = new SharedHelper();
@@ -570,7 +571,7 @@ class MysqlTimeSeries implements engine_methods
         // Write to output stream
         $exportfh = @fopen( 'php://output', 'w' );
         $range = $end - $start; // window duration in seconds
-        if ($data_sampling && $range > 180000 && $dp > 0) // 50 hours
+        if ($settings["feed"]["mysqltimeseries"]["data_sampling"] && $range > 180000 && $dp > 0) // 50 hours
         {
             $time = null;
             $data = null;
@@ -585,7 +586,7 @@ class MysqlTimeSeries implements engine_methods
                 if ($stmt->fetch()) {
                     if ($data != null || $skipmissing === 0) { // Remove this to show white space gaps in graph
                         $timenew = $helperclass->getTimeZoneFormated($time, $timezone);
-                        fwrite($exportfh, $timenew.$csv_field_separator.number_format((float)$data, $csv_decimal_places, $csv_decimal_place_separator, '')."\n");
+                        fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format((float)$data, $settings["feed"]["csv_decimal_places"], $settings["feed"]["csv_decimal_place_separator"], '')."\n");
                     }
                 }
                 $t = $tb;
@@ -610,7 +611,7 @@ class MysqlTimeSeries implements engine_methods
                     if ($data != null || $skipmissing === 0) { // Remove this to show white space gaps in graph
                         $time = $row['time'] * $td;
                         $timenew = $helperclass->getTimeZoneFormated($time, $timezone);
-                        fwrite($exportfh, $timenew.$csv_field_separator.number_format((float)$data, $csv_decimal_places, $csv_decimal_place_separator, '')."\n");
+                        fwrite($exportfh, $timenew.$settings["feed"]["csv_field_separator"].number_format((float)$data, $settings["feed"]["csv_decimal_places"], $settings["feed"]["csv_decimal_place_separator"], '')."\n");
                     }
                 }
             }
@@ -770,7 +771,8 @@ class MysqlTimeSeries implements engine_methods
 
     // Bellow are engine private methods
 
-    private function get_data_type($id) {
+    private function get_data_type($id)
+    {
         if ($this->redis) {
             return $this->redis->hget("feed:$id", "datatype");
         }
@@ -858,7 +860,8 @@ class MysqlTimeSeries implements engine_methods
     }
 
     // Search time in buffer if found update its value and return true 
-    private function writebuffer_update_time($id, $time, $newvalue) {
+    private function writebuffer_update_time($id, $time, $newvalue)
+    {
        if (isset($this->writebuffer[$id])) {
            $array=$this->writebuffer[$id];
            foreach ($array as $key => $val) {
