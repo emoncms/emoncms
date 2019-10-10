@@ -213,7 +213,7 @@ input.checkbox-lg,
         <button @click="collapseAll" id="expand-collapse-all" class="btn" :title="collapse_title">
             <i class="icon" :class="{'icon-resize-small': collapsed.length < total_devices, 'icon-resize-full': collapsed.length >= total_devices}"></i>
         </button>
-        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(_('Delete')); ?>' + ' (' + total_inputs + ')'">
+        <button @click="selectAll" class="btn" :title="'<?php echo addslashes(_('Select all')); ?>' + ' (' + total_inputs + ')'">
             <svg class="icon"><use :xlink:href="checkbox_icon"></use></svg>
             <span>{{selected.length}}</span>
         </button>
