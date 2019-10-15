@@ -248,7 +248,9 @@ input.checkbox-lg,
         <div class="alert" v-else>
             <h3 class="alert-heading mt-0"><?php echo _('No inputs created'); ?></h3>
             <p><?php echo _('Inputs are the main entry point for your monitoring device. Configure your device to post values here, you may want to follow the <a href="api">Input API helper</a> as a guide for generating your request.'); ?></p>
-            <button @click.prevent="create_device" class="btn" >
+        </div>
+        <div>
+            <button @click.prevent="create_device" class="btn btn-small" >
                 <i class="icon-plus-sign" ></i> <?php echo _('New device'); ?>
             </button>
         </div>
