@@ -1,4 +1,4 @@
-**To install emoncms on Debian see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
+**To install emoncms on a Raspberry Pi see new installation script approach:<br>https://github.com/openenergymonitor/EmonScripts**
 
 ---
 
