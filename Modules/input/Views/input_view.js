@@ -296,7 +296,7 @@ var controls = new Vue({
         },
         collapse_title: function () {
             var title = ''
-            if (this.collapsed.length < this.total_inputs) {
+            if (this.collapsed.length < this.total_devices) {
                 title += _('Collapse');
             } else {
                 title += _('Expand');
@@ -305,7 +305,7 @@ var controls = new Vue({
         },
         checkbox_icon: function () {
             var icon = '#icon-checkbox-'
-            if (this.selected.length < this.total_inputs) {
+            if (this.selected.length < this.total_devices) {
                 icon += 'unchecked'
             } else {
                 icon += 'checked'
