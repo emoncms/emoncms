@@ -10,6 +10,7 @@ DirectoryIndex index.php
   RewriteEngine on
  
   #RewriteBase /sites/emon/
+  RewriteRule ^emoncms/(.*)$ $1 [L]
 
   # Rewrite URLs of the form 'x' to the form 'index.php?q=x'.
   RewriteCond %{REQUEST_FILENAME} !-f

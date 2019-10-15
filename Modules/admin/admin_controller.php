@@ -92,7 +92,7 @@ function admin_controller()
                     $phpRedisPattern = 'Redis Version =>';
                     $redis_info['phpRedis'] = substr(shell_exec("php -i | grep '".$phpRedisPattern."'"), strlen($phpRedisPattern));
                     $pipRedisPattern = "Version: ";
-                    $redis_info['pipRedis'] = substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
+                    $redis_info['pipRedis'] = ""; //substr(shell_exec("pip show redis --disable-pip-version-check | grep '".$pipRedisPattern."'"), strlen($pipRedisPattern));
                 }
 
                 $view_data = array(
