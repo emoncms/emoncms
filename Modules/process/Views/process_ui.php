@@ -158,7 +158,7 @@
                                         <option value="3600">1<?php echo dgettext('process_messages','h'); ?></option>
                                         <option value="86400">1<?php echo dgettext('process_messages','d'); ?></option>
                                     </select>
-                                    <?php if (isset($feed_settings["mysql"]) && isset($feed_settings["mysql"]["generic"]) && !$feed_settings["mysql"]["generic"]) { ?>
+                                    <?php if (isset($settings["feed"]["mysqltimeseries"]) && isset($settings["feed"]["mysqltimeseries"]["generic"]) && !$settings["feed"]["mysqltimeseries"]["generic"]) { ?>
                                     <input id="feed-table" type="text" pattern="[a-zA-Z0-9_]+" style="width:6em" title="<?php echo dgettext('process_messages','Please enter a table name consisting of alphabetical letters, A-Z a-z 0-9 and _ characters'); ?>" placeholder="<?php echo dgettext('process_messages','Table'); ?>" />
                                     <?php } ?>
                                 </div>
