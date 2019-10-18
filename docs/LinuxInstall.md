@@ -1,4 +1,8 @@
-# Install Emoncms on Ubuntu / Debian Linux
+**To install emoncms on Debian see new installation script approach: https://github.com/openenergymonitor/EmonScripts**
+
+---
+
+# Archived: Install Emoncms on Ubuntu / Debian Linux
 
 This guide should work on most debian systems including Ubuntu. For installation guide on installing emoncms on a raspberrypi see the [RaspberryPi installation guides](RaspberryPi/readme.md).
 
