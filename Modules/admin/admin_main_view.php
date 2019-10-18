@@ -712,7 +712,7 @@ $(window).resize(function() {
 });
 var logrunning = false;
 var updatelogrunning = false;
-<?php if ($settings["feed"]['redisbuffer']['enabled']) { ?>
+<?php if ($feed_settings['redisbuffer']['enabled']) { ?>
   getBufferSize();
 <?php } ?>
 function getBufferSize() {
