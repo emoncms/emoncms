@@ -80,7 +80,7 @@ if (!in_array($settings["interface"]["themecolor"], ["blue", "sun", "standard"])
     </div><!-- eof #wrap -->
 
     <div id="footer">
-        <?php echo _('Powered by '); ?><a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
+        <?php echo dgettext('theme_messages','Powered by'); ?>&nbsp;<a href="http://openenergymonitor.org" target="_blank" rel="noopener">OpenEnergyMonitor.org</a>
         <span> | <a href="https://github.com/emoncms/emoncms/releases" target="_blank" rel="noopener"><?php echo $emoncms_version; ?></a></span>
     </div>
 
