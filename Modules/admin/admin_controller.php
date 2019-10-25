@@ -123,8 +123,13 @@ function admin_controller()
                     'log_level_label' => $log_levels[$settings['log']['level']],
                     'path_to_config'=> $path_to_config
                 );
-                
+
                 return view("Modules/admin/admin_main_view.php", $view_data);
+            }
+
+            else if ($route->action == 'settings')
+            {
+                return view("Modules/admin/settings_view.php");
             }
 
             else if ($route->action == 'db')

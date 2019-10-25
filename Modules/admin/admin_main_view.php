@@ -275,6 +275,9 @@ listItem;
         </dl>
 
         <h4 class="text-info text-uppercase border-top pt-2 mt-0 px-1"><?php echo _('Emoncms'); ?></h4>
+        <div>
+            <a href="<?php echo $path; ?>admin/settings" class="btn btn-info"><?php echo _('View Emoncms Settings'); ?></a>
+        </div>
         <dl class="row">
             <?php echo row(_('Version'),$emoncms_version); ?>
             <?php echo row(_('Modules'), $emoncms_modules); ?>
