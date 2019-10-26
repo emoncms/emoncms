@@ -11,7 +11,7 @@ global $path, $session, $menu, $user, $settings;
 if (!isset($session['profile'])) {
     $session['profile'] = 0;
 }
-load_language_files("Theme/locale", "theme_messages");
+load_language_files("Theme/basic/locale", "theme_messages");
 ?>
 <?php
 // if not logged in show login button top right
@@ -70,6 +70,24 @@ endforeach; endif;
 <ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
 
 <?php
+$file1 = fopen('version.txt', 'rb');
+$actualVersion=fgets($file1);
+fclose($file1);
+
+$file2 = fopen('https://raw.githubusercontent.com/emoncms/emoncms/stable/version.txt', 'rb');
+$lastStableVersion=fgets($file2);
+fclose($file2);
+$updateNotice = array(
+    'icon'=>'update_available',
+    'href'=>'#',
+    'id'=>'update-available',
+    'title'=>dgettext('theme_messages','New version available').' - EmonCMS '.$lastStableVersion,
+);
+    $updateNotice['class'] = 'align-items-center';
+
+if($actualVersion!=$lastStableVersion && $session['read']){
+    echo makeLink($updateNotice);
+}
 $isBookmarked = currentPageIsBookmarked();
 $addBookmark = array(
     'icon'=>'star_border',
