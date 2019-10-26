@@ -809,7 +809,33 @@ class Process_ProcessList
                 "unit"=>"",
                 "group"=>_("Calibration"),
                 "description"=>_("<p>Return the absolute value of the current value. This can be useful for calibrating a particular variable on the web rather than by reprogramming hardware.</p>")
-            )
+            ),
+            array(
+              "name"=>_("kWh Accumulator"),
+              "short"=>"kwhacc",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"kwh_accumulator",
+              "datafields"=>1,
+              "datatype"=>DataType::REALTIME,
+              "unit"=>"kWh",
+              "group"=>_("Main"),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPTIMESERIES),
+              "requireredis"=>true,
+              "description"=>_("<b>kWh Accumulator:</b>This processor removes resets from a cumulative kWh input, it also filter's out spikes in energy use that are larger than a max power threshold set in the processor, assuming these are error's, the max power threshold is set to 25kW. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br>See forum thread here for an example <a href=\"https://openenergymonitor.org/emon/node/12308\" Creating kWh per day bar graphs from Accumulating kWh </a></p>")
+           ),
+           array(
+              "name"=>_("Log to feed (Join)"),
+              "short"=>"logjn",
+              "argtype"=>ProcessArg::FEEDID,
+              "function"=>"log_to_feed_join",
+              "datafields"=>1,
+              "datatype"=>DataType::REALTIME,
+              "unit"=>"",
+              "group"=>_("Main"),
+              "engines"=>array(Engine::PHPFINA,Engine::PHPFIWA,Engine::PHPTIMESERIES,Engine::MYSQL,Engine::MYSQLMEMORY,Engine::CASSANDRA),
+              "nochange"=>true,
+              "description"=>_("<p><b>Log to feed (Join):</b> In addition to the standard log to feed process, this process links missing data points with a straight line between the newest value and the previous value. It is designed for use with total cumulative kWh meter reading inputs, producing a feed that can be used with the delta property when creating bar graphs. <br><br><b>Visualisation tip:</b> Feeds created with this input processor can be used to generate daily kWh data using the BarGraph visualisation with the delta property set to 1 and scale set to 0.001.<br>See forum thread here for an example <a href=\"https://openenergymonitor.org/emon/node/12308\" Creating kWh per day bar graphs from Accumulating kWh </a></p>")
+           )
         );
         return $list;
     }
@@ -884,6 +910,13 @@ class Process_ProcessList
     {
         $this->feed->insert_data($id, $time, $time, $value);
 
+        return $value;
+    }
+
+    public function log_to_feed_join($id, $time, $value)
+    {
+        $padding_mode = "join";
+        $this->feed->insert_data($id, $time, $time, $value, $padding_mode);
         return $value;
     }
 
@@ -1348,6 +1381,38 @@ class Process_ProcessList
         $redis->hMset("process:whaccumulator:$feedid", array('time' => $time, 'value' => $value));
 
         return $totalwh;
+    }
+    
+    public function kwh_accumulator($feedid, $time, $value)
+    {
+        $max_power = 25000;
+        $totalkwh = $value;
+        
+        global $redis;
+        if (!$redis) return $value; // return if redis is not available
+
+        if ($redis->exists("process:kwhaccumulator:$feedid")) {
+            $last_input = $redis->hmget("process:kwhaccumulator:$feedid",array('time','value'));
+    
+            $last_feed  = $this->feed->get_timevalue($feedid);
+            $totalkwh = $last_feed['value'];
+            
+            $time_diff = $time - $last_feed['time'];
+            $val_diff = $value - $last_input['value'];
+            
+            if ($time_diff>0) {
+                $power = ($val_diff * 3600000) / $time_diff;
+            
+                if ($val_diff>0 && $power<$max_power) $totalkwh += $val_diff;
+            }
+
+            $padding_mode = "join";
+            $this->feed->insert_data($feedid, $time, $time, $totalkwh, $padding_mode);
+            
+        }
+        $redis->hMset("process:kwhaccumulator:$feedid", array('time' => $time, 'value' => $value));
+
+        return $totalkwh;
     }
     
     public function publish_to_mqtt($topic, $time, $value)
