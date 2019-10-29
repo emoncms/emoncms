@@ -81,7 +81,7 @@ $updateNotice = array(
     'icon'=>'update_available',
     'href'=>'#',
     'id'=>'update-available',
-    'title'=>dgettext('theme_messages','New version available').' - EmonCMS '.$lastStableVersion,
+    'title'=>dgettext('theme_messages','New version available').' - Emoncms '.$lastStableVersion,
 );
     $updateNotice['class'] = 'align-items-center';
 
