@@ -70,22 +70,28 @@ endforeach; endif;
 <ul id="right-nav" class='nav d-flex align-items-stretch mr-0 pull-right'>
 
 <?php
-$file1 = fopen('version.txt', 'rb');
-$actualVersion=fgets($file1);
-fclose($file1);
-
-$file2 = fopen('https://raw.githubusercontent.com/emoncms/emoncms/stable/version.txt', 'rb');
-$lastStableVersion=fgets($file2);
-fclose($file2);
+if ($session['userid']== 0){ //user not authenticated
+    $_SESSION['checkUpdate'] = false;
+    $_SESSION['actualVersion']=$_SESSION['lastStableVersion']="";
+}
+if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ //user authenticated and no check update
+    if(file_exists('version.txt')){
+       $file1 = fopen('version.txt', 'rb');
+       $_SESSION['actualVersion'] = fgets($file1);
+       fclose($file1);
+       $_SESSION['lastStableVersion'] = http_request("GET","https://raw.githubusercontent.com/emoncms/emoncms/stable/version.txt",array());
+    }
+    $_SESSION['checkUpdate'] = true;
+}
 $updateNotice = array(
     'icon'=>'update_available',
     'href'=>'#',
     'id'=>'update-available',
-    'title'=>dgettext('theme_messages','New version available').' - Emoncms '.$lastStableVersion,
+    'title'=>dgettext('theme_messages','New version available').' - Emoncms '.trim($_SESSION['lastStableVersion']),
+    'class'=>'align-items-center'
 );
-    $updateNotice['class'] = 'align-items-center';
 
-if($actualVersion!=$lastStableVersion && $session['read']){
+if(trim($_SESSION['actualVersion']) != trim($_SESSION['lastStableVersion']) && $session['read']){
     echo makeLink($updateNotice);
 }
 $isBookmarked = currentPageIsBookmarked();
