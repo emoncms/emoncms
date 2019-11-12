@@ -87,11 +87,11 @@ if ($session['userid'] != 0 && $_SESSION['checkUpdate'] != true){ // User authen
     $emoncmsModulesPath = substr($_SERVER['SCRIPT_FILENAME'], 0, strrpos($_SERVER['SCRIPT_FILENAME'], '/')).'/Modules';  // Set the Modules path
     $emoncmsModuleFolders = glob("$emoncmsModulesPath/*", GLOB_ONLYDIR);                // Use glob to get all the folder names only
         foreach($emoncmsModuleFolders as $emoncmsModuleFolder) {                            // loop through the folders
-            if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version information exists
+            if (file_exists($emoncmsModuleFolder."/module.json")) {                         // JSON Version informatmion exists
               $json = json_decode(file_get_contents($emoncmsModuleFolder."/module.json"));  // Get JSON version information
               $jsonAppName = $json->{'name'};
               $jsonVersion = $json->{'version'};
-              if ($jsonAppName) {
+              if ($jsonAppName && $jsonVersion!="") {
                 $jsonRemote = json_decode(http_request("GET","https://raw.githubusercontent.com/emoncms/".$jsonAppName."/stable/module.json",array())); // Get JSON last stable version information
                 if($jsonRemote){
                    $jsonAppNameRemote = $jsonRemote->{'name'};
