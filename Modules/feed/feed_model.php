@@ -777,7 +777,7 @@ class Feed
                 if ($firstline) {
                     $dataline[$feedid] = $data[$feedid];
                 } else if (isset($data[$feedid])) {
-                    $dataline[$feedid] = number_format((float)$data[$feedid],$this->settings['decimal_places'],$this->settings['decimal_place_separator'],'');
+                    $dataline[$feedid] = number_format((float)$data[$feedid],$this->settings['csv_decimal_places'],$this->settings['csv_decimal_place_separator'],'');
                 } else {
                     $dataline[$feedid] = "";
                 }
@@ -785,7 +785,7 @@ class Feed
             if (!$firstline) {
                 $time = $helperclass->getTimeZoneFormated($time,$usertimezone);
             }
-            fputcsv($fh, array($time)+$dataline,$this->settings['field_separator']);
+            fputcsv($fh, array($time)+$dataline,$this->settings['csv_field_separator']);
             $firstline = false;
         }
         fclose($fh);
