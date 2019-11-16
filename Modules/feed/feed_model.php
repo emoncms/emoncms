@@ -571,7 +571,7 @@ class Feed
         // Call to engine get_data
         $data = $this->EngineClass($engine)->get_data($feedid,$start,$end,$outinterval,$skipmissing,$limitinterval);
 
-        if ($this->settings['redisbuffer']['enabled']) {
+        if ($this->settings['redisbuffer']['enabled'] && !isset($data["success"])) {
             // Add redisbuffer cache if available
             if ($engine==Engine::PHPFINA || $engine==Engine::PHPTIMESERIES) $bufferstart=$start; else $bufferstart=end($data)[0];
             
